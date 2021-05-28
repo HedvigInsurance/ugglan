@@ -53,7 +53,8 @@ extension MultiActionNumberRow: Viewable {
 
         return (containerView, Signal { callback in
             bag += view.addArranged(numberField).onValue { text in
-                callback([data.key: text])
+                let value = MultiActionValue(inputValue: text, displayValue: text + (data.unit ?? ""))
+                callback([data.key: value])
             }
 
             return bag

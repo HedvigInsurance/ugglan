@@ -7,7 +7,8 @@ import UIKit
 
 struct MultiActionValueRow: Hashable, Equatable {
     let didTapRow = ReadWriteSignal<Bool>(false)
-    let values: [String: String]
+    let values: [String: MultiActionValue]
+    let title: String
     let id = UUID()
 
     func hash(into hasher: inout Hasher) {
@@ -23,14 +24,8 @@ extension MultiActionValueRow: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (MultiActionValueRow) -> Disposable) {
         let bag = DisposeBag()
 
-        let control = UIControl()
-        control.backgroundColor = .clear
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.distribution = .fillEqually
-        stackView.isUserInteractionEnabled = false
+        let view = UIView()
+        view.backgroundColor = .clear
 
         let stylingView = UIView()
         bag += stylingView.applyShadow { _ in
@@ -46,58 +41,61 @@ extension MultiActionValueRow: Reusable {
         stylingView.layer.cornerRadius = 8
         stylingView.alpha = 0
         stylingView.backgroundColor = .brand(.embarkMessageBubble(false))
-        stylingView.isUserInteractionEnabled = false
 
-        control.addSubview(stylingView)
+        view.addSubview(stylingView)
         stylingView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-
         let title = UILabel(value: "", style: .brand(.body(color: .primary)))
+        title.textAlignment = .center
 
         let values = UILabel(value: "", style: .brand(.body(color: .secondary)))
+        values.textAlignment = .center
+        values.numberOfLines = 0
+        values.lineBreakMode = .byWordWrapping
 
-        stackView.addArrangedSubview(title)
-        stackView.addArrangedSubview(values)
+        view.addSubview(title)
+        view.addSubview(values)
 
-        stylingView.addSubview(stackView)
-        stackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+        title.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(view).inset(16)
+            make.bottom.equalTo(view.snp.centerY).inset(5)
         }
 
-        let close = UIImageView()
-        close.image = hCoreUIAssets.close.image
-        close.contentMode = .scaleAspectFit
-        close.tintColor = .brand(.secondaryText)
+        values.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(view).inset(16)
+            make.top.equalTo(view.snp.centerY).offset(5)
+        }
 
-        stylingView.addSubview(close)
-        close.snp.makeConstraints { make in
+        let button = UIButton()
+        button.setImage(hCoreUIAssets.close.image, for: .normal)
+        button.tintColor = .brand(.secondaryText)
+        button.isUserInteractionEnabled = true
+
+        view.addSubview(button)
+        button.snp.makeConstraints { make in
             make.top.right.equalToSuperview().inset(8)
+            make.height.width.equalTo(30)
         }
 
-        return (control, { `self` in
-            title.text = self.values.first?.value
+        return (view, { `self` in
+            title.text = self.title
+            values.text = self.values.compactMap { _, value in
+                value.displayValue
+            }.joined(separator: " \u{2022} ")
 
-            values.numberOfLines = 0
-            values.lineBreakMode = .byWordWrapping
-            values.text = self.values.map { _, value in
-                value
-            }.joined(separator: "\u{2022}")
-
-            let didTapButton = control.signal(for: .touchDown)
-
-            bag += didTapButton.onValue {
+            bag += button.onValue {
                 self.didTapRow.value = true
             }
 
-            bag += stackView.didLayoutSignal.take(first: 1).onValue { _ in
-                stackView.transform = CGAffineTransform.identity
-                stackView.transform = CGAffineTransform(translationX: 0, y: 40)
-                stackView.alpha = 0
+            bag += view.didLayoutSignal.take(first: 1).onValue { _ in
+                view.transform = CGAffineTransform.identity
+                view.transform = CGAffineTransform(translationX: 0, y: 40)
+                view.alpha = 0
 
                 bag += Signal(after: 0.4).animated(style: .lightBounce(), animations: { _ in
-                    stackView.transform = CGAffineTransform.identity
-                    stackView.alpha = 1
+                    view.transform = CGAffineTransform.identity
+                    view.alpha = 1
                     stylingView.alpha = 1
                 })
             }

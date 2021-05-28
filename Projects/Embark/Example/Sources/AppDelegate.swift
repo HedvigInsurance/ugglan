@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
 
-        showStoryList()
+        showDebug()
 
         return true
     }

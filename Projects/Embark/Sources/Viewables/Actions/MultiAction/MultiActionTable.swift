@@ -12,12 +12,11 @@ struct MultiActionTable {
     let state: EmbarkState
     var components: [MultiActionComponent]
     let title: String?
-    let storeSignal = MultiActionStoreSignal()
-    @ReadWriteState var multiActionValues = [String: String]()
+    @ReadWriteState var multiActionValues = [String: MultiActionValue]()
 }
 
 extension MultiActionTable: Presentable {
-    func materialize() -> (UIViewController, FiniteSignal<[String: String]>) {
+    func materialize() -> (UIViewController, FiniteSignal<[String: MultiActionValue]>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -53,7 +52,7 @@ extension MultiActionTable: Presentable {
             }
         }
 
-        func addValues(storeValues: [String: String]) {
+        func addValues(storeValues: [String: MultiActionValue]) {
             $multiActionValues.value = $multiActionValues.value.merging(storeValues, uniquingKeysWith: takeLeft)
         }
 
@@ -105,7 +104,7 @@ extension MultiActionTable: Presentable {
         }
 
         let button = ButtonRowViewWrapper(
-            title: "Save",
+            title: L10n.generalSaveButton,
             type: .standard(
                 backgroundColor: .brand(.secondaryButtonBackgroundColor),
                 textColor: .brand(.secondaryButtonTextColor)
@@ -125,6 +124,10 @@ extension MultiActionTable: Presentable {
             rowView.row.backgroundColor = .clear
         }
 
+        bag += viewController.currentDetentSignal.animated(style: .lightBounce()) { _ in
+            viewController.view.layoutIfNeeded()
+        }
+
         return (viewController, FiniteSignal { callback in
             func submit() {
                 callback(.value($multiActionValues.value))
@@ -132,7 +135,7 @@ extension MultiActionTable: Presentable {
 
             let cancelButton = UIButton()
             let textStyle = TextStyle.brand(.body(color: .primary))
-            let attributedTitle = NSAttributedString(string: "Cancel", attributes: textStyle.attributes)
+            let attributedTitle = NSAttributedString(string: L10n.generalCancelButton, attributes: textStyle.attributes)
             cancelButton.setAttributedTitle(attributedTitle, for: .normal)
 
             bag += cancelButton.signal(for: .touchUpInside).onValue { _ in
@@ -150,12 +153,18 @@ extension MultiActionTable: Presentable {
     }
 }
 
+internal struct MultiActionValue {
+    var inputValue: String
+    var displayValue: String?
+}
+
 typealias EmbarkDropDownActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.AsEmbarkDropdownAction.DropDownActionDatum
 
 typealias EmbarkSwitchActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.AsEmbarkSwitchAction.SwitchActionDatum
 
 typealias EmbarkNumberMultiActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.AsEmbarkMultiActionNumberAction.Datum
-internal typealias MultiActionStoreSignal = Signal<[String: String]>
+
+internal typealias MultiActionStoreSignal = Signal<[String: MultiActionValue]>
 
 internal enum MultiActionComponent {
     case number(EmbarkNumberMultiActionData)

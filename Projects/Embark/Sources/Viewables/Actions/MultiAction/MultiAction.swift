@@ -11,7 +11,6 @@ import UIKit
 struct MultiAction {
     let state: EmbarkState
     let data: MultiActionData
-    @ReadWriteState var rows: [MultiActionRow] = []
 }
 
 extension MultiAction: Viewable {
@@ -29,60 +28,27 @@ extension MultiAction: Viewable {
 
         let maxCellWidth = UIScreen.main.bounds.width / 2 - 28
 
+        let dataSource = MultiActionDataSource(maxCount: Int(data.maxAmount) ?? 1, addLabelTitle: data.addLabel ?? "")
+
         let collectionKit = CollectionKit<EmptySection, MultiActionRow>(
-            table: Table(rows: []),
+            table: Table(rows: dataSource.rows),
             layout: layout,
             holdIn: bag
         )
 
-        collectionKit.view.backgroundColor = .clear
-        view.addArrangedSubview(collectionKit.view)
-
         let delegate = collectionKit.delegate
         bag.hold(delegate)
 
-        bag += $rows.atOnce()
+        collectionKit.view.backgroundColor = .clear
+        view.addArrangedSubview(collectionKit.view)
+
+        bag += dataSource.$rows.atOnce()
             .map { Table<EmptySection, MultiActionRow>(rows: $0) }
             .onValue { table in
                 collectionKit.set(table)
             }
 
-        bag += collectionKit.onValueDisposePrevious { table in
-            let innerBag = DisposeBag()
-
-            innerBag += table.signal().onValue { item in
-                switch item {
-                case let .left(row):
-                    innerBag += row.didTapRow.onValue { _ in
-                        if let firstIndex = $rows.value.firstIndex(where: { (either) -> Bool in
-                            if case let .left(iteratedRow) = either {
-                                return iteratedRow.id == row.id
-                            } else {
-                                return false
-                            }
-                        }) {
-                            $rows.value.remove(at: firstIndex)
-                        }
-                    }
-                case let .right(row):
-                    innerBag += row.didTapRow.onValue { _ in
-                        innerBag += present().onValue { values in
-                            $rows.value.append(.make(.init(values: values)))
-                        }
-                    }
-                }
-            }
-
-            return innerBag
-        }
-
-        bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            let height = 0.55 * maxCellWidth
-
-            return CGSize(width: maxCellWidth, height: height)
-        }
-
-        func present() -> FiniteSignal<[String: String]> {
+        func present() -> FiniteSignal<[String: MultiActionValue]>? {
             let components = data.components.map { (component) -> MultiActionComponent in
                 if let dropDownAction = component.asEmbarkDropdownAction?.dropDownActionData {
                     return .dropDown(dropDownAction)
@@ -97,10 +63,40 @@ extension MultiAction: Viewable {
 
             let multiActionForm = MultiActionTable(state: state, components: components, title: data.addLabel)
 
-            return collectionKit.view.viewController!.present(multiActionForm, style: .detented(.medium, .large), options: [.defaults])
+            guard let viewController = collectionKit.view.viewController else { return nil }
+
+            return viewController.present(multiActionForm, style: .detented(.medium, .large), options: [.defaults, .autoPop])
         }
 
-        $rows.value = [.right(.init(title: data.addLabel ?? ""))]
+        bag += collectionKit.onValueDisposePrevious { table in
+            let innerBag = DisposeBag()
+
+            innerBag += table.signal().onValue { item in
+                switch item {
+                case let .left(row):
+                    innerBag += row.didTapRow.onValue { _ in
+                        dataSource.removeValue(row: row)
+                    }
+                case let .right(row):
+                    innerBag += row.didTapRow.onValue { _ in
+                        innerBag += present()?.onValue { values in
+                            dataSource.addValue(values: values)
+                        }
+                    }
+                }
+            }
+
+            return innerBag
+        }
+
+        bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
+            let height = 0.55 * maxCellWidth
+
+            return CGSize(width: maxCellWidth, height: height)
+        }
+
+        // Need to add the first row after the declaration of the collectionKit table signal or there is a race condition
+        dataSource.lazyLoadAddObjectRow()
 
         return (view, Signal { callback in
 
@@ -134,7 +130,12 @@ extension MultiAction: Viewable {
             func submit() {
                 guard let key = data.key else { return }
 
-                let values = rows.compactMap { $0.left?.values }
+                let values = dataSource.rows
+                    .compactMap { $0.left?.values }
+                    .compactMap { (dictionary) -> [String: String] in
+                        dictionary.mapValues { $0.inputValue }
+                    }
+
                 self.state.store.addMultiActionItems(actionKey: key, componentValues: values) {
                     self.state.store.createRevision()
                 }

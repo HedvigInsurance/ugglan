@@ -87,7 +87,7 @@ private extension EmbarkStory {
     static let embarkDropDownComponent = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum.Component.makeEmbarkDropdownAction(
         dropDownActionData: .init(
             label: "Building Type",
-            key: "building",
+            key: "type",
             options: [.init(
                 value: "garage",
                 text: "garage"

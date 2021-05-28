@@ -57,7 +57,7 @@ extension MultiActionDropDownRow: Viewable {
         let buttonTitle = UILabel()
         buttonTitle.style = .brand(.body(color: .tertiary))
         buttonTitle.setContentHuggingPriority(.required, for: .vertical)
-        buttonTitle.text = "Select"
+        buttonTitle.text = "Select"; #warning("need to add to l10n")
 
         let buttonIcon = UIImageView()
         buttonIcon.image = hCoreUIAssets.chevronUp.image
@@ -101,7 +101,9 @@ extension MultiActionDropDownRow: Viewable {
                 buttonTitle.style = .brand(.body(color: .primary))
                 guard let selectedOption = selectedOption else { return }
                 buttonTitle.value = selectedOption.value
-                callback([data.key: selectedOption.value])
+
+                let value = MultiActionValue(inputValue: selectedOption.value, displayValue: selectedOption.value)
+                callback([data.key: value])
             }
 
             return bag

@@ -49,7 +49,8 @@ extension MultiActionSwitchRow: Viewable {
             bag += toggle.signal(for: .valueChanged)
                 .map { toggle.isOn }
                 .onValue { isOn in
-                    callback([data.key: String(isOn)])
+                    let value = MultiActionValue(inputValue: String(isOn), displayValue: isOn ? data.label : nil)
+                    callback([data.key: value])
                 }
             return bag
         })
