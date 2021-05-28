@@ -8,21 +8,26 @@ internal struct MultiActionStoreable {
         baseKey = substrings[0]
         index = Int(substrings[1])
         componentKey = substrings[2]
-        self.value = value
+
+        let valueStrings = value.multiActionValueSubStrings()
+        inputValue = valueStrings.first ?? ""
+        displayValue = valueStrings.last
     }
 
     // Initializer from form
-    init(actionKey: String, value: String, componentKey: String, index: Int) {
+    init(actionKey: String, value: String, componentKey: String, index: Int, displayValue: String?) {
         baseKey = actionKey
-        self.value = value
+        inputValue = value
         self.componentKey = componentKey
         self.index = index
+        self.displayValue = displayValue
     }
 
     var baseKey: String
     var index: Int?
     var componentKey: String
-    var value: String
+    var inputValue: String
+    var displayValue: String?
 
     var storeKey: String {
         baseKey + "[\(String(index ?? 0))]" + componentKey
@@ -30,20 +35,21 @@ internal struct MultiActionStoreable {
 }
 
 internal extension EmbarkStore {
-    func addMultiActionItems(actionKey: String, componentValues: [[String: String]], completion: @escaping () -> Void) {
+    func addMultiActionItems(actionKey: String, componentValues: [[String: MultiActionValue]], completion: @escaping () -> Void) {
         let newStoreables = componentValues.enumerated().flatMap { index, element in
             element.map { component in
                 MultiActionStoreable(
                     actionKey: actionKey,
-                    value: component.value,
+                    value: component.value.inputValue,
                     componentKey: component.key,
-                    index: index
+                    index: index,
+                    displayValue: component.value.displayValue
                 )
             }
         }
 
         newStoreables.forEach {
-            setValue(key: $0.storeKey, value: $0.value)
+            setValue(key: $0.storeKey, value: $0.inputValue)
         }
 
         completion()
@@ -65,6 +71,11 @@ internal extension EmbarkStore {
 private extension String {
     func multiActionKeySubStrings() -> [String] {
         let characterSet = CharacterSet(charactersIn: "[]")
+        return components(separatedBy: characterSet)
+    }
+
+    func multiActionValueSubStrings() -> [String] {
+        let characterSet = CharacterSet(charactersIn: ",")
         return components(separatedBy: characterSet)
     }
 }

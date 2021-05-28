@@ -57,6 +57,12 @@ fragment ResponseFragment on EmbarkResponse {
     items {
       ...MessageFragment
     }
+    each {
+      key
+      content {
+        ...MessageFragment
+            }
+        }
     title {
       text
     }

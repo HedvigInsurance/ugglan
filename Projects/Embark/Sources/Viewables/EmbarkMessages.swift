@@ -47,14 +47,7 @@ extension EmbarkMessages: Viewable {
     }
 
     func replacePlaceholders(message: String) -> String {
-        let placeholderRegex = "(\\{[a-zA-Z0-9_.]+\\})"
-
-        do {
-            let regex = try NSRegularExpression(pattern: placeholderRegex)
-            let results = regex.matches(in: message, range: NSRange(message.startIndex..., in: message))
-            let stringResults = results.map {
-                String(message[Range($0.range, in: message)!])
-            }
+        if let stringResults = getPlaceHolders(message: message) {
             var replacedMessage = message
             stringResults.forEach { message in
                 let key = message.replacingOccurrences(of: "[\\{\\}]", with: "", options: [.regularExpression])
@@ -63,9 +56,34 @@ extension EmbarkMessages: Viewable {
             }
 
             return replacedMessage
-        } catch {
+        } else {
             return message
         }
+    }
+
+    func replacePlaceholdersForMultiAction(message: String, values: [MultiActionStoreable]) -> String {
+        if let stringResults = getPlaceHolders(message: message) {
+            var replacedMessage = message
+            stringResults.forEach { _ in
+                let key = message.replacingOccurrences(of: "[\\{\\}]", with: "", options: [.regularExpression])
+                let result = values.first(where: { $0.componentKey == key })?.inputValue
+                replacedMessage = replacedMessage.replacingOccurrences(of: message, with: result ?? key)
+            }
+
+            return replacedMessage
+        } else {
+            return message
+        }
+    }
+
+    func getPlaceHolders(message: String) -> [String]? {
+        let placeholderRegex = "(\\{[a-zA-Z0-9_.]+\\})"
+        let regex = try? NSRegularExpression(pattern: placeholderRegex)
+        let results = regex?.matches(in: message, range: NSRange(message.startIndex..., in: message))
+        let stringResults = results?.compactMap {
+            String(message[Range($0.range, in: message)!])
+        }
+        return stringResults
     }
 
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
@@ -103,6 +121,17 @@ extension EmbarkMessages: Viewable {
             return responseText
         }
 
+        func configureEach(each: GraphQL.ResponseFragment.AsEmbarkGroupedResponse.Each?) -> [String] {
+            guard let each = each else { return [] }
+            let msgText = parse(each.content.expressions.map { $0.fragments.expressionFragment })
+            let storeItems = state.store.getMultiActionItems(actionKey: each.key)
+            let dictionary = Dictionary(grouping: storeItems, by: { $0.index })
+            let msgs = dictionary.map { _, values in
+                replacePlaceholdersForMultiAction(message: msgText ?? each.content.text, values: values)
+            }
+            return msgs
+        }
+
         let animatedResponseSignal: Signal = messagesDataSignal.withLatestFrom(previousResponseSignal).animated(style: .lightBounce(), animations: { _, previousResponse in
             if self.state.animationDirectionSignal.value == .forwards {
                 let passageName = previousResponse?.passageName ?? ""
@@ -122,10 +151,12 @@ extension EmbarkMessages: Viewable {
                     let messageBubble = MessageBubble(text: responseText, delay: 0, animated: true, messageType: .replied)
                     bag += view.addArranged(messageBubble)
                 } else if let embarkGroupedResponse = previousResponse?.response?.asEmbarkGroupedResponse {
-                    let pills = embarkGroupedResponse.items.map { item in
+                    let itemPills = embarkGroupedResponse.items.map { item in
                         mapItems(item: item)
                     }
-                    let messageBubble = MessageBubble(text: embarkGroupedResponse.title.text, delay: 0, animated: true, messageType: .replied, pills: pills)
+                    let eachPills = configureEach(each: embarkGroupedResponse.each)
+
+                    let messageBubble = MessageBubble(text: embarkGroupedResponse.title.text, delay: 0, animated: true, messageType: .replied, pills: itemPills + eachPills)
                     bag += view.addArranged(messageBubble)
                 } else {
                     let responseText = self.replacePlaceholders(message: "{\(autoResponseKey)}")

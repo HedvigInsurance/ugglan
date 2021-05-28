@@ -46,7 +46,7 @@ private extension EmbarkStory {
                     text: "Mocked Repsonse",
                     expressions: []
                 ),
-                messages: [],
+                messages: [.init(text: "Enter buildings", expressions: [])],
                 api: nil,
                 redirects: [],
                 tracks: [],
@@ -71,7 +71,7 @@ private extension EmbarkStory {
             addLabel: "Add Building",
             key: "multiActionItem",
             maxAmount: "1",
-            link: .init(name: "Next", label: "Next"),
+            link: .init(name: "asd1234", label: "Next"),
             components: [EmbarkStory.embarkNumberComponent, EmbarkStory.embarkDropDownComponent, EmbarkStory.embarkSwitchComponent]
         ),
         component: ""

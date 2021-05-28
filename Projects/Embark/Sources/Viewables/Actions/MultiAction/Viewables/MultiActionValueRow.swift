@@ -82,6 +82,8 @@ extension MultiActionValueRow: Reusable {
             title.text = self.title
             values.text = self.values.compactMap { _, value in
                 value.displayValue
+            }.filter {
+                $0 != self.title
             }.joined(separator: " \u{2022} ")
 
             bag += button.onValue {

@@ -32,8 +32,7 @@ extension MultiAction: Viewable {
 
         let collectionKit = CollectionKit<EmptySection, MultiActionRow>(
             table: Table(rows: dataSource.rows),
-            layout: layout,
-            holdIn: bag
+            layout: layout
         )
 
         let delegate = collectionKit.delegate
@@ -96,7 +95,19 @@ extension MultiAction: Viewable {
         }
 
         // Need to add the first row after the declaration of the collectionKit table signal or there is a race condition
-        dataSource.lazyLoadAddObjectRow()
+        dataSource.lazyLoadDataSource()
+
+        bag += view.didMoveToWindowSignal.onValue {
+            let storedData = self.state.store.getMultiActionItems(actionKey: data.key ?? "")
+            let groupedByIndex = storedData.groupedByIndex
+            groupedByIndex.mapValues { values in
+                values.map { [$0.componentKey: MultiActionValue(inputValue: $0.inputValue, displayValue: $0.displayValue)] }
+            }.forEach { _, values in
+                values.forEach { value in
+                    dataSource.addValue(values: value)
+                }
+            }
+        }
 
         return (view, Signal { callback in
 
@@ -132,9 +143,6 @@ extension MultiAction: Viewable {
 
                 let values = dataSource.rows
                     .compactMap { $0.left?.values }
-                    .compactMap { (dictionary) -> [String: String] in
-                        dictionary.mapValues { $0.inputValue }
-                    }
 
                 self.state.store.addMultiActionItems(actionKey: key, componentValues: values) {
                     self.state.store.createRevision()
@@ -159,6 +167,10 @@ private extension Sequence where Element == MultiActionStoreable {
     var title: String? {
         first { (element) -> Bool in
             element.componentKey == "type"
-        }?.value
+        }?.inputValue
+    }
+
+    var groupedByIndex: [Int?: [MultiActionStoreable]] {
+        Dictionary(grouping: self, by: { $0.index })
     }
 }
