@@ -11,23 +11,20 @@ internal struct MultiActionStoreable {
 
         let valueStrings = value.multiActionValueSubStrings()
         inputValue = valueStrings.first ?? ""
-        displayValue = valueStrings.last
     }
 
     // Initializer from form
-    init(actionKey: String, value: String, componentKey: String, index: Int, displayValue: String?) {
+    init(actionKey: String, value: String, componentKey: String, index: Int) {
         baseKey = actionKey
         inputValue = value
         self.componentKey = componentKey
         self.index = index
-        self.displayValue = displayValue
     }
 
     var baseKey: String
     var index: Int?
     var componentKey: String
     var inputValue: String
-    var displayValue: String?
 
     var storeKey: String {
         baseKey + "[\(String(index ?? 0))]" + componentKey
@@ -42,8 +39,7 @@ internal extension EmbarkStore {
                     actionKey: actionKey,
                     value: component.value.inputValue,
                     componentKey: component.key,
-                    index: index,
-                    displayValue: component.value.displayValue
+                    index: index
                 )
             }
         }

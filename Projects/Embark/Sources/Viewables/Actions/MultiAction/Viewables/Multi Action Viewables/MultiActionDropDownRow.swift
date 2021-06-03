@@ -102,8 +102,9 @@ extension MultiActionDropDownRow: Viewable {
                 guard let selectedOption = selectedOption else { return }
                 buttonTitle.value = selectedOption.value
 
-                let value = MultiActionValue(inputValue: selectedOption.value, displayValue: selectedOption.value)
-                callback([data.key: value])
+                let value = MultiActionValue(inputValue: selectedOption.value, displayValue: selectedOption.text)
+                callback([data.key: value,
+                          "\(data.key).Label": value])
             }
 
             return bag

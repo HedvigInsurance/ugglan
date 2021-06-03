@@ -100,7 +100,7 @@ extension MultiActionTable: Presentable {
         }
 
         func didCompleteForm() -> Bool {
-            $multiActionValues.value.count == components.count
+            $multiActionValues.value.count > components.count
         }
 
         let button = ButtonRowViewWrapper(

@@ -11,7 +11,6 @@ struct MultiActionDataSource {
         addObjectRow = MultiActionRow.make(.init(title: addLabelTitle))
     }
 
-    let bag = DisposeBag()
     let maxCount: Int
     let addObjectRow: MultiActionRow
 
@@ -49,8 +48,8 @@ struct MultiActionDataSource {
         }
     }
 
-    func lazyLoadDataSource() {
-        $rows.value = [addObjectRow]
+    func lazyLoadDataSource(persistedRows: [MultiActionValueRow]) {
+        $rows.value = [addObjectRow] + persistedRows.map { MultiActionRow.left($0) }
     }
 }
 

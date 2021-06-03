@@ -94,19 +94,8 @@ extension MultiAction: Viewable {
             return CGSize(width: maxCellWidth, height: height)
         }
 
-        // Need to add the first row after the declaration of the collectionKit table signal or there is a race condition
-        dataSource.lazyLoadDataSource()
-
         bag += view.didMoveToWindowSignal.onValue {
-            let storedData = self.state.store.getMultiActionItems(actionKey: data.key ?? "")
-            let groupedByIndex = storedData.groupedByIndex
-            groupedByIndex.mapValues { values in
-                values.map { [$0.componentKey: MultiActionValue(inputValue: $0.inputValue, displayValue: $0.displayValue)] }
-            }.forEach { _, values in
-                values.forEach { value in
-                    dataSource.addValue(values: value)
-                }
-            }
+            dataSource.lazyLoadDataSource(persistedRows: self.state.store.persistedMultiActionValueRows)
         }
 
         return (view, Signal { callback in
@@ -141,10 +130,12 @@ extension MultiAction: Viewable {
             func submit() {
                 guard let key = data.key else { return }
 
-                let values = dataSource.rows
-                    .compactMap { $0.left?.values }
+                let rows = dataSource.rows
+                    .compactMap { $0.left }
 
-                self.state.store.addMultiActionItems(actionKey: key, componentValues: values) {
+                self.state.store.persistedMultiActionValueRows = rows
+
+                self.state.store.addMultiActionItems(actionKey: key, componentValues: rows.map { $0.values }) {
                     self.state.store.createRevision()
                 }
                 callback(data.link.fragments.embarkLinkFragment)
@@ -163,14 +154,15 @@ typealias MultiActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Ac
 
 typealias MultiActionRow = Either<MultiActionValueRow, MultiActionAddObjectRow>
 
-private extension Sequence where Element == MultiActionStoreable {
-    var title: String? {
-        first { (element) -> Bool in
-            element.componentKey == "type"
-        }?.inputValue
-    }
+private var persistedRowsKey = 0
 
-    var groupedByIndex: [Int?: [MultiActionStoreable]] {
-        Dictionary(grouping: self, by: { $0.index })
+private extension EmbarkStore {
+    var persistedMultiActionValueRows: [MultiActionValueRow] {
+        get {
+            objc_getAssociatedObject(self, &persistedRowsKey) as? [MultiActionValueRow] ?? []
+        }
+        set {
+            objc_setAssociatedObject(self, &persistedRowsKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        }
     }
 }
