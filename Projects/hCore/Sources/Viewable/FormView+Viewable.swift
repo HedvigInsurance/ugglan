@@ -3,166 +3,143 @@ import Form
 import Foundation
 import UIKit
 
-public extension FormView {
-    func prepend<V: Viewable, View: UIView>(
-        _ viewable: V,
-        onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
-    ) -> Disposable where
-        V.Matter == View,
-        V.Result == Disposable,
-        V.Events == ViewableEvents
-    {
-        let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
-            self.prepend(matter)
-        }
+extension FormView {
+	public func prepend<V: Viewable, View: UIView>(
+		_ viewable: V,
+		onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
+	) -> Disposable where V.Matter == View, V.Result == Disposable, V.Events == ViewableEvents {
+		let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
+			self.prepend(matter)
+		}
 
-        onCreate(matter)
+		onCreate(matter)
 
-        return Disposer {
-            matter.removeFromSuperview()
-            result.dispose()
-            disposable.dispose()
-        }
-    }
+		return Disposer {
+			matter.removeFromSuperview()
+			result.dispose()
+			disposable.dispose()
+		}
+	}
 
-    func prepend<V: Viewable, View: UIView, SignalValue>(
-        _ viewable: V,
-        onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
-    ) -> V.Result where
-        V.Matter == View,
-        V.Result == Signal<SignalValue>,
-        V.Events == ViewableEvents
-    {
-        let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
-            self.prepend(matter)
-        }
+	public func prepend<V: Viewable, View: UIView, SignalValue>(
+		_ viewable: V,
+		onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
+	) -> V.Result where V.Matter == View, V.Result == Signal<SignalValue>, V.Events == ViewableEvents {
+		let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
+			self.prepend(matter)
+		}
 
-        onCreate(matter)
+		onCreate(matter)
 
-        return result.hold(Disposer {
-            matter.removeFromSuperview()
-            disposable.dispose()
-        })
-    }
+		return result.hold(
+			Disposer {
+				matter.removeFromSuperview()
+				disposable.dispose()
+			}
+		)
+	}
 
-    func append<V: Viewable, View: UIView>(
-        _ viewable: V,
-        onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
-    ) -> Disposable where
-        V.Matter == View,
-        V.Result == Disposable,
-        V.Events == ViewableEvents
-    {
-        let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
-            self.append(matter)
-        }
+	public func append<V: Viewable, View: UIView>(
+		_ viewable: V,
+		onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
+	) -> Disposable where V.Matter == View, V.Result == Disposable, V.Events == ViewableEvents {
+		let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
+			self.append(matter)
+		}
 
-        onCreate(matter)
+		onCreate(matter)
 
-        return Disposer {
-            matter.removeFromSuperview()
-            result.dispose()
-            disposable.dispose()
-        }
-    }
+		return Disposer {
+			matter.removeFromSuperview()
+			result.dispose()
+			disposable.dispose()
+		}
+	}
 
-    func append<V: Viewable, View: UIView, SignalValue>(
-        _ viewable: V,
-        onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
-    ) -> V.Result where
-        V.Matter == View,
-        V.Result == Signal<SignalValue>,
-        V.Events == ViewableEvents
-    {
-        let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
-            self.append(matter)
-        }
+	public func append<V: Viewable, View: UIView, SignalValue>(
+		_ viewable: V,
+		onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
+	) -> V.Result where V.Matter == View, V.Result == Signal<SignalValue>, V.Events == ViewableEvents {
+		let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
+			self.append(matter)
+		}
 
-        onCreate(matter)
+		onCreate(matter)
 
-        return result.hold(Disposer {
-            matter.removeFromSuperview()
-            disposable.dispose()
-        })
-    }
+		return result.hold(
+			Disposer {
+				matter.removeFromSuperview()
+				disposable.dispose()
+			}
+		)
+	}
 
-    func append<V: Viewable, View: UIView, SignalKind, SignalValue>(
-        _ viewable: V,
-        onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
-    ) -> V.Result where
-        V.Matter == View,
-        V.Result == CoreSignal<SignalKind, SignalValue>,
-        V.Events == ViewableEvents
-    {
-        let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
-            self.append(matter)
-        }
+	public func append<V: Viewable, View: UIView, SignalKind, SignalValue>(
+		_ viewable: V,
+		onCreate: @escaping (_ view: V.Matter) -> Void = { _ in }
+	) -> V.Result
+	where V.Matter == View, V.Result == CoreSignal<SignalKind, SignalValue>, V.Events == ViewableEvents {
+		let (matter, result, disposable) = materializeViewable(viewable: viewable) { matter in
+			self.append(matter)
+		}
 
-        onCreate(matter)
+		onCreate(matter)
 
-        return result.hold(Disposer {
-            matter.removeFromSuperview()
-            disposable.dispose()
-        })
-    }
+		return result.hold(
+			Disposer {
+				matter.removeFromSuperview()
+				disposable.dispose()
+			}
+		)
+	}
 
-    func prepend<V: Viewable, Matter: Viewable, View: UIView>(
-        _ viewable: V,
-        onCreate: @escaping (_ view: Matter.Matter) -> Void = { _ in }
-    ) -> Disposable where
-        V.Matter == Matter,
-        V.Result == Disposable,
-        V.Events == ViewableEvents,
-        Matter.Matter == View,
-        Matter.Result == Disposable,
-        Matter.Events == ViewableEvents
-    {
-        let wasAddedCallbacker = Callbacker<Void>()
+	public func prepend<V: Viewable, Matter: Viewable, View: UIView>(
+		_ viewable: V,
+		onCreate: @escaping (_ view: Matter.Matter) -> Void = { _ in }
+	) -> Disposable
+	where
+		V.Matter == Matter, V.Result == Disposable, V.Events == ViewableEvents, Matter.Matter == View,
+		Matter.Result == Disposable, Matter.Events == ViewableEvents {
+		let wasAddedCallbacker = Callbacker<Void>()
 
-        let (matter, result) = viewable.materialize(events: ViewableEvents(
-            wasAddedCallbacker: wasAddedCallbacker
-        ))
+		let (matter, result) = viewable.materialize(
+			events: ViewableEvents(wasAddedCallbacker: wasAddedCallbacker)
+		)
 
-        let bag = DisposeBag()
+		let bag = DisposeBag()
 
-        bag += prepend(matter) { view in
-            wasAddedCallbacker.callAll()
-            onCreate(view)
-        }
+		bag += prepend(matter) { view in wasAddedCallbacker.callAll()
+			onCreate(view)
+		}
 
-        return Disposer {
-            result.dispose()
-            bag.dispose()
-        }
-    }
+		return Disposer {
+			result.dispose()
+			bag.dispose()
+		}
+	}
 
-    func append<V: Viewable, Matter: Viewable, View: UIView>(
-        _ viewable: V,
-        onCreate: @escaping (_ view: Matter.Matter) -> Void = { _ in }
-    ) -> Disposable where
-        V.Matter == Matter,
-        V.Result == Disposable,
-        V.Events == ViewableEvents,
-        Matter.Matter == View,
-        Matter.Result == Disposable,
-        Matter.Events == ViewableEvents
-    {
-        let wasAddedCallbacker = Callbacker<Void>()
+	public func append<V: Viewable, Matter: Viewable, View: UIView>(
+		_ viewable: V,
+		onCreate: @escaping (_ view: Matter.Matter) -> Void = { _ in }
+	) -> Disposable
+	where
+		V.Matter == Matter, V.Result == Disposable, V.Events == ViewableEvents, Matter.Matter == View,
+		Matter.Result == Disposable, Matter.Events == ViewableEvents {
+		let wasAddedCallbacker = Callbacker<Void>()
 
-        let (matter, result) = viewable.materialize(events: ViewableEvents(
-            wasAddedCallbacker: wasAddedCallbacker
-        ))
+		let (matter, result) = viewable.materialize(
+			events: ViewableEvents(wasAddedCallbacker: wasAddedCallbacker)
+		)
 
-        let bag = DisposeBag()
+		let bag = DisposeBag()
 
-        bag += append(matter) { view in
-            wasAddedCallbacker.callAll()
-            onCreate(view)
-        }
+		bag += append(matter) { view in wasAddedCallbacker.callAll()
+			onCreate(view)
+		}
 
-        return Disposer {
-            result.dispose()
-            bag.dispose()
-        }
-    }
+		return Disposer {
+			result.dispose()
+			bag.dispose()
+		}
+	}
 }

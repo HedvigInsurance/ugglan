@@ -7,61 +7,61 @@ import SnapKit
 import UIKit
 
 struct EmbarkInput {
-    let placeholder: ReadWriteSignal<String>
-    let keyboardTypeSignal: ReadWriteSignal<UIKeyboardType?>
-    let textContentTypeSignal: ReadWriteSignal<UITextContentType?>
-    let autocapitalisationTypeSignal: ReadWriteSignal<UITextAutocapitalizationType>
-    let returnKeyTypeSignal: ReadWriteSignal<UIReturnKeyType?>
-    let enabledSignal: ReadWriteSignal<Bool>
-    let shouldReturn = Delegate<String, Bool>()
-    let insets: UIEdgeInsets
-    let masking: Masking
-    let shouldAutoFocus: Bool
-    let fieldStyle: FieldStyle
-    let shouldAutoSize: Bool
-    let textFieldAlignment: NSTextAlignment
+	let placeholder: ReadWriteSignal<String>
+	let keyboardTypeSignal: ReadWriteSignal<UIKeyboardType?>
+	let textContentTypeSignal: ReadWriteSignal<UITextContentType?>
+	let autocapitalisationTypeSignal: ReadWriteSignal<UITextAutocapitalizationType>
+	let returnKeyTypeSignal: ReadWriteSignal<UIReturnKeyType?>
+	let enabledSignal: ReadWriteSignal<Bool>
+	let shouldReturn = Delegate<String, Bool>()
+	let insets: UIEdgeInsets
+	let masking: Masking
+	let shouldAutoFocus: Bool
+	let fieldStyle: FieldStyle
+	let shouldAutoSize: Bool
+	let textFieldAlignment: NSTextAlignment
 
-    init(
-        placeholder: String,
-        keyboardType: UIKeyboardType? = nil,
-        textContentType: UITextContentType? = nil,
-        returnKeyType: UIReturnKeyType? = nil,
-        autocapitalisationType: UITextAutocapitalizationType,
-        insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
-        enabled: Bool = true,
-        masking: Masking = Masking(type: .none),
-        shouldAutoFocus: Bool = true,
-        fieldStyle: FieldStyle = .embarkInputLarge,
-        shouldAutoSize: Bool = false,
-        textFieldAlignment: NSTextAlignment = .center
-    ) {
-        self.placeholder = ReadWriteSignal(placeholder)
-        self.insets = insets
-        keyboardTypeSignal = ReadWriteSignal(keyboardType)
-        textContentTypeSignal = ReadWriteSignal(textContentType)
-        enabledSignal = ReadWriteSignal(enabled)
-        returnKeyTypeSignal = ReadWriteSignal(returnKeyType)
-        autocapitalisationTypeSignal = ReadWriteSignal(autocapitalisationType)
-        self.masking = masking
-        self.shouldAutoFocus = shouldAutoFocus
-        self.fieldStyle = fieldStyle
-        self.shouldAutoSize = shouldAutoSize
-        self.textFieldAlignment = textFieldAlignment
-    }
+	init(
+		placeholder: String,
+		keyboardType: UIKeyboardType? = nil,
+		textContentType: UITextContentType? = nil,
+		returnKeyType: UIReturnKeyType? = nil,
+		autocapitalisationType: UITextAutocapitalizationType,
+		insets: UIEdgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 3),
+		enabled: Bool = true,
+		masking: Masking = Masking(type: .none),
+		shouldAutoFocus: Bool = true,
+		fieldStyle: FieldStyle = .embarkInputLarge,
+		shouldAutoSize: Bool = false,
+		textFieldAlignment: NSTextAlignment = .center
+	) {
+		self.placeholder = ReadWriteSignal(placeholder)
+		self.insets = insets
+		keyboardTypeSignal = ReadWriteSignal(keyboardType)
+		textContentTypeSignal = ReadWriteSignal(textContentType)
+		enabledSignal = ReadWriteSignal(enabled)
+		returnKeyTypeSignal = ReadWriteSignal(returnKeyType)
+		autocapitalisationTypeSignal = ReadWriteSignal(autocapitalisationType)
+		self.masking = masking
+		self.shouldAutoFocus = shouldAutoFocus
+		self.fieldStyle = fieldStyle
+		self.shouldAutoSize = shouldAutoSize
+		self.textFieldAlignment = textFieldAlignment
+	}
 }
 
 extension FieldStyle {
-    static let embarkInputLarge = FieldStyle.default.restyled { (style: inout FieldStyle) in
-        style.text = TextStyle.brand(.largeTitle(color: .primary)).centerAligned
-        style.autocorrection = .no
-        style.cursorColor = .brand(.primaryTintColor)
-    }
+	static let embarkInputLarge = FieldStyle.default.restyled { (style: inout FieldStyle) in
+		style.text = TextStyle.brand(.largeTitle(color: .primary)).centerAligned
+		style.autocorrection = .no
+		style.cursorColor = .brand(.primaryTintColor)
+	}
 
-    static let embarkInputSmall = FieldStyle.default.restyled { (style: inout FieldStyle) in
-        style.text = TextStyle.brand(.headline(color: .primary)).centerAligned
-        style.autocorrection = .no
-        style.cursorColor = .brand(.primaryTintColor)
-    }
+	static let embarkInputSmall = FieldStyle.default.restyled { (style: inout FieldStyle) in
+		style.text = TextStyle.brand(.headline(color: .primary)).centerAligned
+		style.autocorrection = .no
+		style.cursorColor = .brand(.primaryTintColor)
+	}
 }
 
 extension EmbarkInput: Viewable {

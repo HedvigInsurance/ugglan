@@ -7,36 +7,30 @@ import hCoreUI
 import UIKit
 
 struct ApolloMultilineLabel<Query: GraphQLQuery> {
-    let query: Query
-    @Inject private var client: ApolloClient
-    let mapDataAndStyle: (_ data: Query.Data) -> StyledText
+	let query: Query
+	@Inject private var client: ApolloClient
+	let mapDataAndStyle: (_ data: Query.Data) -> StyledText
 
-    init(
-        query: Query,
-        mapDataAndStyle: @escaping (_ data: Query.Data) -> StyledText
-    ) {
-        self.query = query
-        self.mapDataAndStyle = mapDataAndStyle
-    }
+	init(
+		query: Query,
+		mapDataAndStyle: @escaping (_ data: Query.Data) -> StyledText
+	) {
+		self.query = query
+		self.mapDataAndStyle = mapDataAndStyle
+	}
 }
 
 extension ApolloMultilineLabel: Viewable {
-    func materialize(events _: ViewableEvents) -> (MultilineLabel, Disposable) {
-        let bag = DisposeBag()
-        let multilineLabel = MultilineLabel(value: "", style: TextStyle.brand(.body(color: .primary)))
+	func materialize(events _: ViewableEvents) -> (MultilineLabel, Disposable) {
+		let bag = DisposeBag()
+		let multilineLabel = MultilineLabel(value: "", style: TextStyle.brand(.body(color: .primary)))
 
-        bag += client
-            .watch(query: query)
-            .map { self.mapDataAndStyle($0) }
-            .map { $0.text }
-            .bindTo(multilineLabel.$value)
+		bag += client.watch(query: query).map { self.mapDataAndStyle($0) }.map { $0.text }
+			.bindTo(multilineLabel.$value)
 
-        bag += client
-            .watch(query: query)
-            .map { self.mapDataAndStyle($0) }
-            .map { $0.style }
-            .bindTo(multilineLabel.$style)
+		bag += client.watch(query: query).map { self.mapDataAndStyle($0) }.map { $0.style }
+			.bindTo(multilineLabel.$style)
 
-        return (multilineLabel, bag)
-    }
+		return (multilineLabel, bag)
+	}
 }

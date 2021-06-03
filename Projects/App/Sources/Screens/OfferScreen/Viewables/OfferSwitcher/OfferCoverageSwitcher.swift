@@ -7,55 +7,48 @@ import hCoreUI
 import hGraphQL
 import UIKit
 
-struct OfferCoverageSwitcher {
-    @Inject var client: ApolloClient
-}
+struct OfferCoverageSwitcher { @Inject var client: ApolloClient }
 
 extension OfferCoverageSwitcher: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-        let bag = DisposeBag()
+	func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+		let bag = DisposeBag()
 
-        let outerView = UIStackView()
-        outerView.axis = .vertical
+		let outerView = UIStackView()
+		outerView.axis = .vertical
 
-        let containerView = UIView()
-        containerView.backgroundColor = .brand(.primaryBackground())
-        outerView.addArrangedSubview(containerView)
+		let containerView = UIView()
+		containerView.backgroundColor = .brand(.primaryBackground())
+		outerView.addArrangedSubview(containerView)
 
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 15
-        stackView.layoutMargins = UIEdgeInsets(top: 40, left: 20, bottom: 40, right: 20)
-        stackView.isLayoutMarginsRelativeArrangement = true
+		let stackView = UIStackView()
+		stackView.axis = .vertical
+		stackView.alignment = .center
+		stackView.spacing = 15
+		stackView.layoutMargins = UIEdgeInsets(top: 40, left: 20, bottom: 40, right: 20)
+		stackView.isLayoutMarginsRelativeArrangement = true
 
-        containerView.addSubview(stackView)
+		containerView.addSubview(stackView)
 
-        stackView.snp.makeConstraints { make in
-            make.trailing.leading.top.bottom.equalToSuperview()
-        }
+		stackView.snp.makeConstraints { make in make.trailing.leading.top.bottom.equalToSuperview() }
 
-        let titleLabel = MultilineLabel(value: "", style: TextStyle.brand(.headline(color: .primary)).centerAligned)
-        bag += stackView.addArranged(titleLabel) { titleLabel in
-            titleLabel.snp.makeConstraints { make in
-                make.width.equalToSuperview().multipliedBy(0.6)
-            }
-        }
+		let titleLabel = MultilineLabel(
+			value: "",
+			style: TextStyle.brand(.headline(color: .primary)).centerAligned
+		)
+		bag += stackView.addArranged(titleLabel) { titleLabel in
+			titleLabel.snp.makeConstraints { make in make.width.equalToSuperview().multipliedBy(0.6) }
+		}
 
-        bag += client.fetch(query: GraphQL.OfferQuery())
-            .valueSignal
-            .compactMap { $0.insurance.previousInsurer }
-            .map { previousInsurer in
-                if !previousInsurer.switchable {
-                    return L10n.offerSwitchTitleNonSwitchableApp
-                }
+		bag += client.fetch(query: GraphQL.OfferQuery()).valueSignal.compactMap { $0.insurance.previousInsurer }
+			.map { previousInsurer in
+				if !previousInsurer.switchable { return L10n.offerSwitchTitleNonSwitchableApp }
 
-                return L10n.offerSwitchTitleApp(previousInsurer.displayName ?? "")
-            }
-            .bindTo(titleLabel.$value)
+				return L10n.offerSwitchTitleApp(previousInsurer.displayName ?? "")
+			}
+			.bindTo(titleLabel.$value)
 
-        bag += stackView.addArranged(OfferSwitcherBulletList())
+		bag += stackView.addArranged(OfferSwitcherBulletList())
 
-        return (outerView, bag)
-    }
+		return (outerView, bag)
+	}
 }

@@ -1,9 +1,10 @@
-@testable import Embark
 import Foundation
 import hGraphQL
 import SnapshotTesting
 import Testing
 import XCTest
+
+@testable import Embark
 
 final class SelectActionOptionTests: XCTestCase {
     override func setUp() {

@@ -5,81 +5,70 @@ import hCore
 import Presentation
 import UIKit
 
-struct OnboardingChat {
-    @Inject var client: ApolloClient
-}
+struct OnboardingChat { @Inject var client: ApolloClient }
 
 extension OnboardingChat: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
-        let bag = DisposeBag()
+	func materialize() -> (UIViewController, Disposable) {
+		let bag = DisposeBag()
 
-        ApplicationState.preserveState(.onboardingChat)
+		ApplicationState.preserveState(.onboardingChat)
 
-        let chat = Chat()
-        let (viewController, future) = chat.materialize()
-        viewController.navigationItem.hidesBackButton = true
+		let chat = Chat()
+		let (viewController, future) = chat.materialize()
+		viewController.navigationItem.hidesBackButton = true
 
-        chat.chatState.fetch()
+		chat.chatState.fetch()
 
-        let settingsButton = UIBarButtonItem()
-        settingsButton.image = Asset.menuIcon.image
-        settingsButton.tintColor = .brand(.primaryText())
+		let settingsButton = UIBarButtonItem()
+		settingsButton.image = Asset.menuIcon.image
+		settingsButton.tintColor = .brand(.primaryText())
 
-        viewController.navigationItem.leftBarButtonItem = settingsButton
+		viewController.navigationItem.leftBarButtonItem = settingsButton
 
-        bag += settingsButton.attachSinglePressMenu(
-            viewController: viewController,
-            menu: Menu(
-                title: nil,
-                children: [
-                    MenuChild.appInformation,
-                    MenuChild.appSettings,
-                    MenuChild.login(onLogin: {
-                        UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
-                    })
-                ]
-            )
-        )
+		bag += settingsButton.attachSinglePressMenu(
+			viewController: viewController,
+			menu: Menu(
+				title: nil,
+				children: [
+					MenuChild.appInformation, MenuChild.appSettings,
+					MenuChild.login(onLogin: {
+						UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
+					})
+				]
+			)
+		)
 
-        let restartButton = UIBarButtonItem()
-        restartButton.image = Asset.restart.image
-        restartButton.tintColor = .brand(.primaryText())
+		let restartButton = UIBarButtonItem()
+		restartButton.image = Asset.restart.image
+		restartButton.tintColor = .brand(.primaryText())
 
-        bag += restartButton.onValue { _ in
-            let alert = Alert(
-                title: L10n.chatRestartAlertTitle,
-                message: L10n.chatRestartAlertMessage,
-                actions: [
-                    Alert.Action(
-                        title: L10n.chatRestartAlertConfirm,
-                        action: {
-                            chat.reloadChatCallbacker.callAll()
-                        }
-                    ),
-                    Alert.Action(
-                        title: L10n.chatRestartAlertCancel,
-                        action: {}
-                    ),
-                ]
-            )
+		bag += restartButton.onValue { _ in
+			let alert = Alert(
+				title: L10n.chatRestartAlertTitle,
+				message: L10n.chatRestartAlertMessage,
+				actions: [
+					Alert.Action(
+						title: L10n.chatRestartAlertConfirm,
+						action: { chat.reloadChatCallbacker.callAll() }
+					), Alert.Action(title: L10n.chatRestartAlertCancel, action: {})
+				]
+			)
 
-            viewController.present(alert)
-        }
+			viewController.present(alert)
+		}
 
-        viewController.navigationItem.rightBarButtonItem = restartButton
+		viewController.navigationItem.rightBarButtonItem = restartButton
 
-        let titleHedvigLogo = UIImageView()
-        titleHedvigLogo.image = Asset.wordmark.image
-        titleHedvigLogo.contentMode = .scaleAspectFit
+		let titleHedvigLogo = UIImageView()
+		titleHedvigLogo.image = Asset.wordmark.image
+		titleHedvigLogo.contentMode = .scaleAspectFit
 
-        viewController.navigationItem.titleView = titleHedvigLogo
+		viewController.navigationItem.titleView = titleHedvigLogo
 
-        titleHedvigLogo.snp.makeConstraints { make in
-            make.width.equalTo(80)
-        }
+		titleHedvigLogo.snp.makeConstraints { make in make.width.equalTo(80) }
 
-        bag += future.onValue { _ in }
+		bag += future.onValue { _ in }
 
-        return (viewController, bag)
-    }
+		return (viewController, bag)
+	}
 }

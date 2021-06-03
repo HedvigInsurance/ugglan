@@ -4,9 +4,7 @@ import hCore
 import hGraphQL
 import UIKit
 
-struct EmbarkMessages {
-    let state: EmbarkState
-}
+struct EmbarkMessages { let state: EmbarkState }
 
 extension EmbarkMessages: Viewable {
     func parseMessage(message: GraphQL.MessageFragment) -> String? {

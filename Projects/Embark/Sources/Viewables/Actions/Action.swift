@@ -5,19 +5,17 @@ import hCoreUI
 import hGraphQL
 import UIKit
 
-struct Action {
-    let state: EmbarkState
-}
+struct Action { let state: EmbarkState }
 
 struct ActionResponse {
-    let link: GraphQL.EmbarkLinkFragment
-    let data: ActionResponseData
+	let link: GraphQL.EmbarkLinkFragment
+	let data: ActionResponseData
 }
 
 struct ActionResponseData {
-    let keys: [String]
-    let values: [String]
-    let textValue: String
+	let keys: [String]
+	let values: [String]
+	let textValue: String
 }
 
 extension Action: Viewable {

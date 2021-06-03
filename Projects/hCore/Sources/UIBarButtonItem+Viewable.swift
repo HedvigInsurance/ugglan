@@ -2,27 +2,24 @@ import Flow
 import Foundation
 import UIKit
 
-public extension UIBarButtonItem {
-    convenience init<V: Viewable, View: UIView>(viewable: V, onCreate: @escaping (_ view: View) -> Void = { _ in }) where
-        V.Matter == View,
-        V.Events == ViewableEvents,
-        V.Result == Disposable
-    {
-        let wasAddedCallbacker = Callbacker<Void>()
-        let events = ViewableEvents(wasAddedCallbacker: wasAddedCallbacker)
+extension UIBarButtonItem {
+	public convenience init<V: Viewable, View: UIView>(
+		viewable: V,
+		onCreate: @escaping (_ view: View) -> Void = { _ in }
+	) where V.Matter == View, V.Events == ViewableEvents, V.Result == Disposable {
+		let wasAddedCallbacker = Callbacker<Void>()
+		let events = ViewableEvents(wasAddedCallbacker: wasAddedCallbacker)
 
-        let bag = DisposeBag()
+		let bag = DisposeBag()
 
-        let (matter, result) = viewable.materialize(events: events)
+		let (matter, result) = viewable.materialize(events: events)
 
-        onCreate(matter)
+		onCreate(matter)
 
-        bag += result
+		bag += result
 
-        self.init(customView: matter)
+		self.init(customView: matter)
 
-        bag += deallocSignal.onValue {
-            bag.dispose()
-        }
-    }
+		bag += deallocSignal.onValue { bag.dispose() }
+	}
 }
