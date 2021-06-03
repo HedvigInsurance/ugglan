@@ -28,16 +28,14 @@ extension EmbarkMessages: Viewable {
 
         if let binaryExpression = expression.fragments
             .basicExpressionFragment
-            .asEmbarkExpressionBinary
-        {
+            .asEmbarkExpressionBinary {
             return binaryExpression.text
         }
 
         if let unaryExpression = expression
             .fragments
             .basicExpressionFragment
-            .asEmbarkExpressionUnary
-        {
+            .asEmbarkExpressionUnary {
             return unaryExpression.text
         }
 
@@ -105,7 +103,7 @@ extension EmbarkMessages: Viewable {
             view.transform = CGAffineTransform(translationX: 0, y: 0)
         }
 
-        let previousResponseSignal: ReadWriteSignal<(
+        let previousResponseSignal: ReadWriteSignal < (
             response: GraphQL.ResponseFragment?,
             passageName: String?
         )?> = ReadWriteSignal(nil)

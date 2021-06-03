@@ -270,7 +270,7 @@ extension Message: Reusable {
 						message.fromMyself ? UIColor.black : .brand(.primaryText())
 
 					switch message.type {
-					case .image(_), .video: bubble.backgroundColor = .clear
+					case .image, .video: bubble.backgroundColor = .clear
 					default:
 						bubble.backgroundColor =
 							message.fromMyself ? Self.bubbleColor : Self.hedvigBubbleColor

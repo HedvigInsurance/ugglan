@@ -1,25 +1,20 @@
 import Flow
 import Foundation
 import hCore
-import hCoreUI
 import UIKit
 
-struct ExpandableContent<Content: Viewable>
-where Content.Matter: UIView, Content.Result == Disposable, Content.Events == ViewableEvents {
-	let content: Content
-	let isExpanded: ReadWriteSignal<Bool>
+public struct ExpandableContent<Content: Viewable> where Content.Matter: UIView, Content.Result == Disposable, Content.Events == ViewableEvents {
+    let content: Content
+    public let isExpanded: ReadWriteSignal<Bool>
 
-	init(
-		content: Content,
-		isExpanded: ReadWriteSignal<Bool>
-	) {
-		self.content = content
-		self.isExpanded = isExpanded
-	}
+    public init(content: Content, isExpanded: ReadWriteSignal<Bool>) {
+        self.content = content
+        self.isExpanded = isExpanded
+    }
 }
 
 extension ExpandableContent: Viewable {
-	func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+	public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
 		let bag = DisposeBag()
 		let outerContainer = UIView()
 

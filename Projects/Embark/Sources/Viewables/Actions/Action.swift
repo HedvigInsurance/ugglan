@@ -47,8 +47,7 @@ extension Action: Viewable {
         bag += outerContainer.didLayoutSignal.onValue { _ in
             widthContainer.snp.remakeConstraints { make in
                 if outerContainer.traitCollection.horizontalSizeClass == .regular,
-                   outerContainer.traitCollection.userInterfaceIdiom == .pad
-                {
+                   outerContainer.traitCollection.userInterfaceIdiom == .pad {
                     make.width.equalTo(outerContainer.frame.width > 600 ? 600 : outerContainer.frame.width)
                 } else {
                     make.width.equalTo(outerContainer.frame.width)
