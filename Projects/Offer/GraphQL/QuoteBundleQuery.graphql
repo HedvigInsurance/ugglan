@@ -1,3 +1,33 @@
+fragment InceptionFragment on QuoteBundleInception {
+  ... on ConcurrentInception {
+    correspondingQuotes {
+      ... on CompleteQuote {
+          id
+        firstName
+        currentInsurer {
+          id
+        }
+      }
+    }
+    startDate
+  }
+  ... on IndependentInceptions {
+    inceptions {
+      ... on IndependentInception {
+          startDate
+        correspondingQuote {
+          ... on CompleteQuote {
+            currentInsurer {
+              id
+            }
+                  id
+              }
+        }
+      }
+    }
+  }
+}
+
 query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
   quoteBundle(input: { ids: $ids }) {
     quotes {
@@ -53,7 +83,11 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
         headline
         body
     }
+    inception {
+      ...InceptionFragment
+    }
   }
+  signMethodForQuotes(input: $ids)
   redeemedCampaigns {
     displayValue(locale: $locale)
   }

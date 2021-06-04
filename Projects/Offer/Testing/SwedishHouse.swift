@@ -41,8 +41,12 @@ public extension JSONObject {
                     )
                 ],
                 bundleCost: bundleCost,
-                frequentlyAskedQuestions: generateFrequentlyAskedQuestions()
+                frequentlyAskedQuestions: generateFrequentlyAskedQuestions(),
+                inception: .makeIndependentInceptions(inceptions: [
+                    .init(startDate: "2020-05-10", correspondingQuote: .makeCompleteQuote(id: "123"))
+                ])
             ),
+            signMethodForQuotes: GraphQL.SignMethod.swedishBankId,
             redeemedCampaigns: redeemedCampaigns
         ).jsonObject
     }

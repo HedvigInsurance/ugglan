@@ -63,7 +63,7 @@ public extension JSONObject {
                         ]
                     ),
                     .init(
-                        id: "123",
+                        id: "1234",
                         currentInsurer: nil,
                         firstName: "Hedvig",
                         lastName: "Hedvigsen",
@@ -85,8 +85,13 @@ public extension JSONObject {
                     monthlyDiscount: .init(amount: "100", currency: "SEK"),
                     monthlyNet: .init(amount: "100", currency: "SEK")
                 ),
-                frequentlyAskedQuestions: generateFrequentlyAskedQuestions()
+                frequentlyAskedQuestions: generateFrequentlyAskedQuestions(),
+                inception: .makeIndependentInceptions(inceptions: [
+                    .init(startDate: "2020-05-10", correspondingQuote: .makeCompleteQuote(id: "123")),
+                    .init(startDate: "2020-05-10", correspondingQuote: .makeCompleteQuote(id: "1234"))
+                ])
             ),
+            signMethodForQuotes: GraphQL.SignMethod.simpleSign,
             redeemedCampaigns: []
         ).jsonObject
     }

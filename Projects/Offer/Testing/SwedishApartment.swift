@@ -32,8 +32,12 @@ public extension JSONObject {
                     monthlyDiscount: .init(amount: "100", currency: "SEK"),
                     monthlyNet: .init(amount: "100", currency: "SEK")
                 ),
-                frequentlyAskedQuestions: generateFrequentlyAskedQuestions()
+                frequentlyAskedQuestions: generateFrequentlyAskedQuestions(),
+                inception: .makeIndependentInceptions(inceptions: [
+                    .init(startDate: "2020-05-10", correspondingQuote: .makeCompleteQuote(id: "123")),
+                ])
             ),
+            signMethodForQuotes: GraphQL.SignMethod.swedishBankId,
             redeemedCampaigns: []
         ).jsonObject
     }
