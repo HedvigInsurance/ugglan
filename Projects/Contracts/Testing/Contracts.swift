@@ -1,8 +1,8 @@
 import Apollo
 import Contracts
+import TestingUtil
 import hCore
 import hGraphQL
-import TestingUtil
 
 extension JSONObject {
 	public static func makeNorwegianHomeContentContract(

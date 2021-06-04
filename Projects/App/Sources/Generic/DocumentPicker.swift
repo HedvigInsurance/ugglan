@@ -10,7 +10,8 @@ private var didCancelDocumentPickerCallbackerKey = 1
 
 extension UIDocumentPickerViewController: UIDocumentPickerDelegate {
 	private var didPickDocumentsCallbacker: Callbacker<[URL]> {
-		if let callbacker = objc_getAssociatedObject(self, &didPickDocumentsCallbackerKey) as? Callbacker<[URL]> {
+		if let callbacker = objc_getAssociatedObject(self, &didPickDocumentsCallbackerKey) as? Callbacker<[URL]>
+		{
 			return callbacker
 		}
 
@@ -30,7 +31,8 @@ extension UIDocumentPickerViewController: UIDocumentPickerDelegate {
 
 	private var didCancelDocumentPickerCallbacker: Callbacker<Void> {
 		if let callbacker = objc_getAssociatedObject(self, &didCancelDocumentPickerCallbackerKey)
-			as? Callbacker<Void> {
+			as? Callbacker<Void>
+		{
 			return callbacker
 		}
 

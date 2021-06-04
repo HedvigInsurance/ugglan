@@ -1,8 +1,8 @@
 import Foundation
-import hGraphQL
 import SnapshotTesting
 import Testing
 import XCTest
+import hGraphQL
 
 @testable import Embark
 

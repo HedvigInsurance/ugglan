@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 struct InvitationRow: Hashable {
 	let invitation: ForeverInvitation
@@ -49,7 +49,8 @@ extension InvitationRow: Reusable {
 		stackView.addArrangedSubview(discountAmountLabel)
 
 		return (
-			stackView, { `self` in nameLabel.value = self.invitation.name
+			stackView,
+			{ `self` in nameLabel.value = self.invitation.name
 				invitedByOtherLabel.animationSafeIsHidden = !self.invitation.invitedByOther
 
 				switch self.invitation.state {

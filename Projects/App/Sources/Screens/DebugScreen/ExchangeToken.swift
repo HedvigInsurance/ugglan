@@ -1,8 +1,8 @@
 import Apollo
 import Foundation
+import SwiftUI
 import hCore
 import hGraphQL
-import SwiftUI
 
 @available(iOS 13, *) struct ExchangeToken: View {
 	let onToken: (_ token: String, _ locale: Localization.Locale) -> Void

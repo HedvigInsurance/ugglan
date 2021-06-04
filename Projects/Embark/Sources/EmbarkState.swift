@@ -1,8 +1,8 @@
 import Flow
 import Foundation
+import UIKit
 import hCore
 import hGraphQL
-import UIKit
 
 public enum ExternalRedirect {
 	case mailingList

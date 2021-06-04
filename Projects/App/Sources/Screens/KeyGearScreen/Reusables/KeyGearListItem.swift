@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
-import hCore
-import hGraphQL
 import Kingfisher
 import UIKit
+import hCore
+import hGraphQL
 
 struct KeyGearListItem {
 	let id: String
@@ -65,7 +65,7 @@ extension KeyGearListItem: Reusable {
 
 		let gradient = CAGradientLayer()
 		gradient.colors = [
-			UIColor.black.withAlphaComponent(0).cgColor, UIColor.black.withAlphaComponent(0.25).cgColor
+			UIColor.black.withAlphaComponent(0).cgColor, UIColor.black.withAlphaComponent(0.25).cgColor,
 		]
 		gradient.locations = [0, 1]
 
@@ -91,7 +91,8 @@ extension KeyGearListItem: Reusable {
 		label.sizeToFit()
 
 		return (
-			view, { `self` in let bag = DisposeBag()
+			view,
+			{ `self` in let bag = DisposeBag()
 
 				bag += gradientView.didLayoutSignal.onValue { _ in gradient.frame = gradientView.frame
 
@@ -125,7 +126,7 @@ extension KeyGearListItem: Reusable {
 						with: imageUrl,
 						options: [
 							.cacheOriginalImage, .backgroundDecode,
-							.transition(.fade(0.25))
+							.transition(.fade(0.25)),
 						]
 					)
 					imageView.contentMode = .scaleAspectFill

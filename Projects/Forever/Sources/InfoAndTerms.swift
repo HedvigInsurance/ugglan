@@ -1,10 +1,10 @@
 import Flow
 import Foundation
-import hCore
-import hCoreUI
 import Presentation
 import SafariServices
 import UIKit
+import hCore
+import hCoreUI
 
 public struct InfoAndTerms {
 	let potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>

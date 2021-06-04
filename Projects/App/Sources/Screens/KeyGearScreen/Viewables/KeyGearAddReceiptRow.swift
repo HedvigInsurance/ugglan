@@ -2,12 +2,12 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import hCore
-import hCoreUI
-import hGraphQL
 import Photos
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
+import hGraphQL
 
 struct KeyGearAddReceiptRow {
 	@Inject var client: ApolloClient
@@ -74,7 +74,8 @@ extension KeyGearAddReceiptRow: Viewable {
 		bag += button.onTapSignal.withLatestFrom(receiptsSignal.atOnce().plain())
 			.onValue { _, receipts in
 				if let receiptUrlString = receipts.first?.file.preSignedUrl,
-					let receiptUrl = URL(string: receiptUrlString) {
+					let receiptUrl = URL(string: receiptUrlString)
+				{
 					self.presentingViewController.present(KeyGearReceipt(receipt: receiptUrl))
 					return
 				}

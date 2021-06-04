@@ -1,10 +1,10 @@
-import Apollo
 import AVKit
+import Apollo
 import Flow
 import Form
-import hCore
 import Presentation
 import UIKit
+import hCore
 
 struct Chat {
 	@Inject var client: ApolloClient

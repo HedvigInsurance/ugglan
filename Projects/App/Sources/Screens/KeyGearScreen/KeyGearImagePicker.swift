@@ -1,9 +1,9 @@
 import Flow
 import Foundation
-import hCore
 import Photos
 import Presentation
 import UIKit
+import hCore
 
 struct KeyGearImagePicker: Presentable {
 	let presentingViewController: UIViewController
@@ -44,7 +44,7 @@ struct KeyGearImagePicker: Presentable {
 					style: .cancel,
 					action: { _ in throw GenericError.cancelled }
 				)
-			]
+			],
 		]
 		.flatMap { $0 }
 	}

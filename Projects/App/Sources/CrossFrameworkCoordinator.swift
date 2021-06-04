@@ -3,13 +3,13 @@ import Contracts
 import Embark
 import Flow
 import Foundation
-import hCore
-import hCoreUI
 import Home
 import Market
 import Mixpanel
 import Payment
 import UIKit
+import hCore
+import hCoreUI
 
 struct CrossFrameworkCoordinator {
 	static func setup() {
@@ -59,7 +59,7 @@ struct CrossFrameworkCoordinator {
 				style: .detented(.preferredContentSize),
 				options: [
 					.defaults, .allowSwipeDismissAlways, .prefersLargeTitles(true),
-					.largeTitleDisplayMode(.always)
+					.largeTitleDisplayMode(.always),
 				]
 			)
 		}

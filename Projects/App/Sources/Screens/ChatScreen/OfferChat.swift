@@ -1,10 +1,10 @@
 import Apollo
 import Flow
 import Foundation
-import hCore
-import hGraphQL
 import Presentation
 import UIKit
+import hCore
+import hGraphQL
 
 struct OfferChat { @Inject var client: ApolloClient }
 
@@ -37,7 +37,7 @@ extension OfferChat: Presentable {
 								completion: nil
 							)
 						}
-					), Alert.Action(title: L10n.chatRestartAlertCancel, action: {})
+					), Alert.Action(title: L10n.chatRestartAlertCancel, action: {}),
 				]
 			)
 

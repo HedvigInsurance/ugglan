@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
-import hCore
-import hCoreUI
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 struct SettingsRow {
 	let presentingViewController: UIViewController

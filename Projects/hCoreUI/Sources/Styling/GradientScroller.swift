@@ -1,7 +1,7 @@
 import Flow
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 protocol GradientScroller where Self: UIScrollView {}
 
@@ -113,13 +113,15 @@ extension GradientScroller {
 					if navigationController.viewControllers.count != 1,
 						ContextGradient.rules.contains(
 							.disallowOnNestedViewControllersInNavigationControllers
-						) {
+						)
+					{
 						return
 					}
 
 					if navigationController.navigationBar.viewWithTag(colorViewTag) == nil,
 						let barBackgroundView = navigationController.navigationBar.subviews
-							.first {
+							.first
+					{
 						let effectView = barBackgroundView.subviews[1]
 						barBackgroundView.addSubview(navigationBarColorView)
 
@@ -134,7 +136,8 @@ extension GradientScroller {
 					}
 
 					if let tabBarController = navigationController.tabBarController,
-						tabBarController.tabBar.viewWithTag(colorViewTag) == nil {
+						tabBarController.tabBar.viewWithTag(colorViewTag) == nil
+					{
 						tabBarController.tabBar.insertSubview(tabBarColorView, at: 0)
 
 						tabBarColorView.snp.makeConstraints { make in

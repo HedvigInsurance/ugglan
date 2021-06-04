@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 public enum ToastSymbol: Equatable {
 	public static func == (lhs: ToastSymbol, rhs: ToastSymbol) -> Bool {

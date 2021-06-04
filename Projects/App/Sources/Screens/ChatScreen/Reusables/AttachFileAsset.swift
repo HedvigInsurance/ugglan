@@ -1,16 +1,16 @@
 import Flow
 import Form
 import Foundation
-import hCore
-import hCoreUI
 import Kingfisher
 import Photos
 import UIKit
+import hCore
+import hCoreUI
 
 struct AttachFileAsset: Reusable {
 	let asset: PHAsset
 	let type: AssetType
-    var uploadFileDelegate = Flow.Delegate<FileUpload, Future<(key: String, bucket: String)>>()
+	var uploadFileDelegate = Flow.Delegate<FileUpload, Future<(key: String, bucket: String)>>()
 
 	enum AssetType { case image, video }
 
@@ -27,7 +27,8 @@ struct AttachFileAsset: Reusable {
 		view.backgroundColor = .clear
 
 		return (
-			view, { `self` in let bag = DisposeBag()
+			view,
+			{ `self` in let bag = DisposeBag()
 				let sendOverlayBag = bag.innerBag()
 
 				bag += view.signal(for: .touchUpInside)
@@ -69,7 +70,7 @@ struct AttachFileAsset: Reusable {
 							loadableButton.isLoadingSignal.value = true
 
 							self.asset.fileUpload.onValue { fileUpload in
-                                self.uploadFileDelegate.call(fileUpload)?
+								self.uploadFileDelegate.call(fileUpload)?
 									.onValue { _ in
 										loadableButton.isLoadingSignal.value =
 											false

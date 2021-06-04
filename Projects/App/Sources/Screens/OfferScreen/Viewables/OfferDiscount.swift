@@ -1,12 +1,12 @@
 import Apollo
 import Flow
 import Foundation
-import hCore
-import hCoreUI
-import hGraphQL
 import Payment
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
+import hGraphQL
 
 struct OfferDiscount {
 	let presentingViewController: UIViewController
@@ -137,7 +137,7 @@ extension OfferDiscount: Viewable {
 										result.cost.fragments.costFragment
 								}
 							}
-					}
+					},
 				]
 			)
 

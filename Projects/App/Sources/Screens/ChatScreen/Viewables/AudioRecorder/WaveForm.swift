@@ -2,8 +2,8 @@ import AVKit
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 struct WaveForm { let audioRecorder: AVAudioRecorder }
 

@@ -1,6 +1,6 @@
 import Foundation
-import hGraphQL
 import UIKit
+import hGraphQL
 
 extension GraphQL.KeyGearItemCategory {
 	var image: UIImage? {

@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
+import UIKit
 import hCore
 import hCoreUI
-import UIKit
 
 struct TabHeader {
 	let image: UIImage
@@ -21,7 +21,8 @@ extension TabHeader: Reusable {
 		let view = UIView()
 
 		return (
-			view, { `self` in let bag = DisposeBag()
+			view,
+			{ `self` in let bag = DisposeBag()
 
 				bag += view.add(self) { buttonView in
 					buttonView.snp.makeConstraints { make in make.width.height.equalToSuperview() }

@@ -5,10 +5,10 @@ import EmbarkTesting
 import Flow
 import Form
 import Foundation
-import hCore
-import hGraphQL
 import Presentation
 import UIKit
+import hCore
+import hGraphQL
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

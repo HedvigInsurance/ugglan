@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
+import UIKit
 import hCore
 import hGraphQL
-import UIKit
 
 public class ExtraBuildingRow {
 	let data: ReadWriteSignal<GraphQL.ExtraBuildingFragment>

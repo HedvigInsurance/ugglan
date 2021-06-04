@@ -2,8 +2,8 @@ import Flow
 import Forever
 import Form
 import Foundation
-import hCoreUI
 import UIKit
+import hCoreUI
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
 	var window: UIWindow?

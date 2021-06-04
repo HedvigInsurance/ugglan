@@ -1,15 +1,15 @@
 import Flow
 import Form
 import Foundation
-import hCore
-import hCoreUI
 import Kingfisher
 import UIKit
+import hCore
+import hCoreUI
 
 struct AttachGIFImage {
 	let url: URL
 	let chatstate: ChatState
-    var uploadGifDelegate = Flow.Delegate<String, Signal<Void>>()
+	var uploadGifDelegate = Flow.Delegate<String, Signal<Void>>()
 
 	init(
 		url: URL,
@@ -36,7 +36,8 @@ extension AttachGIFImage: Reusable {
 		imageView.contentMode = .scaleAspectFill
 
 		return (
-			view, { `self` in let bag = DisposeBag()
+			view,
+			{ `self` in let bag = DisposeBag()
 				let sendOverlayBag = bag.innerBag()
 				imageView.kf.setImage(
 					with: self.url,
@@ -86,7 +87,7 @@ extension AttachGIFImage: Reusable {
 
 						sendOverlayBag += loadableButton.onTapSignal.onValue { _ in
 							loadableButton.isLoadingSignal.value = true
-                            bag += self.uploadGifDelegate.call(self.url.absoluteString)?
+							bag += self.uploadGifDelegate.call(self.url.absoluteString)?
 								.onValue { _ in
 
 									loadableButton.isLoadingSignal.value = false

@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Presentation
+import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import Presentation
-import UIKit
 
 public struct Home {
 	public static var openClaimsHandler: (_ viewController: UIViewController) -> Void = { _ in }
