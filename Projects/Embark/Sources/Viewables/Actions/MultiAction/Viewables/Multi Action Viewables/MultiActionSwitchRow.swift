@@ -42,7 +42,7 @@ extension MultiActionSwitchRow: Viewable {
 		return (
 			containerView,
 			Signal { callback in
-				bag += toggle.signal(for: .valueChanged).map { toggle.isOn }
+                bag += toggle.signal(for: .valueChanged).atOnce().map { toggle.isOn }
 					.onValue { isOn in
 						let value = MultiActionValue(
 							inputValue: String(isOn),

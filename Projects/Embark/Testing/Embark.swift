@@ -64,7 +64,7 @@ extension EmbarkStory {
 			multiActionData: .init(
 				addLabel: "Add Building",
 				key: "multiActionItem",
-				maxAmount: "1",
+				maxAmount: "5",
 				link: .init(name: "asd1234", label: "Next"),
 				components: [
 					EmbarkStory.embarkNumberComponent, EmbarkStory.embarkDropDownComponent,

@@ -45,7 +45,7 @@ extension MultiAction: Viewable {
 		view.addArrangedSubview(collectionKit.view)
 
 		bag += dataSource.$rows.atOnce().map { Table<EmptySection, MultiActionRow>(rows: $0) }
-			.onValue { table in collectionKit.set(table) }
+            .onValue { table in collectionKit.set(table) }
 
 		func present() -> FiniteSignal<[String: MultiActionValue]>? {
 			let components = data.components.map { (component) -> MultiActionComponent in
@@ -70,7 +70,7 @@ extension MultiAction: Viewable {
 
 			return viewController.present(
 				multiActionForm,
-				style: .detented(.medium, .large),
+				style: .detented(.large),
 				options: [.defaults, .autoPop]
 			)
 		}
@@ -109,14 +109,14 @@ extension MultiAction: Viewable {
 			view,
 			Signal { callback in
 
-				bag += collectionKit.view.didLayoutSignal.onValue {
-					collectionKit.view.snp.makeConstraints { make in
-						make.height.equalTo(
-							collectionKit.view.collectionViewLayout
-								.collectionViewContentSize.height
-						)
-					}
-				}
+                bag += collectionKit.view.didLayoutSignal.animated(style: .mediumBounce(delay: 0.2), animations: { _ in
+                    collectionKit.view.snp.makeConstraints { make in
+                        make.height.equalTo(
+                            collectionKit.view.collectionViewLayout
+                                .collectionViewContentSize.height
+                        )
+                    }
+                })
 
 				bag += collectionKit.view.signal(for: \.contentSize)
 					.onValue { size in

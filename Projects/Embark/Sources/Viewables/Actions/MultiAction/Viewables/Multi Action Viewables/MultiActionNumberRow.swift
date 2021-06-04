@@ -40,7 +40,8 @@ extension MultiActionNumberRow: Viewable {
 			textContentType: masking.textContentType,
 			autocapitalisationType: masking.autocapitalizationType,
 			insets: .zero,
-			masking: masking,
+            masking: masking,
+            shouldAutoFocus: false,
 			fieldStyle: .embarkInputSmall,
 			textFieldAlignment: .right
 		)

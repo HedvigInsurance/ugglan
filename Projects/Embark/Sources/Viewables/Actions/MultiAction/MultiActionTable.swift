@@ -31,13 +31,7 @@ extension MultiActionTable: Presentable {
 			default: form.backgroundColor = .brand(.primaryBackground())
 			}
 		}
-
-		bag += viewController.install(form) { scrollView in
-			bag += scrollView.contentSizeSignal.onValue { size in
-				viewController.currentDetentSignal.value =
-					size.height > section.bounds.height ? .large : .medium
-			}
-		}
+        
 		viewController.title = title
 
 		func addDividerIfNeeded(index: Int) {
@@ -56,7 +50,7 @@ extension MultiActionTable: Presentable {
 		func addValues(storeValues: [String: MultiActionValue]) {
 			$multiActionValues.value = $multiActionValues.value.merging(
 				storeValues,
-				uniquingKeysWith: takeLeft
+				uniquingKeysWith: takeRight
 			)
 		}
 
@@ -93,26 +87,36 @@ extension MultiActionTable: Presentable {
 
 		func didCompleteForm() -> Bool { $multiActionValues.value.count > components.count }
 
-		let button = ButtonRowViewWrapper(
-			title: L10n.generalSaveButton,
-			type: .standard(
-				backgroundColor: .brand(.secondaryButtonBackgroundColor),
-				textColor: .brand(.secondaryButtonTextColor)
-			),
-			isEnabled: false
-		)
-
-		bag += $multiActionValues.map { _ in didCompleteForm() }.bindTo(button.isEnabledSignal)
-
 		bag += section.append(Spacing(height: 16))
 
 		section.backgroundColor = .clear
-
-		bag += section.append(button) { rowView in rowView.row.backgroundColor = .clear }
-
 		bag += viewController.currentDetentSignal.animated(style: .lightBounce()) { _ in
 			viewController.view.layoutIfNeeded()
 		}
+        
+        let button = Button(
+            title: L10n.generalSaveButton,
+            type: .standard(
+                backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonTextColor)
+            ),
+            isEnabled: false
+        )
+        
+        let buttonStack = UIStackView()
+        buttonStack.edgeInsets = .init(
+            top: 0,
+            left: 16,
+            bottom: 16 + viewController.view.safeAreaInsets.bottom,
+            right: 16
+        )
+        bag += buttonStack.addArranged(button)
+        
+        bag += viewController.install(form) { scrollView in
+            bag += scrollView.embedPinned(buttonStack, edge: .bottom, minHeight: 44)
+        }
+        
+        bag += $multiActionValues.map { _ in didCompleteForm() }.bindTo(button.isEnabled)
 
 		return (
 			viewController,
