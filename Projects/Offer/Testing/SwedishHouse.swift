@@ -10,7 +10,7 @@ public extension JSONObject {
         bundleCost: GraphQL.QuoteBundleQuery.Data.QuoteBundle.BundleCost,
         redeemedCampaigns: [GraphQL.QuoteBundleQuery.Data.RedeemedCampaign]
     ) -> JSONObject {
-        GraphQL.QuoteBundleQuery.Data.init(
+        GraphQL.QuoteBundleQuery.Data(
             quoteBundle: .init(
                 quotes: [
                     .init(

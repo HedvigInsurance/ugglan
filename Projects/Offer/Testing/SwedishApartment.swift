@@ -7,7 +7,7 @@ import TestingUtil
 
 public extension JSONObject {
     static func makeSwedishApartment() -> JSONObject {
-        GraphQL.QuoteBundleQuery.Data.init(
+        GraphQL.QuoteBundleQuery.Data(
             quoteBundle: .init(
                 quotes: [
                     .init(
@@ -34,7 +34,7 @@ public extension JSONObject {
                 ),
                 frequentlyAskedQuestions: generateFrequentlyAskedQuestions(),
                 inception: .makeIndependentInceptions(inceptions: [
-                    .init(startDate: "2020-05-10", correspondingQuote: .makeCompleteQuote(id: "123")),
+                    .init(startDate: "2020-05-10", correspondingQuote: .makeCompleteQuote(id: "123"))
                 ])
             ),
             signMethodForQuotes: GraphQL.SignMethod.swedishBankId,

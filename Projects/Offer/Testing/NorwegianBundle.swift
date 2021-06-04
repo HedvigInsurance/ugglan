@@ -33,7 +33,7 @@ func generateDetailsTable(title: String, rows: [GraphQL.QuoteBundleQuery.Data.Qu
 
 public extension JSONObject {
     static func makeNorwegianBundle() -> JSONObject {
-        GraphQL.QuoteBundleQuery.Data.init(
+        GraphQL.QuoteBundleQuery.Data(
             quoteBundle: .init(
                 quotes: [
                     .init(

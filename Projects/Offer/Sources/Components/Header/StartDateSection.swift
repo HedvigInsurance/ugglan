@@ -1,11 +1,3 @@
-//
-//  StartDateSection.swift
-//  Offer
-//
-//  Created by Sam Pettersson on 2021-04-19.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import UIKit
 import Form
