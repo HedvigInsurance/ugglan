@@ -65,65 +65,58 @@ extension FieldStyle {
 }
 
 extension EmbarkInput: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, ReadWriteSignal<String>) {
-        let bag = DisposeBag()
-        let view = UIControl()
-        view.isUserInteractionEnabled = true
+	func materialize(events _: ViewableEvents) -> (UIView, ReadWriteSignal<String>) {
+		let bag = DisposeBag()
+		let view = UIControl()
+		view.isUserInteractionEnabled = true
 
-        let paddingView = UIStackView()
-        paddingView.isUserInteractionEnabled = true
-        paddingView.axis = .vertical
-        paddingView.isLayoutMarginsRelativeArrangement = true
-        paddingView.insetsLayoutMarginsFromSafeArea = false
-        paddingView.layoutMargins = insets
-        view.addSubview(paddingView)
+		let paddingView = UIStackView()
+		paddingView.isUserInteractionEnabled = true
+		paddingView.axis = .vertical
+		paddingView.isLayoutMarginsRelativeArrangement = true
+		paddingView.insetsLayoutMarginsFromSafeArea = false
+		paddingView.layoutMargins = insets
+		view.addSubview(paddingView)
 
-        paddingView.snp.makeConstraints { make in
-            make.trailing.leading.top.bottom.equalToSuperview()
-        }
+		paddingView.snp.makeConstraints { make in make.trailing.leading.top.bottom.equalToSuperview() }
 
-        let textField = UITextField(value: "", placeholder: "", style: fieldStyle)
-        textField.backgroundColor = .clear
-        textField.placeholder = placeholder.value
-        textField.adjustsFontSizeToFitWidth = shouldAutoSize
-        textField.textAlignment = textFieldAlignment
+		let textField = UITextField(value: "", placeholder: "", style: fieldStyle)
+		textField.backgroundColor = .clear
+		textField.placeholder = placeholder.value
+		textField.adjustsFontSizeToFitWidth = shouldAutoSize
+		textField.textAlignment = textFieldAlignment
 
-        bag += combineLatest(
-            textContentTypeSignal.atOnce(),
-            keyboardTypeSignal.atOnce(),
-            autocapitalisationTypeSignal.atOnce(),
-            returnKeyTypeSignal.atOnce()
-        ).bindTo { textContentType, keyboardType, autocapitalisationType, returnKeyType in
-            textField.textContentType = textContentType
-            textField.keyboardType = keyboardType ?? .default
-            textField.autocapitalizationType = autocapitalisationType
-            textField.returnKeyType = returnKeyType ?? .default
-            textField.reloadInputViews()
-        }
+		bag += combineLatest(
+			textContentTypeSignal.atOnce(),
+			keyboardTypeSignal.atOnce(),
+			autocapitalisationTypeSignal.atOnce(),
+			returnKeyTypeSignal.atOnce()
+		)
+		.bindTo { textContentType, keyboardType, autocapitalisationType, returnKeyType in
+			textField.textContentType = textContentType
+			textField.keyboardType = keyboardType ?? .default
+			textField.autocapitalizationType = autocapitalisationType
+			textField.returnKeyType = returnKeyType ?? .default
+			textField.reloadInputViews()
+		}
 
-        paddingView.addArrangedSubview(textField)
+		paddingView.addArrangedSubview(textField)
 
-        let placeholderLabel = UILabel(value: placeholder.value, style: .brand(.largeTitle(color: .primary)))
-        placeholderLabel.textAlignment = textFieldAlignment
+		let placeholderLabel = UILabel(value: placeholder.value, style: .brand(.largeTitle(color: .primary)))
+		placeholderLabel.textAlignment = textFieldAlignment
 
-        bag += textField.atOnce().onValue { value in
-            placeholderLabel.alpha = value.isEmpty ? 1 : 0
-        }
+		bag += textField.atOnce().onValue { value in placeholderLabel.alpha = value.isEmpty ? 1 : 0 }
 
-        bag += textField.didMoveToWindowSignal.delay(by: 0.5).filter(predicate: { self.shouldAutoFocus }).onValue { _ in
-            textField.becomeFirstResponder()
-        }
+		bag += textField.didMoveToWindowSignal.delay(by: 0.5).filter(predicate: { self.shouldAutoFocus })
+			.onValue { _ in textField.becomeFirstResponder() }
 
-        bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }.onValue { _ in
-            textField.becomeFirstResponder()
-        }
+		bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }
+			.onValue { _ in textField.becomeFirstResponder() }
 
-        bag += masking.applyMasking(textField)
+		bag += masking.applyMasking(textField)
 
-        bag += textField.shouldReturn.set { value -> Bool in
-            self.shouldReturn.call(value) ?? false
-        }
+		bag += textField.shouldReturn.set { value -> Bool in self.shouldReturn.call(value) ?? false }
 
-        return (view, textField.providedSignal.hold(bag))
-    }
+		return (view, textField.providedSignal.hold(bag))
+	}
 }

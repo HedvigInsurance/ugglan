@@ -1,16 +1,20 @@
 import Flow
 import Foundation
-import hCore
 import UIKit
+import hCore
 
-public struct ExpandableContent<Content: Viewable> where Content.Matter: UIView, Content.Result == Disposable, Content.Events == ViewableEvents {
-    let content: Content
-    public let isExpanded: ReadWriteSignal<Bool>
+public struct ExpandableContent<Content: Viewable>
+where Content.Matter: UIView, Content.Result == Disposable, Content.Events == ViewableEvents {
+	let content: Content
+	public let isExpanded: ReadWriteSignal<Bool>
 
-    public init(content: Content, isExpanded: ReadWriteSignal<Bool>) {
-        self.content = content
-        self.isExpanded = isExpanded
-    }
+	public init(
+		content: Content,
+		isExpanded: ReadWriteSignal<Bool>
+	) {
+		self.content = content
+		self.isExpanded = isExpanded
+	}
 }
 
 extension ExpandableContent: Viewable {
@@ -82,7 +86,7 @@ extension ExpandableContent: Viewable {
 			gradient.colors = [
 				UIColor.brand(.primaryBackground()).withAlphaComponent(0).cgColor,
 				UIColor.brand(.primaryBackground()).withAlphaComponent(0.2).cgColor,
-				UIColor.brand(.primaryBackground()).cgColor
+				UIColor.brand(.primaryBackground()).cgColor,
 			]
 		}
 

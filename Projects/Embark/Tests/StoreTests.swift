@@ -1,4 +1,3 @@
-@testable import Embark
 import Foundation
 import XCTest
 
