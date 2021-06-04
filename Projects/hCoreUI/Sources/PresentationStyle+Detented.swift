@@ -71,9 +71,11 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 				}
 
 				if let presentationController = self.viewController.navigationController?
-					.presentationController {
+					.presentationController
+				{
 					if let lastViewController = self.viewController.navigationController?
-						.visibleViewController {
+						.visibleViewController
+					{
 						PresentationStyle.Detent.set(
 							lastViewController.appliedDetents,
 							on: presentationController,
@@ -127,7 +129,8 @@ extension UIViewController {
 	public var appliedDetents: [PresentationStyle.Detent] {
 		get {
 			if let appliedDetents = objc_getAssociatedObject(self, &UIViewController._appliedDetents)
-				as? [PresentationStyle.Detent] {
+				as? [PresentationStyle.Detent]
+			{
 				return appliedDetents
 			}
 
@@ -195,7 +198,8 @@ extension UIViewController {
 	internal var lastDetentIndex: Int? {
 		get {
 			if let lastDetentIndex = objc_getAssociatedObject(self, &UIViewController._lastDetentIndex)
-				as? Int {
+				as? Int
+			{
 				return lastDetentIndex
 			}
 
@@ -355,7 +359,8 @@ extension PresentationStyle {
 					let bag = DisposeBag()
 
 					if let navigationController = from.navigationController,
-						let presentationController = navigationController.presentationController {
+						let presentationController = navigationController.presentationController
+					{
 						from.lastDetentIndex = getDetentIndex(on: presentationController)
 
 						Self.Detent.set(
@@ -399,11 +404,13 @@ extension PresentationStyle {
 								if navigationController.interactivePopGestureRecognizer?
 									.state == .ended,
 									!(navigationController.transitionCoordinator?
-										.isCancelled ?? false) {
+										.isCancelled ?? false)
+								{
 									handleDismiss()
 								} else if navigationController
 									.interactivePopGestureRecognizer?
-									.state == .possible {
+									.state == .possible
+								{
 									handleDismiss()
 								}
 							}
@@ -416,7 +423,8 @@ extension PresentationStyle {
 					)
 
 					return (
-						defaultPresentation.result, {
+						defaultPresentation.result,
+						{
 							bag.dispose()
 							return defaultPresentation.dismisser()
 						}

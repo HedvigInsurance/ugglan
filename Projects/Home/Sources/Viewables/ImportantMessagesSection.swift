@@ -2,10 +2,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import SafariServices
 import hCore
 import hCoreUI
 import hGraphQL
-import SafariServices
 
 struct ImportantMessagesSection { @Inject var client: ApolloClient }
 

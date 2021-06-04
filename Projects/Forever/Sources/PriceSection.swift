@@ -2,8 +2,8 @@ import Ease
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 struct PriceSection {
 	let grossAmountSignal: ReadSignal<MonetaryAmount?>

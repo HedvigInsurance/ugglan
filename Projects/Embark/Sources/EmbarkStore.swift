@@ -19,7 +19,8 @@ class EmbarkStore {
 
 			// handling for array based keys and values
 			if arraySymbolRegex.firstMatch(in: key, options: [], range: keyRange) != nil,
-				arraySymbolRegex.firstMatch(in: value, options: [], range: valueRange) != nil {
+				arraySymbolRegex.firstMatch(in: value, options: [], range: valueRange) != nil
+			{
 				var mutableValue = String(value)
 				mutableValue.removeFirst()
 				mutableValue.removeLast()
@@ -163,23 +164,27 @@ class EmbarkStore {
 				}
 			case .lessThan:
 				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
-					storeFloat < binaryExpression.value.floatValue {
+					storeFloat < binaryExpression.value.floatValue
+				{
 					return binaryExpression.to
 				}
 
 			case .lessThanOrEquals:
 				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
-					storeFloat <= binaryExpression.value.floatValue {
+					storeFloat <= binaryExpression.value.floatValue
+				{
 					return binaryExpression.to
 				}
 			case .moreThan:
 				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
-					storeFloat > binaryExpression.value.floatValue {
+					storeFloat > binaryExpression.value.floatValue
+				{
 					return binaryExpression.to
 				}
 			case .moreThanOrEquals:
 				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
-					storeFloat >= binaryExpression.value.floatValue {
+					storeFloat >= binaryExpression.value.floatValue
+				{
 					return binaryExpression.to
 				}
 
@@ -192,14 +197,16 @@ class EmbarkStore {
 		}
 
 		if let multipleExpression = redirect.fragments.embarkRedirectFragment
-			.asEmbarkRedirectMultipleExpressions {
+			.asEmbarkRedirectMultipleExpressions
+		{
 			switch multipleExpression.multipleType {
 			case .and:
 				if multipleExpression.subExpressions
 					.map({ subExpression -> Bool in
 						self.passes(expression: subExpression.fragments.expressionFragment)
 					})
-					.allSatisfy({ passes in passes }) {
+					.allSatisfy({ passes in passes })
+				{
 					return multipleExpression.to
 				}
 			case .or:
@@ -207,7 +214,8 @@ class EmbarkStore {
 					.map({ subExpression -> Bool in
 						self.passes(expression: subExpression.fragments.expressionFragment)
 					})
-					.contains(true) {
+					.contains(true)
+				{
 					return multipleExpression.to
 				}
 			case .__unknown: break

@@ -23,7 +23,7 @@ public enum Fonts {
 		let size = defaultDescriptor.pointSize
 		let fontDescriptor = UIFontDescriptor(fontAttributes: [
 			UIFontDescriptor.AttributeName.size: size,
-			UIFontDescriptor.AttributeName.family: favoritStdBook.familyName
+			UIFontDescriptor.AttributeName.family: favoritStdBook.familyName,
 		])
 
 		return UIFont(descriptor: fontDescriptor, size: 0)

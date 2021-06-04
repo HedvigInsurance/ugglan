@@ -22,7 +22,8 @@ public class ForeverServiceGraphQL: ForeverService {
 						)
 					)
 				} else if updateReferralCampaignCode.asSuccessfullyUpdatedCode != nil {
-					self.store.withinReadWriteTransaction({ transaction in
+					self.store.withinReadWriteTransaction(
+						{ transaction in
 							try transaction.update(query: GraphQL.ForeverQuery()) {
 								(data: inout GraphQL.ForeverQuery.Data) in
 								data.referralInformation.campaign.code = value

@@ -1,7 +1,7 @@
 import Flow
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 class AccessoryViewController<Accessory: Viewable>: UIViewController
 where Accessory.Events == ViewableEvents, Accessory.Matter: UIView, Accessory.Result == Disposable {

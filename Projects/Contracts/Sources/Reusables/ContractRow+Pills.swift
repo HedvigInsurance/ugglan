@@ -1,6 +1,6 @@
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 extension Date {
 	var localized: String {
@@ -25,7 +25,7 @@ extension ContractRow {
 
 			return [
 				L10n.dashboardInsuranceStatusInactiveStartdate(futureInceptionDate.localized),
-				L10n.dashboardInsuranceStatusActiveTerminationdate(futureTerminationDate.localized)
+				L10n.dashboardInsuranceStatusActiveTerminationdate(futureTerminationDate.localized),
 			]
 		} else if contract.status.asTerminatedTodayStatus != nil {
 			return [L10n.dashboardInsuranceStatusTerminatedToday]
@@ -81,7 +81,7 @@ extension ContractRow {
 		case .swedishApartment:
 			return [
 				contract.currentAgreement.asSwedishApartmentAgreement?.address.street,
-				coversHowManyPill
+				coversHowManyPill,
 			]
 			.compactMap { $0 }
 		case .swedishHouse:
@@ -90,14 +90,14 @@ extension ContractRow {
 		case .norwegianHome:
 			return [
 				contract.currentAgreement.asNorwegianHomeContentAgreement?.address.street,
-				coversHowManyPill
+				coversHowManyPill,
 			]
 			.compactMap { $0 }
 		case .norwegianTravel: return [coversHowManyPill]
 		case .danishHome:
 			return [
 				contract.currentAgreement.asDanishHomeContentAgreement?.address.street,
-				coversHowManyPill
+				coversHowManyPill,
 			]
 			.compactMap { $0 }
 		case .danishTravel: return [coversHowManyPill]

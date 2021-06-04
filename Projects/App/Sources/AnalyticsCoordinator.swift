@@ -2,10 +2,10 @@ import Apollo
 import Firebase
 import Flow
 import Foundation
-import hCore
-import hGraphQL
 import Mixpanel
 import Shake
+import hCore
+import hGraphQL
 
 public struct AnalyticsCoordinator {
 	@Inject private var client: ApolloClient

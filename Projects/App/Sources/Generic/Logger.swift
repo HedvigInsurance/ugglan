@@ -1,8 +1,8 @@
 import Apollo
 import Foundation
+import UIKit
 import hCore
 import hGraphQL
-import UIKit
 
 private struct LogMessage: Encodable { let text: String }
 
@@ -24,7 +24,8 @@ enum Logger {
 		print("DEBUG 💛 \(Date()) - \(message)")
 
 		if let json = try? JSONEncoder().encode(LogMessage(text: message)),
-			let jsonString = String(data: json, encoding: .utf8) {
+			let jsonString = String(data: json, encoding: .utf8)
+		{
 			log(
 				input: GraphQL.LoggingInput(
 					timestamp: Date().currentTimeMillis.description,
@@ -42,7 +43,8 @@ enum Logger {
 		print("INFO 💙 \(Date()) - \(message)")
 
 		if let json = try? JSONEncoder().encode(LogMessage(text: message)),
-			let jsonString = String(data: json, encoding: .utf8) {
+			let jsonString = String(data: json, encoding: .utf8)
+		{
 			log(
 				input: GraphQL.LoggingInput(
 					timestamp: Date().currentTimeMillis.description,
@@ -60,7 +62,8 @@ enum Logger {
 		print("WARNING 💜 \(Date()) - \(message)")
 
 		if let json = try? JSONEncoder().encode(LogMessage(text: message)),
-			let jsonString = String(data: json, encoding: .utf8) {
+			let jsonString = String(data: json, encoding: .utf8)
+		{
 			log(
 				input: GraphQL.LoggingInput(
 					timestamp: Date().currentTimeMillis.description,
@@ -78,7 +81,8 @@ enum Logger {
 		print("ERROR 💥 \(Date()) - \(message)")
 
 		if let json = try? JSONEncoder().encode(LogMessage(text: message)),
-			let jsonString = String(data: json, encoding: .utf8) {
+			let jsonString = String(data: json, encoding: .utf8)
+		{
 			log(
 				input: GraphQL.LoggingInput(
 					timestamp: Date().currentTimeMillis.description,

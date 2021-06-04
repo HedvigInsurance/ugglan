@@ -2,12 +2,12 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import hCore
-import hCoreUI
-import hGraphQL
 import Presentation
 import SnapKit
 import UIKit
+import hCore
+import hCoreUI
+import hGraphQL
 
 public struct Embark {
 	@Inject var client: ApolloClient
@@ -263,7 +263,7 @@ extension Embark: Presentable {
 							Alert.Action(
 								title: L10n.alertCancel,
 								style: UIAlertAction.Style.cancel
-							) { false }
+							) { false },
 						]
 					)
 
@@ -293,7 +293,7 @@ extension Embark: Presentable {
 										handler: presentRestartAlert
 									)
 								]
-							)
+							),
 						]
 						.compactMap { $0 }
 					)

@@ -3,13 +3,13 @@ import Contracts
 import Flow
 import Forever
 import Foundation
-import hCore
-import hCoreUI
-import hGraphQL
 import Home
 import Mixpanel
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
+import hGraphQL
 
 struct LoggedIn {
 	@Inject var client: ApolloClient
@@ -94,7 +94,7 @@ extension LoggedIn: Presentable {
 						)
 
 						indexForTabsSignal.value = [
-							0: .home, 1: .contracts, 2: .keyGear, 3: .forever, 4: .profile
+							0: .home, 1: .contracts, 2: .keyGear, 3: .forever, 4: .profile,
 						]
 					} else {
 						bag += tabBarController.presentTabs(
@@ -105,7 +105,7 @@ extension LoggedIn: Presentable {
 						)
 
 						indexForTabsSignal.value = [
-							0: .home, 1: .contracts, 2: .keyGear, 3: .profile
+							0: .home, 1: .contracts, 2: .keyGear, 3: .profile,
 						]
 					}
 				} else {
@@ -118,7 +118,7 @@ extension LoggedIn: Presentable {
 						)
 
 						indexForTabsSignal.value = [
-							0: .home, 1: .contracts, 2: .forever, 3: .profile
+							0: .home, 1: .contracts, 2: .forever, 3: .profile,
 						]
 					} else {
 						bag += tabBarController.presentTabs(

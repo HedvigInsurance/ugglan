@@ -1,11 +1,11 @@
-import Apollo
 import AVKit
+import Apollo
 import Disk
 import Flow
 import Foundation
+import UIKit
 import hCore
 import hCoreUI
-import UIKit
 
 struct AudioRecorder {
 	@Inject var client: ApolloClient
@@ -50,7 +50,7 @@ extension AudioRecorder: Viewable {
 				let settings = [
 					AVFormatIDKey: Int(kAudioFormatMPEG4AAC), AVSampleRateKey: 12_000,
 					AVNumberOfChannelsKey: 1,
-					AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+					AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
 				]
 
 				class AudioRecorderCoordinator: NSObject, AVAudioRecorderDelegate {}

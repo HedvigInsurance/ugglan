@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 public struct ButtonRow {
 	public static var trackingHandler: (_ row: Self) -> Void = { _ in }

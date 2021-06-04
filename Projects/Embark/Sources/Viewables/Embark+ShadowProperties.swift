@@ -1,6 +1,6 @@
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 extension UIView.ShadowProperties {
 	static let embark = UIView.ShadowProperties(

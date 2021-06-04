@@ -1,8 +1,8 @@
 import Apollo
 import Flow
 import Foundation
-import hGraphQL
 import UIKit
+import hGraphQL
 
 struct Message: Equatable, Hashable { static func == (lhs: Message, rhs: Message) -> Bool {
 	lhs.globalId == rhs.globalId

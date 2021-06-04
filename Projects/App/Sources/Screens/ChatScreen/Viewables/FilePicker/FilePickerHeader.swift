@@ -1,20 +1,19 @@
 import Flow
 import Form
 import Foundation
-import hCore
 import Photos
 import UIKit
+import hCore
 
-struct FilePickerHeader {
-    var uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>()
-}
+struct FilePickerHeader { var uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>() }
 
 extension FilePickerHeader: Reusable {
 	static func makeAndConfigure() -> (make: UIView, configure: (FilePickerHeader) -> Disposable) {
 		let view = UIView()
 
 		return (
-			view, { `self` in let bag = DisposeBag()
+			view,
+			{ `self` in let bag = DisposeBag()
 
 				bag +=
 					view.add(self) { buttonView in

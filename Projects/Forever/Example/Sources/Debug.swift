@@ -31,7 +31,7 @@ extension Debug: Presentable {
 						style: .default,
 						options: [
 							.defaults, .prefersLargeTitles(true),
-							.largeTitleDisplayMode(.always)
+							.largeTitleDisplayMode(.always),
 						]
 					)
 					.onValue { data in

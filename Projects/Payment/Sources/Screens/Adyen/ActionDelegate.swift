@@ -35,10 +35,12 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
 				}
 
 				if data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished
-					!= nil {
+					!= nil
+				{
 					self.onResult(.success(.make(())))
 				} else if let data = data.submitAdditionalPaymentDetails
-					.asAdditionalPaymentsDetailsResponseAction {
+					.asAdditionalPaymentsDetailsResponseAction
+				{
 					guard let jsonData = data.action.data(using: .utf8) else { return }
 					guard let action = try? JSONDecoder().decode(Adyen.Action.self, from: jsonData)
 					else { return }

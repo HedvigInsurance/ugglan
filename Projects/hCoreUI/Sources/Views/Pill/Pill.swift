@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 public struct Pill: Hashable, ReusableSizeable {
 	public init(
@@ -36,7 +36,8 @@ extension Pill: Reusable {
 		pillView.layer.cornerRadius = 4
 
 		return (
-			pillView, { `self` in let bag = DisposeBag()
+			pillView,
+			{ `self` in let bag = DisposeBag()
 
 				switch self.style {
 				case .effected: pillView.embed()

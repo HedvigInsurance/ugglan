@@ -20,11 +20,11 @@ extension DefaultStyling {
 	) {
 		appearance.titleTextAttributes = [
 			NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-			NSAttributedString.Key.font: Fonts.fontFor(style: .headline)
+			NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
 		]
 		appearance.largeTitleTextAttributes = [
 			NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-			NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle)
+			NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
 		]
 
 		appearance.setBackIndicatorImage(
@@ -74,7 +74,7 @@ extension DefaultStyling {
 		}
 
 		let lightAndBaseTrait = UITraitCollection(traitsFrom: [
-			UITraitCollection(userInterfaceStyle: .light), UITraitCollection(userInterfaceLevel: .base)
+			UITraitCollection(userInterfaceStyle: .light), UITraitCollection(userInterfaceLevel: .base),
 		])
 		UINavigationBar.appearance(for: lightAndBaseTrait).standardAppearance = standardAppearance(
 			for: lightAndBaseTrait
@@ -84,7 +84,7 @@ extension DefaultStyling {
 		)
 
 		let darkAndBaseTrait = UITraitCollection(traitsFrom: [
-			UITraitCollection(userInterfaceStyle: .dark), UITraitCollection(userInterfaceLevel: .base)
+			UITraitCollection(userInterfaceStyle: .dark), UITraitCollection(userInterfaceLevel: .base),
 		])
 		UINavigationBar.appearance(for: darkAndBaseTrait).standardAppearance = standardAppearance(
 			for: darkAndBaseTrait
@@ -94,7 +94,7 @@ extension DefaultStyling {
 		)
 
 		let lightAndElevatedTrait = UITraitCollection(traitsFrom: [
-			UITraitCollection(userInterfaceStyle: .light), UITraitCollection(userInterfaceLevel: .elevated)
+			UITraitCollection(userInterfaceStyle: .light), UITraitCollection(userInterfaceLevel: .elevated),
 		])
 		UINavigationBar.appearance(for: lightAndElevatedTrait).standardAppearance = standardAppearance(
 			for: lightAndElevatedTrait
@@ -104,7 +104,7 @@ extension DefaultStyling {
 		)
 
 		let darkAndElevatedTrait = UITraitCollection(traitsFrom: [
-			UITraitCollection(userInterfaceStyle: .dark), UITraitCollection(userInterfaceLevel: .elevated)
+			UITraitCollection(userInterfaceStyle: .dark), UITraitCollection(userInterfaceLevel: .elevated),
 		])
 		UINavigationBar.appearance(for: darkAndElevatedTrait).standardAppearance = standardAppearance(
 			for: darkAndElevatedTrait
@@ -139,11 +139,11 @@ extension DefaultStyling {
 			UINavigationBar.appearance().shadowImage = UIColor.clear.asImage()
 			UINavigationBar.appearance().titleTextAttributes = [
 				NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-				NSAttributedString.Key.font: Fonts.fontFor(style: .headline)
+				NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
 			]
 			UINavigationBar.appearance().largeTitleTextAttributes = [
 				NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-				NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle)
+				NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
 			]
 		}
 

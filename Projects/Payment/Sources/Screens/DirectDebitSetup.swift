@@ -1,12 +1,12 @@
 import Apollo
 import Flow
 import Foundation
-import hCore
-import hGraphQL
 import Presentation
 import SafariServices
 import UIKit
 import WebKit
+import hCore
+import hGraphQL
 
 struct DirectDebitSetup {
 	@Inject var client: ApolloClient
@@ -126,35 +126,34 @@ extension DirectDebitSetup: Presentable {
 					switch self.setupType {
 					case .initial:
 						alert = Alert<Bool>(
-								title: L10n.PayInIframeInAppCancelAlert.title,
-								message: L10n.PayInIframeInAppCancelAlert.body,
-								actions: [
-									Alert.Action(
-										title: L10n.PayInIframeInAppCancelAlert
-											.proceedButton
-									) { true },
-									Alert.Action(
-										title: L10n.PayInIframeInAppCancelAlert
-											.dismissButton
-									) { false }
-								]
-							)
+							title: L10n.PayInIframeInAppCancelAlert.title,
+							message: L10n.PayInIframeInAppCancelAlert.body,
+							actions: [
+								Alert.Action(
+									title: L10n.PayInIframeInAppCancelAlert
+										.proceedButton
+								) { true },
+								Alert.Action(
+									title: L10n.PayInIframeInAppCancelAlert
+										.dismissButton
+								) { false },
+							]
+						)
 					case .postOnboarding:
 						alert = Alert<Bool>(
-								title: L10n.PayInIframePostSignSkipAlert.title,
-								message: L10n.PayInIframePostSignSkipAlertDirectDebit
-									.body,
-								actions: [
-									Alert.Action(
-										title: L10n.PayInIframePostSignSkipAlert
-											.proceedButton
-									) { true },
-									Alert.Action(
-										title: L10n.PayInIframePostSignSkipAlert
-											.dismissButton
-									) { false }
-								]
-							)
+							title: L10n.PayInIframePostSignSkipAlert.title,
+							message: L10n.PayInIframePostSignSkipAlertDirectDebit.body,
+							actions: [
+								Alert.Action(
+									title: L10n.PayInIframePostSignSkipAlert
+										.proceedButton
+								) { true },
+								Alert.Action(
+									title: L10n.PayInIframePostSignSkipAlert
+										.dismissButton
+								) { false },
+							]
+						)
 					case .replacement:
 						completion(.success)
 						return

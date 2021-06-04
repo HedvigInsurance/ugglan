@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 public struct TextView {
 	public let placeholder: ReadWriteSignal<String>
