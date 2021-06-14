@@ -43,7 +43,7 @@ extension MultiActionValueRow: Reusable {
 		let title = UILabel(value: "", style: .brand(.body(color: .primary)))
 		title.textAlignment = .center
 
-		let values = UILabel(value: "", style: .brand(.body(color: .secondary)))
+		let values = UILabel(value: "", style: .brand(.footnote(color: .secondary)))
 		values.textAlignment = .center
 		values.numberOfLines = 0
 		values.lineBreakMode = .byWordWrapping
@@ -73,7 +73,7 @@ extension MultiActionValueRow: Reusable {
 			view,
 			{ `self` in title.text = self.title
 				values.text = self.values.compactMap { _, value in value.displayValue }
-					.filter { $0 != self.title }.joined(separator: " \u{2022} ")
+					.filter { $0 != self.title }.joined(separator: " \u{00B7} ")
 
 				bag += button.onValue { self.didTapRow.value = true }
 
