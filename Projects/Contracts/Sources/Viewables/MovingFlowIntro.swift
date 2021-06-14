@@ -99,12 +99,17 @@ extension MovingFlowIntro: Presentable {
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
 
+        #warning("ADD ADDRESS DETAILS TABLE VIEW HERE LATER")
+        let tableView = UIView()
+        tableView.isHidden = true
+
         var titleLabel = MultilineLabel(value: "", style: .brand(.title2(color: .primary)))
         var descriptionLabel = MultilineLabel(value: "", style: .brand(.body(color: .secondary)))
 
         stackView.addArrangedSubview(imageView)
         bag += stackView.addArranged(titleLabel) { labelView in labelView.textAlignment = .center }
         bag += stackView.addArranged(descriptionLabel) { labelView in labelView.textAlignment = .center }
+        stackView.addArrangedSubview(tableView)
 
         bag += $section.onValue { state in
             switch state {
@@ -116,6 +121,7 @@ extension MovingFlowIntro: Presentable {
                 titleLabel.value = L10n.MovingIntro.existingMoveTitle
                 descriptionLabel.value = L10n.MovingIntro.existingMoveDescription
                 imageView.image = nil
+                tableView.isHidden = false
             case .normal:
                 titleLabel.value = L10n.MovingIntro.title
                 descriptionLabel.value = L10n.MovingIntro.description

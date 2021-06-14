@@ -70,6 +70,8 @@ private extension RowView {
             make.width.equalTo(24)
         }
 
+        row.append(UIImageView(image: hCoreUIAssets.chevronRight.image))
+
         return row
     }
 }
