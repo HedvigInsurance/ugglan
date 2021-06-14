@@ -207,7 +207,8 @@ public extension Contracts {
                 title: L10n.HomeTab.editingSectionChangeAddressLabel,
                 icon: hCoreUIAssets.apartment.image,
                 handler: { viewController in
-                    viewController.present(MovingFlow())
+                    viewController.present(MovingFlow(),
+                                           options: [.defaults])
                 }
             )]
         )]

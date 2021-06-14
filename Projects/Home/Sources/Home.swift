@@ -121,7 +121,7 @@ extension Home: Presentable {
                 case .vertical:
                     guard state == .active else { return }
                     let section = HomeVerticalSection(section: homeSection)
-                    functionBag += titleRow.append(section)
+                    functionBag += bottomRow.append(section)
                 case .header:
                     break
                 }
@@ -167,12 +167,6 @@ private extension GraphQL.HomeQuery.Data {
             return .future
         } else {
             return .active
-        }
-    }
-
-    var hasUpcomingAgreement: Bool {
-        contracts.contains { (contract) -> Bool in
-            contract.upcomingRenewal != nil
         }
     }
 
