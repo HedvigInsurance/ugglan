@@ -2,9 +2,9 @@ import Ease
 import Flow
 import Form
 import Foundation
+import UIKit
 import hCore
 import hCoreUI
-import UIKit
 
 struct SlideToClaim: SignalProvider {
 	var providedSignal: CoreSignal<Finite, Void> { providedSignalCallbacker.signal().take(first: 1) }

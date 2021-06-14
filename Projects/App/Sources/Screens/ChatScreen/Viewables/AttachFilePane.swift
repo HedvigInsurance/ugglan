@@ -2,10 +2,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
-import hCore
-import hGraphQL
 import Photos
 import UIKit
+import hCore
+import hGraphQL
 
 struct AttachFilePane {
 	let isOpenSignal: ReadWriteSignal<Bool>

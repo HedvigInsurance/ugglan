@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
-import hCore
-import hCoreUI
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 struct ContractDetailPresentableRow: Hashable, Equatable {
 	static func == (lhs: ContractDetailPresentableRow, rhs: ContractDetailPresentableRow) -> Bool {
@@ -41,7 +41,8 @@ extension ContractDetailPresentableRow: Reusable {
 		let view = UIView()
 
 		return (
-			view, { `self` in let bag = DisposeBag()
+			view,
+			{ `self` in let bag = DisposeBag()
 
 				let viewController = self.presentable.materialize(into: bag)
 				view.addSubview(viewController.view)

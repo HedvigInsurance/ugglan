@@ -2,10 +2,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import UIKit
 
 struct ContractTableFooter {
 	@Inject var client: ApolloClient
@@ -34,7 +34,8 @@ extension ContractTableFooter: Viewable {
 					.count
 
 				if filter.displaysActiveContracts, terminatedContractsCount > 0,
-					activeContractsCount > 0 {
+					activeContractsCount > 0
+				{
 					let section = form.appendSection(
 						header: L10n.InsurancesTab.moreTitle,
 						footer: nil,

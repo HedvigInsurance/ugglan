@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
-import hCore
-import hGraphQL
 import Presentation
 import UIKit
+import hCore
+import hGraphQL
 
 struct PerilDetail {
 	let perilFragment: GraphQL.PerilFragment
@@ -131,7 +131,7 @@ extension PerilDetail: Presentable {
 					gradient.colors = [
 						UIColor.brand(.secondaryBackground()).withAlphaComponent(0).cgColor,
 						UIColor.brand(.secondaryBackground()).cgColor,
-						UIColor.brand(.secondaryBackground()).cgColor
+						UIColor.brand(.secondaryBackground()).cgColor,
 					]
 				}
 

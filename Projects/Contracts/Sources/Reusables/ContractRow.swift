@@ -1,11 +1,11 @@
 import Flow
 import Form
 import Foundation
+import Hero
+import UIKit
 import hCore
 import hCoreUI
-import Hero
 import hGraphQL
-import UIKit
 
 struct ContractRow: Hashable {
 	static func == (lhs: ContractRow, rhs: ContractRow) -> Bool { lhs.hashValue == rhs.hashValue }
@@ -120,18 +120,20 @@ extension ContractRow: Reusable {
 		}
 
 		return (
-			view, { `self` in let bag = DisposeBag()
+			view,
+			{ `self` in let bag = DisposeBag()
 
 				chevronImageView.isHidden = !self.allowDetailNavigation
 
-				contentView.accessibilityIdentifier = String(describing: self)
+				contentView.accessibilityIdentifier = "ContractRow"
 				contentView.layer.zPosition = .greatestFiniteMagnitude
 
 				if !UITraitCollection.isCatalyst {
 					contentView.hero.id = "contentView_\(self.contract.id)"
 					contentView.hero.modifiers = [
 						.spring(stiffness: 250, damping: 25),
-						.when({ context -> Bool in !context.isMatched },
+						.when(
+							{ context -> Bool in !context.isMatched },
 							[
 								.init(applyFunction: { (state: inout HeroTargetState) in
 									state.append(
@@ -144,7 +146,7 @@ extension ContractRow: Reusable {
 									)
 								})
 							]
-						)
+						),
 					]
 				}
 

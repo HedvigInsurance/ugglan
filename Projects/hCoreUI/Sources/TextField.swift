@@ -1,7 +1,7 @@
 import Flow
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 public struct TextField {
 	public let value: ReadWriteSignal<String>

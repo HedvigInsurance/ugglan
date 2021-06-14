@@ -1,10 +1,10 @@
 import Apollo
 import Flow
 import Form
-import hCore
-import hCoreUI
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 struct CharityInformation {}
 

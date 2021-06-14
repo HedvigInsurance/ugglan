@@ -1,7 +1,7 @@
 import Flow
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 struct WhenEnabled<V: Viewable>: Viewable where V.Events == ViewableEvents, V.Matter: UIView, V.Result == Disposable {
 	let getViewable: () -> V

@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
+import UIKit
 import hCore
 import hCoreUI
-import UIKit
 
 struct PlanRow: Equatable, Hashable {
 	static func == (lhs: PlanRow, rhs: PlanRow) -> Bool { lhs.hashValue == rhs.hashValue }
@@ -58,7 +58,8 @@ extension PlanRow: Reusable {
 		verticalContentContainer.snp.makeConstraints { $0.top.bottom.trailing.leading.equalToSuperview() }
 
 		return (
-			view, { `self` in let bag = DisposeBag()
+			view,
+			{ `self` in let bag = DisposeBag()
 
 				titleLabel.value = self.title
 

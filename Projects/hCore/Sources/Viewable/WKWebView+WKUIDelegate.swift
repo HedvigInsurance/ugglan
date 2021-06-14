@@ -11,7 +11,8 @@ extension WKWebView: WKUIDelegate {
 
 	public var createWebViewWith: CreateWebViewWithDelegate {
 		if let delegate = objc_getAssociatedObject(self, &WKWebView._createWebViewWith)
-			as? CreateWebViewWithDelegate {
+			as? CreateWebViewWithDelegate
+		{
 			return delegate
 		}
 

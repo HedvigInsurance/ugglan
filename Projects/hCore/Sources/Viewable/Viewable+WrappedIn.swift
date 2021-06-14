@@ -15,7 +15,8 @@ where V.Matter == Matter, V.Events == ViewableEvents, V.Result == Disposable {
 	}
 }
 
-public struct ContainerStackViewableSignal<V: Viewable, Matter: UIView, ContainerView: UIStackView, SignalValue>: Viewable
+public struct ContainerStackViewableSignal<V: Viewable, Matter: UIView, ContainerView: UIStackView, SignalValue>:
+	Viewable
 where V.Matter == Matter, V.Events == ViewableEvents, V.Result == Signal<SignalValue> {
 	let viewable: V
 	let container: ContainerView

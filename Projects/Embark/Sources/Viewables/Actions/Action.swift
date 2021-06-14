@@ -1,9 +1,9 @@
 import Flow
 import Foundation
+import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import UIKit
 
 struct Action { let state: EmbarkState }
 
@@ -54,7 +54,8 @@ extension Action: Viewable {
 		bag += outerContainer.didLayoutSignal.onValue { _ in
 			widthContainer.snp.remakeConstraints { make in
 				if outerContainer.traitCollection.horizontalSizeClass == .regular,
-					outerContainer.traitCollection.userInterfaceIdiom == .pad {
+					outerContainer.traitCollection.userInterfaceIdiom == .pad
+				{
 					make.width.equalTo(
 						outerContainer.frame.width > 600 ? 600 : outerContainer.frame.width
 					)
@@ -154,21 +155,24 @@ extension Action: Viewable {
 								)
 								.onValue(performCallback)
 						} else if let numberActionSetData = actionData?.asEmbarkNumberActionSet?
-							.data {
+							.data
+						{
 							let inputSet = EmbarkActionSetInputData(
 								numberActionSet: numberActionSetData,
 								state: self.state
 							)
 							innerBag += view.addArranged(inputSet).onValue(performCallback)
 						} else if let textActionSet = actionData?.asEmbarkTextActionSet?
-							.textActionSetData {
+							.textActionSetData
+						{
 							let inputSet = EmbarkActionSetInputData(
 								textActionSet: textActionSet,
 								state: self.state
 							)
 							innerBag += view.addArranged(inputSet).onValue(performCallback)
 						} else if let externalInsuranceProviderAction = actionData?
-							.asEmbarkExternalInsuranceProviderAction {
+							.asEmbarkExternalInsuranceProviderAction
+						{
 							innerBag +=
 								view.addArranged(
 									InsuranceProviderAction(
@@ -180,7 +184,8 @@ extension Action: Viewable {
 								)
 								.onValue(performCallback)
 						} else if let previousInsuranceProviderAction = actionData?
-							.asEmbarkPreviousInsuranceProviderAction {
+							.asEmbarkPreviousInsuranceProviderAction
+						{
 							innerBag +=
 								view.addArranged(
 									InsuranceProviderAction(

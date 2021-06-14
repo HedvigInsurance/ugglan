@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Presentation
+import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import Presentation
-import UIKit
 
 enum InsuranceWrapper {
 	case external(EmbarkPassage.Action.AsEmbarkExternalInsuranceProviderAction)
@@ -122,7 +122,7 @@ extension InsuranceProviderAction: Viewable {
 								id: "other",
 								hasExternalCapabilities: false
 							)
-						]
+						],
 					]
 					.flatMap { $0 }
 

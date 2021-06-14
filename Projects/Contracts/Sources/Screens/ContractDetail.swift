@@ -1,11 +1,11 @@
 import Flow
 import Form
 import Foundation
-import hCore
-import hCoreUI
 import Hero
 import Presentation
 import UIKit
+import hCore
+import hCoreUI
 
 struct ContractDetail {
 	var contractRow: ContractRow
@@ -48,7 +48,7 @@ extension ContractDetail: Presentable {
 			rows: [
 				ContractDetailPresentableRow(presentable: AnyPresentable(contractInformation)),
 				ContractDetailPresentableRow(presentable: AnyPresentable(contractCoverage)),
-				ContractDetailPresentableRow(presentable: AnyPresentable(contractDocuments))
+				ContractDetailPresentableRow(presentable: AnyPresentable(contractDocuments)),
 			],
 			currentIndex: IndexPath(row: 0, section: 0)
 		)
@@ -58,7 +58,7 @@ extension ContractDetail: Presentable {
 
 		bag += form.append(contractDetailCollection) { contractDetailCollectionView in
 			contractDetailCollectionView.hero.modifiers = [
-				.translate(x: 0, y: 40, z: 0), .opacity(0), .spring(stiffness: 250, damping: 30)
+				.translate(x: 0, y: 40, z: 0), .opacity(0), .spring(stiffness: 250, damping: 30),
 			]
 		}
 

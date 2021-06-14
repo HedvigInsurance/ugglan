@@ -15,7 +15,8 @@ extension ResultMap {
 						length: firstPath.endIndex.utf16Offset(in: path)
 					),
 					in: path
-				) {
+				)
+			{
 				let resultMap = self[String(firstPath)] as? ResultMap
 				return resultMap?
 					.deepFind(String(path.replacingCharacters(in: range, with: "").dropFirst()))
@@ -76,13 +77,15 @@ extension GraphQL.ApiMultiActionVariableFragment {
 				)
 			} else if let multiActionVariable = variable.asEmbarkApiGraphQlMultiActionVariable {
 				if let apiSingleVariableFragment = multiActionVariable.fragments
-					.apiSingleVariableFragment {
+					.apiSingleVariableFragment
+				{
 					map = map.merging(
 						apiSingleVariableFragment.graphQLMap(store: store),
 						uniquingKeysWith: { lhs, _ in lhs }
 					)
 				} else if let apiGeneratedVariableFragment = multiActionVariable.fragments
-					.apiGeneratedVariableFragment {
+					.apiGeneratedVariableFragment
+				{
 					map = map.merging(
 						apiGeneratedVariableFragment.graphQLMap(store: store),
 						uniquingKeysWith: { lhs, _ in lhs }
@@ -226,7 +229,8 @@ extension EmbarkState {
 								if let errors = result["errors"] as? [ResultMap] {
 									if let error = errors.first,
 										let message = error["message"]
-											as? String {
+											as? String
+									{
 										completion(
 											.failure(
 												ApiError.failed(

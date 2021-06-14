@@ -1,8 +1,8 @@
 import Flow
 import Foundation
-import hCore
 import Presentation
 import UIKit
+import hCore
 
 extension UITabBarController {
 	private func materializeTab<P: Presentable & Tabable, Matter: UIViewController>(
@@ -25,7 +25,8 @@ extension UITabBarController {
 		}
 
 		if let presentableIdentifier = (presentation.presentable as? PresentableIdentifierExpressible)?
-			.presentableIdentifier {
+			.presentableIdentifier
+		{
 			viewController.debugPresentationTitle = presentableIdentifier.value
 		} else {
 			let title = "\(type(of: presentation.presentable))"
@@ -57,7 +58,8 @@ extension UITabBarController {
 	where
 		A.Matter == AMatter, A.Result == Disposable, B.Matter == BMatter, B.Result == Disposable,
 		C.Matter == CMatter, C.Result == Disposable, D.Matter == DMatter, D.Result == Disposable,
-		E.Matter == EMatter, E.Result == Disposable {
+		E.Matter == EMatter, E.Result == Disposable
+	{
 		let bag = DisposeBag()
 
 		let tabA = materializeTab(a)
@@ -89,7 +91,8 @@ extension UITabBarController {
 	>(_ a: Presentation<A>, _ b: Presentation<B>, _ c: Presentation<C>, _ d: Presentation<D>) -> Disposable
 	where
 		A.Matter == AMatter, A.Result == Disposable, B.Matter == BMatter, B.Result == Disposable,
-		C.Matter == CMatter, C.Result == Disposable, D.Matter == DMatter, D.Result == Disposable {
+		C.Matter == CMatter, C.Result == Disposable, D.Matter == DMatter, D.Result == Disposable
+	{
 		let bag = DisposeBag()
 
 		let tabA = materializeTab(a)
@@ -117,7 +120,8 @@ extension UITabBarController {
 	>(_ a: Presentation<A>, _ b: Presentation<B>, _ c: Presentation<C>) -> Disposable
 	where
 		A.Matter == AMatter, A.Result == Disposable, B.Matter == BMatter, B.Result == Disposable,
-		C.Matter == CMatter, C.Result == Disposable {
+		C.Matter == CMatter, C.Result == Disposable
+	{
 		let bag = DisposeBag()
 
 		let tabA = materializeTab(a)

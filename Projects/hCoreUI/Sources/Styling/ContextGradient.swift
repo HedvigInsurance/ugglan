@@ -1,7 +1,7 @@
 import Flow
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 public enum ContextGradient {
 	public enum Option {
@@ -54,63 +54,63 @@ public enum ContextGradient {
 			case .none:
 				return [
 					.brand(.primaryBackground()), .brand(.primaryBackground()),
-					.brand(.primaryBackground())
+					.brand(.primaryBackground()),
 				]
 			case .home:
 				if traitCollection.userInterfaceStyle == .dark {
 					return [
 						UIColor(red: 0.00, green: 0.00, blue: 0.00, alpha: 1.00),
 						UIColor(red: 0.11, green: 0.15, blue: 0.19, alpha: 1.00),
-						UIColor(red: 0.20, green: 0.13, blue: 0.12, alpha: 1.00)
+						UIColor(red: 0.20, green: 0.13, blue: 0.12, alpha: 1.00),
 					]
 				}
 
 				return [
 					UIColor(red: 0.75, green: 0.79, blue: 0.85, alpha: 1.00),
 					UIColor(red: 0.93, green: 0.80, blue: 0.67, alpha: 1.00),
-					UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.00)
+					UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.00),
 				]
 			case .insurance:
 				if traitCollection.userInterfaceStyle == .dark {
 					return [
 						UIColor(red: 0.00, green: 0.00, blue: 0.00, alpha: 1.00),
 						UIColor(red: 0.04, green: 0.09, blue: 0.10, alpha: 1.00),
-						UIColor(red: 0.10, green: 0.18, blue: 0.20, alpha: 1.00)
+						UIColor(red: 0.10, green: 0.18, blue: 0.20, alpha: 1.00),
 					]
 				}
 
 				return [
 					UIColor(red: 0.95, green: 0.85, blue: 0.75, alpha: 1.00),
 					UIColor(red: 0.96, green: 0.91, blue: 0.86, alpha: 1.00),
-					UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.00)
+					UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.00),
 				]
 			case .forever:
 				if traitCollection.userInterfaceStyle == .dark {
 					return [
 						UIColor(red: 0.00, green: 0.00, blue: 0.00, alpha: 1.00),
 						UIColor(red: 0.07, green: 0.07, blue: 0.07, alpha: 1.00),
-						UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.00)
+						UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.00),
 					]
 				}
 
 				return [
 					UIColor(red: 0.83, green: 0.83, blue: 0.83, alpha: 1.00),
 					UIColor(red: 0.90, green: 0.90, blue: 0.90, alpha: 1.00),
-					UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.00)
+					UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.00),
 				]
 			case .profile:
 				if traitCollection.userInterfaceStyle == .dark {
 					return [
 						UIColor(red: 0.00, green: 0.00, blue: 0.00, alpha: 1.00),
 						UIColor(red: 0.06, green: 0.06, blue: 0.02, alpha: 1.00),
-						UIColor(red: 0.12, green: 0.11, blue: 0.04, alpha: 1.00)
+						UIColor(red: 0.12, green: 0.11, blue: 0.04, alpha: 1.00),
 					]
 				}
 
 				return [
 					UIColor(red: 0.77, green: 0.87, blue: 0.93, alpha: 1.00),
 					UIColor(red: 0.87, green: 0.93, blue: 0.95, alpha: 1.00),
-					UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.00)
+					UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.00),
 				]
 			}
 		}
@@ -124,7 +124,7 @@ public enum ContextGradient {
 
 	@ReadWriteState public static var rules: Set<Rule> = [
 		.disallowOnElevatedTraits, .disallowOnNestedViewControllersInNavigationControllers,
-		.disallowOnFirstLevelModals
+		.disallowOnFirstLevelModals,
 	]
 	@ReadWriteState public static var currentOption: Option = .none
 

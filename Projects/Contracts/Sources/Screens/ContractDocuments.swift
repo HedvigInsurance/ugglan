@@ -1,11 +1,11 @@
 import Flow
 import Form
 import Foundation
+import Presentation
+import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import Presentation
-import UIKit
 
 struct ContractDocuments { let contract: GraphQL.ContractsQuery.Data.Contract }
 

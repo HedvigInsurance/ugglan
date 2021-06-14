@@ -1,11 +1,11 @@
 import ContractsTesting
 import Flow
 import Foundation
-import hCoreUI
 import SnapshotTesting
 import Testing
 import TestingUtil
 import XCTest
+import hCoreUI
 
 @testable import Contracts
 

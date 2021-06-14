@@ -1,10 +1,10 @@
 import Flow
 import Form
 import Foundation
+import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import UIKit
 
 struct EmbarkSelectActionOption {
 	let state: EmbarkState
@@ -21,7 +21,8 @@ extension EmbarkSelectActionOption: Viewable {
 		bag += control.applyShadow { _ -> UIView.ShadowProperties in .embark }
 
 		if data.keys.enumerated()
-			.allSatisfy({ offset, key in state.store.getPrefillValue(key: key) == data.values[offset] }) {
+			.allSatisfy({ offset, key in state.store.getPrefillValue(key: key) == data.values[offset] })
+		{
 			control.layer.borderWidth = 2
 			bag += control.applyBorderColor { _ in UIColor.tint(.lavenderOne) }
 		}

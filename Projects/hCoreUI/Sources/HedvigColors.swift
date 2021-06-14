@@ -1,7 +1,7 @@
 import DynamicColor
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 extension UIColor { private enum BrandColorBase {
 	static let almostBlack = UIColor(red: 0.04, green: 0.04, blue: 0.04, alpha: 1.0)
