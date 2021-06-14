@@ -97,10 +97,11 @@ extension MultiActionDropDownRow: Viewable {
 
 						let value = MultiActionValue(
 							inputValue: selectedOption.value,
-							displayValue: nil
+							displayValue: nil,
+                            isValid: true
 						)
                         
-                        let labelValue = MultiActionValue(inputValue: selectedOption.text, displayValue: nil)
+                        let labelValue = MultiActionValue(inputValue: selectedOption.text, displayValue: nil, isValid: true)
                         
 						callback([data.key: value, "\(data.key).Label": labelValue])
 					}

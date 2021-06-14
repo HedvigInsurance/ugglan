@@ -53,7 +53,8 @@ extension MultiActionNumberRow: Viewable {
 					.onValue { text in
 						let value = MultiActionValue(
 							inputValue: text,
-							displayValue: text + (data.unit ?? "")
+							displayValue: text + (data.unit ?? ""),
+                            isValid: true
 						)
 						callback([data.key: value])
 					}

@@ -85,7 +85,7 @@ extension MultiActionTable: Presentable {
 				}
 			}
 
-		func didCompleteForm() -> Bool { $multiActionValues.value.count > components.count }
+        func didCompleteForm() -> Bool { $multiActionValues.value.allSatisfy { $1.isValid } }
 
 		bag += section.append(Spacing(height: 16))
 
@@ -145,6 +145,7 @@ extension MultiActionTable: Presentable {
 internal struct MultiActionValue {
 	var inputValue: String
 	var displayValue: String?
+    var isValid = false
 }
 
 typealias EmbarkDropDownActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction

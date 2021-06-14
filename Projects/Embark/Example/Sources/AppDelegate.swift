@@ -20,7 +20,7 @@ import hGraphQL
 	) -> Bool {
 		window = UIWindow(frame: UIScreen.main.bounds)
 
-		showDebug()
+		showStoryList()
 
 		return true
 	}

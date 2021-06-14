@@ -46,7 +46,8 @@ extension MultiActionSwitchRow: Viewable {
 					.onValue { isOn in
 						let value = MultiActionValue(
 							inputValue: String(isOn),
-							displayValue: isOn ? data.label : nil
+							displayValue: isOn ? data.label : nil,
+                            isValid: true
 						)
 						callback([data.key: value])
 					}
