@@ -1,11 +1,3 @@
-//
-//  MainContentForm.swift
-//  Offer
-//
-//  Created by Sam Pettersson on 2021-04-20.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Form
 import Foundation

@@ -1,11 +1,3 @@
-//
-//  Perils.swift
-//  OfferTesting
-//
-//  Created by Sam Pettersson on 2021-04-22.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Foundation
 import hGraphQL
