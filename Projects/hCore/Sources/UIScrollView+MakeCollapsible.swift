@@ -14,7 +14,7 @@ extension UIScrollView {
         let bag = DisposeBag()
         
         bag += isExpandedSignal.atOnce()
-            .throttle(0.25)
+            .throttle(0.5)
             .atValue({ isExpanded in
                 if isExpanded {
                     scrollView.animationSafeIsHidden = !isExpanded

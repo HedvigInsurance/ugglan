@@ -186,9 +186,22 @@ extension Project {
 				platform: .iOS,
 				product: .app,
 				bundleId: "com.hedvig.example.\(name)Example",
-				deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+				deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad, .mac]),
 				infoPlist: .extendingDefault(with: [
-					"UIMainStoryboardFile": "", "UILaunchStoryboardName": "LaunchScreen",
+					"UIMainStoryboardFile": "",
+                    "UILaunchStoryboardName": "LaunchScreen",
+                    "UIApplicationSceneManifest": [
+                        "UIApplicationSupportsMultipleScenes": true,
+                        "UISceneConfigurations": [
+                            "UIWindowSceneSessionRoleApplication": [
+                                [
+                                    "UISceneConfigurationName": "Default Configuration",
+                                    "UISceneDelegateClassName": "\(name)Example.SceneDelegate",
+                                    "UISceneStoryboardFile": ""
+                                ]
+                            ]
+                        ]
+                    ]
 				]),
 				sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
 				resources: "Example/Resources/**",

@@ -7,7 +7,6 @@ import hCoreUI
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-	var window: UIWindow?
 	let bag = DisposeBag()
 
 	internal func application(
@@ -15,20 +14,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
 	) -> Bool {
 		application.setup()
-		window = UIWindow(frame: UIScreen.main.bounds)
-
-		let navigationController = UINavigationController()
-		navigationController.navigationBar.prefersLargeTitles = true
-
-		window?.rootViewController = navigationController
-		window?.makeKeyAndVisible()
-
-		bag += navigationController.present(
-			Debug(),
-			style: .default,
-			options: [.largeTitleDisplayMode(.always)]
-		)
 
 		return true
 	}
+    
+    @available(iOS 13.0, *)
+    func application(_ application: UIApplication,
+                     configurationForConnecting connectingSceneSession: UISceneSession,
+                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
 }

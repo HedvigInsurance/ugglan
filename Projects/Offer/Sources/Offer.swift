@@ -51,6 +51,14 @@ public struct Offer {
 	}
 }
 
+extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
+    func quoteFor(id: GraphQLID?) -> GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote? {
+        self.quotes.first { quote in
+            quote.id == id
+        }
+    }
+}
+
 class OfferState {
 	@Inject var client: ApolloClient
 	@Inject var store: ApolloStore
@@ -93,23 +101,25 @@ class OfferState {
 
 				self.store.update(query: self.query) {
 					(storeData: inout GraphQL.QuoteBundleQuery.Data) in
-					guard
-						var quote = storeData.quoteBundle.quotes.first(where: { quote in
-							quote.id == quoteId
-						})
-					else {
-						return
-					}
+                    storeData.quoteBundle.inception.asConcurrentInception?.startDate = data.editQuote.asCompleteQuote?.startDate
+                    
+                    guard let allInceptionsToUpdate = storeData.quoteBundle.inception.asIndependentInceptions?.inceptions.filter({ inception in
+                        inception.correspondingQuote.asCompleteQuote?.id == quoteId
+                    }) else {
+                        return
+                    }
+                    
+                    typealias Inception = GraphQL.QuoteBundleQuery.Data.QuoteBundle.Inception.AsIndependentInceptions.Inception
+                    
+                    let updatedInceptions = allInceptionsToUpdate.map { inception -> Inception in
+                        var inception = inception
 
-					quote.startDate = data.editQuote.asCompleteQuote?.startDate
-
-					storeData.quoteBundle.quotes = [
-						storeData.quoteBundle.quotes.filter({ quote in
-							quote.id == quoteId
-						}),
-						[quote],
-					]
-					.flatMap { $0 }
+                        inception.startDate = data.editQuote.asCompleteQuote?.startDate
+                        
+                        return inception
+                    }
+                    
+                    storeData.quoteBundle.inception.asIndependentInceptions?.inceptions = updatedInceptions
 				}
 
 				return Future(date)

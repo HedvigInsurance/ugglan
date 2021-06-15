@@ -41,7 +41,6 @@ extension GraphQL.QuoteBundleQuery.Data {
 				quotes: [
 					.init(
 						id: "123",
-						currentInsurer: nil,
 						firstName: "Hedvig",
 						lastName: "Hedvigsen",
 						displayName: "Innboforsikring",
@@ -72,7 +71,6 @@ extension GraphQL.QuoteBundleQuery.Data {
 					),
 					.init(
 						id: "1234",
-						currentInsurer: nil,
 						firstName: "Hedvig",
 						lastName: "Hedvigsen",
 						displayName: "Reiseforsikring",
@@ -101,6 +99,7 @@ extension GraphQL.QuoteBundleQuery.Data {
 				inception: .makeIndependentInceptions(inceptions: [
 					.init(
 						startDate: "2020-05-10",
+                        currentInsurer: .init(id: "Hedvig", switchable: true),
 						correspondingQuote: .makeCompleteQuote(id: "123")
 					),
 					.init(

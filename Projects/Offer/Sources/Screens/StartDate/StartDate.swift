@@ -23,21 +23,44 @@ extension StartDate: Presentable {
 
 		var selectedDatesMap: [String: Date?] = [:]
 
-		bag += state.quotesSignal.onValueDisposePrevious { quotes in
+        bag += state.dataSignal.map { $0.quoteBundle }.onValueDisposePrevious { quoteBundle in
 			let bag = DisposeBag()
-
-			bag += quotes.map { quote in
-				form.append(
-					SingleStartDateSection(
-						title: quote.displayName,
-						switchingActivated: quote.currentInsurer?.switchable ?? false,
-						isCollapsible: quotes.count > 1
-					)
-				)
-				.onValue { date in
-					selectedDatesMap[quote.id] = date
-				}
-			}
+            
+            if let concurrentInception = quoteBundle.inception.asConcurrentInception {
+                bag += form.append(
+                    SingleStartDateSection(
+                        title: nil,
+                        switchingActivated: concurrentInception.currentInsurer?.switchable ?? false,
+                        isCollapsible: false,
+                        initialStartDate: concurrentInception.startDate?.localDateToDate
+                    )
+                )
+                .onValue { date in
+                    concurrentInception.correspondingQuotes.forEach { quote in
+                        guard let quoteId = quote.asCompleteQuote?.id else {
+                            return
+                        }
+                        selectedDatesMap[quoteId] = date
+                    }
+                }
+            } else if let independentInceptions = quoteBundle.inception.asIndependentInceptions {
+                bag += independentInceptions.inceptions.map { inception in
+                    form.append(
+                        SingleStartDateSection(
+                            title: quoteBundle.quoteFor(id: inception.correspondingQuote.asCompleteQuote?.id)?.displayName,
+                            switchingActivated: inception.currentInsurer?.switchable ?? false,
+                            isCollapsible: independentInceptions.inceptions.count > 1,
+                            initialStartDate: inception.startDate?.localDateToDate
+                        )
+                    )
+                    .onValue { date in
+                        guard let quoteId = inception.correspondingQuote.asCompleteQuote?.id else {
+                            return
+                        }
+                        selectedDatesMap[quoteId] = date
+                    }
+                }
+            }
 
 			return bag
 		}
