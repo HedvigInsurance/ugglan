@@ -93,7 +93,7 @@ extension MultiActionDropDownRow: Viewable {
 					.map { option in data.options.first(where: { $0.value == option }) }
 					.onValue { selectedOption in buttonTitle.style = .brand(.body(color: .primary))
 						guard let selectedOption = selectedOption else { return }
-						buttonTitle.value = selectedOption.value
+						buttonTitle.value = selectedOption.text
 
 						let value = MultiActionValue(
 							inputValue: selectedOption.value,
