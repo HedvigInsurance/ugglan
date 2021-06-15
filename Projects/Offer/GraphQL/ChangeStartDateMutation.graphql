@@ -1,0 +1,12 @@
+mutation ChangeStartDate($id: ID!, $startDate: String!) {
+    editQuote(
+        input: {
+            id: $id
+            startDate: $startDate
+        }
+    ) {
+        ... on CompleteQuote {
+            startDate
+        }
+    }
+}

@@ -127,4 +127,26 @@ extension FormView {
         
         return bag
     }
+    
+    public func append<P: Presentable, Kind: SignalKind, Value>(
+        _ presentable: P,
+        options: Set<UIViewPresentationOptions> = [],
+        configure: @escaping (_ matter: P.Matter, _ result: P.Result) -> Void = { _, _ in () }
+    ) -> CoreSignal<Kind, Value> where P.Matter: UIView, P.Result == CoreSignal<Kind, Value> {
+        let (view, signal) = presentable.materialize()
+        
+        self.append(view)
+                
+        let bag = DisposeBag()
+        
+        if options.contains(.autoRemove) {
+            bag += {
+                view.removeFromSuperview()
+            }
+        }
+        
+        configure(view, signal)
+        
+        return signal.hold(bag)
+    }
 }

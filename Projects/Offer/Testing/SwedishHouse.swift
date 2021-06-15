@@ -5,11 +5,11 @@ import hGraphQL
 import Offer
 import TestingUtil
 
-public extension JSONObject {
+public extension GraphQL.QuoteBundleQuery.Data {
     static func makeSwedishHouse(
         bundleCost: GraphQL.QuoteBundleQuery.Data.QuoteBundle.BundleCost,
         redeemedCampaigns: [GraphQL.QuoteBundleQuery.Data.RedeemedCampaign]
-    ) -> JSONObject {
+    ) -> GraphQL.QuoteBundleQuery.Data {
         GraphQL.QuoteBundleQuery.Data(
             quoteBundle: .init(
                 quotes: [
@@ -48,6 +48,6 @@ public extension JSONObject {
             ),
             signMethodForQuotes: GraphQL.SignMethod.swedishBankId,
             redeemedCampaigns: redeemedCampaigns
-        ).jsonObject
+        )
     }
 }

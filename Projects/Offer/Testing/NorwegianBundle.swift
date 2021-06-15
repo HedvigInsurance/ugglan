@@ -31,8 +31,8 @@ func generateDetailsTable(title: String, rows: [GraphQL.QuoteBundleQuery.Data.Qu
     )
 }
 
-public extension JSONObject {
-    static func makeNorwegianBundle() -> JSONObject {
+public extension GraphQL.QuoteBundleQuery.Data {
+    static func makeNorwegianBundle() -> GraphQL.QuoteBundleQuery.Data {
         GraphQL.QuoteBundleQuery.Data(
             quoteBundle: .init(
                 quotes: [
@@ -93,6 +93,6 @@ public extension JSONObject {
             ),
             signMethodForQuotes: GraphQL.SignMethod.simpleSign,
             redeemedCampaigns: []
-        ).jsonObject
+        )
     }
 }

@@ -1,5 +1,115 @@
 import Apollo
 import Foundation
+import hCore
+
+var mockURL: URL {
+    URL(string: "https://www.hedvig.com")!
+}
+
+public class MockNetworkFetchInterceptor: ApolloInterceptor, Cancellable {
+    public init() {}
+  
+  public func interceptAsync<Operation: GraphQLOperation>(
+    chain: RequestChain,
+    request: HTTPRequest<Operation>,
+    response: HTTPResponse<Operation>?,
+    completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void) {
+      if let handler = handlers.compactMapValues({ value in
+          value as? (_ operation: Operation) -> Result<Operation.Data, Error>
+      }).first?.value {
+          let handlerResult = handler(request.operation)
+          guard let dataEntry = try? handlerResult.get() else {
+              chain.handleErrorAsync(handlerResult.error ?? NetworkError.networkFailure,
+                                     request: request,
+                                     response: response,
+                                     completion: completion)
+              return
+          }
+          
+          let response = HTTPResponse<Operation>(
+            response: .init(url: mockURL, statusCode: 200, httpVersion: "1.1", headerFields: [:])!,
+            rawData: try! JSONSerialization.data(withJSONObject: [
+                "data": dataEntry.jsonObject
+            ].jsonObject, options: []),
+            parsedResponse: nil
+          )
+          
+          chain.proceedAsync(request: request,
+                             response: response,
+                             completion: completion)
+      }
+    
+  }
+    
+    enum NetworkError: Error { case networkFailure }
+
+    private final class MockTask: Cancellable { func cancel() {} }
+
+    var handlers: [AnyHashable: Any] = [:]
+
+    public func handle<Operation: GraphQLOperation>(_ operationType: Operation.Type, requestHandler: @escaping (_ operation: Operation) -> Result<Operation.Data, Error>) {
+        handlers[ObjectIdentifier(operationType)] = requestHandler
+    }
+  
+  public func cancel() {}
+}
+
+open class MockInterceptorProvider: InterceptorProvider {
+  public let store: ApolloStore
+    private let mockNetworkFetchInterceptor = MockNetworkFetchInterceptor()
+  
+  /// Designated initializer
+  ///
+  /// - Parameters:
+  ///   - store: The `ApolloStore` to use when reading from or writing to the cache. Make sure you pass the same store to the `ApolloClient` instance you're planning to use.
+  public init(store: ApolloStore = ApolloStore()) {
+    self.store = store
+  }
+
+    public func handle<Operation: GraphQLOperation>(_ operationType: Operation.Type, requestHandler: @escaping (_ operation: Operation) -> Result<Operation.Data, Error>) {
+        mockNetworkFetchInterceptor.handle(operationType, requestHandler: requestHandler)
+    }
+  
+  open func interceptors<Operation: GraphQLOperation>(for operation: Operation) -> [ApolloInterceptor] {
+      return [
+        MaxRetryInterceptor(),
+        LegacyCacheReadInterceptor(store: self.store),
+        mockNetworkFetchInterceptor,
+        ResponseCodeInterceptor(),
+        LegacyParsingInterceptor(cacheKeyForObject: self.store.cacheKeyForObject),
+        AutomaticPersistedQueryInterceptor(),
+        LegacyCacheWriteInterceptor(store: self.store),
+    ]
+  }
+  
+  open func additionalErrorInterceptor<Operation: GraphQLOperation>(for operation: Operation) -> ApolloErrorInterceptor? {
+    return nil
+  }
+}
+
+public final class MockRequestChainNetworkTransport: RequestChainNetworkTransport {
+    public init(interceptorProvider: MockInterceptorProvider) {
+        super.init(interceptorProvider: interceptorProvider, endpointURL: mockURL)
+    }
+}
+
+extension ApolloClient {
+    public static func createMock(mockInterceptorProvider: MockInterceptorProvider) {
+        let client = ApolloClient(
+            networkTransport: MockRequestChainNetworkTransport(interceptorProvider: mockInterceptorProvider),
+            store: mockInterceptorProvider.store
+        )
+        
+        Dependencies.shared.add(module: Module { () -> ApolloClient in
+            client
+        })
+        
+        Dependencies.shared.add(module: Module { () -> ApolloStore in
+            mockInterceptorProvider.store
+        })
+    }
+}
+
 
 public final class MockNetworkTransport: NetworkTransport {
 	public func send<Operation>(

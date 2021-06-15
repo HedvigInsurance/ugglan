@@ -90,7 +90,7 @@ extension ApolloClient {
 					} else if let errors = result.errors {
 						onError(GraphQLError(errors: errors))
 					} else {
-						fatalError("Invalid GraphQL state")
+                        fatalError("Invalid GraphQL state")
 					}
 				case let .failure(error): onError(error)
 				}

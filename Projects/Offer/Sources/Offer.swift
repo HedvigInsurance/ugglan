@@ -50,16 +50,58 @@ public struct Offer {
     }
 }
 
-struct OfferState {
+class OfferState {
     @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
     let ids: [String]
     
+    public init(ids: [String]) {
+        self.ids = ids
+    }
+    
+    var query: GraphQL.QuoteBundleQuery {
+        GraphQL.QuoteBundleQuery(ids: ids, locale: Localization.Locale.currentLocale.asGraphQLLocale())
+    }
+        
     var dataSignal: CoreSignal<Plain, GraphQL.QuoteBundleQuery.Data> {
-        return client.watch(query: GraphQL.QuoteBundleQuery(ids: ids, locale: Localization.Locale.currentLocale.asGraphQLLocale()))
+        client.watch(query: query)
     }
     
     var quotesSignal: CoreSignal<Plain, [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote]> {
         return dataSignal.map { $0.quoteBundle.quotes }
+    }
+    
+    enum UpdateStartDateError: Error {
+        case failed
+    }
+    
+    func updateStartDate(quoteId: String, date: Date?) -> Future<Date> {
+        self.client.perform(
+            mutation: GraphQL.ChangeStartDateMutation(id: quoteId, startDate: date?.localDateString ?? "")
+        ).flatMap { data in
+            guard let date = data.editQuote.asCompleteQuote?.startDate?.localDateToDate else {
+                return Future(error: UpdateStartDateError.failed)
+            }
+            
+            self.store.update(query: self.query) { (storeData: inout GraphQL.QuoteBundleQuery.Data) in
+                guard var quote = storeData.quoteBundle.quotes.first(where: { quote in
+                    quote.id == quoteId
+                }) else {
+                    return
+                }
+
+                quote.startDate = data.editQuote.asCompleteQuote?.startDate
+
+                storeData.quoteBundle.quotes = [
+                    storeData.quoteBundle.quotes.filter({ quote in
+                        quote.id == quoteId
+                    }),
+                    [quote]
+                ].flatMap { $0 }
+            }
+            
+            return Future(date)
+        }
     }
 }
 
