@@ -50,7 +50,7 @@ extension StartDateSection: Presentable {
 				innerBag += section.append(row).compactMap { _ in row.viewController }
 					.onValue { viewController in
 						viewController.present(
-                            StartDate().wrappedInCloseButton(),
+							StartDate().wrappedInCloseButton(),
 							style: .detented(.large)
 						)
 					}
