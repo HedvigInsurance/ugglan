@@ -115,6 +115,14 @@ extension StartDate: Presentable {
 						loadableSaveButton.isLoadingSignal.value = false
 						completion(.success)
 					}
+                    .onError { _ in
+                        viewController.present(Alert<Void>(
+                                                title: "Couldn't update start date",
+                                                message: "Please try again",
+                                                actions: [.init(title: L10n.alertOk, action: { () })])).onValue { _ in
+                                                    loadableSaveButton.isLoadingSignal.value = false
+                                                }
+                    }
 				}
 
 				return bag

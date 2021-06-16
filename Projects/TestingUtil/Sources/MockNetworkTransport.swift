@@ -6,6 +6,8 @@ var mockURL: URL {
     URL(string: "https://www.hedvig.com")!
 }
 
+public enum MockError: Error { case failed }
+
 public class MockNetworkFetchInterceptor: ApolloInterceptor, Cancellable {
     public init() {}
   
@@ -15,39 +17,37 @@ public class MockNetworkFetchInterceptor: ApolloInterceptor, Cancellable {
     response: HTTPResponse<Operation>?,
     completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void) {
       if let handler = handlers.compactMapValues({ value in
-          value as? (_ operation: Operation) -> Result<Operation.Data, Error>
+        value as? (_ operation: Operation) throws -> Operation.Data
       }).first?.value {
-          let handlerResult = handler(request.operation)
-          guard let dataEntry = try? handlerResult.get() else {
-              chain.handleErrorAsync(handlerResult.error ?? NetworkError.networkFailure,
-                                     request: request,
-                                     response: response,
-                                     completion: completion)
-              return
-          }
-          
-          let response = HTTPResponse<Operation>(
-            response: .init(url: mockURL, statusCode: 200, httpVersion: "1.1", headerFields: [:])!,
-            rawData: try! JSONSerialization.data(withJSONObject: [
-                "data": dataEntry.jsonObject
-            ].jsonObject, options: []),
-            parsedResponse: nil
-          )
-          
-          chain.proceedAsync(request: request,
-                             response: response,
-                             completion: completion)
+        do {
+            let dataEntry = try handler(request.operation)
+            
+            let response = HTTPResponse<Operation>(
+              response: .init(url: mockURL, statusCode: 200, httpVersion: "1.1", headerFields: [:])!,
+              rawData: try! JSONSerialization.data(withJSONObject: [
+                  "data": dataEntry.jsonObject
+              ].jsonObject, options: []),
+              parsedResponse: nil
+            )
+            
+            chain.proceedAsync(request: request,
+                               response: response,
+                               completion: completion)
+        } catch {
+            chain.handleErrorAsync(error,
+                                   request: request,
+                                   response: response,
+                                   completion: completion)
+        }
       }
     
   }
     
-    enum NetworkError: Error { case networkFailure }
-
     private final class MockTask: Cancellable { func cancel() {} }
 
     var handlers: [AnyHashable: Any] = [:]
 
-    public func handle<Operation: GraphQLOperation>(_ operationType: Operation.Type, requestHandler: @escaping (_ operation: Operation) -> Result<Operation.Data, Error>) {
+    public func handle<Operation: GraphQLOperation>(_ operationType: Operation.Type, requestHandler: @escaping (_ operation: Operation) throws -> Operation.Data) {
         handlers[ObjectIdentifier(operationType)] = requestHandler
     }
   
@@ -66,7 +66,7 @@ open class MockInterceptorProvider: InterceptorProvider {
     self.store = store
   }
 
-    public func handle<Operation: GraphQLOperation>(_ operationType: Operation.Type, requestHandler: @escaping (_ operation: Operation) -> Result<Operation.Data, Error>) {
+    public func handle<Operation: GraphQLOperation>(_ operationType: Operation.Type, requestHandler: @escaping (_ operation: Operation) throws -> Operation.Data) {
         mockNetworkFetchInterceptor.handle(operationType, requestHandler: requestHandler)
     }
   
