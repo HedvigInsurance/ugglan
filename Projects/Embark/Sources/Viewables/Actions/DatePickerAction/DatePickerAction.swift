@@ -28,9 +28,11 @@ extension EmbarkDatePickerAction: Viewable {
         
         let titleLabel = UILabel()
         titleLabel.style = .brand(.body(color: .primary))
+        titleLabel.text = data.label
         
         let placeHolderLabel = UILabel()
         placeHolderLabel.style = .brand(.body(color: .secondary))
+        placeHolderLabel.text = "Select Date"
         
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit

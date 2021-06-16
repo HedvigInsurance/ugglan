@@ -241,11 +241,18 @@ query EmbarkStory($name: String!, $locale: String!) {
       action {
         ... on EmbarkMultiAction {
           multiActionData: data {
+            addLabel
+            maxAmount
+            link {
+              ...EmbarkLinkFragment
+            }
             components {
-              ... on EmbarkNumberAction {
+              ... on EmbarkMultiActionNumberAction {
                 numberActionData: data {
-                  ...EmbarkNumberActionFragment
-                }
+                  placeholder
+                  key
+                  unit
+                  }
               }
               ... on EmbarkDropdownAction {
                 dropDownActionData: data {
@@ -316,78 +323,11 @@ query EmbarkStory($name: String!, $locale: String!) {
               }
               api {
                 ...ApiFragment
+              }
             }
-            redirects {
-              ...EmbarkRedirectFragment
-            }
-            tracks {
-              eventName
-              eventKeys
-              includeAllKeys
-              customData
-            }
-            action {
-                ... on EmbarkActionCore {
-                    component
-                }
-                ... on EmbarkTextAction {
-                    component
-                    textActionData: data {
-                        key
-                        placeholder
-                        mask
-                        api {
-                            ...ApiFragment
-                        }
-                        link {
-                            ...EmbarkLinkFragment
-                        }
-                    }
-                }
-                ... on EmbarkNumberAction {
-                    component
-                    numberActionData: data {
-                        key
-                        placeholder
-                        unit
-                        maxValue
-                        minValue
-                        link {
-                            ...EmbarkLinkFragment
-                        }
-                    }
-                }
-                ... on EmbarkTextActionSet {
-                    textActionSetData: data {
-                        link {
-                            ...EmbarkLinkFragment
-                        }
-                        textActions {
-                            data {
-                              title
-                              key
-                              placeholder
-                              mask
-                            }
-                        }
-                    }
-                }
-                ... on EmbarkSelectAction {
-                    component
-                    selectActionData: data {
-                        options {
-                            keys
-                            values
-                            link {
-                                ...EmbarkLinkFragment
-                            }
-                            api {
-                                ...ApiFragment
-                            }
-                        }
-                    }
-                }
-                ... on EmbarkDatePickerAction {
+          }
+        }
+        ... on EmbarkDatePickerAction {
                     component
           next {
             ...EmbarkLinkFragment
@@ -399,51 +339,50 @@ query EmbarkStory($name: String!, $locale: String!) {
             description
           }
         }
-                ... on EmbarkExternalInsuranceProviderAction {
-                    component
-                    externalInsuranceProviderData: data {
-                        next {
-                            ...EmbarkLinkFragment
-                        }
-                        skip {
-                            ...EmbarkLinkFragment
-                        }
-                    }
-                }
-                ... on EmbarkPreviousInsuranceProviderAction {
-                    component
-                    previousInsuranceProviderData: data {
-                        next {
-                            ...EmbarkLinkFragment
-                        }
-                        skip {
-                            ...EmbarkLinkFragment
-                        }
-                        providers
-                        storeKey
-                    }
-                }
-              ... on EmbarkNumberActionSet {
-                component
-                data {
-                  link {
-                    ...EmbarkLinkFragment
-                  }
-                  numberActions {
-                    data {
-                      key
-                      placeholder
-                      unit
-                      label
-                      maxValue
-                      minValue
-                      title
-                    }
-                  }
-                }
+        ... on EmbarkExternalInsuranceProviderAction {
+          component
+          externalInsuranceProviderData: data {
+            next {
+              ...EmbarkLinkFragment
+            }
+            skip {
+              ...EmbarkLinkFragment
+            }
+          }
+        }
+        ... on EmbarkPreviousInsuranceProviderAction {
+          component
+          previousInsuranceProviderData: data {
+            next {
+              ...EmbarkLinkFragment
+            }
+            skip {
+              ...EmbarkLinkFragment
+            }
+            providers
+            storeKey
+          }
+        }
+        ... on EmbarkNumberActionSet {
+          component
+          data {
+            link {
+              ...EmbarkLinkFragment
+            }
+            numberActions {
+              data {
+                key
+                placeholder
+                unit
+                label
+                maxValue
+                minValue
+                title
               }
             }
+          }
         }
+      }
     }
   }
 }
