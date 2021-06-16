@@ -10,7 +10,7 @@ struct SingleStartDateSection {
 	let title: String?
 	let switchingActivated: Bool
 	let isCollapsible: Bool
-    let initialStartDate: Date?
+	let initialStartDate: Date?
 
 	private var headerView: UIView? {
 		if let title = title {
@@ -24,27 +24,28 @@ struct SingleStartDateSection {
 }
 
 extension UIImageView {
-    func withLayoutMargins(_ layoutMargins: UIEdgeInsets) -> UIStackView {
-        let stackView = UIStackView()
-        stackView.edgeInsets = layoutMargins
-        stackView.addArrangedSubview(self)
-        return stackView
-    }
+	func withLayoutMargins(_ layoutMargins: UIEdgeInsets) -> UIStackView {
+		let stackView = UIStackView()
+		stackView.edgeInsets = layoutMargins
+		stackView.addArrangedSubview(self)
+		return stackView
+	}
 }
 
 extension SingleStartDateSection: Presentable {
 	func materialize() -> (SectionView, ReadWriteSignal<Date?>) {
 		let dateSignal = ReadWriteSignal<Date?>(initialStartDate)
-        let latestTwoDatesSignal = dateSignal.latestTwo().readable(initial: (initialStartDate, initialStartDate))
+		let latestTwoDatesSignal = dateSignal.latestTwo()
+			.readable(initial: (initialStartDate, initialStartDate))
 
 		let section = SectionView(headerView: headerView, footerView: nil)
 		let bag = DisposeBag()
 		let row = RowView(title: "Start date")
-        row.prepend(
-            hCoreUIAssets.calendar.image
-                .imageView(height: 21, width: 21)
-                .withLayoutMargins(.init(top: 0, left: 0, bottom: 0, right: 14))
-        )
+		row.prepend(
+			hCoreUIAssets.calendar.image
+				.imageView(height: 21, width: 21)
+				.withLayoutMargins(.init(top: 0, left: 0, bottom: 0, right: 14))
+		)
 
 		let valueLabel = UILabel(value: "", style: .brand(.body(color: .link)))
 		row.append(valueLabel)
@@ -52,33 +53,33 @@ extension SingleStartDateSection: Presentable {
 		bag += dateSignal.atOnce()
 			.onValue { date in
 				guard let date = date else {
-                    valueLabel.styledText = StyledText(
-                        text: "When current plan expires",
-                        style: .brand(.body(color: .secondary))
-                    )
+					valueLabel.styledText = StyledText(
+						text: "When current plan expires",
+						style: .brand(.body(color: .secondary))
+					)
 					return
 				}
 
-                valueLabel.styledText = StyledText(
-                    text: date.localDateStringWithToday ?? "",
-                    style: .brand(.body(color: .link))
-                )
+				valueLabel.styledText = StyledText(
+					text: date.localDateStringWithToday ?? "",
+					style: .brand(.body(color: .link))
+				)
 			}
-        
-        let pickerContainer = UIStackView()
-        pickerContainer.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
-        
+
+		let pickerContainer = UIStackView()
+		pickerContainer.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
+
 		let picker = UIDatePicker()
-        picker.minimumDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())
+		picker.minimumDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())
 		picker.maximumDate = Calendar.current.date(byAdding: .year, value: 1, to: Date())
 		picker.calendar = Calendar.current
-        picker.datePickerMode = .date
+		picker.datePickerMode = .date
 		picker.tintColor = .tint(.lavenderOne)
 		if #available(iOS 14.0, *) { picker.preferredDatePickerStyle = .inline }
-        pickerContainer.addArrangedSubview(picker)
+		pickerContainer.addArrangedSubview(picker)
 
 		bag += dateSignal.atOnce()
-            .compactMap { date in date }
+			.compactMap { date in date }
 			.onValue({ date in
 				picker.date = date
 			})
@@ -89,7 +90,7 @@ extension SingleStartDateSection: Presentable {
 			}
 
 		let (collapsibleScrollView, isExpandedSignal) = UIScrollView.makeCollapsible(
-            pickerContainer,
+			pickerContainer,
 			initiallyCollapsed: isCollapsible
 		)
 		bag += isExpandedSignal.nil()
@@ -121,33 +122,37 @@ extension SingleStartDateSection: Presentable {
 		section.append(collapsibleScrollView)
 
 		if switchingActivated {
-            let switcherRow = RowView(title: "When current plan expires")
-            switcherRow.prepend(
-                hCoreUIAssets.circularClock.image
-                    .imageView(height: 21, width: 21)
-                    .withLayoutMargins(.init(top: 0, left: 0, bottom: 0, right: 14))
-            )
+			let switcherRow = RowView(title: "When current plan expires")
+			switcherRow.prepend(
+				hCoreUIAssets.circularClock.image
+					.imageView(height: 21, width: 21)
+					.withLayoutMargins(.init(top: 0, left: 0, bottom: 0, right: 14))
+			)
 
-            let switcherSwitch = UISwitch()
-            bag += dateSignal.atOnce().map { date in date == nil }.bindTo(switcherSwitch)
+			let switcherSwitch = UISwitch()
+			bag += dateSignal.atOnce().map { date in date == nil }.bindTo(switcherSwitch)
 
-            bag += switcherSwitch.distinct()
-                .withLatestFrom(latestTwoDatesSignal)
-                .onValue { active, latestTwoDates in
-                    if active {
-                        dateSignal.value = nil
-                    } else {
-                        dateSignal.value = latestTwoDates.0 ?? Date()
-                    }
-                }
-            switcherRow.append(switcherSwitch)
+			bag += switcherSwitch.distinct()
+				.withLatestFrom(latestTwoDatesSignal)
+				.onValue { active, latestTwoDates in
+					if active {
+						dateSignal.value = nil
+					} else {
+						dateSignal.value = latestTwoDates.0 ?? Date()
+					}
+				}
+			switcherRow.append(switcherSwitch)
 
-            let switcherExplanationRow = RowView()
-            
-            bag += switcherExplanationRow.addArranged(MultilineLabel(
-                                                        value: "Your Hedvig insurance will automatically start when your current plan expires.",
-                                                        style: .brand(.footnote(color: .tertiary))))
-            
+			let switcherExplanationRow = RowView()
+
+			bag += switcherExplanationRow.addArranged(
+				MultilineLabel(
+					value:
+						"Your Hedvig insurance will automatically start when your current plan expires.",
+					style: .brand(.footnote(color: .tertiary))
+				)
+			)
+
 			section.append(switcherRow)
 			section.append(switcherExplanationRow)
 		}

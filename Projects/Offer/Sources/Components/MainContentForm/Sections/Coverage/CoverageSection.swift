@@ -17,7 +17,7 @@ extension CoverageSection: Presentable {
 
 		let bag = DisposeBag()
 
-        bag += state.quotesSignal.onValueDisposePrevious { quotes in
+		bag += state.quotesSignal.onValueDisposePrevious { quotes in
 			let innerBag = DisposeBag()
 
 			let innerSection = SectionView()

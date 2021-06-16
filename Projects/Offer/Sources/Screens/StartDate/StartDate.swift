@@ -8,15 +8,15 @@ import hCoreUI
 import hGraphQL
 
 struct StartDate {
-    let quoteBundle: GraphQL.QuoteBundleQuery.Data.QuoteBundle
-    @Inject var state: OfferState
+	let quoteBundle: GraphQL.QuoteBundleQuery.Data.QuoteBundle
+	@Inject var state: OfferState
 }
 
 extension StartDate: Presentable {
 	func materialize() -> (UIViewController, Future<Void>) {
 		let viewController = UIViewController()
 		viewController.title = L10n.offerSetStartDate
-        viewController.preferredPresentationStyle = .detented(.large)
+		viewController.preferredPresentationStyle = .detented(.large)
 		let bag = DisposeBag()
 
 		let scrollView = FormScrollView()
@@ -26,41 +26,46 @@ extension StartDate: Presentable {
 
 		var selectedDatesMap: [String: Date?] = [:]
 
-        if let concurrentInception = quoteBundle.inception.asConcurrentInception {
-            bag += form.append(
-                SingleStartDateSection(
-                    title: nil,
-                    switchingActivated: concurrentInception.currentInsurer?.switchable ?? false,
-                    isCollapsible: false,
-                    initialStartDate: concurrentInception.startDate?.localDateToDate
-                )
-            )
-            .onValue { date in
-                concurrentInception.correspondingQuotes.forEach { quote in
-                    guard let quoteId = quote.asCompleteQuote?.id else {
-                        return
-                    }
-                    selectedDatesMap[quoteId] = date
-                }
-            }
-        } else if let independentInceptions = quoteBundle.inception.asIndependentInceptions {
-            bag += independentInceptions.inceptions.map { inception in
-                form.append(
-                    SingleStartDateSection(
-                        title: quoteBundle.quoteFor(id: inception.correspondingQuote.asCompleteQuote?.id)?.displayName,
-                        switchingActivated: inception.currentInsurer?.switchable ?? false,
-                        isCollapsible: independentInceptions.inceptions.count > 1,
-                        initialStartDate: inception.startDate?.localDateToDate
-                    )
-                )
-                .onValue { date in
-                    guard let quoteId = inception.correspondingQuote.asCompleteQuote?.id else {
-                        return
-                    }
-                    selectedDatesMap[quoteId] = date
-                }
-            }
-        }
+		if let concurrentInception = quoteBundle.inception.asConcurrentInception {
+			bag +=
+				form.append(
+					SingleStartDateSection(
+						title: nil,
+						switchingActivated: concurrentInception.currentInsurer?.switchable
+							?? false,
+						isCollapsible: false,
+						initialStartDate: concurrentInception.startDate?.localDateToDate
+					)
+				)
+				.onValue { date in
+					concurrentInception.correspondingQuotes.forEach { quote in
+						guard let quoteId = quote.asCompleteQuote?.id else {
+							return
+						}
+						selectedDatesMap[quoteId] = date
+					}
+				}
+		} else if let independentInceptions = quoteBundle.inception.asIndependentInceptions {
+			bag += independentInceptions.inceptions.map { inception in
+				form.append(
+					SingleStartDateSection(
+						title: quoteBundle.quoteFor(
+							id: inception.correspondingQuote.asCompleteQuote?.id
+						)?
+						.displayName,
+						switchingActivated: inception.currentInsurer?.switchable ?? false,
+						isCollapsible: independentInceptions.inceptions.count > 1,
+						initialStartDate: inception.startDate?.localDateToDate
+					)
+				)
+				.onValue { date in
+					guard let quoteId = inception.correspondingQuote.asCompleteQuote?.id else {
+						return
+					}
+					selectedDatesMap[quoteId] = date
+				}
+			}
+		}
 
 		let buttonContainer = UIStackView()
 		buttonContainer.axis = .vertical
@@ -115,14 +120,18 @@ extension StartDate: Presentable {
 						loadableSaveButton.isLoadingSignal.value = false
 						completion(.success)
 					}
-                    .onError { _ in
-                        viewController.present(Alert<Void>(
-                                                title: "Couldn't update start date",
-                                                message: "Please try again",
-                                                actions: [.init(title: L10n.alertOk, action: { () })])).onValue { _ in
-                                                    loadableSaveButton.isLoadingSignal.value = false
-                                                }
-                    }
+					.onError { _ in
+						viewController.present(
+							Alert<Void>(
+								title: "Couldn't update start date",
+								message: "Please try again",
+								actions: [.init(title: L10n.alertOk, action: { () })]
+							)
+						)
+						.onValue { _ in
+							loadableSaveButton.isLoadingSignal.value = false
+						}
+					}
 				}
 
 				return bag

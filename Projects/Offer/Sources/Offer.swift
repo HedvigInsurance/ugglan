@@ -52,11 +52,11 @@ public struct Offer {
 }
 
 extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
-    func quoteFor(id: GraphQLID?) -> GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote? {
-        self.quotes.first { quote in
-            quote.id == id
-        }
-    }
+	func quoteFor(id: GraphQLID?) -> GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote? {
+		self.quotes.first { quote in
+			quote.id == id
+		}
+	}
 }
 
 class OfferState {
@@ -85,46 +85,50 @@ class OfferState {
 	enum UpdateStartDateError: Error {
 		case failed
 	}
-    
-    private func updateCacheStartDate(quoteId: String, date: String?) {
-        self.store.update(query: self.query) {
-            (storeData: inout GraphQL.QuoteBundleQuery.Data) in
-            storeData.quoteBundle.inception.asConcurrentInception?.startDate = date
-            
-            guard let allInceptions = storeData.quoteBundle.inception.asIndependentInceptions?.inceptions else {
-                return
-            }
-            
-            typealias Inception = GraphQL.QuoteBundleQuery.Data.QuoteBundle.Inception.AsIndependentInceptions.Inception
-            
-            let updatedInceptions = allInceptions.map { inception -> Inception in
-                guard inception.correspondingQuote.asCompleteQuote?.id == quoteId else {
-                    return inception
-                }
-                var inception = inception
-                inception.startDate = date
-                return inception
-            }
-            
-            storeData.quoteBundle.inception.asIndependentInceptions?.inceptions = updatedInceptions
-        }
-    }
+
+	private func updateCacheStartDate(quoteId: String, date: String?) {
+		self.store.update(query: self.query) {
+			(storeData: inout GraphQL.QuoteBundleQuery.Data) in
+			storeData.quoteBundle.inception.asConcurrentInception?.startDate = date
+
+			guard let allInceptions = storeData.quoteBundle.inception.asIndependentInceptions?.inceptions
+			else {
+				return
+			}
+
+			typealias Inception = GraphQL.QuoteBundleQuery.Data.QuoteBundle.Inception
+				.AsIndependentInceptions.Inception
+
+			let updatedInceptions = allInceptions.map { inception -> Inception in
+				guard inception.correspondingQuote.asCompleteQuote?.id == quoteId else {
+					return inception
+				}
+				var inception = inception
+				inception.startDate = date
+				return inception
+			}
+
+			storeData.quoteBundle.inception.asIndependentInceptions?.inceptions = updatedInceptions
+		}
+	}
 
 	func updateStartDate(quoteId: String, date: Date?) -> Future<Date?> {
-        guard let date = date else {
-            return self.client.perform(
-                mutation: GraphQL.RemoveStartDateMutation(id: quoteId)
-            ).flatMap { data in
-                guard data.removeStartDate.asCompleteQuote?.startDate == nil else {
-                    return Future(error: UpdateStartDateError.failed)
-                }
-                
-                self.updateCacheStartDate(quoteId: quoteId, date: nil)
+		guard let date = date else {
+			return self.client
+				.perform(
+					mutation: GraphQL.RemoveStartDateMutation(id: quoteId)
+				)
+				.flatMap { data in
+					guard data.removeStartDate.asCompleteQuote?.startDate == nil else {
+						return Future(error: UpdateStartDateError.failed)
+					}
 
-                return Future(date)
-            }
-        }
-        
+					self.updateCacheStartDate(quoteId: quoteId, date: nil)
+
+					return Future(date)
+				}
+		}
+
 		return self.client
 			.perform(
 				mutation: GraphQL.ChangeStartDateMutation(
@@ -136,11 +140,11 @@ class OfferState {
 				guard let date = data.editQuote.asCompleteQuote?.startDate?.localDateToDate else {
 					return Future(error: UpdateStartDateError.failed)
 				}
-                
-                self.updateCacheStartDate(
-                    quoteId: quoteId,
-                    date: data.editQuote.asCompleteQuote?.startDate
-                )
+
+				self.updateCacheStartDate(
+					quoteId: quoteId,
+					date: data.editQuote.asCompleteQuote?.startDate
+				)
 
 				return Future(date)
 			}

@@ -31,21 +31,23 @@ extension Debug: Presentable {
 
 		func presentOffer(_ mockInterceptorProvider: MockInterceptorProvider) {
 			mockInterceptorProvider.handle(GraphQL.ChangeStartDateMutation.self) { operation in
-                if operation.startDate == Calendar.current.date(byAdding: .day, value: 3, to: Date())?.localDateString {
-                    throw MockError.failed
-                }
-                
+				if operation.startDate
+					== Calendar.current.date(byAdding: .day, value: 3, to: Date())?.localDateString
+				{
+					throw MockError.failed
+				}
+
 				return
 					GraphQL.ChangeStartDateMutation.Data(
 						editQuote: .makeCompleteQuote(startDate: operation.startDate)
 					)
 			}
-            
-            mockInterceptorProvider.handle(GraphQL.RemoveStartDateMutation.self) { operation in
-                    GraphQL.RemoveStartDateMutation.Data(
-                        removeStartDate: .makeCompleteQuote(startDate: nil)
-                    )
-            }
+
+			mockInterceptorProvider.handle(GraphQL.RemoveStartDateMutation.self) { operation in
+				GraphQL.RemoveStartDateMutation.Data(
+					removeStartDate: .makeCompleteQuote(startDate: nil)
+				)
+			}
 
 			ApolloClient.createMock(mockInterceptorProvider: mockInterceptorProvider)
 
@@ -76,15 +78,15 @@ extension Debug: Presentable {
 			.onValue {
 				let mockInterceptorProvider = MockInterceptorProvider()
 				mockInterceptorProvider.handle(GraphQL.QuoteBundleQuery.self) { variables in
-						.makeSwedishHouse(
-							bundleCost: .init(
-								monthlyGross: .init(amount: "100", currency: "SEK"),
-								monthlyDiscount: .init(amount: "0", currency: "SEK"),
-								monthlyNet: .init(amount: "100", currency: "SEK")
-							),
-							redeemedCampaigns: []
-						)
-					
+					.makeSwedishHouse(
+						bundleCost: .init(
+							monthlyGross: .init(amount: "100", currency: "SEK"),
+							monthlyDiscount: .init(amount: "0", currency: "SEK"),
+							monthlyNet: .init(amount: "100", currency: "SEK")
+						),
+						redeemedCampaigns: []
+					)
+
 				}
 				presentOffer(mockInterceptorProvider)
 			}
@@ -93,15 +95,15 @@ extension Debug: Presentable {
 			.onValue {
 				let mockInterceptorProvider = MockInterceptorProvider()
 				mockInterceptorProvider.handle(GraphQL.QuoteBundleQuery.self) { variables in
-						.makeSwedishHouse(
-							bundleCost: .init(
-								monthlyGross: .init(amount: "110", currency: "SEK"),
-								monthlyDiscount: .init(amount: "10", currency: "SEK"),
-								monthlyNet: .init(amount: "100", currency: "SEK")
-							),
-							redeemedCampaigns: [.init(displayValue: "-10 kr per month")]
-						)
-					
+					.makeSwedishHouse(
+						bundleCost: .init(
+							monthlyGross: .init(amount: "110", currency: "SEK"),
+							monthlyDiscount: .init(amount: "10", currency: "SEK"),
+							monthlyNet: .init(amount: "100", currency: "SEK")
+						),
+						redeemedCampaigns: [.init(displayValue: "-10 kr per month")]
+					)
+
 				}
 				presentOffer(mockInterceptorProvider)
 			}
@@ -110,15 +112,15 @@ extension Debug: Presentable {
 			.onValue {
 				let mockInterceptorProvider = MockInterceptorProvider()
 				mockInterceptorProvider.handle(GraphQL.QuoteBundleQuery.self) { variables in
-						.makeSwedishHouse(
-							bundleCost: .init(
-								monthlyGross: .init(amount: "110", currency: "SEK"),
-								monthlyDiscount: .init(amount: "27.5", currency: "SEK"),
-								monthlyNet: .init(amount: "82.5", currency: "SEK")
-							),
-							redeemedCampaigns: [.init(displayValue: "-25% forever")]
-						)
-					
+					.makeSwedishHouse(
+						bundleCost: .init(
+							monthlyGross: .init(amount: "110", currency: "SEK"),
+							monthlyDiscount: .init(amount: "27.5", currency: "SEK"),
+							monthlyNet: .init(amount: "82.5", currency: "SEK")
+						),
+						redeemedCampaigns: [.init(displayValue: "-25% forever")]
+					)
+
 				}
 				presentOffer(mockInterceptorProvider)
 			}
@@ -127,15 +129,15 @@ extension Debug: Presentable {
 			.onValue {
 				let mockInterceptorProvider = MockInterceptorProvider()
 				mockInterceptorProvider.handle(GraphQL.QuoteBundleQuery.self) { variables in
-						.makeSwedishHouse(
-							bundleCost: .init(
-								monthlyGross: .init(amount: "110", currency: "SEK"),
-								monthlyDiscount: .init(amount: "110", currency: "SEK"),
-								monthlyNet: .init(amount: "0", currency: "SEK")
-							),
-							redeemedCampaigns: [.init(displayValue: "3 free months")]
-						)
-					
+					.makeSwedishHouse(
+						bundleCost: .init(
+							monthlyGross: .init(amount: "110", currency: "SEK"),
+							monthlyDiscount: .init(amount: "110", currency: "SEK"),
+							monthlyNet: .init(amount: "0", currency: "SEK")
+						),
+						redeemedCampaigns: [.init(displayValue: "3 free months")]
+					)
+
 				}
 				presentOffer(mockInterceptorProvider)
 			}
@@ -144,17 +146,17 @@ extension Debug: Presentable {
 			.onValue {
 				let mockInterceptorProvider = MockInterceptorProvider()
 				mockInterceptorProvider.handle(GraphQL.QuoteBundleQuery.self) { variables in
-						.makeSwedishHouse(
-							bundleCost: .init(
-								monthlyGross: .init(amount: "110", currency: "SEK"),
-								monthlyDiscount: .init(amount: "27.5", currency: "SEK"),
-								monthlyNet: .init(amount: "82.5", currency: "SEK")
-							),
-							redeemedCampaigns: [
-								.init(displayValue: "25% discount for 3 months")
-							]
-						)
-					
+					.makeSwedishHouse(
+						bundleCost: .init(
+							monthlyGross: .init(amount: "110", currency: "SEK"),
+							monthlyDiscount: .init(amount: "27.5", currency: "SEK"),
+							monthlyNet: .init(amount: "82.5", currency: "SEK")
+						),
+						redeemedCampaigns: [
+							.init(displayValue: "25% discount for 3 months")
+						]
+					)
+
 				}
 				presentOffer(mockInterceptorProvider)
 			}
@@ -167,15 +169,15 @@ extension Debug: Presentable {
 				}
 				presentOffer(mockInterceptorProvider)
 			}
-        
-        bag += section.appendRow(title: "Danish bundle")
-            .onValue {
-                let mockInterceptorProvider = MockInterceptorProvider()
-                mockInterceptorProvider.handle(GraphQL.QuoteBundleQuery.self) { variables in
-                    .makeDanishBundle()
-                }
-                presentOffer(mockInterceptorProvider)
-            }
+
+		bag += section.appendRow(title: "Danish bundle")
+			.onValue {
+				let mockInterceptorProvider = MockInterceptorProvider()
+				mockInterceptorProvider.handle(GraphQL.QuoteBundleQuery.self) { variables in
+					.makeDanishBundle()
+				}
+				presentOffer(mockInterceptorProvider)
+			}
 
 		bag += viewController.install(form)
 
