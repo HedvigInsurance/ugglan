@@ -104,3 +104,4 @@ extension CampaignBubble: Viewable {
 		return (containerView, bag)
 	}
 }
+

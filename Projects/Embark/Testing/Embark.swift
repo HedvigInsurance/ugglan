@@ -78,7 +78,7 @@ private extension EmbarkStory {
         return mockedData
     }
     
-    static let datePickerAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.makeEmbarkDatePickerAction(component: "", next: .init(name: "", label: ""), storeKey: "", label: "")
+    static let datePickerAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.makeEmbarkDatePickerAction(component: "", next: .init(name: "", label: ""), storeKey: "", label: "Access Date")
     
     static let mockedMultiAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.makeEmbarkMultiAction(
         multiActionData: .init(
