@@ -28,9 +28,9 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
         
 		guard let independentInceptions = self.inception.asIndependentInceptions?.inceptions else { return "" }
         
-		let startDates = independentInceptions.compactMap { $0.startDate }
+        let startDates = independentInceptions.map { $0.startDate }
 		let allStartDatesEqual = startDates.dropFirst().allSatisfy({ $0 == startDates.first })
-		let dateDisplayValue = startDates.first?.localDateToDate?.localDateStringWithToday ?? ""
+        let dateDisplayValue = startDates.first??.localDateToDate?.localDateStringWithToday ?? ""
         
 		return allStartDatesEqual ? dateDisplayValue : "Multiple"
 	}

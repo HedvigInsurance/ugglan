@@ -66,14 +66,13 @@ extension SingleStartDateSection: Presentable {
 			}
         
         let pickerContainer = UIStackView()
-        pickerContainer.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+        pickerContainer.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
         
 		let picker = UIDatePicker()
-		picker.date = Date()
-		picker.minimumDate = Date()
+        picker.minimumDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())
 		picker.maximumDate = Calendar.current.date(byAdding: .year, value: 1, to: Date())
 		picker.calendar = Calendar.current
-		picker.datePickerMode = .date
+        picker.datePickerMode = .date
 		picker.tintColor = .tint(.lavenderOne)
 		if #available(iOS 14.0, *) { picker.preferredDatePickerStyle = .inline }
         pickerContainer.addArrangedSubview(picker)
@@ -138,15 +137,16 @@ extension SingleStartDateSection: Presentable {
                     if active {
                         dateSignal.value = nil
                     } else {
-                        dateSignal.value = latestTwoDates.0
+                        dateSignal.value = latestTwoDates.0 ?? Date()
                     }
                 }
             switcherRow.append(switcherSwitch)
 
-            let switcherExplanationRow = RowView(
-                title: "Your Hedvig insurance will automatically start when your current plan expires.",
-                style: .brand(.footnote(color: .tertiary))
-            )
+            let switcherExplanationRow = RowView()
+            
+            bag += switcherExplanationRow.addArranged(MultilineLabel(
+                                                        value: "Your Hedvig insurance will automatically start when your current plan expires.",
+                                                        style: .brand(.footnote(color: .tertiary))))
             
 			section.append(switcherRow)
 			section.append(switcherExplanationRow)

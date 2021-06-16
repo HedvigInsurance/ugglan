@@ -85,42 +85,62 @@ class OfferState {
 	enum UpdateStartDateError: Error {
 		case failed
 	}
+    
+    private func updateCacheStartDate(quoteId: String, date: String?) {
+        self.store.update(query: self.query) {
+            (storeData: inout GraphQL.QuoteBundleQuery.Data) in
+            storeData.quoteBundle.inception.asConcurrentInception?.startDate = date
+            
+            guard let allInceptions = storeData.quoteBundle.inception.asIndependentInceptions?.inceptions else {
+                return
+            }
+            
+            typealias Inception = GraphQL.QuoteBundleQuery.Data.QuoteBundle.Inception.AsIndependentInceptions.Inception
+            
+            let updatedInceptions = allInceptions.map { inception -> Inception in
+                guard inception.correspondingQuote.asCompleteQuote?.id == quoteId else {
+                    return inception
+                }
+                var inception = inception
+                inception.startDate = date
+                return inception
+            }
+            
+            storeData.quoteBundle.inception.asIndependentInceptions?.inceptions = updatedInceptions
+        }
+    }
 
-	func updateStartDate(quoteId: String, date: Date?) -> Future<Date> {
-		self.client
+	func updateStartDate(quoteId: String, date: Date?) -> Future<Date?> {
+        guard let date = date else {
+            return self.client.perform(
+                mutation: GraphQL.RemoveStartDateMutation(id: quoteId)
+            ).flatMap { data in
+                guard data.removeStartDate.asCompleteQuote?.startDate == nil else {
+                    return Future(error: UpdateStartDateError.failed)
+                }
+                
+                self.updateCacheStartDate(quoteId: quoteId, date: nil)
+
+                return Future(date)
+            }
+        }
+        
+		return self.client
 			.perform(
 				mutation: GraphQL.ChangeStartDateMutation(
 					id: quoteId,
-					startDate: date?.localDateString ?? ""
+					startDate: date.localDateString ?? ""
 				)
 			)
 			.flatMap { data in
 				guard let date = data.editQuote.asCompleteQuote?.startDate?.localDateToDate else {
 					return Future(error: UpdateStartDateError.failed)
 				}
-
-				self.store.update(query: self.query) {
-					(storeData: inout GraphQL.QuoteBundleQuery.Data) in
-                    storeData.quoteBundle.inception.asConcurrentInception?.startDate = data.editQuote.asCompleteQuote?.startDate
-                    
-                    guard let allInceptionsToUpdate = storeData.quoteBundle.inception.asIndependentInceptions?.inceptions.filter({ inception in
-                        inception.correspondingQuote.asCompleteQuote?.id == quoteId
-                    }) else {
-                        return
-                    }
-                    
-                    typealias Inception = GraphQL.QuoteBundleQuery.Data.QuoteBundle.Inception.AsIndependentInceptions.Inception
-                    
-                    let updatedInceptions = allInceptionsToUpdate.map { inception -> Inception in
-                        var inception = inception
-
-                        inception.startDate = data.editQuote.asCompleteQuote?.startDate
-                        
-                        return inception
-                    }
-                    
-                    storeData.quoteBundle.inception.asIndependentInceptions?.inceptions = updatedInceptions
-				}
+                
+                self.updateCacheStartDate(
+                    quoteId: quoteId,
+                    date: data.editQuote.asCompleteQuote?.startDate
+                )
 
 				return Future(date)
 			}

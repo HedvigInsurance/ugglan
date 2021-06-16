@@ -16,6 +16,7 @@ extension StartDate: Presentable {
 	func materialize() -> (UIViewController, Future<Void>) {
 		let viewController = UIViewController()
 		viewController.title = L10n.offerSetStartDate
+        viewController.preferredPresentationStyle = .detented(.large)
 		let bag = DisposeBag()
 
 		let scrollView = FormScrollView()
@@ -26,8 +27,6 @@ extension StartDate: Presentable {
 		var selectedDatesMap: [String: Date?] = [:]
 
         if let concurrentInception = quoteBundle.inception.asConcurrentInception {
-            viewController.preferredPresentationStyle = .detented(.scrollViewContentSize(20))
-            
             bag += form.append(
                 SingleStartDateSection(
                     title: nil,
@@ -45,12 +44,6 @@ extension StartDate: Presentable {
                 }
             }
         } else if let independentInceptions = quoteBundle.inception.asIndependentInceptions {
-            if independentInceptions.inceptions.count > 1 {
-                viewController.preferredPresentationStyle = .detented(.large)
-            } else {
-                viewController.preferredPresentationStyle = .detented(.scrollViewContentSize(20))
-            }
-            
             bag += independentInceptions.inceptions.map { inception in
                 form.append(
                     SingleStartDateSection(

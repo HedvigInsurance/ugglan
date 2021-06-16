@@ -37,6 +37,14 @@ extension Debug: Presentable {
 					)
 				)
 			}
+            
+            mockInterceptorProvider.handle(GraphQL.RemoveStartDateMutation.self) { operation in
+                .success(
+                    GraphQL.RemoveStartDateMutation.Data(
+                        removeStartDate: .makeCompleteQuote(startDate: nil)
+                    )
+                )
+            }
 
 			ApolloClient.createMock(mockInterceptorProvider: mockInterceptorProvider)
 
