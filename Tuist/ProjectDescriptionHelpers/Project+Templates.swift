@@ -196,8 +196,7 @@ extension Project {
                             "UIWindowSceneSessionRoleApplication": [
                                 [
                                     "UISceneConfigurationName": "Default Configuration",
-                                    "UISceneDelegateClassName": "\(name)Example.SceneDelegate",
-                                    "UISceneStoryboardFile": ""
+                                    "UISceneDelegateClassName": "\(name)Example.SceneDelegate"
                                 ]
                             ]
                         ]

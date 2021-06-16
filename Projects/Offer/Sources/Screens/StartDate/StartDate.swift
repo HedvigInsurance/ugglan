@@ -5,9 +5,11 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct StartDate {
-	@Inject var state: OfferState
+    let quoteBundle: GraphQL.QuoteBundleQuery.Data.QuoteBundle
+    @Inject var state: OfferState
 }
 
 extension StartDate: Presentable {
@@ -23,47 +25,49 @@ extension StartDate: Presentable {
 
 		var selectedDatesMap: [String: Date?] = [:]
 
-        bag += state.dataSignal.map { $0.quoteBundle }.onValueDisposePrevious { quoteBundle in
-			let bag = DisposeBag()
+        if let concurrentInception = quoteBundle.inception.asConcurrentInception {
+            viewController.preferredPresentationStyle = .detented(.scrollViewContentSize(20))
             
-            if let concurrentInception = quoteBundle.inception.asConcurrentInception {
-                bag += form.append(
+            bag += form.append(
+                SingleStartDateSection(
+                    title: nil,
+                    switchingActivated: concurrentInception.currentInsurer?.switchable ?? false,
+                    isCollapsible: false,
+                    initialStartDate: concurrentInception.startDate?.localDateToDate
+                )
+            )
+            .onValue { date in
+                concurrentInception.correspondingQuotes.forEach { quote in
+                    guard let quoteId = quote.asCompleteQuote?.id else {
+                        return
+                    }
+                    selectedDatesMap[quoteId] = date
+                }
+            }
+        } else if let independentInceptions = quoteBundle.inception.asIndependentInceptions {
+            if independentInceptions.inceptions.count > 1 {
+                viewController.preferredPresentationStyle = .detented(.large)
+            } else {
+                viewController.preferredPresentationStyle = .detented(.scrollViewContentSize(20))
+            }
+            
+            bag += independentInceptions.inceptions.map { inception in
+                form.append(
                     SingleStartDateSection(
-                        title: nil,
-                        switchingActivated: concurrentInception.currentInsurer?.switchable ?? false,
-                        isCollapsible: false,
-                        initialStartDate: concurrentInception.startDate?.localDateToDate
+                        title: quoteBundle.quoteFor(id: inception.correspondingQuote.asCompleteQuote?.id)?.displayName,
+                        switchingActivated: inception.currentInsurer?.switchable ?? false,
+                        isCollapsible: independentInceptions.inceptions.count > 1,
+                        initialStartDate: inception.startDate?.localDateToDate
                     )
                 )
                 .onValue { date in
-                    concurrentInception.correspondingQuotes.forEach { quote in
-                        guard let quoteId = quote.asCompleteQuote?.id else {
-                            return
-                        }
-                        selectedDatesMap[quoteId] = date
+                    guard let quoteId = inception.correspondingQuote.asCompleteQuote?.id else {
+                        return
                     }
-                }
-            } else if let independentInceptions = quoteBundle.inception.asIndependentInceptions {
-                bag += independentInceptions.inceptions.map { inception in
-                    form.append(
-                        SingleStartDateSection(
-                            title: quoteBundle.quoteFor(id: inception.correspondingQuote.asCompleteQuote?.id)?.displayName,
-                            switchingActivated: inception.currentInsurer?.switchable ?? false,
-                            isCollapsible: independentInceptions.inceptions.count > 1,
-                            initialStartDate: inception.startDate?.localDateToDate
-                        )
-                    )
-                    .onValue { date in
-                        guard let quoteId = inception.correspondingQuote.asCompleteQuote?.id else {
-                            return
-                        }
-                        selectedDatesMap[quoteId] = date
-                    }
+                    selectedDatesMap[quoteId] = date
                 }
             }
-
-			return bag
-		}
+        }
 
 		let buttonContainer = UIStackView()
 		buttonContainer.axis = .vertical

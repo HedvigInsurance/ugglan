@@ -163,6 +163,15 @@ extension Debug: Presentable {
 				}
 				presentOffer(mockInterceptorProvider)
 			}
+        
+        bag += section.appendRow(title: "Danish bundle")
+            .onValue {
+                let mockInterceptorProvider = MockInterceptorProvider()
+                mockInterceptorProvider.handle(GraphQL.QuoteBundleQuery.self) { variables in
+                    .success(.makeDanishBundle())
+                }
+                presentOffer(mockInterceptorProvider)
+            }
 
 		bag += viewController.install(form)
 

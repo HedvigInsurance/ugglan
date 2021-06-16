@@ -1,11 +1,3 @@
-//
-//  SceneDelegate.swift
-//  OfferExample
-//
-//  Created by Sam Pettersson on 2021-06-15.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import Flow
 import UIKit
