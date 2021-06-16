@@ -136,7 +136,9 @@ extension Action: Viewable {
 									)
 								)
 								.onValue(performCallback)
-						} else if let textAction = actionData?.asEmbarkTextAction {
+                        } else if let dateAction = actionData?.asEmbarkDatePickerAction {
+                            
+                        } else if let textAction = actionData?.asEmbarkTextAction {
 							innerBag +=
 								view.addArranged(
 									EmbarkTextAction(
