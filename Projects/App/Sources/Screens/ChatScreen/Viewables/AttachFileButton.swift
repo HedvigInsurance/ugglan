@@ -1,8 +1,8 @@
 import Flow
 import Foundation
+import UIKit
 import hCore
 import hCoreUI
-import UIKit
 
 struct AttachFileButton { let isOpenSignal: ReadSignal<Bool> }
 

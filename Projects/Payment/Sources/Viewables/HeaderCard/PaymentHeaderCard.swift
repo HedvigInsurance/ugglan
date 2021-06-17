@@ -2,10 +2,10 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import UIKit
 
 struct PaymentHeaderCard { @Inject var client: ApolloClient }
 

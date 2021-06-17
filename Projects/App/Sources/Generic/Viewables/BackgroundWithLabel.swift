@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 struct BackgroundWithLabel {
 	let labelText: DynamicString

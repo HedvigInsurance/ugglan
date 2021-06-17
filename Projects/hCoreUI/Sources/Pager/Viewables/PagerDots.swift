@@ -1,8 +1,8 @@
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 public struct PagerDots {
 	public let pageIndexSignal: ReadWriteSignal<Int> = ReadWriteSignal(0)

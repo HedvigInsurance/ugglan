@@ -1,11 +1,11 @@
 import Flow
 import Form
 import Foundation
+import Presentation
+import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import Presentation
-import UIKit
 
 struct ContractInformation { let contract: GraphQL.ContractsQuery.Data.Contract }
 
@@ -147,7 +147,7 @@ extension ContractInformation: Presentable {
 					bag,
 					[
 						.make(apartmentInfoSection), .make(Spacing(height: 10)),
-						.make(extraBuildingsSection)
+						.make(extraBuildingsSection),
 					]
 				)
 			} else {
@@ -422,7 +422,7 @@ extension ContractInformation: Presentable {
 				message: L10n.myHomeChangeAlertMessage,
 				actions: [
 					Alert.Action(title: L10n.myHomeChangeAlertActionCancel) { false },
-					Alert.Action(title: L10n.myHomeChangeAlertActionConfirm) { true }
+					Alert.Action(title: L10n.myHomeChangeAlertActionConfirm) { true },
 				]
 			)
 

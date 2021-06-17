@@ -7,10 +7,7 @@ import FirebaseMessaging
 import Flow
 import Form
 import Foundation
-import hCore
-import hCoreUI
 import Hero
-import hGraphQL
 import Mixpanel
 import Payment
 import Presentation
@@ -19,6 +16,9 @@ import Shake
 import SwiftUI
 import UIKit
 import UserNotifications
+import hCore
+import hCoreUI
+import hGraphQL
 
 let log = Logger.self
 

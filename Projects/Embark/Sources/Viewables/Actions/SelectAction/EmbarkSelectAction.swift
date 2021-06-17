@@ -1,9 +1,9 @@
 import Flow
 import Foundation
-import hCore
-import hGraphQL
 import Presentation
 import UIKit
+import hCore
+import hGraphQL
 
 typealias EmbarkSelectActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction
 
@@ -73,7 +73,8 @@ extension EmbarkSelectAction: Viewable {
 										)
 									}
 
-								if let passageName = self.state.passageNameSignal.value {
+								if let passageName = self.state.passageNameSignal.value
+								{
 									self.state.store.setValue(
 										key: "\(passageName)Result",
 										value: result.textValue

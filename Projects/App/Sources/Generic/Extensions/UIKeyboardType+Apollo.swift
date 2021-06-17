@@ -1,7 +1,7 @@
 import Apollo
 import Foundation
-import hGraphQL
 import UIKit
+import hGraphQL
 
 extension UIKeyboardType {
 	static func from(_ keyboardType: GraphQL.KeyboardType?) -> UIKeyboardType? {

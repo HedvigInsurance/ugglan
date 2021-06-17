@@ -99,7 +99,8 @@ extension FormView {
 	) -> Disposable
 	where
 		V.Matter == Matter, V.Result == Disposable, V.Events == ViewableEvents, Matter.Matter == View,
-		Matter.Result == Disposable, Matter.Events == ViewableEvents {
+		Matter.Result == Disposable, Matter.Events == ViewableEvents
+	{
 		let wasAddedCallbacker = Callbacker<Void>()
 
 		let (matter, result) = viewable.materialize(
@@ -124,7 +125,8 @@ extension FormView {
 	) -> Disposable
 	where
 		V.Matter == Matter, V.Result == Disposable, V.Events == ViewableEvents, Matter.Matter == View,
-		Matter.Result == Disposable, Matter.Events == ViewableEvents {
+		Matter.Result == Disposable, Matter.Events == ViewableEvents
+	{
 		let wasAddedCallbacker = Callbacker<Void>()
 
 		let (matter, result) = viewable.materialize(

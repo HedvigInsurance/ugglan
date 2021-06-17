@@ -1,7 +1,7 @@
 import Apollo
 import Foundation
-import hGraphQL
 import UIKit
+import hGraphQL
 
 extension UITextContentType {
 	static func from(_ textContentType: GraphQL.TextContentType?) -> UITextContentType? {

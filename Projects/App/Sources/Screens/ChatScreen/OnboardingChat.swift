@@ -1,9 +1,9 @@
 import Apollo
 import Flow
 import Form
-import hCore
 import Presentation
 import UIKit
+import hCore
 
 struct OnboardingChat { @Inject var client: ApolloClient }
 
@@ -33,7 +33,7 @@ extension OnboardingChat: Presentable {
 					MenuChild.appInformation, MenuChild.appSettings,
 					MenuChild.login(onLogin: {
 						UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
-					})
+					}),
 				]
 			)
 		)
@@ -50,7 +50,7 @@ extension OnboardingChat: Presentable {
 					Alert.Action(
 						title: L10n.chatRestartAlertConfirm,
 						action: { chat.reloadChatCallbacker.callAll() }
-					), Alert.Action(title: L10n.chatRestartAlertCancel, action: {})
+					), Alert.Action(title: L10n.chatRestartAlertCancel, action: {}),
 				]
 			)
 

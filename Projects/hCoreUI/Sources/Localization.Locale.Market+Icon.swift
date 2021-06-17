@@ -1,6 +1,6 @@
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 extension Localization.Locale.Market {
 	public var icon: UIImage {

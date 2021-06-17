@@ -12,7 +12,8 @@ extension WKWebView: WKNavigationDelegate {
 
 	public var didReceiveAuthenticationChallenge: DidReceiveAuthenticationChallengeDelegate {
 		if let delegate = objc_getAssociatedObject(self, &WKWebView._didReceiveAuthenticationChallenge)
-			as? DidReceiveAuthenticationChallengeDelegate {
+			as? DidReceiveAuthenticationChallengeDelegate
+		{
 			return delegate
 		}
 
@@ -36,7 +37,8 @@ extension WKWebView: WKNavigationDelegate {
 
 	public var decidePolicyForNavigationAction: DecidePolicyForNavigationActionDelegate {
 		if let delegate = objc_getAssociatedObject(self, &WKWebView._decidePolicyForNavigationAction)
-			as? DecidePolicyForNavigationActionDelegate {
+			as? DecidePolicyForNavigationActionDelegate
+		{
 			return delegate
 		}
 

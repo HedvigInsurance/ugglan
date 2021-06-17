@@ -1,10 +1,10 @@
 import Apollo
 import Flow
 import Foundation
-import hCore
-import hGraphQL
 import UIKit
 import WebKit
+import hCore
+import hGraphQL
 
 enum WebOnboardingScreen {
 	case webOffer(ids: [String])
@@ -38,7 +38,7 @@ struct WebOnboardingState {
 		case let .webOffer(ids):
 			return [
 				URLQueryItem(name: "quoteIds", value: "[" + ids.joined(separator: ",") + "]"),
-				defaultQueryItem
+				defaultQueryItem,
 			]
 		case .webOnboarding: return [defaultQueryItem]
 		}

@@ -1,9 +1,9 @@
 import Flow
 import Foundation
-import hCore
 import Presentation
 import UIKit
 import UserNotifications
+import hCore
 
 enum PushNotificationsRegisterError: Error { case canceled }
 
@@ -44,7 +44,7 @@ struct PushNotificationsRegister: Presentable {
 					title: L10n.pushNotificationsAlertActionNotNow,
 					style: .cancel,
 					action: { throw PushNotificationsRegisterError.canceled }
-				)
+				),
 			]
 		)
 

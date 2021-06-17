@@ -2,8 +2,8 @@ import Ease
 import Flow
 import Form
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 struct PaymentHeaderPrice {
 	let grossPriceSignal: ReadSignal<Int>

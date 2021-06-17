@@ -1,7 +1,7 @@
 import Flow
 import Foundation
-import hCore
 import UIKit
+import hCore
 
 struct Blob: Viewable {
 	let color: UIColor

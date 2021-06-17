@@ -36,7 +36,8 @@ public struct ApplicationState {
 
 	public static func getMarket() -> Localization.Locale.Market? {
 		if let marketRawValue = UserDefaults.standard.value(forKey: marketKey) as? String,
-			let market = Localization.Locale.Market(rawValue: marketRawValue) {
+			let market = Localization.Locale.Market(rawValue: marketRawValue)
+		{
 			return market
 		}
 
@@ -50,7 +51,8 @@ public struct ApplicationState {
 	public static var preferredLocale: Localization.Locale {
 		if hasPreferredLocale {
 			if let preferredLocaleRawValue = UserDefaults.standard.value(forKey: preferredLocaleKey)
-				as? String, let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue) {
+				as? String, let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue)
+			{
 				setPreferredLocale(preferredLocale)
 				UserDefaults.standard.removeObject(forKey: preferredLocaleKey)
 				UserDefaults.standard.synchronize()
@@ -81,7 +83,8 @@ public struct ApplicationState {
 		if let bestMatchedLanguage = bestMatchedLanguage,
 			let locale = Localization.Locale(
 				rawValue: bestMatchedLanguage.replacingOccurrences(of: "-", with: "_")
-			) {
+			)
+		{
 			return locale
 		}
 

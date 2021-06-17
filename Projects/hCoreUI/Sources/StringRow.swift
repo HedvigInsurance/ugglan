@@ -29,7 +29,8 @@ extension StringRow: Reusable {
 		view.addArrangedSubview(label)
 
 		return (
-			view, { `self` in label.style = self.style
+			view,
+			{ `self` in label.style = self.style
 				label.value = self.value
 				return NilDisposer()
 			}

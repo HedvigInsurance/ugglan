@@ -1,9 +1,9 @@
 import Flow
 import Form
 import Foundation
+import UIKit
 import hCore
 import hCoreUI
-import UIKit
 
 struct ContractDetailSegmentedControl {
 	let form: FormView
@@ -16,7 +16,7 @@ extension ContractDetailSegmentedControl: Viewable {
 
 		let segmentedControlBackgroundView = UIView()
 		segmentedControlBackgroundView.hero.modifiers = [
-			.translate(x: 0, y: 40, z: 0), .opacity(0), .spring(stiffness: 250, damping: 30)
+			.translate(x: 0, y: 40, z: 0), .opacity(0), .spring(stiffness: 250, damping: 30),
 		]
 		segmentedControlBackgroundView.backgroundColor = .brand(.primaryBackground())
 
@@ -46,7 +46,7 @@ extension ContractDetailSegmentedControl: Viewable {
 
 		let segmentedControl = UISegmentedControl(titles: [
 			L10n.InsuranceDetailsView.tab1Title, L10n.InsuranceDetailsView.tab2Title,
-			L10n.InsuranceDetailsView.tab3Title
+			L10n.InsuranceDetailsView.tab3Title,
 		])
 		segmentedControl.selectedSegmentIndex = 0
 		segmentedControlContainer.addArrangedSubview(segmentedControl)
@@ -55,7 +55,7 @@ extension ContractDetailSegmentedControl: Viewable {
 		segmentedControl.setTitleTextAttributes(
 			[
 				NSAttributedString.Key.foregroundColor: UIColor.brand(.secondaryText),
-				NSAttributedString.Key.font: font
+				NSAttributedString.Key.font: font,
 			],
 			for: .normal
 		)
@@ -63,7 +63,7 @@ extension ContractDetailSegmentedControl: Viewable {
 		segmentedControl.setTitleTextAttributes(
 			[
 				NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-				NSAttributedString.Key.font: font
+				NSAttributedString.Key.font: font,
 			],
 			for: .selected
 		)
