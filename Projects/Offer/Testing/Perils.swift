@@ -7,8 +7,8 @@ func generatePerils() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.Peril]
 		repeating: .init(
 			title: "Delays",
 			description: """
-								If you experience delays when travelling, we'll reimburse you for the extra costs. For example, if your bag does not arrive or if your flight is delayed and you have to stay overnight in a hotel.
-								""",
+																If you experience delays when travelling, we'll reimburse you for the extra costs. For example, if your bag does not arrive or if your flight is delayed and you have to stay overnight in a hotel.
+																""",
 			icon: .init(
 				variants: .init(
 					dark: .init(pdfUrl: "/app-content-service/delayed_luggage_dark.pdf"),

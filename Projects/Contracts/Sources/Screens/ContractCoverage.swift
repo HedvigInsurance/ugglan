@@ -8,40 +8,40 @@ import hCoreUI
 import hGraphQL
 
 struct ContractCoverage {
-    let perilFragments: [GraphQL.PerilFragment]
-    let insurableLimitFragments: [GraphQL.InsurableLimitFragment]
+	let perilFragments: [GraphQL.PerilFragment]
+	let insurableLimitFragments: [GraphQL.InsurableLimitFragment]
 }
 
 extension ContractCoverage: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
-        let bag = DisposeBag()
-        let viewController = UIViewController()
-        viewController.title = L10n.contractCoverageMainTitle
+	func materialize() -> (UIViewController, Disposable) {
+		let bag = DisposeBag()
+		let viewController = UIViewController()
+		viewController.title = L10n.contractCoverageMainTitle
 
-        let form = FormView()
+		let form = FormView()
 
-        let insets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
+		let insets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
 
-        let perilCollection = PerilCollection(
-            perilFragmentsSignal: ReadWriteSignal(perilFragments).readOnly()
-        )
+		let perilCollection = PerilCollection(
+			perilFragmentsSignal: ReadWriteSignal(perilFragments).readOnly()
+		)
 
-        bag += form.append(perilCollection.insetted(insets))
+		bag += form.append(perilCollection.insetted(insets))
 
-        bag += form.append(Spacing(height: 20))
+		bag += form.append(Spacing(height: 20))
 
-        bag += form.append(Divider(backgroundColor: .brand(.primaryBorderColor)))
+		bag += form.append(Divider(backgroundColor: .brand(.primaryBorderColor)))
 
-        bag += form.append(Spacing(height: 20))
+		bag += form.append(Spacing(height: 20))
 
-        let insurableLimits = InsurableLimits(
-            insurableLimitFragmentsSignal: ReadWriteSignal(insurableLimitFragments).readOnly()
-        )
+		let insurableLimits = InsurableLimits(
+			insurableLimitFragmentsSignal: ReadWriteSignal(insurableLimitFragments).readOnly()
+		)
 
-        bag += form.append(insurableLimits)
+		bag += form.append(insurableLimits)
 
-        bag += viewController.install(form, options: [])
+		bag += viewController.install(form, options: [])
 
-        return (viewController, bag)
-    }
+		return (viewController, bag)
+	}
 }

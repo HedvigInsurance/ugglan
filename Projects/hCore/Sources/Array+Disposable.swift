@@ -6,11 +6,11 @@
 //  Copyright © 2021 Hedvig AB. All rights reserved.
 //
 
-import Foundation
 import Flow
+import Foundation
 
 extension Array where Element: Disposable {
-    public var disposable: Disposable {
-        DisposeBag(self)
-    }
+	public var disposable: Disposable {
+		DisposeBag(self)
+	}
 }
