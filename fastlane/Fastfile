@@ -223,6 +223,14 @@ platform :ios do
                 "identifier" => "com.hedvig.example.*",
                 "project_path" => "Projects/Offer/Offer.xcodeproj"
             },
+	        "HomeExample" => {
+                "identifier" => "com.hedvig.example.*",
+                "project_path" => "Projects/Home/Home.xcodeproj"
+            },
+	        "ForeverExample" => {
+                "identifier" => "com.hedvig.example.*",
+                "project_path" => "Projects/Forever/Forever.xcodeproj"
+            },
             "Ugglan" => {
                 "identifier" => "com.hedvig.test.app",
                 "project_path" => "Projects/App/Ugglan.xcodeproj"
