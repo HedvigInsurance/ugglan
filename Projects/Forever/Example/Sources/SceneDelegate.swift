@@ -1,11 +1,3 @@
-//
-//  SceneDelegate.swift
-//  ForeverExample
-//
-//  Created by Sam Pettersson on 2021-06-17.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Flow
 import Foundation
 import UIKit
