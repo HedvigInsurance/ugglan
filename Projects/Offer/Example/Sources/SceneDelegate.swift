@@ -7,8 +7,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	let bag = DisposeBag()
 	var window: UIWindow?
 
-	// MARK: - UIWindowSceneDelegate
-
 	func scene(
 		_ scene: UIScene,
 		willConnectTo session: UISceneSession,
