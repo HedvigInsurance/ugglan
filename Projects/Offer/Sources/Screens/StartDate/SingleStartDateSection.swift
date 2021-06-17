@@ -31,7 +31,7 @@ extension SingleStartDateSection: Presentable {
 
 		let section = SectionView(headerView: headerView, footerView: nil)
 		let bag = DisposeBag()
-        let row = RowView(title: L10n.offerStartDate)
+		let row = RowView(title: L10n.offerStartDate)
 		row.prepend(
 			hCoreUIAssets.calendar.image
 				.imageView(height: 21, width: 21)
@@ -45,7 +45,7 @@ extension SingleStartDateSection: Presentable {
 			.onValue { date in
 				guard let date = date else {
 					valueLabel.styledText = StyledText(
-                        text: L10n.offerSwitcherNoDate,
+						text: L10n.offerSwitcherNoDate,
 						style: .brand(.body(color: .secondary))
 					)
 					return
@@ -113,7 +113,7 @@ extension SingleStartDateSection: Presentable {
 		section.append(collapsibleScrollView)
 
 		if switchingActivated {
-            let switcherRow = RowView(title: L10n.offerSwitcherNoDate)
+			let switcherRow = RowView(title: L10n.offerSwitcherNoDate)
 			switcherRow.prepend(
 				hCoreUIAssets.circularClock.image
 					.imageView(height: 21, width: 21)
@@ -139,7 +139,7 @@ extension SingleStartDateSection: Presentable {
 			bag += switcherExplanationRow.addArranged(
 				MultilineLabel(
 					value:
-                        L10n.offerSwitcherExplanationFooter,
+						L10n.offerSwitcherExplanationFooter,
 					style: .brand(.footnote(color: .tertiary))
 				)
 			)
