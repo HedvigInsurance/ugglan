@@ -27,13 +27,10 @@ public class MockNetworkFetchInterceptor: ApolloInterceptor, Cancellable {
 			do {
 				let dataEntry = try handler(request.operation)
 
+                let httpURLResponse = HTTPURLResponse()
+                                
 				let response = HTTPResponse<Operation>(
-					response: .init(
-						url: mockURL,
-						statusCode: 200,
-						httpVersion: "1.1",
-						headerFields: [:]
-					)!,
+					response: httpURLResponse,
 					rawData: try! JSONSerialization.data(
 						withJSONObject: [
 							"data": dataEntry.jsonObject
