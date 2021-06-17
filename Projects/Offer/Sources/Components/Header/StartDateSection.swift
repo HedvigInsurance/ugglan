@@ -33,7 +33,7 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
 		let allStartDatesEqual = startDates.dropFirst().allSatisfy({ $0 == startDates.first })
 		let dateDisplayValue = startDates.first??.localDateToDate?.localDateStringWithToday ?? ""
 
-		return allStartDatesEqual ? dateDisplayValue : "Multiple"
+        return allStartDatesEqual ? dateDisplayValue : L10n.offerStartDateMultiple
 	}
 }
 
@@ -47,7 +47,7 @@ extension StartDateSection: Presentable {
 		bag += state.dataSignal.map { $0.quoteBundle }
 			.onValueDisposePrevious { quoteBundle in
 				let row = RowView(
-					title: quoteBundle.canHaveIndependentStartDates ? "Start dates" : "Start date"
+                    title: quoteBundle.canHaveIndependentStartDates ? L10n.offerStartDatePlural : L10n.offerStartDate
 				)
 				let iconImageView = UIImageView()
 				iconImageView.image = hCoreUIAssets.calendar.image

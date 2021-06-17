@@ -75,7 +75,7 @@ extension StartDate: Presentable {
 		buttonContainer.insetsLayoutMarginsFromSafeArea = false
 
 		let saveButton = Button(
-			title: "Save",
+            title: L10n.generalSaveButton,
 			type: .standard(
 				backgroundColor: .brand(.secondaryButtonBackgroundColor),
 				textColor: .brand(.secondaryButtonTextColor)
@@ -123,8 +123,8 @@ extension StartDate: Presentable {
 					.onError { _ in
 						viewController.present(
 							Alert<Void>(
-								title: "Couldn't update start date",
-								message: "Please try again",
+                                title: L10n.offerSaveStartDateErrorAlertTitle,
+								message: L10n.offerSaveStartDateErrorAlertMessage,
 								actions: [.init(title: L10n.alertOk, action: { () })]
 							)
 						)

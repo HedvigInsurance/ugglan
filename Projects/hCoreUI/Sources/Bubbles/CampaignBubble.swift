@@ -87,7 +87,7 @@ extension CampaignBubble: Viewable {
 				case .invited:
 					titleLabel.text = ""
 					titleLabel.animationSafeIsHidden = true
-					subtitlelabel.text = L10n.offerScreenInvitedBubble
+					subtitlelabel.text = L10n.offerScreenInvitedBubble("")
 				}
 			} else {
 				titleLabel.animationSafeIsHidden = true

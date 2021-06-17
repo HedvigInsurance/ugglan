@@ -23,15 +23,6 @@ struct SingleStartDateSection {
 	}
 }
 
-extension UIImageView {
-	func withLayoutMargins(_ layoutMargins: UIEdgeInsets) -> UIStackView {
-		let stackView = UIStackView()
-		stackView.edgeInsets = layoutMargins
-		stackView.addArrangedSubview(self)
-		return stackView
-	}
-}
-
 extension SingleStartDateSection: Presentable {
 	func materialize() -> (SectionView, ReadWriteSignal<Date?>) {
 		let dateSignal = ReadWriteSignal<Date?>(initialStartDate)
@@ -40,7 +31,7 @@ extension SingleStartDateSection: Presentable {
 
 		let section = SectionView(headerView: headerView, footerView: nil)
 		let bag = DisposeBag()
-		let row = RowView(title: "Start date")
+        let row = RowView(title: L10n.offerStartDate)
 		row.prepend(
 			hCoreUIAssets.calendar.image
 				.imageView(height: 21, width: 21)
@@ -54,7 +45,7 @@ extension SingleStartDateSection: Presentable {
 			.onValue { date in
 				guard let date = date else {
 					valueLabel.styledText = StyledText(
-						text: "When current plan expires",
+                        text: L10n.offerSwitcherNoDate,
 						style: .brand(.body(color: .secondary))
 					)
 					return
@@ -122,7 +113,7 @@ extension SingleStartDateSection: Presentable {
 		section.append(collapsibleScrollView)
 
 		if switchingActivated {
-			let switcherRow = RowView(title: "When current plan expires")
+            let switcherRow = RowView(title: L10n.offerSwitcherNoDate)
 			switcherRow.prepend(
 				hCoreUIAssets.circularClock.image
 					.imageView(height: 21, width: 21)
@@ -148,7 +139,7 @@ extension SingleStartDateSection: Presentable {
 			bag += switcherExplanationRow.addArranged(
 				MultilineLabel(
 					value:
-						"Your Hedvig insurance will automatically start when your current plan expires.",
+                        L10n.offerSwitcherExplanationFooter,
 					style: .brand(.footnote(color: .tertiary))
 				)
 			)
