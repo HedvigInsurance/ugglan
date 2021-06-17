@@ -1,11 +1,3 @@
-//
-//  DynamicSectionStyle+Helpers.swift
-//  hCoreUI
-//
-//  Created by Sam Pettersson on 2021-04-19.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Form
 import Foundation
 import UIKit
