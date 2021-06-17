@@ -1,11 +1,3 @@
-//
-//  UIImage+imageView.swift
-//  hCore
-//
-//  Created by Sam Pettersson on 2021-04-23.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
