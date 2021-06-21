@@ -16,6 +16,7 @@ fragment InceptionFragment on QuoteBundleInception {
       startDate
       currentInsurer {
         id
+        displayName
         switchable
       }
       correspondingQuote {
