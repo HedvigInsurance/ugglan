@@ -21,18 +21,24 @@ extension CurrentInsurerSection: Presentable {
             headerView: UILabel(value: "Your current insurance", style: .default),
             footerView: nil
         )
+        bag += sectionContainer.addArranged(Spacing(height: 16))
         sectionContainer.addArrangedSubview(section)
+        bag += {
+            for view in sectionContainer.subviews {
+                view.removeFromSuperview()
+            }
+        }
 
         bag += state.dataSignal.compactMap{ $0.quoteBundle.inception }.onValueDisposePrevious { inception in
             let innerBag = DisposeBag()
 
-            innerBag += inception.asIndependentInceptions?.inceptions.map { inception in
+            innerBag += inception.asIndependentInceptions?.inceptions.compactMap { $0.currentInsurer }.map { currentInsurer in
                 let row = RowView(title: "Current insurer")
                 section.append(row)
 
                 row.append(
                     UILabel(
-                        value:  inception.currentInsurer?.displayName ?? "",
+                        value:  currentInsurer.displayName ?? "",
                         style: .brand(.body(color: .secondary))
                     )
                 )

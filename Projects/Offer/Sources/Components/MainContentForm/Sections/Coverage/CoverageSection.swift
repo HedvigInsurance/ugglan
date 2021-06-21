@@ -16,65 +16,31 @@ extension CoverageSection: Presentable {
 		section.dynamicStyle = .brandGrouped(separatorType: .none)
 
 		let bag = DisposeBag()
+        
+        let contentWrapper = UIStackView()
+        section.append(contentWrapper)
 
-		bag += state.quotesSignal.onValueDisposePrevious { quotes in
-			let innerBag = DisposeBag()
-
-			let innerSection = SectionView()
-			innerSection.dynamicStyle = .brandGrouped(
-				separatorType: .standard,
-				shouldRoundCorners: { _ in false }
-			)
-
-			if quotes.count > 1 {
-				let label = MultilineLabel(
-					value: "Read the full coverage of your insurances below.",
-					style: .brand(.body(color: .secondary))
-				)
-				let labelInset =
-					UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
-					+ UIEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
-				innerBag += section.append(label.insetted(labelInset))
-
-				section.append(innerSection)
-
-				innerBag += {
-					innerSection.removeFromSuperview()
-				}
-			}
-
-			innerBag += quotes.map { (quote) -> DisposeBag in
-				let innerBag = DisposeBag()
-
-				if quotes.count > 1 {
-					let row = RowView(title: quote.displayName)
-					row.append(hCoreUIAssets.chevronRight.image)
-
-					innerBag += innerSection.append(row)
-						.onValue {
-							section.viewController?
-								.present(
-									QuoteCoverage(quote: quote).withCloseButton,
-									style: .detented(.large),
-									options: [
-										.defaults, .prefersLargeTitles(true),
-										.largeTitleDisplayMode(.always),
-									]
-								)
-						}
-
-					innerBag += {
-						innerSection.remove(row)
-					}
-				} else {
-					innerBag += section.append(SingleQuoteCoverage(quote: quote))
-				}
-
-				return innerBag
-			}
-
+        bag += state.quotesSignal.onValueDisposePrevious { quotes in
+            let innerBag = DisposeBag()
+            
+            if quotes.count > 1 {
+                innerBag += contentWrapper.addArrangedSubview(MultiQuoteCoverage(quotes: quotes))
+            } else if quotes.count == 1 {
+                innerBag += contentWrapper.addArrangedSubview(SingleQuoteCoverage(quote: quotes[0]))
+            }
+            
 			return innerBag
 		}
+        
+        bag += state
+            .dataSignal
+            .compactMap { $0.quoteBundle.inception.asIndependentInceptions }
+            .compactMap { $0.inceptions.compactMap { $0.currentInsurer }.count > 0 ? true : nil }
+            .onValueDisposePrevious { _ in
+                let innerBag = DisposeBag()
+                innerBag += section.append(CurrentInsurerSection())
+                return innerBag
+        }
 
 		return (section, bag)
 	}
