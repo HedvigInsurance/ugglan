@@ -35,7 +35,7 @@ extension HeaderForm: Presentable {
 
 		section.appendSpacing(.custom(30))
 
-		bag += section.append(PriceRow())
+        bag += section.append(PriceRow(placement: .header))
 
 		bag += form.append(StartDateSection())
 

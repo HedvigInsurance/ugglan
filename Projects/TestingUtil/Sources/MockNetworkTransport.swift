@@ -1,4 +1,6 @@
 import Apollo
+import ApolloWebSocket
+import Flow
 import Foundation
 import hCore
 
@@ -9,41 +11,63 @@ var mockURL: URL {
 public enum MockError: Error { case failed }
 
 public class MockNetworkFetchInterceptor: ApolloInterceptor, Cancellable {
-	public init() {}
+	let handlers: GraphQLMockHandlers
+
+	internal init(
+		handlers: GraphQLMockHandlers
+	) {
+		self.handlers = handlers
+	}
+
+	func interceptAsync<Operation: GraphQLOperation>(
+		chain: RequestChain,
+		request: HTTPRequest<Operation>,
+		response: HTTPResponse<Operation>?,
+		duration: TimeInterval,
+		data: Operation.Data,
+		completion: @escaping (Swift.Result<GraphQLResult<Operation.Data>, Error>) -> Void
+	) {
+		let mainQueue = DispatchQueue.main
+		let deadline = DispatchTime.now() + duration
+		mainQueue.asyncAfter(deadline: deadline) {
+			let httpURLResponse = HTTPURLResponse()
+
+			let response = HTTPResponse<Operation>(
+				response: httpURLResponse,
+				rawData: try! JSONSerialization.data(
+					withJSONObject: [
+						"data": data.jsonObject
+					]
+					.jsonObject,
+					options: []
+				),
+				parsedResponse: nil
+			)
+
+			chain.proceedAsync(
+				request: request,
+				response: response,
+				completion: completion
+			)
+		}
+	}
 
 	public func interceptAsync<Operation: GraphQLOperation>(
 		chain: RequestChain,
 		request: HTTPRequest<Operation>,
 		response: HTTPResponse<Operation>?,
-		completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void
+		completion: @escaping (Swift.Result<GraphQLResult<Operation.Data>, Error>) -> Void
 	) {
-		if let handler =
-			handlers.compactMapValues({ value in
-				value as? (_ operation: Operation) throws -> Operation.Data
-			})
-			.first?
-			.value
-		{
+		if let handler = handlers[ObjectIdentifier(Operation.self)] as? QueryMock<Operation> {
 			do {
-				let dataEntry = try handler(request.operation)
+				let data = try handler.handler(request.operation)
 
-                let httpURLResponse = HTTPURLResponse()
-                                
-				let response = HTTPResponse<Operation>(
-					response: httpURLResponse,
-					rawData: try! JSONSerialization.data(
-						withJSONObject: [
-							"data": dataEntry.jsonObject
-						]
-						.jsonObject,
-						options: []
-					),
-					parsedResponse: nil
-				)
-
-				chain.proceedAsync(
+				interceptAsync(
+					chain: chain,
 					request: request,
 					response: response,
+					duration: handler.duration,
+					data: data,
 					completion: completion
 				)
 			} catch {
@@ -54,19 +78,27 @@ public class MockNetworkFetchInterceptor: ApolloInterceptor, Cancellable {
 					completion: completion
 				)
 			}
-		}
+		} else if let handler = handlers[ObjectIdentifier(Operation.self)] as? MutationMock<Operation> {
+            do {
+                let data = try handler.handler(request.operation)
 
-	}
-
-	private final class MockTask: Cancellable { func cancel() {} }
-
-	var handlers: [AnyHashable: Any] = [:]
-
-	public func handle<Operation: GraphQLOperation>(
-		_ operationType: Operation.Type,
-		requestHandler: @escaping (_ operation: Operation) throws -> Operation.Data
-	) {
-		handlers[ObjectIdentifier(operationType)] = requestHandler
+                interceptAsync(
+                    chain: chain,
+                    request: request,
+                    response: response,
+                    duration: handler.duration,
+                    data: data,
+                    completion: completion
+                )
+            } catch {
+                chain.handleErrorAsync(
+                    error,
+                    request: request,
+                    response: response,
+                    completion: completion
+                )
+            }
+        }
 	}
 
 	public func cancel() {}
@@ -74,23 +106,18 @@ public class MockNetworkFetchInterceptor: ApolloInterceptor, Cancellable {
 
 open class MockInterceptorProvider: InterceptorProvider {
 	public let store: ApolloStore
-	private let mockNetworkFetchInterceptor = MockNetworkFetchInterceptor()
+	let mockNetworkFetchInterceptor: MockNetworkFetchInterceptor
 
 	/// Designated initializer
 	///
 	/// - Parameters:
 	///   - store: The `ApolloStore` to use when reading from or writing to the cache. Make sure you pass the same store to the `ApolloClient` instance you're planning to use.
 	public init(
-		store: ApolloStore = ApolloStore()
+		store: ApolloStore = ApolloStore(),
+		handlers: GraphQLMockHandlers
 	) {
 		self.store = store
-	}
-
-	public func handle<Operation: GraphQLOperation>(
-		_ operationType: Operation.Type,
-		requestHandler: @escaping (_ operation: Operation) throws -> Operation.Data
-	) {
-		mockNetworkFetchInterceptor.handle(operationType, requestHandler: requestHandler)
+		self.mockNetworkFetchInterceptor = MockNetworkFetchInterceptor(handlers: handlers)
 	}
 
 	open func interceptors<Operation: GraphQLOperation>(for operation: Operation) -> [ApolloInterceptor] {
@@ -120,12 +147,76 @@ public final class MockRequestChainNetworkTransport: RequestChainNetworkTranspor
 	}
 }
 
+public class MockWebSocketNetworkTransport: NetworkTransport {
+	let handlers: GraphQLMockHandlers
+
+	internal init(
+		handlers: GraphQLMockHandlers
+	) {
+		self.handlers = handlers
+	}
+
+	let bag = DisposeBag()
+
+	private final class MockTask: Cancellable { func cancel() {} }
+
+	public func send<Operation>(
+		operation: Operation,
+		cachePolicy: CachePolicy,
+		contextIdentifier: UUID?,
+		callbackQueue: DispatchQueue,
+		completionHandler: @escaping (Swift.Result<GraphQLResult<Operation.Data>, Error>) -> Void
+	) -> Cancellable where Operation: GraphQLOperation {
+		if let handler = handlers[ObjectIdentifier(Operation.self)] as? SubscriptionMock<Operation> {
+			let mainQueue = DispatchQueue.main
+			let deadline = DispatchTime.now() + handler.duration
+			mainQueue.asyncAfter(deadline: deadline) {
+				do {
+					let signal = try handler.handler(operation)
+
+					self.bag += signal.onValue { dataEntry in
+						let response = GraphQLResponse(
+							operation: operation,
+							body: [
+								"data": dataEntry.jsonObject
+							]
+							.jsonObject
+						)
+
+						if let result = try? response.parseResultFast() {
+							completionHandler(.success(result))
+						} else {
+							completionHandler(.failure(MockError.failed))
+						}
+					}
+				} catch {
+					completionHandler(.failure(MockError.failed))
+				}
+			}
+		}
+
+		return MockTask()
+	}
+}
+
 extension ApolloClient {
-	public static func createMock(mockInterceptorProvider: MockInterceptorProvider) {
-		let client = ApolloClient(
-			networkTransport: MockRequestChainNetworkTransport(
+	public static func createMock(@GraphQLMockBuilder _ builder: () -> GraphQLMock) {
+		let store = ApolloStore()
+		let mock = builder()
+
+		let mockInterceptorProvider = MockInterceptorProvider(store: store, handlers: mock.handlers)
+
+		let networkTransport = SplitNetworkTransport(
+			uploadingNetworkTransport: MockRequestChainNetworkTransport(
 				interceptorProvider: mockInterceptorProvider
 			),
+			webSocketNetworkTransport: MockWebSocketNetworkTransport(
+				handlers: mock.handlers
+			)
+		)
+
+		let client = ApolloClient(
+			networkTransport: networkTransport,
 			store: mockInterceptorProvider.store
 		)
 
@@ -137,7 +228,7 @@ extension ApolloClient {
 
 		Dependencies.shared.add(
 			module: Module { () -> ApolloStore in
-				mockInterceptorProvider.store
+				store
 			}
 		)
 	}
@@ -149,7 +240,7 @@ public final class MockNetworkTransport: NetworkTransport {
 		cachePolicy _: CachePolicy,
 		contextIdentifier _: UUID?,
 		callbackQueue _: DispatchQueue,
-		completionHandler: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void
+		completionHandler: @escaping (Swift.Result<GraphQLResult<Operation.Data>, Error>) -> Void
 	) -> Cancellable where Operation: GraphQLOperation {
 		DispatchQueue.global(qos: .default)
 			.async {
