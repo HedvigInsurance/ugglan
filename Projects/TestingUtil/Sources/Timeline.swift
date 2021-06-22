@@ -1,11 +1,3 @@
-//
-//  Timeline.swift
-//  TestingUtil
-//
-//  Created by Sam Pettersson on 2021-06-21.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Foundation

@@ -1,11 +1,3 @@
-//
-//  GraphQLMock.swift
-//  TestingUtil
-//
-//  Created by Sam Pettersson on 2021-06-21.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Apollo
 import Flow
 import Foundation
@@ -81,7 +73,7 @@ public struct SubscriptionMock<Operation: GraphQLOperation>: GraphQLMockOperatio
     public init(
         _ operationType: Operation.Type,
         duration: TimeInterval = 0.25,
-        @TimelineBuilder<Operation.Data> timeline: @escaping (_ operation: Operation) throws -> Timeline<Operation.Data>
+        @TimelineBuilder<Operation.Data> timeline: @escaping (Operation) throws -> Timeline<Operation.Data>
     ) {
         self.operationType = operationType
         self.duration = duration
