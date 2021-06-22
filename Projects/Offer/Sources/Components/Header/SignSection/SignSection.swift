@@ -18,10 +18,6 @@ extension SignSection: Presentable {
 		let row = RowView()
 		section.append(row)
 
-		bag += state.signStatusSubscription.onValue({ data in
-			print(data)
-		})
-
 		bag += state.dataSignal.onValueDisposePrevious { data in
 			let innerBag = DisposeBag()
 
@@ -39,7 +35,7 @@ extension SignSection: Presentable {
 				innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
 					.onValue { viewController in
 						viewController.present(
-							SwedishBankIdSign(quoteIds: state.ids).wrappedInCloseButton(),
+							SwedishBankIdSign(),
 							style: .detented(.medium),
 							options: [
 								.defaults, .prefersLargeTitles(true),

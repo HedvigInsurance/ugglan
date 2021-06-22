@@ -10,7 +10,6 @@ import hGraphQL
 
 struct SwedishBankIdSign {
 	@Inject var state: OfferState
-	var quoteIds: [String]
 
 	func presentFailedAlert(
 		_ viewController: UIViewController,
@@ -92,11 +91,18 @@ struct SwedishBankIdSign {
 	}
 }
 
-enum SwedishBankIdSignError: Error { case failed }
+enum SwedishBankIdSignError: Error {
+    case failed
+    case userCancel
+}
 
 extension SwedishBankIdSign: Presentable {
 	func materialize() -> (UIViewController, Future<Void>) {
 		let viewController = UIViewController()
+        if #available(iOS 13.0, *) {
+            viewController.isModalInPresentation = true
+        }
+        
 		let bag = DisposeBag()
 
 		let view = UIView()
@@ -147,7 +153,18 @@ extension SwedishBankIdSign: Presentable {
 		return (
 			viewController,
 			Future { completion in
-				state.signQuotes(ids: quoteIds)
+                let cancelButton = UIBarButtonItem(
+                    title: L10n.NavBar.cancel,
+                    style: .brand(.body(color: .primary))
+                )
+            
+                bag += cancelButton.onValue({ _ in
+                    completion(.failure(SwedishBankIdSignError.userCancel))
+                })
+            
+                viewController.navigationItem.rightBarButtonItem = cancelButton
+            
+				state.signQuotes()
 					.onValue { signEvent in
 						switch signEvent {
 						case let .swedishBankId(autoStartToken, subscription):
@@ -178,6 +195,7 @@ extension SwedishBankIdSign: Presentable {
 									case "noClient", "outstandingTransaction":
 										statusText = L10n.signStartBankid
 									case "userSign":
+                                        viewController.navigationItem.rightBarButtonItem = nil
 										statusText = L10n.signInProgress
 									case "userCancel", "cancelled":
 										statusText = L10n.signCanceled

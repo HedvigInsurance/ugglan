@@ -10,117 +10,8 @@ struct Checkout {
 	@Inject var state: OfferState
 }
 
-class AccessoryBaseView: UIView {
-	override var intrinsicContentSize: CGSize { CGSize(width: 0, height: 0) }
-
-	init() {
-		super.init(frame: .zero)
-		autoresizingMask = .flexibleHeight
-	}
-
-	required init?(
-		coder: NSCoder
-	) {
-		fatalError("init(coder:) has not been implemented")
-	}
-}
-
-class AccessoryViewController<Accessory: Presentable>: UIViewController
-where Accessory.Matter: UIView, Accessory.Result == Disposable {
-	let accessoryView: Accessory.Matter
-
-	init(
-		accessoryView: Accessory
-	) {
-		let (view, disposable) = accessoryView.materialize()
-		self.accessoryView = view
-
-		let bag = DisposeBag()
-
-		bag += disposable
-
-		super.init(nibName: nil, bundle: nil)
-
-		bag += deallocSignal.onValue { _ in bag.dispose() }
-	}
-
-	@available(*, unavailable) required init?(
-		coder _: NSCoder
-	) { fatalError("init(coder:) has not been implemented") }
-
-	override var canBecomeFirstResponder: Bool { true }
-
-	override var inputAccessoryView: UIView? { accessoryView }
-
-	override var disablesAutomaticKeyboardDismissal: Bool { true }
-}
-
-struct CheckoutButton: Presentable {
-	@ReadWriteState var isEnabled: Bool = false
-	@ReadWriteState var isLoading: Bool = false
-
-	func materialize() -> (UIView, Disposable) {
-		let view = AccessoryBaseView()
-		let bag = DisposeBag()
-
-		let safeAreaWrapperView = UIView()
-		view.addSubview(safeAreaWrapperView)
-
-		safeAreaWrapperView.snp.makeConstraints { make in
-			make.edges.equalToSuperview()
-		}
-
-		let baseLayoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 15, right: 15)
-
-		let containerView = UIStackView()
-		containerView.isLayoutMarginsRelativeArrangement = true
-		containerView.insetsLayoutMarginsFromSafeArea = true
-		containerView.layoutMargins = baseLayoutMargins
-		containerView.axis = .horizontal
-		safeAreaWrapperView.addSubview(containerView)
-
-		containerView.snp.makeConstraints { make in
-			make.edges.equalToSuperview()
-		}
-
-		let button = Button(
-			title: L10n.offerSignButton,
-			type: .standard(
-				backgroundColor: .brand(.secondaryButtonBackgroundColor),
-				textColor: .brand(.secondaryButtonTextColor)
-			)
-		)
-		bag += $isEnabled.atOnce().bindTo(button.isEnabled)
-
-		let loadableButton = LoadableButton(button: button)
-		bag += $isLoading.atOnce().bindTo(loadableButton.isLoadingSignal)
-
-		bag += containerView.addArranged(
-			loadableButton
-		)
-
-		bag += view.keyboardSignal(priority: .contentInsets)
-			.onValue({ keyboard in
-				guard let viewController = view.viewController else {
-					return
-				}
-
-				let frameWidth = view.frame.width
-				let viewControllerWidth = viewController.view.frame.width
-				let halfWidth = (frameWidth - viewControllerWidth) / 2
-
-				containerView.layoutMargins =
-					baseLayoutMargins
-					+ UIEdgeInsets(
-						top: 0,
-						left: halfWidth,
-						bottom: view.safeAreaInsets.bottom == 0 ? 0 : 20,
-						right: halfWidth
-					)
-			})
-
-		return (view, bag)
-	}
+enum CheckoutError: Error {
+    case signingFailed
 }
 
 extension Checkout: Presentable {
@@ -160,18 +51,18 @@ extension Checkout: Presentable {
 				let section = SectionView(headerView: header, footerView: nil)
 
 				form.append(section)
+                
+                let emailMasking = Masking(type: .email)
 
-				let emailRow = RowView(title: "Email", style: .brand(.title3(color: .primary)))
+                let emailRow = RowView(title: emailMasking.helperText ?? "", style: .brand(.title3(color: .primary)))
 				emailRow.alignment = .leading
 				emailRow.axis = .vertical
 				emailRow.distribution = .fill
 				section.append(emailRow)
 
-				let emailMasking = Masking(type: .email)
-
 				let emailTextField = UITextField(
 					value: "",
-					placeholder: L10n.emailRowTitle,
+                    placeholder: emailMasking.placeholderText ?? "",
 					style: .default
 				)
 				emailTextField.returnKeyType = .next
@@ -185,7 +76,7 @@ extension Checkout: Presentable {
 				let ssnMasking = Localization.Locale.currentLocale.market.masking
 
 				let ssnRow = RowView(
-					title: "National Identity Number",
+                    title: ssnMasking.helperText ?? "",
 					style: .brand(.title3(color: .primary))
 				)
 				ssnRow.alignment = .leading
@@ -195,7 +86,7 @@ extension Checkout: Presentable {
 
 				let ssnTextField = UITextField(
 					value: "",
-					placeholder: L10n.SimpleSignLogin.TextField.helperText,
+                    placeholder: ssnMasking.placeholderText ?? "",
 					style: .default
 				)
 				ssnMasking.applySettings(ssnTextField)
@@ -242,6 +133,56 @@ extension Checkout: Presentable {
 		return (
 			viewController,
 			Future { completion in
+            
+                func toggleAllowDismissal() {
+                    if #available(iOS 13.0, *) {
+                        viewController.isModalInPresentation = !viewController.isModalInPresentation
+                    }
+                    viewController.navigationItem.rightBarButtonItem?.isEnabled = !(viewController.navigationItem.rightBarButtonItem?.isEnabled ?? true)
+                }
+            
+            func handleError() {
+                toggleAllowDismissal()
+                checkoutButton.$isLoading.value = false
+                
+                let alert = Alert<Void>(
+                    title: L10n.simpleSignFailedTitle,
+                    message: L10n.simpleSignFailedMessage,
+                    actions: [
+                        Alert.Action(
+                            title: L10n.alertOk,
+                            action: { _ in
+                                
+                            }
+                        )
+                    ]
+                )
+
+                viewController.present(alert)
+            }
+            
+                bag += checkoutButton.onTapSignal.onValue { _ in
+                    checkoutButton.$isLoading.value = true
+                    
+                    toggleAllowDismissal()
+                    
+                    state.signQuotes().onValue { signEvent in
+                        switch signEvent {
+                        case .swedishBankId, .failed:
+                            handleError()
+                        case let .simpleSign(subscription):
+                            bag += subscription.filter { $0.signStatus?.status?.signState == .failed }.onFirstValue { _ in
+                                handleError()
+                            }
+                            
+                            bag += subscription.filter { $0.signStatus?.status?.signState == .completed }.onValue { _ in
+                                completion(.success)
+                            }
+                        case .done:
+                            completion(.success)
+                        }
+                    }
+                }
 
 				return bag
 			}

@@ -189,7 +189,7 @@ class OfferState {
 		case failed
 	}
 
-	func signQuotes(ids: [String]) -> Future<SignEvent> {
+	func signQuotes() -> Future<SignEvent> {
 		let subscription = signStatusSubscription
 
 		return client.perform(mutation: GraphQL.SignQuotesMutation(ids: ids))
