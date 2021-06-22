@@ -128,6 +128,7 @@ extension ExpandableContent: Presentable {
 		}
 
 		outerContainer.addSubview(shadowView)
+        outerContainer.clipsToBounds = true
 
 		shadowView.snp.makeConstraints { make in
 			make.width.centerX.equalToSuperview()
