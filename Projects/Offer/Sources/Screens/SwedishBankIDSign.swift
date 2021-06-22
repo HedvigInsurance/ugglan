@@ -11,6 +11,85 @@ import hGraphQL
 struct SwedishBankIdSign {
     @Inject var state: OfferState
     var quoteIds: [String]
+    
+    func presentFailedAlert(
+        _ viewController: UIViewController,
+        completion: @escaping (_ result: Result<Void>) -> Void
+    ) {
+        let alert = Alert<Void>(
+            title: L10n.bankidFailedTitle,
+            message: L10n.bankidFailedMessage,
+            actions: [
+                Alert.Action(
+                    title: L10n.alertOk,
+                    action: { _ in
+                        completion(
+                            .failure(
+                                SwedishBankIdSignError
+                                    .failed
+                            )
+                        )
+                    }
+                )
+            ]
+        )
+
+        viewController.present(alert)
+    }
+    
+    func presentErrorAlert(
+        _ viewController: UIViewController,
+        data: GraphQL.SignStatusSubscription.Data,
+        completion: @escaping (_ result: Result<Void>) -> Void
+    ) {
+        guard let code = data.signStatus?.status?.collectStatus?.code,
+              let state = data.signStatus?.status?.signState
+        else { return }
+
+        if code == "userCancel", state == .failed {
+            let alert = Alert<Void>(
+                title: L10n.bankidUserCancelTitle,
+                message: L10n.bankidUserCancelMessage,
+                actions: [
+                    Alert.Action(
+                        title: L10n.alertOk,
+                        action: { _ in
+                            completion(
+                                .failure(
+                                    SwedishBankIdSignError
+                                        .failed
+                                )
+                            )
+                        }
+                    )
+                ]
+            )
+
+            viewController.present(alert)
+        } else if code == "expiredTransaction", state == .failed {
+            let alert = Alert<Void>(
+                title: L10n.bankidInactiveTitle,
+                message: L10n.bankidInactiveMessage,
+                actions: [
+                    Alert.Action(
+                        title: L10n.bankidInactiveButton,
+                        action: { _ in
+                            completion(
+                                .failure(
+                                    SwedishBankIdSignError
+                                        .failed
+                                )
+                            )
+                        }
+                    )
+                ]
+            )
+
+            viewController.present(alert)
+        } else if state == .failed {
+            presentFailedAlert(viewController, completion: completion)
+        }
+    }
 }
 
 enum SwedishBankIdSignError: Error { case failed }
@@ -59,28 +138,19 @@ extension SwedishBankIdSign: Presentable {
 
         headerContainer.addArrangedSubview(iconContainerView)
 
-        bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, size: 50).wrappedIn(UIStackView()))
+        let loaderStackView = UIStackView()
+        bag += headerContainer.addArranged(LoadingIndicator(showAfter: 0, size: 50).wrappedIn(loaderStackView))
 
         var statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .brand(.headline(color: .primary)))
         bag += containerView.addArranged(statusLabel)
 
-        let closeButtonContainer = UIStackView()
-        closeButtonContainer.animationSafeIsHidden = true
-        containerView.addArrangedSubview(closeButtonContainer)
-
-        let closeButton = Button(title: L10n.generalCloseButton, type: .standard(backgroundColor: .purple, textColor: .white))
-        bag += closeButtonContainer.addArranged(closeButton)
-
         return (
             viewController,
             Future { completion in
-                bag += closeButton.onTapSignal.onValue { completion(.failure(SwedishBankIdSignError.failed)) }
-            
                 state.signQuotes(ids: quoteIds).onValue { signEvent in
                     switch signEvent {
-                        
                     case let .swedishBankId(autoStartToken, subscription):
-                        let urlScheme =  "" // TODO Bundle.main.urlScheme ??
+                        let urlScheme = Bundle.main.urlScheme ?? ""
                             guard
                                 let url = URL(
                                     string:
@@ -106,60 +176,24 @@ extension SwedishBankIdSign: Presentable {
                         }
                         
                         bag += subscription.filter { $0.signStatus?.status?.signState == .completed }.onValue { _ in
-//                            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-//                                UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
-//                            } TODO
-
                             completion(.success)
                         }
                                                 
-                        bag += subscription.compactMap { $0.signStatus?.status }
-                            .onValue { status in
-                                guard let code = status.collectStatus?.code,
-                                    let state = status.signState
-                                else { return }
-
-                                if code == "userCancel", state == .failed {
-                                    bag += Signal(after: 0)
-                                        .animated(style: SpringAnimationStyle.mediumBounce()) {
-                                            _ in
-                                            headerContainer.animationSafeIsHidden = true
-                                            closeButtonContainer.animationSafeIsHidden =
-                                                false
-                                            containerStackView.layoutIfNeeded()
-                                        }
-                                }
-
-                                if code == "expiredTransaction", state == .failed {
-                                    let alert = Alert<Void>(
-                                        title: L10n.bankidInactiveTitle,
-                                        message: L10n.bankidInactiveMessage,
-                                        actions: [
-                                            Alert.Action(
-                                                title: L10n.bankidInactiveButton,
-                                                action: { _ in
-                                                    completion(
-                                                        .failure(
-                                                            SwedishBankIdSignError
-                                                                .failed
-                                                        )
-                                                    )
-                                                }
-                                            )
-                                        ]
-                                    )
-
-                                    viewController.present(alert)
-                                }
-                            }
-                    case .failed:
-                        break
-                    default:
-                        break
+                        bag += subscription.onValue { data in
+                            presentErrorAlert(
+                                viewController,
+                                data: data,
+                                completion: completion
+                            )
+                        }
+                    case .failed, .simpleSign:
+                        presentFailedAlert(viewController, completion: completion)
+                    case .done:
+                        completion(.success)
                     }
                 }
 
-                return bag
+                return DelayedDisposer(bag, delay: 2)
             }
         )
     }
