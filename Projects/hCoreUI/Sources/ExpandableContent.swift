@@ -45,8 +45,8 @@ extension ExpandableContent: Presentable {
 		let expandButton = Button(
 			title: "",
 			type: .outlineIcon(
-                borderColor: .brand(.primaryTintColor),
-				textColor: .brand(.primaryTintColor),
+                borderColor: .brand(.secondaryButtonBackgroundColor),
+				textColor: .brand(.secondaryButtonBackgroundColor),
 				icon: .left(image: hCoreUIAssets.chevronDown.image, width: 10)
 			)
 		)
@@ -161,8 +161,8 @@ extension ExpandableContent: Presentable {
 								? L10n.expandableContentCollapse
 								: L10n.expandableContentExpand
 							expandButton.type.value = .outlineIcon(
-								borderColor: .brand(.primaryTintColor),
-								textColor: .brand(.primaryTintColor),
+								borderColor: .brand(.secondaryButtonBackgroundColor),
+								textColor: .brand(.secondaryButtonBackgroundColor),
 								icon: .left(
 									image: value
 										? hCoreUIAssets.chevronUp.image
