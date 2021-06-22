@@ -134,8 +134,15 @@ extension ExpandableContent: Presentable {
 			make.bottom.equalTo(outerContainer.snp.bottom).inset(buttonHalfHeight)
 			make.height.lessThanOrEqualTo(300)
 		}
-
-		bag += outerContainer.add(expandButton.wrappedIn(UIStackView())) { buttonView in
+        
+        let buttonContainer = UIStackView()
+        outerContainer.addSubview(buttonContainer)
+        buttonContainer.snp.makeConstraints { make in
+            make.bottom.equalToSuperview()
+            make.centerX.equalToSuperview()
+        }
+        
+        bag += buttonContainer.addArranged(expandButton) { buttonView in
 			bag += buttonIsHiddenSignal.atOnce()
 				.onValue { isHidden in
 					buttonView.isHidden = isHidden
@@ -163,14 +170,14 @@ extension ExpandableContent: Presentable {
 								)
 							)
 							buttonView.layoutIfNeeded()
+                            buttonContainer.layoutIfNeeded()
 						},
 						completion: nil
 					)
 				}
 
 			buttonView.snp.makeConstraints { make in
-				make.bottom.equalToSuperview()
-				make.centerX.equalToSuperview()
+                make.edges.equalToSuperview()
 			}
 		}
 
