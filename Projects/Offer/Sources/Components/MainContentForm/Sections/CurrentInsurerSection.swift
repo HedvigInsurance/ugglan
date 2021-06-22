@@ -53,7 +53,7 @@ extension CurrentInsurerSection: Presentable {
             
             let switchingCard = Card(
                 titleIcon: hCoreUIAssets.apartment.image,
-                title: "Switching from Folksam",
+                title: "Switching from Hedvig",
                 body: "It only takes a minute with BankID and your new insurance with Hedvig is activated the same day as your old one from Folksam expires.",
                 backgroundColor: .tint(.lavenderTwo)
             )
