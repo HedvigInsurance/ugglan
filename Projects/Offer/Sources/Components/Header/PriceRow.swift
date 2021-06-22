@@ -8,31 +8,31 @@ import hCoreUI
 
 struct PriceRow {
 	@Inject var state: OfferState
-    
-    enum Placement {
-        case header
-        case checkout
-        
-        var alignment: UIStackView.Alignment {
-            switch self {
-            case .header:
-                return .center
-            case .checkout:
-                return .leading
-            }
-        }
-        
-        var perMonthTextStyle: TextStyle {
-            switch self {
-            case .header:
-                return TextStyle.brand(.subHeadline(color: .primary)).centerAligned
-            case .checkout:
-                return TextStyle.brand(.subHeadline(color: .secondary)).leftAligned
-            }
-        }
-    }
-    
-    let placement: Placement
+
+	enum Placement {
+		case header
+		case checkout
+
+		var alignment: UIStackView.Alignment {
+			switch self {
+			case .header:
+				return .center
+			case .checkout:
+				return .leading
+			}
+		}
+
+		var perMonthTextStyle: TextStyle {
+			switch self {
+			case .header:
+				return TextStyle.brand(.subHeadline(color: .primary)).centerAligned
+			case .checkout:
+				return TextStyle.brand(.subHeadline(color: .secondary)).leftAligned
+			}
+		}
+	}
+
+	let placement: Placement
 }
 
 extension PriceRow: Presentable {
@@ -47,7 +47,7 @@ extension PriceRow: Presentable {
 		let priceContainer = UIStackView()
 		priceContainer.axis = .vertical
 		priceContainer.distribution = .equalCentering
-        priceContainer.alignment = placement.alignment
+		priceContainer.alignment = placement.alignment
 		view.addArrangedSubview(priceContainer)
 
 		let priceHorizontalContainer = UIStackView()
@@ -75,10 +75,10 @@ extension PriceRow: Presentable {
 			style: TextStyle.brand(.largeTitle(color: .primary)).centerAligned
 		)
 		priceHorizontalContainer.addArrangedSubview(netPriceLabel)
-        
+
 		let perMonthLabel = UILabel(
 			value: "",
-            style: placement.perMonthTextStyle
+			style: placement.perMonthTextStyle
 		)
 		view.addArrangedSubview(perMonthLabel)
 

@@ -31,8 +31,8 @@ extension Debug: Presentable {
 
 		func presentOffer<Mock: GraphQLMock>(@GraphQLMockBuilder _ mocks: () -> Mock) {
 			ApolloClient.createMock {
-                mocks()
-                sharedMocks
+				mocks()
+				sharedMocks
 			}
 
 			viewController.present(
@@ -173,74 +173,79 @@ extension Debug: Presentable {
 }
 
 extension Debug {
-    @GraphQLMockBuilder var sharedMocks: some GraphQLMock {
-        MutationMock(GraphQL.ChangeStartDateMutation.self) { operation in
-            if operation.startDate
-                == Calendar.current.date(byAdding: .day, value: 3, to: Date())?
-                .localDateString
-            {
-                throw MockError.failed
-            }
+	@GraphQLMockBuilder var sharedMocks: some GraphQLMock {
+		MutationMock(GraphQL.ChangeStartDateMutation.self) { operation in
+			if operation.startDate
+				== Calendar.current.date(byAdding: .day, value: 3, to: Date())?
+				.localDateString
+			{
+				throw MockError.failed
+			}
 
-            return
-                GraphQL.ChangeStartDateMutation.Data(
-                    editQuote: .makeCompleteQuote(startDate: operation.startDate)
-                )
-        }
+			return
+				GraphQL.ChangeStartDateMutation.Data(
+					editQuote: .makeCompleteQuote(startDate: operation.startDate)
+				)
+		}
 
-        SubscriptionMock(GraphQL.SignStatusSubscription.self, timeline: { operation in
-            TimelineEntry(
-                after: 0,
-                data: GraphQL.SignStatusSubscription.Data(
-                    signStatus: .init(
-                        status: .init(
-                            collectStatus: .init(
-                                status: .pending,
-                                code: "outstandingTransaction"
-                            ),
-                            signState: .inProgress
-                        )
-                    )
-                )
-            )
-            TimelineEntry(
-                after: 5,
-                data: GraphQL.SignStatusSubscription.Data(
-                    signStatus: .init(
-                        status: .init(
-                            collectStatus: .init(
-                                status: .pending,
-                                code: "outstandingTransaction"
-                            ),
-                            signState: .inProgress
-                        )
-                    )
-                )
-            )
-            TimelineEntry(
-                after: 10,
-                data: GraphQL.SignStatusSubscription.Data(
-                    signStatus: .init(
-                        status: .init(
-                            collectStatus: .init(
-                                status: .failed,
-                                code: "userCancel"
-                            ),
-                            signState: .failed
-                        )
-                    )
-                )
-            )
-        })
+		SubscriptionMock(
+			GraphQL.SignStatusSubscription.self,
+			timeline: { operation in
+				TimelineEntry(
+					after: 0,
+					data: GraphQL.SignStatusSubscription.Data(
+						signStatus: .init(
+							status: .init(
+								collectStatus: .init(
+									status: .pending,
+									code: "outstandingTransaction"
+								),
+								signState: .inProgress
+							)
+						)
+					)
+				)
+				TimelineEntry(
+					after: 5,
+					data: GraphQL.SignStatusSubscription.Data(
+						signStatus: .init(
+							status: .init(
+								collectStatus: .init(
+									status: .pending,
+									code: "outstandingTransaction"
+								),
+								signState: .inProgress
+							)
+						)
+					)
+				)
+				TimelineEntry(
+					after: 10,
+					data: GraphQL.SignStatusSubscription.Data(
+						signStatus: .init(
+							status: .init(
+								collectStatus: .init(
+									status: .failed,
+									code: "userCancel"
+								),
+								signState: .failed
+							)
+						)
+					)
+				)
+			}
+		)
 
-        MutationMock(GraphQL.RemoveStartDateMutation.self) { _ in
-            GraphQL.RemoveStartDateMutation.Data(
-                removeStartDate: .makeCompleteQuote(startDate: nil)
-            )
-        }
+		MutationMock(GraphQL.RemoveStartDateMutation.self) { _ in
+			GraphQL.RemoveStartDateMutation.Data(
+				removeStartDate: .makeCompleteQuote(startDate: nil)
+			)
+		}
 
-        MutationMock(GraphQL.CheckoutUpdateMutation.self, duration: 2) { operation in
-            GraphQL.CheckoutUpdateMutation.Data(editQuote: .makeCompleteQuote(email: operation.email, ssn: operation.ssn))
-        }
-    }
+		MutationMock(GraphQL.CheckoutUpdateMutation.self, duration: 2) { operation in
+			GraphQL.CheckoutUpdateMutation.Data(
+				editQuote: .makeCompleteQuote(email: operation.email, ssn: operation.ssn)
+			)
+		}
+	}
 }
