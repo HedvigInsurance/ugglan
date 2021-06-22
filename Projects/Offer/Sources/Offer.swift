@@ -129,7 +129,7 @@ class OfferState {
 
 					self.updateCacheStartDate(quoteId: quoteId, date: nil)
 
-					return Future(date)
+					return Future(nil)
 				}
 		}
 
