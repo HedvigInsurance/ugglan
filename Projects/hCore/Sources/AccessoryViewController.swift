@@ -1,11 +1,3 @@
-//
-//  AccessoryBaseView.swift
-//  hCore
-//
-//  Created by Sam Pettersson on 2021-06-22.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import UIKit
 import Presentation
