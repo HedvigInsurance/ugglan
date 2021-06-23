@@ -139,8 +139,7 @@ extension ExpandableContent: Presentable {
 		let buttonContainer = UIStackView()
 		outerContainer.addSubview(buttonContainer)
 		buttonContainer.snp.makeConstraints { make in
-			make.bottom.equalToSuperview()
-			make.centerX.equalToSuperview()
+			make.bottom.centerX.equalToSuperview()
 		}
 
 		bag += buttonContainer.addArranged(expandButton) { buttonView in
