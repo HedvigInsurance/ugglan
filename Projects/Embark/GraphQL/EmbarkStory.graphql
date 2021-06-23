@@ -247,20 +247,20 @@ query EmbarkStory($name: String!, $locale: String!) {
       action {
         ... on EmbarkMultiAction {
           multiActionData: data {
-          addLabel
-          key
+            addLabel
+            key
             maxAmount
             link {
               ...EmbarkLinkFragment
             }
             components {
               ... on EmbarkMultiActionNumberAction {
-                data {
-                                    key
+                numberActionData: data {
                   placeholder
-                  unit
+                  key
                   label
-                }
+                  unit
+                  }
               }
               ... on EmbarkDropdownAction {
                 dropDownActionData: data {

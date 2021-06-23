@@ -53,7 +53,7 @@ extension MultiAction: Viewable {
 					return .dropDown(dropDownAction)
 				} else if let switchAction = component.asEmbarkSwitchAction?.switchActionData {
 					return .switch(switchAction)
-				} else if let numberAction = component.asEmbarkMultiActionNumberAction?.data {
+                } else if let numberAction = component.asEmbarkMultiActionNumberAction?.numberActionData {
 					return .number(numberAction)
 				}
 
@@ -102,7 +102,11 @@ extension MultiAction: Viewable {
 		}
 
 		bag += view.didMoveToWindowSignal.onValue {
-			dataSource.lazyLoadDataSource(persistedRows: self.state.store.persistedMultiActionValueRows)
+            guard let key = data.key else { return }
+            
+            let componentValues = self.state.store.getComponentValues(actionKey: key, data: data)
+            
+            dataSource.lazyLoadDataSource(allValues: componentValues)
 		}
 
 		return (
@@ -145,11 +149,9 @@ extension MultiAction: Viewable {
 
 					let rows = dataSource.rows.compactMap { $0.left }
 
-					self.state.store.persistedMultiActionValueRows = rows
-
 					self.state.store.addMultiActionItems(
 						actionKey: key,
-						componentValues: rows.map { $0.values }
+                        componentValues: rows.map { $0.values.mapValues { $0.inputValue }}
 					) { self.state.store.createRevision() }
 					callback(data.link.fragments.embarkLinkFragment)
 				}
@@ -167,18 +169,27 @@ typealias MultiActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Ac
 
 typealias MultiActionRow = Either<MultiActionValueRow, MultiActionAddObjectRow>
 
-private var persistedRowsKey = 0
 
-extension EmbarkStore {
-	fileprivate var persistedMultiActionValueRows: [MultiActionValueRow] {
-		get { objc_getAssociatedObject(self, &persistedRowsKey) as? [MultiActionValueRow] ?? [] }
-		set {
-			objc_setAssociatedObject(
-				self,
-				&persistedRowsKey,
-				newValue,
-				objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN
-			)
-		}
-	}
+internal extension MultiActionStoreable {
+    func zip(with data: MultiActionData) -> MultiActionValue {
+        if let switchAction = data.components.first(where: { $0.asEmbarkSwitchAction?.switchActionData.key == self.componentKey })?.asEmbarkSwitchAction {
+            return .init(inputValue: self.inputValue, displayValue: switchAction.switchActionData.displayValue(inputValue: self.inputValue), isValid: true)
+        } else if let numberAction = data.components.first(where: { $0.asEmbarkMultiActionNumberAction?.numberActionData.key == self.componentKey })?.asEmbarkMultiActionNumberAction {
+            return .init(inputValue: self.inputValue, displayValue: numberAction.numberActionData.displayValue(inputValue: self.inputValue), isValid: true)
+        } else if componentKey.contains("Label") {
+            return .init(inputValue: self.inputValue, displayValue: self.inputValue)
+        } else {
+            return.init(inputValue: self.inputValue)
+        }
+    }
+}
+
+internal extension EmbarkSwitchActionData {
+    func displayValue(inputValue: String?) -> String? {
+        if let inputValue = inputValue, inputValue == "true" {
+            return label
+        } else {
+            return nil
+        }
+    }
 }

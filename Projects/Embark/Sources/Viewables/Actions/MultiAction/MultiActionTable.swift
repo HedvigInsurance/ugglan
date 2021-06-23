@@ -155,7 +155,7 @@ typealias EmbarkSwitchActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Pas
 	.MultiActionDatum.Component.AsEmbarkSwitchAction.SwitchActionDatum
 
 typealias EmbarkNumberMultiActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
-	.MultiActionDatum.Component.AsEmbarkMultiActionNumberAction.Datum
+    .MultiActionDatum.Component.AsEmbarkMultiActionNumberAction.NumberActionDatum
 
 internal typealias MultiActionStoreSignal = Signal<[String: MultiActionValue]>
 

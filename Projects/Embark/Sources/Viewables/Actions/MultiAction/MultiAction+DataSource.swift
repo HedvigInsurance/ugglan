@@ -20,7 +20,7 @@ struct MultiActionDataSource {
 	@ReadWriteState var rows: [MultiActionRow] = []
 
 	func addValue(values: [String: MultiActionValue]) {
-		let title = values.first(where: { (key, _) -> Bool in key == "type" })?.value.displayValue
+        let title = values.first(where: { (key, _) -> Bool in key.contains("Label") })?.value.inputValue
 
 		$rows.value.append(.make(.init(values: values, title: title ?? "")))
 
@@ -49,8 +49,11 @@ struct MultiActionDataSource {
 		}
 	}
 
-	func lazyLoadDataSource(persistedRows: [MultiActionValueRow]) {
-		$rows.value = [addObjectRow] + persistedRows.map { MultiActionRow.left($0) }
+	func lazyLoadDataSource(allValues: [[String:MultiActionValue]]) {
+        $rows.value = [addObjectRow]
+        allValues.forEach { (values) in
+            addValue(values: values)
+        }
 	}
 }
 

@@ -33,6 +33,10 @@ internal struct MultiActionStoreable {
 	var index: Int?
 	var componentKey: String
 	var inputValue: String
+    
+    var isLabel: Bool {
+        componentKey.contains("Label")
+    }
 
 	var storeKey: String { baseKey + "[\(String(index ?? 0))]" + componentKey }
 }
@@ -40,7 +44,7 @@ internal struct MultiActionStoreable {
 extension EmbarkStore {
 	func addMultiActionItems(
 		actionKey: String,
-		componentValues: [[String: MultiActionValue]],
+		componentValues: [[String: String]],
 		completion: @escaping () -> Void
 	) {
 		let newStoreables = componentValues.enumerated()
@@ -48,7 +52,7 @@ extension EmbarkStore {
 				element.map { component in
 					MultiActionStoreable(
 						actionKey: actionKey,
-						value: component.value.inputValue,
+						value: component.value,
 						componentKey: component.key,
 						index: index
 					)
@@ -66,6 +70,25 @@ extension EmbarkStore {
 		return values.filter { (key, _) -> Bool in key.contains(actionKey) }
 			.map { MultiActionStoreable(storeKey: $0.key, value: $0.value) }
 	}
+    
+    func getComponentValues(actionKey: String, data: MultiActionData) -> [[String:MultiActionValue]] {
+        let values = getPrefilledMultiActionItems(actionKey: actionKey)
+        
+        let clusteredByIndex = Dictionary(grouping: values, by: { $0.index })
+        
+        let mappedValues = clusteredByIndex.mapValues { storeables in
+            Dictionary(uniqueKeysWithValues: storeables.map { ($0.componentKey, $0.zip(with: data))})
+        }.values
+        
+        return Array(mappedValues)
+    }
+    
+    private func getPrefilledMultiActionItems(actionKey: String) -> [MultiActionStoreable] {
+        let values = prefill
+        
+        return values.filter { (key, _) -> Bool in key.contains(actionKey) }
+            .map { MultiActionStoreable(storeKey: $0.key, value: $0.value) }
+    }
 }
 
 extension String {
