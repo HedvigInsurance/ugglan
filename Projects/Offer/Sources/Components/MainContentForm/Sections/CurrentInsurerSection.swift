@@ -33,12 +33,14 @@ extension CurrentInsurerSection: Presentable {
 
 		let inception = quoteBundle.inception
 		if let concurrentInception = inception.asConcurrentInception {
+			#warning("Translation needed")
 			let section = SectionView(
 				headerView: UILabel(value: "Your current insurance", style: .default),
 				footerView: nil
 			)
 			sectionContainer.addArrangedSubview(section)
 
+			#warning("Translation needed")
 			let row = RowView(title: "Current insurer")
 			section.append(row)
 
@@ -51,12 +53,14 @@ extension CurrentInsurerSection: Presentable {
 				)
 			)
 
+			#warning("Translations needed")
 			cardTitle = "Switching from \(currentInsurerName)"
 			cardBody =
 				"It only takes a minute with BankID and your new insurance with Hedvig is activated the same day as your old one from \(currentInsurerName) expires."
 
 		} else if let independentInceptions = inception.asIndependentInceptions {
 			let inceptions = independentInceptions.inceptions
+			#warning("Translations needed")
 			let headerText = inceptions.count > 1 ? "Your current insurances" : "Your current insurance"
 
 			let section = SectionView(
@@ -73,6 +77,7 @@ extension CurrentInsurerSection: Presentable {
 					let innerBag = DisposeBag()
 
 					let insuranceType = quoteBundle.quoteFor(id: correspondingQuoteID)?.displayName
+					#warning("Translations needed")
 					let rowViewTitle = inceptions.count == 1 ? "Current insurer" : insuranceType
 
 					let row = RowView(title: rowViewTitle ?? "")
@@ -88,10 +93,13 @@ extension CurrentInsurerSection: Presentable {
 					return innerBag
 				}
 
+			#warning("Translations needed")
 			cardTitle =
 				inceptions.count == 1
 				? "Switching from \(inceptions[0].currentInsurer?.displayName ?? "")"
 				: "Switching to Hedvig"
+
+			#warning("Translations needed")
 			cardBody =
 				inceptions.count == 1
 				? "It only takes a minute with BankID and your new insurance with Hedvig is activated the same day as your old one from \(inceptions[0].currentInsurer?.displayName ?? "") expires."

@@ -9,28 +9,28 @@ public struct Card {
 	@ReadWriteState var title: DisplayableString
 	@ReadWriteState var body: DisplayableString
 	var backgroundColor: UIColor
-    @ReadWriteState var buttonText: DisplayableString?
-    var buttonType: ButtonType?
-    
-    public init(
-        titleIcon: UIImage,
-        title: DisplayableString,
-        body: DisplayableString,
-        buttonText: DisplayableString? = nil,
-        backgroundColor: UIColor,
-        buttonType: ButtonType? = nil
-    ) {
-        self.titleIcon = titleIcon
-        self.title = title
-        self.body = body
-        self.backgroundColor = backgroundColor
-        self.buttonText = buttonText
-        self.buttonType = buttonType
-    }
+	@ReadWriteState var buttonText: DisplayableString?
+	var buttonType: ButtonType?
+
+	public init(
+		titleIcon: UIImage,
+		title: DisplayableString,
+		body: DisplayableString,
+		buttonText: DisplayableString? = nil,
+		backgroundColor: UIColor,
+		buttonType: ButtonType? = nil
+	) {
+		self.titleIcon = titleIcon
+		self.title = title
+		self.body = body
+		self.backgroundColor = backgroundColor
+		self.buttonText = buttonText
+		self.buttonType = buttonType
+	}
 }
 
 extension Card: Viewable {
-    public func materialize(events _: ViewableEvents) -> (UIView, Signal<UIControl>) {
+	public func materialize(events _: ViewableEvents) -> (UIView, Signal<UIControl>) {
 		let bag = DisposeBag()
 		let view = UIView()
 		view.accessibilityIdentifier = "Card"
@@ -65,16 +65,16 @@ extension Card: Viewable {
 				imageView.contentMode = .scaleAspectFit
 				imageView.tintColor = .typographyColor(.primary(state: .matching(backgroundColor)))
 
-                bag += $titleIcon.bindTo(imageView, \.image)
+				bag += $titleIcon.bindTo(imageView, \.image)
 
 				imageView.snp.makeConstraints { make in make.height.width.equalTo(24) }
 
 				return imageView
 			}()
 		)
-        
-        let titleWrapper = UIView()
-        headerView.addArrangedSubview(titleWrapper)
+
+		let titleWrapper = UIView()
+		headerView.addArrangedSubview(titleWrapper)
 
 		let titleLabel = MultilineLabel(
 			value: title,
@@ -83,11 +83,11 @@ extension Card: Viewable {
 		)
 		bag += $title.bindTo(titleLabel.$value)
 
-        bag += titleWrapper.add(titleLabel) { view in
-            view.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
-        }
+		bag += titleWrapper.add(titleLabel) { view in
+			view.snp.makeConstraints { make in
+				make.edges.equalToSuperview()
+			}
+		}
 
 		let bodyLabel = MultilineLabel(
 			value: body,
@@ -97,19 +97,20 @@ extension Card: Viewable {
 		bag += $body.bindTo(bodyLabel.$value)
 
 		bag += contentView.addArranged(bodyLabel) { view in contentView.setCustomSpacing(24, after: view) }
-        
-        let onTapCallbacker = Callbacker<UIControl>()
 
-        if let buttonText = buttonText,
-           let buttonType = buttonType {
-            let button = Button(title: buttonText, type: buttonType)
-            bag += $buttonText.compactMap { $0 }.bindTo(button.title)
-            bag += contentView.addArranged(
-                button.alignedTo(alignment: .center) { buttonView in
-                    bag += button.onTapSignal.onValue { onTapCallbacker.callAll(with: buttonView) }
-                }
-            )
-        }
+		let onTapCallbacker = Callbacker<UIControl>()
+
+		if let buttonText = buttonText,
+			let buttonType = buttonType
+		{
+			let button = Button(title: buttonText, type: buttonType)
+			bag += $buttonText.compactMap { $0 }.bindTo(button.title)
+			bag += contentView.addArranged(
+				button.alignedTo(alignment: .center) { buttonView in
+					bag += button.onTapSignal.onValue { onTapCallbacker.callAll(with: buttonView) }
+				}
+			)
+		}
 
 		return (view, onTapCallbacker.providedSignal.hold(bag))
 	}

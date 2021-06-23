@@ -73,7 +73,7 @@ extension Debug: Presentable {
 				}
 				presentOffer(mockInterceptorProvider)
 			}
-        
+
 		bag += section.appendRow(title: "Swedish house")
 			.onValue {
 				let mockInterceptorProvider = MockInterceptorProvider()
