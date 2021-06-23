@@ -45,8 +45,8 @@ extension ExpandableContent: Presentable {
 		let expandButton = Button(
 			title: "",
 			type: .outlineIcon(
-				borderColor: .brand(.primaryButtonTextColor),
-				textColor: .brand(.primaryButtonTextColor),
+				borderColor: .brand(.secondaryButtonBackgroundColor),
+				textColor: .brand(.secondaryButtonBackgroundColor),
 				icon: .left(image: hCoreUIAssets.chevronDown.image, width: 10)
 			)
 		)
@@ -128,6 +128,7 @@ extension ExpandableContent: Presentable {
 		}
 
 		outerContainer.addSubview(shadowView)
+		outerContainer.clipsToBounds = true
 
 		shadowView.snp.makeConstraints { make in
 			make.width.centerX.equalToSuperview()
@@ -135,7 +136,13 @@ extension ExpandableContent: Presentable {
 			make.height.lessThanOrEqualTo(300)
 		}
 
-		bag += outerContainer.add(expandButton.wrappedIn(UIStackView())) { buttonView in
+		let buttonContainer = UIStackView()
+		outerContainer.addSubview(buttonContainer)
+		buttonContainer.snp.makeConstraints { make in
+			make.bottom.centerX.equalToSuperview()
+		}
+
+		bag += buttonContainer.addArranged(expandButton) { buttonView in
 			bag += buttonIsHiddenSignal.atOnce()
 				.onValue { isHidden in
 					buttonView.isHidden = isHidden
@@ -153,8 +160,8 @@ extension ExpandableContent: Presentable {
 								? L10n.expandableContentCollapse
 								: L10n.expandableContentExpand
 							expandButton.type.value = .outlineIcon(
-								borderColor: .brand(.primaryButtonTextColor),
-								textColor: .brand(.primaryButtonTextColor),
+								borderColor: .brand(.secondaryButtonBackgroundColor),
+								textColor: .brand(.secondaryButtonBackgroundColor),
 								icon: .left(
 									image: value
 										? hCoreUIAssets.chevronUp.image
@@ -163,14 +170,14 @@ extension ExpandableContent: Presentable {
 								)
 							)
 							buttonView.layoutIfNeeded()
+							buttonContainer.layoutIfNeeded()
 						},
 						completion: nil
 					)
 				}
 
 			buttonView.snp.makeConstraints { make in
-				make.bottom.equalToSuperview()
-				make.centerX.equalToSuperview()
+				make.edges.equalToSuperview()
 			}
 		}
 
