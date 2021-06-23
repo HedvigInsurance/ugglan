@@ -99,11 +99,20 @@ extension GraphQL.QuoteBundleQuery.Data {
 				inception: .makeIndependentInceptions(inceptions: [
 					.init(
 						startDate: "2020-05-10",
-                        currentInsurer: .init(id: "Hedvig", displayName: "Hedvig", switchable: true),
+						currentInsurer: .init(
+							id: "Hedvig",
+							displayName: "Hedvig",
+							switchable: true
+						),
 						correspondingQuote: .makeCompleteQuote(id: "123")
 					),
 					.init(
 						startDate: "2020-05-10",
+						currentInsurer: .init(
+							id: "axels",
+							displayName: "Axels försäkringar",
+							switchable: true
+						),
 						correspondingQuote: .makeCompleteQuote(id: "1234")
 					),
 				])

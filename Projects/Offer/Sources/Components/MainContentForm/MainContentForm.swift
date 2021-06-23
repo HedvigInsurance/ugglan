@@ -8,6 +8,7 @@ import hCoreUI
 
 struct MainContentForm {
 	let scrollView: UIScrollView
+	@Inject var state: OfferState
 }
 
 extension MainContentForm: Presentable {
@@ -47,7 +48,8 @@ extension MainContentForm: Presentable {
 			container.didLayoutSignal,
 			formContainer.didLayoutSignal,
 			form.didLayoutSignal,
-			scrollView.didScrollSignal
+			scrollView.didScrollSignal,
+			state.quotesSignal.toVoid()
 		)
 		.onValue {
 			let bottomContentInset: CGFloat = scrollView.safeAreaInsets.bottom + 20

@@ -129,7 +129,7 @@ extension GraphQL.QuoteBundleQuery.Data {
 						.makeCompleteQuote(id: "12345"),
 					],
 					startDate: Date().localDateString,
-					currentInsurer: nil
+					currentInsurer: .init(id: "Hedvig", displayName: "Hedvig", switchable: true)
 				)
 			),
 			signMethodForQuotes: GraphQL.SignMethod.simpleSign,
