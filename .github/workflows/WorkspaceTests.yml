@@ -11,6 +11,8 @@ jobs:
     runs-on: self-hosted
 
     steps:
+    - name: Cleanup
+      run: sudo rm -rf *
     - uses: actions/checkout@v2
     - name: Bundle install
       run: arch -arm64 sudo bundle install
@@ -35,6 +37,3 @@ jobs:
       with:
         name: test_output.html
         path: fastlane/test_output/index.html
-    - name: Cleanup
-      if: ${{ always() }}
-      run: sudo rm -rf *

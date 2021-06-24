@@ -11,6 +11,8 @@ jobs:
     runs-on: self-hosted
 
     steps:
+    - name: Cleanup
+      run: sudo rm -rf *
     - uses: actions/checkout@v2
     - name: Bundle install
       run: arch -arm64 sudo bundle install
@@ -31,6 +33,3 @@ jobs:
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
       run: arch -arm64 sudo bundle exec fastlane ios workspace_apps --verbose
-    - name: Cleanup
-      if: ${{ always() }}
-      run: sudo rm -rf *
