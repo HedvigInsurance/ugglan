@@ -2,8 +2,6 @@ import Flow
 import Form
 import Foundation
 import hCore
-import hCoreUI
-import Market
 import UIKit
 
 public struct AppInfoRow {
@@ -64,7 +62,7 @@ extension AppInfoRow: Viewable {
         bag += value.onValue { value in
             row.subtitle = value
             activityIndicator.stopAnimating()
-            
+
             bag += row.subtitleLabel?.copySignal.onValue { _ in
                 UIPasteboard.general.value = value
             }

@@ -53,7 +53,7 @@ extension LoggedIn: Presentable {
 
         let indexForTabsSignal = ReadWriteSignal<[Int: Tab]>([:])
 
-        let home = Home()
+        let home = Home(sections: Contracts.getSections())
         let contracts = Contracts()
         let keyGear = KeyGearOverview()
         let referrals = Forever(service: ForeverServiceGraphQL())
@@ -194,5 +194,23 @@ extension LoggedIn: Presentable {
         bag += ChatState.shared.activateNewMessageToasts(tabBarController)
 
         return (tabBarController, bag)
+    }
+}
+
+public extension Contracts {
+    static func getSections() -> [HomeSection] {
+        [HomeSection(
+            title: L10n.HomeTab.editingSectionTitle,
+            style: .vertical,
+            children:
+            [.init(
+                title: L10n.HomeTab.editingSectionChangeAddressLabel,
+                icon: hCoreUIAssets.apartment.image,
+                handler: { viewController in
+                    viewController.present(MovingFlow(),
+                                           options: [.defaults])
+                }
+            )]
+        )]
     }
 }
