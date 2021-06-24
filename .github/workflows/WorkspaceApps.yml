@@ -8,16 +8,13 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v2
-    - name: XCode Select
-      run: sudo xcode-select -s /Applications/Xcode_12.3.app
-    - name: Install Tuist
-      run: bash <(curl -Ls https://install.tuist.io)
+    - name: Bundle install
+      run: arch -arm64 sudo bundle install
     - name: Fastlane Action
-      uses: maierj/fastlane-action@v1.4.0
       env:
         APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
         APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
@@ -33,5 +30,4 @@ jobs:
         GITHUB_PR_NUMBER: ${{ github.event.number }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      with:
-       lane: ios workspace_apps
+      run: arch -arm64 sudo bundle exec fastlane ios workspace_apps

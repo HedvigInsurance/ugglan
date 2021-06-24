@@ -17,64 +17,39 @@ extension CoverageSection: Presentable {
 
 		let bag = DisposeBag()
 
+		let contentWrapper = UIStackView()
+		section.append(contentWrapper)
+
 		bag += state.quotesSignal.onValueDisposePrevious { quotes in
 			let innerBag = DisposeBag()
 
-			let innerSection = SectionView()
-			innerSection.dynamicStyle = .brandGrouped(
-				separatorType: .standard,
-				shouldRoundCorners: { _ in false }
-			)
-
 			if quotes.count > 1 {
-				let label = MultilineLabel(
-					value: "Read the full coverage of your insurances below.",
-					style: .brand(.body(color: .secondary))
-				)
-				let labelInset =
-					UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
-					+ UIEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
-				innerBag += section.append(label.insetted(labelInset))
-
-				section.append(innerSection)
-
-				innerBag += {
-					innerSection.removeFromSuperview()
-				}
-			}
-
-			innerBag += quotes.map { (quote) -> DisposeBag in
-				let innerBag = DisposeBag()
-
-				if quotes.count > 1 {
-					let row = RowView(title: quote.displayName)
-					row.append(hCoreUIAssets.chevronRight.image)
-
-					innerBag += innerSection.append(row)
-						.onValue {
-							section.viewController?
-								.present(
-									QuoteCoverage(quote: quote).withCloseButton,
-									style: .detented(.large),
-									options: [
-										.defaults, .prefersLargeTitles(true),
-										.largeTitleDisplayMode(.always),
-									]
-								)
-						}
-
-					innerBag += {
-						innerSection.remove(row)
-					}
-				} else {
-					innerBag += section.append(SingleQuoteCoverage(quote: quote))
-				}
-
-				return innerBag
+				innerBag += contentWrapper.addArrangedSubview(MultiQuoteCoverage(quotes: quotes))
+			} else if let quote = quotes.first {
+				innerBag += contentWrapper.addArrangedSubview(SingleQuoteCoverage(quote: quote))
 			}
 
 			return innerBag
 		}
+
+		bag += state
+			.dataSignal
+			.compactMap { $0.quoteBundle }
+			.onValueDisposePrevious { quoteBundle in
+				let innerBag = DisposeBag()
+
+				let hasConcurrentInception =
+					quoteBundle.inception.asConcurrentInception?.currentInsurer != nil
+				let hasIndependentInceptions =
+					quoteBundle.inception.asIndependentInceptions?.inceptions
+					.compactMap { $0.currentInsurer }.count ?? 0 > 0
+
+				if hasConcurrentInception || hasIndependentInceptions {
+					innerBag += section.append(CurrentInsurerSection(quoteBundle: quoteBundle))
+				}
+
+				return innerBag
+			}
 
 		return (section, bag)
 	}

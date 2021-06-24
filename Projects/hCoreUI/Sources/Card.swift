@@ -3,19 +3,34 @@ import Form
 import Foundation
 import UIKit
 import hCore
-import hCoreUI
 
-struct Card {
+public struct Card {
 	@ReadWriteState var titleIcon: UIImage
 	@ReadWriteState var title: DisplayableString
 	@ReadWriteState var body: DisplayableString
-	@ReadWriteState var buttonText: DisplayableString
 	var backgroundColor: UIColor
-	var buttonType: ButtonType
+	@ReadWriteState var buttonText: DisplayableString?
+	var buttonType: ButtonType?
+
+	public init(
+		titleIcon: UIImage,
+		title: DisplayableString,
+		body: DisplayableString,
+		buttonText: DisplayableString? = nil,
+		backgroundColor: UIColor,
+		buttonType: ButtonType? = nil
+	) {
+		self.titleIcon = titleIcon
+		self.title = title
+		self.body = body
+		self.backgroundColor = backgroundColor
+		self.buttonText = buttonText
+		self.buttonType = buttonType
+	}
 }
 
 extension Card: Viewable {
-	func materialize(events _: ViewableEvents) -> (UIView, Signal<UIControl>) {
+	public func materialize(events _: ViewableEvents) -> (UIView, Signal<UIControl>) {
 		let bag = DisposeBag()
 		let view = UIView()
 		view.accessibilityIdentifier = "Card"
@@ -58,14 +73,21 @@ extension Card: Viewable {
 			}()
 		)
 
-		let titleLabel = UILabel(
+		let titleWrapper = UIView()
+		headerView.addArrangedSubview(titleWrapper)
+
+		let titleLabel = MultilineLabel(
 			value: title,
 			style: TextStyle.brand(.headline(color: .primary(state: .matching(backgroundColor))))
 				.centerAligned
 		)
-		bag += $title.bindTo(titleLabel, \.value)
+		bag += $title.bindTo(titleLabel.$value)
 
-		headerView.addArrangedSubview(titleLabel)
+		bag += titleWrapper.add(titleLabel) { view in
+			view.snp.makeConstraints { make in
+				make.edges.equalToSuperview()
+			}
+		}
 
 		let bodyLabel = MultilineLabel(
 			value: body,
@@ -76,16 +98,19 @@ extension Card: Viewable {
 
 		bag += contentView.addArranged(bodyLabel) { view in contentView.setCustomSpacing(24, after: view) }
 
-		let button = Button(title: buttonText, type: buttonType)
-		bag += $buttonText.bindTo(button.title)
-
 		let onTapCallbacker = Callbacker<UIControl>()
 
-		bag += contentView.addArranged(
-			button.alignedTo(alignment: .center) { buttonView in
-				bag += button.onTapSignal.onValue { onTapCallbacker.callAll(with: buttonView) }
-			}
-		)
+		if let buttonText = buttonText,
+			let buttonType = buttonType
+		{
+			let button = Button(title: buttonText, type: buttonType)
+			bag += $buttonText.compactMap { $0 }.bindTo(button.title)
+			bag += contentView.addArranged(
+				button.alignedTo(alignment: .center) { buttonView in
+					bag += button.onTapSignal.onValue { onTapCallbacker.callAll(with: buttonView) }
+				}
+			)
+		}
 
 		return (view, onTapCallbacker.providedSignal.hold(bag))
 	}
