@@ -15,17 +15,16 @@ jobs:
       run: sudo rm -rf *
     - uses: actions/checkout@v2
     - name: Bundle install
-      run: arch -arm64 sudo bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
       env:
-        CI: 'true'
         APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
         APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
         APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
         GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 sudo bundle exec fastlane ios workspace_tests
+      run: arch -arm64 sudo --preserve-env bundle exec fastlane ios workspace_tests
     - name: Upload test results
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
