@@ -13,7 +13,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Fastlane Action
-      uses: maierj/fastlane-action@v1.4.0
       env:
         APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
         APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
@@ -29,5 +28,4 @@ jobs:
         GITHUB_PR_NUMBER: ${{ github.event.number }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      with:
-       lane: ios workspace_apps
+      run: arch -arm64 fastlane ios workspace_apps
