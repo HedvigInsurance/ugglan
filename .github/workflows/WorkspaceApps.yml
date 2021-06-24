@@ -8,14 +8,10 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v2
-    - name: XCode Select
-      run: sudo xcode-select -s /Applications/Xcode_12.3.app
-    - name: Install Tuist
-      run: bash <(curl -Ls https://install.tuist.io)
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       env:
