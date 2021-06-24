@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Bundle install
-      run: arch -arm64 sudo bundle install
+      run: arch -arm64 bundle install
     - name: Fastlane Action
       env:
         APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
@@ -30,4 +30,4 @@ jobs:
         GITHUB_PR_NUMBER: ${{ github.event.number }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 sudo bundle exec fastlane ios workspace_apps
+      run: arch -arm64 bundle exec fastlane ios workspace_apps
