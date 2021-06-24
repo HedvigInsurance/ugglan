@@ -25,8 +25,8 @@ extension CoverageSection: Presentable {
 
 			if quotes.count > 1 {
 				innerBag += contentWrapper.addArrangedSubview(MultiQuoteCoverage(quotes: quotes))
-			} else if quotes.count == 1 {
-				innerBag += contentWrapper.addArrangedSubview(SingleQuoteCoverage(quote: quotes[0]))
+			} else if let quote = quotes.first {
+				innerBag += contentWrapper.addArrangedSubview(SingleQuoteCoverage(quote: quote))
 			}
 
 			return innerBag

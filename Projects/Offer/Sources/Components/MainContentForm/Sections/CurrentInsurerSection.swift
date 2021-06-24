@@ -18,7 +18,7 @@ extension CurrentInsurerSection: Presentable {
 		let sectionContainer = UIStackView()
 		sectionContainer.axis = .vertical
 
-		bag += sectionContainer.addArranged(Spacing(height: 16))
+		sectionContainer.appendSpacing(.inbetween)
 
 		bag += {
 			for view in sectionContainer.subviews {
@@ -30,6 +30,7 @@ extension CurrentInsurerSection: Presentable {
 		cardContainer.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 5)
 		var cardTitle = ""
 		var cardBody = ""
+		var switchable = false
 
 		let inception = quoteBundle.inception
 		if let concurrentInception = inception.asConcurrentInception {
@@ -40,11 +41,12 @@ extension CurrentInsurerSection: Presentable {
 			)
 			sectionContainer.addArrangedSubview(section)
 
-			#warning("Translation needed")
+			#warning("Translation needed — same as on line 82")
 			let row = RowView(title: "Current insurer")
 			section.append(row)
 
 			let currentInsurerName = concurrentInception.currentInsurer?.displayName ?? ""
+			switchable = concurrentInception.currentInsurer?.switchable ?? false
 
 			row.append(
 				UILabel(
@@ -60,6 +62,9 @@ extension CurrentInsurerSection: Presentable {
 
 		} else if let independentInceptions = inception.asIndependentInceptions {
 			let inceptions = independentInceptions.inceptions
+			switchable =
+				inceptions.map { $0.currentInsurer?.switchable ?? false }.filter { $0 == true }.count
+				> 0
 			#warning("Translations needed")
 			let headerText = inceptions.count > 1 ? "Your current insurances" : "Your current insurance"
 
@@ -93,28 +98,32 @@ extension CurrentInsurerSection: Presentable {
 					return innerBag
 				}
 
-			#warning("Translations needed")
-			cardTitle =
-				inceptions.count == 1
-				? "Switching from \(inceptions[0].currentInsurer?.displayName ?? "")"
-				: "Switching to Hedvig"
+			if let firstInception = inceptions.first {
+				#warning("Translations needed")
+				cardTitle =
+					inceptions.count == 1
+					? "Switching from \(firstInception.currentInsurer?.displayName ?? "")"
+					: "Switching to Hedvig"
 
-			#warning("Translations needed")
-			cardBody =
-				inceptions.count == 1
-				? "It only takes a minute with BankID and your new insurance with Hedvig is activated the same day as your old one from \(inceptions[0].currentInsurer?.displayName ?? "") expires."
-				: "It only takes a minute with BankID and your new insurance with Hedvig is activated the same day as your old ones expire."
+				#warning("Translations needed")
+				cardBody =
+					inceptions.count == 1
+					? "It only takes a minute with BankID and your new insurance with Hedvig is activated the same day as your old one from \(firstInception.currentInsurer?.displayName ?? "") expires."
+					: "It only takes a minute with BankID and your new insurance with Hedvig is activated the same day as your old ones expire."
+			}
 		}
 
-		let switchingCard = Card(
-			titleIcon: hCoreUIAssets.apartment.image,
-			title: cardTitle,
-			body: cardBody,
-			backgroundColor: .tint(.lavenderTwo)
-		)
+		if switchable {
+			let switchingCard = Card(
+				titleIcon: hCoreUIAssets.apartment.image,
+				title: cardTitle,
+				body: cardBody,
+				backgroundColor: .tint(.lavenderTwo)
+			)
 
-		sectionContainer.addArrangedSubview(cardContainer)
-		bag += cardContainer.addArranged(switchingCard)
+			sectionContainer.addArrangedSubview(cardContainer)
+			bag += cardContainer.addArranged(switchingCard)
+		}
 
 		return (sectionContainer, bag)
 	}
