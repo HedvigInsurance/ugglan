@@ -39,7 +39,7 @@ extension Checkout: Presentable {
 								: "\(previousString) + \n\(quote.displayName)"
 						}
 					),
-					style: .brand(.title1(color: .secondary))
+					style: TextStyle.brand(.title1(color: .secondary))
 						.restyled({ (style: inout TextStyle) in
 							style.lineHeight = quoteBundle.quotes.count > 1 ? 45 : 0
 						})
