@@ -35,3 +35,5 @@ jobs:
       with:
         name: test_output.html
         path: fastlane/test_output/index.html
+    - name: Cleanup
+      run: sudo rm -rf *

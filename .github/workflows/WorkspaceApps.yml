@@ -31,3 +31,5 @@ jobs:
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
       run: arch -arm64 sudo bundle exec fastlane ios workspace_apps
+    - name: Cleanup
+      run: sudo rm -rf *
