@@ -249,6 +249,8 @@ platform :ios do
                 type: "adhoc",
                 app_identifier: app_identifier,
                 readonly: is_ci,
+                shallow_clone: is_ci,
+                clone_branch_directly: is_ci,
                 git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil,
                 keychain_name: is_ci ? 'CI' : nil,
                 keychain_password: is_ci ? ENV["MATCH_PASSWORD"] : nil

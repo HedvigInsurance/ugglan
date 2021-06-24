@@ -36,4 +36,5 @@ jobs:
         name: test_output.html
         path: fastlane/test_output/index.html
     - name: Cleanup
+      if: ${{ always() }}
       run: sudo rm -rf *
