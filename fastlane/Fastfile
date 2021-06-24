@@ -470,15 +470,13 @@ platform :ios do
                         workspace: "Ugglan.xcworkspace",
                         devices: [device],
                         scheme: scheme,
-                        derived_data_path: "scan_derived_data",
                         xcargs: "OTHER_SWIFT_FLAGS='$(inherited) -D RECORD'"
                     )
                 else
                     scan(
                         workspace: "Ugglan.xcworkspace",
                         devices: [device],
-                        scheme: scheme,
-                        derived_data_path: "scan_derived_data"
+                        scheme: scheme
                     )
                 end
             rescue => ex
