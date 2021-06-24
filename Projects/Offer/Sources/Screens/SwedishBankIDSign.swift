@@ -13,7 +13,7 @@ struct SwedishBankIdSign {
 
 	func presentFailedAlert(
 		_ viewController: UIViewController,
-		completion: @escaping (_ result: Result<Void>) -> Void
+        completion: @escaping (_ result: Flow.Result<Void>) -> Void
 	) {
 		let alert = Alert<Void>(
 			title: L10n.bankidFailedTitle,
@@ -39,7 +39,7 @@ struct SwedishBankIdSign {
 	func presentErrorAlert(
 		_ viewController: UIViewController,
 		data: GraphQL.SignStatusSubscription.Data,
-		completion: @escaping (_ result: Result<Void>) -> Void
+        completion: @escaping (_ result: Flow.Result<Void>) -> Void
 	) {
 		guard let code = data.signStatus?.status?.collectStatus?.code,
 			let state = data.signStatus?.status?.signState
