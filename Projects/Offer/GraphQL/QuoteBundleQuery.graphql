@@ -8,6 +8,7 @@ fragment InceptionFragment on QuoteBundleInception {
     startDate
     currentInsurer {
       id
+      displayName
       switchable
     }
   }
@@ -16,6 +17,7 @@ fragment InceptionFragment on QuoteBundleInception {
       startDate
       currentInsurer {
         id
+        displayName
         switchable
       }
       correspondingQuote {
