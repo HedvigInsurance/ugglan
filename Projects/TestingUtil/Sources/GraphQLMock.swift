@@ -112,21 +112,24 @@ extension Dictionary {
 	public static func buildBlock<M1>(_ m1: M1) -> CombinedMock<(M1)>
 	where M1: GraphQLMock {
 		var combinedMock = CombinedMock((m1))
-		combinedMock.handlers = m1.handlers
+		combinedMock.handlers += m1.handlers
 		return combinedMock
 	}
 
 	public static func buildBlock<M1, M2>(_ m1: M1, _ m2: M2) -> CombinedMock<(M1, M2)>
 	where M1: GraphQLMock, M2: GraphQLMock {
 		var combinedMock = CombinedMock((m1, m2))
-		combinedMock.handlers = m1.handlers + m2.handlers
+		combinedMock.handlers += m1.handlers
+        combinedMock.handlers += m2.handlers
 		return combinedMock
 	}
 
 	public static func buildBlock<M1, M2, M3>(_ m1: M1, _ m2: M2, _ m3: M3) -> CombinedMock<(M1, M2, M3)>
 	where M1: GraphQLMock, M2: GraphQLMock, M3: GraphQLMock {
 		var combinedMock = CombinedMock((m1, m2, m3))
-		combinedMock.handlers = m1.handlers + m2.handlers + m3.handlers
+        combinedMock.handlers += m1.handlers
+        combinedMock.handlers += m2.handlers
+        combinedMock.handlers += m3.handlers
 		return combinedMock
 	}
 
@@ -138,7 +141,10 @@ extension Dictionary {
 	) -> CombinedMock<(M1, M2, M3, M4)>
 	where M1: GraphQLMock, M2: GraphQLMock, M3: GraphQLMock, M4: GraphQLMock {
 		var combinedMock = CombinedMock((m1, m2, m3, m4))
-		combinedMock.handlers = m1.handlers + m2.handlers + m3.handlers + m4.handlers
+        combinedMock.handlers += m1.handlers
+        combinedMock.handlers += m2.handlers
+        combinedMock.handlers += m3.handlers
+        combinedMock.handlers += m4.handlers
 		return combinedMock
 	}
 
@@ -151,7 +157,11 @@ extension Dictionary {
 	) -> CombinedMock<(M1, M2, M3, M4, M5)>
 	where M1: GraphQLMock, M2: GraphQLMock, M3: GraphQLMock, M4: GraphQLMock, M5: GraphQLMock {
 		var combinedMock = CombinedMock((m1, m2, m3, m4, m5))
-		combinedMock.handlers = m1.handlers + m2.handlers + m3.handlers + m4.handlers + m5.handlers
+        combinedMock.handlers += m1.handlers
+        combinedMock.handlers += m2.handlers
+        combinedMock.handlers += m3.handlers
+        combinedMock.handlers += m4.handlers
+        combinedMock.handlers += m5.handlers
 		return combinedMock
 	}
 
@@ -165,8 +175,12 @@ extension Dictionary {
 	) -> CombinedMock<(M1, M2, M3, M4, M5, M6)>
 	where M1: GraphQLMock, M2: GraphQLMock, M3: GraphQLMock, M4: GraphQLMock, M5: GraphQLMock, M6: GraphQLMock {
 		var combinedMock = CombinedMock((m1, m2, m3, m4, m5, m6))
-		combinedMock.handlers =
-			m1.handlers + m2.handlers + m3.handlers + m4.handlers + m5.handlers + m6.handlers
+        combinedMock.handlers += m1.handlers
+        combinedMock.handlers += m2.handlers
+        combinedMock.handlers += m3.handlers
+        combinedMock.handlers += m4.handlers
+        combinedMock.handlers += m5.handlers
+        combinedMock.handlers += m6.handlers
 		return combinedMock
 	}
 
@@ -184,8 +198,13 @@ extension Dictionary {
 		M7: GraphQLMock
 	{
 		var combinedMock = CombinedMock((m1, m2, m3, m4, m5, m6, m7))
-		combinedMock.handlers =
-			m1.handlers + m2.handlers + m3.handlers + m4.handlers + m5.handlers + m6.handlers + m7.handlers
+        combinedMock.handlers += m1.handlers
+        combinedMock.handlers += m2.handlers
+        combinedMock.handlers += m3.handlers
+        combinedMock.handlers += m4.handlers
+        combinedMock.handlers += m5.handlers
+        combinedMock.handlers += m6.handlers
+        combinedMock.handlers += m7.handlers
 		return combinedMock
 	}
 
@@ -204,9 +223,14 @@ extension Dictionary {
 		M7: GraphQLMock, M8: GraphQLMock
 	{
 		var combinedMock = CombinedMock((m1, m2, m3, m4, m5, m6, m7, m8))
-		combinedMock.handlers =
-			m1.handlers + m2.handlers + m3.handlers + m4.handlers + m5.handlers + m6.handlers + m7.handlers
-			+ m8.handlers
+        combinedMock.handlers += m1.handlers
+        combinedMock.handlers += m2.handlers
+        combinedMock.handlers += m3.handlers
+        combinedMock.handlers += m4.handlers
+        combinedMock.handlers += m5.handlers
+        combinedMock.handlers += m6.handlers
+        combinedMock.handlers += m7.handlers
+        combinedMock.handlers += m8.handlers
 		return combinedMock
 	}
 
@@ -226,9 +250,15 @@ extension Dictionary {
 		M7: GraphQLMock, M8: GraphQLMock, M9: GraphQLMock
 	{
 		var combinedMock = CombinedMock((m1, m2, m3, m4, m5, m6, m7, m8, m9))
-		combinedMock.handlers =
-			m1.handlers + m2.handlers + m3.handlers + m4.handlers + m5.handlers + m6.handlers + m7.handlers
-			+ m8.handlers + m9.handlers
+        combinedMock.handlers += m1.handlers
+        combinedMock.handlers += m2.handlers
+        combinedMock.handlers += m3.handlers
+        combinedMock.handlers += m4.handlers
+        combinedMock.handlers += m5.handlers
+        combinedMock.handlers += m6.handlers
+        combinedMock.handlers += m7.handlers
+        combinedMock.handlers += m8.handlers
+        combinedMock.handlers += m9.handlers
 		return combinedMock
 	}
 
@@ -249,9 +279,16 @@ extension Dictionary {
 		M7: GraphQLMock, M8: GraphQLMock, M9: GraphQLMock, M10: GraphQLMock
 	{
 		var combinedMock = CombinedMock((m1, m2, m3, m4, m5, m6, m7, m8, m9, m10))
-		combinedMock.handlers =
-			m1.handlers + m2.handlers + m3.handlers + m4.handlers + m5.handlers + m6.handlers + m7.handlers
-			+ m8.handlers + m9.handlers + m10.handlers
+        combinedMock.handlers += m1.handlers
+        combinedMock.handlers += m2.handlers
+        combinedMock.handlers += m3.handlers
+        combinedMock.handlers += m4.handlers
+        combinedMock.handlers += m5.handlers
+        combinedMock.handlers += m6.handlers
+        combinedMock.handlers += m7.handlers
+        combinedMock.handlers += m8.handlers
+        combinedMock.handlers += m9.handlers
+        combinedMock.handlers += m10.handlers
 		return combinedMock
 	}
 }
