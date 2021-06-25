@@ -213,17 +213,20 @@ platform :ios do
         app_results = []
         
         if is_ci
-            delete_keychain(
-                name: "CI"
-            ) if File.exist? File.expand_path("~/Library/Keychains/CI-db")
-            create_keychain(
-                name: "CI",
-                password: ENV["MATCH_PASSWORD"],
-                default_keychain: true,
-                unlock: true,
-                timeout: 3600,
-                lock_when_sleeps: false
-            )
+            if File.exist? File.expand_path("~/Library/Keychains/CI-db")
+                unlock_keychain(
+                    path: "CI",
+                    password: ENV["MATCH_PASSWORD"]
+                )
+            else
+                create_keychain(
+                    name: "CI",
+                    password: ENV["MATCH_PASSWORD"],
+                    unlock: true,
+                    timeout: false,
+                    lock_when_sleeps: false
+                )
+            end
         end
         
         apps.each do |scheme, app|
