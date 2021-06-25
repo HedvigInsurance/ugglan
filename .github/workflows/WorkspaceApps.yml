@@ -36,4 +36,4 @@ jobs:
         GITHUB_PR_NUMBER: ${{ github.event.number }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 bundle exec fastlane ios workspace_apps --verbose
+      run: arch -arm64 sudo --preserve-env bundle exec fastlane ios workspace_apps --verbose
