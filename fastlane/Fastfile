@@ -136,32 +136,13 @@ platform :ios do
         setup
         
         app_identifier = "com.hedvig.app"
-
-        if is_ci
-            create_keychain(
-                name: "CI",
-                password: ENV["MATCH_PASSWORD"],
-                default_keychain: true,
-                unlock: true,
-                timeout: 3600,
-                lock_when_sleeps: false
-            )
-        end
         
         match(
             type: "appstore",
             app_identifier: app_identifier,
             readonly: is_ci,
             git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil,
-            keychain_name: is_ci ? 'CI' : nil,
-            keychain_password: is_ci ? ENV["MATCH_PASSWORD"] : nil
         )
-
-        if is_ci
-            sh("security list-keychains -d user")
-            sh("security default-keychain -d user")
-            sh("security find-identity -v -p codesigning CI")
-        end
         
         increment_build_number(
             build_number: latest_testflight_build_number(app_identifier: app_identifier) + 1,
@@ -244,14 +225,20 @@ platform :ios do
         app_results = []
         
         if is_ci
-            create_keychain(
-                name: "CI",
-                password: ENV["MATCH_PASSWORD"],
-                default_keychain: true,
-                unlock: true,
-                timeout: 3600,
-                lock_when_sleeps: false
-            )
+            if File.exist? File.expand_path("~/Library/Keychains/CI-db")
+                unlock_keychain(
+                    path: "CI",
+                    password: ENV["MATCH_PASSWORD"]
+                )
+            else
+                create_keychain(
+                    name: "CI",
+                    password: ENV["MATCH_PASSWORD"],
+                    unlock: true,
+                    timeout: false,
+                    lock_when_sleeps: false
+                )
+            end
         end
         
         apps.each do |scheme, app|
