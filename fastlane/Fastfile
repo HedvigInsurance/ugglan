@@ -232,6 +232,9 @@ platform :ios do
         app_results = []
         
         if is_ci
+            delete_keychain(
+                name: "CI"
+            ) if File.exist? File.expand_path("~/Library/Keychains/CI-db")
             create_keychain(
                 name: "CI",
                 password: ENV["MATCH_PASSWORD"],
