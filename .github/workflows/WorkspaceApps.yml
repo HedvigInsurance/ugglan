@@ -17,6 +17,8 @@ jobs:
     steps:
     - name: Cleanup
       run: sudo rm -rf *
+    - name: Remove old archives
+      run: sudo find ~/Library/Developer/Xcode/Archives/ -name "*.xcarchive" -ctime +2 -print0 | xargs -0 rm -rf
     - uses: actions/checkout@v2
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
