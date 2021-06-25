@@ -212,6 +212,20 @@ platform :ios do
         
         app_results = []
         
+        if is_ci
+            delete_keychain(
+                name: "CI"
+            ) if File.exist? File.expand_path("~/Library/Keychains/CI-db")
+            create_keychain(
+                name: "CI",
+                password: ENV["MATCH_PASSWORD"],
+                default_keychain: true,
+                unlock: true,
+                timeout: 3600,
+                lock_when_sleeps: false
+            )
+        end
+        
         apps.each do |scheme, app|
             app_identifier = app["identifier"]
 
@@ -219,8 +233,16 @@ platform :ios do
                 type: "adhoc",
                 app_identifier: app_identifier,
                 readonly: is_ci,
-                git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil
+                git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil,
+                keychain_name: is_ci ? 'CI' : nil,
+                keychain_password: is_ci ? ENV["MATCH_PASSWORD"] : nil
             )
+
+            if is_ci
+                sh("security list-keychains -d user")
+                sh("security default-keychain -d user")
+                sh("security find-identity -v -p codesigning CI")
+            end
                         
             update_project_provisioning(
                 xcodeproj: app["project_path"],
