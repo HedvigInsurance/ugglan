@@ -18,6 +18,8 @@ jobs:
     - name: Cleanup
       run: sudo rm -rf *
     - uses: actions/checkout@v2
+    - name: Permissions
+      run: sudo chmod -R 777 *
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
