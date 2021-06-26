@@ -437,6 +437,8 @@ platform :ios do
         end
         
         device = "iPhone 11 Pro (14.4)"
+
+        sh("sudo chmod -R 777 *")
         
         schemes.each { |scheme|
             begin
