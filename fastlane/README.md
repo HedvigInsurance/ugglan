@@ -41,9 +41,14 @@ fastlane ios upload_dsyms
 fastlane ios production_upload
 ```
 
-### ios workspace_apps
+### ios build
 ```
-fastlane ios workspace_apps
+fastlane ios build
+```
+
+### ios slack_message
+```
+fastlane ios slack_message
 ```
 
 ### ios workspace_tests

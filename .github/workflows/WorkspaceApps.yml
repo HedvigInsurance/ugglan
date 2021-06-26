@@ -35,7 +35,12 @@ jobs:
         GITHUB_PR_NUMBER: ${{ github.event.number }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 bundle exec fastlane ios build_app name:Ugglan --verbose
+      run: arch -arm64 bundle exec fastlane ios build identifier:'com.hedvig.test.app' path:Projects/Ugglan/Ugglan.xcodeproj scheme:Ugglan
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: Ugglan.ipa
+        path: fastlane/build_output/Ugglan.ipa
   build_embark:
     runs-on: self-hosted
     steps:
@@ -60,12 +65,23 @@ jobs:
         GITHUB_PR_NUMBER: ${{ github.event.number }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 bundle exec fastlane ios build_app name:Embark --verbose
+      run: arch -arm64 bundle exec fastlane ios build identifier:'com.hedvig.example.*' path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: EmbarkExample.ipa
+        path: fastlane/build_output/EmbarkExample.ipa
   slack:
     runs-on: self-hosted
     needs: [build_ugglan, build_embark]
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: EmbarkExample.ipa
+      - uses: actions/download-artifact@v2
+        with:
+          name: Ugglan.ipa
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
