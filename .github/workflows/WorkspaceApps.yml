@@ -104,7 +104,7 @@ jobs:
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
-        name: Forever.ipa
+        name: ForeverExample.ipa
         path: fastlane/build_output/ForeverExample.ipa
   build_offer:
     runs-on: self-hosted
