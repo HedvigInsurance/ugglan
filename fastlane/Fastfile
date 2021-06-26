@@ -268,6 +268,7 @@ platform :ios do
                 codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
                 include_bitcode: false,
                 catalyst_platform: "ios",
+                skip_package_dependencies_resolution: true,
                 export_options: {
                     compileBitcode: false,
                     iCloudContainerEnvironment: "Production",
@@ -456,7 +457,8 @@ platform :ios do
                     scan(
                         workspace: "Ugglan.xcworkspace",
                         devices: [device],
-                        scheme: scheme
+                        scheme: scheme,
+                        skip_package_dependencies_resolution: true
                     )
                 end
             rescue => ex
