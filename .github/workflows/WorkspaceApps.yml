@@ -105,7 +105,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Forever.ipa
-        path: fastlane/build_output/Forever.ipa
+        path: fastlane/build_output/ForeverExample.ipa
   slack:
     runs-on: macos-latest
     needs: [build_ugglan, build_embark, build_hedvig, build_home, build_forever]
