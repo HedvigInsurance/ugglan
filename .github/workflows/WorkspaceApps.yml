@@ -75,16 +75,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
         with:
-          name: EmbarkExample.ipa
-          path: fastlane/build_output/EmbarkExample.ipa
-      - uses: actions/download-artifact@v2
-        with:
-          name: Ugglan.ipa
-          path: fastlane/build_output/Ugglan.ipa
-      - uses: actions/download-artifact@v2
-        with:
-          name: Hedvig.ipa
-          path: fastlane/build_output/Hedvig.ipa
+          path: fastlane/build_output
       - name: Fastlane Action
         uses: maierj/fastlane-action@v1.4.0
         env:
