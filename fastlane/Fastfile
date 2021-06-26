@@ -198,7 +198,7 @@ platform :ios do
         notifier.post(blocks: options[:blocks])
     end
     
-    lane :workspace_apps do
+    lane :build_app do |options|
         setup
         
         apps = {
@@ -214,8 +214,8 @@ platform :ios do
                 "identifier" => "com.hedvig.app",
                 "project_path" => "Projects/App/Ugglan.xcodeproj"
             }
-        }
-        
+        }.select { |key, value| key.include?(options[:name]) }
+
         app_results = []
         
         if is_ci
@@ -297,6 +297,10 @@ platform :ios do
             })
         end
         
+        
+    end
+
+    lane :send_slack_message do
         is_pr = git_branch != ""
         
         blocks = [
