@@ -126,7 +126,7 @@ extension JSONObject {
 				)
 				.jsonObject,
 			GraphQL.HomeInsuranceProvidersQuery
-				.Data(insuranceProviders: [.init(name: "Hedvig", switchable: true)]).jsonObject,
+                .Data(insuranceProviders: [.init(id: "hedvig", name: "Hedvig", switchable: true)]).jsonObject,
 			makeCommonClaims(),
 		])
 	}
@@ -147,7 +147,7 @@ extension JSONObject {
 				)
 				.jsonObject,
 			GraphQL.HomeInsuranceProvidersQuery
-				.Data(insuranceProviders: [.init(name: "Hedvig", switchable: switchable)]).jsonObject,
+                .Data(insuranceProviders: [.init(id: "hedvig", name: "Hedvig", switchable: switchable)]).jsonObject,
 			makeCommonClaims(),
 		])
 	}
@@ -167,7 +167,7 @@ extension JSONObject {
 				)
 				.jsonObject,
 			GraphQL.HomeInsuranceProvidersQuery
-				.Data(insuranceProviders: [.init(name: "Hedvig", switchable: switchable)]).jsonObject,
+                .Data(insuranceProviders: [.init(id: "hedvig", name: "Hedvig", switchable: switchable)]).jsonObject,
 			makeCommonClaims(),
 		])
 	}

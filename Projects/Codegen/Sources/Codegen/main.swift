@@ -8,8 +8,6 @@ let sourceRootURL = parentFolderOfScriptFile.deletingLastPathComponent().deletin
 let cliFolderURL = FileManager.default.urls(for: .cachesDirectory, in: .allDomainsMask).first!
 	.appendingPathComponent("Codegen").appendingPathComponent("ApolloCLI")
 
-try? FileManager.default.removeItem(at: cliFolderURL)
-
 try FileManager.default.createDirectory(at: cliFolderURL, withIntermediateDirectories: true, attributes: nil)
 
 let endpoint = URL(string: "https://graphql.dev.hedvigit.com/graphql")!
