@@ -218,7 +218,7 @@ platform :ios do
             end
         end
 
-        app_identifier = options[:identifier]
+        app_identifier = options[:identifier] || 'com.hedvig.example.*'
         scheme = options[:scheme]
         project_path = options[:path]
         

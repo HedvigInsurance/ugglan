@@ -44,8 +44,6 @@ jobs:
   build_embark:
     runs-on: self-hosted
     steps:
-    - name: Remove old archives
-      run: sudo find ~/Library/Developer/Xcode/Archives/ -name "*.xcarchive" -ctime +2 -print0 | xargs -0 rm -rf
     - uses: actions/checkout@v2
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
@@ -65,15 +63,43 @@ jobs:
         GITHUB_PR_NUMBER: ${{ github.event.number }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 bundle exec fastlane ios build identifier:`com.hedvig.example.*` path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
+      run: arch -arm64 bundle exec fastlane ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
         name: EmbarkExample.ipa
         path: fastlane/build_output/EmbarkExample.ipa
+  build_hedvig:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+        APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+        S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+        SLACK_IOS_BUILDS_URL: ${{ secrets.SLACK_IOS_BUILDS_URL }}
+        SLACK_IOS_PR_BUILDS_URL: ${{ secrets.SLACK_IOS_PR_BUILDS_URL }}
+        BRANCH_NAME: ${{ github.head_ref }}
+        GITHUB_PR_NUMBER: ${{ github.event.number }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios build path:Projects/App/Ugglan.xcodeproj scheme:Hedvig
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: Hedvig.ipa
+        path: fastlane/build_output/Hedvig.ipa
   slack:
     runs-on: self-hosted
-    needs: [build_ugglan, build_embark]
+    needs: [build_ugglan, build_embark, build_hedvig]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
@@ -82,6 +108,9 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: Ugglan.ipa
+      - uses: actions/download-artifact@v2
+        with:
+          name: Hedvig.ipa
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
