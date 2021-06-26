@@ -107,7 +107,7 @@ jobs:
         name: ForeverExample.ipa
         path: fastlane/build_output/ForeverExample.ipa
   slack:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     needs: [build_ugglan, build_embark, build_hedvig, build_home, build_forever]
     steps:
       - uses: actions/checkout@v2
