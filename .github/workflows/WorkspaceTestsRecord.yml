@@ -30,6 +30,6 @@ jobs:
         commit-message: 'Update WorkspaceTests snapshots'
         title: 'Update WorkspaceTests snapshots'
         body: 'This PR was created automatically by the ProductionDeploy action, merge this so that the repo has a matching app version to what will be deployed to App Store.'
-        branch: 'update-snapshots/${{ github.job }}'
+        branch: 'update-snapshots/${{ github.run_id }}/${{ github.run_number }}'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
