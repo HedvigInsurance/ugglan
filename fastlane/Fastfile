@@ -29,7 +29,6 @@ platform :ios do
     end
     
     lane :setup do
-        load_api
         sh("cd ..; tuist up")
         sh("cd ..; tuist generate")
         ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
@@ -139,6 +138,7 @@ platform :ios do
     end
     
     lane :production_upload do |options|
+        load_api
         setup
         
         app_identifier = "com.hedvig.app"
