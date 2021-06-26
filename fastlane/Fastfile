@@ -29,7 +29,6 @@ platform :ios do
     end
     
     lane :setup do
-        load_api
         sh("cd ..; tuist up")
         sh("cd ..; tuist generate")
         ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
@@ -131,8 +130,15 @@ platform :ios do
         force: true
       )
     end
+
+    lane :upload_dsyms do
+        download_dsyms
+        sentry_upload_dsym
+        clean_build_artifacts
+    end
     
     lane :production_upload do |options|
+        load_api
         setup
         
         app_identifier = "com.hedvig.app"
@@ -192,37 +198,8 @@ platform :ios do
         notifier.post(blocks: options[:blocks])
     end
     
-    lane :workspace_apps do
+    lane :build do |options|
         setup
-        
-        apps = {
-            "EmbarkExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Embark/Embark.xcodeproj"
-            },
-            "OfferExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Offer/Offer.xcodeproj"
-            },
-	        "HomeExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Home/Home.xcodeproj"
-            },
-	        "ForeverExample" => {
-                "identifier" => "com.hedvig.example.*",
-                "project_path" => "Projects/Forever/Forever.xcodeproj"
-            },
-            "Ugglan" => {
-                "identifier" => "com.hedvig.test.app",
-                "project_path" => "Projects/App/Ugglan.xcodeproj"
-            },
-            "Hedvig" => {
-                "identifier" => "com.hedvig.app",
-                "project_path" => "Projects/App/Ugglan.xcodeproj"
-            }
-        }
-        
-        app_results = []
         
         if is_ci
             if File.exist? File.expand_path("~/Library/Keychains/CI-db")
@@ -240,60 +217,72 @@ platform :ios do
                 )
             end
         end
+
+        app_identifier = options[:identifier] || 'com.hedvig.example.*'
+        scheme = options[:scheme]
+        project_path = options[:path]
         
-        apps.each do |scheme, app|
-            app_identifier = app["identifier"]
+        match(
+            type: "adhoc",
+            app_identifier: app_identifier,
+            readonly: is_ci,
+            git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil,
+            keychain_name: is_ci ? 'CI' : nil,
+            keychain_password: is_ci ? ENV["MATCH_PASSWORD"] : nil
+        )
 
-            match(
-                type: "adhoc",
-                app_identifier: app_identifier,
-                readonly: is_ci,
-                git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil,
-                keychain_name: is_ci ? 'CI' : nil,
-                keychain_password: is_ci ? ENV["MATCH_PASSWORD"] : nil
-            )
+        if is_ci
+            sh("security list-keychains -d user")
+            sh("security default-keychain -d user")
+            sh("security find-identity -v -p codesigning CI")
+        end
+                    
+        update_project_provisioning(
+            xcodeproj: project_path,
+            profile: ENV["sigh_#{app_identifier}_adhoc_profile-path"],
+            target_filter: scheme,
+            build_configuration: "Release"
+        )
+                                
+        build_app(
+            workspace: "Ugglan.xcworkspace",
+            configuration: "Release",
+            scheme: scheme,
+            output_directory: "fastlane/build_output",
+            codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
+            include_bitcode: false,
+            catalyst_platform: "ios",
+            skip_package_dependencies_resolution: true,
+            export_options: {
+                compileBitcode: false,
+                iCloudContainerEnvironment: "Production",
+                method: "ad-hoc",
+                provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
+                thinning: "<none>"
+            }
+        )
+    end
 
-            if is_ci
-                sh("security list-keychains -d user")
-                sh("security default-keychain -d user")
-                sh("security find-identity -v -p codesigning CI")
-            end
-                        
-            update_project_provisioning(
-                xcodeproj: app["project_path"],
-                profile: ENV["sigh_#{app_identifier}_adhoc_profile-path"],
-                target_filter: scheme,
-                build_configuration: "Release"
-            )
-                                    
-            build_app(
-                workspace: "Ugglan.xcworkspace",
-                configuration: "Release",
-                scheme: scheme,
-                output_directory: "fastlane/build_output",
-                codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
-                include_bitcode: false,
-                catalyst_platform: "ios",
-                export_options: {
-                    compileBitcode: false,
-                    iCloudContainerEnvironment: "Production",
-                    method: "ad-hoc",
-                    provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
-                    thinning: "<none>"
-                }
-            )
-            
+    lane :slack_message do
+        is_pr = git_branch != ""
+
+        app_results = []
+
+        Dir.glob("build_output/*.ipa") do |path|
             require 'securerandom'
-            
+
+            scheme = File.basename(path, ".*")
+            absolute_path = File.expand_path(path)
+                
             aws_s3(
-              access_key: ENV['S3_ACCESS_KEY'],
-              secret_access_key: ENV['S3_SECRET_ACCESS_KEY'],
-              bucket: "hedvig-ios-builds",
-              region: "eu-central-1",
-              ipa: "fastlane/build_output/#{scheme}.ipa",
-              app_directory: "#{scheme}_#{SecureRandom.uuid}",
-              path: 'v{CFBundleShortVersionString}_b{CFBundleVersion}/',
-              upload_metadata: true,
+                access_key: ENV['S3_ACCESS_KEY'],
+                secret_access_key: ENV['S3_SECRET_ACCESS_KEY'],
+                bucket: "hedvig-ios-builds",
+                region: "eu-central-1",
+                ipa: absolute_path + "/" + scheme + ".ipa",
+                app_directory: "#{scheme}_#{SecureRandom.uuid}",
+                path: 'v{CFBundleShortVersionString}_b{CFBundleVersion}/',
+                upload_metadata: true,
             )
             
             app_results.append({
@@ -301,8 +290,6 @@ platform :ios do
                 scheme: scheme
             })
         end
-        
-        is_pr = git_branch != ""
         
         blocks = [
             {
@@ -434,8 +421,7 @@ platform :ios do
             "hCoreUI",
             "Forever",
             "Contracts",
-            "Home",
-            "Payment"
+            "Home"
         ]
 
         if ENV["SCHEME_FILTER"]
@@ -448,7 +434,7 @@ platform :ios do
             )
         end
         
-        device = "iPhone 11 Pro (14.4)"
+        device = "iPhone 11 Pro (14.5)"
         
         schemes.each { |scheme|
             begin
@@ -463,7 +449,8 @@ platform :ios do
                     scan(
                         workspace: "Ugglan.xcworkspace",
                         devices: [device],
-                        scheme: scheme
+                        scheme: scheme,
+                        skip_package_dependencies_resolution: true
                     )
                 end
             rescue => ex

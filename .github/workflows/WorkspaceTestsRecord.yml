@@ -1,14 +1,11 @@
-name: WorkspaceTests
+name: WorkspaceTestsRecord
 
 defaults:
   run:
     shell: bash -ieo pipefail {0}
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: ['*']
+  [workflow_dispatch]
 
 jobs:
   test:
@@ -26,16 +23,13 @@ jobs:
         GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 bundle exec fastlane ios workspace_tests
-    - name: Upload test results
-      if: ${{ always() }}
-      uses: actions/upload-artifact@v2
+      run: RECORD=true arch -arm64 bundle exec fastlane ios workspace_tests
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
       with:
-        name: test_output
-        path: fastlane/test_output
-    - name: Upload test results html
-      if: ${{ always() }}
-      uses: actions/upload-artifact@v2
-      with:
-        name: test_output.html
-        path: fastlane/test_output/index.html
+        commit-message: 'Update WorkspaceTests snapshots'
+        title: 'Update WorkspaceTests snapshots'
+        body: 'This PR was created automatically by the ProductionDeploy action, merge this so that the repo has a matching app version to what will be deployed to App Store.'
+        branch: 'update-snapshots/${{ github.run_id }}/${{ github.run_number }}'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
