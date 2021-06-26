@@ -27,13 +27,13 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output
+        name: ugglan_output
         path: fastlane/test_output
     - name: Upload test results html
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output.html
+        name: ugglan.html
         path: fastlane/test_output/index.html
   test_hCore:
     runs-on: self-hosted
@@ -51,13 +51,13 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output
+        name: hCoreUI_output
         path: fastlane/test_output
     - name: Upload test results html
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output.html
+        name: hCore.html
         path: fastlane/test_output/index.html
   test_hCoreUI:
     runs-on: self-hosted
@@ -75,13 +75,13 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output
+        name: hCoreUI_output
         path: fastlane/test_output
     - name: Upload test results html
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output.html
+        name: hCoreUI.html
         path: fastlane/test_output/index.html
   test_forever:
     runs-on: self-hosted
@@ -99,13 +99,13 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output
+        name: forever_output
         path: fastlane/test_output
     - name: Upload test results html
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output.html
+        name: forever.html
         path: fastlane/test_output/index.html
   test_contracts:
     runs-on: self-hosted
@@ -123,13 +123,13 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output
+        name: contracts_output
         path: fastlane/test_output
     - name: Upload test results html
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output.html
+        name: contracts.html
         path: fastlane/test_output/index.html
   test_home:
     runs-on: self-hosted
@@ -147,11 +147,11 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output
+        name: home_output
         path: fastlane/test_output
     - name: Upload test results html
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: test_output.html
+        name: home.html
         path: fastlane/test_output/index.html
