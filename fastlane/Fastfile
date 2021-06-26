@@ -422,8 +422,7 @@ platform :ios do
             "hCoreUI",
             "Forever",
             "Contracts",
-            "Home",
-            "Payment"
+            "Home"
         ]
 
         if ENV["SCHEME_FILTER"]
