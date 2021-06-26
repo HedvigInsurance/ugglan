@@ -11,7 +11,7 @@ on:
     branches: ['*']
 
 jobs:
-  test:
+  test_ugglan:
     runs-on: self-hosted
 
     steps:
@@ -20,13 +20,129 @@ jobs:
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
       env:
-        APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
-        APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-        APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
-        GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 bundle exec fastlane ios workspace_tests
+      run: arch -arm64 bundle exec fastlane ios test scheme:Ugglan
+    - name: Upload test results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: test_output
+        path: fastlane/test_output
+    - name: Upload test results html
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: test_output.html
+        path: fastlane/test_output/index.html
+  test_hCore:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios test scheme:hCore
+    - name: Upload test results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: test_output
+        path: fastlane/test_output
+    - name: Upload test results html
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: test_output.html
+        path: fastlane/test_output/index.html
+  test_hCoreUI:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios test scheme:hCoreUI
+    - name: Upload test results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: test_output
+        path: fastlane/test_output
+    - name: Upload test results html
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: test_output.html
+        path: fastlane/test_output/index.html
+  test_forever:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios test scheme:Forever
+    - name: Upload test results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: test_output
+        path: fastlane/test_output
+    - name: Upload test results html
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: test_output.html
+        path: fastlane/test_output/index.html
+  test_contracts:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios test scheme:Contracts
+    - name: Upload test results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: test_output
+        path: fastlane/test_output
+    - name: Upload test results html
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: test_output.html
+        path: fastlane/test_output/index.html
+  test_home:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios test scheme:Home
     - name: Upload test results
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
