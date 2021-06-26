@@ -98,7 +98,7 @@ jobs:
         name: Hedvig.ipa
         path: fastlane/build_output/Hedvig.ipa
   slack:
-    runs-on: self-hosted
+    runs-on: macos-latest
     needs: [build_ugglan, build_embark, build_hedvig]
     steps:
       - uses: actions/checkout@v2
@@ -114,9 +114,8 @@ jobs:
         with:
           name: Hedvig.ipa
           path: fastlane/build_output/Hedvig.ipa
-      - name: Bundle install
-        run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
+        uses: maierj/fastlane-action@v1.4.0
         env:
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
@@ -132,5 +131,6 @@ jobs:
           GITHUB_PR_NUMBER: ${{ github.event.number }}
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
           FASTLANE_XCODE_LIST_TIMEOUT: '180'
-        run: arch -arm64 bundle exec fastlane ios slack_message --verbose
+        with:
+          lane: ios slack_message
 
