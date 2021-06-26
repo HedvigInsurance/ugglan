@@ -16,6 +16,7 @@ Localizable.stringsdict
 .githooks/bin
 .package.resolved
 __MACOSX
+vendor/bundle
 
 ## Various settings
 *.pbxuser
