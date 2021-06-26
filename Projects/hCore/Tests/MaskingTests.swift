@@ -1,7 +1,6 @@
 import Foundation
 import XCTest
-
-@testable import Embark
+@testable import hCore
 
 final class MaskingTests: XCTestCase {
 	override func setUp() { super.setUp() }
