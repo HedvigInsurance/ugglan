@@ -35,7 +35,7 @@ jobs:
         GITHUB_PR_NUMBER: ${{ github.event.number }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 bundle exec fastlane ios build identifier:'com.hedvig.test.app' path:Projects/Ugglan/Ugglan.xcodeproj scheme:Ugglan
+      run: arch -arm64 bundle exec fastlane ios build identifier:com.hedvig.test.app path:Projects/Ugglan/Ugglan.xcodeproj scheme:Ugglan
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
@@ -65,7 +65,7 @@ jobs:
         GITHUB_PR_NUMBER: ${{ github.event.number }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 bundle exec fastlane ios build identifier:'com.hedvig.example.*' path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
+      run: arch -arm64 bundle exec fastlane ios build identifier:`com.hedvig.example.*` path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
