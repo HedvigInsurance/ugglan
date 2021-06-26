@@ -69,7 +69,7 @@ jobs:
         name: Hedvig.ipa
         path: fastlane/build_output/Hedvig.ipa
   slack:
-    runs-on: self-hosted
+    runs-on: macos-latest
     needs: [build_ugglan, build_embark, build_hedvig]
     steps:
       - uses: actions/checkout@v2
