@@ -300,7 +300,7 @@ platform :ios do
         
     end
 
-    lane :send_slack_message do
+    lane :slack_message do
         is_pr = git_branch != ""
         
         blocks = [

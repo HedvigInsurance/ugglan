@@ -84,5 +84,5 @@ jobs:
           GITHUB_PR_NUMBER: ${{ github.event.number }}
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
           FASTLANE_XCODE_LIST_TIMEOUT: '180'
-        run: arch -arm64 bundle exec fastlane ios slack --verbose
+        run: arch -arm64 bundle exec fastlane ios slack_message --verbose
 
