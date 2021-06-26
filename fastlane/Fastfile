@@ -409,6 +409,25 @@ platform :ios do
         
         send_slack_message(url: git_branch == "" ? ENV["SLACK_IOS_BUILDS_URL"] : ENV["SLACK_IOS_PR_BUILDS_URL"], blocks: blocks)
     end
+
+    lane :test do |options|
+        setup
+        
+        scheme = options[:scheme]
+        
+        device = "iPhone 11 Pro (14.5)"
+        
+        scan(
+            workspace: "Ugglan.xcworkspace",
+            devices: [device],
+            scheme: scheme,
+            skip_package_dependencies_resolution: true
+        )
+        
+        xchtmlreport(
+            result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"]
+        )
+    end
     
     lane :workspace_tests do
         if !ENV["SKIP_SETUP"]
