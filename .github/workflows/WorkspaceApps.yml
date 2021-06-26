@@ -106,9 +106,28 @@ jobs:
       with:
         name: Forever.ipa
         path: fastlane/build_output/ForeverExample.ipa
+  build_offer:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios build path:Projects/Offer/Offer.xcodeproj scheme:OfferExample
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: OfferExample.ipa
+        path: fastlane/build_output/OfferExample.ipa
   slack:
     runs-on: macos-latest
-    needs: [build_ugglan, build_embark, build_hedvig, build_home, build_forever]
+    needs: [build_ugglan, build_embark, build_hedvig, build_home, build_forever, build_offer]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
