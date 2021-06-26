@@ -1,6 +1,7 @@
 name: Upload DSYM
 
-on: [workflow_dispatch]
+on:
+  [workflow_dispatch]
 
 jobs:
   upload-dsym:
@@ -12,12 +13,15 @@ jobs:
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       env:
-       FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
-       FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-       DOWNLOAD_DSYMS_APP_IDENTIFIER: ${{ secrets.DOWNLOAD_DSYMS_APP_IDENTIFIER }}
-       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-       SENTRY_PROJECT_SLUG: ${{ secrets.SENTRY_PROJECT_SLUG }}
-       SENTRY_ORG_SLUG: ${{ secrets.SENTRY_ORG_SLUG }}
-       DOWNLOAD_DSYMS_MIN_VERSION: ${{ secrets.DOWNLOAD_DSYMS_MIN_VERSION }}
+        APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+        APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+        FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
+        FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+        DOWNLOAD_DSYMS_APP_IDENTIFIER: ${{ secrets.DOWNLOAD_DSYMS_APP_IDENTIFIER }}
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_PROJECT_SLUG: ${{ secrets.SENTRY_PROJECT_SLUG }}
+        SENTRY_ORG_SLUG: ${{ secrets.SENTRY_ORG_SLUG }}
+        DOWNLOAD_DSYMS_MIN_VERSION: ${{ secrets.DOWNLOAD_DSYMS_MIN_VERSION }}
       with:
-       lane: ios upload_dsyms_to_sentry_after_processing
+        lane: ios upload_dsyms

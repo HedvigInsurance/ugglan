@@ -131,6 +131,13 @@ platform :ios do
         force: true
       )
     end
+
+    lane :upload_dsyms do
+        load_api
+        download_dsyms
+        sentry_upload_dsym
+        clean_build_artifacts
+    end
     
     lane :production_upload do |options|
         setup
