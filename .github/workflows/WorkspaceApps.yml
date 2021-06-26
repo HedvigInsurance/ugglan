@@ -105,12 +105,15 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: EmbarkExample.ipa
+          path: fastlane/build_output/EmbarkExample.ipa
       - uses: actions/download-artifact@v2
         with:
           name: Ugglan.ipa
+          path: fastlane/build_output/Ugglan.ipa
       - uses: actions/download-artifact@v2
         with:
           name: Hedvig.ipa
+          path: fastlane/build_output/Hedvig.ipa
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
