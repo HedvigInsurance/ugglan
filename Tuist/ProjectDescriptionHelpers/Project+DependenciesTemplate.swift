@@ -3,7 +3,6 @@ import ProjectDescription
 public enum ExternalDependencies: CaseIterable {
 	case adyen
 	case firebase
-	case fb
 	case kingfisher
 	case apollo
 	case flow
@@ -26,8 +25,10 @@ public enum ExternalDependencies: CaseIterable {
 	public var isDevDependency: Bool { self == .runtime }
 
 	public var isResourceBundledDependency: Bool { self == .mixpanel || self == .adyen }
+    
+    public var isAppDependency: Bool { self == .firebase && self == .sentry }
 
-	public var isCoreDependency: Bool { !isTestDependency && !isDevDependency && !isResourceBundledDependency }
+	public var isCoreDependency: Bool { !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency }
 
 	public func swiftPackages() -> [Package] {
 		switch self {
