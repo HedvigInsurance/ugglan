@@ -464,13 +464,15 @@ platform :ios do
         rescue => ex
             handle_compile_errors
             xchtmlreport(
-                result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"]
+                result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"],
+                enable_junit: true
             )
             raise ex
         end
 
         xchtmlreport(
-            result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"]
+            result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"],
+            enable_junit: true
         )
     end
     

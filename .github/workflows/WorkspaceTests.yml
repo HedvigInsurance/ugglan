@@ -59,6 +59,10 @@ jobs:
       with:
         name: hCore.html
         path: fastlane/test_output/index.html
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v2
+      with:
+        report_paths: 'fastlane/test_output/*.junit'
   test_hCoreUI:
     runs-on: self-hosted
 
