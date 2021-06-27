@@ -271,6 +271,11 @@ platform :ios do
                 error_definition = error["file_path"].split(":")
                 puts "::error file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}"
             }
+
+            errors["compile_warnings"].each { |error|
+                error_definition = error["file_path"].split(":")
+                puts "::warning file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}"
+            }
         end
     end
 
