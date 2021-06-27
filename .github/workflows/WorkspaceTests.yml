@@ -51,15 +51,10 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: hCoreUI_output
-        path: fastlane/test_output
-    - name: Upload test results html
-      if: ${{ always() }}
-      uses: actions/upload-artifact@v2
-      with:
-        name: hCore.html
-        path: fastlane/test_output/index.html
+        name: hCore.xcresult
+        path: fastlane/test_output/hCore.xcresult
     - name: Publish Test Report
+      if: ${{ always() }}
       uses: mikepenz/action-junit-report@v2
       with:
         report_paths: 'fastlane/test_output/**/*.junit'
