@@ -198,7 +198,7 @@ platform :ios do
         notifier.post(blocks: options[:blocks])
     end
 
-    private_lane :handle_compile_errors
+    private_lane :handle_compile_errors do
         require "json"
         file = File.open "../build/reports/errors.json"
         errors = JSON.load file
