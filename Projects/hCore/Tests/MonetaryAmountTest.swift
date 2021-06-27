@@ -10,9 +10,9 @@ final class MonetaryAmountTests: XCTestCase {
 		XCTAssertEqual(sekAmount.formattedAmount, "100 kr")
 
 		let nokAmount = MonetaryAmount(amount: "100.0", currency: "NOK")
-		XCTAssertEqual(nokAmount.formattedAmount, "kr dsdsds100")
+		XCTAssertEqual(nokAmount.formattedAmount, "kr 100")
 
 		let unknownAmount = MonetaryAmount(amount: "100.0", currency: "USD")
-		XCTAssertEqual(unknownAmount.formattedAmount, "ffdfd 100")
+		XCTAssertEqual(unknownAmount.formattedAmount, "$100")
 	}
 }
