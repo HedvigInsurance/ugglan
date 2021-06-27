@@ -41,6 +41,11 @@ fastlane ios upload_dsyms
 fastlane ios production_upload
 ```
 
+### ios xcresult
+```
+fastlane ios xcresult
+```
+
 ### ios build
 ```
 fastlane ios build

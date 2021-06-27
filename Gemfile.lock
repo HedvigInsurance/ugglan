@@ -208,6 +208,7 @@ GEM
       xcpretty (~> 0.2, >= 0.0.7)
     xcpretty-travis-formatter (1.0.1)
       xcpretty (~> 0.2, >= 0.0.7)
+    xcresult (0.2.1)
 
 PLATFORMS
   ruby
@@ -218,6 +219,7 @@ DEPENDENCIES
   fastlane-plugin-sentry
   fastlane-plugin-xchtmlreport
   xcpretty-json-formatter
+  xcresult
 
 BUNDLED WITH
    2.2.21
