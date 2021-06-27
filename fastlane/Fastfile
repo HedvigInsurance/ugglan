@@ -200,7 +200,7 @@ platform :ios do
     
     lane :build do |options|
         setup
-        
+
         if is_ci
             if File.exist? File.expand_path("~/Library/Keychains/CI-db")
                 unlock_keychain(
@@ -271,12 +271,14 @@ platform :ios do
 
             errors["compile_errors"].each { |error|
                 error_definition = error["file_path"].split(":")
-                puts "::error file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}"
+                output = "::error file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}"
+                sh("echo \"#{output}\"")
             }
 
             errors["compile_warnings"].each { |error|
                 error_definition = error["file_path"].split(":")
-                puts "::warning file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}"
+                output = "::warning file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}"
+                sh("echo \"#{output}\"")
             }
 
             raise ex
