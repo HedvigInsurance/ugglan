@@ -200,7 +200,14 @@ platform :ios do
 
     private_lane :handle_compile_errors do
         require "json"
-        file = File.open "../build/reports/errors.json"
+
+        file_path = "../build/reports/errors.json"
+
+        if !File.file?(filename)
+            return
+        end
+
+        file = File.open file_path
         errors = JSON.load file
 
         main_dir = File.expand_path("..", Dir.pwd)
