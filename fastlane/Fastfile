@@ -253,7 +253,7 @@ platform :ios do
             include_bitcode: false,
             catalyst_platform: "ios",
             skip_package_dependencies_resolution: true,
-            xcpretty_formatter: is_ci ? ENV["GEM_HOME"] + "/bin/xcpretty-actions-formatter" : nil,
+            xcpretty_report_junit: "fastlane/junit.xml",
             derived_data_path: is_ci ? "../../../DerivedData" : nil,
             export_options: {
                 compileBitcode: false,
@@ -423,7 +423,6 @@ platform :ios do
             workspace: "Ugglan.xcworkspace",
             devices: [device],
             scheme: scheme,
-            xcpretty_formatter: is_ci ? ENV["GEM_HOME"] + "/bin/xcpretty-actions-formatter" : nil,
             skip_package_dependencies_resolution: true,
             derived_data_path: is_ci ? "../../../DerivedData" : nil,
         )
