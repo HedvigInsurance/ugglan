@@ -30,10 +30,6 @@ jobs:
       with:
         name: Ugglan.ipa
         path: fastlane/build_output/Ugglan.ipa
-    - name: Publish Report
-      uses: mikepenz/action-junit-report@v2
-      with:
-        report_paths: 'fastlane/junit.xml'
   build_embark:
     runs-on: self-hosted
     steps:
