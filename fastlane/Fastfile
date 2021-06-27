@@ -199,6 +199,8 @@ platform :ios do
     end
     
     lane :build do |options|
+        setup
+        
         if is_ci
             if File.exist? File.expand_path("~/Library/Keychains/CI-db")
                 unlock_keychain(
