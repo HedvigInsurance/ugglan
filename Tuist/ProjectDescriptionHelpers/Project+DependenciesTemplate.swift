@@ -26,7 +26,7 @@ public enum ExternalDependencies: CaseIterable {
 
 	public var isResourceBundledDependency: Bool { self == .mixpanel || self == .adyen }
     
-    public var isAppDependency: Bool { self == .firebase && self == .sentry }
+    public var isAppDependency: Bool { self == .firebase || self == .sentry }
 
 	public var isCoreDependency: Bool { !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency }
 
