@@ -204,6 +204,8 @@ GEM
       nanaimo (~> 0.3.0)
     xcpretty (0.3.0)
       rouge (~> 2.0.7)
+    xcpretty-actions-formatter (0.1.2)
+      xcpretty (~> 0.2)
     xcpretty-travis-formatter (1.0.1)
       xcpretty (~> 0.2, >= 0.0.7)
 
@@ -215,6 +217,7 @@ DEPENDENCIES
   fastlane-plugin-aws_s3
   fastlane-plugin-sentry
   fastlane-plugin-xchtmlreport
+  xcpretty-actions-formatter
 
 BUNDLED WITH
-   2.2.4
+   2.2.21
