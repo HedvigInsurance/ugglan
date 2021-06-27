@@ -271,13 +271,13 @@ platform :ios do
 
             errors["compile_errors"].each { |error|
                 error_definition = error["file_path"].split(":")
-                output = "::error file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}"
+                output = "::error file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
                 STDOUT.write output
             }
 
             errors["compile_warnings"].each { |error|
                 error_definition = error["file_path"].split(":")
-                output = "::warning file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}"
+                output = "::warning file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
                 STDOUT.write output
             }
 
