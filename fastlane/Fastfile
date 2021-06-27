@@ -199,8 +199,6 @@ platform :ios do
     end
     
     lane :build do |options|
-        setup
-        
         if is_ci
             if File.exist? File.expand_path("~/Library/Keychains/CI-db")
                 unlock_keychain(
@@ -243,26 +241,37 @@ platform :ios do
             target_filter: scheme,
             build_configuration: "Release"
         )
-                                
-        build_app(
-            workspace: "Ugglan.xcworkspace",
-            configuration: "Release",
-            scheme: scheme,
-            output_directory: "fastlane/build_output",
-            codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
-            include_bitcode: false,
-            catalyst_platform: "ios",
-            skip_package_dependencies_resolution: true,
-            xcpretty_report_junit: "fastlane/junit.xml",
-            derived_data_path: is_ci ? "../../../DerivedData" : nil,
-            export_options: {
-                compileBitcode: false,
-                iCloudContainerEnvironment: "Production",
-                method: "ad-hoc",
-                provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
-                thinning: "<none>"
+
+        begin
+            build_app(
+                workspace: "Ugglan.xcworkspace",
+                configuration: "Release",
+                scheme: scheme,
+                output_directory: "fastlane/build_output",
+                codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
+                include_bitcode: false,
+                catalyst_platform: "ios",
+                skip_package_dependencies_resolution: true,
+                xcpretty_formatter: ENV["GEM_HOME"] + "/gems/xcpretty-json-formatter-0.1.1/lib/json_formatter.rb",
+                derived_data_path: is_ci ? "../../../DerivedData" : nil,
+                export_options: {
+                    compileBitcode: false,
+                    iCloudContainerEnvironment: "Production",
+                    method: "ad-hoc",
+                    provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
+                    thinning: "<none>"
+                }
+            )
+        rescue => ex
+            require "json"
+            file = File.open "../build/reports/errors.json"
+            errors = JSON.load file
+
+            errors["compile_errors"].each { |error|
+                error_definition = error["file_path"].split(":")
+                puts "::error file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}"
             }
-        )
+        end
     end
 
     lane :slack_message do
