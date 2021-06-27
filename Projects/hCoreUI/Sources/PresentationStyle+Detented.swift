@@ -342,7 +342,7 @@ extension PresentationStyle {
             if modally {
                 let vc = viewController.embededInNavigationController(options)
 
-                let fisk = DisposeBag()
+                let bag = DisposeBag()
 
                 let delegate = DetentedTransitioningDelegate(
                     detents: detents,
