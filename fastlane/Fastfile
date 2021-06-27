@@ -203,34 +203,32 @@ platform :ios do
 
         file_path = "../build/reports/errors.json"
 
-        if !File.file?(filename)
-            return
+        if File.file?(file_path)
+            file = File.open file_path
+            errors = JSON.load file
+
+            main_dir = File.expand_path("..", Dir.pwd)
+
+            errors["compile_errors"].each { |error|
+                error_definition = error["file_path"].split(":")
+                file = error_definition[0]
+
+                if Find.find(main_dir).include?(file)
+                    output = "::error file=#{file},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
+                    STDOUT.write output
+                end
+            }
+
+            errors["compile_warnings"].each { |error|
+                error_definition = error["file_path"].split(":")
+                file = error_definition[0]
+
+                if Find.find(main_dir).include?(file)
+                    output = "::warning file=#{file},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
+                    STDOUT.write output
+                end
+            }
         end
-
-        file = File.open file_path
-        errors = JSON.load file
-
-        main_dir = File.expand_path("..", Dir.pwd)
-
-        errors["compile_errors"].each { |error|
-            error_definition = error["file_path"].split(":")
-            file = error_definition[0]
-
-            if Find.find(main_dir).include?(file)
-                output = "::error file=#{file},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
-                STDOUT.write output
-            end
-        }
-
-        errors["compile_warnings"].each { |error|
-            error_definition = error["file_path"].split(":")
-            file = error_definition[0]
-
-            if Find.find(main_dir).include?(file)
-                output = "::warning file=#{file},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
-                STDOUT.write output
-            end
-        }
     end
 
     private_lane :handle_xcresult_result do |options|
