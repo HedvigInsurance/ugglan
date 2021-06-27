@@ -269,16 +269,26 @@ platform :ios do
             file = File.open "../build/reports/errors.json"
             errors = JSON.load file
 
+            main_dir = File.expand_path("..", Dir.pwd)
+
             errors["compile_errors"].each { |error|
                 error_definition = error["file_path"].split(":")
-                output = "::error file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
-                STDOUT.write output
+                file = error_definition[0]
+
+                if Find.find(main_dir).include?(file)
+                    output = "::error file=#{file},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
+                    STDOUT.write output
+                end
             }
 
             errors["compile_warnings"].each { |error|
                 error_definition = error["file_path"].split(":")
-                output = "::warning file=#{error_definition[0]},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
-                STDOUT.write output
+                file = error_definition[0]
+
+                if Find.find(main_dir).include?(file)
+                    output = "::warning file=#{file},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
+                    STDOUT.write output
+                end
             }
 
             raise ex
