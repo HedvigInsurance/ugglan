@@ -191,8 +191,6 @@ extension LoggedIn: Presentable {
             }
         }
 
-        bag += ChatState.shared.activateNewMessageToasts(tabBarController)
-
         return (tabBarController, bag)
     }
 }
