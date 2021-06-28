@@ -527,6 +527,8 @@ platform :ios do
                         workspace: "Ugglan.xcworkspace",
                         devices: [device],
                         scheme: scheme,
+                        derived_data_path: is_ci ? "../../../DerivedData" : nil,
+                        skip_package_dependencies_resolution: true
                         xcargs: "OTHER_SWIFT_FLAGS='$(inherited) -D RECORD'"
                     )
                 else
@@ -534,6 +536,7 @@ platform :ios do
                         workspace: "Ugglan.xcworkspace",
                         devices: [device],
                         scheme: scheme,
+                        derived_data_path: is_ci ? "../../../DerivedData" : nil,
                         skip_package_dependencies_resolution: true
                     )
                 end

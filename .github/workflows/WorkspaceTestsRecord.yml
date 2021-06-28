@@ -5,7 +5,11 @@ defaults:
     shell: bash -ieo pipefail {0}
 
 on:
-  [workflow_dispatch]
+  workflow_dispatch:
+    inputs:
+      schemeFilter:
+        description: 'Schemes'
+        required: false
 
 jobs:
   test:
@@ -23,7 +27,7 @@ jobs:
         GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: RECORD=true arch -arm64 bundle exec fastlane ios workspace_tests
+      run: SCHEME_FILTER=${{ github.event.inputs.schemeFilter }} RECORD=true arch -arm64 bundle exec fastlane ios workspace_tests
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
       with:
