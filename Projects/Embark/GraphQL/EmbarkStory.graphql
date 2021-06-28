@@ -57,6 +57,12 @@ fragment ResponseFragment on EmbarkResponse {
     items {
       ...MessageFragment
     }
+    each {
+      key
+      content {
+        ...MessageFragment
+            }
+        }
     title {
       text
     }
@@ -242,6 +248,7 @@ query EmbarkStory($name: String!, $locale: String!) {
         ... on EmbarkMultiAction {
           multiActionData: data {
             addLabel
+            key
             maxAmount
             link {
               ...EmbarkLinkFragment
@@ -251,6 +258,7 @@ query EmbarkStory($name: String!, $locale: String!) {
                 numberActionData: data {
                   placeholder
                   key
+                  label
                   unit
                   }
               }
