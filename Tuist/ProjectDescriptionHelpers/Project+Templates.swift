@@ -1,4 +1,5 @@
 import ProjectDescription
+import Foundation
 
 public enum FeatureTarget {
 	case framework
@@ -238,7 +239,7 @@ extension Project {
 					)
 				],
 				arguments: Arguments(
-					environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"],
+                    environment: ["SNAPSHOT_ARTIFACTS": "/tmp/\(UUID().uuidString)/__SnapshotFailures__"],
 					launchArguments: [
 						"-UIPreferredContentSizeCategoryName": true,
 						"UICTContentSizeCategoryM": true,
