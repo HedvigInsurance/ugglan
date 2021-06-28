@@ -3,11 +3,12 @@ import Foundation
 
 internal struct MultiActionStoreable {
 	// Initializer from store
-	init(
+	init?(
 		storeKey: String,
 		value: String
 	) {
 		let substrings = storeKey.multiActionKeySubStrings()
+        guard substrings.count == 3 else { return nil }
 		baseKey = substrings[0]
 		index = Int(substrings[1])
 		componentKey = substrings[2]
@@ -68,7 +69,7 @@ extension EmbarkStore {
 		let values = getAllValues()
 
 		return values.filter { (key, _) -> Bool in key.contains(actionKey) }
-			.map { MultiActionStoreable(storeKey: $0.key, value: $0.value) }
+			.compactMap { MultiActionStoreable(storeKey: $0.key, value: $0.value) }
 	}
     
     func getComponentValues(actionKey: String, data: MultiActionData) -> [[String:MultiActionValue]] {
@@ -83,11 +84,11 @@ extension EmbarkStore {
         return Array(mappedValues)
     }
     
-    private func getPrefilledMultiActionItems(actionKey: String) -> [MultiActionStoreable] {
+    func getPrefilledMultiActionItems(actionKey: String) -> [MultiActionStoreable] {
         let values = prefill
         
         return values.filter { (key, _) -> Bool in key.contains(actionKey) }
-            .map { MultiActionStoreable(storeKey: $0.key, value: $0.value) }
+            .compactMap { MultiActionStoreable(storeKey: $0.key, value: $0.value) }
     }
 }
 

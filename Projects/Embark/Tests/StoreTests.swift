@@ -98,10 +98,12 @@ final class StoreTests: XCTestCase {
                                  "addBuilding[2]dropDownAction":"gazebo",
                                  "addBuilding[2]dropDownAction.Label":"GARAGE"]
     
+    private let mockedData = MultiActionData(addLabel: "asd", key: "asd", maxAmount: "4", link: .init(name: "", label: ""), components: [])
+    
     func testAddMutliAction() {
         let store = EmbarkStore()
         
-        store.addMultiActionItems(actionKey: actionKey, componentValues: componentValues.flatMap { $0.mapValues { MultiActionValue(inputValue: $0)} }) { }
+        store.addMultiActionItems(actionKey: actionKey, componentValues: componentValues) {}
         
         store.createRevision()
         
@@ -113,10 +115,16 @@ final class StoreTests: XCTestCase {
     func testGetMultiActionItems() {
         let store = EmbarkStore()
         
-        store.addMultiActionItems(actionKey: actionKey, componentValues: componentValues.flatMap { $0.mapValues { MultiActionValue(inputValue: $0)} }) { }
+        store.addMultiActionItems(actionKey: actionKey, componentValues: componentValues) {}
         
-        let prefilledComponentValues = store.getComponentValues(actionKey: actionKey)
+        let values = store.getComponentValues(actionKey: actionKey, data: mockedData).map { dic in
+            return dic.reduce([String:String]()) { (dict, values) in
+                var dict = dict
+                dict[values.key] = values.value.inputValue
+                return dict
+            }
+        }
         
-        XCTAssertEqual(componentValues, prefilledComponentValues)
+        XCTAssertEqual(values, componentValues)
     }
 }
