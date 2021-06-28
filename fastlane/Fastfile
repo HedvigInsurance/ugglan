@@ -197,10 +197,58 @@ platform :ios do
         
         notifier.post(blocks: options[:blocks])
     end
+
+    private_lane :handle_compile_errors do
+        require "json"
+
+        file_path = "../build/reports/errors.json"
+
+        if File.file?(file_path)
+            file = File.open file_path
+            errors = JSON.load file
+
+            main_dir = File.expand_path("..", Dir.pwd)
+
+            errors["compile_errors"].each { |error|
+                error_definition = error["file_path"].split(":")
+                file = error_definition[0]
+
+                if Find.find(main_dir).include?(file)
+                    output = "::error file=#{file},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
+                    STDOUT.write output
+                end
+            }
+
+            errors["compile_warnings"].each { |error|
+                error_definition = error["file_path"].split(":")
+                file = error_definition[0]
+
+                if Find.find(main_dir).include?(file)
+                    output = "::warning file=#{file},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
+                    STDOUT.write output
+                end
+            }
+        end
+    end
+
+    private_lane :handle_xcresult_result do |options|
+        require 'xcresult'
+
+        parser = XCResult::Parser.new(path: "test_output/#{options[:scheme]}.xcresult")
+        
+        parser.actions_invocation_record.issues.test_failure_summaries.each { |failure|
+            urlParts = failure.document_location_in_creating_workspace.url.sub!("file://", "").split("#")
+            lineConfig = urlParts[1].split("&")
+            startingLineNumber = lineConfig[2].split("=")[1]
+
+            output = "::error file=#{urlParts[0]},line=#{startingLineNumber},col=0::#{failure.message}\n"
+            STDOUT.write output
+        }
+    end
     
     lane :build do |options|
         setup
-        
+
         if is_ci
             if File.exist? File.expand_path("~/Library/Keychains/CI-db")
                 unlock_keychain(
@@ -243,24 +291,31 @@ platform :ios do
             target_filter: scheme,
             build_configuration: "Release"
         )
-                                
-        build_app(
-            workspace: "Ugglan.xcworkspace",
-            configuration: "Release",
-            scheme: scheme,
-            output_directory: "fastlane/build_output",
-            codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
-            include_bitcode: false,
-            catalyst_platform: "ios",
-            skip_package_dependencies_resolution: true,
-            export_options: {
-                compileBitcode: false,
-                iCloudContainerEnvironment: "Production",
-                method: "ad-hoc",
-                provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
-                thinning: "<none>"
-            }
-        )
+
+        begin
+            build_app(
+                workspace: "Ugglan.xcworkspace",
+                configuration: "Release",
+                scheme: scheme,
+                output_directory: "fastlane/build_output",
+                codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
+                include_bitcode: false,
+                catalyst_platform: "ios",
+                skip_package_dependencies_resolution: true,
+                xcpretty_formatter: ENV["GEM_HOME"] + "/gems/xcpretty-json-formatter-0.1.1/lib/json_formatter.rb",
+                derived_data_path: is_ci ? "../../../DerivedData" : nil,
+                export_options: {
+                    compileBitcode: false,
+                    iCloudContainerEnvironment: "Production",
+                    method: "ad-hoc",
+                    provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
+                    thinning: "<none>"
+                }
+            )
+        rescue => ex
+            handle_compile_errors
+            raise ex
+        end
     end
 
     lane :slack_message do
@@ -416,16 +471,26 @@ platform :ios do
         scheme = options[:scheme]
         
         device = "iPhone 11 Pro (14.5)"
-        
-        scan(
-            workspace: "Ugglan.xcworkspace",
-            devices: [device],
-            scheme: scheme,
-            skip_package_dependencies_resolution: true
-        )
-        
+
+        begin
+            scan(
+                workspace: "Ugglan.xcworkspace",
+                devices: [device],
+                scheme: scheme,
+                formatter: ENV["GEM_HOME"] + "/gems/xcpretty-json-formatter-0.1.1/lib/json_formatter.rb",
+                output_style: "rspec",
+                skip_package_dependencies_resolution: true,
+                derived_data_path: is_ci ? "../../../DerivedData" : nil,
+            )
+        rescue => ex
+            handle_compile_errors
+            handle_xcresult_result(scheme: scheme)
+            raise ex
+        end
+
         xchtmlreport(
-            result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"]
+            result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"],
+            enable_junit: true
         )
     end
     
