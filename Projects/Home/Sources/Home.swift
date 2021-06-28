@@ -171,13 +171,13 @@ private extension GraphQL.HomeQuery.Data {
     }
 
     private var isTerminated: Bool {
-        contracts.contains(where: { (contract) -> Bool in
+        contracts.allSatisfy({ (contract) -> Bool in
             contract.status.asActiveInFutureStatus != nil || contract.status.asTerminatedStatus != nil || contract.status.asTerminatedTodayStatus != nil
         })
     }
 
     private var isFuture: Bool {
-        contracts.contains { (contract) -> Bool in
+        contracts.allSatisfy { (contract) -> Bool in
             contract.status.asActiveInFutureStatus != nil || contract.status.asPendingStatus != nil
         }
     }
