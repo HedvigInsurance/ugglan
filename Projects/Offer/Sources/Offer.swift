@@ -79,7 +79,11 @@ class OfferState {
 	}
 
 	var quotesSignal: CoreSignal<Plain, [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote]> {
-		return dataSignal.map { $0.quoteBundle.quotes }
+		dataSignal.map { $0.quoteBundle.quotes }
+	}
+
+	var signStatusSubscription: CoreSignal<Plain, GraphQL.SignStatusSubscription.Data> {
+		client.subscribe(subscription: GraphQL.SignStatusSubscription())
 	}
 
 	enum UpdateStartDateError: Error {
@@ -147,6 +151,63 @@ class OfferState {
 				)
 
 				return Future(date)
+			}
+	}
+
+	enum CheckoutUpdateError: Error {
+		case failed
+	}
+
+	func checkoutUpdate(quoteId: String, email: String, ssn: String) -> Future<Void> {
+		return self.client
+			.perform(
+				mutation: GraphQL.CheckoutUpdateMutation(quoteID: quoteId, email: email, ssn: ssn)
+			)
+			.flatMap { data in
+				guard data.editQuote.asCompleteQuote?.email == email,
+					data.editQuote.asCompleteQuote?.ssn == ssn
+				else {
+					return Future(error: CheckoutUpdateError.failed)
+				}
+
+				return self.client
+					.fetch(
+						query: self.query,
+						cachePolicy: .fetchIgnoringCacheData
+					)
+					.toVoid()
+			}
+	}
+
+	enum SignEvent {
+		case swedishBankId(
+			autoStartToken: String,
+			subscription: CoreSignal<Plain, GraphQL.SignStatusSubscription.Data>
+		)
+		case simpleSign(subscription: CoreSignal<Plain, GraphQL.SignStatusSubscription.Data>)
+		case done
+		case failed
+	}
+
+	func signQuotes() -> Future<SignEvent> {
+		let subscription = signStatusSubscription
+
+		return client.perform(mutation: GraphQL.SignQuotesMutation(ids: ids))
+			.map { data in
+				if data.signQuotes.asAlreadyCompleted != nil {
+					return SignEvent.done
+				} else if data.signQuotes.asFailedToStartSign != nil {
+					return SignEvent.failed
+				} else if let session = data.signQuotes.asSwedishBankIdSession {
+					return SignEvent.swedishBankId(
+						autoStartToken: session.autoStartToken ?? "",
+						subscription: subscription
+					)
+				} else if data.signQuotes.asSimpleSignSession != nil {
+					return SignEvent.simpleSign(subscription: subscription)
+				}
+
+				return SignEvent.failed
 			}
 	}
 }

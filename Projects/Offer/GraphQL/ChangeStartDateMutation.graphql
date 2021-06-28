@@ -1,4 +1,4 @@
-mutation ChangeStartDate($id: ID!, $startDate: String!) {
+mutation ChangeStartDate($id: ID!, $startDate: LocalDate!) {
     editQuote(
         input: {
             id: $id

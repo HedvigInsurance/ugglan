@@ -1,0 +1,19 @@
+mutation SignQuotes($ids: [ID!]!) {
+    signQuotes(input: {
+        quoteIds: $ids
+    }) {
+        ... on SwedishBankIdSession {
+            autoStartToken
+        }
+        ... on SimpleSignSession {
+            id
+        }
+        ... on AlreadyCompleted {
+            ignore
+        }
+        ... on FailedToStartSign {
+            errorMessage
+            errorCode
+        }
+    }
+}

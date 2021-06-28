@@ -36,6 +36,8 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
         id
         firstName
         lastName
+        ssn
+        email
         displayName(locale: $locale)
         detailsTable(locale: $locale) {
           title
