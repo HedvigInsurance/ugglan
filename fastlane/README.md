@@ -31,14 +31,29 @@ fastlane ios setup
 fastlane ios provision
 ```
 
+### ios upload_dsyms
+```
+fastlane ios upload_dsyms
+```
+
 ### ios production_upload
 ```
 fastlane ios production_upload
 ```
 
-### ios workspace_apps
+### ios build
 ```
-fastlane ios workspace_apps
+fastlane ios build
+```
+
+### ios slack_message
+```
+fastlane ios slack_message
+```
+
+### ios test
+```
+fastlane ios test
 ```
 
 ### ios workspace_tests

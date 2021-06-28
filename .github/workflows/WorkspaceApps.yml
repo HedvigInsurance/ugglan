@@ -1,5 +1,9 @@
 name: WorkspaceApps
 
+defaults:
+  run:
+    shell: bash -ieo pipefail {0}
+
 on:
   push:
     branches: [ main ]
@@ -7,31 +11,121 @@ on:
     branches: ['*']
 
 jobs:
-  build:
-    runs-on: macos-latest
-
+  build_ugglan:
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
-    - name: XCode Select
-      run: sudo xcode-select -s /Applications/Xcode_12.3.app
-    - name: Install Tuist
-      run: bash <(curl -Ls https://install.tuist.io)
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
-      uses: maierj/fastlane-action@v1.4.0
       env:
-        APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
-        APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-        APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
         GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-        S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-        S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-        SLACK_IOS_BUILDS_URL: ${{ secrets.SLACK_IOS_BUILDS_URL }}
-        SLACK_IOS_PR_BUILDS_URL: ${{ secrets.SLACK_IOS_PR_BUILDS_URL }}
-        BRANCH_NAME: ${{ github.head_ref }}
-        GITHUB_PR_NUMBER: ${{ github.event.number }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
+    - name: Upload app
+      uses: actions/upload-artifact@v2
       with:
-       lane: ios workspace_apps
+        name: Ugglan.ipa
+        path: fastlane/build_output/Ugglan.ipa
+  build_embark:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: EmbarkExample.ipa
+        path: fastlane/build_output/EmbarkExample.ipa
+  build_hedvig:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: Hedvig.ipa
+        path: fastlane/build_output/Hedvig.ipa
+  build_home:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios build path:Projects/Home/Home.xcodeproj scheme:HomeExample
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: HomeExample.ipa
+        path: fastlane/build_output/HomeExample.ipa
+  build_forever:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+      run: arch -arm64 bundle exec fastlane ios build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: ForeverExample.ipa
+        path: fastlane/build_output/ForeverExample.ipa
+  slack:
+    runs-on: ubuntu-latest
+    needs: [build_ugglan, build_embark, build_hedvig, build_home, build_forever]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          path: fastlane/build_output
+      - name: Fastlane Action
+        uses: maierj/fastlane-action@v1.4.0
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          SLACK_IOS_BUILDS_URL: ${{ secrets.SLACK_IOS_BUILDS_URL }}
+          SLACK_IOS_PR_BUILDS_URL: ${{ secrets.SLACK_IOS_PR_BUILDS_URL }}
+          BRANCH_NAME: ${{ github.head_ref }}
+          GITHUB_PR_NUMBER: ${{ github.event.number }}
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+          FASTLANE_XCODE_LIST_TIMEOUT: '180'
+        with:
+          lane: ios slack_message
+

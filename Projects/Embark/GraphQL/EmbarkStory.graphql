@@ -335,6 +335,18 @@ query EmbarkStory($name: String!, $locale: String!) {
             }
           }
         }
+        ... on EmbarkDatePickerAction {
+                    component
+          next {
+            ...EmbarkLinkFragment
+          }
+          storeKey
+          label
+          tooltip {
+            title
+            description
+          }
+        }
         ... on EmbarkExternalInsuranceProviderAction {
           component
           externalInsuranceProviderData: data {

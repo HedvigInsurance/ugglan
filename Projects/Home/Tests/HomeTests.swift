@@ -38,17 +38,4 @@ class HomeTests: XCTestCase {
 
 		wait(for: [waitForApollo], timeout: 2)
 	}
-
-	func testContractTerminatedState() {
-		perform(.makeTerminatedInTheFuture()) { window in assertSnapshot(matching: window, as: .image) }
-	}
-
-	func testContractActiveInFutureState() {
-		perform(.makeActiveInFuture(switchable: true)) { window in assertSnapshot(matching: window, as: .image)
-		}
-	}
-
-	func testContractActiveState() {
-		perform(.makeActive()) { window in assertSnapshot(matching: window, as: .image) }
-	}
 }
