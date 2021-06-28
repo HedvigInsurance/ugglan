@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       schemeFilter:
-        description: 'Schemes'
+        description: 'Scheme filter (leave empty to run on all)'
         required: false
 
 jobs:
