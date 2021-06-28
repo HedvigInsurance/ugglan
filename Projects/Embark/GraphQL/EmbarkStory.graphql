@@ -1,150 +1,162 @@
 fragment EmbarkLinkFragment on EmbarkLink {
-    name
-    label
+  name
+  label
 }
 
 fragment MessageFragment on EmbarkMessage {
-    text
-    expressions {
-        ...ExpressionFragment
-    }
+  text
+  expressions {
+    ...ExpressionFragment
+  }
 }
 
 fragment BasicExpressionFragment on EmbarkExpression {
-    ... on EmbarkExpressionUnary {
-        expressionUnaryType: type
-        text
-    }
-    ... on EmbarkExpressionBinary {
-        expressionBinaryType: type
-        key
-        value
-        text
-    }
+  ... on EmbarkExpressionUnary {
+    expressionUnaryType: type
+    text
+  }
+  ... on EmbarkExpressionBinary {
+    expressionBinaryType: type
+    key
+    value
+    text
+  }
 }
 
 fragment ExpressionFragment on EmbarkExpression {
-    ...BasicExpressionFragment
-    ... on EmbarkExpressionMultiple {
+  ...BasicExpressionFragment
+  ... on EmbarkExpressionMultiple {
+    expressionMultipleType: type
+    text
+    subExpressions {
+      ...BasicExpressionFragment
+      ... on EmbarkExpressionMultiple {
         expressionMultipleType: type
         text
         subExpressions {
-            ...BasicExpressionFragment
-              ... on EmbarkExpressionMultiple {
-                expressionMultipleType: type
-                text
-                subExpressions {
-                    ...BasicExpressionFragment
-                      ... on EmbarkExpressionMultiple {
-                        expressionMultipleType: type
-                        text
-                        subExpressions {
-                            ...BasicExpressionFragment
-                        }
-                    }
-                }
+          ...BasicExpressionFragment
+          ... on EmbarkExpressionMultiple {
+            expressionMultipleType: type
+            text
+            subExpressions {
+              ...BasicExpressionFragment
             }
+          }
         }
+      }
     }
+  }
 }
 
 fragment ResponseFragment on EmbarkResponse {
-    ... on EmbarkMessage {
-        ...MessageFragment
+  ... on EmbarkMessage {
+    ...MessageFragment
+  }
+  ... on EmbarkGroupedResponse {
+    component
+    items {
+      ...MessageFragment
     }
-    ... on EmbarkGroupedResponse {
-        component
-        items {
-            ...MessageFragment
-        }
-        title {
-            text
-        }
+    title {
+      text
     }
-    ... on EmbarkResponseExpression {
-        text
-        expressions {
-            ...ExpressionFragment
-        }
+  }
+  ... on EmbarkResponseExpression {
+    text
+    expressions {
+      ...ExpressionFragment
     }
+  }
 }
 
 fragment ApiSingleVariableFragment on EmbarkAPIGraphQLSingleVariable {
-    key
-    from
-    as
+  key
+  from
+  as
 }
 
 fragment ApiGeneratedVariableFragment on EmbarkAPIGraphQLGeneratedVariable {
-    key
-    storeAs
-    type
+  key
+  storeAs
+  type
 }
 
 fragment ApiMultiActionVariableFragment on EmbarkAPIGraphQLMultiActionVariable {
-    key
-    variables {
+  key
+  variables {
+    ...ApiSingleVariableFragment
+    ...ApiGeneratedVariableFragment
+    ... on EmbarkAPIGraphQLMultiActionVariable {
+      key
+      variables {
         ...ApiSingleVariableFragment
         ...ApiGeneratedVariableFragment
-        ... on EmbarkAPIGraphQLMultiActionVariable {
-            key
-            variables {
-                ...ApiSingleVariableFragment
-                ...ApiGeneratedVariableFragment
-            }
-        }
+      }
     }
+  }
+}
+
+fragment EmbarkNumberActionFragment on EmbarkNumberActionData {
+  key
+  placeholder
+  unit
+  label
+  maxValue
+  minValue
+  link {
+    ...EmbarkLinkFragment
+  }
 }
 
 fragment ApiVariablesFragment on EmbarkAPIGraphQLVariable {
-    ...ApiSingleVariableFragment
-    ...ApiGeneratedVariableFragment
-    ...ApiMultiActionVariableFragment
+  ...ApiSingleVariableFragment
+  ...ApiGeneratedVariableFragment
+  ...ApiMultiActionVariableFragment
 }
 
 fragment ApiFragment on EmbarkApi {
-    ... on EmbarkApiGraphQLQuery {
-        data {
-            next {
-                ...EmbarkLinkFragment
-            }
-            query
-            variables {
-                ...ApiVariablesFragment
-            }
-            queryResults: results {
-                key
-                as
-            }
-            queryErrors: errors {
-                contains
-                next {
-                    ...EmbarkLinkFragment
-                }
-            }
+  ... on EmbarkApiGraphQLQuery {
+    data {
+      next {
+        ...EmbarkLinkFragment
+      }
+      query
+      variables {
+        ...ApiVariablesFragment
+      }
+      queryResults: results {
+        key
+        as
+      }
+      queryErrors: errors {
+        contains
+        next {
+          ...EmbarkLinkFragment
         }
+      }
     }
-    ... on EmbarkApiGraphQLMutation {
-        data {
-            next {
-                ...EmbarkLinkFragment
-            }
-            mutation
-            variables {
-                ...ApiVariablesFragment
-            }
-            mutationResults: results {
-               key
-               as
-            }
-            mutationErrors: errors {
-                contains
-                next {
-                    ...EmbarkLinkFragment
-                }
-            }
+  }
+  ... on EmbarkApiGraphQLMutation {
+    data {
+      next {
+        ...EmbarkLinkFragment
+      }
+      mutation
+      variables {
+        ...ApiVariablesFragment
+      }
+      mutationResults: results {
+        key
+        as
+      }
+      mutationErrors: errors {
+        contains
+        next {
+          ...EmbarkLinkFragment
         }
+      }
     }
+  }
 }
 
 fragment EmbarkRedirectSingle on EmbarkRedirect {
@@ -165,153 +177,212 @@ fragment EmbarkRedirectSingle on EmbarkRedirect {
 }
 
 fragment EmbarkRedirectFragment on EmbarkRedirect {
-    ...EmbarkRedirectSingle
-    ... on EmbarkRedirectMultipleExpressions {
-        multipleType: type
-        to
-        passedExpressionKey
-        passedExpressionValue
-        subExpressions {
-          ...ExpressionFragment
-        }
+  ...EmbarkRedirectSingle
+  ... on EmbarkRedirectMultipleExpressions {
+    multipleType: type
+    to
+    passedExpressionKey
+    passedExpressionValue
+    subExpressions {
+      ...ExpressionFragment
     }
+  }
 }
 
 query EmbarkStory($name: String!, $locale: String!) {
-    embarkStory(name: $name, locale: $locale) {
-        id
-        startPassage
-        name
-        computedStoreValues {
-            key
-            value
-        }
-        passages {
-            id
-            name
-            externalRedirect {
-                component
-                data {
-                    location
-                }
-            }
-            offerRedirect {
-                component
-                data {
-                    keys
-                }
-            }
-            tooltips {
-              description
-              title
-            }
-            allLinks {
-                ...EmbarkLinkFragment
-            }
-            response {
-                ...ResponseFragment
-            }
-            messages {
-                ...MessageFragment
-            }
-            api {
-                ...ApiFragment
-            }
-            redirects {
-              ...EmbarkRedirectFragment
-            }
-            tracks {
-              eventName
-              eventKeys
-              includeAllKeys
-              customData
-            }
-            action {
-                ... on EmbarkActionCore {
-                    component
-                }
-                ... on EmbarkTextAction {
-                    component
-                    textActionData: data {
-                        key
-                        placeholder
-                        mask
-                        api {
-                            ...ApiFragment
-                        }
-                        link {
-                            ...EmbarkLinkFragment
-                        }
-                    }
-                }
-                ... on EmbarkNumberAction {
-                    component
-                    numberActionData: data {
-                        key
-                        placeholder
-                        unit
-                        maxValue
-                        minValue
-                        link {
-                            ...EmbarkLinkFragment
-                        }
-                    }
-                }
-                ... on EmbarkTextActionSet {
-                    textActionSetData: data {
-                        link {
-                            ...EmbarkLinkFragment
-                        }
-                        textActions {
-                            data {
-                              title
-                              key
-                              placeholder
-                              mask
-                            }
-                        }
-                    }
-                }
-                ... on EmbarkSelectAction {
-                    component
-                    selectActionData: data {
-                        options {
-                            keys
-                            values
-                            link {
-                                ...EmbarkLinkFragment
-                            }
-                            api {
-                                ...ApiFragment
-                            }
-                        }
-                    }
-                }
-                ... on EmbarkExternalInsuranceProviderAction {
-                    component
-                    externalInsuranceProviderData: data {
-                        next {
-                            ...EmbarkLinkFragment
-                        }
-                        skip {
-                            ...EmbarkLinkFragment
-                        }
-                    }
-                }
-                ... on EmbarkPreviousInsuranceProviderAction {
-                    component
-                    previousInsuranceProviderData: data {
-                        next {
-                            ...EmbarkLinkFragment
-                        }
-                        skip {
-                            ...EmbarkLinkFragment
-                        }
-                        providers
-                        storeKey
-                    }
-                }
-            }
-        }
+  embarkStory(name: $name, locale: $locale) {
+    id
+    startPassage
+    name
+    computedStoreValues {
+      key
+      value
     }
+    passages {
+      id
+      name
+      externalRedirect {
+        component
+        data {
+          location
+        }
+      }
+      offerRedirect {
+        component
+        data {
+          keys
+        }
+      }
+      tooltips {
+        description
+        title
+      }
+      allLinks {
+        ...EmbarkLinkFragment
+      }
+      response {
+        ...ResponseFragment
+      }
+      messages {
+        ...MessageFragment
+      }
+      api {
+        ...ApiFragment
+      }
+      redirects {
+        ...EmbarkRedirectFragment
+      }
+      tracks {
+        eventName
+        eventKeys
+        includeAllKeys
+        customData
+      }
+      action {
+        ... on EmbarkMultiAction {
+          multiActionData: data {
+            addLabel
+            maxAmount
+            link {
+              ...EmbarkLinkFragment
+            }
+            components {
+              ... on EmbarkMultiActionNumberAction {
+                numberActionData: data {
+                  placeholder
+                  key
+                  unit
+                  }
+              }
+              ... on EmbarkDropdownAction {
+                dropDownActionData: data {
+                  label
+                  key
+                  options {
+                    value
+                    text
+                  }
+                }
+              }
+              ... on EmbarkSwitchAction {
+                switchActionData: data {
+                  label
+                  key
+                  defaultValue
+                }
+              }
+            }
+          }
+        }
+        ... on EmbarkActionCore {
+          component
+        }
+        ... on EmbarkTextAction {
+          component
+          textActionData: data {
+            key
+            placeholder
+            mask
+            api {
+              ...ApiFragment
+            }
+            link {
+              ...EmbarkLinkFragment
+            }
+          }
+        }
+        ... on EmbarkNumberAction {
+          component
+          numberActionData: data {
+            ...EmbarkNumberActionFragment
+          }
+        }
+        ... on EmbarkTextActionSet {
+          textActionSetData: data {
+            link {
+              ...EmbarkLinkFragment
+            }
+            textActions {
+              data {
+                title
+                key
+                placeholder
+                mask
+              }
+            }
+          }
+        }
+        ... on EmbarkSelectAction {
+          component
+          selectActionData: data {
+            options {
+              keys
+              values
+              link {
+                ...EmbarkLinkFragment
+              }
+              api {
+                ...ApiFragment
+              }
+            }
+          }
+        }
+        ... on EmbarkDatePickerAction {
+                    component
+          next {
+            ...EmbarkLinkFragment
+          }
+          storeKey
+          label
+          tooltip {
+            title
+            description
+          }
+        }
+        ... on EmbarkExternalInsuranceProviderAction {
+          component
+          externalInsuranceProviderData: data {
+            next {
+              ...EmbarkLinkFragment
+            }
+            skip {
+              ...EmbarkLinkFragment
+            }
+          }
+        }
+        ... on EmbarkPreviousInsuranceProviderAction {
+          component
+          previousInsuranceProviderData: data {
+            next {
+              ...EmbarkLinkFragment
+            }
+            skip {
+              ...EmbarkLinkFragment
+            }
+            providers
+            storeKey
+          }
+        }
+        ... on EmbarkNumberActionSet {
+          component
+          data {
+            link {
+              ...EmbarkLinkFragment
+            }
+            numberActions {
+              data {
+                key
+                placeholder
+                unit
+                label
+                maxValue
+                minValue
+                title
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

@@ -1,30 +1,34 @@
+import ExampleUtil
 import Flow
 import Form
 import Foundation
-import hCoreUI
 import UIKit
-import ExampleUtil
+import hCoreUI
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
-    let bag = DisposeBag()
+	var window: UIWindow?
+	let bag = DisposeBag()
 
-    internal func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
-    ) -> Bool {
-        application.setup()
-        window = UIWindow(frame: UIScreen.main.bounds)
+	internal func application(
+		_ application: UIApplication,
+		didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+	) -> Bool {
+		application.setup()
+		window = UIWindow(frame: UIScreen.main.bounds)
 
-        let navigationController = UINavigationController()
-        navigationController.navigationBar.prefersLargeTitles = true
+		let navigationController = UINavigationController()
+		navigationController.navigationBar.prefersLargeTitles = true
 
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
+		window?.rootViewController = navigationController
+		window?.makeKeyAndVisible()
 
-        bag += navigationController.present(Debug(), style: .default, options: [.largeTitleDisplayMode(.always)])
+		bag += navigationController.present(
+			Debug(),
+			style: .default,
+			options: [.largeTitleDisplayMode(.always)]
+		)
 
-        return true
-    }
+		return true
+	}
 }

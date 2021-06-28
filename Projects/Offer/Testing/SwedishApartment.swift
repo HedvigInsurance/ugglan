@@ -1,35 +1,47 @@
 import Apollo
 import Foundation
-import hCore
-import hGraphQL
 import Offer
 import TestingUtil
+import hCore
+import hGraphQL
 
-public extension JSONObject {
-    static func makeSwedishApartment() -> JSONObject {
-        GraphQL.QuoteBundleQuery.Data.init(
-            quoteBundle: .init(
-                quotes: [
-                    .init(
-                        id: "123",
-                        currentInsurer: nil,
-                        firstName: "Hedvig",
-                        lastName: "Hedvigsen",
-                        quoteDetails: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.QuoteDetail.makeSwedishApartmentQuoteDetails(
-                            street: "Lilla gatan 12",
-                            zipCode: "12345",
-                            householdSize: 200,
-                            livingSpace: 20,
-                            swedishApartmentType: .rent
-                        )
-                    )
-                ],
-                bundleCost: .init(
-                    monthlyGross: .init(amount: "100", currency: "SEK"),
-                    monthlyDiscount: .init(amount: "100", currency: "SEK"),
-                    monthlyNet: .init(amount: "100", currency: "SEK")
-                )
-            )
-        ).jsonObject
-    }
+extension JSONObject {
+	public static func makeSwedishApartment() -> JSONObject {
+		GraphQL.QuoteBundleQuery.Data
+			.init(
+				quoteBundle: .init(
+					quotes: [
+						.init(
+							id: "123",
+							currentInsurer: nil,
+							firstName: "Hedvig",
+							lastName: "Hedvigsen",
+							displayName: "Home insurance rental",
+							detailsTable: generateDetailsTable(
+								title: "Home insurance rental",
+								rows: generateHomeRows()
+							),
+							perils: generatePerils(),
+							insurableLimits: generateInsurableLimits(),
+							insuranceTerms: [
+								.init(
+									displayName: "Terms and pre-sale information",
+									url:
+										"https://www.hedvig.com/no-en/terms/terms/travel.pdf",
+									type: .termsAndConditions
+								)
+							]
+						)
+					],
+					bundleCost: .init(
+						monthlyGross: .init(amount: "100", currency: "SEK"),
+						monthlyDiscount: .init(amount: "100", currency: "SEK"),
+						monthlyNet: .init(amount: "100", currency: "SEK")
+					),
+					frequentlyAskedQuestions: generateFrequentlyAskedQuestions()
+				),
+				redeemedCampaigns: []
+			)
+			.jsonObject
+	}
 }

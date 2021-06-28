@@ -1,246 +1,227 @@
 import Flow
 import Foundation
-import hGraphQL
 import hCore
+import hGraphQL
 
-extension String {
-    var floatValue: Float {
-        return Float(self) ?? 0
-    }
-}
+extension String { var floatValue: Float { Float(self) ?? 0 } }
 
 class EmbarkStore {
-    var prefill: [String: String] = [:]
-    var revisions: [[String: String]] = [[:]]
-    var queue: [String: String] = [:]
-    var computedValues: [String: String] = [:]
+	var prefill: [String: String] = [:]
+	var revisions: [[String: String]] = [[:]]
+	var queue: [String: String] = [:]
+	var computedValues: [String: String] = [:]
 
-    func setValue(key: String?, value: String?) {
-        if let key = key, let value = value {
-            guard let arraySymbolRegex = try? NSRegularExpression(pattern: "[\\[\\]]") else {
-                return
-            }
-            let keyRange = NSRange(location: 0, length: key.utf16.count)
-            let valueRange = NSRange(location: 0, length: value.utf16.count)
+	func setValue(key: String?, value: String?) {
+		if let key = key, let value = value {
+			guard let arraySymbolRegex = try? NSRegularExpression(pattern: "[\\[\\]]") else { return }
+			let keyRange = NSRange(location: 0, length: key.utf16.count)
+			let valueRange = NSRange(location: 0, length: value.utf16.count)
 
-            // handling for array based keys and values
-            if
-                arraySymbolRegex.firstMatch(in: key, options: [], range: keyRange) != nil,
-                arraySymbolRegex.firstMatch(in: value, options: [], range: valueRange) != nil
-            {
-                var mutableValue = String(value)
-                mutableValue.removeFirst()
-                mutableValue.removeLast()
-                let values = mutableValue.split(separator: ",")
+			// handling for array based keys and values
+			if arraySymbolRegex.firstMatch(in: key, options: [], range: keyRange) != nil,
+				arraySymbolRegex.firstMatch(in: value, options: [], range: valueRange) != nil
+			{
+				var mutableValue = String(value)
+				mutableValue.removeFirst()
+				mutableValue.removeLast()
+				let values = mutableValue.split(separator: ",")
 
-                var mutableKey = String(key)
-                mutableKey.removeFirst()
-                mutableKey.removeLast()
-                mutableKey.split(separator: ",").enumerated().forEach { arg in
-                    let (offset, key) = arg
-                    setValue(key: String(key), value: String(values[offset]))
-                }
-            } else {
-                prefill[key] = value
-                queue[key] = value
-            }
-        }
-    }
-    
-    func getAllValues() -> [String:String] {
-        let mappedComputedValues = computedValues.compactMapValues { value in parseComputedExpression(value) }
-        
-        return mappedComputedValues.merging(revisions.last ?? [:], uniquingKeysWith: takeLeft)
-    }
+				var mutableKey = String(key)
+				mutableKey.removeFirst()
+				mutableKey.removeLast()
+				mutableKey.split(separator: ",").enumerated()
+					.forEach { arg in let (offset, key) = arg
+						setValue(key: String(key), value: String(values[offset]))
+					}
+			} else {
+				prefill[key] = value
+				queue[key] = value
+			}
+		}
+	}
 
-    private func parseComputedExpression(_ expression: String) -> String? {
-        expression.tokens.expression?.evaluate(store: self)
-    }
+	func getAllValues() -> [String: String] {
+		let mappedComputedValues = computedValues.compactMapValues { value in parseComputedExpression(value) }
 
-    func getValue(key: String) -> String? {
-        if let computedExpression = computedValues[key] {
-            return parseComputedExpression(computedExpression)
-        }
+		return mappedComputedValues.merging(revisions.last ?? [:], uniquingKeysWith: takeLeft)
+	}
 
-        if let store = revisions.last {
-            return store[key]
-        }
+	private func parseComputedExpression(_ expression: String) -> String? {
+		expression.tokens.expression?.evaluate(store: self)
+	}
 
-        return nil
-    }
-    
-    func getPrefillValue(key: String) -> String? {
-        return prefill[key]
-    }
+	func getValue(key: String) -> String? {
+		if let computedExpression = computedValues[key] { return parseComputedExpression(computedExpression) }
 
-    func createRevision() {
-        guard let store = revisions.last else {
-            return
-        }
+		if let store = revisions.last { return store[key] }
 
-        var storeCopy = store
+		return nil
+	}
 
-        queue.forEach { key, value in
-            storeCopy[key] = value
-            queue.removeValue(forKey: key)
-        }
+	func getPrefillValue(key: String) -> String? { prefill[key] }
 
-        revisions.append(storeCopy)
+	func createRevision() {
+		guard let store = revisions.last else { return }
 
-        print("COMMITED NEW REVISION:", revisions.last ?? "missing revision")
-    }
+		var storeCopy = store
 
-    func removeLastRevision() {
-        if revisions.count > 1 {
-            revisions.removeLast()
-            print("POPPING LAST REVISION, NEW STORE:", revisions.last ?? "missing revision")
-        }
-    }
-    
-    func passes(expression: GraphQL.BasicExpressionFragment) -> Bool {
-        if let binaryExpression = expression.asEmbarkExpressionBinary {
-            switch binaryExpression.expressionBinaryType {
-            case .equals:
-                return getValue(key: binaryExpression.key) == binaryExpression.value
-            case .lessThan:
-                if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
-                    return storeFloat < binaryExpression.value.floatValue
-                }
+		queue.forEach { key, value in storeCopy[key] = value
+			queue.removeValue(forKey: key)
+		}
 
-                return false
-            case .lessThanOrEquals:
-                if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
-                    return storeFloat <= binaryExpression.value.floatValue
-                }
+		revisions.append(storeCopy)
 
-                return false
-            case .moreThan:
-                if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
-                    return storeFloat > binaryExpression.value.floatValue
-                }
+		print("COMMITED NEW REVISION:", revisions.last ?? "missing revision")
+	}
 
-                return false
-            case .moreThanOrEquals:
-                if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
-                    return storeFloat >= binaryExpression.value.floatValue
-                }
+	func removeLastRevision() {
+		if revisions.count > 1 {
+			revisions.removeLast()
+			print("POPPING LAST REVISION, NEW STORE:", revisions.last ?? "missing revision")
+		}
+	}
 
-                return false
-            case .notEquals:
-                return getValue(key: binaryExpression.key) != binaryExpression.value
-            case .__unknown:
-                return false
-            }
-        }
+	func passes(expression: GraphQL.BasicExpressionFragment) -> Bool {
+		if let binaryExpression = expression.asEmbarkExpressionBinary {
+			switch binaryExpression.expressionBinaryType {
+			case .equals: return getValue(key: binaryExpression.key) == binaryExpression.value
+			case .lessThan:
+				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
+					return storeFloat < binaryExpression.value.floatValue
+				}
 
-        if let unaryExpression = expression.asEmbarkExpressionUnary {
-            switch unaryExpression.expressionUnaryType {
-            case .always:
-                return true
-            case .never:
-                return false
-            case .__unknown:
-                return false
-            }
-        }
+				return false
+			case .lessThanOrEquals:
+				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
+					return storeFloat <= binaryExpression.value.floatValue
+				}
 
-        return false
-    }
+				return false
+			case .moreThan:
+				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
+					return storeFloat > binaryExpression.value.floatValue
+				}
 
-    func passes(expression: GraphQL.ExpressionFragment) -> Bool {
-        if let multiple = expression.asEmbarkExpressionMultiple {
-            switch multiple.expressionMultipleType {
-            case .and:
-                return !multiple.subExpressions.map { subExpression -> Bool in
-                    self.passes(expression: subExpression.fragments.basicExpressionFragment)
-                }.contains(false)
-            case .or:
-                return !multiple.subExpressions.map { subExpression -> Bool in
-                    self.passes(expression: subExpression.fragments.basicExpressionFragment)
-                }.contains(true)
-            case .__unknown:
-                return false
-            }
-        }
+				return false
+			case .moreThanOrEquals:
+				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
+					return storeFloat >= binaryExpression.value.floatValue
+				}
 
-        return passes(expression: expression.fragments.basicExpressionFragment)
-    }
+				return false
+			case .notEquals: return getValue(key: binaryExpression.key) != binaryExpression.value
+			case .__unknown: return false
+			}
+		}
 
-    func passes(expression: GraphQL.MessageFragment.Expression) -> Bool {
-        passes(expression: expression.fragments.expressionFragment)
-    }
+		if let unaryExpression = expression.asEmbarkExpressionUnary {
+			switch unaryExpression.expressionUnaryType {
+			case .always: return true
+			case .never: return false
+			case .__unknown: return false
+			}
+		}
 
-    func shouldRedirectTo(redirect: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Redirect) -> String? {
-        if let unaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectUnaryExpression {
-            if unaryExpression.unaryType == .always {
-                return unaryExpression.to
-            }
-        }
+		return false
+	}
 
-        if let binaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectBinaryExpression {
-            switch binaryExpression.binaryType {
-            case .equals:
-                if getValue(key: binaryExpression.key) == binaryExpression.value {
-                    return binaryExpression.to
-                }
-            case .lessThan:
-                if
-                    let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
-                    storeFloat < binaryExpression.value.floatValue
-                {
-                    return binaryExpression.to
-                }
+	func passes(expression: GraphQL.ExpressionFragment) -> Bool {
+		if let multiple = expression.asEmbarkExpressionMultiple {
+			switch multiple.expressionMultipleType {
+			case .and:
+				return !multiple.subExpressions
+					.map { subExpression -> Bool in
+						self.passes(expression: subExpression.fragments.basicExpressionFragment)
+					}
+					.contains(false)
+			case .or:
+				return !multiple.subExpressions
+					.map { subExpression -> Bool in
+						self.passes(expression: subExpression.fragments.basicExpressionFragment)
+					}
+					.contains(true)
+			case .__unknown: return false
+			}
+		}
 
-            case .lessThanOrEquals:
-                if
-                    let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
-                    storeFloat <= binaryExpression.value.floatValue
-                {
-                    return binaryExpression.to
-                }
-            case .moreThan:
-                if
-                    let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
-                    storeFloat > binaryExpression.value.floatValue
-                {
-                    return binaryExpression.to
-                }
-            case .moreThanOrEquals:
-                if
-                    let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
-                    storeFloat >= binaryExpression.value.floatValue
-                {
-                    return binaryExpression.to
-                }
+		return passes(expression: expression.fragments.basicExpressionFragment)
+	}
 
-            case .notEquals:
-                if getValue(key: binaryExpression.key) != binaryExpression.value {
-                    return binaryExpression.to
-                }
-            case .__unknown:
-                break
-            }
-        }
+	func passes(expression: GraphQL.MessageFragment.Expression) -> Bool {
+		passes(expression: expression.fragments.expressionFragment)
+	}
 
-        if let multipleExpression = redirect.fragments.embarkRedirectFragment.asEmbarkRedirectMultipleExpressions {
-            switch multipleExpression.multipleType {
-            case .and:
-                if multipleExpression.subExpressions.map({ subExpression -> Bool in
-                    self.passes(expression: subExpression.fragments.expressionFragment)
-                }).allSatisfy({ passes in passes }) {
-                    return multipleExpression.to
-                }
-            case .or:
-                if multipleExpression.subExpressions.map({ subExpression -> Bool in
-                    self.passes(expression: subExpression.fragments.expressionFragment)
-                }).contains(true) {
-                    return multipleExpression.to
-                }
-            case .__unknown:
-                break
-            }
-        }
+	func shouldRedirectTo(redirect: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Redirect) -> String? {
+		if let unaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectUnaryExpression {
+			if unaryExpression.unaryType == .always { return unaryExpression.to }
+		}
 
-        return nil
-    }
+		if let binaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectBinaryExpression {
+			switch binaryExpression.binaryType {
+			case .equals:
+				if getValue(key: binaryExpression.key) == binaryExpression.value {
+					return binaryExpression.to
+				}
+			case .lessThan:
+				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
+					storeFloat < binaryExpression.value.floatValue
+				{
+					return binaryExpression.to
+				}
+
+			case .lessThanOrEquals:
+				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
+					storeFloat <= binaryExpression.value.floatValue
+				{
+					return binaryExpression.to
+				}
+			case .moreThan:
+				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
+					storeFloat > binaryExpression.value.floatValue
+				{
+					return binaryExpression.to
+				}
+			case .moreThanOrEquals:
+				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue,
+					storeFloat >= binaryExpression.value.floatValue
+				{
+					return binaryExpression.to
+				}
+
+			case .notEquals:
+				if getValue(key: binaryExpression.key) != binaryExpression.value {
+					return binaryExpression.to
+				}
+			case .__unknown: break
+			}
+		}
+
+		if let multipleExpression = redirect.fragments.embarkRedirectFragment
+			.asEmbarkRedirectMultipleExpressions
+		{
+			switch multipleExpression.multipleType {
+			case .and:
+				if multipleExpression.subExpressions
+					.map({ subExpression -> Bool in
+						self.passes(expression: subExpression.fragments.expressionFragment)
+					})
+					.allSatisfy({ passes in passes })
+				{
+					return multipleExpression.to
+				}
+			case .or:
+				if multipleExpression.subExpressions
+					.map({ subExpression -> Bool in
+						self.passes(expression: subExpression.fragments.expressionFragment)
+					})
+					.contains(true)
+				{
+					return multipleExpression.to
+				}
+			case .__unknown: break
+			}
+		}
+
+		return nil
+	}
 }
