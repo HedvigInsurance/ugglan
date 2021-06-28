@@ -9,6 +9,7 @@ import hGraphQL
 import Home
 import Presentation
 import UIKit
+import Offer
 
 struct MovingFlow {
     @Inject var client: ApolloClient
@@ -49,12 +50,16 @@ extension MovingFlow: Presentable {
                         options: [.autoPop]
                     )
                     .onValue { redirect in
-                        #warning("PLUG IN NATIVE OFFER HERE")
                         switch redirect {
                         case .mailingList:
                             break
                         case let .offer(ids: ids):
-                            break
+                            viewController.present(Offer(
+                                offerIDContainer: .exact(ids: ids, shouldStore: false),
+                                menu: Menu(title: nil, children: [])
+                            )).onValue { _ in
+                                #warning("handle this")
+                            }
                         }
                     }
             }
