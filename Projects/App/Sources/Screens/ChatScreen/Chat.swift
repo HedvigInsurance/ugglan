@@ -6,6 +6,7 @@ import Offer
 import Presentation
 import UIKit
 import hCore
+import hGraphQL
 
 struct Chat {
 	@Inject var client: ApolloClient
@@ -46,9 +47,28 @@ extension Chat: Presentable {
 		bag += navigateCallbacker.onValue { navigationEvent in
 			switch navigationEvent {
 			case .offer:
-				viewController.present(
-					Offer(offerIDContainer: .stored, menu: Menu(title: nil, children: []))
-				)
+                client.fetch(query: GraphQL.LastQuoteOfMemberQuery()).onValue { data in
+                    guard let id = data.lastQuoteOfMember.asCompleteQuote?.id else {
+                        return
+                    }
+                    
+                    viewController.present(
+                        Offer(
+                            offerIDContainer: .exact(ids: [id], shouldStore: true),
+                            menu: Menu(
+                                title: nil,
+                                children: [
+                                    MenuChild.appInformation,
+                                    MenuChild.appSettings,
+                                    MenuChild.login(onLogin: {
+                                        UIApplication.shared.appDelegate.appFlow
+                                            .presentLoggedIn()
+                                    }),
+                                ]
+                            )
+                        )
+                    )
+                }
 			case .dashboard:
 				viewController.present(LoggedIn())
 			case .login:
