@@ -314,6 +314,7 @@ platform :ios do
                     thinning: "<none>"
                 }
             )
+            handle_compile_errors
         rescue => ex
             handle_compile_errors
             raise ex
@@ -484,6 +485,7 @@ platform :ios do
                 skip_package_dependencies_resolution: true,
                 derived_data_path: is_ci ? "../../../DerivedData" : nil,
             )
+            handle_compile_errors
         rescue => ex
             handle_compile_errors
             handle_xcresult_result(scheme: scheme)
