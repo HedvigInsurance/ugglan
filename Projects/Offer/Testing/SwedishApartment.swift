@@ -47,7 +47,11 @@ extension GraphQL.QuoteBundleQuery.Data {
 						),
 						correspondingQuote: .makeCompleteQuote(id: "123")
 					)
-				])
+                ]),
+                appConfiguration: .init(
+                    showCampaignManagement: true,
+                    title: .logo
+                )
 			),
 			signMethodForQuotes: GraphQL.SignMethod.swedishBankId,
 			redeemedCampaigns: []

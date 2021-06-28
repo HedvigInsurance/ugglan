@@ -169,6 +169,15 @@ extension Debug: Presentable {
                     }
 				}
 			}
+        
+        bag += section.appendRow(title: "Swedish apartment - moving flow")
+            .onValue {
+                presentOffer {
+                    QueryMock(GraphQL.QuoteBundleQuery.self) { _ in
+                        .makeSwedishApartmentMovingFlow()
+                    }
+                }
+            }
 
 		bag += viewController.install(form)
 
