@@ -206,6 +206,7 @@ public extension Contracts {
                 icon: hCoreUIAssets.apartment.image,
                 handler: { viewController in
                     viewController.present(MovingFlow(),
+                                           style: .detented(.large),
                                            options: [.defaults])
                 }
             )]
