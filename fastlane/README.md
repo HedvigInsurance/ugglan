@@ -51,6 +51,11 @@ fastlane ios build
 fastlane ios slack_message
 ```
 
+### ios test
+```
+fastlane ios test
+```
+
 ### ios workspace_tests
 ```
 fastlane ios workspace_tests
