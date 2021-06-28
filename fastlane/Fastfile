@@ -163,6 +163,7 @@ platform :ios do
         update_project_provisioning(
             xcodeproj: "Projects/App/Ugglan.xcodeproj",
             profile: ENV["sigh_#{app_identifier}_appstore_profile-path"],
+            certificate: is_ci ? "AppleIncRootCertificate.cer" : "",
             target_filter: "Hedvig",
             build_configuration: "Release"
         )
@@ -288,6 +289,7 @@ platform :ios do
         update_project_provisioning(
             xcodeproj: project_path,
             profile: ENV["sigh_#{app_identifier}_adhoc_profile-path"],
+            certificate: is_ci ? "AppleIncRootCertificate.cer" : "",
             target_filter: scheme,
             build_configuration: "Release"
         )
