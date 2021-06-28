@@ -215,8 +215,6 @@ class OfferState {
 extension Offer: Presentable {
 	public func materialize() -> (UIViewController, Disposable) {
 		let viewController = UIViewController()
-		viewController.title = "Your offer"
-
 		ApplicationState.preserveState(.offer)
 
 		Dependencies.shared.add(
@@ -232,7 +230,22 @@ extension Offer: Presentable {
 			viewController.navigationItem.standardAppearance = appearance
 			viewController.navigationItem.compactAppearance = appearance
 		}
+        
 		let bag = DisposeBag()
+        
+        bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }.distinct().onValue { title in
+            viewController.navigationItem.titleView = nil
+            viewController.title = nil
+            
+            switch title {
+                case .logo:
+                viewController.navigationItem.titleView = .titleWordmarkView
+                case .updateSummary:
+                    viewController.title = L10n.offerUpdateSummaryTitle
+                case .__unknown(_):
+                    break
+            }
+        }
 
 		let optionsButton = UIBarButtonItem(
 			image: hCoreUIAssets.menuIcon.image,

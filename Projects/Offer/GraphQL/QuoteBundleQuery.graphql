@@ -83,6 +83,10 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
     inception {
       ...InceptionFragment
     }
+    appConfiguration {
+      showCampaignManagement
+      title
+    }
   }
   signMethodForQuotes(input: $ids)
   redeemedCampaigns {

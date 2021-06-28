@@ -115,7 +115,11 @@ extension GraphQL.QuoteBundleQuery.Data {
 						),
 						correspondingQuote: .makeCompleteQuote(id: "1234")
 					),
-				])
+				]),
+                appConfiguration: .init(
+                    showCampaignManagement: true,
+                    title: .logo
+                )
 			),
 			signMethodForQuotes: GraphQL.SignMethod.simpleSign,
 			redeemedCampaigns: []
