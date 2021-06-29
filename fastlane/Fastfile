@@ -345,7 +345,7 @@ platform :ios do
             bucket: "hedvig-ios-builds",
             region: "eu-central-1",
             folder: "test_output",
-            app_directory: "#{scheme}_#{SecureRandom.uuid}",
+            app_directory: "#{options[:scheme]}_#{SecureRandom.uuid}",
             upload_metadata: false
         )
 
