@@ -207,7 +207,7 @@ platform :ios do
             client = Octokit::Client.new(:access_token => ENV["GITHUB_TOKEN"])
             repo = ENV["GITHUB_REPOSITORY"]
 
-            check_run_response = client.create_check_run(repo, "Compilation Result", ENV["GITHUB_SHA"], {
+            check_run_response = client.create_check_run(repo, options[:name], ENV["GITHUB_SHA"], {
                 status: "completed",
                 conclusion: options[:conclusion]
             })
@@ -280,7 +280,13 @@ platform :ios do
                 end
             }
 
-            update_annotations(title: title, summary: summary, conclusion: conclusion, annotations: annotations)
+            update_annotations(
+                name: "#{ENV["GITHUB_JOB"]} - Compilation Result",
+                title: title,
+                summary: summary,
+                conclusion: conclusion,
+                annotations: annotations
+            )
         end
     end
 
@@ -306,7 +312,13 @@ platform :ios do
             })
         }
 
-        update_annotations(title: "WorkspaceTests", summary: "Some tests failed", annotations: annotations)
+        update_annotations(
+            name: "#{ENV["GITHUB_JOB"]} - Test Result",
+            title: "Tests failed",
+            summary: "Some tests failed",
+            conclusion: "failure",
+            annotations: annotations
+        )
     end
     
     lane :build do |options|
