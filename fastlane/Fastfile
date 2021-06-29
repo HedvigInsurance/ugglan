@@ -199,36 +199,57 @@ platform :ios do
         notifier.post(blocks: options[:blocks])
     end
 
-    private_lane :handle_compile_errors do
-        require "json"
+    lane :handle_compile_errors do
+        if is_ci
+            require "json"
+            require "octokit"
 
-        file_path = "../build/reports/errors.json"
+            run_id = ENV["GITHUB_RUN_ID"]
+            client = Octokit::Client.new(:access_token => ENV["GITHUB_TOKEN"])
+            repo = ENV["GITHUB_REPOSITORY"]
 
-        if File.file?(file_path)
-            file = File.open file_path
-            errors = JSON.load file
+            file_path = "../build/reports/errors.json"
 
-            main_dir = File.expand_path("..", Dir.pwd)
+            if File.file?(file_path)
+                file = File.open file_path
+                errors = JSON.load file
 
-            errors["compile_errors"].each { |error|
-                error_definition = error["file_path"].split(":")
-                file = error_definition[0]
+                main_dir = File.expand_path("..", Dir.pwd)
 
-                if Find.find(main_dir).include?(file)
-                    output = "::error file=#{file},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
-                    STDOUT.write output
-                end
-            }
+                annotations = []
 
-            errors["compile_warnings"].each { |error|
-                error_definition = error["file_path"].split(":")
-                file = error_definition[0]
+                errors["compile_errors"].each { |error|
+                    error_definition = error["file_path"].split(":")
+                    file = error_definition[0]
 
-                if Find.find(main_dir).include?(file)
-                    output = "::warning file=#{file},line=#{error_definition[1]},col=#{error_definition[2]}::#{error["reason"]}\n"
-                    STDOUT.write output
-                end
-            }
+                    annotations.append({
+                        path: file,
+                        start_line: error_definition[1],
+                        end_line: error_definition[1],
+                        annotation_level: "failure",
+                        title: "Compilation error",
+                        message: error["reason"]
+                    })
+                }
+
+                errors["compile_warnings"].each { |error|
+                    error_definition = error["file_path"].split(":")
+                    file = error_definition[0]
+
+                    annotations.append({
+                        path: file,
+                        start_line: error_definition[1],
+                        end_line: error_definition[1],
+                        annotation_level: "warning",
+                        title: "Compilation warning",
+                        message: error["reason"]
+                    })
+                }
+
+                client.update_check_run(repo, run_id, {
+                    annotations: annotations
+                })
+            end
         end
     end
 
