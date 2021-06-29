@@ -199,59 +199,64 @@ platform :ios do
         notifier.post(blocks: options[:blocks])
     end
 
-    lane :handle_compile_errors do
-        if true
-            require "json"
+    private_lane :update_annotations do |options|
+        if is_ci
             require "octokit"
 
-            run_id = ENV["GITHUB_RUN_ID"]
+            run_id = ENV["GITHUB_JOB"]
             client = Octokit::Client.new(:access_token => ENV["GITHUB_TOKEN"])
             repo = ENV["GITHUB_REPOSITORY"]
 
-            file_path = "../build/reports/errors.json"
-
-            if File.file?(file_path)
-                file = File.open file_path
-                errors = JSON.load file
-
-                main_dir = File.expand_path("..", Dir.pwd)
-
-                annotations = []
-
-                errors["compile_errors"].each { |error|
-                    error_definition = error["file_path"].split(":")
-                    file = error_definition[0]
-
-                    annotations.append({
-                        path: file,
-                        start_line: error_definition[1],
-                        end_line: error_definition[1],
-                        annotation_level: "failure",
-                        title: "Compilation error",
-                        message: error["reason"]
-                    })
+            client.update_check_run(repo, run_id, {
+                output: {
+                    annotations: options[:annotations]
                 }
+            })
+        end
+    end
 
-                errors["compile_warnings"].each { |error|
-                    error_definition = error["file_path"].split(":")
-                    file = error_definition[0]
+    lane :handle_compile_errors do
+        require "json"
+            
+        file_path = "../build/reports/errors.json"
 
-                    annotations.append({
-                        path: file,
-                        start_line: error_definition[1],
-                        end_line: error_definition[1],
-                        annotation_level: "warning",
-                        title: "Compilation warning",
-                        message: error["reason"]
-                    })
-                }
+        if File.file?(file_path)
+            file = File.open file_path
+            errors = JSON.load file
 
-                client.update_check_run(repo, run_id, {
-                    output: {
-                        annotations: annotations
-                    }
+            main_dir = File.expand_path("..", Dir.pwd)
+
+            annotations = []
+
+            errors["compile_errors"].each { |error|
+                error_definition = error["file_path"].split(":")
+                file = error_definition[0]
+
+                annotations.append({
+                    path: file,
+                    start_line: error_definition[1],
+                    end_line: error_definition[1],
+                    annotation_level: "failure",
+                    title: "Compilation error",
+                    message: error["reason"]
                 })
-            end
+            }
+
+            errors["compile_warnings"].each { |error|
+                error_definition = error["file_path"].split(":")
+                file = error_definition[0]
+
+                annotations.append({
+                    path: file,
+                    start_line: error_definition[1],
+                    end_line: error_definition[1],
+                    annotation_level: "warning",
+                    title: "Compilation warning",
+                    message: error["reason"]
+                })
+            }
+
+            update_annotations(annotations: annotations)
         end
     end
 
@@ -259,15 +264,25 @@ platform :ios do
         require 'xcresult'
 
         parser = XCResult::Parser.new(path: "test_output/#{options[:scheme]}.xcresult")
+
+        annotations = []
         
         parser.actions_invocation_record.issues.test_failure_summaries.each { |failure|
             urlParts = failure.document_location_in_creating_workspace.url.sub!("file://", "").split("#")
             lineConfig = urlParts[1].split("&")
             startingLineNumber = lineConfig[2].split("=")[1]
 
-            output = "::error file=#{urlParts[0]},line=#{startingLineNumber},col=0::#{failure.message}\n"
-            STDOUT.write output
+            annotations.append({
+                path: urlParts[0],
+                start_line: startingLineNumber,
+                end_line: startingLineNumber,
+                annotation_level: "error",
+                title: "Test error",
+                message: failure.message
+            })
         }
+
+        update_annotations(annotations: annotations)
     end
     
     lane :build do |options|
