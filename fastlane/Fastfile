@@ -344,7 +344,7 @@ platform :ios do
             secret_access_key: ENV['S3_SECRET_ACCESS_KEY'],
             bucket: "hedvig-ios-builds",
             region: "eu-central-1",
-            folder: "test_output",
+            folder: "fastlane/test_output",
             app_directory: "#{options[:scheme]}_#{SecureRandom.uuid}",
             upload_metadata: false
         )
