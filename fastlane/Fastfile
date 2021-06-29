@@ -323,6 +323,31 @@ platform :ios do
         parser = XCResult::Parser.new(path: "test_output/#{options[:scheme]}.xcresult")
 
         annotations = []
+
+        name = ""
+        summary = ""
+        conclusion = ""
+
+        parser.actions_invocation_record.issues.warning_summaries.each { |issue|
+            if issue.document_location_in_creating_workspace
+                urlParts = issue.document_location_in_creating_workspace.url.sub!("file://", "").split("#")
+                lineConfig = urlParts[1].split("&")
+                startingLineNumber = lineConfig[2].split("=")[1]
+
+                annotations.append({
+                    path: urlParts[0],
+                    start_line: startingLineNumber.to_i,
+                    end_line: startingLineNumber.to_i,
+                    annotation_level: "warning",
+                    title: issue.issue_type,
+                    message: issue.message
+                })
+
+                name = "#{ENV["GITHUB_JOB"]} - Warnings"
+                summary = "Some tests failed"
+                conclusion = "failure"
+            end
+        }
         
         parser.actions_invocation_record.issues.test_failure_summaries.each { |failure|
             urlParts = failure.document_location_in_creating_workspace.url.sub!("file://", "").split("#")
@@ -337,6 +362,10 @@ platform :ios do
                 title: "Test error",
                 message: failure.message
             })
+
+            name = "#{ENV["GITHUB_JOB"]} - Failures"
+            conclusion = "There where some warnings"
+            conclusion = "neutral"
         }
 
         aws_s3(
@@ -351,12 +380,12 @@ platform :ios do
 
         if !annotations.empty?
             update_annotations(
-                name: "#{ENV["GITHUB_JOB"]} - Failures",
+                name: name,
                 title: "#{ENV["GITHUB_JOB"]}",
-                summary: "Some tests failed",
-                conclusion: "failure",
+                summary: summary,
+                conclusion: conclusion,
                 annotations: annotations,
-                details_url: lane_context[SharedValues::S3_FOLDER_OUTPUT_PATH]
+                details_url: lane_context[SharedValues::S3_FOLDER_OUTPUT_PATH] + "/index.html"
             )
         end
     end
