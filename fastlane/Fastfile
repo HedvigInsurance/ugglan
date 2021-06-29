@@ -216,6 +216,8 @@ platform :ios do
             options[:annotations].each_slice(50) { |annotations|
                 client.update_check_run(repo, check_run_response.id, {
                     output: {
+                        title: options[:title],
+                        summary: options[:summary],
                         annotations: annotations
                     }
                 })
@@ -234,25 +236,16 @@ platform :ios do
 
             main_dir = File.expand_path("..", Dir.pwd)
 
+            title = ""
+            summary = ""
             annotations = []
-
-            errors["compile_errors"].each { |error|
-                error_definition = error["file_path"].split(":")
-                file = error_definition[0]
-
-                annotations.append({
-                    path: file,
-                    start_line: error_definition[1].to_i,
-                    end_line: error_definition[1].to_i,
-                    annotation_level: "failure",
-                    title: "Compilation error",
-                    message: error["reason"]
-                })
-            }
 
             errors["compile_warnings"].each { |error|
                 error_definition = error["file_path"].split(":")
                 file = error_definition[0]
+
+                title = "WorkspaceApps"
+                summary = "There where some warnings"
 
                 annotations.append({
                     path: file,
@@ -264,7 +257,24 @@ platform :ios do
                 })
             }
 
-            update_annotations(annotations: annotations)
+            errors["compile_errors"].each { |error|
+                error_definition = error["file_path"].split(":")
+                file = error_definition[0]
+
+                title = "WorkspaceApps"
+                summary = "There where some errors"
+
+                annotations.append({
+                    path: file,
+                    start_line: error_definition[1].to_i,
+                    end_line: error_definition[1].to_i,
+                    annotation_level: "failure",
+                    title: "Compilation error",
+                    message: error["reason"]
+                })
+            }
+
+            update_annotations(title: title, summary: summart, annotations: annotations)
         end
     end
 
