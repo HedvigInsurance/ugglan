@@ -232,7 +232,8 @@ platform :ios do
 
             check_run_response = client.create_check_run(repo, options[:name], run_response.head_sha, {
                 status: "completed",
-                conclusion: options[:conclusion]
+                conclusion: options[:conclusion],
+                details_url: options[:details_url]
             })
 
             options[:annotations].each_slice(50) { |annotations|
@@ -338,13 +339,24 @@ platform :ios do
             })
         }
 
+        aws_s3(
+            access_key: ENV['S3_ACCESS_KEY'],
+            secret_access_key: ENV['S3_SECRET_ACCESS_KEY'],
+            bucket: "hedvig-ios-builds",
+            region: "eu-central-1",
+            folder: "test_output",
+            app_directory: "#{scheme}_#{SecureRandom.uuid}",
+            upload_metadata: false
+        )
+
         if !annotations.empty?
             update_annotations(
                 name: "#{ENV["GITHUB_JOB"]} - Failures",
                 title: "#{ENV["GITHUB_JOB"]}",
                 summary: "Some tests failed",
                 conclusion: "failure",
-                annotations: annotations
+                annotations: annotations,
+                details_url: lane_context[SharedValues::S3_FOLDER_OUTPUT_PATH]
             )
         end
     end
@@ -591,14 +603,13 @@ platform :ios do
             handle_compile_errors
         rescue => ex
             handle_compile_errors
+            xchtmlreport(
+                result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"],
+                enable_junit: true
+            )
             handle_xcresult_result(scheme: scheme)
             raise ex
         end
-
-        xchtmlreport(
-            result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"],
-            enable_junit: true
-        )
     end
     
     lane :workspace_tests do
