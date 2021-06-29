@@ -275,7 +275,7 @@ platform :ios do
 
                 if Find.find(main_dir).include?(file)
                     annotations.append({
-                        path: file,
+                        path: file.sub!(main_dir + "/", ""),
                         start_line: error_definition[1].to_i,
                         end_line: error_definition[1].to_i,
                         annotation_level: "warning",
@@ -295,7 +295,7 @@ platform :ios do
 
                 if Find.find(main_dir).include?(file)
                     annotations.append({
-                        path: file,
+                        path: file.sub!(main_dir + "/", ""),
                         start_line: error_definition[1].to_i,
                         end_line: error_definition[1].to_i,
                         annotation_level: "failure",
@@ -317,7 +317,7 @@ platform :ios do
         end
     end
 
-    lane :handle_xcresult_result do |options|
+    private_lane :handle_xcresult_result do |options|
         require 'xcresult'
 
         parser = XCResult::Parser.new(path: "test_output/#{options[:scheme]}.xcresult")
@@ -340,7 +340,7 @@ platform :ios do
 
                 if Find.find(main_dir).include?(file)
                     annotations.append({
-                        path: file.sub!(main_dir, ""),
+                        path: file.sub!(main_dir + "/", ""),
                         start_line: startingLineNumber.to_i,
                         end_line: startingLineNumber.to_i,
                         annotation_level: "warning",
@@ -364,7 +364,7 @@ platform :ios do
 
             if Find.find(main_dir).include?(file)
                 annotations.prepend({
-                    path: file.sub!(main_dir, ""),
+                    path: file.sub!(main_dir + "/", ""),
                     start_line: startingLineNumber.to_i,
                     end_line: startingLineNumber.to_i,
                     annotation_level: "failure",
