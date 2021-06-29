@@ -226,7 +226,7 @@ platform :ios do
         end
     end
 
-    lane :handle_compile_errors do
+    private_lane :handle_compile_errors do
         require "json"
             
         file_path = "../build/reports/errors.json"
@@ -237,6 +237,7 @@ platform :ios do
 
             main_dir = File.expand_path("..", Dir.pwd)
 
+            name = "",
             title = "#{ENV["GITHUB_JOB"]}"
             summary = ""
             conclusion = "" 
@@ -246,6 +247,7 @@ platform :ios do
                 error_definition = error["file_path"].split(":")
                 file = error_definition[0]
 
+                name = "#{ENV["GITHUB_JOB"]} - Warnings"
                 summary = "There where some warnings"
                 conclusion = "success"
 
@@ -265,6 +267,7 @@ platform :ios do
                 error_definition = error["file_path"].split(":")
                 file = error_definition[0]
 
+                name = "#{ENV["GITHUB_JOB"]} - Errors"
                 summary = "There where some errors"
                 conclusion = "failure"
 
@@ -280,13 +283,15 @@ platform :ios do
                 end
             }
 
-            update_annotations(
-                name: "#{ENV["GITHUB_JOB"]} - Report",
-                title: title,
-                summary: summary,
-                conclusion: conclusion,
-                annotations: annotations
-            )
+            if !annotations.empty?
+                update_annotations(
+                    name: name,
+                    title: title,
+                    summary: summary,
+                    conclusion: conclusion,
+                    annotations: annotations
+                )
+            end
         end
     end
 
@@ -312,13 +317,15 @@ platform :ios do
             })
         }
 
-        update_annotations(
-            name: "#{ENV["GITHUB_JOB"]} - Report",
-            title: "#{ENV["GITHUB_JOB"]}",
-            summary: "Some tests failed",
-            conclusion: "failure",
-            annotations: annotations
-        )
+        if !annotations.empty?
+            update_annotations(
+                name: "#{ENV["GITHUB_JOB"]} - Failures",
+                title: "#{ENV["GITHUB_JOB"]}",
+                summary: "Some tests failed",
+                conclusion: "failure",
+                annotations: annotations
+            )
+        end
     end
     
     lane :build do |options|

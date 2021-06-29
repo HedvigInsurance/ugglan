@@ -41,11 +41,6 @@ fastlane ios upload_dsyms
 fastlane ios production_upload
 ```
 
-### ios handle_compile_errors
-```
-fastlane ios handle_compile_errors
-```
-
 ### ios build
 ```
 fastlane ios build
