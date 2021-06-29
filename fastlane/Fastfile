@@ -249,7 +249,7 @@ platform :ios do
 
                 name = "#{ENV["GITHUB_JOB"]} - Warnings"
                 summary = "There where some warnings"
-                conclusion = "success"
+                conclusion = "neutral"
 
                 if Find.find(main_dir).include?(file)
                     annotations.append({
