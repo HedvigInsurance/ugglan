@@ -341,8 +341,8 @@ platform :ios do
                 if Find.find(main_dir).include?(file)
                     annotations.append({
                         path: file.sub!(main_dir + "/", ""),
-                        start_line: params["StartingLineNumber"].to_i,
-                        end_line: params["EndingLineNumber"].to_i,
+                        start_line: params["StartingLineNumber"].first.to_i,
+                        end_line: params["EndingLineNumber"].first.to_i,
                         annotation_level: "warning",
                         title: issue.issue_type,
                         message: issue.message
@@ -364,8 +364,8 @@ platform :ios do
             if Find.find(main_dir).include?(file)
                 annotations.prepend({
                     path: file.sub!(main_dir + "/", ""),
-                    start_line: params["StartingLineNumber"].to_i,
-                    end_line: params["EndingLineNumber"].to_i,
+                    start_line: params["StartingLineNumber"].first.to_i,
+                    end_line: params["EndingLineNumber"].first.to_i,
                     annotation_level: "failure",
                     title: "Test error",
                     message: failure.message
