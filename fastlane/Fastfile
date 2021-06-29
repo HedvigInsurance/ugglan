@@ -397,6 +397,15 @@ platform :ios do
                 annotations: annotations,
                 details_url: lane_context[SharedValues::S3_FOLDER_OUTPUT_PATH] + "/index.html"
             )
+        else
+            update_annotations(
+                name: "#{ENV["GITHUB_JOB"]} - Report",
+                title: "#{ENV["GITHUB_JOB"]}",
+                summary: "Tests passed.",
+                conclusion: "success",
+                annotations: annotations,
+                details_url: lane_context[SharedValues::S3_FOLDER_OUTPUT_PATH] + "/index.html"
+            )
         end
     end
     
