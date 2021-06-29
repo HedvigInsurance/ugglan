@@ -334,14 +334,18 @@ platform :ios do
                 lineConfig = urlParts[1].split("&")
                 startingLineNumber = lineConfig[2].split("=")[1]
 
-                annotations.append({
-                    path: urlParts[0],
-                    start_line: startingLineNumber.to_i,
-                    end_line: startingLineNumber.to_i,
-                    annotation_level: "warning",
-                    title: issue.issue_type,
-                    message: issue.message
-                })
+                file = urlParts[0]
+
+                if Find.find(main_dir).include?(file)
+                    annotations.append({
+                        path: urlParts[0],
+                        start_line: startingLineNumber.to_i,
+                        end_line: startingLineNumber.to_i,
+                        annotation_level: "warning",
+                        title: issue.issue_type,
+                        message: issue.message
+                    })
+                end
 
                 name = "#{ENV["GITHUB_JOB"]} - Warnings"
                 summary = "There where some warnings"
@@ -359,7 +363,7 @@ platform :ios do
             file = urlParts[0]
 
             if Find.find(main_dir).include?(file)
-                annotations.append({
+                annotations.prepend({
                     path: file,
                     start_line: startingLineNumber.to_i,
                     end_line: startingLineNumber.to_i,
