@@ -212,6 +212,8 @@ platform :ios do
                 conclusion: options[:conclusion]
             })
 
+            puts check_run_response.to_h
+
             options[:annotations].each_slice(50) { |annotations|
                 client.update_check_run(repo, check_run_response.id, {
                     output: {
