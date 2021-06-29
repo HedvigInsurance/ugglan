@@ -207,7 +207,7 @@ platform :ios do
             client = Octokit::Client.new(:access_token => ENV["GITHUB_TOKEN"])
             repo = ENV["GITHUB_REPOSITORY"]
 
-            check_run_response = client.create_check_run(repo, ENV["GITHUB_JOB"], ENV["GITHUB_SHA"], {
+            check_run_response = client.create_check_run(repo, "Compilation Result", ENV["GITHUB_SHA"], {
                 status: "completed",
                 conclusion: options[:conclusion]
             })
@@ -248,14 +248,16 @@ platform :ios do
                 summary = "There where some warnings"
                 conclusion = "success"
 
-                annotations.append({
-                    path: file,
-                    start_line: error_definition[1].to_i,
-                    end_line: error_definition[1].to_i,
-                    annotation_level: "warning",
-                    title: "Compilation warning",
-                    message: error["reason"]
-                })
+                if Find.find(main_dir).include?(file)
+                    annotations.append({
+                        path: file,
+                        start_line: error_definition[1].to_i,
+                        end_line: error_definition[1].to_i,
+                        annotation_level: "warning",
+                        title: "Compilation warning",
+                        message: error["reason"]
+                    })
+                end
             }
 
             errors["compile_errors"].each { |error|
@@ -266,14 +268,16 @@ platform :ios do
                 summary = "There where some errors"
                 conclusion = "failure"
 
-                annotations.append({
-                    path: file,
-                    start_line: error_definition[1].to_i,
-                    end_line: error_definition[1].to_i,
-                    annotation_level: "failure",
-                    title: "Compilation error",
-                    message: error["reason"]
-                })
+                if Find.find(main_dir).include?(file)
+                    annotations.append({
+                        path: file,
+                        start_line: error_definition[1].to_i,
+                        end_line: error_definition[1].to_i,
+                        annotation_level: "failure",
+                        title: "Compilation error",
+                        message: error["reason"]
+                    })
+                end
             }
 
             update_annotations(title: title, summary: summary, annotations: annotations)
