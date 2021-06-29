@@ -242,8 +242,8 @@ platform :ios do
 
                 annotations.append({
                     path: file,
-                    start_line: error_definition[1],
-                    end_line: error_definition[1],
+                    start_line: error_definition[1].to_i,
+                    end_line: error_definition[1].to_i,
                     annotation_level: "failure",
                     title: "Compilation error",
                     message: error["reason"]
@@ -256,8 +256,8 @@ platform :ios do
 
                 annotations.append({
                     path: file,
-                    start_line: error_definition[1],
-                    end_line: error_definition[1],
+                    start_line: error_definition[1].to_i,
+                    end_line: error_definition[1].to_i,
                     annotation_level: "warning",
                     title: "Compilation warning",
                     message: error["reason"]
@@ -282,8 +282,8 @@ platform :ios do
 
             annotations.append({
                 path: urlParts[0],
-                start_line: startingLineNumber,
-                end_line: startingLineNumber,
+                start_line: startingLineNumber.to_i,
+                end_line: startingLineNumber.to_i,
                 annotation_level: "error",
                 title: "Test error",
                 message: failure.message
