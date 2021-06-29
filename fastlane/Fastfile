@@ -332,7 +332,7 @@ platform :ios do
                 path: urlParts[0],
                 start_line: startingLineNumber.to_i,
                 end_line: startingLineNumber.to_i,
-                annotation_level: "error",
+                annotation_level: "failure",
                 title: "Test error",
                 message: failure.message
             })
