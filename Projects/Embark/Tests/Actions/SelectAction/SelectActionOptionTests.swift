@@ -14,7 +14,6 @@ final class SelectActionOptionTests: XCTestCase {
 
 	func testSelectActionOption() {
 		let selectActionOption = EmbarkSelectActionOption(
-			state: .init(),
 			data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction
 				.SelectActionDatum.Option(
 					keys: ["test"],

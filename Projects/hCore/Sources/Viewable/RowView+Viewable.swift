@@ -25,37 +25,4 @@ extension RowView {
 			matter.removeFromSuperview()
 		}
 	}
-
-	public func append<V: Viewable, View: UIView, Value>(
-		_ viewable: V,
-		onCreate: @escaping (_ view: View) -> Void = { _ in }
-	) -> Signal<Value> where V.Matter == View, V.Result == Signal<Value>, V.Events == ViewableEvents {
-		let wasAddedCallbacker = Callbacker<Void>()
-
-		let (matter, result) = viewable.materialize(
-			events: ViewableEvents(wasAddedCallbacker: wasAddedCallbacker)
-		)
-
-		append(matter)
-		onCreate(matter)
-
-		return result
-	}
-
-	public func append<V: Viewable, View: UIView, Value>(
-		_ viewable: V,
-		onCreate: @escaping (_ view: View) -> Void = { _ in }
-	) -> ReadWriteSignal<Value>
-	where V.Matter == View, V.Result == ReadWriteSignal<Value>, V.Events == ViewableEvents {
-		let wasAddedCallbacker = Callbacker<Void>()
-
-		let (matter, result) = viewable.materialize(
-			events: ViewableEvents(wasAddedCallbacker: wasAddedCallbacker)
-		)
-
-		append(matter)
-		onCreate(matter)
-
-		return result
-	}
 }

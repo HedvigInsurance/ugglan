@@ -147,9 +147,7 @@ extension Action: Viewable {
 									)
 								)
 								.onValue(performCallback)
-						} else if let numberAction = actionData?.asEmbarkNumberAction?
-							.numberActionData
-						{
+						} else if let numberAction = actionData?.asEmbarkNumberAction {
 							innerBag +=
 								view.addArranged(
 									EmbarkNumberAction(
@@ -197,15 +195,6 @@ extension Action: Viewable {
 										data: .previous(
 											previousInsuranceProviderAction
 										)
-									)
-								)
-								.onValue(performCallback)
-						} else if let multiAction = actionData?.asEmbarkMultiAction {
-							innerBag +=
-								view.addArranged(
-									MultiAction(
-										state: self.state,
-										data: multiAction.multiActionData
 									)
 								)
 								.onValue(performCallback)

@@ -1,14 +1,6 @@
 import Foundation
 
 @propertyWrapper public struct CachedDefault<T> {
-	public init(
-		key: String,
-		defaultValue: T
-	) {
-		self.key = key
-		self.defaultValue = defaultValue
-	}
-
 	public let key: String
 	public let defaultValue: T
 
@@ -24,8 +16,6 @@ import Foundation
 }
 
 @propertyWrapper public struct Cached<T> {
-	public init(key: String) { self.key = key }
-
 	public let key: String
 	public let storage = UserDefaults.standard
 
