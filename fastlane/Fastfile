@@ -280,7 +280,7 @@ platform :ios do
                 end
             }
 
-            update_annotations(title: title, summary: summary, annotations: annotations)
+            update_annotations(title: title, summary: summary, conclusion: conclusion, annotations: annotations)
         end
     end
 
