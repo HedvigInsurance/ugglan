@@ -319,6 +319,7 @@ platform :ios do
 
     private_lane :handle_xcresult_result do |options|
         require 'xcresult'
+        require 'cgi'
 
         parser = XCResult::Parser.new(path: "test_output/#{options[:scheme]}.xcresult")
 
@@ -333,16 +334,15 @@ platform :ios do
         parser.actions_invocation_record.issues.warning_summaries.each { |issue|
             if issue.document_location_in_creating_workspace
                 urlParts = issue.document_location_in_creating_workspace.url.sub!("file://", "").split("#")
-                lineConfig = urlParts[1].split("&")
-                startingLineNumber = lineConfig[2].split("=")[1]
+                params = CGI::parse(urlParts[1])
 
                 file = urlParts[0]
 
                 if Find.find(main_dir).include?(file)
                     annotations.append({
                         path: file.sub!(main_dir + "/", ""),
-                        start_line: startingLineNumber.to_i,
-                        end_line: startingLineNumber.to_i,
+                        start_line: params["StartingLineNumber"].to_i,
+                        end_line: params["EndingLineNumber"].to_i,
                         annotation_level: "warning",
                         title: issue.issue_type,
                         message: issue.message
@@ -357,16 +357,15 @@ platform :ios do
         
         parser.actions_invocation_record.issues.test_failure_summaries.each { |failure|
             urlParts = failure.document_location_in_creating_workspace.url.sub!("file://", "").split("#")
-            lineConfig = urlParts[1].split("&")
-            startingLineNumber = lineConfig[2].split("=")[1]
+            params = CGI::parse(urlParts[1])
 
             file = urlParts[0]
 
             if Find.find(main_dir).include?(file)
                 annotations.prepend({
                     path: file.sub!(main_dir + "/", ""),
-                    start_line: startingLineNumber.to_i,
-                    end_line: startingLineNumber.to_i,
+                    start_line: params["StartingLineNumber"].to_i,
+                    end_line: params["EndingLineNumber"].to_i,
                     annotation_level: "failure",
                     title: "Test error",
                     message: failure.message
