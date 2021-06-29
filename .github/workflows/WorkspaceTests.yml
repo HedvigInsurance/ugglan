@@ -22,7 +22,8 @@ jobs:
       env:
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       run: arch -arm64 bundle exec fastlane ios test scheme:Ugglan
     - name: Upload test results
       if: ${{ always() }}
@@ -41,7 +42,8 @@ jobs:
       env:
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       run: arch -arm64 bundle exec fastlane ios test scheme:hCore
     - name: Upload test results
       if: ${{ always() }}
@@ -60,7 +62,8 @@ jobs:
       env:
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       run: arch -arm64 bundle exec fastlane ios test scheme:hCoreUI
     - name: Upload test results
       if: ${{ always() }}
@@ -79,7 +82,8 @@ jobs:
       env:
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       run: arch -arm64 bundle exec fastlane ios test scheme:Forever
     - name: Upload test results
       if: ${{ always() }}
@@ -98,7 +102,8 @@ jobs:
       env:
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       run: arch -arm64 bundle exec fastlane ios test scheme:Contracts
     - name: Upload test results
       if: ${{ always() }}
@@ -117,7 +122,8 @@ jobs:
       env:
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       run: arch -arm64 bundle exec fastlane ios test scheme:Home
     - name: Upload test results
       if: ${{ always() }}
