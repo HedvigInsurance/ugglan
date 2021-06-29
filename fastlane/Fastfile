@@ -207,7 +207,10 @@ platform :ios do
             client = Octokit::Client.new(:access_token => ENV["GITHUB_TOKEN"])
             repo = ENV["GITHUB_REPOSITORY"]
 
-            check_run_response = client.create_check_run(repo, ENV["GITHUB_JOB"], ENV["GITHUB_SHA"], {})
+            check_run_response = client.create_check_run(repo, ENV["GITHUB_JOB"], ENV["GITHUB_SHA"], {
+                status: "completed",
+                conclusion: options[:conclusion]
+            })
 
             options[:annotations].each_slice(50) { |annotations|
                 client.update_check_run(repo, check_run_response.id, {
@@ -234,6 +237,7 @@ platform :ios do
 
             title = ""
             summary = ""
+            conclusion = "" 
             annotations = []
 
             errors["compile_warnings"].each { |error|
@@ -242,6 +246,7 @@ platform :ios do
 
                 title = "WorkspaceApps"
                 summary = "There where some warnings"
+                conclusion = "success"
 
                 annotations.append({
                     path: file,
@@ -259,6 +264,7 @@ platform :ios do
 
                 title = "WorkspaceApps"
                 summary = "There where some errors"
+                conclusion = "failure"
 
                 annotations.append({
                     path: file,
