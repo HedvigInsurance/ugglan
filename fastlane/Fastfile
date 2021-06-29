@@ -344,8 +344,8 @@ platform :ios do
                 })
 
                 name = "#{ENV["GITHUB_JOB"]} - Warnings"
-                summary = "Some tests failed"
-                conclusion = "failure"
+                summary = "There where some warnings"
+                conclusion = "neutral"
             end
         }
         
@@ -364,8 +364,8 @@ platform :ios do
             })
 
             name = "#{ENV["GITHUB_JOB"]} - Failures"
-            conclusion = "There where some warnings"
-            conclusion = "neutral"
+            conclusion = "Some tests failed"
+            conclusion = "failure"
         }
 
         aws_s3(
