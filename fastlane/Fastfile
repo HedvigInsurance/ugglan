@@ -200,7 +200,7 @@ platform :ios do
     end
 
     lane :handle_compile_errors do
-        if is_ci
+        if true
             require "json"
             require "octokit"
 
@@ -247,7 +247,9 @@ platform :ios do
                 }
 
                 client.update_check_run(repo, run_id, {
-                    annotations: annotations
+                    output: {
+                        annotations: annotations
+                    }
                 })
             end
         end
