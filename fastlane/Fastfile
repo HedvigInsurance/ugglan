@@ -207,11 +207,7 @@ platform :ios do
             client = Octokit::Client.new(:access_token => ENV["GITHUB_TOKEN"])
             repo = ENV["GITHUB_REPOSITORY"]
 
-            jobs_response = client.get("#{Octokit::Repository.path repo}/actions/runs/#{run_id}/jobs", {})
-
-            job = jobs_response.jobs.detect{ |job| job.name == ENV["GITHUB_JOB"] }
-
-            check_run_response = client.get(job.check_run_url, {})
+            check_run_response = client.create_check_run(repo, ENV["GITHUB_JOB"], ENV["GITHUB_SHA"], {})
 
             options[:annotations].each_slice(50) { |annotations|
                 client.update_check_run(repo, check_run_response.id, {
@@ -300,7 +296,7 @@ platform :ios do
             })
         }
 
-        update_annotations(annotations: annotations)
+        update_annotations(title: "WorkspaceTests", summary: "Some tests failed", annotations: annotations)
     end
     
     lane :build do |options|
