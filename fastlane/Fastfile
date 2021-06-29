@@ -203,15 +203,23 @@ platform :ios do
         if is_ci
             require "octokit"
 
-            run_id = ENV["GITHUB_JOB"]
+            run_id = ENV["GITHUB_RUN_ID"]
             client = Octokit::Client.new(:access_token => ENV["GITHUB_TOKEN"])
             repo = ENV["GITHUB_REPOSITORY"]
 
-            client.update_check_run(repo, run_id, {
-                output: {
-                    annotations: options[:annotations]
-                }
-            })
+            jobs_response = client.get("#{Octokit::Repository.path repo}/actions/runs/#{run_id}/jobs", {})
+
+            job = jobs_response.jobs.detect{ |job| job.name == ENV["GITHUB_JOB"] }
+
+            check_run_response = client.get(job.check_run_url, {})
+
+            options[:annotations].each_slice(50) { |annotations|
+                client.update_check_run(repo, check_run_response.id, {
+                    output: {
+                        annotations: annotations
+                    }
+                })
+            }
         end
     end
 
