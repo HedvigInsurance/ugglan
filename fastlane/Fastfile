@@ -274,7 +274,7 @@ platform :ios do
                 })
             }
 
-            update_annotations(title: title, summary: summart, annotations: annotations)
+            update_annotations(title: title, summary: summary, annotations: annotations)
         end
     end
 
