@@ -233,7 +233,7 @@ platform :ios do
             check_run_response = client.create_check_run(repo, options[:name], run_response.head_sha, {
                 status: "completed",
                 conclusion: options[:conclusion],
-                details_url: options[:details_url]
+                details_url: options[:details_url] || "https://www.hedvig.com"
             })
 
             options[:annotations].each_slice(50) { |annotations|
