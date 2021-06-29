@@ -207,12 +207,12 @@ platform :ios do
             client = Octokit::Client.new(:access_token => ENV["GITHUB_TOKEN"])
             repo = ENV["GITHUB_REPOSITORY"]
 
-            check_run_response = client.create_check_run(repo, options[:name], ENV["GITHUB_SHA"], {
+            run_response = client.get("#{Octokit::Repository.path repo}/actions/runs/#{run_id}", {})
+
+            check_run_response = client.create_check_run(repo, options[:name], run_response.head_sha, {
                 status: "completed",
                 conclusion: options[:conclusion]
             })
-
-            puts check_run_response.to_h
 
             options[:annotations].each_slice(50) { |annotations|
                 client.update_check_run(repo, check_run_response.id, {
