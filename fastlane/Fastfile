@@ -199,14 +199,35 @@ platform :ios do
         notifier.post(blocks: options[:blocks])
     end
 
-    private_lane :update_annotations do |options|
+    lane :update_annotations do |options|
         if is_ci
             require "octokit"
+            require 'openssl'
+            require 'jwt'
+
+            private_key = OpenSSL::PKey::RSA.new(ENV["HEDVIG_GITHUB_APP_PRIVATE_KEY"])
+
+            payload = {
+                iat: Time.now.to_i - 60,
+                exp: Time.now.to_i + (10 * 60),
+                iss: ENV["HEDVIG_GITHUB_APP_ID"].to_i
+            }
+
+            jwt = JWT.encode(payload, private_key, "RS256")
+
+            application_client = Octokit::Client.new(
+                :bearer_token => jwt
+            )
+            repo = ENV["GITHUB_REPOSITORY"]
+            
+            installation = application_client.find_repository_installation(repo)
+            installation_token = application_client.create_installation_access_token(installation.id, accept: 'application/vnd.github.machine-man-preview+json')
+
+            client = Octokit::Client.new(
+                :access_token => installation_token.token
+            )
 
             run_id = ENV["GITHUB_RUN_ID"]
-            client = Octokit::Client.new(:access_token => ENV["GITHUB_TOKEN"])
-            repo = ENV["GITHUB_REPOSITORY"]
-
             run_response = client.get("#{Octokit::Repository.path repo}/actions/runs/#{run_id}", {})
 
             check_run_response = client.create_check_run(repo, options[:name], run_response.head_sha, {

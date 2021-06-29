@@ -224,6 +224,7 @@ DEPENDENCIES
   fastlane-plugin-aws_s3
   fastlane-plugin-sentry
   fastlane-plugin-xchtmlreport
+  jwt (~> 2.2, >= 2.2.3)
   octokit (~> 4.0)
   xcpretty-json-formatter
   xcresult

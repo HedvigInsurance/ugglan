@@ -21,7 +21,8 @@ jobs:
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
       run: arch -arm64 bundle exec fastlane ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
@@ -40,7 +41,8 @@ jobs:
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
       run: arch -arm64 bundle exec fastlane ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
@@ -59,7 +61,8 @@ jobs:
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
       run: arch -arm64 bundle exec fastlane ios build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig
@@ -78,7 +81,8 @@ jobs:
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
       run: arch -arm64 bundle exec fastlane ios build path:Projects/Home/Home.xcodeproj scheme:HomeExample
@@ -97,7 +101,8 @@ jobs:
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
       run: arch -arm64 bundle exec fastlane ios build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample
