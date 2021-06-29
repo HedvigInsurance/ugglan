@@ -14,5 +14,8 @@ final class MonetaryAmountTests: XCTestCase {
 
 		let unknownAmount = MonetaryAmount(amount: "100.0", currency: "USD")
 		XCTAssertEqual(unknownAmount.formattedAmount, "$100")
+
+		let unknownAmount2 = MonetaryAmount(amount: "100.0", currency: "USD")
+		XCTAssertEqual(unknownAmount2.formattedAmount, "$dsdsds")
 	}
 }
