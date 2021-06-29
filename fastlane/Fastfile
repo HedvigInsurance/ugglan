@@ -317,7 +317,7 @@ platform :ios do
         end
     end
 
-    private_lane :handle_xcresult_result do |options|
+    lane :handle_xcresult_result do |options|
         require 'xcresult'
 
         parser = XCResult::Parser.new(path: "test_output/#{options[:scheme]}.xcresult")
@@ -327,6 +327,8 @@ platform :ios do
         name = ""
         summary = ""
         conclusion = ""
+
+        main_dir = File.expand_path("..", Dir.pwd)
 
         parser.actions_invocation_record.issues.warning_summaries.each { |issue|
             if issue.document_location_in_creating_workspace
@@ -338,7 +340,7 @@ platform :ios do
 
                 if Find.find(main_dir).include?(file)
                     annotations.append({
-                        path: urlParts[0],
+                        path: file.sub!(main_dir, ""),
                         start_line: startingLineNumber.to_i,
                         end_line: startingLineNumber.to_i,
                         annotation_level: "warning",
@@ -358,13 +360,11 @@ platform :ios do
             lineConfig = urlParts[1].split("&")
             startingLineNumber = lineConfig[2].split("=")[1]
 
-            main_dir = File.expand_path("..", Dir.pwd)
-
             file = urlParts[0]
 
             if Find.find(main_dir).include?(file)
                 annotations.prepend({
-                    path: file,
+                    path: file.sub!(main_dir, ""),
                     start_line: startingLineNumber.to_i,
                     end_line: startingLineNumber.to_i,
                     annotation_level: "failure",
