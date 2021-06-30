@@ -10,6 +10,7 @@ public func setupScreenShotTests() {
 	Localization.Locale.currentLocale = .en_SE
 	DefaultStyling.installCustom()
 	ApplicationContext.shared.hasFinishedBootstrapping = true
+    UIView.setAnimationsEnabled(false)
 
 	#if RECORD
 		record = true
