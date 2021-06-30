@@ -630,12 +630,24 @@ platform :ios do
         send_slack_message(url: git_branch == "" ? ENV["SLACK_IOS_BUILDS_URL"] : ENV["SLACK_IOS_PR_BUILDS_URL"], blocks: blocks)
     end
 
-    lane :test do |options|
-        setup
-        
+    lane :test do |options|        
         scheme = options[:scheme]
         
         device = "iPhone 11 Pro (14.5)"
+
+
+        config_path = File.join(File.expand_path("~"), "Library", "Preferences", "com.apple.iphonesimulator.plist")
+
+        UI.message "Patching '#{config_path}' to scale simulator to 100%"
+
+        FastlaneCore::Simulator.all.each do |simulator|
+            simulator_name = simulator.name.tr("\s", "-")
+            key = "SimulatorWindowLastScale-com.apple.CoreSimulator.SimDeviceType.#{simulator_name}"
+
+            command = "defaults write '#{config_path}' '#{key}' '1.0'"
+            puts command
+            `#{command}`
+        end
 
         begin
             scan(

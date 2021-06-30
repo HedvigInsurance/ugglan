@@ -46,11 +46,6 @@ fastlane ios production_upload
 fastlane ios update_annotations
 ```
 
-### ios handle_xcresult_result
-```
-fastlane ios handle_xcresult_result
-```
-
 ### ios build
 ```
 fastlane ios build
