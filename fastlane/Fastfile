@@ -630,7 +630,8 @@ platform :ios do
         send_slack_message(url: git_branch == "" ? ENV["SLACK_IOS_BUILDS_URL"] : ENV["SLACK_IOS_PR_BUILDS_URL"], blocks: blocks)
     end
 
-    lane :test do |options|        
+    lane :test do |options|
+        setup
         scheme = options[:scheme]
         
         device = "iPhone 11 Pro (14.5)"
