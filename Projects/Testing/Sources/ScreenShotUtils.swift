@@ -12,7 +12,7 @@ public func setupScreenShotTests() {
 	DefaultStyling.installCustom()
 	ApplicationContext.shared.hasFinishedBootstrapping = true
     UIView.setAnimationsEnabled(false)
-    XCTAssertEqual(UIScreen.main.scale, 2)
+    XCTAssertEqual(UIScreen.main.scale, 3)
 
 	#if RECORD
 		record = true
