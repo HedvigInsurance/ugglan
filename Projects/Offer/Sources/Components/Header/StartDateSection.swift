@@ -21,14 +21,14 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
 					inception.currentInsurer != nil
 				}) == true
 	}
-    
-    var fallbackDisplayValue: String {
-        if switcher {
-            return L10n.startDateExpires
-        }
-        
-        return Date().localDateStringWithToday ?? ""
-    }
+
+	var fallbackDisplayValue: String {
+		if switcher {
+			return L10n.startDateExpires
+		}
+
+		return Date().localDateStringWithToday ?? ""
+	}
 
 	var displayableStartDate: String {
 		if let concurrentInception = self.inception.asConcurrentInception {
@@ -39,8 +39,9 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
 
 		let startDates = independentInceptions.map { $0.startDate }
 		let allStartDatesEqual = startDates.dropFirst().allSatisfy({ $0 == startDates.first })
-        let dateDisplayValue = startDates.first??.localDateToDate?.localDateStringWithToday ?? fallbackDisplayValue
-        
+		let dateDisplayValue =
+			startDates.first??.localDateToDate?.localDateStringWithToday ?? fallbackDisplayValue
+
 		return allStartDatesEqual ? dateDisplayValue : L10n.offerStartDateMultiple
 	}
 }
