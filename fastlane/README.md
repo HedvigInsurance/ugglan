@@ -41,6 +41,11 @@ fastlane ios upload_dsyms
 fastlane ios production_upload
 ```
 
+### ios update_annotations
+```
+fastlane ios update_annotations
+```
+
 ### ios build
 ```
 fastlane ios build

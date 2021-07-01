@@ -1,0 +1,8 @@
+query ActiveContractBundles {
+     activeContractBundles {
+        id
+    angelStories {
+      addressChange
+    }
+  }
+}
