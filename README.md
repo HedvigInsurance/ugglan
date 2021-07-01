@@ -1,6 +1,6 @@
 <img src="https://i.imgur.com/awvfy5Q.png" width="50" height="auto" />
 
-Hedvig is a new approach to insurance currently available in Sweden and Norway, we belive in transparency hence we code in the open and publish all our source code here on Github, feel free to take a peek, if you are interested in working with us check out our [jobs page](https://jobs.lever.co/hedvig).
+Hedvig is a new approach to insurance currently available in Sweden, Norway and Denmark, we belive in transparency hence we code in the open and publish all our source code here on Github, feel free to take a peek, if you are interested in working with us check out our [jobs page](https://jobs.lever.co/hedvig).
 
 # ugglan ![WorkspaceTests](https://github.com/HedvigInsurance/ugglan/workflows/WorkspaceTests/badge.svg) ![WorkspaceApps](https://github.com/HedvigInsurance/ugglan/workflows/WorkspaceApps/badge.svg) 
 
