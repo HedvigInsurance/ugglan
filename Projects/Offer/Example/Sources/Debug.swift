@@ -236,13 +236,13 @@ extension Debug {
 					after: 10,
 					data: GraphQL.SignStatusSubscription.Data(
 						signStatus: .init(
-							status: .init(
-								collectStatus: .init(
-									status: .failed,
-									code: "userCancel"
-								),
-								signState: .failed
-							)
+                        status: .init(
+                            collectStatus: .init(
+                                status: .failed,
+                                code: "userCancel"
+                            ),
+                            signState: .failed
+                        )
 						)
 					)
 				)
