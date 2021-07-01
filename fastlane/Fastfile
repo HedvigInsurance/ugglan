@@ -321,6 +321,8 @@ platform :ios do
             )
         end
 
+        summary = summary + "\n [Install app](#{lane_context[SharedValues::S3_HTML_OUTPUT_PATH]})"
+
         update_annotations(
             name: name,
             title: title,
