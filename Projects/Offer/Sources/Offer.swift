@@ -310,7 +310,7 @@ extension Offer: Presentable {
 						let insetTop = viewController.navigationController?.view.safeAreaInsets
 							.top
 					{
-						make.height.equalTo(navigationBar.frame.height +                                         insetTop)
+						make.height.equalTo(navigationBar.frame.height + insetTop)
 					}
 				}
 			}
