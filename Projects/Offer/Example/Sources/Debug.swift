@@ -36,7 +36,7 @@ extension Debug: Presentable {
 			}
 
 			viewController.present(
-				Offer(offerIDContainer: .stored, menu: Menu(title: nil, children: [])).withCloseButton,
+                Offer(offerIDContainer: .stored, menu: Menu(title: nil, children: [])).wrappedInCloseButton(),
 				style: presentFullScreenSwitch.isOn
 					? .modally(
 						presentationStyle: .fullScreen,
