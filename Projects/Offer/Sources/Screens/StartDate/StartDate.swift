@@ -34,7 +34,7 @@ extension StartDate: Presentable {
 						switchingActivated: concurrentInception.currentInsurer?.switchable
 							?? false,
 						isCollapsible: false,
-						initialStartDate: concurrentInception.startDate?.localDateToDate
+                        initialStartDate: concurrentInception.startDate?.localDateToDate
 					)
 				)
 				.onValue { date in
