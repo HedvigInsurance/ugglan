@@ -16,7 +16,7 @@ extension DiscountTerms: Viewable {
 
 		let containerStackView = UIStackView()
 		containerStackView.isLayoutMarginsRelativeArrangement = true
-		containerStackView.layoutMargins = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
+		containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 8)
 		containerStackView.isUserInteractionEnabled = false
 		view.addSubview(containerStackView)
 
@@ -24,11 +24,11 @@ extension DiscountTerms: Viewable {
 
 		#warning("Check link - directs to hedvig.com's 404")
 		let termsAndConditionsString = L10n.referralAddcouponTcLink
-		let textStyle = TextStyle.brand(.footnote(color: .secondary)).centerAligned
+		let textStyle = TextStyle.brand(.footnote(color: .secondary)).leftAligned
 
 		let termsLabelText = L10n.referralAddcouponTc(termsAndConditionsString)
 			.attributedStringWithVariableStyles(
-				[termsAndConditionsString: textStyle.colored(.brand(.primaryTintColor))],
+				[termsAndConditionsString: textStyle.colored(.tint(.lavenderOne))],
 				fallbackStyle: textStyle
 			)
 

@@ -28,6 +28,18 @@ extension DiscountCodeSection: Presentable {
 		)
 		bag += row.append(button.alignedTo(alignment: .center))
 
+		bag += button.onTapSignal.onValue { _ in
+			let addDiscountSheet = DiscountSheet()
+			section.viewController?
+				.present(
+					addDiscountSheet.wrappedInCloseButton(),
+					style: .detented(.scrollViewContentSize(20), .large),
+					options: [
+						.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never),
+					]
+				)
+		}
+
 		return (section, bag)
 	}
 }
