@@ -248,22 +248,22 @@ platform :ios do
         end
     end
 
-    private_lane :handle_compile_errors do
+    private_lane :handle_build_result do |options|
         require "json"
             
         file_path = "../build/reports/errors.json"
+
+        name = "#{ENV["GITHUB_JOB"]} - Report",
+        title = "#{ENV["GITHUB_JOB"]}"
+        summary = "Build succeeded without any remarks"
+        conclusion = "success" 
+        annotations = []
 
         if File.file?(file_path)
             file = File.open file_path
             errors = JSON.load file
 
             main_dir = File.expand_path("..", Dir.pwd)
-
-            name = "",
-            title = "#{ENV["GITHUB_JOB"]}"
-            summary = ""
-            conclusion = "" 
-            annotations = []
 
             errors["compile_warnings"].each { |error|
                 error_definition = error["file_path"].split(":")
@@ -304,17 +304,34 @@ platform :ios do
                     })
                 end
             }
-
-            if !annotations.empty?
-                update_annotations(
-                    name: name,
-                    title: title,
-                    summary: summary,
-                    conclusion: conclusion,
-                    annotations: annotations
-                )
-            end
         end
+
+        scheme = options[:scheme]
+
+        if scheme
+            aws_s3(
+                access_key: ENV['S3_ACCESS_KEY'],
+                secret_access_key: ENV['S3_SECRET_ACCESS_KEY'],
+                bucket: "hedvig-ios-builds",
+                region: "eu-central-1",
+                ipa: "fastlane/build_output/" + scheme + ".ipa",
+                app_directory: "#{scheme}_#{SecureRandom.uuid}",
+                path: 'v{CFBundleShortVersionString}_b{CFBundleVersion}/',
+                upload_metadata: true,
+            )
+            summary = summary + "\n\n [Install app](#{lane_context[SharedValues::S3_HTML_OUTPUT_PATH]})"
+            url_encoded_link = ERB::Util.url_encode(lane_context[SharedValues::S3_HTML_OUTPUT_PATH])
+            summary = summary + "\n\n ![Install app](https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=#{url_encoded_link})"
+        end
+
+        update_annotations(
+            name: name,
+            title: title,
+            summary: summary,
+            conclusion: conclusion,
+            annotations: annotations,
+            details_url: lane_context[SharedValues::S3_HTML_OUTPUT_PATH]
+        )
     end
 
     private_lane :handle_xcresult_result do |options|
@@ -476,9 +493,9 @@ platform :ios do
                     thinning: "<none>"
                 }
             )
-            handle_compile_errors
+            handle_build_result(scheme: scheme)
         rescue => ex
-            handle_compile_errors
+            handle_build_result
             raise ex
         end
     end
