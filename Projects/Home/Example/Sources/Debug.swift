@@ -39,7 +39,7 @@ extension Debug: Presentable {
 
 			bag += UIApplication.shared.keyWindow?
 				.present(
-					Home(),
+					Home(sections: []),
 					options: [
 						.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
 					]

@@ -5,11 +5,14 @@ import SnapshotTesting
 import UIKit
 import hCore
 import hCoreUI
+import XCTest
 
 public func setupScreenShotTests() {
 	Localization.Locale.currentLocale = .en_SE
 	DefaultStyling.installCustom()
 	ApplicationContext.shared.hasFinishedBootstrapping = true
+    UIView.setAnimationsEnabled(false)
+    XCTAssertEqual(UIScreen.main.scale, 3)
 
 	#if RECORD
 		record = true

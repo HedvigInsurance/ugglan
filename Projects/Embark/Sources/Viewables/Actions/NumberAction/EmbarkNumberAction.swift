@@ -7,11 +7,23 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-typealias EmbarkNumberActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberAction
+internal typealias EmbarkNumberActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+	.AsEmbarkNumberAction.NumberActionDatum
 
 struct EmbarkNumberAction {
+	internal init(
+		state: EmbarkState,
+		data: EmbarkNumberActionData,
+		style: FieldStyle = .embarkInputLarge
+	) {
+		self.state = state
+		self.data = data
+		self.style = style
+	}
+
 	let state: EmbarkState
 	let data: EmbarkNumberActionData
+	let style: FieldStyle
 }
 
 extension EmbarkNumberAction: Viewable {
@@ -35,25 +47,26 @@ extension EmbarkNumberAction: Viewable {
 			view,
 			Signal { callback in
 				func handleSubmit(textValue: String) {
-					let key = self.data.numberActionData.key
+					let key = self.data.key
 					self.state.store.setValue(key: key, value: textValue)
 					if let passageName = self.state.passageNameSignal.value {
 						self.state.store.setValue(key: "\(passageName)Result", value: textValue)
 					}
-					callback(self.data.numberActionData.link.fragments.embarkLinkFragment)
+					callback(self.data.link.fragments.embarkLinkFragment)
 				}
 
 				let masking = Masking(type: .digits)
 				let textField = EmbarkInput(
-					placeholder: self.data.numberActionData.placeholder,
+					placeholder: self.data.placeholder,
 					keyboardType: masking.keyboardType,
 					textContentType: masking.textContentType,
 					autocapitalisationType: masking.autocapitalizationType,
-					masking: masking
+					masking: masking,
+					fieldStyle: self.style
 				)
 				let (textInputView, textSignal) = textField.materialize(events: events)
 				textSignal.value = masking.maskValueFromStore(
-					text: state.store.getPrefillValue(key: data.numberActionData.key) ?? ""
+					text: state.store.getPrefillValue(key: data.key) ?? ""
 				)
 				boxStack.addArrangedSubview(textInputView)
 
@@ -65,7 +78,7 @@ extension EmbarkNumberAction: Viewable {
 					return true
 				}
 
-				if let unit = self.data.numberActionData.unit {
+				if let unit = self.data.unit {
 					let unitLabel = MultilineLabel(
 						value: unit,
 						style: TextStyle.brand(.body(color: .primary)).centerAligned
@@ -79,7 +92,7 @@ extension EmbarkNumberAction: Viewable {
 				view.addArrangedSubview(box)
 
 				let button = Button(
-					title: self.data.numberActionData.link.fragments.embarkLinkFragment.label,
+					title: self.data.link.fragments.embarkLinkFragment.label,
 					type: .standard(
 						backgroundColor: .brand(.secondaryButtonBackgroundColor),
 						textColor: .brand(.secondaryButtonTextColor)
