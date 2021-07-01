@@ -5,43 +5,56 @@ import TestingUtil
 import hCore
 import hGraphQL
 
-extension JSONObject {
-	public static func makeSwedishApartment() -> JSONObject {
-		GraphQL.QuoteBundleQuery.Data
-			.init(
-				quoteBundle: .init(
-					quotes: [
-						.init(
-							id: "123",
-							currentInsurer: nil,
-							firstName: "Hedvig",
-							lastName: "Hedvigsen",
-							displayName: "Home insurance rental",
-							detailsTable: generateDetailsTable(
-								title: "Home insurance rental",
-								rows: generateHomeRows()
-							),
-							perils: generatePerils(),
-							insurableLimits: generateInsurableLimits(),
-							insuranceTerms: [
-								.init(
-									displayName: "Terms and pre-sale information",
-									url:
-										"https://www.hedvig.com/no-en/terms/terms/travel.pdf",
-									type: .termsAndConditions
-								)
-							]
-						)
-					],
-					bundleCost: .init(
-						monthlyGross: .init(amount: "100", currency: "SEK"),
-						monthlyDiscount: .init(amount: "100", currency: "SEK"),
-						monthlyNet: .init(amount: "100", currency: "SEK")
-					),
-					frequentlyAskedQuestions: generateFrequentlyAskedQuestions()
+extension GraphQL.QuoteBundleQuery.Data {
+	public static func makeSwedishApartment() -> GraphQL.QuoteBundleQuery.Data {
+		GraphQL.QuoteBundleQuery.Data(
+			quoteBundle: .init(
+				quotes: [
+					.init(
+						id: "123",
+						firstName: "Hedvig",
+						lastName: "Hedvigsen",
+						displayName: "Home insurance rental",
+						detailsTable: generateDetailsTable(
+							title: "Home insurance rental",
+							rows: generateHomeRows()
+						),
+						perils: generatePerils(),
+						insurableLimits: generateInsurableLimits(),
+						insuranceTerms: [
+							.init(
+								displayName: "Terms and pre-sale information",
+								url:
+									"https://www.hedvig.com/no-en/terms/terms/travel.pdf",
+								type: .termsAndConditions
+							)
+						]
+					)
+				],
+				bundleCost: .init(
+					monthlyGross: .init(amount: "100", currency: "SEK"),
+					monthlyDiscount: .init(amount: "100", currency: "SEK"),
+					monthlyNet: .init(amount: "100", currency: "SEK")
 				),
-				redeemedCampaigns: []
-			)
-			.jsonObject
+				frequentlyAskedQuestions: generateFrequentlyAskedQuestions(),
+				inception: .makeIndependentInceptions(inceptions: [
+					.init(
+						startDate: "2020-05-10",
+						currentInsurer: .init(
+							id: "Hedvig",
+							displayName: "Hedvig",
+							switchable: true
+						),
+						correspondingQuote: .makeCompleteQuote(id: "123")
+					)
+                ]),
+                appConfiguration: .init(
+                    showCampaignManagement: true,
+                    title: .logo
+                )
+			),
+			signMethodForQuotes: GraphQL.SignMethod.swedishBankId,
+			redeemedCampaigns: []
+		)
 	}
 }

@@ -59,13 +59,7 @@ extension OnboardingChat: Presentable {
 
 		viewController.navigationItem.rightBarButtonItem = restartButton
 
-		let titleHedvigLogo = UIImageView()
-		titleHedvigLogo.image = Asset.wordmark.image
-		titleHedvigLogo.contentMode = .scaleAspectFit
-
-		viewController.navigationItem.titleView = titleHedvigLogo
-
-		titleHedvigLogo.snp.makeConstraints { make in make.width.equalTo(80) }
+		viewController.navigationItem.titleView = .titleWordmarkView
 
 		bag += future.onValue { _ in }
 

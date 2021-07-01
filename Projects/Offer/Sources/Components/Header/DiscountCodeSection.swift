@@ -6,15 +6,22 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct DiscountCodeSection {}
+struct DiscountCodeSection {
+    @Inject var state: OfferState
+}
 
 extension DiscountCodeSection: Presentable {
 	func materialize() -> (SectionView, Disposable) {
 		let section = SectionView()
+        section.isHidden = true
 		section.dynamicStyle = DynamicSectionStyle.brandGroupedNoBackground.rowInsets(
 			UIEdgeInsets(top: 0, left: 15, bottom: 20, right: 15)
 		)
 		let bag = DisposeBag()
+        
+        bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.showCampaignManagement }.onValue { showCampaignManagement in
+            section.isHidden = !showCampaignManagement
+        }
 
 		let row = RowView()
 		section.append(row)

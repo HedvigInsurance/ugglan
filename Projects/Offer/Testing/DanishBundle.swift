@@ -5,13 +5,13 @@ import TestingUtil
 import hCore
 import hGraphQL
 
-func generateTravelRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row] {
+func generateDanishTravelRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row] {
 	[
 		.init(title: "Co-insured", subtitle: nil, value: "You + 2")
 	]
 }
 
-func generateHomeRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row] {
+func generateDanishHomeRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row] {
 	[
 		.init(title: "Street", subtitle: nil, value: "An address"),
 		.init(title: "Postal code", subtitle: nil, value: "111 44"),
@@ -19,7 +19,13 @@ func generateHomeRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.Deta
 	]
 }
 
-func generateDetailsTable(
+func generateDanishAccidentRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row] {
+	[
+		.init(title: "Co-insured", subtitle: nil, value: "You + 2")
+	]
+}
+
+func generateDanishDetailsTable(
 	title: String,
 	rows: [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable.Section.Row]
 ) -> GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.DetailsTable {
@@ -35,7 +41,7 @@ func generateDetailsTable(
 }
 
 extension GraphQL.QuoteBundleQuery.Data {
-	public static func makeNorwegianBundle() -> GraphQL.QuoteBundleQuery.Data {
+	public static func makeDanishBundle() -> GraphQL.QuoteBundleQuery.Data {
 		GraphQL.QuoteBundleQuery.Data(
 			quoteBundle: .init(
 				quotes: [
@@ -43,10 +49,10 @@ extension GraphQL.QuoteBundleQuery.Data {
 						id: "123",
 						firstName: "Hedvig",
 						lastName: "Hedvigsen",
-						displayName: "Innboforsikring",
+						displayName: "Indbo",
 						detailsTable: generateDetailsTable(
-							title: "Innboforsikring",
-							rows: generateHomeRows()
+							title: "Indbo",
+							rows: generateDanishHomeRows()
 						),
 						perils: generatePerils(),
 						insurableLimits: generateInsurableLimits(),
@@ -54,17 +60,17 @@ extension GraphQL.QuoteBundleQuery.Data {
 							.init(
 								displayName: "Terms and pre-sale information",
 								url:
-									"https://www.hedvig.com/no-en/terms/terms/travel.pdf",
+									"https://www.hedvig.com/da-en/terms/terms/travel.pdf",
 								type: .termsAndConditions
 							),
 							.init(
 								displayName: "General terms",
-								url: "https://www.hedvig.com/no-en/terms",
+								url: "https://www.hedvig.com/da-en/terms",
 								type: .generalTerms
 							),
 							.init(
 								displayName: "EU standard pre-sale information",
-								url: "https://www.hedvig.com/no-en/terms",
+								url: "https://www.hedvig.com/da-en/terms",
 								type: .preSaleInfoEuStandard
 							),
 						]
@@ -73,10 +79,10 @@ extension GraphQL.QuoteBundleQuery.Data {
 						id: "1234",
 						firstName: "Hedvig",
 						lastName: "Hedvigsen",
-						displayName: "Reiseforsikring",
+						displayName: "Ulykke",
 						detailsTable: generateDetailsTable(
-							title: "Reiseforsikring",
-							rows: generateTravelRows()
+							title: "Ulykke",
+							rows: generateDanishAccidentRows()
 						),
 						perils: generatePerils(),
 						insurableLimits: generateInsurableLimits(),
@@ -84,38 +90,47 @@ extension GraphQL.QuoteBundleQuery.Data {
 							.init(
 								displayName: "Terms and pre-sale information",
 								url:
-									"https://www.hedvig.com/no-en/terms/terms/travel.pdf",
+									"https://www.hedvig.com/da-en/terms/terms/accident.pdf",
+								type: .termsAndConditions
+							)
+						]
+					),
+					.init(
+						id: "12345",
+						firstName: "Hedvig",
+						lastName: "Hedvigsen",
+						displayName: "Rejse",
+						detailsTable: generateDetailsTable(
+							title: "Rejse",
+							rows: generateDanishTravelRows()
+						),
+						perils: generatePerils(),
+						insurableLimits: generateInsurableLimits(),
+						insuranceTerms: [
+							.init(
+								displayName: "Terms and pre-sale information",
+								url:
+									"https://www.hedvig.com/da-en/terms/terms/travel.pdf",
 								type: .termsAndConditions
 							)
 						]
 					),
 				],
 				bundleCost: .init(
-					monthlyGross: .init(amount: "100", currency: "SEK"),
-					monthlyDiscount: .init(amount: "100", currency: "SEK"),
-					monthlyNet: .init(amount: "100", currency: "SEK")
+					monthlyGross: .init(amount: "100", currency: "DKK"),
+					monthlyDiscount: .init(amount: "100", currency: "DKK"),
+					monthlyNet: .init(amount: "100", currency: "DKK")
 				),
 				frequentlyAskedQuestions: generateFrequentlyAskedQuestions(),
-				inception: .makeIndependentInceptions(inceptions: [
-					.init(
-						startDate: "2020-05-10",
-						currentInsurer: .init(
-							id: "Hedvig",
-							displayName: "Hedvig",
-							switchable: true
-						),
-						correspondingQuote: .makeCompleteQuote(id: "123")
-					),
-					.init(
-						startDate: "2020-05-10",
-						currentInsurer: .init(
-							id: "axels",
-							displayName: "Axels försäkringar",
-							switchable: true
-						),
-						correspondingQuote: .makeCompleteQuote(id: "1234")
-					),
-				]),
+				inception: .makeConcurrentInception(
+					correspondingQuotes: [
+						.makeCompleteQuote(id: "123"),
+						.makeCompleteQuote(id: "1234"),
+						.makeCompleteQuote(id: "12345"),
+					],
+					startDate: Date().localDateString,
+					currentInsurer: .init(id: "Hedvig", displayName: "Hedvig", switchable: true)
+				),
                 appConfiguration: .init(
                     showCampaignManagement: true,
                     title: .logo
