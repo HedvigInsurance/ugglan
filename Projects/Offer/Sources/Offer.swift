@@ -70,6 +70,11 @@ class OfferState {
 		self.ids = ids
 	}
 
+	lazy var isLoadingSignal: ReadSignal<Bool> = {
+		return client.fetch(query: query).valueSignal.plain().map { _ in false }.delay(by: 0.5)
+			.readable(initial: true)
+	}()
+
 	var query: GraphQL.QuoteBundleQuery {
 		GraphQL.QuoteBundleQuery(ids: ids, locale: Localization.Locale.currentLocale.asGraphQLLocale())
 	}
@@ -230,22 +235,33 @@ extension Offer: Presentable {
 			viewController.navigationItem.standardAppearance = appearance
 			viewController.navigationItem.compactAppearance = appearance
 		}
-        
+
 		let bag = DisposeBag()
-        
-        bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }.distinct().onValue { title in
-            viewController.navigationItem.titleView = nil
-            viewController.title = nil
-            
-            switch title {
-                case .logo:
-                viewController.navigationItem.titleView = .titleWordmarkView
-                case .updateSummary:
-                    viewController.title = L10n.offerUpdateSummaryTitle
-                case .__unknown(_):
-                    break
-            }
-        }
+
+		bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }
+			.distinct()
+			.wait(until: state.isLoadingSignal.map { !$0 })
+			.delay(by: 0.1)
+			.onValue { title in
+				viewController.navigationItem.titleView = nil
+				viewController.title = nil
+
+				let fadeTextAnimation = CATransition()
+				fadeTextAnimation.duration = 0.25
+				fadeTextAnimation.type = .fade
+
+				viewController.navigationController?.navigationBar.layer
+					.add(fadeTextAnimation, forKey: "fadeText")
+
+				switch title {
+				case .logo:
+					viewController.navigationItem.titleView = .titleWordmarkView
+				case .updateSummary:
+					viewController.title = L10n.offerUpdateSummaryTitle
+				case .__unknown(_):
+					break
+				}
+			}
 
 		let optionsButton = UIBarButtonItem(
 			image: hCoreUIAssets.menuIcon.image,
