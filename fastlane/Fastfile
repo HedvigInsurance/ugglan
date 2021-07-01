@@ -319,7 +319,8 @@ platform :ios do
                 path: 'v{CFBundleShortVersionString}_b{CFBundleVersion}/',
                 upload_metadata: true,
             )
-            summary = summary + "\n [Install app](#{lane_context[SharedValues::S3_HTML_OUTPUT_PATH]})"
+            summary = summary + "\n\n [Install app](#{lane_context[SharedValues::S3_HTML_OUTPUT_PATH]})"
+            summary = summary + "\n\n ![Install app](https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=#{lane_context[SharedValues::S3_HTML_OUTPUT_PATH]})"
         end
 
         update_annotations(
