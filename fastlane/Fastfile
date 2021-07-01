@@ -253,7 +253,7 @@ platform :ios do
             
         file_path = "../build/reports/errors.json"
 
-        name = "#{ENV["GITHUB_JOB"]} - Report",
+        name = ENV["GITHUB_JOB"]
         title = "#{ENV["GITHUB_JOB"]}"
         summary = "Build succeeded without any remarks"
         conclusion = "success" 
@@ -269,7 +269,7 @@ platform :ios do
                 error_definition = error["file_path"].split(":")
                 file = error_definition[0]
 
-                name = "#{ENV["GITHUB_JOB"]} - Warnings"
+                name = ENV["GITHUB_JOB"]
                 summary = "There where some warnings"
                 conclusion = "neutral"
 
@@ -289,7 +289,7 @@ platform :ios do
                 error_definition = error["file_path"].split(":")
                 file = error_definition[0]
 
-                name = "#{ENV["GITHUB_JOB"]} - Errors"
+                name = ENV["GITHUB_JOB"]
                 summary = "There where some errors"
                 conclusion = "failure"
 
@@ -366,7 +366,7 @@ platform :ios do
                     })
                 end
 
-                name = "#{ENV["GITHUB_JOB"]} - Warnings"
+                name = ENV["GITHUB_JOB"]
                 summary = "There where some warnings"
                 conclusion = "neutral"
             end
@@ -389,7 +389,7 @@ platform :ios do
                 })
             end
 
-            name = "#{ENV["GITHUB_JOB"]} - Failures"
+            name = ENV["GITHUB_JOB"]
             conclusion = "Some tests failed"
             conclusion = "failure"
         }
@@ -415,7 +415,7 @@ platform :ios do
             )
         else
             update_annotations(
-                name: "#{ENV["GITHUB_JOB"]} - Report",
+                name: ENV["GITHUB_JOB"],
                 title: "#{ENV["GITHUB_JOB"]}",
                 summary: "Tests passed.",
                 conclusion: "success",
