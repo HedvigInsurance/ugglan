@@ -314,6 +314,8 @@ extension Offer: Presentable {
 					}
 				}
 			}
+        
+        
 
 		return (viewController, bag)
 	}
