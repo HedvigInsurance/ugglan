@@ -1,6 +1,7 @@
 import Apollo
 import ApolloWebSocket
 import Embark
+import EmbarkTesting
 import Flow
 import Form
 import Foundation
@@ -18,14 +19,20 @@ import hGraphQL
 		didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
 	) -> Bool {
 		window = UIWindow(frame: UIScreen.main.bounds)
-		window?.makeKeyAndVisible()
 
+		showStoryList()
+
+		return true
+	}
+
+	func showStoryList() {
 		ApolloClient.saveToken(token: "tBmMTBw4OAPC5w==.TNrYtXtgMrDzxw==.KyJBBOTLaw1/Pg==")
 
 		ApolloClient.initClient()
 			.onValue { store, client in let navigationController = UINavigationController()
 				navigationController.navigationBar.prefersLargeTitles = true
 				self.window?.rootViewController = navigationController
+				self.window?.makeKeyAndVisible()
 
 				Dependencies.shared.add(module: Module { client })
 
@@ -39,6 +46,18 @@ import hGraphQL
 					options: [.defaults, .largeTitleDisplayMode(.never)]
 				)
 			}
-		return true
+	}
+
+	func showDebug() {
+		let navigationController = UINavigationController()
+		navigationController.navigationBar.prefersLargeTitles = true
+
+		window?.rootViewController = navigationController
+		window?.makeKeyAndVisible()
+		bag += navigationController.present(
+			Debug(),
+			style: .default,
+			options: [.largeTitleDisplayMode(.always)]
+		)
 	}
 }

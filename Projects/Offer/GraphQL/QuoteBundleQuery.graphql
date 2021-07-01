@@ -1,58 +1,94 @@
+fragment InceptionFragment on QuoteBundleInception {
+  ... on ConcurrentInception {
+    correspondingQuotes {
+      ... on CompleteQuote {
+        id
+      }
+    }
+    startDate
+    currentInsurer {
+      id
+      displayName
+      switchable
+    }
+  }
+  ... on IndependentInceptions {
+    inceptions {
+      startDate
+      currentInsurer {
+        id
+        displayName
+        switchable
+      }
+      correspondingQuote {
+        ... on CompleteQuote {
+          id
+        }
+      }
+    }
+  }
+}
+
 query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
   quoteBundle(input: { ids: $ids }) {
     quotes {
-        ... on BundledQuote {
-            id
-            currentInsurer {
-                id
-                displayName
-                switchable
+      ... on BundledQuote {
+        id
+        firstName
+        lastName
+        ssn
+        email
+        displayName(locale: $locale)
+        detailsTable(locale: $locale) {
+          title
+          sections {
+            title
+            rows {
+              title
+              subtitle
+              value
             }
-            firstName
-            lastName
-            displayName(locale: $locale)
-            detailsTable(locale: $locale) {
-                title
-                sections {
-                    title
-                    rows {
-                        title
-                        subtitle
-                        value
-                    }
-                }
-            }
-            perils(locale: $locale) {
-                ...PerilFragment
-            }
-            insurableLimits(locale: $locale) {
-                ...InsurableLimitFragment
-            }
-            insuranceTerms(locale: $locale) {
-                displayName
-                url
-                type
-            }
+          }
         }
+        perils(locale: $locale) {
+          ...PerilFragment
+        }
+        insurableLimits(locale: $locale) {
+          ...InsurableLimitFragment
+        }
+        insuranceTerms(locale: $locale) {
+          displayName
+          url
+          type
+        }
+      }
     }
     bundleCost {
-        monthlyGross {
-            ...MonetaryAmountFragment
-        }
-        monthlyDiscount {
-            ...MonetaryAmountFragment
-        }
-        monthlyNet {
-            ...MonetaryAmountFragment
-        }
-        freeUntil
+      monthlyGross {
+        ...MonetaryAmountFragment
+      }
+      monthlyDiscount {
+        ...MonetaryAmountFragment
+      }
+      monthlyNet {
+        ...MonetaryAmountFragment
+      }
+      freeUntil
     }
     frequentlyAskedQuestions(locale: $locale) {
-        id
-        headline
-        body
+      id
+      headline
+      body
+    }
+    inception {
+      ...InceptionFragment
+    }
+    appConfiguration {
+      showCampaignManagement
+      title
     }
   }
+  signMethodForQuotes(input: $ids)
   redeemedCampaigns {
     displayValue(locale: $locale)
   }

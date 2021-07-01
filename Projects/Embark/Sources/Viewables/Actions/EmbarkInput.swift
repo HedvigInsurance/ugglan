@@ -103,12 +103,12 @@ extension EmbarkInput: Viewable {
 		paddingView.addArrangedSubview(textField)
 
 		let placeholderLabel = UILabel(value: placeholder.value, style: .brand(.largeTitle(color: .primary)))
-		placeholderLabel.textAlignment = .center
+		placeholderLabel.textAlignment = textFieldAlignment
 
 		bag += textField.atOnce().onValue { value in placeholderLabel.alpha = value.isEmpty ? 1 : 0 }
 
 		bag += textField.didMoveToWindowSignal.delay(by: 0.5).filter(predicate: { self.shouldAutoFocus })
-			.onValue { _ in textField.becomeFirstResponder() }
+			.onValue { _ in textField.becomeFirstResponder() } 
 
 		bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }
 			.onValue { _ in textField.becomeFirstResponder() }

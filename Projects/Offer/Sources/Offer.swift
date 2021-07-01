@@ -51,29 +51,170 @@ public struct Offer {
 	}
 }
 
-struct OfferState {
+extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
+	func quoteFor(id: GraphQLID?) -> GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote? {
+		self.quotes.first { quote in
+			quote.id == id
+		}
+	}
+}
+
+class OfferState {
 	@Inject var client: ApolloClient
+	@Inject var store: ApolloStore
 	let ids: [String]
 
+	public init(
+		ids: [String]
+	) {
+		self.ids = ids
+	}
+
+	var query: GraphQL.QuoteBundleQuery {
+		GraphQL.QuoteBundleQuery(ids: ids, locale: Localization.Locale.currentLocale.asGraphQLLocale())
+	}
+
 	var dataSignal: CoreSignal<Plain, GraphQL.QuoteBundleQuery.Data> {
-		return client.watch(
-			query: GraphQL.QuoteBundleQuery(
-				ids: ids,
-				locale: Localization.Locale.currentLocale.asGraphQLLocale()
-			)
-		)
+		client.watch(query: query)
 	}
 
 	var quotesSignal: CoreSignal<Plain, [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote]> {
-		return dataSignal.map { $0.quoteBundle.quotes }
+		dataSignal.map { $0.quoteBundle.quotes }
+	}
+
+	var signStatusSubscription: CoreSignal<Plain, GraphQL.SignStatusSubscription.Data> {
+		client.subscribe(subscription: GraphQL.SignStatusSubscription())
+	}
+
+	enum UpdateStartDateError: Error {
+		case failed
+	}
+
+	private func updateCacheStartDate(quoteId: String, date: String?) {
+		self.store.update(query: self.query) {
+			(storeData: inout GraphQL.QuoteBundleQuery.Data) in
+			storeData.quoteBundle.inception.asConcurrentInception?.startDate = date
+
+			guard let allInceptions = storeData.quoteBundle.inception.asIndependentInceptions?.inceptions
+			else {
+				return
+			}
+
+			typealias Inception = GraphQL.QuoteBundleQuery.Data.QuoteBundle.Inception
+				.AsIndependentInceptions.Inception
+
+			let updatedInceptions = allInceptions.map { inception -> Inception in
+				guard inception.correspondingQuote.asCompleteQuote?.id == quoteId else {
+					return inception
+				}
+				var inception = inception
+				inception.startDate = date
+				return inception
+			}
+
+			storeData.quoteBundle.inception.asIndependentInceptions?.inceptions = updatedInceptions
+		}
+	}
+
+	func updateStartDate(quoteId: String, date: Date?) -> Future<Date?> {
+		guard let date = date else {
+			return self.client
+				.perform(
+					mutation: GraphQL.RemoveStartDateMutation(id: quoteId)
+				)
+				.flatMap { data in
+					guard data.removeStartDate.asCompleteQuote?.startDate == nil else {
+						return Future(error: UpdateStartDateError.failed)
+					}
+
+					self.updateCacheStartDate(quoteId: quoteId, date: nil)
+
+					return Future(nil)
+				}
+		}
+
+		return self.client
+			.perform(
+				mutation: GraphQL.ChangeStartDateMutation(
+					id: quoteId,
+					startDate: date.localDateString ?? ""
+				)
+			)
+			.flatMap { data in
+				guard let date = data.editQuote.asCompleteQuote?.startDate?.localDateToDate else {
+					return Future(error: UpdateStartDateError.failed)
+				}
+
+				self.updateCacheStartDate(
+					quoteId: quoteId,
+					date: data.editQuote.asCompleteQuote?.startDate
+				)
+
+				return Future(date)
+			}
+	}
+
+	enum CheckoutUpdateError: Error {
+		case failed
+	}
+
+	func checkoutUpdate(quoteId: String, email: String, ssn: String) -> Future<Void> {
+		return self.client
+			.perform(
+				mutation: GraphQL.CheckoutUpdateMutation(quoteID: quoteId, email: email, ssn: ssn)
+			)
+			.flatMap { data in
+				guard data.editQuote.asCompleteQuote?.email == email,
+					data.editQuote.asCompleteQuote?.ssn == ssn
+				else {
+					return Future(error: CheckoutUpdateError.failed)
+				}
+
+				return self.client
+					.fetch(
+						query: self.query,
+						cachePolicy: .fetchIgnoringCacheData
+					)
+					.toVoid()
+			}
+	}
+
+	enum SignEvent {
+		case swedishBankId(
+			autoStartToken: String,
+			subscription: CoreSignal<Plain, GraphQL.SignStatusSubscription.Data>
+		)
+		case simpleSign(subscription: CoreSignal<Plain, GraphQL.SignStatusSubscription.Data>)
+		case done
+		case failed
+	}
+
+	func signQuotes() -> Future<SignEvent> {
+		let subscription = signStatusSubscription
+
+		return client.perform(mutation: GraphQL.SignQuotesMutation(ids: ids))
+			.map { data in
+				if data.signQuotes.asAlreadyCompleted != nil {
+					return SignEvent.done
+				} else if data.signQuotes.asFailedToStartSign != nil {
+					return SignEvent.failed
+				} else if let session = data.signQuotes.asSwedishBankIdSession {
+					return SignEvent.swedishBankId(
+						autoStartToken: session.autoStartToken ?? "",
+						subscription: subscription
+					)
+				} else if data.signQuotes.asSimpleSignSession != nil {
+					return SignEvent.simpleSign(subscription: subscription)
+				}
+
+				return SignEvent.failed
+			}
 	}
 }
 
 extension Offer: Presentable {
 	public func materialize() -> (UIViewController, Disposable) {
 		let viewController = UIViewController()
-		viewController.title = "Your offer"
-
 		ApplicationState.preserveState(.offer)
 
 		Dependencies.shared.add(
@@ -89,7 +230,22 @@ extension Offer: Presentable {
 			viewController.navigationItem.standardAppearance = appearance
 			viewController.navigationItem.compactAppearance = appearance
 		}
+        
 		let bag = DisposeBag()
+        
+        bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }.distinct().onValue { title in
+            viewController.navigationItem.titleView = nil
+            viewController.title = nil
+            
+            switch title {
+                case .logo:
+                viewController.navigationItem.titleView = .titleWordmarkView
+                case .updateSummary:
+                    viewController.title = L10n.offerUpdateSummaryTitle
+                case .__unknown(_):
+                    break
+            }
+        }
 
 		let optionsButton = UIBarButtonItem(
 			image: hCoreUIAssets.menuIcon.image,

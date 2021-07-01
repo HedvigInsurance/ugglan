@@ -3,7 +3,6 @@ import ProjectDescription
 public enum ExternalDependencies: CaseIterable {
 	case adyen
 	case firebase
-	case fb
 	case kingfisher
 	case apollo
 	case flow
@@ -26,8 +25,10 @@ public enum ExternalDependencies: CaseIterable {
 	public var isDevDependency: Bool { self == .runtime }
 
 	public var isResourceBundledDependency: Bool { self == .mixpanel || self == .adyen }
+    
+    public var isAppDependency: Bool { self == .firebase || self == .sentry }
 
-	public var isCoreDependency: Bool { !isTestDependency && !isDevDependency && !isResourceBundledDependency }
+	public var isCoreDependency: Bool { !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency }
 
 	public func swiftPackages() -> [Package] {
 		switch self {
@@ -55,13 +56,6 @@ public enum ExternalDependencies: CaseIterable {
 			return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.4"))]
 		case .kingfisher:
 			return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "6.0.1"))]
-		case .fb:
-			return [
-				.package(
-					url: "https://github.com/facebook/facebook-ios-sdk",
-					.upToNextMajor(from: "9.1.0")
-				)
-			]
 		case .snapkit:
 			return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.0.1"))]
 		case .markdownkit:
@@ -101,7 +95,6 @@ public enum ExternalDependencies: CaseIterable {
 				.package(product: "AdyenDropIn"),
 			]
 		case .firebase: return [.package(product: "FirebaseAnalytics"), .package(product: "FirebaseMessaging")]
-		case .fb: return [.package(product: "FacebookCore")]
 		case .kingfisher: return [.package(product: "Kingfisher")]
 		case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
 		case .flow: return [.package(product: "Flow")]

@@ -136,7 +136,9 @@ extension Action: Viewable {
 									)
 								)
 								.onValue(performCallback)
-						} else if let textAction = actionData?.asEmbarkTextAction {
+                        } else if let dateAction = actionData?.asEmbarkDatePickerAction {
+                            innerBag += view.addArranged(EmbarkDatePickerAction(state: self.state, data: dateAction)).onValue(performCallback)
+                        } else if let textAction = actionData?.asEmbarkTextAction {
 							innerBag +=
 								view.addArranged(
 									EmbarkTextAction(
@@ -145,7 +147,9 @@ extension Action: Viewable {
 									)
 								)
 								.onValue(performCallback)
-						} else if let numberAction = actionData?.asEmbarkNumberAction {
+						} else if let numberAction = actionData?.asEmbarkNumberAction?
+							.numberActionData
+						{
 							innerBag +=
 								view.addArranged(
 									EmbarkNumberAction(
@@ -193,6 +197,15 @@ extension Action: Viewable {
 										data: .previous(
 											previousInsuranceProviderAction
 										)
+									)
+								)
+								.onValue(performCallback)
+						} else if let multiAction = actionData?.asEmbarkMultiAction {
+							innerBag +=
+								view.addArranged(
+									MultiAction(
+										state: self.state,
+										data: multiAction.multiActionData
 									)
 								)
 								.onValue(performCallback)

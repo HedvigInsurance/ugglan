@@ -1,6 +1,8 @@
 name: Upload DSYM
 
-on: [workflow_dispatch]
+on:
+  schedule:
+     - cron:  '0 8 * * *'
 
 jobs:
   upload-dsym:
@@ -12,12 +14,13 @@ jobs:
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       env:
-       FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
-       FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-       DOWNLOAD_DSYMS_APP_IDENTIFIER: ${{ secrets.DOWNLOAD_DSYMS_APP_IDENTIFIER }}
-       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-       SENTRY_PROJECT_SLUG: ${{ secrets.SENTRY_PROJECT_SLUG }}
-       SENTRY_ORG_SLUG: ${{ secrets.SENTRY_ORG_SLUG }}
-       DOWNLOAD_DSYMS_MIN_VERSION: ${{ secrets.DOWNLOAD_DSYMS_MIN_VERSION }}
+        FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
+        FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
+        FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+        DOWNLOAD_DSYMS_APP_IDENTIFIER: ${{ secrets.DOWNLOAD_DSYMS_APP_IDENTIFIER }}
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_PROJECT_SLUG: ${{ secrets.SENTRY_PROJECT_SLUG }}
+        SENTRY_ORG_SLUG: ${{ secrets.SENTRY_ORG_SLUG }}
+        DOWNLOAD_DSYMS_MIN_VERSION: ${{ secrets.DOWNLOAD_DSYMS_MIN_VERSION }}
       with:
-       lane: ios upload_dsyms_to_sentry_after_processing
+        lane: ios upload_dsyms

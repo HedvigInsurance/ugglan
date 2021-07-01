@@ -1,0 +1,71 @@
+query UpcomingAgreement($locale: Locale!) {
+  contracts {
+    ... UpcomingAgreementFragment
+  }
+}
+fragment UpcomingAgreementFragment on Contract {
+  status {
+    ... on ActiveStatus {
+      upcomingAgreementChange {
+        ... UpcomingAgreementChangeFragment
+      }
+    }
+    ... on TerminatedInFutureStatus {
+      upcomingAgreementChange {
+        ... UpcomingAgreementChangeFragment
+      }
+    }
+    ... on TerminatedTodayStatus {
+      upcomingAgreementChange {
+        ... UpcomingAgreementChangeFragment
+      }
+    }
+  }
+  upcomingAgreementDetailsTable(locale: $locale) {
+    title
+    sections {
+      title
+      rows {
+        title
+        subtitle
+        value
+      }
+    }
+  }
+}
+fragment UpcomingAgreementChangeFragment on UpcomingAgreementChange {
+  newAgreement {
+    ... on SwedishApartmentAgreement {
+      address {
+        ...AddressFragment
+      }
+      activeFrom
+    }
+    ... on SwedishHouseAgreement {
+      address {
+        ...AddressFragment
+      }
+      activeFrom
+    }
+    ... on NorwegianHomeContentAgreement {
+      address {
+        ...AddressFragment
+      }
+      activeFrom
+    }
+    ... on DanishHomeContentAgreement {
+      address {
+        ...AddressFragment
+      }
+      activeFrom
+    }
+  }
+}
+
+fragment AddressFragment on Address {
+  street
+  postalCode
+  city
+  apartment
+  floor
+}

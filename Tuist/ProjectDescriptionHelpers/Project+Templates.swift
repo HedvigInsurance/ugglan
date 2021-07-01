@@ -1,4 +1,5 @@
 import ProjectDescription
+import Foundation
 
 public enum FeatureTarget {
 	case framework
@@ -186,9 +187,21 @@ extension Project {
 				platform: .iOS,
 				product: .app,
 				bundleId: "com.hedvig.example.\(name)Example",
-				deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+				deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad, .mac]),
 				infoPlist: .extendingDefault(with: [
-					"UIMainStoryboardFile": "", "UILaunchStoryboardName": "LaunchScreen",
+					"UIMainStoryboardFile": "",
+                    "UILaunchStoryboardName": "LaunchScreen",
+                    "UIApplicationSceneManifest": [
+                        "UIApplicationSupportsMultipleScenes": true,
+                        "UISceneConfigurations": [
+                            "UIWindowSceneSessionRoleApplication": [
+                                [
+                                    "UISceneConfigurationName": "Default Configuration",
+                                    "UISceneDelegateClassName": "\(name)Example.SceneDelegate"
+                                ]
+                            ]
+                        ]
+                    ]
 				]),
 				sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
 				resources: "Example/Resources/**",
@@ -238,7 +251,7 @@ extension Project {
 					)
 				],
 				arguments: Arguments(
-					environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"],
+                    environment: ["SNAPSHOT_ARTIFACTS": "/tmp/\(UUID().uuidString)/__SnapshotFailures__"],
 					launchArguments: [
 						"-UIPreferredContentSizeCategoryName": true,
 						"UICTContentSizeCategoryM": true,

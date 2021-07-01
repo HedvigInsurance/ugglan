@@ -24,14 +24,24 @@ indirect enum Expression: Equatable { case binary(operator: BinaryOperator, left
 		case let .binary(op, left, right):
 			switch op {
 			case .addition:
+                let leftValue = left?.evaluate(store: store) ?? ""
+                let leftValueDouble = Double(leftValue) ?? 0
+                
+                let rightValue = right?.evaluate(store: store) ?? ""
+                let rightValueDouble = Double(rightValue) ?? 0
+                
 				return String(
-					(Double(left?.evaluate(store: store) ?? "") ?? 0)
-						+ (Double(right?.evaluate(store: store) ?? "") ?? 0)
+					leftValueDouble + rightValueDouble
 				)
 			case .subtraction:
+                let leftValue = left?.evaluate(store: store) ?? ""
+                let leftValueDouble = Double(leftValue) ?? 0
+                
+                let rightValue = right?.evaluate(store: store) ?? ""
+                let rightValueDouble = Double(rightValue) ?? 0
+                
 				return String(
-					(Double(left?.evaluate(store: store) ?? "") ?? 0)
-						- (Double(right?.evaluate(store: store) ?? "") ?? 0)
+                    leftValueDouble - rightValueDouble
 				)
 			case .concatenation:
 				return (left?.evaluate(store: store) ?? "") + (right?.evaluate(store: store) ?? "")

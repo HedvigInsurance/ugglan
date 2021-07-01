@@ -26,67 +26,67 @@ final class InvitationRowTests: XCTestCase {
 		return tableKit
 	}
 
-	func testPendingState() {
-		let invitationRow = InvitationRow(
-			invitation: .init(name: "mock", state: .pending, discount: .sek(10), invitedByOther: false)
-		)
-
-		let bag = DisposeBag()
-
-		let tableKit = setupTableKit(holdIn: bag)
-
-		tableKit.table = Table(rows: [invitationRow])
-
-		assertSnapshot(matching: tableKit.view, as: .image)
-
-		bag.dispose()
-	}
-
-	func testActiveState() {
-		let invitationRow = InvitationRow(
-			invitation: .init(name: "mock", state: .active, discount: .sek(10), invitedByOther: false)
-		)
-
-		let bag = DisposeBag()
-
-		let tableKit = setupTableKit(holdIn: bag)
-
-		tableKit.table = Table(rows: [invitationRow])
-
-		assertSnapshot(matching: tableKit.view, as: .image)
-
-		bag.dispose()
-	}
-
-	func testTerminatedState() {
-		let invitationRow = InvitationRow(
-			invitation: .init(name: "mock", state: .terminated, discount: .sek(10), invitedByOther: false)
-		)
-
-		let bag = DisposeBag()
-
-		let tableKit = setupTableKit(holdIn: bag)
-
-		tableKit.table = Table(rows: [invitationRow])
-
-		assertSnapshot(matching: tableKit.view, as: .image)
-
-		bag.dispose()
-	}
-
-	func testTerminatedStateWithInvited() {
-		let invitationRow = InvitationRow(
-			invitation: .init(name: "mock", state: .terminated, discount: .sek(10), invitedByOther: true)
-		)
-
-		let bag = DisposeBag()
-
-		let tableKit = setupTableKit(holdIn: bag)
-
-		tableKit.table = Table(rows: [invitationRow])
-
-		assertSnapshot(matching: tableKit.view, as: .image)
-
-		bag.dispose()
-	}
+//	func testPendingState() {
+//		let invitationRow = InvitationRow(
+//			invitation: .init(name: "mock", state: .pending, discount: .sek(10), invitedByOther: false)
+//		)
+//
+//		let bag = DisposeBag()
+//
+//		let tableKit = setupTableKit(holdIn: bag)
+//
+//		tableKit.table = Table(rows: [invitationRow])
+//
+//		assertSnapshot(matching: tableKit.view, as: .image)
+//
+//		bag.dispose()
+//	}
+//
+//	func testActiveState() {
+//		let invitationRow = InvitationRow(
+//			invitation: .init(name: "mock", state: .active, discount: .sek(10), invitedByOther: false)
+//		)
+//
+//		let bag = DisposeBag()
+//
+//		let tableKit = setupTableKit(holdIn: bag)
+//
+//		tableKit.table = Table(rows: [invitationRow])
+//
+//		assertSnapshot(matching: tableKit.view, as: .image)
+//
+//		bag.dispose()
+//	}
+//
+//	func testTerminatedState() {
+//		let invitationRow = InvitationRow(
+//			invitation: .init(name: "mock", state: .terminated, discount: .sek(10), invitedByOther: false)
+//		)
+//
+//		let bag = DisposeBag()
+//
+//		let tableKit = setupTableKit(holdIn: bag)
+//
+//		tableKit.table = Table(rows: [invitationRow])
+//
+//		assertSnapshot(matching: tableKit.view, as: .image)
+//
+//		bag.dispose()
+//	}
+//
+//	func testTerminatedStateWithInvited() {
+//		let invitationRow = InvitationRow(
+//			invitation: .init(name: "mock", state: .terminated, discount: .sek(10), invitedByOther: true)
+//		)
+//
+//		let bag = DisposeBag()
+//
+//		let tableKit = setupTableKit(holdIn: bag)
+//
+//		tableKit.table = Table(rows: [invitationRow])
+//
+//		assertSnapshot(matching: tableKit.view, as: .image)
+//
+//		bag.dispose()
+//	}
 }
