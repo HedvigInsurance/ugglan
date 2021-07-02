@@ -1,6 +1,8 @@
 #!/bin/bash
 
+SWIFT_FORMAT_PATH=$(find . -type f -name swift-format | grep -v '.dSYM')
+
 for file_path in $(git diff --name-only --cached | grep ".swift$"); do
-    /usr/local/bin/swift-format format -i $file_path
+    $SWIFT_FORMAT_PATH -i "${file_path}";
     sed -i '' -e '1,/^import/{/^\/\/.*/d;}' -e '/./,$!d' $file_path
 done
