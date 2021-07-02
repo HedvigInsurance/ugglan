@@ -146,19 +146,23 @@ let log = Logger.self
 			options.environment = Environment.current.displayName
 			options.enableAutoSessionTracking = true
 		}
-        
+
 		if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
 			Shake.setup()
 		}
 
 		if let mixpanelToken = mixpanelToken {
-            Mixpanel.initialize(token: mixpanelToken)
-            AnalyticsSender.sendEvent = { event, properties in
-                Mixpanel.mainInstance().track(event: event, properties: properties.mapValues({ property in
-                    property.mixpanelType
-                }))
-            }
-        }
+			Mixpanel.initialize(token: mixpanelToken)
+			AnalyticsSender.sendEvent = { event, properties in
+				Mixpanel.mainInstance()
+					.track(
+						event: event,
+						properties: properties.mapValues({ property in
+							property.mixpanelType
+						})
+					)
+			}
+		}
 
 		Localization.Locale.currentLocale = ApplicationState.preferredLocale
 
