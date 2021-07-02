@@ -69,9 +69,9 @@ class OfferState {
 	) {
 		self.ids = ids
 	}
-    
-    private var bag = DisposeBag()
-    @ReadWriteState var hasSignedQuotes = false
+
+	private var bag = DisposeBag()
+	@ReadWriteState var hasSignedQuotes = false
 
 	var query: GraphQL.QuoteBundleQuery {
 		GraphQL.QuoteBundleQuery(ids: ids, locale: Localization.Locale.currentLocale.asGraphQLLocale())
@@ -194,15 +194,17 @@ class OfferState {
 
 	func signQuotes() -> Future<SignEvent> {
 		let subscription = signStatusSubscription
-        
-        bag += subscription.map { $0.signStatus?.status?.signState == .completed }.filter(predicate: { $0 }).distinct().onValue({ _ in
-            self.$hasSignedQuotes.value = true
-        })
+
+		bag += subscription.map { $0.signStatus?.status?.signState == .completed }.filter(predicate: { $0 })
+			.distinct()
+			.onValue({ _ in
+				self.$hasSignedQuotes.value = true
+			})
 
 		return client.perform(mutation: GraphQL.SignQuotesMutation(ids: ids))
 			.map { data in
 				if data.signQuotes.asAlreadyCompleted != nil {
-                    self.$hasSignedQuotes.value = true
+					self.$hasSignedQuotes.value = true
 					return SignEvent.done
 				} else if data.signQuotes.asFailedToStartSign != nil {
 					return SignEvent.failed
@@ -323,19 +325,27 @@ extension Offer: Presentable {
 					}
 				}
 			}
-        
-        bag += state.$hasSignedQuotes.filter(predicate: { $0 }).flatMapLatest { _ in state.dataSignal }.onValue { data in
-            Analytics.track("QUOTES_SIGNED", properties: [
-                "quoteIds": data.quoteBundle.quotes.map { $0.id }
-            ])
-        }
 
-        return (viewController, Future { completion in
-            bag += state.$hasSignedQuotes.filter(predicate: { $0 }).onValue({ _ in
-                completion(.success)
-            })
-            
-            return DelayedDisposer(bag, delay: 2)
-        })
+		bag += state.$hasSignedQuotes.filter(predicate: { $0 }).flatMapLatest { _ in state.dataSignal }
+			.onValue { data in
+				Analytics.track(
+					"QUOTES_SIGNED",
+					properties: [
+						"quoteIds": data.quoteBundle.quotes.map { $0.id }
+					]
+				)
+			}
+
+		return (
+			viewController,
+			Future { completion in
+				bag += state.$hasSignedQuotes.filter(predicate: { $0 })
+					.onValue({ _ in
+						completion(.success)
+					})
+
+				return DelayedDisposer(bag, delay: 2)
+			}
+		)
 	}
 }
