@@ -9,6 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: build
+        key: ${{ runner.os }}
     - name: Install Swift-Format
       run: scripts/install-swift-format.sh
     - name: Format
