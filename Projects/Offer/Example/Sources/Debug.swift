@@ -163,21 +163,21 @@ extension Debug: Presentable {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeDanishBundle()
 					}
-                    
-                    MutationMock(GraphQL.SignQuotesMutation.self) { operation in
-                            .init(signQuotes: .makeSimpleSignSession(id: "123"))
-                    }
+
+					MutationMock(GraphQL.SignQuotesMutation.self) { operation in
+						.init(signQuotes: .makeSimpleSignSession(id: "123"))
+					}
 				}
 			}
-        
-        bag += section.appendRow(title: "Swedish apartment - moving flow")
-            .onValue {
-                presentOffer {
-                    QueryMock(GraphQL.QuoteBundleQuery.self) { _ in
-                        .makeSwedishApartmentMovingFlow()
-                    }
-                }
-            }
+
+		bag += section.appendRow(title: "Swedish apartment - moving flow")
+			.onValue {
+				presentOffer {
+					QueryMock(GraphQL.QuoteBundleQuery.self) { _ in
+						.makeSwedishApartmentMovingFlow()
+					}
+				}
+			}
 
 		bag += viewController.install(form)
 
@@ -187,7 +187,7 @@ extension Debug: Presentable {
 
 extension Debug {
 	@GraphQLMockBuilder var sharedMocks: some GraphQLMock {
-        MutationMock(GraphQL.ChangeStartDateMutation.self, duration: 2) { operation in
+		MutationMock(GraphQL.ChangeStartDateMutation.self, duration: 2) { operation in
 			if operation.startDate
 				== Calendar.current.date(byAdding: .day, value: 3, to: Date())?
 				.localDateString
