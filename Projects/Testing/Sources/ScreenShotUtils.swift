@@ -3,20 +3,20 @@ import Form
 import Foundation
 import SnapshotTesting
 import UIKit
+import XCTest
 import hCore
 import hCoreUI
-import XCTest
 
 public func setupScreenShotTests() {
 	Localization.Locale.currentLocale = .en_SE
 	DefaultStyling.installCustom()
 	ApplicationContext.shared.hasFinishedBootstrapping = true
-    UIView.setAnimationsEnabled(false)
-    XCTAssertEqual(UIScreen.main.scale, 3)
-    Fonts.forceTraitCollection = UITraitCollection(preferredContentSizeCategory: .medium)
+	UIView.setAnimationsEnabled(false)
+	XCTAssertEqual(UIScreen.main.scale, 3)
+	Fonts.forceTraitCollection = UITraitCollection(preferredContentSizeCategory: .medium)
 
 	#if RECORD
-		record = true
+		isRecording = true
 	#endif
 }
 
