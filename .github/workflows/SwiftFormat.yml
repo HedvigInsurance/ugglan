@@ -25,5 +25,6 @@ jobs:
         title: 'Formatting'
         body: '@${{ github.actor }} swift-format found changes that should be applied to your branch'
         branch: 'update-snapshots/${{ github.run_id }}/${{ github.run_number }}'
+        base: ${{ github.head_ref }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
