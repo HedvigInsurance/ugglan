@@ -240,10 +240,7 @@ extension Project {
 				],
 				arguments: Arguments(
                     environment: ["SNAPSHOT_ARTIFACTS": "/tmp/\(UUID().uuidString)/__SnapshotFailures__"],
-					launchArguments: [
-						"-UIPreferredContentSizeCategoryName": true,
-						"UICTContentSizeCategoryM": true,
-					]
+					launchArguments: []
 				),
 				coverage: true
 			)
