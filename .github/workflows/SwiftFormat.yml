@@ -1,0 +1,32 @@
+name: SwiftFormat
+
+on:
+  pull_request:
+    branches: ['*']
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: build
+        key: ${{ runner.os }}
+    - name: Install Swift-Format
+      run: scripts/install-swift-format.sh
+    - name: Format
+      run: scripts/format-ci.sh
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        commit-message: 'Formatting'
+        title: 'Formatting'
+        body: '@${{ github.actor }} swift-format found changes that should be applied to your branch'
+        branch: 'formatting/${{ github.head_ref }}'
+        base: ${{ github.head_ref }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.APP_BOT_TOKEN }}

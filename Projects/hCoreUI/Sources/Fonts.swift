@@ -17,15 +17,19 @@ public enum Fonts {
 
 		return UIFont(name: favoritStdBookFontName, size: UIFont.labelFontSize)!
 	}()
+	public static var forceTraitCollection: UITraitCollection? = nil
 
 	public static func fontFor(style: UIFont.TextStyle) -> UIFont {
-		let defaultDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: style)
+		let defaultDescriptor = UIFontDescriptor.preferredFontDescriptor(
+			withTextStyle: style,
+			compatibleWith: forceTraitCollection
+		)
 		let size = defaultDescriptor.pointSize
 		let fontDescriptor = UIFontDescriptor(fontAttributes: [
 			UIFontDescriptor.AttributeName.size: size,
 			UIFontDescriptor.AttributeName.family: favoritStdBook.familyName,
 		])
 
-		return UIFont(descriptor: fontDescriptor, size: 0)
+		return UIFont(descriptor: fontDescriptor, size: size)
 	}
 }
