@@ -31,6 +31,6 @@ public enum Fonts {
 			UIFontDescriptor.AttributeName.family: favoritStdBook.familyName,
 		])
 
-		return UIFont(descriptor: fontDescriptor, size: 0)
+		return UIFont(descriptor: fontDescriptor, size: size)
 	}
 }
