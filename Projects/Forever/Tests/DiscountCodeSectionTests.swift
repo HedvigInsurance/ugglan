@@ -30,7 +30,7 @@ final class DiscountCodeSectionTests: XCTestCase {
 
 		materializeViewable(discountCodeSection) { view in
 			view.snp.makeConstraints { make in make.width.equalTo(300) }
-            view.layoutIfNeeded()
+			view.layoutIfNeeded()
 			assertSnapshot(matching: view, as: .image)
 		}
 	}

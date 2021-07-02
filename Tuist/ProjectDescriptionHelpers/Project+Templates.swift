@@ -1,5 +1,5 @@
-import ProjectDescription
 import Foundation
+import ProjectDescription
 
 public enum FeatureTarget {
 	case framework
@@ -141,7 +141,8 @@ extension Project {
 							path: .relativeToRoot("Dependencies/DevDependencies")
 						),
 					], targetDependencies,
-				].flatMap { $0 },
+				]
+				.flatMap { $0 },
 				settings: Settings(base: [:], configurations: frameworkConfigurations)
 			)
 
@@ -174,7 +175,8 @@ extension Project {
 							path: .relativeToRoot("Dependencies/TestDependencies")
 						),
 					], testsDependencies,
-				].flatMap { $0 },
+				]
+				.flatMap { $0 },
 				settings: Settings(base: [:], configurations: testsConfigurations)
 			)
 
@@ -217,7 +219,8 @@ extension Project {
 						),
 					], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [],
 					targetDependencies,
-				].flatMap { $0 },
+				]
+				.flatMap { $0 },
 				settings: Settings(
 					base: [
 						"PROVISIONING_PROFILE_SPECIFIER":
@@ -239,7 +242,9 @@ extension Project {
 					)
 				],
 				arguments: Arguments(
-                    environment: ["SNAPSHOT_ARTIFACTS": "/tmp/\(UUID().uuidString)/__SnapshotFailures__"],
+					environment: [
+						"SNAPSHOT_ARTIFACTS": "/tmp/\(UUID().uuidString)/__SnapshotFailures__"
+					],
 					launchArguments: []
 				),
 				coverage: true
@@ -272,7 +277,8 @@ extension Project {
 							executable: TargetReference(stringLiteral: "\(name)Example")
 						)
 					) : nil,
-			].compactMap { $0 },
+			]
+			.compactMap { $0 },
 			additionalFiles: [includesGraphQL ? .folderReference(path: "GraphQL") : nil].compactMap { $0 }
 		)
 	}
