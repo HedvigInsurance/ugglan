@@ -121,8 +121,9 @@ extension Header: Presentable {
 				make.height.equalTo(scrollView.frameLayoutGuide.snp.height)
 			}
 
-            innerBag += state.isLoadingSignal.animated(style: SpringAnimationStyle.lightBounce(duration: 0.8))
-			{ isLoading in
+			innerBag += state.isLoadingSignal.animated(
+				style: SpringAnimationStyle.lightBounce(duration: 0.8)
+			) { isLoading in
 				scrollView.isScrollEnabled = !isLoading
 
 				formContainer.snp.remakeConstraints { make in
