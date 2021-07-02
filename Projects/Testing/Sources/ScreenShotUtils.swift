@@ -13,7 +13,7 @@ public func setupScreenShotTests() {
 	ApplicationContext.shared.hasFinishedBootstrapping = true
     UIView.setAnimationsEnabled(false)
     XCTAssertEqual(UIScreen.main.scale, 3)
-    Fonts.forceTraitCollection = UITraitCollection(preferredContentSizeCategory: .accessibilityMedium)
+    Fonts.forceTraitCollection = UITraitCollection(preferredContentSizeCategory: .medium)
 
 	#if RECORD
 		record = true
