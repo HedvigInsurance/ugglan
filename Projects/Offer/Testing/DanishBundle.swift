@@ -131,10 +131,10 @@ extension GraphQL.QuoteBundleQuery.Data {
 					startDate: Date().localDateString,
 					currentInsurer: .init(id: "Hedvig", displayName: "Hedvig", switchable: true)
 				),
-                appConfiguration: .init(
-                    showCampaignManagement: true,
-                    title: .logo
-                )
+				appConfiguration: .init(
+					showCampaignManagement: true,
+					title: .logo
+				)
 			),
 			signMethodForQuotes: GraphQL.SignMethod.simpleSign,
 			redeemedCampaigns: []

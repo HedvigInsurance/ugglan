@@ -79,26 +79,26 @@ public class MockNetworkFetchInterceptor: ApolloInterceptor, Cancellable {
 				)
 			}
 		} else if let handler = handlers[ObjectIdentifier(Operation.self)] as? MutationMock<Operation> {
-            do {
-                let data = try handler.handler(request.operation)
+			do {
+				let data = try handler.handler(request.operation)
 
-                interceptAsync(
-                    chain: chain,
-                    request: request,
-                    response: response,
-                    duration: handler.duration,
-                    data: data,
-                    completion: completion
-                )
-            } catch {
-                chain.handleErrorAsync(
-                    error,
-                    request: request,
-                    response: response,
-                    completion: completion
-                )
-            }
-        }
+				interceptAsync(
+					chain: chain,
+					request: request,
+					response: response,
+					duration: handler.duration,
+					data: data,
+					completion: completion
+				)
+			} catch {
+				chain.handleErrorAsync(
+					error,
+					request: request,
+					response: response,
+					completion: completion
+				)
+			}
+		}
 	}
 
 	public func cancel() {}
