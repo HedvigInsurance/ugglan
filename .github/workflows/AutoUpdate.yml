@@ -1,4 +1,4 @@
-name: autoupdate
+name: AutoUpdate
 on:
   push: {}
 jobs:
