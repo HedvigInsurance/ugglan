@@ -47,28 +47,30 @@ extension Chat: Presentable {
 		bag += navigateCallbacker.onValue { navigationEvent in
 			switch navigationEvent {
 			case .offer:
-                client.fetch(query: GraphQL.LastQuoteOfMemberQuery()).onValue { data in
-                    guard let id = data.lastQuoteOfMember.asCompleteQuote?.id else {
-                        return
-                    }
-                    
-                    viewController.present(
-                        Offer(
-                            offerIDContainer: .exact(ids: [id], shouldStore: true),
-                            menu: Menu(
-                                title: nil,
-                                children: [
-                                    MenuChild.appInformation,
-                                    MenuChild.appSettings,
-                                    MenuChild.login(onLogin: {
-                                        UIApplication.shared.appDelegate.appFlow
-                                            .presentLoggedIn()
-                                    }),
-                                ]
-                            )
-                        )
-                    )
-                }
+				client.fetch(query: GraphQL.LastQuoteOfMemberQuery())
+					.onValue { data in
+						guard let id = data.lastQuoteOfMember.asCompleteQuote?.id else {
+							return
+						}
+
+						viewController.present(
+							Offer(
+								offerIDContainer: .exact(ids: [id], shouldStore: true),
+								menu: Menu(
+									title: nil,
+									children: [
+										MenuChild.appInformation,
+										MenuChild.appSettings,
+										MenuChild.login(onLogin: {
+											UIApplication.shared.appDelegate
+												.appFlow
+												.presentLoggedIn()
+										}),
+									]
+								)
+							)
+						)
+					}
 			case .dashboard:
 				viewController.present(LoggedIn())
 			case .login:
