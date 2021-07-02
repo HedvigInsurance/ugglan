@@ -63,48 +63,49 @@ extension ExpandableContent: Presentable {
 		scrollView.embedView(contentView, scrollAxis: .vertical)
 
 		let shadowView = UIView()
-        
-        func rerenderHeight(size: CGSize) {
-            outerContainer.snp.remakeConstraints { make in
-                make.width.equalTo(size.width)
-                let outerContainerHeight = buttonHalfHeight + size.height
 
-                if collapsedMaxHeight > (size.height + (size.height * 0.1)) {
-                    shadowView.isHidden = true
-                    buttonIsHiddenSignal.value = true
-                    make.height.equalTo(size.height)
-                } else {
-                    shadowView.isHidden = false
-                    buttonIsHiddenSignal.value = false
+		func rerenderHeight(size: CGSize) {
+			outerContainer.snp.remakeConstraints { make in
+				make.width.equalTo(size.width)
+				let outerContainerHeight = buttonHalfHeight + size.height
 
-                    let totalHeight =
-                        self.isExpanded.value
-                        ? outerContainerHeight + (buttonHalfHeight * 2)
-                        : outerContainerHeight * 0.5
-                    make.height.equalTo(
-                        totalHeight
-                    )
-                }
-            }
-            
-            outerContainer.layoutSuperviewsIfNeeded()
-            outerContainer.subviews.forEach { subview in
-                if subview is UIStackView {
-                    subview.layoutIfNeeded()
-                }
-            }
-            scrollView.subviews.forEach { subview in
-                subview.layoutIfNeeded()
-            }
-        }
-        
-        bag += scrollView.contentSizeSignal.atOnce().onValue({ size in
-            rerenderHeight(size: size)
-        })
-        
-        bag += isExpanded.animated(style: .mediumBounce()) { _ in
-            rerenderHeight(size: scrollView.contentSize)
-        }
+				if collapsedMaxHeight > (size.height + (size.height * 0.1)) {
+					shadowView.isHidden = true
+					buttonIsHiddenSignal.value = true
+					make.height.equalTo(size.height)
+				} else {
+					shadowView.isHidden = false
+					buttonIsHiddenSignal.value = false
+
+					let totalHeight =
+						self.isExpanded.value
+						? outerContainerHeight + (buttonHalfHeight * 2)
+						: outerContainerHeight * 0.5
+					make.height.equalTo(
+						totalHeight
+					)
+				}
+			}
+
+			outerContainer.layoutSuperviewsIfNeeded()
+			outerContainer.subviews.forEach { subview in
+				if subview is UIStackView {
+					subview.layoutIfNeeded()
+				}
+			}
+			scrollView.subviews.forEach { subview in
+				subview.layoutIfNeeded()
+			}
+		}
+
+		bag += scrollView.contentSizeSignal.atOnce()
+			.onValue({ size in
+				rerenderHeight(size: size)
+			})
+
+		bag += isExpanded.animated(style: .mediumBounce()) { _ in
+			rerenderHeight(size: scrollView.contentSize)
+		}
 
 		bag += expandButton.onTapSignal.withLatestFrom(isExpanded.atOnce().plain()).map { !$1 }
 			.bindTo(isExpanded)
