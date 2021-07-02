@@ -58,11 +58,11 @@ extension GraphQL.QuoteBundleQuery.Data {
 						startDate: "2020-05-10",
 						correspondingQuote: .makeCompleteQuote(id: "123")
 					)
-                ]),
-                appConfiguration: .init(
-                    showCampaignManagement: true,
-                    title: .logo
-                )
+				]),
+				appConfiguration: .init(
+					showCampaignManagement: true,
+					title: .logo
+				)
 			),
 			signMethodForQuotes: GraphQL.SignMethod.swedishBankId,
 			redeemedCampaigns: redeemedCampaigns
