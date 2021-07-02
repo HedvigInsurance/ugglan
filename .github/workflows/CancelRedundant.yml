@@ -1,0 +1,12 @@
+name: Cancel
+on: [push]
+jobs:
+  cancel:
+    name: 'Cancel Redundant Runs'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          workflow_id: WorkspaceApps.yml,WorkspaceTests.yml
+          access_token: ${{ github.token }}
