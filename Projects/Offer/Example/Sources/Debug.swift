@@ -64,8 +64,8 @@ extension Debug: Presentable {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { _ in
 						.makeSwedishHouse(
 							bundleCost: .init(
-								monthlyGross: .init(amount: "100", currency: "SEK"),
 								monthlyDiscount: .init(amount: "0", currency: "SEK"),
+								monthlyGross: .init(amount: "100", currency: "SEK"),
 								monthlyNet: .init(amount: "100", currency: "SEK")
 							),
 							redeemedCampaigns: []
@@ -84,8 +84,8 @@ extension Debug: Presentable {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeSwedishHouse(
 							bundleCost: .init(
-								monthlyGross: .init(amount: "110", currency: "SEK"),
 								monthlyDiscount: .init(amount: "10", currency: "SEK"),
+								monthlyGross: .init(amount: "110", currency: "SEK"),
 								monthlyNet: .init(amount: "100", currency: "SEK")
 							),
 							redeemedCampaigns: [.init(displayValue: "-10 kr per month")]
@@ -101,8 +101,8 @@ extension Debug: Presentable {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeSwedishHouse(
 							bundleCost: .init(
-								monthlyGross: .init(amount: "110", currency: "SEK"),
 								monthlyDiscount: .init(amount: "27.5", currency: "SEK"),
+								monthlyGross: .init(amount: "110", currency: "SEK"),
 								monthlyNet: .init(amount: "82.5", currency: "SEK")
 							),
 							redeemedCampaigns: [.init(displayValue: "-25% forever")]
@@ -118,8 +118,8 @@ extension Debug: Presentable {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeSwedishHouse(
 							bundleCost: .init(
-								monthlyGross: .init(amount: "110", currency: "SEK"),
 								monthlyDiscount: .init(amount: "110", currency: "SEK"),
+								monthlyGross: .init(amount: "110", currency: "SEK"),
 								monthlyNet: .init(amount: "0", currency: "SEK")
 							),
 							redeemedCampaigns: [.init(displayValue: "3 free months")]
@@ -135,8 +135,8 @@ extension Debug: Presentable {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeSwedishHouse(
 							bundleCost: .init(
-								monthlyGross: .init(amount: "110", currency: "SEK"),
 								monthlyDiscount: .init(amount: "27.5", currency: "SEK"),
+								monthlyGross: .init(amount: "110", currency: "SEK"),
 								monthlyNet: .init(amount: "82.5", currency: "SEK")
 							),
 							redeemedCampaigns: [
@@ -163,21 +163,21 @@ extension Debug: Presentable {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeDanishBundle()
 					}
-                    
-                    MutationMock(GraphQL.SignQuotesMutation.self) { operation in
-                            .init(signQuotes: .makeSimpleSignSession(id: "123"))
-                    }
+
+					MutationMock(GraphQL.SignQuotesMutation.self) { operation in
+						.init(signQuotes: .makeSimpleSignSession(id: "123"))
+					}
 				}
 			}
-        
-        bag += section.appendRow(title: "Swedish apartment - moving flow")
-            .onValue {
-                presentOffer {
-                    QueryMock(GraphQL.QuoteBundleQuery.self) { _ in
-                        .makeSwedishApartmentMovingFlow()
-                    }
-                }
-            }
+
+		bag += section.appendRow(title: "Swedish apartment - moving flow")
+			.onValue {
+				presentOffer {
+					QueryMock(GraphQL.QuoteBundleQuery.self) { _ in
+						.makeSwedishApartmentMovingFlow()
+					}
+				}
+			}
 
 		bag += viewController.install(form)
 
@@ -187,7 +187,7 @@ extension Debug: Presentable {
 
 extension Debug {
 	@GraphQLMockBuilder var sharedMocks: some GraphQLMock {
-        MutationMock(GraphQL.ChangeStartDateMutation.self, duration: 2) { operation in
+		MutationMock(GraphQL.ChangeStartDateMutation.self, duration: 2) { operation in
 			if operation.startDate
 				== Calendar.current.date(byAdding: .day, value: 3, to: Date())?
 				.localDateString
@@ -199,6 +199,32 @@ extension Debug {
 				GraphQL.ChangeStartDateMutation.Data(
 					editQuote: .makeCompleteQuote(startDate: operation.startDate)
 				)
+		}
+
+		MutationMock(GraphQL.RedeemCodeMutation.self, duration: 2) { operation in
+			if operation.code == "hello" {
+				throw MockError.failed
+			}
+
+			let mockData = GraphQL.RedeemCodeMutation.Data(
+				redeemCodeV2: .makeSuccessfulRedeemResult(
+					cost:
+						.init(
+							monthlyDiscount: .init(amount: "110", currency: "SEK"),
+							monthlyGross: .init(amount: "110", currency: "SEK"),
+							monthlyNet: .init(amount: "0", currency: "SEK")
+						),
+					campaigns: [
+						.init(
+							code: "axel",
+							incentive: .makeFreeMonths(quantity: 3),
+							displayValue: "3 free months!!!"
+						)
+					]
+				)
+			)
+
+			return mockData
 		}
 
 		SubscriptionMock(

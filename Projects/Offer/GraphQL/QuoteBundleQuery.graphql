@@ -64,16 +64,7 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
       }
     }
     bundleCost {
-      monthlyGross {
-        ...MonetaryAmountFragment
-      }
-      monthlyDiscount {
-        ...MonetaryAmountFragment
-      }
-      monthlyNet {
-        ...MonetaryAmountFragment
-      }
-      freeUntil
+      ...CostFragment
     }
     frequentlyAskedQuestions(locale: $locale) {
       id

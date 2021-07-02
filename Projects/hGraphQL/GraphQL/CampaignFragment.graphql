@@ -3,4 +3,5 @@ fragment CampaignFragment on Campaign {
     incentive {
         ...IncentiveFragment
     }
+    displayValue
 }

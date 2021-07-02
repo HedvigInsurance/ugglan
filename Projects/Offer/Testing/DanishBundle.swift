@@ -117,8 +117,8 @@ extension GraphQL.QuoteBundleQuery.Data {
 					),
 				],
 				bundleCost: .init(
-					monthlyGross: .init(amount: "100", currency: "DKK"),
 					monthlyDiscount: .init(amount: "100", currency: "DKK"),
+					monthlyGross: .init(amount: "100", currency: "DKK"),
 					monthlyNet: .init(amount: "100", currency: "DKK")
 				),
 				frequentlyAskedQuestions: generateFrequentlyAskedQuestions(),
@@ -131,10 +131,10 @@ extension GraphQL.QuoteBundleQuery.Data {
 					startDate: Date().localDateString,
 					currentInsurer: .init(id: "Hedvig", displayName: "Hedvig", switchable: true)
 				),
-                appConfiguration: .init(
-                    showCampaignManagement: true,
-                    title: .logo
-                )
+				appConfiguration: .init(
+					showCampaignManagement: true,
+					title: .logo
+				)
 			),
 			signMethodForQuotes: GraphQL.SignMethod.simpleSign,
 			redeemedCampaigns: []
