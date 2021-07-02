@@ -15,3 +15,5 @@ fi
 cd swift-format
 
 swift build -c release --disable-sandbox
+
+cd ../..
