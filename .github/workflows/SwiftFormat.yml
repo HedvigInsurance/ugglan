@@ -24,8 +24,8 @@ jobs:
       uses: peter-evans/create-pull-request@v3
       with:
         commit-message: 'Formatting'
-        title: 'Formatting'
-        body: '@${{ github.actor }} swift-format found changes that should be applied to your branch'
+        title: 'Formatting: ${{ github.head_ref }}'
+        body: '@${{ github.event.pull_request.user.login }} swift-format found changes that should be applied to your branch'
         branch: 'formatting/${{ github.head_ref }}'
         base: ${{ github.head_ref }}
       env:
