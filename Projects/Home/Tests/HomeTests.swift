@@ -26,7 +26,7 @@ class HomeTests: XCTestCase {
 
 		let window = UIWindow()
 
-        bag += window.present(Home(sections: []))
+		bag += window.present(Home(sections: []))
 
 		let waitForApollo = expectation(description: "wait for apollo")
 
