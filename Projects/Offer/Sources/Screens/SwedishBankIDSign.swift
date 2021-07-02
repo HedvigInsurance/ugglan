@@ -13,7 +13,7 @@ struct SwedishBankIdSign {
 
 	func presentFailedAlert(
 		_ viewController: UIViewController,
-        completion: @escaping (_ result: Flow.Result<Void>) -> Void
+		completion: @escaping (_ result: Flow.Result<Void>) -> Void
 	) {
 		let alert = Alert<Void>(
 			title: L10n.bankidFailedTitle,
@@ -39,7 +39,7 @@ struct SwedishBankIdSign {
 	func presentErrorAlert(
 		_ viewController: UIViewController,
 		data: GraphQL.SignStatusSubscription.Data,
-        completion: @escaping (_ result: Flow.Result<Void>) -> Void
+		completion: @escaping (_ result: Flow.Result<Void>) -> Void
 	) {
 		guard let code = data.signStatus?.status?.collectStatus?.code,
 			let state = data.signStatus?.status?.signState
@@ -92,17 +92,17 @@ struct SwedishBankIdSign {
 }
 
 enum SwedishBankIdSignError: Error {
-    case failed
-    case userCancel
+	case failed
+	case userCancel
 }
 
 extension SwedishBankIdSign: Presentable {
 	func materialize() -> (UIViewController, Future<Void>) {
 		let viewController = UIViewController()
-        if #available(iOS 13.0, *) {
-            viewController.isModalInPresentation = true
-        }
-        
+		if #available(iOS 13.0, *) {
+			viewController.isModalInPresentation = true
+		}
+
 		let bag = DisposeBag()
 
 		let view = UIView()
@@ -153,17 +153,17 @@ extension SwedishBankIdSign: Presentable {
 		return (
 			viewController,
 			Future { completion in
-                let cancelButton = UIBarButtonItem(
-                    title: L10n.NavBar.cancel,
-                    style: .brand(.body(color: .primary))
-                )
-            
-                bag += cancelButton.onValue({ _ in
-                    completion(.failure(SwedishBankIdSignError.userCancel))
-                })
-            
-                viewController.navigationItem.rightBarButtonItem = cancelButton
-            
+				let cancelButton = UIBarButtonItem(
+					title: L10n.NavBar.cancel,
+					style: .brand(.body(color: .primary))
+				)
+
+				bag += cancelButton.onValue({ _ in
+					completion(.failure(SwedishBankIdSignError.userCancel))
+				})
+
+				viewController.navigationItem.rightBarButtonItem = cancelButton
+
 				state.signQuotes()
 					.onValue { signEvent in
 						switch signEvent {
@@ -195,7 +195,8 @@ extension SwedishBankIdSign: Presentable {
 									case "noClient", "outstandingTransaction":
 										statusText = L10n.signStartBankid
 									case "userSign":
-                                        viewController.navigationItem.rightBarButtonItem = nil
+										viewController.navigationItem
+											.rightBarButtonItem = nil
 										statusText = L10n.signInProgress
 									case "userCancel", "cancelled":
 										statusText = L10n.signCanceled

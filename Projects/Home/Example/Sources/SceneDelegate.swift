@@ -1,55 +1,55 @@
 import Flow
+import Form
 import Foundation
 import UIKit
 import hCore
-import Form
 
 @available(iOS 13, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    let bag = DisposeBag()
-    var window: UIWindow?
-    
-    func run() {
-        DefaultStyling.installCustom()
+	let bag = DisposeBag()
+	var window: UIWindow?
 
-        Localization.Locale.currentLocale = .en_SE
+	func run() {
+		DefaultStyling.installCustom()
 
-        let navigationController = UINavigationController()
-        navigationController.navigationBar.prefersLargeTitles = true
+		Localization.Locale.currentLocale = .en_SE
 
-        let tapGestureRecognizer = UITapGestureRecognizer()
-        tapGestureRecognizer.numberOfTouchesRequired = 3
+		let navigationController = UINavigationController()
+		navigationController.navigationBar.prefersLargeTitles = true
 
-        bag += tapGestureRecognizer.signal(forState: .recognized)
-            .onValue { _ in self.bag.dispose()
-                self.run()
-            }
+		let tapGestureRecognizer = UITapGestureRecognizer()
+		tapGestureRecognizer.numberOfTouchesRequired = 3
 
-        window?.addGestureRecognizer(tapGestureRecognizer)
+		bag += tapGestureRecognizer.signal(forState: .recognized)
+			.onValue { _ in self.bag.dispose()
+				self.run()
+			}
 
-        bag += { self.window?.removeGestureRecognizer(tapGestureRecognizer) }
+		window?.addGestureRecognizer(tapGestureRecognizer)
 
-        navigationController.present(Debug(), options: [.defaults, .largeTitleDisplayMode(.always)])
+		bag += { self.window?.removeGestureRecognizer(tapGestureRecognizer) }
 
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
+		navigationController.present(Debug(), options: [.defaults, .largeTitleDisplayMode(.always)])
 
-        ApplicationContext.shared.hasFinishedBootstrapping = true
-    }
+		window?.rootViewController = navigationController
+		window?.makeKeyAndVisible()
 
-    func scene(
-        _ scene: UIScene,
-        willConnectTo session: UISceneSession,
-        options connectionOptions: UIScene.ConnectionOptions
-    ) {
-        if let windowScene = scene as? UIWindowScene {
-            let window = UIWindow(windowScene: windowScene)
-            self.window = window
-            run()
-        }
-    }
+		ApplicationContext.shared.hasFinishedBootstrapping = true
+	}
 
-    func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
-        return scene.userActivity
-    }
+	func scene(
+		_ scene: UIScene,
+		willConnectTo session: UISceneSession,
+		options connectionOptions: UIScene.ConnectionOptions
+	) {
+		if let windowScene = scene as? UIWindowScene {
+			let window = UIWindow(windowScene: windowScene)
+			self.window = window
+			run()
+		}
+	}
+
+	func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
+		return scene.userActivity
+	}
 }
