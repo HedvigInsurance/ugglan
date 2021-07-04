@@ -48,7 +48,7 @@ jobs:
         HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 bundle exec fastlane ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
+      run: arch -arm64 bundle exec fastlane ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan catalyst_platform:macos
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
