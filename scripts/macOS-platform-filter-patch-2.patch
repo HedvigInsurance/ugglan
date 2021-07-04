@@ -1,0 +1,20 @@
+--- Projects/Payment/Payment.xcodeproj/project.pbxproj	2021-07-04 10:22:59.000000000 +0200
++++ Projects/Payment/Payment.xcodeproj/project 2.pbxproj	2021-07-04 10:21:27.000000000 +0200
+@@ -32,7 +32,7 @@
+ 		34EED3EF358017396F65A79D /* MyPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBC6D9ACF5A036A8FEABFE9 /* MyPayment.swift */; };
+ 		381495239262AE27B0BDF570 /* Testing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 661B5529AF1881FA2164DA02 /* Testing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+ 		3896EA5C67EFB96181C6BBC6 /* AdyenPayOut.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07B88F89A4130881F71FEEA /* AdyenPayOut.swift */; };
+-		3E4B3F8A2B5ECF2A95256BA2 /* NonMacDependencies.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A52FEF12C151697F1248FCC /* NonMacDependencies.framework */; platformFilter = ios; };
++		3E4B3F8A2B5ECF2A95256BA2 /* NonMacDependencies.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A52FEF12C151697F1248FCC /* NonMacDependencies.framework */; };
+ 		3FF8D41BA35FC5B51BAE6DD3 /* MyPayment.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A419AE3DF5EB7934FCCFE62 /* MyPayment.graphql.swift */; };
+ 		44D6F3D1A2EDB877A66777D9 /* CoreDependencies.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B39E627376ADC2E74E7FF50 /* CoreDependencies.framework */; };
+ 		476BE9812380D4B4715EA756 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60717183B676C86211A4801F /* AppDelegate.swift */; };
+@@ -236,7 +236,7 @@
+ 		6C3307B35F280120AAB9D056 /* DirectDebitResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectDebitResult.swift; sourceTree = "<group>"; };
+ 		6DEF64BA0A3872CFFD0E51E1 /* AdyenPayIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdyenPayIn.swift; sourceTree = "<group>"; };
+ 		6E5FC110866ECA7A38D9832C /* iOS-Application.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "iOS-Application.xcconfig"; sourceTree = "<group>"; };
+-		7468CA808FAC5DED78BA4566 /* GraphQL */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GraphQL; sourceTree = "<group>"; };
++		7468CA808FAC5DED78BA4566 /* GraphQL */ = {isa = PBXFileReference; path = GraphQL; sourceTree = "<group>"; };
+ 		7B2C3E215F2F98FDC5B8056D /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+ 		7DDDACBC58F1CD29D60FFBD6 /* PaymentHeaderNextCharge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentHeaderNextCharge.swift; sourceTree = "<group>"; };
+ 		7E83E7E973F6CF49865F0B40 /* PaymentExample.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = PaymentExample.plist; sourceTree = "<group>"; };
