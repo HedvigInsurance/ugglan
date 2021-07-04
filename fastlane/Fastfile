@@ -496,7 +496,8 @@ platform :ios do
                 load_api
                 notarize(
                     package: lane_context[SharedValues::PKG_OUTPUT_PATH],
-                    bundle_id: "maccatalyst.#{app_identifier}"
+                    bundle_id: "maccatalyst.#{app_identifier}",
+                    api_key_path: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
                 )
             end
 
