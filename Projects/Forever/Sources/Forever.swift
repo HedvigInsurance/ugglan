@@ -44,15 +44,15 @@ extension Forever: Presentable {
 		bag += tableKit.delegate.heightForCell.set { index -> CGFloat in tableKit.table[index].cellHeight }
 
 		bag += NotificationCenter.default.signal(forName: .costDidUpdate).onValue { _ in service.refetch() }
-//
-//		let refreshControl = UIRefreshControl()
-//
-//		bag += refreshControl.onValue {
-//			refreshControl.endRefreshing()
-//			self.service.refetch()
-//		}
-//
-//		tableKit.view.refreshControl = refreshControl
+		//
+		//		let refreshControl = UIRefreshControl()
+		//
+		//		bag += refreshControl.onValue {
+		//			refreshControl.endRefreshing()
+		//			self.service.refetch()
+		//		}
+		//
+		//		tableKit.view.refreshControl = refreshControl
 
 		bag += tableKit.view.addTableHeaderView(Header(service: service), animated: false)
 

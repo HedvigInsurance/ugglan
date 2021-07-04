@@ -107,11 +107,13 @@ extension BankIdSign: Presentable {
 				bag += statusSignal.compactMap { $0.signState }.filter { state in state == .completed }
 					.take(first: 1)
 					.onValue { _ in
-                        #if canImport(Firebase)
-                        if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-                            UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
-                        }
-                        #endif
+						#if canImport(Firebase)
+							if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
+								UIApplication.shared.appDelegate.registerFCMToken(
+									fcmToken
+								)
+							}
+						#endif
 
 						completion(.success)
 					}

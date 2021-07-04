@@ -33,10 +33,10 @@ extension Profile: Presentable {
 		bag += client.watch(query: query).bindTo(profileSection.dataSignal)
 
 		bag += viewController.install(form) { scrollView in
-//            let refreshControl = UIRefreshControl()
-//			bag += self.client.refetchOnRefresh(query: query, refreshControl: refreshControl)
-//
-//			scrollView.refreshControl = refreshControl
+			//            let refreshControl = UIRefreshControl()
+			//			bag += self.client.refetchOnRefresh(query: query, refreshControl: refreshControl)
+			//
+			//			scrollView.refreshControl = refreshControl
 			bag += scrollView.chainAllControlResponders(shouldLoop: true, returnKey: .next)
 		}
 

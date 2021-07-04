@@ -1,7 +1,4 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.dependenciesFramework(
-	name: "MacDependencies",
-    externalDependencies: []
-)
+let project = Project.dependenciesFramework(name: "MacDependencies", externalDependencies: [])

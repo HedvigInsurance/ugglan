@@ -113,9 +113,10 @@ extension Project {
 				resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
 				actions: [],
 				dependencies: targetDependencies,
-				settings: Settings(base: [
-                    "SUPPORTED_PLATFORMS": "iphonesimulator iphoneos macosx"
-                ], configurations: frameworkConfigurations)
+				settings: Settings(
+					base: ["SUPPORTED_PLATFORMS": "iphonesimulator iphoneos macosx"],
+					configurations: frameworkConfigurations
+				)
 			)
 
 			projectTargets.append(frameworkTarget)
@@ -145,9 +146,10 @@ extension Project {
 					], targetDependencies,
 				]
 				.flatMap { $0 },
-				settings: Settings(base: [
-                    "SUPPORTED_PLATFORMS": "iphonesimulator iphoneos macosx"
-                ], configurations: frameworkConfigurations)
+				settings: Settings(
+					base: ["SUPPORTED_PLATFORMS": "iphonesimulator iphoneos macosx"],
+					configurations: frameworkConfigurations
+				)
 			)
 
 			projectTargets.append(testingTarget)
@@ -181,9 +183,10 @@ extension Project {
 					], testsDependencies,
 				]
 				.flatMap { $0 },
-				settings: Settings(base: [
-                    "SUPPORTED_PLATFORMS": "iphonesimulator iphoneos macosx"
-                ], configurations: testsConfigurations)
+				settings: Settings(
+					base: ["SUPPORTED_PLATFORMS": "iphonesimulator iphoneos macosx"],
+					configurations: testsConfigurations
+				)
 			)
 
 			projectTargets.append(testTarget)
@@ -230,10 +233,10 @@ extension Project {
 				settings: Settings(
 					base: [
 						"PROVISIONING_PROFILE_SPECIFIER[sdk=iphone*]":
-                            "match Development com.hedvig.example.*",
-                        "PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]":
-                            "match Development com.hedvig.example.* catalyst",
-                        "SUPPORTED_PLATFORMS": "iphonesimulator iphoneos macosx"
+							"match Development com.hedvig.example.*",
+						"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]":
+							"match Development com.hedvig.example.* catalyst",
+						"SUPPORTED_PLATFORMS": "iphonesimulator iphoneos macosx",
 					],
 					configurations: appConfigurations
 				)

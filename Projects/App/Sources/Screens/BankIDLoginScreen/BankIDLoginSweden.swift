@@ -123,13 +123,13 @@ extension BankIDLoginSweden: Presentable {
 						if authState == .success {
 							let appDelegate = UIApplication.shared.appDelegate
 
-                            #if canImport(Firebase)
-                            
-                            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-                                appDelegate.registerFCMToken(fcmToken)
-                            }
-                            
-                            #endif
+							#if canImport(Firebase)
+								if let fcmToken =
+									ApplicationState.getFirebaseMessagingToken()
+								{
+									appDelegate.registerFCMToken(fcmToken)
+								}
+							#endif
 
 							AnalyticsCoordinator().setUserId()
 

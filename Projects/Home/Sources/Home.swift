@@ -57,9 +57,9 @@ extension Home: Presentable {
 
 		let form = FormView()
 		bag += viewController.install(form) { scrollView in
-//            let refreshControl = UIRefreshControl()
-//			scrollView.refreshControl = refreshControl
-//			bag += self.client.refetchOnRefresh(query: GraphQL.HomeQuery(), refreshControl: refreshControl)
+			//            let refreshControl = UIRefreshControl()
+			//			scrollView.refreshControl = refreshControl
+			//			bag += self.client.refetchOnRefresh(query: GraphQL.HomeQuery(), refreshControl: refreshControl)
 
 			bag += scrollView.performEntryAnimation(
 				contentView: form,

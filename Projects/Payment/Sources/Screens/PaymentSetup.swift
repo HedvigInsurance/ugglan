@@ -22,18 +22,11 @@ public struct PaymentSetup {
 extension PaymentSetup: Presentable {
 	public func materialize() -> (UIViewController, Future<Void>) {
 		switch Localization.Locale.currentLocale.market {
-		case .se: return DirectDebitSetup(setupType: setupType).materialize()
-        
-        #if canImport(Adyen)
-        
-		case .no, .dk: return AdyenPayInSync(urlScheme: urlScheme).materialize()
-            
-            #else
-        
-    
-        case .no, .dk: return DirectDebitSetup(setupType: setupType).materialize()
-        
-        #endif
+		case .se: return DirectDebitSetup(setupType: setupType).materialize() #if canImport(Adyen)
+			case .no, .dk: return AdyenPayInSync(urlScheme: urlScheme).materialize()
+		#else
+			case .no, .dk: return DirectDebitSetup(setupType: setupType).materialize()
+		#endif
 		}
 	}
 }
