@@ -5,6 +5,7 @@ import UIKit
 
 #if canImport(Shake)
 	import Shake
+    import NonMacDependencies
 #endif
 
 extension UIApplication {
