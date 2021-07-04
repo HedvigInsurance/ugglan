@@ -532,6 +532,31 @@ platform :ios do
             
             app_results.append({
                 url: lane_context[SharedValues::S3_HTML_OUTPUT_PATH],
+                type: "iOS",
+                scheme: scheme
+            })
+        end
+
+        Dir.glob("build_output/*.app") do |path|
+            require 'securerandom'
+
+            scheme = File.basename(path, ".*")
+            absolute_path = File.expand_path(path)
+                
+            aws_s3(
+                access_key: ENV['S3_ACCESS_KEY'],
+                secret_access_key: ENV['S3_SECRET_ACCESS_KEY'],
+                bucket: "hedvig-ios-builds",
+                region: "eu-central-1",
+                files: [
+                    absolute_path + "/" + scheme + ".app"
+                ],
+                app_directory: "#{scheme}_#{SecureRandom.uuid}",
+            )
+            
+            app_results.append({
+                url: lane_context[SharedValues::S3_FILES_OUTPUT_PATHS].first,
+                type: "macOS",
                 scheme: scheme
             })
         end
@@ -579,7 +604,7 @@ platform :ios do
                         "text": app_result[:scheme]
                     },
                     "url": app_result[:url],
-                    "value": app_result[:scheme]
+                    "value": "#{app_result[:scheme]} #{app_result[:type]}"
                 }
             }
           },

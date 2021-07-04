@@ -136,7 +136,7 @@ jobs:
         path: fastlane/build_output/ForeverExample.ipa
   slack:
     runs-on: ubuntu-latest
-    needs: [build_ugglan, build_embark, build_hedvig, build_home, build_forever]
+    needs: [build_ugglan, build_ugglan_macOS, build_embark, build_hedvig, build_home, build_forever]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
