@@ -1,3 +1,4 @@
+import CoreDependencies
 import Apollo
 import ApolloWebSocket
 import Disk

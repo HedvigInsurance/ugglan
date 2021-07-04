@@ -1,3 +1,5 @@
+#if canImport(Adyen)
+
 import Adyen
 import Foundation
 
@@ -15,3 +17,5 @@ internal final class EmptyPaymentComponent: PaymentComponent {
 		submit(data: PaymentComponentData(paymentMethodDetails: details))
 	}
 }
+
+#endif

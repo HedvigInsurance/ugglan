@@ -1,3 +1,5 @@
+#if canImport(Adyen)
+
 import Adyen
 import Flow
 import Form
@@ -47,3 +49,5 @@ extension AdyenPayInSync: Presentable {
 		)
 	}
 }
+
+#endif

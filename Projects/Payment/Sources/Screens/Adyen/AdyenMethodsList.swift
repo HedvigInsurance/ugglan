@@ -1,3 +1,5 @@
+#if canImport(Adyen)
+
 import Adyen
 import AdyenCard
 import Apollo
@@ -120,3 +122,5 @@ extension AdyenMethodsList: Presentable {
 		)
 	}
 }
+
+#endif

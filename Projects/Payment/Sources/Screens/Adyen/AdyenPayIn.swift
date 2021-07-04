@@ -1,3 +1,5 @@
+#if canImport(Adyen)
+
 import Adyen
 import Apollo
 import Flow
@@ -88,3 +90,5 @@ struct AdyenPayIn: Presentable {
 		return (viewController, result)
 	}
 }
+
+#endif

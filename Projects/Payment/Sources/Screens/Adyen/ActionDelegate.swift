@@ -1,3 +1,5 @@
+#if canImport(Adyen)
+
 import Adyen
 import Apollo
 import Flow
@@ -62,3 +64,5 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
 		}
 	}
 }
+
+#endif

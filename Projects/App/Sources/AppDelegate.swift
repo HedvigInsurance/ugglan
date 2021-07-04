@@ -1,9 +1,20 @@
+
+#if canImport(Adyen)
 import Adyen
+#endif
+
 import Apollo
 import CoreDependencies
 import Disk
+
+#if !targetEnvironment(macCatalyst)
+
 import Firebase
 import FirebaseMessaging
+import Shake
+
+#endif
+
 import Flow
 import Form
 import Foundation
@@ -12,7 +23,6 @@ import Mixpanel
 import Payment
 import Presentation
 import Sentry
-import Shake
 import SwiftUI
 import UIKit
 import UserNotifications
@@ -112,9 +122,15 @@ let log = Logger.self
 	}
 
 	func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
-		let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
+		
+        #if canImport(Adyen)
+        
+        let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
 
-		if adyenRedirect { return adyenRedirect }
+        if adyenRedirect { return adyenRedirect }
+        
+        #endif
+        
 
 		return false
 	}
@@ -147,9 +163,13 @@ let log = Logger.self
 			options.enableAutoSessionTracking = true
 		}
 
-		if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
-			Shake.setup()
-		}
+        #if canImport(Shake)
+        
+        if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
+            Shake.setup()
+        }
+        
+        #endif
 
 		if let mixpanelToken = mixpanelToken { Mixpanel.initialize(token: mixpanelToken) }
 
@@ -180,7 +200,11 @@ let log = Logger.self
 		AskForRating().registerSession()
 		CrossFrameworkCoordinator.setup()
 
-		FirebaseApp.configure()
+        #if canImport(Firebase)
+        
+        FirebaseApp.configure()
+        
+        #endif
 
 		presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
 			let presentationEvent = event()
@@ -275,7 +299,12 @@ let log = Logger.self
 
 		DefaultStyling.installCustom()
 
-		Messaging.messaging().delegate = self
+        #if canImport(FirebaseMessaging)
+        
+        Messaging.messaging().delegate = self
+        
+        #endif
+        
 		UNUserNotificationCenter.current().delegate = self
 
 		// treat an empty token as a newly downloaded app and setLastNewsSeen
@@ -348,28 +377,33 @@ extension ApolloClient {
 	}
 }
 
-extension AppDelegate: MessagingDelegate {
-	func registerFCMToken(_ token: String) {
-		bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 })
-			.onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
-				client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token))
-					.onValue { data in
-						if data.registerPushToken != nil {
-							log.info("Did register push token for user")
-						} else {
-							log.info("Failed to register push token for user")
-						}
-					}
-			}
-	}
+#if canImport(Firebase)
 
-	func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-		if let fcmToken = fcmToken {
-			ApplicationState.setFirebaseMessagingToken(fcmToken)
-			registerFCMToken(fcmToken)
-		}
-	}
+extension AppDelegate: MessagingDelegate {
+    func registerFCMToken(_ token: String) {
+        bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 })
+            .onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
+                client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token))
+                    .onValue { data in
+                        if data.registerPushToken != nil {
+                            log.info("Did register push token for user")
+                        } else {
+                            log.info("Failed to register push token for user")
+                        }
+                    }
+            }
+    }
+
+    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        if let fcmToken = fcmToken {
+            ApplicationState.setFirebaseMessagingToken(fcmToken)
+            registerFCMToken(fcmToken)
+        }
+    }
 }
+
+#endif
+
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
 	func userNotificationCenter(

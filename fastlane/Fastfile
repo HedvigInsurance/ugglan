@@ -66,6 +66,13 @@ platform :ios do
       )
 
       match(
+        type: "appstore",
+        platform: "catalyst",
+        app_identifier: "com.hedvig.test.app",
+        force: true
+      )
+
+      match(
         type: "adhoc",
         app_identifier: "com.hedvig.test.app",
         force: true
@@ -85,7 +92,7 @@ platform :ios do
       )
 
       match(
-        type: "adhoc",
+        type: "appstore",
         platform: "catalyst",
         app_identifier: "com.hedvig.example.*",
         force: true
@@ -431,14 +438,21 @@ platform :ios do
         app_identifier = options[:identifier] || 'com.hedvig.example.*'
         scheme = options[:scheme]
         project_path = options[:path]
+        catalyst_platform = options[:catalyst_platform] || "ios"
+
+        if catalyst_platform == "macos"
+            sh("cd ../; scripts/patch-platform-filter.sh")
+        end
         
         match(
-            type: "adhoc",
+            type: catalyst_platform == "macos" ? "appstore" : "adhoc",
             app_identifier: app_identifier,
+            platform: catalyst_platform == "macos" ? "catalyst" : nil,
             readonly: is_ci,
             git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil,
             keychain_name: is_ci ? 'CI' : nil,
-            keychain_password: is_ci ? ENV["MATCH_PASSWORD"] : nil
+            keychain_password: is_ci ? ENV["MATCH_PASSWORD"] : nil,
+            additional_cert_types: catalyst_platform == "macos" ? ["mac_installer_distribution"] : nil
         )
 
         if is_ci
@@ -446,11 +460,11 @@ platform :ios do
             sh("security default-keychain -d user")
             sh("security find-identity -v -p codesigning CI")
         end
-                    
+        
         update_project_provisioning(
             xcodeproj: project_path,
-            profile: ENV["sigh_#{app_identifier}_adhoc_profile-path"],
-            certificate: is_ci ? "AppleIncRootCertificate.cer" : "",
+            profile: catalyst_platform == "macos" ? ENV["sigh_#{app_identifier}_appstore_catalyst_profile-path"] : ENV["sigh_#{app_identifier}_adhoc_profile-path"],
+            certificate: is_ci ? "AppleIncRootCertificate.cer" : nil,
             target_filter: scheme,
             build_configuration: "Release"
         )
@@ -461,9 +475,10 @@ platform :ios do
                 configuration: "Release",
                 scheme: scheme,
                 output_directory: "fastlane/build_output",
-                codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
+                codesigning_identity: catalyst_platform == "macos" ? nil : "Apple Distribution: Hedvig AB (AW656G5PFM)",
                 include_bitcode: false,
-                catalyst_platform: "ios",
+                destination: catalyst_platform == "macos" ? "generic/platform=macOS,variant=Mac Catalyst" : nil,
+                catalyst_platform: catalyst_platform,
                 skip_package_dependencies_resolution: true,
                 xcpretty_formatter: ENV["GEM_HOME"] + "/gems/xcpretty-json-formatter-0.1.1/lib/json_formatter.rb",
                 derived_data_path: is_ci ? "../../../DerivedData" : nil,
@@ -471,11 +486,20 @@ platform :ios do
                 export_options: {
                     compileBitcode: false,
                     iCloudContainerEnvironment: "Production",
-                    method: "ad-hoc",
+                    method: catalyst_platform == "macos" ? "app-store" : "ad-hoc",
                     provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
                     thinning: "<none>"
                 }
             )
+
+            if catalyst_platform == "macos"
+                load_api
+                notarize(
+                    package: lane_context[SharedValues:PKG_OUTPUT_PATH],
+                    bundle_id: "maccatalyst.#{app_identifier}"
+                )
+            end
+
             handle_compile_errors
         rescue => ex
             handle_compile_errors

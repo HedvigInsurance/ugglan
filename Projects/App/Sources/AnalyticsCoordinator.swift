@@ -1,9 +1,7 @@
 import Apollo
-import Firebase
 import Flow
 import Foundation
 import Mixpanel
-import Shake
 import hCore
 import hGraphQL
 
@@ -15,7 +13,12 @@ public struct AnalyticsCoordinator {
 	func setUserId() {
 		client.fetch(query: GraphQL.MemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
 			.compactMap { $0.member.id }
-			.onValue { id in Shake.setMetadata(key: "memberId", value: id)
+			.onValue { id in
+                
+                #if canImport(Shake)
+                Shake.setMetadata(key: "memberId", value: id)
+                #endif
+                
 				Mixpanel.mainInstance().identify(distinctId: id)
 			}
 	}

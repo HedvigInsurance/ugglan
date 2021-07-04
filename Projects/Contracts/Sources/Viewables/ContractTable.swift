@@ -114,13 +114,13 @@ extension ContractTable: Viewable {
 
 		watchContracts()
 
-		let refreshControl = UIRefreshControl()
-		bag += client.refetchOnRefresh(
-			query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
-			refreshControl: refreshControl
-		)
-
-		tableKit.view.refreshControl = refreshControl
+//		let refreshControl = UIRefreshControl()
+//		bag += client.refetchOnRefresh(
+//			query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+//			refreshControl: refreshControl
+//		)
+//
+//		tableKit.view.refreshControl = refreshControl
 
 		return (tableKit.view, bag)
 	}

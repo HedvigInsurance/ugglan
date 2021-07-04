@@ -1,3 +1,5 @@
+#if canImport(Adyen)
+
 import Adyen
 import AdyenCard
 import Foundation
@@ -117,3 +119,5 @@ struct AdyenPaymentBuilder: PaymentComponentBuilder {
 		EmptyPaymentComponent(paymentMethod: paymentMethod)
 	}
 }
+
+#endif

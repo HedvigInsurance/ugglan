@@ -188,13 +188,13 @@ extension KeyGearOverview: Presentable {
 
 		bag +=
 			viewController.install(KeyGearListCollection()) { collectionView in
-				let refreshControl = UIRefreshControl()
-				bag += client.refetchOnRefresh(
-					query: GraphQL.KeyGearItemsQuery(),
-					refreshControl: refreshControl
-				)
-
-				collectionView.refreshControl = refreshControl
+//				let refreshControl = UIRefreshControl()
+//				bag += client.refetchOnRefresh(
+//					query: GraphQL.KeyGearItemsQuery(),
+//					refreshControl: refreshControl
+//				)
+//
+//				collectionView.refreshControl = refreshControl
 
 			}
 			.onValue { result in

@@ -1,3 +1,5 @@
+#if canImport(Adyen)
+
 import Adyen
 import Flow
 import Foundation
@@ -47,3 +49,5 @@ extension AdyenSuccess: Presentable {
 		)
 	}
 }
+
+#endif

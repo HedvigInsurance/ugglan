@@ -1,3 +1,5 @@
+#if canImport(Adyen)
+
 import Apollo
 import Flow
 import Form
@@ -94,3 +96,5 @@ extension CardDetailsSection: Viewable {
 		return (section, bag)
 	}
 }
+
+#endif

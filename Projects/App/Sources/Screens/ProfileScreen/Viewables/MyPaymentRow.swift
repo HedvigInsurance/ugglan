@@ -28,21 +28,20 @@ extension MyPaymentRow: Viewable {
 			}
 			.bindTo(row.subtitle)
 
-		bag += events.onSelect.onValue {
-			let myPayment = MyPayment(urlScheme: Bundle.main.urlScheme ?? "")
-			self.presentingViewController.present(
-				myPayment,
-				style: .default,
-				options: [.largeTitleDisplayMode(.never)]
-			)
-		}
+        #if canImport(Adyen)
+        
+        bag += events.onSelect.onValue {
+            let myPayment = MyPayment(urlScheme: Bundle.main.urlScheme ?? "")
+            self.presentingViewController.present(
+                myPayment,
+                style: .default,
+                options: [.largeTitleDisplayMode(.never)]
+            )
+        }
+        
+        #endif
+        
 
 		return (row, bag)
-	}
-}
-
-extension MyPaymentRow: Previewable {
-	func preview() -> (MyPayment, PresentationOptions) {
-		return (MyPayment(urlScheme: Bundle.main.urlScheme ?? ""), [.largeTitleDisplayMode(.never)])
 	}
 }

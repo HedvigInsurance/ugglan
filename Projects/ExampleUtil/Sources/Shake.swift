@@ -1,12 +1,18 @@
 import CoreDependencies
 import Form
 import Foundation
-import Shake
 import UIKit
+
+#if canImport(Shake)
+import Shake
+#endif
 
 extension UIApplication {
 	public func setup() {
 		DefaultStyling.installCustom()
-		Shake.setup()
+		
+        #if canImport(Shake)
+        Shake.setup()
+        #endif
 	}
 }

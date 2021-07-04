@@ -24,11 +24,13 @@ public enum ExternalDependencies: CaseIterable {
 
 	public var isDevDependency: Bool { self == .runtime }
 
-	public var isResourceBundledDependency: Bool { self == .mixpanel || self == .adyen }
+	public var isResourceBundledDependency: Bool { self == .mixpanel }
     
-    public var isAppDependency: Bool { self == .firebase || self == .sentry }
+    public var isAppDependency: Bool { self == .sentry }
+    
+    public var isNonMacDependency: Bool { self == .shake || self == .firebase || self == .adyen }
 
-	public var isCoreDependency: Bool { !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency }
+	public var isCoreDependency: Bool { !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency && !isNonMacDependency }
 
 	public func swiftPackages() -> [Package] {
 		switch self {
@@ -153,6 +155,13 @@ extension Project {
 
 		let packages = externalDependencies.map { externalDependency in externalDependency.swiftPackages() }
 			.flatMap { $0 }
+        
+        let isMacCompatible = !externalDependencies.contains { $0.isNonMacDependency }
+        
+        let devices: DeploymentDevice = isMacCompatible ? [.iphone, .ipad, .mac] : [.iphone, .ipad]
+        let supportedPlatforms = isMacCompatible ? "iphonesimulator iphoneos macosx" : "iphonesimulator iphoneos"
+        
+        print(devices)
 
 		return Project(
 			name: name,
@@ -165,13 +174,15 @@ extension Project {
 					platform: .iOS,
 					product: .framework,
 					bundleId: "com.hedvig.\(name)",
-					deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+                    deploymentTarget: .iOS(targetVersion: "12.0", devices: devices),
 					infoPlist: .default,
 					sources: ["Sources/**/*.swift"],
 					resources: [],
 					actions: [],
 					dependencies: dependencies,
-					settings: Settings(base: [:], configurations: frameworkConfigurations)
+					settings: Settings(base: [
+                        "SUPPORTED_PLATFORMS": SettingValue(stringLiteral: supportedPlatforms)
+                    ], configurations: frameworkConfigurations)
 				)
 			],
 			schemes: [

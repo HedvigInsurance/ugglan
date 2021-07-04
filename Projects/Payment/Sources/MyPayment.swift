@@ -1,3 +1,5 @@
+#if canImport(Adyen)
+
 import Adyen
 import AdyenDropIn
 import Apollo
@@ -80,3 +82,5 @@ extension MyPayment: Presentable {
 		return (viewController, bag)
 	}
 }
+
+#endif

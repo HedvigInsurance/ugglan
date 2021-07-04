@@ -8,7 +8,10 @@
 HEADER_SEARCH_PATHS = $(inherited) $(OBJROOT)/UninstalledProducts/include
 
 // Where to find embedded frameworks
-LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
+LD_RUNPATH_SEARCH_PATHS[sdk=macosx*] = $(inherited) @executable_path/../Frameworks @loader_path/../Frameworks
+LD_RUNPATH_SEARCH_PATHS[sdk=iphone*] = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
+
+SUPPORTS_MACCATALYST = YES
 
 // The base SDK to use (if no version is specified, the latest version is
 // assumed)

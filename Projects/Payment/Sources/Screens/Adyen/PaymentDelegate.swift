@@ -1,3 +1,5 @@
+#if canImport(Adyen)
+
 import Adyen
 import AdyenCard
 import Flow
@@ -127,3 +129,5 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
 		stopLoading(withSuccess: false, in: component)
 	}
 }
+
+#endif
