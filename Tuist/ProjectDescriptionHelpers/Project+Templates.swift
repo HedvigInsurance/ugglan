@@ -46,12 +46,22 @@ extension Project {
 		let appConfigurations: [CustomConfiguration] = [
 			.debug(
 				name: "Debug",
-				settings: [String: SettingValue](),
+				settings: [
+                    "PROVISIONING_PROFILE_SPECIFIER[sdk=iphone*]":
+                        "match Development com.hedvig.example.*",
+                    "PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]":
+                        "match Development com.hedvig.example.* catalyst"
+                ],
 				xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 			),
 			.release(
 				name: "Release",
-				settings: [String: SettingValue](),
+				settings: [
+                    "PROVISIONING_PROFILE_SPECIFIER[sdk=iphone*]":
+                        "match AdHoc com.hedvig.example.*",
+                    "PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]":
+                        "match AdHoc com.hedvig.example.* catalyst"
+                ],
 				xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 			),
 		]
@@ -232,11 +242,7 @@ extension Project {
 				.flatMap { $0 },
 				settings: Settings(
 					base: [
-						"PROVISIONING_PROFILE_SPECIFIER[sdk=iphone*]":
-							"match Development com.hedvig.example.*",
-						"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]":
-							"match Development com.hedvig.example.* catalyst",
-						"SUPPORTED_PLATFORMS": "iphonesimulator iphoneos macosx",
+                        "SUPPORTED_PLATFORMS": "iphonesimulator iphoneos macosx",
 					],
 					configurations: appConfigurations
 				)
