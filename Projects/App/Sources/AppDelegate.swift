@@ -16,15 +16,13 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-#if canImport(Adyen)
-	import Adyen
-#endif
-
 #if !targetEnvironment(macCatalyst)
 
 	import Firebase
 	import FirebaseMessaging
 	import Shake
+    import Adyen
+    import NonMacDependencies
 
 #endif
 

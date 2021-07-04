@@ -5,6 +5,10 @@ import Mixpanel
 import hCore
 import hGraphQL
 
+#if canImport(Shake)
+import Shake
+#endif
+
 public struct AnalyticsCoordinator {
 	@Inject private var client: ApolloClient
 
