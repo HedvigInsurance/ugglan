@@ -532,7 +532,7 @@ platform :ios do
             
             app_results.append({
                 url: lane_context[SharedValues::S3_HTML_OUTPUT_PATH],
-                type: "ios",
+                type: "iOS",
                 scheme: scheme
             })
         end
