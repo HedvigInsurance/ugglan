@@ -532,7 +532,7 @@ platform :ios do
             
             app_results.append({
                 url: lane_context[SharedValues::S3_HTML_OUTPUT_PATH],
-                type: "iOS",
+                type: "ios",
                 scheme: scheme
             })
         end
@@ -541,6 +541,7 @@ platform :ios do
             require 'securerandom'
 
             scheme = File.basename(path, ".*")
+            absolute_path = File.expand_path(path)
                 
             aws_s3(
                 access_key: ENV['S3_ACCESS_KEY'],
@@ -548,7 +549,7 @@ platform :ios do
                 bucket: "hedvig-ios-builds",
                 region: "eu-central-1",
                 files: [
-                    path
+                    absolute_path
                 ],
                 app_directory: "#{scheme}_#{SecureRandom.uuid}",
             )
