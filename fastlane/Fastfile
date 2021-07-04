@@ -495,7 +495,7 @@ platform :ios do
             if catalyst_platform == "macos"
                 load_api
                 notarize(
-                    package: lane_context[SharedValues:PKG_OUTPUT_PATH],
+                    package: lane_context[SharedValues::PKG_OUTPUT_PATH],
                     bundle_id: "maccatalyst.#{app_identifier}"
                 )
             end
