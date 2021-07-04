@@ -6,7 +6,7 @@ import hCore
 import hGraphQL
 
 #if canImport(Shake)
-import Shake
+	import Shake
 #endif
 
 public struct AnalyticsCoordinator {

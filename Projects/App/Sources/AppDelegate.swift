@@ -21,8 +21,8 @@ import hGraphQL
 	import Firebase
 	import FirebaseMessaging
 	import Shake
-    import Adyen
-    import NonMacDependencies
+	import Adyen
+	import NonMacDependencies
 
 #endif
 
