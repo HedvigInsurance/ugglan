@@ -13,7 +13,6 @@ struct AdditionalDetailsRequest: Encodable {
 }
 
 class ActionDelegate: NSObject, ActionComponentDelegate {
-	func didComplete(from component: ActionComponent) { #warning("todo") }
 	typealias ResultHandler = (_ result: Flow.Result<Either<Void, AdyenActions.Action>>) -> Void
 
 	@Inject var client: ApolloClient
@@ -68,4 +67,6 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
 			onResult(.failure(error))
 		}
 	}
+    
+    func didComplete(from component: ActionComponent) { }
 }
