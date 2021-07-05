@@ -5,7 +5,7 @@ let project = Project.framework(
 	name: "Payment",
 	targets: Set([.framework, .tests, .example, .testing]),
 	projects: ["hCore", "hCoreUI"],
-	dependencies: ["CoreDependencies", "ResourceBundledDependencies", "NonMacDependencies"],
+	dependencies: ["CoreDependencies", "ResourceBundledDependencies"],
 	sdks: [],
 	includesGraphQL: true
 )
