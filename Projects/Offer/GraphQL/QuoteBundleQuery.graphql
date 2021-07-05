@@ -86,6 +86,7 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
     appConfiguration {
       showCampaignManagement
       title
+      gradientOption
     }
   }
   signMethodForQuotes(input: $ids)

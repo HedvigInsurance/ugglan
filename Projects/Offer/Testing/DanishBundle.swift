@@ -133,7 +133,8 @@ extension GraphQL.QuoteBundleQuery.Data {
 				),
 				appConfiguration: .init(
 					showCampaignManagement: true,
-					title: .logo
+					title: .logo,
+                    gradientOption: .gradientThree
 				)
 			),
 			signMethodForQuotes: GraphQL.SignMethod.simpleSign,

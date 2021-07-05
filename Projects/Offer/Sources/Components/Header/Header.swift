@@ -23,15 +23,43 @@ extension Header: Presentable {
 
 		view.edgeInsets = UIEdgeInsets(top: Self.insetTop, left: 15, bottom: 60, right: 15)
 
+        var gradientView = GradientView(
+            gradientOption: .init(
+                preset: .random,
+                shouldShimmer: false,
+                shouldAnimate: false
+            ),
+            shouldShowGradientSignal: .init(true)
+        )
+        
+        bag += state.dataSignal.map { $0.quoteBundle.appConfiguration.gradientOption }.onValue { gradientOption in
+            switch gradientOption {
+            case .gradientOne:
+                gradientView.gradientOption = .init(
+                    preset: .insuranceOne,
+                    shouldShimmer: false,
+                    shouldAnimate: false
+                )
+            case .gradientTwo:
+                gradientView.gradientOption =
+                    .init(
+                    preset: .insuranceTwo,
+                    shouldShimmer: false,
+                    shouldAnimate: false
+                )
+            case .gradientThree:
+                gradientView.gradientOption = .init(
+                    preset: .insuranceThree,
+                    shouldShimmer: false,
+                    shouldAnimate: false
+                )
+            case .__unknown(_):
+                break
+            }
+        }
+        
 		bag += view.add(
-			GradientView(
-				gradientOption: .init(
-					preset: .insuranceOne,
-					shouldShimmer: false,
-					shouldAnimate: false
-				),
-				shouldShowGradientSignal: .init(true)
-			)
+            gradientView
 		) { headerBackgroundView in
 			headerBackgroundView.layer.masksToBounds = true
 			headerBackgroundView.layer.zPosition = -1

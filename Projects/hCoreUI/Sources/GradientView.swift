@@ -4,36 +4,31 @@ import hCore
 
 public struct GradientView {
 	public init(
-		gradientOption: GradientOption,
+		gradientOption: GradientOption?,
 		shouldShowGradientSignal: ReadWriteSignal<Bool>
 	) {
 		self.gradientOption = gradientOption
 		_shouldShowGradient = .init(wrappedValue: shouldShowGradientSignal)
 	}
 
-	public let gradientOption: GradientOption
-
+    @ReadWriteState public var gradientOption: GradientOption?
 	@ReadWriteState public var shouldShowGradient = false
 }
 
 extension GradientView: Viewable {
-	public func gradientLayer() -> CAGradientLayer {
-		let layer = CAGradientLayer()
-		layer.locations = gradientOption.locations
-		layer.startPoint = gradientOption.startPoint
-		layer.endPoint = gradientOption.endPoint
-		layer.transform = gradientOption.transform
-		layer.masksToBounds = true
-		return layer
-	}
-
-	func applyColors(_ layer: CAGradientLayer, _ traitCollection: UITraitCollection) {
-		layer.colors = gradientOption.backgroundColors(traitCollection: traitCollection).map { $0.cgColor }
+	func applySettings(_ layer: CAGradientLayer, _ traitCollection: UITraitCollection) {
+        if let gradientOption = gradientOption {
+            layer.locations = gradientOption.locations
+            layer.startPoint = gradientOption.startPoint
+            layer.endPoint = gradientOption.endPoint
+            layer.transform = gradientOption.transform
+            layer.colors = gradientOption.backgroundColors(traitCollection: traitCollection).map { $0.cgColor }
+        }
 	}
 
 	var shimmerLayer: CAGradientLayer {
 		let layer = CAGradientLayer()
-		layer.isHidden = !self.gradientOption.shouldShimmer
+		layer.isHidden = !(self.gradientOption?.shouldShimmer ?? false)
 		layer.colors = [
 			UIColor(red: 1, green: 1, blue: 1, alpha: 0).cgColor,
 			UIColor(red: 1, green: 1, blue: 1, alpha: 0.5).cgColor,
@@ -76,11 +71,11 @@ extension GradientView: Viewable {
 			make.width.equalTo(100)
 		}
 
-		let layer = gradientLayer()
+        let layer = CAGradientLayer()
+        layer.masksToBounds = true
 		gradientView.layer.addSublayer(layer)
 
 		bag += gradientView.didLayoutSignal.onValue { _ in
-
 			CATransaction.begin()
 			if let animation = gradientView.layer.animation(forKey: "position") {
 				CATransaction.setAnimationDuration(animation.duration)
@@ -92,20 +87,20 @@ extension GradientView: Viewable {
 			layer.frame = gradientView.layer.frame
 			layer.position = gradientView.layer.position
 			CATransaction.commit()
-
 		}
 
 		bag += combineLatest(
 			$shouldShowGradient.atOnce(),
-			gradientView.traitCollectionSignal.atOnce()
+			gradientView.traitCollectionSignal.atOnce(),
+            $gradientOption.atOnce()
 		)
-		.onValueDisposePrevious { (shouldShow, traitCollection) -> Disposable? in
+		.onValueDisposePrevious { (shouldShow, traitCollection, _) -> Disposable? in
 			let innerBag = DisposeBag()
 
 			let animatedLayer = self.shimmerLayer
-			applyColors(layer, traitCollection)
+			applySettings(layer, traitCollection)
 
-			if shouldShow {
+			if shouldShow, let gradientOption = gradientOption {
 				shimmerView.layer.addSublayer(animatedLayer)
 
 				let orbLayer = gradientOption.orbLayer(traitCollection: traitCollection)
