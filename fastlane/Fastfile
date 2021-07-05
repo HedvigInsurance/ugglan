@@ -136,6 +136,12 @@ platform :ios do
         app_identifier: "com.hedvig.example.*",
         force: true
       )
+
+      match(
+        type: "developer_id",
+        platform: "catalyst",
+        app_identifier: "com.hedvig.test.app",
+      )
     end
 
     lane :upload_dsyms do
@@ -444,31 +450,6 @@ platform :ios do
             sh("cd ../; scripts/patch-platform-filter.sh")
         end
         
-        match(
-            type: catalyst_platform == "macos" ? "appstore" : "adhoc",
-            app_identifier: app_identifier,
-            platform: catalyst_platform == "macos" ? "catalyst" : nil,
-            readonly: is_ci,
-            git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil,
-            keychain_name: is_ci ? 'CI' : nil,
-            keychain_password: is_ci ? ENV["MATCH_PASSWORD"] : nil,
-            additional_cert_types: catalyst_platform == "macos" ? ["mac_installer_distribution"] : nil
-        )
-
-        if is_ci
-            sh("security list-keychains -d user")
-            sh("security default-keychain -d user")
-            sh("security find-identity -v -p codesigning CI")
-        end
-        
-        update_project_provisioning(
-            xcodeproj: project_path,
-            profile: catalyst_platform == "macos" ? ENV["sigh_#{app_identifier}_appstore_catalyst_profile-path"] : ENV["sigh_#{app_identifier}_adhoc_profile-path"],
-            certificate: is_ci ? "AppleIncRootCertificate.cer" : nil,
-            target_filter: scheme,
-            build_configuration: "Release"
-        )
-
         if catalyst_platform == "macos"
             match(
                 type: "developer_id",
@@ -479,7 +460,30 @@ platform :ios do
                 keychain_name: is_ci ? 'CI' : nil,
                 keychain_password: is_ci ? ENV["MATCH_PASSWORD"] : nil
             )
+        else
+            match(
+                type: "adhoc",
+                app_identifier: app_identifier,
+                readonly: is_ci,
+                git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil,
+                keychain_name: is_ci ? 'CI' : nil,
+                keychain_password: is_ci ? ENV["MATCH_PASSWORD"] : nil,
+            )
         end
+
+        if is_ci
+            sh("security list-keychains -d user")
+            sh("security default-keychain -d user")
+            sh("security find-identity -v -p codesigning CI")
+        end
+        
+        update_project_provisioning(
+            xcodeproj: project_path,
+            profile: catalyst_platform == "macos" ? ENV["sigh_#{app_identifier}_developer_id_catalyst_profile-path"] : ENV["sigh_#{app_identifier}_adhoc_profile-path"],
+            certificate: is_ci ? "AppleIncRootCertificate.cer" : nil,
+            target_filter: scheme,
+            build_configuration: "Release"
+        )
 
         begin
             build_app(
@@ -498,7 +502,7 @@ platform :ios do
                 export_options: {
                     compileBitcode: false,
                     iCloudContainerEnvironment: "Production",
-                    method: "developer-id",
+                    method: catalyst_platform == "macos" ? "developer-id" : "ad-hoc",
                     provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
                     thinning: "<none>"
                 }
