@@ -469,6 +469,18 @@ platform :ios do
             build_configuration: "Release"
         )
 
+        if catalyst_platform == "macos"
+            match(
+                type: "developer_id",
+                platform: "macos",
+                app_identifier: app_identifier,
+                readonly: is_ci,
+                git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil,
+                keychain_name: is_ci ? 'CI' : nil,
+                keychain_password: is_ci ? ENV["MATCH_PASSWORD"] : nil
+            )
+        end
+
         begin
             build_app(
                 workspace: "Ugglan.xcworkspace",
@@ -486,7 +498,7 @@ platform :ios do
                 export_options: {
                     compileBitcode: false,
                     iCloudContainerEnvironment: "Production",
-                    method: catalyst_platform == "macos" ? "app-store" : "ad-hoc",
+                    method: "developer-id",
                     provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
                     thinning: "<none>"
                 }
@@ -494,11 +506,10 @@ platform :ios do
 
             if catalyst_platform == "macos"
                 load_api
-                #notarize(
-                #    verbose: true,
-                #    package: "fastlane/build_output/#{scheme}.app",
-                #    api_key_path: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
-                #)
+                notarize(
+                    package: "fastlane/build_output/#{scheme}.app",
+                    api_key_path: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+                )
             end
 
             handle_compile_errors
