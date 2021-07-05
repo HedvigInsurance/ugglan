@@ -543,7 +543,7 @@ platform :ios do
             scheme = File.basename(path, ".*")
             absolute_path = File.expand_path(path)
 
-            sh("zip -rj #{absolute_path}.zip #{absolute_path}")
+            sh("zip -9 -y -r -q #{absolute_path}.zip #{absolute_path}")
                 
             aws_s3(
                 access_key: ENV['S3_ACCESS_KEY'],
