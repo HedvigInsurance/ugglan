@@ -6,6 +6,6 @@ fragment DetailsTableFragment on Table {
         title
         subtitle
         value
-        }
+      }
     }
 }
