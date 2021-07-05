@@ -70,6 +70,9 @@ class OfferState {
 		self.ids = ids
 	}
 
+	private var bag = DisposeBag()
+	@ReadWriteState var hasSignedQuotes = false
+
 	lazy var isLoadingSignal: ReadSignal<Bool> = {
 		return client.fetch(query: query).valueSignal.plain().map { _ in false }.delay(by: 0.5)
 			.readable(initial: true)
@@ -197,9 +200,16 @@ class OfferState {
 	func signQuotes() -> Future<SignEvent> {
 		let subscription = signStatusSubscription
 
+		bag += subscription.map { $0.signStatus?.status?.signState == .completed }.filter(predicate: { $0 })
+			.distinct()
+			.onValue({ _ in
+				self.$hasSignedQuotes.value = true
+			})
+
 		return client.perform(mutation: GraphQL.SignQuotesMutation(ids: ids))
 			.map { data in
 				if data.signQuotes.asAlreadyCompleted != nil {
+					self.$hasSignedQuotes.value = true
 					return SignEvent.done
 				} else if data.signQuotes.asFailedToStartSign != nil {
 					return SignEvent.failed
@@ -218,7 +228,7 @@ class OfferState {
 }
 
 extension Offer: Presentable {
-	public func materialize() -> (UIViewController, Disposable) {
+	public func materialize() -> (UIViewController, Future<Void>) {
 		let viewController = UIViewController()
 		ApplicationState.preserveState(.offer)
 
@@ -333,6 +343,26 @@ extension Offer: Presentable {
 				}
 			}
 
-		return (viewController, bag)
+		bag += state.$hasSignedQuotes.filter(predicate: { $0 }).flatMapLatest { _ in state.dataSignal }
+			.onValue { data in
+				Analytics.track(
+					"QUOTES_SIGNED",
+					properties: [
+						"quoteIds": data.quoteBundle.quotes.map { $0.id }
+					]
+				)
+			}
+
+		return (
+			viewController,
+			Future { completion in
+				bag += state.$hasSignedQuotes.filter(predicate: { $0 })
+					.onValue({ _ in
+						completion(.success)
+					})
+
+				return DelayedDisposer(bag, delay: 2)
+			}
+		)
 	}
 }
