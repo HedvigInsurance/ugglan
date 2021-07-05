@@ -29,3 +29,5 @@ CODE_SIGN_STYLE = Manual
 SWIFT_TREAT_WARNINGS_AS_ERRORS = NO
 
 OTHER_LDFLAGS = -ObjC
+
+OTHER_CODE_SIGN_FLAGS[sdk=macosx*] = $(inherited) --deep
