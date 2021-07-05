@@ -57,6 +57,9 @@ extension DiscountSheet: Presentable {
 		bag += loadableSubmitButton.isLoadingSignal.map { !$0 }.bindTo(textField.enabledSignal)
 		bag += form.append(loadableSubmitButton)
 
+		submitButton.isEnabled.value = false
+		bag += textField.value.map { $0 != "" }.bindTo(submitButton.isEnabled)
+
 		let shouldSubmitCallbacker = Callbacker<Void>()
 		bag += loadableSubmitButton.onTapSignal.onValue { _ in shouldSubmitCallbacker.callAll() }
 

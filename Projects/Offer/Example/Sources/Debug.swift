@@ -218,9 +218,23 @@ extension Debug {
 						.init(
 							code: "axel",
 							incentive: .makeFreeMonths(quantity: 3),
-							displayValue: "3 free months!!!"
+							displayValue: "3 free months"
 						)
 					]
+				)
+			)
+
+			return mockData
+		}
+
+		MutationMock(GraphQL.RemoveDiscountMutation.self, duration: 2) { _ in
+			let mockData = GraphQL.RemoveDiscountMutation.Data(
+				removeDiscountCode: .init(
+					cost: .init(
+						monthlyDiscount: .init(amount: "0", currency: "SEK"),
+						monthlyGross: .init(amount: "110", currency: "SEK"),
+						monthlyNet: .init(amount: "110", currency: "SEK")
+					)
 				)
 			)
 
