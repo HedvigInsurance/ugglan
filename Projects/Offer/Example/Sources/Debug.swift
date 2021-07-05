@@ -52,6 +52,8 @@ extension Debug: Presentable {
 
 		bag += section.appendRow(title: "Swedish apartment")
 			.onValue {
+				Localization.Locale.currentLocale = .en_SE
+
 				presentOffer {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { _ in
 						.makeSwedishApartment()
@@ -61,6 +63,8 @@ extension Debug: Presentable {
 
 		bag += section.appendRow(title: "Swedish house")
 			.onValue {
+				Localization.Locale.currentLocale = .en_SE
+
 				presentOffer {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { _ in
 						.makeSwedishHouse(
@@ -81,6 +85,8 @@ extension Debug: Presentable {
 
 		bag += section.appendRow(title: "Swedish house - discounted")
 			.onValue {
+				Localization.Locale.currentLocale = .en_SE
+
 				presentOffer {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeSwedishHouse(
@@ -98,6 +104,8 @@ extension Debug: Presentable {
 
 		bag += section.appendRow(title: "Swedish house - discounted indefinite")
 			.onValue {
+				Localization.Locale.currentLocale = .en_SE
+
 				presentOffer {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeSwedishHouse(
@@ -115,6 +123,8 @@ extension Debug: Presentable {
 
 		bag += section.appendRow(title: "Swedish house - discounted free months")
 			.onValue {
+				Localization.Locale.currentLocale = .en_SE
+
 				presentOffer {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeSwedishHouse(
@@ -132,6 +142,8 @@ extension Debug: Presentable {
 
 		bag += section.appendRow(title: "Swedish house - discounted percentage for months")
 			.onValue {
+				Localization.Locale.currentLocale = .en_SE
+
 				presentOffer {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeSwedishHouse(
@@ -151,6 +163,8 @@ extension Debug: Presentable {
 
 		bag += section.appendRow(title: "Norwegian bundle")
 			.onValue {
+				Localization.Locale.currentLocale = .en_NO
+
 				presentOffer {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeNorwegianBundle()
@@ -160,6 +174,8 @@ extension Debug: Presentable {
 
 		bag += section.appendRow(title: "Danish bundle")
 			.onValue {
+				Localization.Locale.currentLocale = .en_DK
+
 				presentOffer {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { variables in
 						.makeDanishBundle()
@@ -173,6 +189,8 @@ extension Debug: Presentable {
 
 		bag += section.appendRow(title: "Swedish apartment - moving flow")
 			.onValue {
+				Localization.Locale.currentLocale = .en_SE
+
 				presentOffer {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { _ in
 						.makeSwedishApartmentMovingFlow()
