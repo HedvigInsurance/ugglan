@@ -1,4 +1,5 @@
 import Adyen
+import AdyenActions
 import Apollo
 import CoreDependencies
 import Disk
@@ -12,13 +13,17 @@ import Mixpanel
 import Payment
 import Presentation
 import Sentry
-import Shake
 import SwiftUI
 import UIKit
 import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
+
+#if !targetEnvironment(macCatalyst)
+	import Shake
+	import NonMacDependencies
+#endif
 
 let log = Logger.self
 
@@ -113,7 +118,6 @@ let log = Logger.self
 
 	func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
 		let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
-
 		if adyenRedirect { return adyenRedirect }
 
 		return false
@@ -147,9 +151,11 @@ let log = Logger.self
 			options.enableAutoSessionTracking = true
 		}
 
-		if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
-			Shake.setup()
-		}
+		#if canImport(Shake)
+			if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
+				Shake.setup()
+			}
+		#endif
 
 		if let mixpanelToken = mixpanelToken { Mixpanel.initialize(token: mixpanelToken) }
 

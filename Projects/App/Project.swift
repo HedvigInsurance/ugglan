@@ -7,15 +7,26 @@ let sdkFrameworks: [TargetDependency] = [
 	.sdk(name: "SceneKit.framework"), .sdk(name: "AdSupport.framework"),
 ]
 
+let supportedPlatforms = SettingValue("iphonesimulator iphoneos macosx")
+
 let ugglanConfigurations: [CustomConfiguration] = [
 	.debug(
 		name: "Debug",
-		settings: ["PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.test.app"],
+		settings: [
+			"PROVISIONING_PROFILE_SPECIFIER[sdk=iphone*]": "match Development com.hedvig.test.app",
+			"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]": "match Development com.hedvig.test.app catalyst",
+			"SUPPORTED_PLATFORMS": supportedPlatforms, "IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]": "14.2",
+			"TARGETED_DEVICE_FAMILY": "1,2,6",
+		],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 	),
 	.release(
 		name: "Release",
-		settings: [:],
+		settings: [
+			"CODE_SIGN_IDENTITY[sdk=macosx*]": "Developer ID Application: Hedvig AB (AW656G5PFM)",
+			"SUPPORTED_PLATFORMS": supportedPlatforms, "IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]": "14.2",
+			"TARGETED_DEVICE_FAMILY": "1,2,6",
+		],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 	),
 ]
@@ -23,12 +34,16 @@ let ugglanConfigurations: [CustomConfiguration] = [
 let hedvigConfigurations: [CustomConfiguration] = [
 	.debug(
 		name: "Debug",
-		settings: ["PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.app"],
+		settings: [
+			"PROVISIONING_PROFILE_SPECIFIER[sdk=iphone*]": "match Development com.hedvig.app",
+			"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]": "match Development com.hedvig.app catalyst",
+			"SUPPORTED_PLATFORMS": supportedPlatforms,
+		],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 	),
 	.release(
 		name: "Release",
-		settings: [:],
+		settings: ["SUPPORTED_PLATFORMS": supportedPlatforms],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 	),
 ]
@@ -36,12 +51,18 @@ let hedvigConfigurations: [CustomConfiguration] = [
 let testsConfigurations: [CustomConfiguration] = [
 	.debug(
 		name: "Debug",
-		settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"],
+		settings: [
+			"SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING",
+			"SUPPORTED_PLATFORMS": supportedPlatforms,
+		],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
 	),
 	.release(
 		name: "Release",
-		settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING"],
+		settings: [
+			"SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING",
+			"SUPPORTED_PLATFORMS": supportedPlatforms,
+		],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
 	),
 ]
@@ -57,7 +78,8 @@ let appDependencies: [TargetDependency] = [
 		.project(target: "Market", path: .relativeToRoot("Projects/Market")),
 		.project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
 		.project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
-        .project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
+		.project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
+		.project(target: "NonMacDependencies", path: .relativeToRoot("Dependencies/NonMacDependencies")),
 		.project(
 			target: "ResourceBundledDependencies",
 			path: .relativeToRoot("Dependencies/ResourceBundledDependencies")

@@ -71,6 +71,7 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+fastlane/build_output
 scan_derived_data
 gym_derived_data
 

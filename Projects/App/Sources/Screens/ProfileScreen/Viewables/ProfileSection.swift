@@ -43,12 +43,7 @@ extension ProfileSection: Viewable {
 		bag += dataSignal.atOnce().map { $0?.cashback?.name }.bindTo(myCharityRow.charityNameSignal)
 
 		let myPaymentRow = MyPaymentRow(presentingViewController: presentingViewController)
-		bag += section.append(myPaymentRow) { row in
-			bag += self.presentingViewController.registerForPreviewing(
-				sourceView: row.viewRepresentation,
-				previewable: myPaymentRow
-			)
-		}
+		bag += section.append(myPaymentRow)
 
 		bag += dataSignal.atOnce().map { $0?.insuranceCost?.fragments.costFragment.monthlyNet.amount }.debug()
 			.toInt().bindTo(myPaymentRow.monthlyCostSignal)

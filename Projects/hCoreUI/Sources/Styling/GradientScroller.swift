@@ -90,7 +90,7 @@ extension GradientScroller {
 	}
 
 	func addGradient(into bag: DisposeBag) {
-		guard bag.isEmpty, !UITraitCollection.isCatalyst else { return }
+		guard bag.isEmpty else { return }
 
 		let gradientLayer = makeGradientLayer(into: bag)
 		let navigationBarColorView = ContextGradient.makeColorView(into: bag, for: .navigationBar)

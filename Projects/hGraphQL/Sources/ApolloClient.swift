@@ -1,5 +1,6 @@
 import Apollo
 import ApolloWebSocket
+import CoreDependencies
 import Disk
 import Flow
 import Foundation

@@ -77,24 +77,27 @@ extension ApolloClient {
 	public func watch<Query: GraphQLQuery>(
 		query: Query,
 		cachePolicy: CachePolicy = .returnCacheDataElseFetch,
-		queue _: DispatchQueue = DispatchQueue.main,
+		_ queue: DispatchQueue = DispatchQueue.main,
 		onError: @escaping (_ error: Error) -> Void = { _ in }
 	) -> Signal<Query.Data> {
 		Signal { callbacker in let bag = DisposeBag()
-
-			let watcher = self.watch(query: query, cachePolicy: cachePolicy) { result in
-				switch result {
-				case let .success(result):
-					if let data = result.data {
-						callbacker(data)
-					} else if let errors = result.errors {
-						onError(GraphQLError(errors: errors))
-					} else {
-						fatalError("Invalid GraphQL state")
+			let watcher = self.watch(
+				query: query,
+				cachePolicy: cachePolicy,
+				resultHandler: { result in
+					switch result {
+					case let .success(result):
+						if let data = result.data {
+							callbacker(data)
+						} else if let errors = result.errors {
+							onError(GraphQLError(errors: errors))
+						} else {
+							fatalError("Invalid GraphQL state")
+						}
+					case let .failure(error): onError(error)
 					}
-				case let .failure(error): onError(error)
 				}
-			}
+			)
 
 			return Disposer {
 				watcher.cancel()

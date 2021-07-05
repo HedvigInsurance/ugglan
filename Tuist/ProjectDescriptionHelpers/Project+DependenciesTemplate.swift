@@ -24,15 +24,18 @@ public enum ExternalDependencies: CaseIterable {
 
 	public var isDevDependency: Bool { self == .runtime }
 
-	public var isResourceBundledDependency: Bool { self == .mixpanel || self == .adyen }
-    
-    public var isAppDependency: Bool { self == .firebase || self == .sentry }
+	public var isResourceBundledDependency: Bool { self == .mixpanel }
+	public var isAppDependency: Bool { self == .sentry }
+	public var isNonMacDependency: Bool { self == .shake }
 
-	public var isCoreDependency: Bool { !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency }
+	public var isCoreDependency: Bool {
+		!isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
+			&& !isNonMacDependency
+	}
 
 	public func swiftPackages() -> [Package] {
 		switch self {
-		case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .upToNextMajor(from: "3.8.4"))]
+		case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .upToNextMajor(from: "4.0.0"))]
 		case .runtime:
 			return [.package(url: "https://github.com/wickwirew/Runtime", .upToNextMajor(from: "2.2.2"))]
 		case .firebase:
@@ -92,9 +95,10 @@ public enum ExternalDependencies: CaseIterable {
 		case .adyen:
 			return [
 				.package(product: "Adyen"), .package(product: "AdyenCard"),
-				.package(product: "AdyenDropIn"),
+				.package(product: "AdyenDropIn"), .package(product: "AdyenComponents"),
+				.package(product: "AdyenActions"),
 			]
-		case .firebase: return [.package(product: "FirebaseAnalytics"), .package(product: "FirebaseMessaging")]
+		case .firebase: return [.package(product: "FirebaseMessaging")]
 		case .kingfisher: return [.package(product: "Kingfisher")]
 		case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
 		case .flow: return [.package(product: "Flow")]
@@ -149,10 +153,16 @@ extension Project {
 		let dependencies: [TargetDependency] = [
 			externalDependencies.map { externalDependency in externalDependency.targetDependencies() }
 				.flatMap { $0 }, sdks.map { sdk in .sdk(name: sdk) },
-		].flatMap { $0 }
+		]
+		.flatMap { $0 }
 
 		let packages = externalDependencies.map { externalDependency in externalDependency.swiftPackages() }
 			.flatMap { $0 }
+		let isMacCompatible = !externalDependencies.contains { $0.isNonMacDependency }
+		let devices: DeploymentDevice = isMacCompatible ? [.iphone, .ipad, .mac] : [.iphone, .ipad]
+		let supportedPlatforms =
+			isMacCompatible ? "iphonesimulator iphoneos macosx" : "iphonesimulator iphoneos"
+		print(devices)
 
 		return Project(
 			name: name,
@@ -165,13 +175,20 @@ extension Project {
 					platform: .iOS,
 					product: .framework,
 					bundleId: "com.hedvig.\(name)",
-					deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+					deploymentTarget: .iOS(targetVersion: "12.0", devices: devices),
 					infoPlist: .default,
 					sources: ["Sources/**/*.swift"],
 					resources: [],
 					actions: [],
 					dependencies: dependencies,
-					settings: Settings(base: [:], configurations: frameworkConfigurations)
+					settings: Settings(
+						base: [
+							"SUPPORTED_PLATFORMS": SettingValue(
+								stringLiteral: supportedPlatforms
+							)
+						],
+						configurations: frameworkConfigurations
+					)
 				)
 			],
 			schemes: [
