@@ -25,7 +25,9 @@ struct SingleStartDateSection {
 
 extension SingleStartDateSection: Presentable {
 	func materialize() -> (SectionView, ReadWriteSignal<Date?>) {
-		let dateSignal = ReadWriteSignal<Date?>(initialStartDate)
+		let dateSignal = ReadWriteSignal<Date?>(
+			switchingActivated ? initialStartDate : (initialStartDate ?? Date())
+		)
 		let latestTwoDatesSignal = dateSignal.latestTwo()
 			.readable(initial: (initialStartDate, initialStartDate))
 
