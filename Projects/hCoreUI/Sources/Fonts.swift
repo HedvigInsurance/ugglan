@@ -1,10 +1,11 @@
 import Foundation
 import UIKit
+import SwiftUI
 
 class FontBundleToken {}
 
 public enum Fonts {
-	private static let favoritStdBookFontName = "FavoritStd-Book"
+	fileprivate static let favoritStdBookFontName = "FavoritStd-Book"
 
 	public static var favoritStdBook: UIFont = {
 		let fontPath = Bundle(for: FontBundleToken.self).path(forResource: "FavoritStd-Book", ofType: "otf")
@@ -32,4 +33,9 @@ public enum Fonts {
 
 		return UIFont(descriptor: fontDescriptor, size: size)
 	}
+    
+    @available(iOS 13, *)
+    public static var font: Font {
+        Font(favoritStdBook)
+    }
 }
