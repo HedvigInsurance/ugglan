@@ -472,7 +472,7 @@ platform :ios do
         if catalyst_platform == "macos"
             match(
                 type: "developer_id",
-                platform: "macos",
+                platform: "catalyst",
                 app_identifier: app_identifier,
                 readonly: is_ci,
                 git_url: is_ci ? "https://hedvig-app-bot:#{ENV['MATCH_GITHUB_TOKEN']}@github.com/HedvigInsurance/ugglan-certificates.git" : nil,
