@@ -512,7 +512,6 @@ platform :ios do
             )
 
             if catalyst_platform == "macos"
-                sh("chmod -R 755 build_output/#{scheme}.app")
                 notarize(
                     package: "fastlane/build_output/#{scheme}.app"
                 )
@@ -554,13 +553,11 @@ platform :ios do
             })
         end
 
-        Dir.glob("build_output/*.app") do |path|
+        Dir.glob("build_output/*.zip") do |path|
             require 'securerandom'
 
             scheme = File.basename(path, ".*")
             absolute_path = File.expand_path(path)
-
-            sh("zip -9 -y -r -q #{absolute_path}.zip #{absolute_path}")
                 
             aws_s3(
                 access_key: ENV['S3_ACCESS_KEY'],
@@ -568,7 +565,7 @@ platform :ios do
                 bucket: "hedvig-ios-builds",
                 region: "eu-central-1",
                 files: [
-                    absolute_path + ".zip"
+                    absolute_path
                 ],
                 app_directory: "#{scheme}_#{SecureRandom.uuid}",
             )
