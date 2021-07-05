@@ -22,7 +22,7 @@ fragment UpcomingAgreementFragment on Contract {
     }
   }
   upcomingAgreementDetailsTable(locale: $locale) {
-    ... DetailsTableFragment
+    ...DetailsTableFragment
   }
 }
 fragment UpcomingAgreementChangeFragment on UpcomingAgreementChange {
