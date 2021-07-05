@@ -73,7 +73,7 @@ class OfferState {
 	private var bag = DisposeBag()
 	@ReadWriteState var hasSignedQuotes = false
 
-    lazy var isLoadingSignal: ReadSignal<Bool> = {
+	lazy var isLoadingSignal: ReadSignal<Bool> = {
 		return client.fetch(query: query).valueSignal.plain().map { _ in false }.delay(by: 0.5)
 			.readable(initial: true)
 	}()
