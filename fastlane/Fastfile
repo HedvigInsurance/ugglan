@@ -603,7 +603,7 @@ platform :ios do
                     "type": "button",
                     "text": {
                         "type": "plain_text",
-                        "text": app_result[:scheme]
+                        "text": "#{app_result[:scheme]} #{app_result[:type]}"
                     },
                     "url": app_result[:url],
                     "value": "#{app_result[:scheme]} #{app_result[:type]}"
