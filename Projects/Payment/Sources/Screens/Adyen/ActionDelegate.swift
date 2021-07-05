@@ -67,6 +67,5 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
 			onResult(.failure(error))
 		}
 	}
-    
-    func didComplete(from component: ActionComponent) { }
+	func didComplete(from component: ActionComponent) {}
 }
