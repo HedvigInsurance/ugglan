@@ -1,10 +1,7 @@
+import Adyen
+import Foundation
 
-
-	import Adyen
-	import Foundation
-
-	struct AdyenOptions {
-		let paymentMethods: PaymentMethods
-		let clientEncrytionKey: String
-	}
-
+struct AdyenOptions {
+	let paymentMethods: PaymentMethods
+	let clientEncrytionKey: String
+}

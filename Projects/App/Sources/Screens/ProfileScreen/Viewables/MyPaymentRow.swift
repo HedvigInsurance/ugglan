@@ -28,15 +28,14 @@ extension MyPaymentRow: Viewable {
 			}
 			.bindTo(row.subtitle)
 
-		
-			bag += events.onSelect.onValue {
-				let myPayment = MyPayment(urlScheme: Bundle.main.urlScheme ?? "")
-				self.presentingViewController.present(
-					myPayment,
-					style: .default,
-					options: [.largeTitleDisplayMode(.never)]
-				)
-			}
+		bag += events.onSelect.onValue {
+			let myPayment = MyPayment(urlScheme: Bundle.main.urlScheme ?? "")
+			self.presentingViewController.present(
+				myPayment,
+				style: .default,
+				options: [.largeTitleDisplayMode(.never)]
+			)
+		}
 
 		return (row, bag)
 	}
