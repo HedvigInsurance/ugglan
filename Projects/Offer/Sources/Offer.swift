@@ -209,7 +209,10 @@ class OfferState {
 		return client.perform(mutation: GraphQL.SignQuotesMutation(ids: ids))
 			.map { data in
 				if data.signQuotes.asAlreadyCompleted != nil {
-					self.$hasSignedQuotes.value = true
+                    Future().delay(by: 1).onValue { _ in
+                        self.$hasSignedQuotes.value = true
+                    }
+                    
 					return SignEvent.done
 				} else if data.signQuotes.asFailedToStartSign != nil {
 					return SignEvent.failed

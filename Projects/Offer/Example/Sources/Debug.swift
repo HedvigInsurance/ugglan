@@ -195,6 +195,10 @@ extension Debug: Presentable {
 					QueryMock(GraphQL.QuoteBundleQuery.self) { _ in
 						.makeSwedishApartmentMovingFlow()
 					}
+                    
+                    MutationMock(GraphQL.SignQuotesMutation.self) { operation in
+                        .init(signQuotes: .makeAlreadyCompleted())
+                    }
 				}
 			}
 
