@@ -32,31 +32,15 @@ fragment InceptionFragment on QuoteBundleInception {
 query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
   quoteBundle(input: { ids: $ids }) {
     quotes {
-        ... on BundledQuote {
-            id
-            currentInsurer {
-                id
-                displayName
-                switchable
-            }
-            firstName
-            lastName
-            displayName(locale: $locale)
-            detailsTable(locale: $locale) {
-                ... DetailsTableFragment
-            }
-            perils(locale: $locale) {
-                ...PerilFragment
-            }
-            insurableLimits(locale: $locale) {
-                ...InsurableLimitFragment
-            }
-            insuranceTerms(locale: $locale) {
-                displayName
-                url
-                type
-            }
-          }
+      ... on BundledQuote {
+        id
+        firstName
+        lastName
+        ssn
+        email
+        displayName(locale: $locale)
+        detailsTable(locale: $locale) {
+          ... DetailsTableFragment
         }
         perils(locale: $locale) {
           ...PerilFragment
