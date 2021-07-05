@@ -512,7 +512,6 @@ platform :ios do
             )
 
             if catalyst_platform == "macos"
-                load_api
                 notarize(
                     package: "fastlane/build_output/#{scheme}.app"
                 )
