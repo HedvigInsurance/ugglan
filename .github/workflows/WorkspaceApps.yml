@@ -53,6 +53,11 @@ jobs:
       with:
         name: Ugglan.app
         path: fastlane/build_output/Ugglan.app
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: Ugglan.zip
+        path: fastlane/build_output/Ugglan.zip
   build_embark:
     runs-on: self-hosted
     steps:
