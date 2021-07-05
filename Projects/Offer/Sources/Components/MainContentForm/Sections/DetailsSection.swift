@@ -21,7 +21,7 @@ extension DetailsSection: Presentable {
 				.map { (offset, quote) -> DisposeBag in
 					let innerBag = DisposeBag()
 
-                    innerBag += section.append(quote.detailsTable.fragments.detailsTableFragment)
+					innerBag += section.append(quote.detailsTable.fragments.detailsTableFragment)
 					return innerBag
 				}
 				.disposable
