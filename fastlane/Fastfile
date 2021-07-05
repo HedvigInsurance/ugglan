@@ -485,6 +485,8 @@ platform :ios do
             build_configuration: "Release"
         )
 
+        export_method = catalyst_platform == "macos" ? "developer-id" : "ad-hoc"
+
         begin
             build_app(
                 workspace: "Ugglan.xcworkspace",
@@ -499,10 +501,11 @@ platform :ios do
                 xcpretty_formatter: ENV["GEM_HOME"] + "/gems/xcpretty-json-formatter-0.1.1/lib/json_formatter.rb",
                 derived_data_path: is_ci ? "../../../DerivedData" : nil,
                 archive_path: is_ci ? "build" : nil,
+                export_method: export_method,
                 export_options: {
                     compileBitcode: false,
                     iCloudContainerEnvironment: "Production",
-                    method: catalyst_platform == "macos" ? "developer-id" : "ad-hoc",
+                    method: export_method,
                     provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'],
                     thinning: "<none>"
                 }
