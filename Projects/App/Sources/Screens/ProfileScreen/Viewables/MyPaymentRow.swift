@@ -28,7 +28,7 @@ extension MyPaymentRow: Viewable {
 			}
 			.bindTo(row.subtitle)
 
-		#if canImport(Adyen)
+		
 			bag += events.onSelect.onValue {
 				let myPayment = MyPayment(urlScheme: Bundle.main.urlScheme ?? "")
 				self.presentingViewController.present(
@@ -37,7 +37,6 @@ extension MyPaymentRow: Viewable {
 					options: [.largeTitleDisplayMode(.never)]
 				)
 			}
-		#endif
 
 		return (row, bag)
 	}

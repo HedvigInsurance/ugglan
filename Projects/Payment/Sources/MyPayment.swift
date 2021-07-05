@@ -1,4 +1,4 @@
-#if canImport(Adyen)
+
 
 	import Adyen
 	import AdyenDropIn
@@ -82,5 +82,3 @@
 			return (viewController, bag)
 		}
 	}
-
-#endif

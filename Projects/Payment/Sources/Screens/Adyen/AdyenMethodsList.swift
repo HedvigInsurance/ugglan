@@ -1,7 +1,10 @@
-#if canImport(Adyen)
+
 
 	import Adyen
 	import AdyenCard
+    import AdyenComponents
+import Adyen3DS2
+import AdyenActions
 	import Apollo
 	import Flow
 	import Form
@@ -16,7 +19,7 @@
 	struct AdyenMethodsList {
 		typealias DidSubmit = (
 			_ data: PaymentComponentData, _ component: PaymentComponent,
-			_ onResult: @escaping (_ result: Flow.Result<Either<Void, Adyen.Action>>) -> Void
+			_ onResult: @escaping (_ result: Flow.Result<Either<Void, AdyenActions.Action>>) -> Void
 		) -> Void
 
 		let adyenOptions: AdyenOptions
@@ -48,7 +51,7 @@
 
 						let logoURL = Adyen.LogoURLProvider.logoURL(
 							for: method,
-							environment: AdyenPaymentBuilder.environment
+                            environment: HedvigAdyenAPIContext().environment
 						)
 						logoImageView.kf.setImage(with: logoURL)
 
@@ -64,9 +67,6 @@
 								guard
 									let component = method.buildComponent(
 										using: AdyenPaymentBuilder(
-											encryptionPublicKey:
-												adyenOptions
-												.clientEncrytionKey
 										)
 									)
 								else { return }
@@ -132,4 +132,3 @@
 		}
 	}
 
-#endif

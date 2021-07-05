@@ -1,4 +1,4 @@
-#if canImport(Adyen)
+
 
 	import Adyen
 	import Flow
@@ -49,5 +49,3 @@
 			)
 		}
 	}
-
-#endif

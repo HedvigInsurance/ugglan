@@ -26,7 +26,7 @@ public enum ExternalDependencies: CaseIterable {
 
 	public var isResourceBundledDependency: Bool { self == .mixpanel }
 	public var isAppDependency: Bool { self == .sentry }
-	public var isNonMacDependency: Bool { self == .shake || self == .firebase || self == .adyen }
+	public var isNonMacDependency: Bool { self == .shake }
 
 	public var isCoreDependency: Bool {
 		!isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
@@ -35,7 +35,7 @@ public enum ExternalDependencies: CaseIterable {
 
 	public func swiftPackages() -> [Package] {
 		switch self {
-		case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .upToNextMajor(from: "3.8.4"))]
+		case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .upToNextMajor(from: "4.0.0"))]
 		case .runtime:
 			return [.package(url: "https://github.com/wickwirew/Runtime", .upToNextMajor(from: "2.2.2"))]
 		case .firebase:
@@ -95,9 +95,9 @@ public enum ExternalDependencies: CaseIterable {
 		case .adyen:
 			return [
 				.package(product: "Adyen"), .package(product: "AdyenCard"),
-				.package(product: "AdyenDropIn"),
+                .package(product: "AdyenDropIn"), .package(product: "AdyenComponents"), .package(product: "AdyenActions")
 			]
-		case .firebase: return [.package(product: "FirebaseAnalytics"), .package(product: "FirebaseMessaging")]
+		case .firebase: return [.package(product: "FirebaseMessaging")]
 		case .kingfisher: return [.package(product: "Kingfisher")]
 		case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
 		case .flow: return [.package(product: "Flow")]

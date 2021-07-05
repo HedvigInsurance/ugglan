@@ -17,14 +17,14 @@ import hCoreUI
 import hGraphQL
 
 #if !targetEnvironment(macCatalyst)
-
-	import Firebase
-	import FirebaseMessaging
 	import Shake
-	import Adyen
 	import NonMacDependencies
-
 #endif
+
+import Firebase
+import FirebaseMessaging
+import Adyen
+import AdyenActions
 
 let log = Logger.self
 
@@ -118,11 +118,8 @@ let log = Logger.self
 	}
 
 	func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
-		#if canImport(Adyen)
-			let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
-
-			if adyenRedirect { return adyenRedirect }
-		#endif
+        let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
+        if adyenRedirect { return adyenRedirect }
 
 		return false
 	}
@@ -190,9 +187,7 @@ let log = Logger.self
 		AskForRating().registerSession()
 		CrossFrameworkCoordinator.setup()
 
-		#if canImport(Firebase)
-			FirebaseApp.configure()
-		#endif
+        FirebaseApp.configure()
 
 		presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
 			let presentationEvent = event()
@@ -287,9 +282,7 @@ let log = Logger.self
 
 		DefaultStyling.installCustom()
 
-		#if canImport(FirebaseMessaging)
-			Messaging.messaging().delegate = self
-		#endif
+        Messaging.messaging().delegate = self
 		UNUserNotificationCenter.current().delegate = self
 
 		// treat an empty token as a newly downloaded app and setLastNewsSeen
@@ -362,32 +355,28 @@ extension ApolloClient {
 	}
 }
 
-#if canImport(Firebase)
+extension AppDelegate: MessagingDelegate {
+    func registerFCMToken(_ token: String) {
+        bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 })
+            .onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
+                client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token))
+                    .onValue { data in
+                        if data.registerPushToken != nil {
+                            log.info("Did register push token for user")
+                        } else {
+                            log.info("Failed to register push token for user")
+                        }
+                    }
+            }
+    }
 
-	extension AppDelegate: MessagingDelegate {
-		func registerFCMToken(_ token: String) {
-			bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 })
-				.onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
-					client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token))
-						.onValue { data in
-							if data.registerPushToken != nil {
-								log.info("Did register push token for user")
-							} else {
-								log.info("Failed to register push token for user")
-							}
-						}
-				}
-		}
-
-		func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-			if let fcmToken = fcmToken {
-				ApplicationState.setFirebaseMessagingToken(fcmToken)
-				registerFCMToken(fcmToken)
-			}
-		}
-	}
-
-#endif
+    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        if let fcmToken = fcmToken {
+            ApplicationState.setFirebaseMessagingToken(fcmToken)
+            registerFCMToken(fcmToken)
+        }
+    }
+}
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
 	func userNotificationCenter(

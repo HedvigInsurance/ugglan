@@ -1,6 +1,7 @@
-#if canImport(Adyen)
+
 
 	import Adyen
+import AdyenActions
 	import Apollo
 	import Flow
 	import Foundation
@@ -65,7 +66,7 @@
 							}
 							guard
 								let action = try? JSONDecoder()
-									.decode(Adyen.Action.self, from: jsonData)
+									.decode(AdyenActions.Action.self, from: jsonData)
 							else { return }
 
 							onResult(.success(.make(action)))
@@ -87,4 +88,3 @@
 		}
 	}
 
-#endif

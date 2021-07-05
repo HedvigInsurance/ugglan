@@ -1,4 +1,4 @@
-#if canImport(Adyen)
+
 
 	import Adyen
 	import Foundation
@@ -8,4 +8,3 @@
 		let clientEncrytionKey: String
 	}
 
-#endif

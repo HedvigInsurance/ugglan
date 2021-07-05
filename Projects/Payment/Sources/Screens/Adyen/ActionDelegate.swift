@@ -1,7 +1,9 @@
-#if canImport(Adyen)
+
 
 	import Adyen
 	import Apollo
+import AdyenComponents
+import AdyenActions
 	import Flow
 	import Foundation
 	import hCore
@@ -12,8 +14,12 @@
 		let paymentData: String?
 	}
 
-	class ActionDelegate: NSObject, ActionComponentDelegate {
-		typealias ResultHandler = (_ result: Flow.Result<Either<Void, Adyen.Action>>) -> Void
+class ActionDelegate: NSObject, ActionComponentDelegate {
+    func didComplete(from component: ActionComponent) {
+        #warning("todo")
+    }
+    
+		typealias ResultHandler = (_ result: Flow.Result<Either<Void, AdyenActions.Action>>) -> Void
 
 		@Inject var client: ApolloClient
 		let onResult: ResultHandler
@@ -32,10 +38,10 @@
 
 			client.perform(mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(req: detailsJson))
 				.onValue { data in
-					if let component = component as? DismissableComponent {
-						component.dismiss(true, completion: nil)
-					}
-
+//					if let component = component as? DismissableComponent {
+//						component.dismiss(true, completion: nil)
+//					}
+                    
 					if data.submitAdditionalPaymentDetails
 						.asAdditionalPaymentsDetailsResponseFinished != nil
 					{
@@ -46,7 +52,7 @@
 						guard let jsonData = data.action.data(using: .utf8) else { return }
 						guard
 							let action = try? JSONDecoder()
-								.decode(Adyen.Action.self, from: jsonData)
+								.decode(AdyenActions.Action.self, from: jsonData)
 						else { return }
 
 						self.onResult(.success(.make(action)))
@@ -57,9 +63,9 @@
 		}
 
 		func didFail(with error: Error, from component: ActionComponent) {
-			if let component = component as? DismissableComponent {
-				component.dismiss(true, completion: nil)
-			}
+//			if let component = component as? DismissableComponent {
+//				component.dismiss(true, completion: nil)
+//			}
 
 			if let error = error as? Adyen.ComponentError, error == .cancelled {
 				// no op
@@ -69,4 +75,3 @@
 		}
 	}
 
-#endif
