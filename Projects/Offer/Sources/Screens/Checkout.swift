@@ -70,7 +70,6 @@ extension Checkout: Presentable {
 				)
 				emailTextField.returnKeyType = .next
 				emailMasking.applySettings(emailTextField)
-				emailTextField.clearButtonMode = .whileEditing
 				emailTextField.becomeFirstResponder()
 				emailRow.append(emailTextField)
 
@@ -93,7 +92,6 @@ extension Checkout: Presentable {
 					style: .default
 				)
 				ssnMasking.applySettings(ssnTextField)
-				ssnTextField.clearButtonMode = .whileEditing
 				ssnRow.append(ssnTextField)
 
 				bag += ssnMasking.applyMasking(ssnTextField)
