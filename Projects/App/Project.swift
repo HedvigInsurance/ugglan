@@ -22,7 +22,7 @@ let ugglanConfigurations: [CustomConfiguration] = [
 	.release(
 		name: "Release",
 		settings: [
-			"CODE_SIGN_IDENTITY[sdk=macosx*]": "Apple Distribution: Hedvig AB (AW656G5PFM)",
+			"CODE_SIGN_IDENTITY[sdk=macosx*]": "Developer ID Application: Hedvig AB (AW656G5PFM)",
 			"SUPPORTED_PLATFORMS": supportedPlatforms,
 		],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
