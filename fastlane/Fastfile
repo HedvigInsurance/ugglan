@@ -542,6 +542,8 @@ platform :ios do
 
             scheme = File.basename(path, ".*")
             absolute_path = File.expand_path(path)
+
+            sh("zip -r #{absolute_path}.zip #{absolute_path}")
                 
             aws_s3(
                 access_key: ENV['S3_ACCESS_KEY'],
@@ -549,7 +551,7 @@ platform :ios do
                 bucket: "hedvig-ios-builds",
                 region: "eu-central-1",
                 files: [
-                    absolute_path
+                    absolute_path + ".zip"
                 ],
                 app_directory: "#{scheme}_#{SecureRandom.uuid}",
             )
