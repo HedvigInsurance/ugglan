@@ -570,7 +570,7 @@ platform :ios do
                 bucket: "hedvig-ios-builds",
                 region: "eu-central-1",
                 files: [
-                    absolute_path + "/" + scheme + ".app.zip"
+                    absolute_path + "/" + scheme + ".zip"
                 ],
                 app_directory: "#{scheme}_#{SecureRandom.uuid}",
             )
