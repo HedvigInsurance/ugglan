@@ -62,7 +62,7 @@ extension GraphQL.QuoteBundleQuery.Data {
 				appConfiguration: .init(
 					showCampaignManagement: true,
 					title: .logo,
-                    gradientOption: .gradientTwo
+					gradientOption: .gradientTwo
 				)
 			),
 			signMethodForQuotes: GraphQL.SignMethod.swedishBankId,

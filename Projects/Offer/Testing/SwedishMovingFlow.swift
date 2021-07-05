@@ -47,7 +47,7 @@ extension GraphQL.QuoteBundleQuery.Data {
 				appConfiguration: .init(
 					showCampaignManagement: false,
 					title: .updateSummary,
-                    gradientOption: .gradientOne
+					gradientOption: .gradientOne
 				)
 			),
 			signMethodForQuotes: GraphQL.SignMethod.approveOnly,

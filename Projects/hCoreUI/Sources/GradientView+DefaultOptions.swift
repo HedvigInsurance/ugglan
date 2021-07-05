@@ -106,13 +106,13 @@ extension GradientView {
 		}
 	}
 
-    public enum Preset: CaseIterable {
+	public enum Preset: CaseIterable {
 		case insuranceOne
 		case insuranceTwo
 		case insuranceThree
-        
-        public static var random: Self {
-            Self.allCases.shuffled().randomElement()!
-        }
+
+		public static var random: Self {
+			Self.allCases.shuffled().randomElement()!
+		}
 	}
 }

@@ -11,19 +11,20 @@ public struct GradientView {
 		_shouldShowGradient = .init(wrappedValue: shouldShowGradientSignal)
 	}
 
-    @ReadWriteState public var gradientOption: GradientOption?
+	@ReadWriteState public var gradientOption: GradientOption?
 	@ReadWriteState public var shouldShowGradient = false
 }
 
 extension GradientView: Viewable {
 	func applySettings(_ layer: CAGradientLayer, _ traitCollection: UITraitCollection) {
-        if let gradientOption = gradientOption {
-            layer.locations = gradientOption.locations
-            layer.startPoint = gradientOption.startPoint
-            layer.endPoint = gradientOption.endPoint
-            layer.transform = gradientOption.transform
-            layer.colors = gradientOption.backgroundColors(traitCollection: traitCollection).map { $0.cgColor }
-        }
+		if let gradientOption = gradientOption {
+			layer.locations = gradientOption.locations
+			layer.startPoint = gradientOption.startPoint
+			layer.endPoint = gradientOption.endPoint
+			layer.transform = gradientOption.transform
+			layer.colors = gradientOption.backgroundColors(traitCollection: traitCollection)
+				.map { $0.cgColor }
+		}
 	}
 
 	var shimmerLayer: CAGradientLayer {
@@ -71,8 +72,8 @@ extension GradientView: Viewable {
 			make.width.equalTo(100)
 		}
 
-        let layer = CAGradientLayer()
-        layer.masksToBounds = true
+		let layer = CAGradientLayer()
+		layer.masksToBounds = true
 		gradientView.layer.addSublayer(layer)
 
 		bag += gradientView.didLayoutSignal.onValue { _ in
@@ -92,7 +93,7 @@ extension GradientView: Viewable {
 		bag += combineLatest(
 			$shouldShowGradient.atOnce(),
 			gradientView.traitCollectionSignal.atOnce(),
-            $gradientOption.atOnce()
+			$gradientOption.atOnce()
 		)
 		.onValueDisposePrevious { (shouldShow, traitCollection, _) -> Disposable? in
 			let innerBag = DisposeBag()
