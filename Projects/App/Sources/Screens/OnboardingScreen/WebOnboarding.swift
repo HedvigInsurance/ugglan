@@ -156,13 +156,3 @@ extension WebOnboarding: Presentable {
 		)
 	}
 }
-
-extension Environment {
-	var baseUrl: String {
-		switch self {
-		case .production: return "www.hedvig.com"
-		case .staging: return "www.dev.hedvigit.com"
-		case .custom: return "www.dev.hedvigit.com"
-		}
-	}
-}
