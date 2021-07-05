@@ -39,9 +39,8 @@ jobs:
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
       env:
-        APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
-        APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-        APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+        FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
+        FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
         HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
