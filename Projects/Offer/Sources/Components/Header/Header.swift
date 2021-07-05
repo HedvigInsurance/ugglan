@@ -7,6 +7,7 @@ import hCore
 import hCoreUI
 
 struct Header {
+	@Inject var state: OfferState
 	let scrollView: UIScrollView
 	static let trailingAlignmentBreakpoint: CGFloat = 800
 	static let trailingAlignmentFormPercentageWidth: CGFloat = 0.40
@@ -75,11 +76,80 @@ extension Header: Presentable {
 		let formContainer = UIStackView()
 		formContainer.axis = .vertical
 		formContainer.alignment = .trailing
+		formContainer.distribution = .equalSpacing
 		formContainer.isLayoutMarginsRelativeArrangement = true
 		formContainer.insetsLayoutMarginsFromSafeArea = true
 		view.addArrangedSubview(formContainer)
 
+		let spacerView = UIView()
+		formContainer.addArrangedSubview(spacerView)
+
+		let loadingIndicator = UIActivityIndicatorView()
+		if #available(iOS 13.0, *) {
+			loadingIndicator.style = .large
+		} else {
+			loadingIndicator.style = .whiteLarge
+		}
+		loadingIndicator.tintColor = .brand(.primaryText())
+		scrollView.addSubview(loadingIndicator)
+
+		bag += state.isLoadingSignal
+			.animated(style: .easeOut(duration: 0.25)) { isLoading in
+				if isLoading {
+					loadingIndicator.alpha = 1
+				} else {
+					loadingIndicator.alpha = 0
+				}
+			}
+			.onValue { isLoading in
+				if !isLoading {
+					loadingIndicator.removeFromSuperview()
+				}
+			}
+
+		loadingIndicator.startAnimating()
+
+		loadingIndicator.snp.makeConstraints { make in
+			make.center.equalTo(scrollView.frameLayoutGuide.snp.center)
+		}
+
+		bag += formContainer.didMoveToWindowSignal.onValueDisposePrevious { _ in
+			let innerBag = DisposeBag()
+			scrollView.isScrollEnabled = false
+
+			formContainer.snp.remakeConstraints { make in
+				make.height.equalTo(scrollView.frameLayoutGuide.snp.height)
+			}
+
+			innerBag += state.isLoadingSignal.animated(
+				style: SpringAnimationStyle.lightBounce(duration: 0.8)
+			) { isLoading in
+				scrollView.isScrollEnabled = !isLoading
+
+				formContainer.snp.remakeConstraints { make in
+					if isLoading {
+						make.height.equalTo(scrollView.frameLayoutGuide.snp.height)
+					}
+				}
+
+				formContainer.layoutIfNeeded()
+				formContainer.layoutSuperviewsIfNeeded()
+
+				view.subviews.forEach { view in
+					view.layoutIfNeeded()
+				}
+			}
+
+			return innerBag
+		}
+
 		bag += formContainer.addArrangedSubview(HeaderForm()) { form, _ in
+			form.alpha = 0
+
+			bag += state.isLoadingSignal.animated(style: .easeOut(duration: 0.25)) { isLoading in
+				form.alpha = isLoading ? 0 : 1
+			}
+
 			bag += merge(
 				formContainer.didLayoutSignal,
 				view.didLayoutSignal
