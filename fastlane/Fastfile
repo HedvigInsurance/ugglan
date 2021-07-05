@@ -512,8 +512,13 @@ platform :ios do
             )
 
             if catalyst_platform == "macos"
+                package_path = "fastlane/build_output/#{scheme}.app"
+                compressed_package_path = package_path + ".zip"
                 notarize(
-                    package: "fastlane/build_output/#{scheme}.app"
+                    package: package_path
+                )
+                sh(
+                    "ditto -c -k --rsrc --keepParent \"#{package_path}\" \"#{compressed_package_path}\"",
                 )
             end
 
