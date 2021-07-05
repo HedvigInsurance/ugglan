@@ -16,6 +16,8 @@ let ugglanConfigurations: [CustomConfiguration] = [
 			"PROVISIONING_PROFILE_SPECIFIER[sdk=iphone*]": "match Development com.hedvig.test.app",
 			"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]": "match Development com.hedvig.test.app catalyst",
 			"SUPPORTED_PLATFORMS": supportedPlatforms,
+            "IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]": "14.2",
+            "TARGETED_DEVICE_FAMILY": "1,2,6"
 		],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 	),
@@ -24,6 +26,8 @@ let ugglanConfigurations: [CustomConfiguration] = [
 		settings: [
 			"CODE_SIGN_IDENTITY[sdk=macosx*]": "Developer ID Application: Hedvig AB (AW656G5PFM)",
 			"SUPPORTED_PLATFORMS": supportedPlatforms,
+            "IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]": "14.2",
+            "TARGETED_DEVICE_FAMILY": "1,2,6"
 		],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 	),
