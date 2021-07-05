@@ -10,31 +10,24 @@ import Apollo
 import Flow
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
-import SwiftUI
 
 struct LoggedIn {
-    @Inject var client: ApolloClient
-    let didSign: Bool
+	@Inject var client: ApolloClient
+	let didSign: Bool
 
-    init(didSign: Bool = false) { self.didSign = didSign }
+	init(didSign: Bool = false) { self.didSign = didSign }
 }
 
 extension LoggedIn: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
-        
-        ApplicationState.preserveState(.loggedIn)
-        
-        #if targetEnvironment(macCatalyst)
-        
-        return (UIHostingController(rootView: SidebarLoggedIn()), NilDisposer())
-        
-        #else
-        
-        return TabBarLoggedIn(didSign: didSign).materialize()
-        
-        #endif
-        
-    }
+	func materialize() -> (UIViewController, Disposable) {
+		ApplicationState.preserveState(.loggedIn)
+		#if targetEnvironment(macCatalyst)
+			return (UIHostingController(rootView: SidebarLoggedIn()), NilDisposer())
+		#else
+			return TabBarLoggedIn(didSign: didSign).materialize()
+		#endif
+	}
 }

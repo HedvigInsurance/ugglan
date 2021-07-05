@@ -11,7 +11,7 @@ public final class FormScrollView: UIScrollView, GradientScroller {
 	) {
 		super.init(frame: frame)
 
-        if appliesGradient { addGradient(into: bag) }
+		if appliesGradient { addGradient(into: bag) }
 	}
 
 	@available(*, unavailable) required init?(

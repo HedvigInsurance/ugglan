@@ -1,6 +1,6 @@
 import Foundation
-import UIKit
 import SwiftUI
+import UIKit
 
 class FontBundleToken {}
 
@@ -33,9 +33,5 @@ public enum Fonts {
 
 		return UIFont(descriptor: fontDescriptor, size: size)
 	}
-    
-    @available(iOS 13, *)
-    public static var font: Font {
-        Font(favoritStdBook)
-    }
+	@available(iOS 13, *) public static var font: Font { Font(favoritStdBook) }
 }
