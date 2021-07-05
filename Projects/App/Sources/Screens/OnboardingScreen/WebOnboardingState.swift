@@ -23,7 +23,7 @@ struct WebOnboardingState {
 		}
 	}
 
-    private var host: String { Environment.current.webBaseURL.host ?? "" }
+	private var host: String { Environment.current.webBaseURL.host ?? "" }
 
 	private var token: String? {
 		guard let token = ApolloClient.retreiveToken() else { return nil }

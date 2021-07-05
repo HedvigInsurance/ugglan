@@ -17,7 +17,7 @@ import hGraphQL
 	@State private var endpointURL: String = ""
 	@State private var wsEndpointURL: String = ""
 	@State private var assetsEndpointURL: String = ""
-    @State private var webBaseURL: String = ""
+	@State private var webBaseURL: String = ""
 	@State private var authorizationToken: String = ""
 	@State private var showFaultyEndpointAlert = false
 
@@ -32,10 +32,10 @@ import hGraphQL
 	}
 
 	init() {
-        _endpointURL = State(initialValue: Environment.current.endpointURL.absoluteString)
-        _wsEndpointURL = State(initialValue: Environment.current.wsEndpointURL.absoluteString)
-        _assetsEndpointURL = State(initialValue: Environment.current.assetsEndpointURL.absoluteString)
-        _webBaseURL = State(initialValue: Environment.current.webBaseURL.absoluteString)
+		_endpointURL = State(initialValue: Environment.current.endpointURL.absoluteString)
+		_wsEndpointURL = State(initialValue: Environment.current.wsEndpointURL.absoluteString)
+		_assetsEndpointURL = State(initialValue: Environment.current.assetsEndpointURL.absoluteString)
+		_webBaseURL = State(initialValue: Environment.current.webBaseURL.absoluteString)
 		_pickedEnvironment = State(initialValue: Debug.environmentOptionFromTarget)
 		_authorizationToken = State(initialValue: ApolloClient.retreiveToken()?.token ?? "")
 	}
@@ -61,7 +61,7 @@ import hGraphQL
 						SwiftUI.TextField("Endpoint URL", text: $endpointURL)
 						SwiftUI.TextField("WebSocket Endpoint URL", text: $wsEndpointURL)
 						SwiftUI.TextField("Assets Endpoint URL", text: $assetsEndpointURL)
-                        SwiftUI.TextField("Web Base URL", text: $webBaseURL)
+						SwiftUI.TextField("Web Base URL", text: $webBaseURL)
 					}
 				}
 				Section { SwiftUI.TextField("Authorization token", text: $authorizationToken) }
@@ -162,22 +162,17 @@ import hGraphQL
 								self.showFaultyEndpointAlert = true
 								return
 							}
-                            
-                            guard
-                                let webBaseURL = URL(
-                                    string: self.webBaseURL
-                                )
-                            else {
-                                self.showFaultyEndpointAlert = true
-                                return
-                            }
+							guard let webBaseURL = URL(string: self.webBaseURL) else {
+								self.showFaultyEndpointAlert = true
+								return
+							}
 
 							Environment.setCurrent(
 								.custom(
 									endpointURL: endpointURL,
 									wsEndpointURL: wsEndpointURL,
 									assetsEndpointURL: assetsEndpointURL,
-                                    webBaseURL: webBaseURL
+									webBaseURL: webBaseURL
 								)
 							)
 						}
