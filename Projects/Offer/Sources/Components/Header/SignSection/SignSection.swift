@@ -71,24 +71,25 @@ extension SignSection: Presentable {
 				innerBag += row.append(signButton)
 			case .approveOnly:
 				let signButton = Button(
-                    title: L10n.offerApproveChanges,
+					title: L10n.offerApproveChanges,
 					type: .standard(
 						backgroundColor: .brand(.secondaryButtonBackgroundColor),
 						textColor: .brand(.secondaryButtonTextColor)
 					)
 				)
-                
-                let loadableSignButton = LoadableButton(button: signButton)
+
+				let loadableSignButton = LoadableButton(button: signButton)
 
 				innerBag += loadableSignButton.onTapSignal
 					.onValue { _ in
-                        loadableSignButton.isLoadingSignal.value = true
-                        state.signQuotes().onError { _ in
-                            loadableSignButton.isLoadingSignal.value = false
-                        }
+						loadableSignButton.isLoadingSignal.value = true
+						state.signQuotes()
+							.onError { _ in
+								loadableSignButton.isLoadingSignal.value = false
+							}
 					}
-                
-                innerBag += row.append(loadableSignButton)
+
+				innerBag += row.append(loadableSignButton)
 			case .__unknown(_):
 				break
 			}
