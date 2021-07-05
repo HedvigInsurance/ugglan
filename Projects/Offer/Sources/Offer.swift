@@ -318,9 +318,11 @@ extension Offer: Presentable {
 			make.height.equalTo(CGFloat.hairlineWidth)
 		}
 
-		bag += scrollView.didScrollSignal.map { _ in scrollView.contentOffset }
+		bag += scrollView.signal(for: \.contentOffset)
+			.atOnce()
 			.onValue { contentOffset in
-				navigationBarBackgroundView.alpha = contentOffset.y / Header.insetTop
+				navigationBarBackgroundView.alpha =
+					(contentOffset.y + scrollView.safeAreaInsets.top) / (Header.insetTop)
 				navigationBarBackgroundView.snp.updateConstraints { make in
 					if let navigationBar = viewController.navigationController?.navigationBar,
 						let insetTop = viewController.navigationController?.view.safeAreaInsets
