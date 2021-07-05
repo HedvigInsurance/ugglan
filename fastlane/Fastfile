@@ -512,6 +512,7 @@ platform :ios do
             )
 
             if catalyst_platform == "macos"
+                sh("chmod -R 755 build_output/#{scheme}.app")
                 notarize(
                     package: "fastlane/build_output/#{scheme}.app"
                 )
