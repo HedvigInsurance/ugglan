@@ -17,15 +17,18 @@ public struct GradientView {
 }
 
 extension GradientView: Viewable {
-	public func gradientLayer(traitCollection: UITraitCollection) -> CAGradientLayer {
+	public func gradientLayer() -> CAGradientLayer {
 		let layer = CAGradientLayer()
-		layer.colors = gradientOption.backgroundColors(traitCollection: traitCollection).map { $0.cgColor }
 		layer.locations = gradientOption.locations
 		layer.startPoint = gradientOption.startPoint
 		layer.endPoint = gradientOption.endPoint
 		layer.transform = gradientOption.transform
 		layer.masksToBounds = true
 		return layer
+	}
+
+	func applyColors(_ layer: CAGradientLayer, _ traitCollection: UITraitCollection) {
+		layer.colors = gradientOption.backgroundColors(traitCollection: traitCollection).map { $0.cgColor }
 	}
 
 	var shimmerLayer: CAGradientLayer {
@@ -73,29 +76,42 @@ extension GradientView: Viewable {
 			make.width.equalTo(100)
 		}
 
+		let layer = gradientLayer()
+		gradientView.layer.addSublayer(layer)
+
+		bag += gradientView.didLayoutSignal.onValue { _ in
+
+			CATransaction.begin()
+			if let animation = gradientView.layer.animation(forKey: "position") {
+				CATransaction.setAnimationDuration(animation.duration)
+				CATransaction.setAnimationTimingFunction(animation.timingFunction)
+			} else {
+				CATransaction.disableActions()
+			}
+			layer.bounds = gradientView.layer.bounds
+			layer.frame = gradientView.layer.frame
+			layer.position = gradientView.layer.position
+			CATransaction.commit()
+
+		}
+
 		bag += combineLatest(
 			$shouldShowGradient.atOnce(),
-			gradientView.traitCollectionSignal.atOnce(),
-			gradientView.signal(for: \.bounds).delay(by: 0.1).atOnce()
+			gradientView.traitCollectionSignal.atOnce()
 		)
-		.onValueDisposePrevious { (shouldShow, traitCollection, _) -> Disposable? in
+		.onValueDisposePrevious { (shouldShow, traitCollection) -> Disposable? in
 			let innerBag = DisposeBag()
 
-			let layer = gradientLayer(traitCollection: traitCollection)
 			let animatedLayer = self.shimmerLayer
+			applyColors(layer, traitCollection)
 
 			if shouldShow {
-				gradientView.layer.addSublayer(layer)
 				shimmerView.layer.addSublayer(animatedLayer)
 
 				let orbLayer = gradientOption.orbLayer(traitCollection: traitCollection)
 				orbContainerView.layer.addSublayer(orbLayer)
 				gradientView.bringSubviewToFront(orbContainerView)
 				gradientView.bringSubviewToFront(shimmerView)
-
-				layer.bounds = gradientView.layer.bounds
-				layer.frame = gradientView.layer.frame
-				layer.position = gradientView.layer.position
 
 				orbLayer.frame = orbContainerView.bounds
 				orbLayer.cornerRadius = orbContainerView.bounds.width / 2
@@ -119,7 +135,6 @@ extension GradientView: Viewable {
 					)
 
 				func remove() {
-					layer.removeFromSuperlayer()
 					orbLayer.removeFromSuperlayer()
 					animatedLayer.removeFromSuperlayer()
 					shimmerView.transform = .identity
