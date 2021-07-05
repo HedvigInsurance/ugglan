@@ -84,10 +84,10 @@ extension SignSection: Presentable {
 					.onValue { _ in
 						loadableSignButton.isLoadingSignal.value = true
 						state.signQuotes()
-                            .onValue { event in
-                                if case .failed = event {
-                                    loadableSignButton.isLoadingSignal.value = false
-                                }
+							.onValue { event in
+								if case .failed = event {
+									loadableSignButton.isLoadingSignal.value = false
+								}
 							}
 					}
 
