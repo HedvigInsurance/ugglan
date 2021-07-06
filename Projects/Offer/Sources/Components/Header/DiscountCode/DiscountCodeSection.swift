@@ -35,61 +35,73 @@ extension DiscountCodeSection: Presentable {
 			)
 		)
 
-		let loadableButton = LoadableButton(button: button)
-		bag += row.append(loadableButton.alignedTo(alignment: .center))
+		bag += row.append(button.alignedTo(alignment: .center))
+        
+        let removeRow = RowView()
+        section.append(removeRow)
+        let removeButton = Button(
+            title: L10n.Offer.removeDiscountButton,
+            type: .transparentLarge(textColor: .brand(.destructive))
+        )
+        let loadableButton = LoadableButton(button: removeButton)
+        bag += removeRow.append(loadableButton.alignedTo(alignment: .center))
+        removeRow.isHidden = true
+        removeRow.alpha = 0
+        
 
-		bag += state.dataSignal.onValue { data in
+        bag += state.dataSignal.animated(style: SpringAnimationStyle.lightBounce()) { data in
 			if data.redeemedCampaigns.isEmpty {
-				button.title.value = L10n.Offer.addDiscountButton
-				button.type.value = .iconTransparent(
-					textColor: .brand(.primaryText()),
-					icon: .left(image: hCoreUIAssets.circularPlus.image, width: 20)
-				)
+                removeRow.alpha = 0
+                row.alpha = 1
+                removeRow.isHidden = true
+                row.isHidden = false
 			} else {
-                button.title.value = L10n.Offer.removeDiscountButton
-				button.type.value = .transparentLarge(textColor: .brand(.destructive))
+                row.alpha = 0
+                removeRow.alpha = 1
+                row.isHidden = true
+                removeRow.isHidden = false
 			}
 		}
 
 		let discountsPresent = ReadWriteSignal<Bool>(false)
 		bag += state.dataSignal.map { $0.redeemedCampaigns.count != 0 }.bindTo(discountsPresent)
 
+        bag += removeButton.onTapSignal.onValue { _ in
+            loadableButton.isLoadingSignal.value = true
+            state.removeRedeemedCampaigns()
+                .onValue { _ in
+                    loadableButton.isLoadingSignal.value = false
+                }
+                .onError { _ in
+                    loadableButton.isLoadingSignal.value = false
+                    section.viewController?
+                        .present(
+                            Alert<Void>(
+                                title: L10n.Offer.removeDiscountErrorAlertTitle,
+                                message:
+                                    L10n.Offer.removeDiscountErrorAlertBody,
+                                actions: [
+                                    .init(
+                                        title: L10n.alertOk,
+                                        action: { () }
+                                    )
+                                ]
+                            )
+                        )
+                }
+        }
+        
 		bag += button.onTapSignal.onValue { _ in
-			if discountsPresent.value {
-				loadableButton.isLoadingSignal.value = true
-				state.removeRedeemedCampaigns()
-					.onValue { _ in
-						loadableButton.isLoadingSignal.value = false
-					}
-					.onError { _ in
-						loadableButton.isLoadingSignal.value = false
-						section.viewController?
-							.present(
-								Alert<Void>(
-                                    title: L10n.Offer.removeDiscountErrorAlertTitle,
-									message:
-                                        L10n.Offer.removeDiscountErrorAlertBody,
-									actions: [
-										.init(
-											title: L10n.alertOk,
-											action: { () }
-										)
-									]
-								)
-							)
-					}
-			} else {
-				let redeemDiscount = RedeemDiscount()
-				section.viewController?
-					.present(
-						redeemDiscount.wrappedInCloseButton(),
-						style: .detented(.scrollViewContentSize(20), .large),
-						options: [
-							.defaults, .prefersLargeTitles(false),
-							.largeTitleDisplayMode(.never),
-						]
-					)
-			}
+            let redeemDiscount = RedeemDiscount()
+            section.viewController?
+                .present(
+                    redeemDiscount.wrappedInCloseButton(),
+                    style: .detented(.scrollViewContentSize(20), .large),
+                    options: [
+                        .defaults, .prefersLargeTitles(false),
+                        .largeTitleDisplayMode(.never),
+                    ]
+                )
 		}
 
 		return (section, bag)
