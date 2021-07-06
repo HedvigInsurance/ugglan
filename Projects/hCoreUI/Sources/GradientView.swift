@@ -69,7 +69,7 @@ extension GradientView: Viewable {
 				.map { $0.cgColor }
 
 			let colorsAnimation = createAnimation(for: \.colors, from: layer.colors, to: colors)
-
+            
 			groupAnimation.animations = [
 				locationsAnimation,
 				startPointAnimation,
@@ -84,7 +84,7 @@ extension GradientView: Viewable {
 		}
 	}
 
-	var shimmerLayer: CAGradientLayer {
+	func createShimmerLayer() -> CAGradientLayer {
 		let layer = CAGradientLayer()
 		layer.isHidden = !(self.gradientOption?.shouldShimmer ?? false)
 		layer.colors = [
@@ -132,6 +132,14 @@ extension GradientView: Viewable {
 		let layer = CAGradientLayer()
 		layer.masksToBounds = true
 		gradientView.layer.addSublayer(layer)
+        
+        let orbLayer = CAGradientLayer()
+        orbContainerView.layer.addSublayer(orbLayer)
+        gradientView.bringSubviewToFront(orbContainerView)
+        
+        let shimmerLayer = self.createShimmerLayer()
+        shimmerView.layer.addSublayer(shimmerLayer)
+        gradientView.bringSubviewToFront(shimmerView)
 
 		bag += gradientView.didLayoutSignal.onValue { _ in
 			CATransaction.begin()
@@ -144,6 +152,14 @@ extension GradientView: Viewable {
 			layer.bounds = gradientView.layer.bounds
 			layer.frame = gradientView.layer.frame
 			layer.position = gradientView.layer.position
+            orbLayer.frame = orbContainerView.bounds
+            orbLayer.cornerRadius = orbContainerView.bounds.width / 2
+
+            shimmerLayer.frame = shimmerView.frame
+            shimmerLayer.bounds = shimmerView.bounds.insetBy(
+                dx: -0.5 * shimmerView.bounds.size.width,
+                dy: -0.5 * shimmerView.bounds.size.height
+            )
 			CATransaction.commit()
 		}
 
@@ -151,11 +167,13 @@ extension GradientView: Viewable {
 			let signal = $gradientOption.atOnce().filter(predicate: { $0 != nil }).distinct()
 
 			bag += signal.onFirstValue({ gradientOption in
+                gradientOption?.applySettings(orbLayer: orbLayer, traitCollection: gradientView.traitCollection)
 				applySettings(layer, gradientView.traitCollection)
 			})
 
 			bag += signal.skip(first: 1)
 				.onValue({ gradientOption in
+                    gradientOption?.applySettings(orbLayer: orbLayer, traitCollection: gradientView.traitCollection)
 					applySettingsWithAnimation(layer, gradientView.traitCollection)
 				})
 		})
@@ -165,89 +183,29 @@ extension GradientView: Viewable {
 				lhs.userInterfaceStyle == rhs.userInterfaceStyle
 			})
 			.onValue({ traitCollection in
+                gradientOption?.applySettings(orbLayer: orbLayer, traitCollection: gradientView.traitCollection)
 				applySettings(layer, traitCollection)
 			})
-
-		bag += combineLatest(
-			$shouldShowGradient.atOnce(),
-			gradientView.traitCollectionSignal.atOnce(),
-			$gradientOption.atOnce()
-		)
-		.onValueDisposePrevious { (shouldShow, traitCollection, _) -> Disposable? in
-			let innerBag = DisposeBag()
-
-			let animatedLayer = self.shimmerLayer
-
-			if shouldShow, let gradientOption = gradientOption {
-				shimmerView.layer.addSublayer(animatedLayer)
-
-				let orbLayer = gradientOption.orbLayer(traitCollection: traitCollection)
-				orbContainerView.layer.addSublayer(orbLayer)
-				gradientView.bringSubviewToFront(orbContainerView)
-				gradientView.bringSubviewToFront(shimmerView)
-
-				orbLayer.frame = orbContainerView.bounds
-				orbLayer.cornerRadius = orbContainerView.bounds.width / 2
-
-				animatedLayer.frame = shimmerView.frame
-				animatedLayer.bounds = shimmerView.bounds.insetBy(
-					dx: -0.5 * shimmerView.bounds.size.width,
-					dy: -0.5 * shimmerView.bounds.size.height
-				)
-
-				innerBag += shimmerView.didLayoutSignal.delay(by: 0.1)
-					.animated(
-						style: .easeOut(duration: 0.5),
-						animations: {
-							shimmerView.transform = CGAffineTransform(
-								translationX: gradientView.frame.width
-									+ shimmerView.frame.width,
-								y: 0
-							)
-						}
-					)
-
-				func remove() {
-					orbLayer.removeFromSuperlayer()
-					animatedLayer.removeFromSuperlayer()
-					shimmerView.transform = .identity
-				}
-
-				if gradientOption.shouldAnimate {
-					let fadeInAnimation = CABasicAnimation(keyPath: "opacity")
-					fadeInAnimation.fromValue = 0
-					fadeInAnimation.toValue = 1
-					fadeInAnimation.duration = 0.25
-					fadeInAnimation.fillMode = .forwards
-
-					layer.add(fadeInAnimation, forKey: "fadeInAnimation")
-
-					innerBag += {
-						CATransaction.begin()
-
-						let fadeOutAnimation = CABasicAnimation(keyPath: "opacity")
-						fadeOutAnimation.fromValue = 1
-						fadeOutAnimation.toValue = 0
-						fadeOutAnimation.duration = 0.25
-						fadeOutAnimation.fillMode = .forwards
-
-						layer.opacity = 0
-
-						CATransaction.setCompletionBlock {
-							remove()
-						}
-
-						layer.add(fadeOutAnimation, forKey: "fadeOutAnimation")
-
-						CATransaction.commit()
-					}
-				} else {
-					innerBag += remove
-				}
-			}
-
-			return innerBag
-		}
+        
+        gradientView.alpha = shouldShowGradient ? 1 : 0
+        
+        bag += $shouldShowGradient.animated(style: .easeOut(duration: 0.5)) { shoulShow in
+            gradientView.alpha = shoulShow ? 1 : 0
+        }
+        
+        bag += $shouldShowGradient.animated(mapStyle: { shouldShow in
+            shouldShow ? SpringAnimationStyle.heavyBounce(delay: 0.1, duration: 2) : SpringAnimationStyle.lightBounce(duration: 0)
+        }) { shoulShow in
+            if shoulShow {
+                shimmerView.transform = CGAffineTransform(
+                    translationX: gradientView.frame.width
+                        + (shimmerView.frame.width * 1.25),
+                    y: 0
+                )
+            } else {
+                shimmerView.transform = .identity
+            }
+        }
 
 		return (gradientView, bag)
 	}
