@@ -256,18 +256,18 @@ extension Offer: Presentable {
 				viewController.navigationItem.titleView = nil
 				viewController.title = nil
 
-                if let navigationBar = viewController.navigationController?.navigationBar, navigationBar.layer.animation(forKey: "fadeText") == nil {
- 
-                    let fadeTextAnimation = CATransition()
-                    fadeTextAnimation.duration = 0.25
-                    fadeTextAnimation.type = .fade
-                    fadeTextAnimation.fillMode = .both
-                    
-                    navigationBar.layer
-                        .add(fadeTextAnimation, forKey: "fadeText")
-                }
+				if let navigationBar = viewController.navigationController?.navigationBar,
+					navigationBar.layer.animation(forKey: "fadeText") == nil
+				{
 
-				
+					let fadeTextAnimation = CATransition()
+					fadeTextAnimation.duration = 0.25
+					fadeTextAnimation.type = .fade
+					fadeTextAnimation.fillMode = .both
+
+					navigationBar.layer
+						.add(fadeTextAnimation, forKey: "fadeText")
+				}
 
 				switch title {
 				case .logo:
