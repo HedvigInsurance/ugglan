@@ -64,6 +64,10 @@ extension MainContentForm: Presentable {
 					)
 				}
 
+				guard !state.isLoadingSignal.value else {
+					return
+				}
+
 				let pointInScrollView = scrollView.convert(
 					formContainer.frameWithoutTransform,
 					from: container

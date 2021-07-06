@@ -9,6 +9,7 @@ public enum ButtonType {
 	case standardIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
 	case standardSmall(backgroundColor: UIColor, textColor: UIColor)
 	case standardOutline(borderColor: UIColor, textColor: UIColor)
+	case standardOutlineIcon(borderColor: UIColor, textColor: UIColor, icon: ButtonIcon)
 	case tinyIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
 	case outline(borderColor: UIColor, textColor: UIColor)
 	case outlineIcon(borderColor: UIColor, textColor: UIColor, icon: ButtonIcon)
@@ -44,7 +45,7 @@ public enum ButtonType {
 		switch self {
 		case .standard, .standardSmall, .standardIcon, .tinyIcon:
 			return 1
-		case .outline, .outlineIcon, .transparent, .standardOutline:
+		case .outline, .outlineIcon, .transparent, .standardOutline, .standardOutlineIcon:
 			return 0
 		case .pillSemiTransparent:
 			return 0.6
@@ -57,7 +58,7 @@ public enum ButtonType {
 		switch self {
 		case .standard, .standardSmall, .standardIcon, .tinyIcon:
 			return 1
-		case .outline, .outlineIcon, .standardOutline:
+		case .outline, .outlineIcon, .standardOutline, .standardOutlineIcon:
 			return 0.05
 		case .pillSemiTransparent:
 			return 0.6
@@ -72,7 +73,7 @@ public enum ButtonType {
 		switch self {
 		case .standard, .standardSmall, .standardIcon, .tinyIcon:
 			return 1
-		case .outline, .outlineIcon, .standardOutline:
+		case .outline, .outlineIcon, .standardOutline, .standardOutlineIcon:
 			return 0.05
 		case .pillSemiTransparent:
 			return 0.6
@@ -101,6 +102,8 @@ public enum ButtonType {
 			return borderColor
 		case let .pillSemiTransparent(backgroundColor, _):
 			return backgroundColor
+		case let .standardOutlineIcon(borderColor, _, _):
+			return borderColor
 		case .iconTransparent:
 			return .black
 		case .transparent:
@@ -134,12 +137,14 @@ public enum ButtonType {
 			return textColor
 		case let .transparentLarge(textColor):
 			return textColor
+		case let .standardOutlineIcon(_, textColor, _):
+			return textColor
 		}
 	}
 
 	public var height: CGFloat {
 		switch self {
-		case .standard, .standardIcon, .standardOutline:
+		case .standard, .standardIcon, .standardOutline, .standardOutlineIcon:
 			return 50
 		case .standardSmall:
 			return 34
@@ -160,7 +165,7 @@ public enum ButtonType {
 
 	var textStyle: TextStyle {
 		switch self {
-		case .standard, .outline, .standardIcon, .standardOutline:
+		case .standard, .outline, .standardIcon, .standardOutline, .standardOutlineIcon:
 			return TextStyle.brand(.body(color: .primary(state: .negative))).colored(textColor)
 		case .standardSmall:
 			return TextStyle.brand(.subHeadline(color: .primary(state: .negative))).colored(textColor)
@@ -177,7 +182,7 @@ public enum ButtonType {
 
 	public var extraWidthOffset: CGFloat {
 		switch self {
-		case .standard, .standardIcon, .standardOutline:
+		case .standard, .standardIcon, .standardOutline, .standardOutlineIcon:
 			return 50
 		case .standardSmall:
 			return 40
@@ -208,6 +213,8 @@ public enum ButtonType {
 			return icon
 		case let .tinyIcon(_, _, icon):
 			return icon
+		case let .standardOutlineIcon(_, _, icon):
+			return icon
 		default:
 			return nil
 		}
@@ -217,7 +224,7 @@ public enum ButtonType {
 		switch self {
 		case .iconTransparent:
 			return textColor
-		case .standardIcon:
+		case .standardIcon, .standardOutlineIcon:
 			return textColor
 		case .tinyIcon:
 			return textColor
@@ -236,7 +243,7 @@ public enum ButtonType {
 			return 4
 		case .tinyIcon:
 			return 4
-		case .outlineIcon:
+		case .outlineIcon, .standardOutlineIcon:
 			return 7
 		default:
 			return 0
@@ -245,7 +252,7 @@ public enum ButtonType {
 
 	var borderWidth: CGFloat {
 		switch self {
-		case .outline, .outlineIcon, .standardOutline:
+		case .outline, .outlineIcon, .standardOutline, .standardOutlineIcon:
 			return 1
 		default:
 			return 0
@@ -257,6 +264,8 @@ public enum ButtonType {
 		case let .outline(borderColor, _):
 			return borderColor
 		case let .standardOutline(borderColor, _):
+			return borderColor
+		case let .standardOutlineIcon(borderColor, _, _):
 			return borderColor
 		case let .outlineIcon(borderColor, _, _):
 			return borderColor

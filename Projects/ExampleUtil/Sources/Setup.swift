@@ -9,6 +9,6 @@ extension UIApplication {
 	public func setup() {
 		DefaultStyling.installCustom()
 		Shake.setup()
-        Localization.Locale.currentLocale = .en_SE
+		Localization.Locale.currentLocale = .en_SE
 	}
 }

@@ -70,6 +70,14 @@ class OfferState {
 		self.ids = ids
 	}
 
+	private var bag = DisposeBag()
+	@ReadWriteState var hasSignedQuotes = false
+
+	lazy var isLoadingSignal: ReadSignal<Bool> = {
+		return client.fetch(query: query).valueSignal.plain().map { _ in false }.delay(by: 0.5)
+			.readable(initial: true)
+	}()
+
 	var query: GraphQL.QuoteBundleQuery {
 		GraphQL.QuoteBundleQuery(ids: ids, locale: Localization.Locale.currentLocale.asGraphQLLocale())
 	}
@@ -241,9 +249,16 @@ class OfferState {
 	func signQuotes() -> Future<SignEvent> {
 		let subscription = signStatusSubscription
 
+		bag += subscription.map { $0.signStatus?.status?.signState == .completed }.filter(predicate: { $0 })
+			.distinct()
+			.onValue({ _ in
+				self.$hasSignedQuotes.value = true
+			})
+
 		return client.perform(mutation: GraphQL.SignQuotesMutation(ids: ids))
 			.map { data in
 				if data.signQuotes.asAlreadyCompleted != nil {
+					self.$hasSignedQuotes.value = true
 					return SignEvent.done
 				} else if data.signQuotes.asFailedToStartSign != nil {
 					return SignEvent.failed
@@ -262,7 +277,7 @@ class OfferState {
 }
 
 extension Offer: Presentable {
-	public func materialize() -> (UIViewController, Disposable) {
+	public func materialize() -> (UIViewController, Future<Void>) {
 		let viewController = UIViewController()
 		ApplicationState.preserveState(.offer)
 
@@ -282,11 +297,28 @@ extension Offer: Presentable {
 
 		let bag = DisposeBag()
 
+<<<<<<< HEAD
 		bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }.distinct()
+=======
+		bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }
+			.distinct()
+			.wait(until: state.isLoadingSignal.map { !$0 })
+			.delay(by: 0.1)
+>>>>>>> APP-78-offer-screen
 			.onValue { title in
 				viewController.navigationItem.titleView = nil
 				viewController.title = nil
 
+<<<<<<< HEAD
+=======
+				let fadeTextAnimation = CATransition()
+				fadeTextAnimation.duration = 0.25
+				fadeTextAnimation.type = .fade
+
+				viewController.navigationController?.navigationBar.layer
+					.add(fadeTextAnimation, forKey: "fadeText")
+
+>>>>>>> APP-78-offer-screen
 				switch title {
 				case .logo:
 					viewController.navigationItem.titleView = .titleWordmarkView
@@ -352,9 +384,11 @@ extension Offer: Presentable {
 			make.height.equalTo(CGFloat.hairlineWidth)
 		}
 
-		bag += scrollView.didScrollSignal.map { _ in scrollView.contentOffset }
+		bag += scrollView.signal(for: \.contentOffset)
+			.atOnce()
 			.onValue { contentOffset in
-				navigationBarBackgroundView.alpha = contentOffset.y / Header.insetTop
+				navigationBarBackgroundView.alpha =
+					(contentOffset.y + scrollView.safeAreaInsets.top) / (Header.insetTop)
 				navigationBarBackgroundView.snp.updateConstraints { make in
 					if let navigationBar = viewController.navigationController?.navigationBar,
 						let insetTop = viewController.navigationController?.view.safeAreaInsets
@@ -365,6 +399,26 @@ extension Offer: Presentable {
 				}
 			}
 
-		return (viewController, bag)
+		bag += state.$hasSignedQuotes.filter(predicate: { $0 }).flatMapLatest { _ in state.dataSignal }
+			.onValue { data in
+				Analytics.track(
+					"QUOTES_SIGNED",
+					properties: [
+						"quoteIds": data.quoteBundle.quotes.map { $0.id }
+					]
+				)
+			}
+
+		return (
+			viewController,
+			Future { completion in
+				bag += state.$hasSignedQuotes.filter(predicate: { $0 })
+					.onValue({ _ in
+						completion(.success)
+					})
+
+				return DelayedDisposer(bag, delay: 2)
+			}
+		)
 	}
 }

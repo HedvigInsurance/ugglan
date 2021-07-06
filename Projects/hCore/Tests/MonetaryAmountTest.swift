@@ -12,9 +12,8 @@ final class MonetaryAmountTests: XCTestCase {
 		let nokAmount = MonetaryAmount(amount: "100.0", currency: "NOK")
 		XCTAssertEqual(nokAmount.formattedAmount, "kr 100")
 
-        
-        Localization.Locale.currentLocale = .sv_SE
-        
+		Localization.Locale.currentLocale = .sv_SE
+
 		let unknownAmount = MonetaryAmount(amount: "100.0", currency: "USD")
 		XCTAssertEqual(unknownAmount.formattedAmount, "100 US$")
 	}

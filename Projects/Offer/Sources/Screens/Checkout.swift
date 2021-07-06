@@ -11,7 +11,7 @@ struct Checkout {
 }
 
 enum CheckoutError: Error {
-    case signingFailed
+	case signingFailed
 }
 
 extension Checkout: Presentable {
@@ -51,10 +51,13 @@ extension Checkout: Presentable {
 				let section = SectionView(headerView: header, footerView: nil)
 
 				form.append(section)
-                
-                let emailMasking = Masking(type: .email)
 
-                let emailRow = RowView(title: emailMasking.helperText ?? "", style: .brand(.title3(color: .primary)))
+				let emailMasking = Masking(type: .email)
+
+				let emailRow = RowView(
+					title: emailMasking.helperText ?? "",
+					style: .brand(.title3(color: .primary))
+				)
 				emailRow.alignment = .leading
 				emailRow.axis = .vertical
 				emailRow.distribution = .fill
@@ -62,12 +65,11 @@ extension Checkout: Presentable {
 
 				let emailTextField = UITextField(
 					value: "",
-                    placeholder: emailMasking.placeholderText ?? "",
+					placeholder: emailMasking.placeholderText ?? "",
 					style: .default
 				)
 				emailTextField.returnKeyType = .next
 				emailMasking.applySettings(emailTextField)
-				emailTextField.clearButtonMode = .whileEditing
 				emailTextField.becomeFirstResponder()
 				emailRow.append(emailTextField)
 
@@ -76,7 +78,7 @@ extension Checkout: Presentable {
 				let ssnMasking = Localization.Locale.currentLocale.market.masking
 
 				let ssnRow = RowView(
-                    title: ssnMasking.helperText ?? "",
+					title: ssnMasking.helperText ?? "",
 					style: .brand(.title3(color: .primary))
 				)
 				ssnRow.alignment = .leading
@@ -86,11 +88,10 @@ extension Checkout: Presentable {
 
 				let ssnTextField = UITextField(
 					value: "",
-                    placeholder: ssnMasking.placeholderText ?? "",
+					placeholder: ssnMasking.placeholderText ?? "",
 					style: .default
 				)
 				ssnMasking.applySettings(ssnTextField)
-				ssnTextField.clearButtonMode = .whileEditing
 				ssnRow.append(ssnTextField)
 
 				bag += ssnMasking.applyMasking(ssnTextField)
@@ -133,56 +134,69 @@ extension Checkout: Presentable {
 		return (
 			viewController,
 			Future { completion in
-            
-                func toggleAllowDismissal() {
-                    if #available(iOS 13.0, *) {
-                        viewController.isModalInPresentation = !viewController.isModalInPresentation
-                    }
-                    viewController.navigationItem.rightBarButtonItem?.isEnabled = !(viewController.navigationItem.rightBarButtonItem?.isEnabled ?? true)
-                }
-            
-            func handleError() {
-                toggleAllowDismissal()
-                checkoutButton.$isLoading.value = false
-                
-                let alert = Alert<Void>(
-                    title: L10n.simpleSignFailedTitle,
-                    message: L10n.simpleSignFailedMessage,
-                    actions: [
-                        Alert.Action(
-                            title: L10n.alertOk,
-                            action: { _ in
-                                
-                            }
-                        )
-                    ]
-                )
 
-                viewController.present(alert)
-            }
-            
-                bag += checkoutButton.onTapSignal.onValue { _ in
-                    checkoutButton.$isLoading.value = true
-                    
-                    toggleAllowDismissal()
-                    
-                    state.signQuotes().onValue { signEvent in
-                        switch signEvent {
-                        case .swedishBankId, .failed:
-                            handleError()
-                        case let .simpleSign(subscription):
-                            bag += subscription.filter { $0.signStatus?.status?.signState == .failed }.onFirstValue { _ in
-                                handleError()
-                            }
-                            
-                            bag += subscription.filter { $0.signStatus?.status?.signState == .completed }.onValue { _ in
-                                completion(.success)
-                            }
-                        case .done:
-                            completion(.success)
-                        }
-                    }
-                }
+				func toggleAllowDismissal() {
+					if #available(iOS 13.0, *) {
+						viewController.isModalInPresentation = !viewController
+							.isModalInPresentation
+					}
+					viewController.navigationItem.rightBarButtonItem?.isEnabled =
+						!(viewController.navigationItem.rightBarButtonItem?.isEnabled ?? true)
+				}
+
+				func handleError() {
+					toggleAllowDismissal()
+					checkoutButton.$isLoading.value = false
+
+					let alert = Alert<Void>(
+						title: L10n.simpleSignFailedTitle,
+						message: L10n.simpleSignFailedMessage,
+						actions: [
+							Alert.Action(
+								title: L10n.alertOk,
+								action: { _ in
+
+								}
+							)
+						]
+					)
+
+					viewController.present(alert)
+				}
+
+				bag += checkoutButton.onTapSignal.onValue { _ in
+					checkoutButton.$isLoading.value = true
+
+					toggleAllowDismissal()
+
+					state.signQuotes()
+						.onValue { signEvent in
+							switch signEvent {
+							case .swedishBankId, .failed:
+								handleError()
+							case let .simpleSign(subscription):
+								bag +=
+									subscription.filter {
+										$0.signStatus?.status?.signState
+											== .failed
+									}
+									.onFirstValue { _ in
+										handleError()
+									}
+
+								bag +=
+									subscription.filter {
+										$0.signStatus?.status?.signState
+											== .completed
+									}
+									.onValue { _ in
+										completion(.success)
+									}
+							case .done:
+								completion(.success)
+							}
+						}
+				}
 
 				return bag
 			}
