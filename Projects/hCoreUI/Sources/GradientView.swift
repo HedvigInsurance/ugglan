@@ -69,7 +69,7 @@ extension GradientView: Viewable {
 				.map { $0.cgColor }
 
 			let colorsAnimation = createAnimation(for: \.colors, from: layer.colors, to: colors)
-            
+
 			groupAnimation.animations = [
 				locationsAnimation,
 				startPointAnimation,
@@ -132,14 +132,14 @@ extension GradientView: Viewable {
 		let layer = CAGradientLayer()
 		layer.masksToBounds = true
 		gradientView.layer.addSublayer(layer)
-        
-        let orbLayer = CAGradientLayer()
-        orbContainerView.layer.addSublayer(orbLayer)
-        gradientView.bringSubviewToFront(orbContainerView)
-        
-        let shimmerLayer = self.createShimmerLayer()
-        shimmerView.layer.addSublayer(shimmerLayer)
-        gradientView.bringSubviewToFront(shimmerView)
+
+		let orbLayer = CAGradientLayer()
+		orbContainerView.layer.addSublayer(orbLayer)
+		gradientView.bringSubviewToFront(orbContainerView)
+
+		let shimmerLayer = self.createShimmerLayer()
+		shimmerView.layer.addSublayer(shimmerLayer)
+		gradientView.bringSubviewToFront(shimmerView)
 
 		bag += gradientView.didLayoutSignal.onValue { _ in
 			CATransaction.begin()
@@ -152,14 +152,14 @@ extension GradientView: Viewable {
 			layer.bounds = gradientView.layer.bounds
 			layer.frame = gradientView.layer.frame
 			layer.position = gradientView.layer.position
-            orbLayer.frame = orbContainerView.bounds
-            orbLayer.cornerRadius = orbContainerView.bounds.width / 2
+			orbLayer.frame = orbContainerView.bounds
+			orbLayer.cornerRadius = orbContainerView.bounds.width / 2
 
-            shimmerLayer.frame = shimmerView.frame
-            shimmerLayer.bounds = shimmerView.bounds.insetBy(
-                dx: -0.5 * shimmerView.bounds.size.width,
-                dy: -0.5 * shimmerView.bounds.size.height
-            )
+			shimmerLayer.frame = shimmerView.frame
+			shimmerLayer.bounds = shimmerView.bounds.insetBy(
+				dx: -0.5 * shimmerView.bounds.size.width,
+				dy: -0.5 * shimmerView.bounds.size.height
+			)
 			CATransaction.commit()
 		}
 
@@ -167,13 +167,21 @@ extension GradientView: Viewable {
 			let signal = $gradientOption.atOnce().filter(predicate: { $0 != nil }).distinct()
 
 			bag += signal.onFirstValue({ gradientOption in
-                gradientOption?.applySettings(orbLayer: orbLayer, traitCollection: gradientView.traitCollection)
+				gradientOption?
+					.applySettings(
+						orbLayer: orbLayer,
+						traitCollection: gradientView.traitCollection
+					)
 				applySettings(layer, gradientView.traitCollection)
 			})
 
 			bag += signal.skip(first: 1)
 				.onValue({ gradientOption in
-                    gradientOption?.applySettings(orbLayer: orbLayer, traitCollection: gradientView.traitCollection)
+					gradientOption?
+						.applySettings(
+							orbLayer: orbLayer,
+							traitCollection: gradientView.traitCollection
+						)
 					applySettingsWithAnimation(layer, gradientView.traitCollection)
 				})
 		})
@@ -183,29 +191,35 @@ extension GradientView: Viewable {
 				lhs.userInterfaceStyle == rhs.userInterfaceStyle
 			})
 			.onValue({ traitCollection in
-                gradientOption?.applySettings(orbLayer: orbLayer, traitCollection: gradientView.traitCollection)
+				gradientOption?
+					.applySettings(
+						orbLayer: orbLayer,
+						traitCollection: gradientView.traitCollection
+					)
 				applySettings(layer, traitCollection)
 			})
-        
-        gradientView.alpha = shouldShowGradient ? 1 : 0
-        
-        bag += $shouldShowGradient.animated(style: .easeOut(duration: 0.5)) { shoulShow in
-            gradientView.alpha = shoulShow ? 1 : 0
-        }
-        
-        bag += $shouldShowGradient.animated(mapStyle: { shouldShow in
-            shouldShow ? SpringAnimationStyle.heavyBounce(delay: 0.1, duration: 2) : SpringAnimationStyle.lightBounce(duration: 0)
-        }) { shoulShow in
-            if shoulShow {
-                shimmerView.transform = CGAffineTransform(
-                    translationX: gradientView.frame.width
-                        + (shimmerView.frame.width * 1.25),
-                    y: 0
-                )
-            } else {
-                shimmerView.transform = .identity
-            }
-        }
+
+		gradientView.alpha = shouldShowGradient ? 1 : 0
+
+		bag += $shouldShowGradient.animated(style: .easeOut(duration: 0.5)) { shoulShow in
+			gradientView.alpha = shoulShow ? 1 : 0
+		}
+
+		bag += $shouldShowGradient.animated(mapStyle: { shouldShow in
+			shouldShow
+				? SpringAnimationStyle.heavyBounce(delay: 0.1, duration: 2)
+				: SpringAnimationStyle.lightBounce(duration: 0)
+		}) { shoulShow in
+			if shoulShow {
+				shimmerView.transform = CGAffineTransform(
+					translationX: gradientView.frame.width
+						+ (shimmerView.frame.width * 1.25),
+					y: 0
+				)
+			} else {
+				shimmerView.transform = .identity
+			}
+		}
 
 		return (gradientView, bag)
 	}
