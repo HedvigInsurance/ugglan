@@ -20,11 +20,7 @@ public class EmbarkState {
 	let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
 	let bag = DisposeBag()
 
-	public init() {
-		defer {
-			startTracking()
-		}
-	}
+	public init() { defer { startTracking() } }
 
 	enum AnimationDirection {
 		case forwards
@@ -102,9 +98,7 @@ public class EmbarkState {
 			} else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {
 				EmbarkTrackingEvent(title: "Offer Redirect", properties: [:]).send()
 				externalRedirectSignal.value = .offer(
-					ids: offerRedirectKeys.flatMap { key in
-						store.getValues(key: key) ?? []
-					}
+					ids: offerRedirectKeys.flatMap { key in store.getValues(key: key) ?? [] }
 				)
 			} else {
 				currentPassageSignal.value = resultingPassage

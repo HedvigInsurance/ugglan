@@ -29,9 +29,7 @@ extension ResultMap {
 	}
 
 	func getValues(at path: String) -> Either<[String], String>? {
-		guard let value = deepFind(path) else {
-			return nil
-		}
+		guard let value = deepFind(path) else { return nil }
 
 		if let values = value as? [String] {
 			return .make(values)
@@ -181,8 +179,7 @@ extension GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
 
 extension ResultMap {
 	func insertInto(store: EmbarkStore, basedOn query: GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery) {
-		query.data.queryResults.forEach { queryResult in
-			let values = getValues(at: queryResult.key)
+		query.data.queryResults.forEach { queryResult in let values = getValues(at: queryResult.key)
 
 			switch values {
 			case let .left(array):
@@ -193,18 +190,15 @@ extension ResultMap {
 							value: value
 						)
 					}
-			case let .right(value):
-				store.setValue(key: queryResult.as, value: value)
-			case .none:
-				break
+			case let .right(value): store.setValue(key: queryResult.as, value: value)
+			case .none: break
 			}
 		}
 	}
 
 	func insertInto(store: EmbarkStore, basedOn mutation: GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation) {
 		mutation.data.mutationResults.compactMap { $0 }
-			.forEach { mutationResult in
-				let values = getValues(at: mutationResult.key)
+			.forEach { mutationResult in let values = getValues(at: mutationResult.key)
 
 				switch values {
 				case let .left(array):
@@ -215,10 +209,8 @@ extension ResultMap {
 								value: value
 							)
 						}
-				case let .right(value):
-					store.setValue(key: mutationResult.as, value: value)
-				case .none:
-					break
+				case let .right(value): store.setValue(key: mutationResult.as, value: value)
+				case .none: break
 				}
 			}
 	}
