@@ -46,7 +46,7 @@ extension DiscountCodeSection: Presentable {
 					icon: .left(image: hCoreUIAssets.circularPlus.image, width: 20)
 				)
 			} else {
-                button.title.value = "Remove discount"
+				button.title.value = "Remove discount"
 				button.type.value = .transparentLarge(textColor: .brand(.destructive))
 			}
 		}
