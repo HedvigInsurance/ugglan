@@ -46,7 +46,7 @@ extension RedeemDiscount: Presentable {
 		form.appendSpacing(.custom(24))
 
 		let submitButton = Button(
-			title: "Save",
+            title: L10n.generalSaveButton,
 			type: .standard(
 				backgroundColor: .brand(.secondaryButtonBackgroundColor),
 				textColor: .brand(.secondaryButtonTextColor)
@@ -88,7 +88,7 @@ extension RedeemDiscount: Presentable {
 											hCoreUIAssets.circularCheckmark
 												.image
 										),
-										body: "Discount added"
+                                        body: L10n.Offer.discountAddedToastbar
 									)
 								)
 								completion(.success)
@@ -96,9 +96,8 @@ extension RedeemDiscount: Presentable {
 							.onError { error in
 								viewController.present(
 									Alert<Void>(
-										title: "Sorry, that code doesn't exist",
-										message:
-											"Make sure you have spelled the code correctly.",
+                                        title: L10n.Offer.discountErrorAlertTitle,
+										message: L10n.Offer.discountErrorAlertBody,
 										actions: [
 											.init(
 												title: L10n.alertOk,

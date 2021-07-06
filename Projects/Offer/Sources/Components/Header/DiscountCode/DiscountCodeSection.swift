@@ -28,7 +28,7 @@ extension DiscountCodeSection: Presentable {
 		section.append(row)
 
 		let button = Button(
-			title: "Add discount code",
+            title: L10n.Offer.addDiscountButton,
 			type: .iconTransparent(
 				textColor: .brand(.primaryText()),
 				icon: .left(image: hCoreUIAssets.circularPlus.image, width: 20)
@@ -40,13 +40,13 @@ extension DiscountCodeSection: Presentable {
 
 		bag += state.dataSignal.onValue { data in
 			if data.redeemedCampaigns.isEmpty {
-				button.title.value = "Add discount code"
+				button.title.value = L10n.Offer.addDiscountButton
 				button.type.value = .iconTransparent(
 					textColor: .brand(.primaryText()),
 					icon: .left(image: hCoreUIAssets.circularPlus.image, width: 20)
 				)
 			} else {
-				button.title.value = "Remove discount"
+                button.title.value = L10n.Offer.removeDiscountButton
 				button.type.value = .transparentLarge(textColor: .brand(.destructive))
 			}
 		}
@@ -66,9 +66,9 @@ extension DiscountCodeSection: Presentable {
 						section.viewController?
 							.present(
 								Alert<Void>(
-									title: "Unable to remove discount",
+                                    title: L10n.Offer.removeDiscountErrorAlertTitle,
 									message:
-										"Try again later.",
+                                        L10n.Offer.removeDiscountErrorAlertBody,
 									actions: [
 										.init(
 											title: L10n.alertOk,
