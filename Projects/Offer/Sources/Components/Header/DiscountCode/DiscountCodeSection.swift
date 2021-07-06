@@ -28,7 +28,7 @@ extension DiscountCodeSection: Presentable {
 		section.append(row)
 
 		let button = Button(
-            title: L10n.Offer.addDiscountButton,
+			title: L10n.Offer.addDiscountButton,
 			type: .iconTransparent(
 				textColor: .brand(.primaryText()),
 				icon: .left(image: hCoreUIAssets.circularPlus.image, width: 20)
@@ -92,6 +92,7 @@ extension DiscountCodeSection: Presentable {
         }
         
 		bag += button.onTapSignal.onValue { _ in
+<<<<<<< HEAD
             let redeemDiscount = RedeemDiscount()
             section.viewController?
                 .present(
@@ -102,6 +103,43 @@ extension DiscountCodeSection: Presentable {
                         .largeTitleDisplayMode(.never),
                     ]
                 )
+=======
+			if discountsPresent.value {
+				loadableButton.isLoadingSignal.value = true
+				state.removeRedeemedCampaigns()
+					.onValue { _ in
+						loadableButton.isLoadingSignal.value = false
+					}
+					.onError { _ in
+						loadableButton.isLoadingSignal.value = false
+						section.viewController?
+							.present(
+								Alert<Void>(
+									title: L10n.Offer.removeDiscountErrorAlertTitle,
+									message:
+										L10n.Offer.removeDiscountErrorAlertBody,
+									actions: [
+										.init(
+											title: L10n.alertOk,
+											action: { () }
+										)
+									]
+								)
+							)
+					}
+			} else {
+				let redeemDiscount = RedeemDiscount()
+				section.viewController?
+					.present(
+						redeemDiscount.wrappedInCloseButton(),
+						style: .detented(.scrollViewContentSize(20), .large),
+						options: [
+							.defaults, .prefersLargeTitles(false),
+							.largeTitleDisplayMode(.never),
+						]
+					)
+			}
+>>>>>>> 80f791ce14278ee361d8f5e47d87670cbe18ba67
 		}
 
 		return (section, bag)
