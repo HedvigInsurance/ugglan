@@ -5,14 +5,16 @@ import Market
 import SwiftUI
 import hCore
 import hGraphQL
+import Presentation
 
-@available(iOS 13, *) struct Debug: View {
+@available(iOS 13, *) struct Debug: View, Presentable {
 	enum EnvironmentOption: String, CaseIterable {
 		case production = "Production"
 		case staging = "Staging"
 		case custom = "Custom"
 	}
 
+    @State private var dismissAction: () -> Void = {}
 	@State private var pickedEnvironment: EnvironmentOption
 	@State private var endpointURL: String = ""
 	@State private var wsEndpointURL: String = ""
@@ -141,7 +143,7 @@ import hGraphQL
 				Alert(title: Text("Endpoint config is faulty"), dismissButton: .default(Text("OK!")))
 			}
 			.navigationBarItems(
-				trailing: SwiftUI.Button(
+				leading: SwiftUI.Button(
 					"Update",
 					action: {
 						switch self.pickedEnvironment {
@@ -177,10 +179,26 @@ import hGraphQL
 						ApplicationState.preserveState(.loggedIn)
 						ApolloClient.saveToken(token: self.authorizationToken)
 					}
-				)
+				),
+                trailing: SwiftUI.Button("Close") {
+                    self.dismissAction()
+                }
 			)
 			.navigationBarTitle(Text("Wizard 🧙‍♂️"), displayMode: .large)
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
 	}
+    
+    func materialize() -> (UIHostingController<Self>, Future<Void>) {
+        
+        let future = Future<Void> { completion in
+            self.dismissAction = {
+                completion(.success)
+            }
+            
+            return NilDisposer()
+        }
+        
+        return (UIHostingController(rootView: self), future)
+    }
 }
