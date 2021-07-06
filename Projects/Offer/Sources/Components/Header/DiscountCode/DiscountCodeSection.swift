@@ -91,16 +91,16 @@ extension DiscountCodeSection: Presentable {
 		}
 
 		bag += button.onTapSignal.onValue { _ in
-            let redeemDiscount = RedeemDiscount()
-            section.viewController?
-                .present(
-                    redeemDiscount.wrappedInCloseButton(),
-                    style: .detented(.scrollViewContentSize(20), .large),
-                    options: [
-                        .defaults, .prefersLargeTitles(false),
-                        .largeTitleDisplayMode(.never),
-                    ]
-                )
+			let redeemDiscount = RedeemDiscount()
+			section.viewController?
+				.present(
+					redeemDiscount.wrappedInCloseButton(),
+					style: .detented(.scrollViewContentSize(20), .large),
+					options: [
+						.defaults, .prefersLargeTitles(false),
+						.largeTitleDisplayMode(.never),
+					]
+				)
 		}
 
 		return (section, bag)
