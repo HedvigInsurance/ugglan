@@ -249,19 +249,25 @@ extension Offer: Presentable {
 		let bag = DisposeBag()
 
 		bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }
-			.distinct()
 			.wait(until: state.isLoadingSignal.map { !$0 })
+			.distinct()
 			.delay(by: 0.1)
 			.onValue { title in
 				viewController.navigationItem.titleView = nil
 				viewController.title = nil
 
-				let fadeTextAnimation = CATransition()
-				fadeTextAnimation.duration = 0.25
-				fadeTextAnimation.type = .fade
+				if let navigationBar = viewController.navigationController?.navigationBar,
+					navigationBar.layer.animation(forKey: "fadeText") == nil
+				{
 
-				viewController.navigationController?.navigationBar.layer
-					.add(fadeTextAnimation, forKey: "fadeText")
+					let fadeTextAnimation = CATransition()
+					fadeTextAnimation.duration = 0.25
+					fadeTextAnimation.type = .fade
+					fadeTextAnimation.fillMode = .both
+
+					navigationBar.layer
+						.add(fadeTextAnimation, forKey: "fadeText")
+				}
 
 				switch title {
 				case .logo:
