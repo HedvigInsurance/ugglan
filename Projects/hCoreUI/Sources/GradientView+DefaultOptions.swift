@@ -3,7 +3,7 @@ import Flow
 import UIKit
 
 extension GradientView {
-	public struct GradientOption {
+    public struct GradientOption: Equatable {
 		public init(
 			preset: GradientView.Preset,
 			shouldShimmer: Bool = true,

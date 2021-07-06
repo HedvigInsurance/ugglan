@@ -16,14 +16,55 @@ public struct GradientView {
 }
 
 extension GradientView: Viewable {
-	func applySettings(_ layer: CAGradientLayer, _ traitCollection: UITraitCollection) {
+    func createAnimation<T>(for keyPath: KeyPath<CAGradientLayer, T>, from: T, to: T) -> CABasicAnimation {
+        let stringKeyPath = keyPath._kvcKeyPathString
+        
+        let animation = CABasicAnimation(keyPath: stringKeyPath)
+        animation.fromValue = from
+        animation.toValue = to
+        animation.fillMode = .forwards
+        animation.duration = 2
+        
+        return animation
+    }
+    
+    func applySettings(_ layer: CAGradientLayer, _ traitCollection: UITraitCollection) {
+        if let gradientOption = gradientOption {
+        layer.locations = gradientOption.locations
+                    layer.startPoint = gradientOption.startPoint
+                    layer.endPoint = gradientOption.endPoint
+                    layer.transform = gradientOption.transform
+                    layer.colors = gradientOption.backgroundColors(traitCollection: traitCollection)
+                        .map { $0.cgColor }
+        }
+    }
+    
+	func applySettingsWithAnimation(_ layer: CAGradientLayer, _ traitCollection: UITraitCollection) {
 		if let gradientOption = gradientOption {
-			layer.locations = gradientOption.locations
-			layer.startPoint = gradientOption.startPoint
-			layer.endPoint = gradientOption.endPoint
-			layer.transform = gradientOption.transform
-			layer.colors = gradientOption.backgroundColors(traitCollection: traitCollection)
-				.map { $0.cgColor }
+            let groupAnimation = CAAnimationGroup()
+            groupAnimation.duration = 2
+            
+            let locationsAnimation = createAnimation(for: \.locations, from: layer.locations, to: gradientOption.locations)
+            let startPointAnimation = createAnimation(for: \.startPoint, from: layer.startPoint, to: gradientOption.startPoint)
+            let endPointAnimation = createAnimation(for: \.endPoint, from: layer.endPoint, to: gradientOption.endPoint)
+            let transformAnimation = createAnimation(for: \.transform, from: layer.transform, to: gradientOption.transform)
+            
+            let colors =  gradientOption.backgroundColors(traitCollection: traitCollection)
+                .map { $0.cgColor }
+            
+            let colorsAnimation = createAnimation(for: \.colors, from: layer.colors, to: colors)
+            
+            groupAnimation.animations = [
+                locationsAnimation,
+                startPointAnimation,
+                endPointAnimation,
+                transformAnimation,
+                colorsAnimation
+            ]
+            
+            applySettings(layer, traitCollection)
+            
+            layer.add(groupAnimation, forKey: "groupLayerAnimation")
 		}
 	}
 
@@ -89,17 +130,34 @@ extension GradientView: Viewable {
 			layer.position = gradientView.layer.position
 			CATransaction.commit()
 		}
+        
+        bag += gradientView.didMoveToWindowSignal.onValue({ _ in
+            let signal = $gradientOption.atOnce().filter(predicate: { $0 != nil }).distinct()
+            
+            bag += signal.onFirstValue({ gradientOption in
+                applySettings(layer, gradientView.traitCollection)
+            })
+            
+            bag += signal.skip(first: 1).onValue({ gradientOption in
+                applySettingsWithAnimation(layer, gradientView.traitCollection)
+            })
+        })
+        
+        bag += gradientView.traitCollectionSignal.distinct({ lhs, rhs in
+            lhs.userInterfaceStyle == rhs.userInterfaceStyle
+        }).onValue({ traitCollection in
+            applySettings(layer, traitCollection)
+        })
 
 		bag += combineLatest(
 			$shouldShowGradient.atOnce(),
 			gradientView.traitCollectionSignal.atOnce(),
-			$gradientOption.atOnce()
+            $gradientOption.atOnce()
 		)
 		.onValueDisposePrevious { (shouldShow, traitCollection, _) -> Disposable? in
 			let innerBag = DisposeBag()
 
 			let animatedLayer = self.shimmerLayer
-			applySettings(layer, traitCollection)
 
 			if shouldShow, let gradientOption = gradientOption {
 				shimmerView.layer.addSublayer(animatedLayer)
