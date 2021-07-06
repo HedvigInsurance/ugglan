@@ -28,7 +28,7 @@ extension DiscountCodeSection: Presentable {
 		section.append(row)
 
 		let button = Button(
-            title: L10n.Offer.addDiscountButton,
+			title: L10n.Offer.addDiscountButton,
 			type: .iconTransparent(
 				textColor: .brand(.primaryText()),
 				icon: .left(image: hCoreUIAssets.circularPlus.image, width: 20)
@@ -46,7 +46,7 @@ extension DiscountCodeSection: Presentable {
 					icon: .left(image: hCoreUIAssets.circularPlus.image, width: 20)
 				)
 			} else {
-                button.title.value = L10n.Offer.removeDiscountButton
+				button.title.value = L10n.Offer.removeDiscountButton
 				button.type.value = .transparentLarge(textColor: .brand(.destructive))
 			}
 		}
@@ -66,9 +66,9 @@ extension DiscountCodeSection: Presentable {
 						section.viewController?
 							.present(
 								Alert<Void>(
-                                    title: L10n.Offer.removeDiscountErrorAlertTitle,
+									title: L10n.Offer.removeDiscountErrorAlertTitle,
 									message:
-                                        L10n.Offer.removeDiscountErrorAlertBody,
+										L10n.Offer.removeDiscountErrorAlertBody,
 									actions: [
 										.init(
 											title: L10n.alertOk,
