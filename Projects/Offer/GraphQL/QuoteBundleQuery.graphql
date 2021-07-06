@@ -40,15 +40,7 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
         email
         displayName(locale: $locale)
         detailsTable(locale: $locale) {
-          title
-          sections {
-            title
-            rows {
-              title
-              subtitle
-              value
-            }
-          }
+          ...DetailsTableFragment
         }
         perils(locale: $locale) {
           ...PerilFragment
