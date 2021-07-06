@@ -2,10 +2,10 @@ import Apollo
 import Flow
 import Foundation
 import Market
+import Presentation
 import SwiftUI
 import hCore
 import hGraphQL
-import Presentation
 
 @available(iOS 13, *) struct Debug: View, Presentable {
 	enum EnvironmentOption: String, CaseIterable {
@@ -14,7 +14,7 @@ import Presentation
 		case custom = "Custom"
 	}
 
-    @State private var dismissAction: () -> Void = {}
+	@State private var dismissAction: () -> Void = {}
 	@State private var pickedEnvironment: EnvironmentOption
 	@State private var endpointURL: String = ""
 	@State private var wsEndpointURL: String = ""
@@ -180,25 +180,16 @@ import Presentation
 						ApolloClient.saveToken(token: self.authorizationToken)
 					}
 				),
-                trailing: SwiftUI.Button("Close") {
-                    self.dismissAction()
-                }
+				trailing: SwiftUI.Button("Close") { self.dismissAction() }
 			)
 			.navigationBarTitle(Text("Wizard 🧙‍♂️"), displayMode: .large)
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
 	}
-    
-    func materialize() -> (UIHostingController<Self>, Future<Void>) {
-        
-        let future = Future<Void> { completion in
-            self.dismissAction = {
-                completion(.success)
-            }
-            
-            return NilDisposer()
-        }
-        
-        return (UIHostingController(rootView: self), future)
-    }
+	func materialize() -> (UIHostingController<Self>, Future<Void>) {
+		let future = Future<Void> { completion in self.dismissAction = { completion(.success) }
+			return NilDisposer()
+		}
+		return (UIHostingController(rootView: self), future)
+	}
 }

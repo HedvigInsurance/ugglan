@@ -82,12 +82,8 @@ extension AppInfo: Presentable {
 
 			bag += debugGesture.signal(forState: .recognized)
 				.onValue { _ in
-					if #available(iOS 13, *) {                        
-						viewController.present(
-                            Debug(),
-							style: .detented(.large),
-                            options: []
-						)
+					if #available(iOS 13, *) {
+						viewController.present(Debug(), style: .detented(.large), options: [])
 					}
 				}
 		}
