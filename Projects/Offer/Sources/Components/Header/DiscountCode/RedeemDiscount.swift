@@ -8,11 +8,11 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct DiscountSheet {
+struct RedeemDiscount {
 	@Inject var state: OfferState
 }
 
-extension DiscountSheet: Presentable {
+extension RedeemDiscount: Presentable {
 	public func materialize() -> (UIViewController, Future<Void>) {
 		let viewController = UIViewController()
 		viewController.title = L10n.referralAddcouponHeadline

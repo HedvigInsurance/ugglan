@@ -220,12 +220,12 @@ extension Debug {
 				)
 		}
 
-		MutationMock(GraphQL.RedeemCodeMutation.self, duration: 2) { operation in
+		MutationMock(GraphQL.RedeemDiscountCodeMutation.self, duration: 2) { operation in
 			if operation.code == "hello" {
 				throw MockError.failed
 			}
 
-			let mockData = GraphQL.RedeemCodeMutation.Data(
+			let mockData = GraphQL.RedeemDiscountCodeMutation.Data(
 				redeemCodeV2: .makeSuccessfulRedeemResult(
 					cost:
 						.init(
@@ -235,8 +235,6 @@ extension Debug {
 						),
 					campaigns: [
 						.init(
-							code: "axel",
-							incentive: .makeFreeMonths(quantity: 3),
 							displayValue: "3 free months"
 						)
 					]

@@ -39,14 +39,14 @@ extension DiscountCodeSection: Presentable {
 		bag += row.append(loadableButton.alignedTo(alignment: .center))
 
 		bag += state.dataSignal.onValue { data in
-			if data.redeemedCampaigns.count == 0 {
+			if data.redeemedCampaigns.isEmpty {
 				button.title.value = "Add discount code"
 				button.type.value = .iconTransparent(
 					textColor: .brand(.primaryText()),
 					icon: .left(image: hCoreUIAssets.circularPlus.image, width: 20)
 				)
 			} else {
-				button.title.value = "Remove discount"
+                button.title.value = "Remove discount"
 				button.type.value = .transparentLarge(textColor: .brand(.destructive))
 			}
 		}
@@ -79,10 +79,10 @@ extension DiscountCodeSection: Presentable {
 							)
 					}
 			} else {
-				let addDiscountSheet = DiscountSheet()
+				let redeemDiscount = RedeemDiscount()
 				section.viewController?
 					.present(
-						addDiscountSheet.wrappedInCloseButton(),
+						redeemDiscount.wrappedInCloseButton(),
 						style: .detented(.scrollViewContentSize(20), .large),
 						options: [
 							.defaults, .prefersLargeTitles(false),
