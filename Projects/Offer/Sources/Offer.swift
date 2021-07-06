@@ -296,21 +296,14 @@ extension Offer: Presentable {
 		}
 
 		let bag = DisposeBag()
-
-<<<<<<< HEAD
-		bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }.distinct()
-=======
 		bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }
 			.distinct()
 			.wait(until: state.isLoadingSignal.map { !$0 })
 			.delay(by: 0.1)
->>>>>>> APP-78-offer-screen
 			.onValue { title in
 				viewController.navigationItem.titleView = nil
 				viewController.title = nil
 
-<<<<<<< HEAD
-=======
 				let fadeTextAnimation = CATransition()
 				fadeTextAnimation.duration = 0.25
 				fadeTextAnimation.type = .fade
@@ -318,7 +311,6 @@ extension Offer: Presentable {
 				viewController.navigationController?.navigationBar.layer
 					.add(fadeTextAnimation, forKey: "fadeText")
 
->>>>>>> APP-78-offer-screen
 				switch title {
 				case .logo:
 					viewController.navigationItem.titleView = .titleWordmarkView
