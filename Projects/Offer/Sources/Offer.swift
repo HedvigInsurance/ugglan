@@ -141,7 +141,13 @@ class OfferState {
 	}
 
 	func updateRedeemedCampaigns(discountCode: String) -> Future<Void> {
-        return self.client.perform(mutation: GraphQL.RedeemDiscountCodeMutation(code: discountCode, locale: Localization.Locale.currentLocale.asGraphQLLocale()))
+		return self.client
+			.perform(
+				mutation: GraphQL.RedeemDiscountCodeMutation(
+					code: discountCode,
+					locale: Localization.Locale.currentLocale.asGraphQLLocale()
+				)
+			)
 			.flatMap { data in
 				guard let campaigns = data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns,
 					let cost = data.redeemCodeV2.asSuccessfulRedeemResult?.cost
