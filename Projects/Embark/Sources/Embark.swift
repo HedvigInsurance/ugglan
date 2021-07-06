@@ -177,7 +177,7 @@ extension Embark: Presentable {
 			)
 			.valueSignal.compactMap { $0.embarkStory }
 			.onValue { embarkStory in
-                activityIndicator.removeFromSuperview()
+				activityIndicator.removeFromSuperview()
 				self.state.storySignal.value = embarkStory
 				self.state.passagesSignal.value = embarkStory.passages
 				self.state.startPassageIDSignal.value = embarkStory.startPassage

@@ -49,38 +49,40 @@ class EmbarkStore {
 	private func parseComputedExpression(_ expression: String) -> String? {
 		expression.tokens.expression?.evaluate(store: self)
 	}
-    
-    private func arrayRegexFor(key: String) -> String {
-        return "\(key)\\[[0-9]+\\]$"
-    }
+
+	private func arrayRegexFor(key: String) -> String {
+		return "\(key)\\[[0-9]+\\]$"
+	}
 
 	func getValues(key: String) -> [String]? {
-        if let computedExpression = computedValues[key] { return [parseComputedExpression(computedExpression)].compactMap { $0 } }
-        
+		if let computedExpression = computedValues[key] {
+			return [parseComputedExpression(computedExpression)].compactMap { $0 }
+		}
+
 		if let store = revisions.last {
-            let filteredStore = store.filter { (key, value) in
-                key.range(of: arrayRegexFor(key: key), options: .regularExpression) != nil
-            }
-            
-            if !filteredStore.isEmpty {
-                return Array(filteredStore.values)
-            }
-            
-            if let value = store[key] {
-                return [value]
-            }
-        }
+			let filteredStore = store.filter { (key, value) in
+				key.range(of: arrayRegexFor(key: key), options: .regularExpression) != nil
+			}
+
+			if !filteredStore.isEmpty {
+				return Array(filteredStore.values)
+			}
+
+			if let value = store[key] {
+				return [value]
+			}
+		}
 
 		return nil
 	}
-    
-    func getValue(key: String) -> String? {
-        return getValues(key: key)?.first
-    }
-    
-    func getValueWithNull(key: String) -> String {
-        getValue(key: key) ?? "null"
-    }
+
+	func getValue(key: String) -> String? {
+		return getValues(key: key)?.first
+	}
+
+	func getValueWithNull(key: String) -> String {
+		getValue(key: key) ?? "null"
+	}
 
 	func getPrefillValue(key: String) -> String? { prefill[key] }
 

@@ -12,7 +12,7 @@ public enum ExternalRedirect {
 public class EmbarkState {
 	var store = EmbarkStore()
 	var edgePanGestureRecognizer: UIScreenEdgePanGestureRecognizer?
-    let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
+	let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
 	let startPassageIDSignal = ReadWriteSignal<String?>(nil)
 	let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
 	let currentPassageSignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
@@ -20,9 +20,11 @@ public class EmbarkState {
 	let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
 	let bag = DisposeBag()
 
-	public init() { defer {
-        startTracking()
-    } }
+	public init() {
+		defer {
+			startTracking()
+		}
+	}
 
 	enum AnimationDirection {
 		case forwards
@@ -43,13 +45,13 @@ public class EmbarkState {
 		})
 		passageHistorySignal.value = []
 		store = EmbarkStore()
-        store.computedValues =
-            storySignal.value?.computedStoreValues?
-            .reduce([:]) { (prev, computedValue) -> [String: String] in
-                var computedValues: [String: String] = prev
-                computedValues[computedValue.key] = computedValue.value
-                return computedValues
-            } ?? [:]
+		store.computedValues =
+			storySignal.value?.computedStoreValues?
+			.reduce([:]) { (prev, computedValue) -> [String: String] in
+				var computedValues: [String: String] = prev
+				computedValues[computedValue.key] = computedValue.value
+				return computedValues
+			} ?? [:]
 	}
 
 	func startTracking() {
@@ -100,9 +102,9 @@ public class EmbarkState {
 			} else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {
 				EmbarkTrackingEvent(title: "Offer Redirect", properties: [:]).send()
 				externalRedirectSignal.value = .offer(
-                    ids: offerRedirectKeys.flatMap { key in
-                        store.getValues(key: key) ?? []
-                    }
+					ids: offerRedirectKeys.flatMap { key in
+						store.getValues(key: key) ?? []
+					}
 				)
 			} else {
 				currentPassageSignal.value = resultingPassage

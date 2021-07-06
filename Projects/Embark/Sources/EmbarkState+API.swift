@@ -24,35 +24,35 @@ extension ResultMap {
 
 			return nil
 		}
-        
-        return self[path] ?? nil
+
+		return self[path] ?? nil
 	}
-    
-    func getValues(at path: String) -> Either<[String], String>? {
-        guard let value = deepFind(path) else {
-            return nil
-        }
-        
-        if let values = value as? [String] {
-            return .make(values)
-        } else if let values = value as? [Int] {
-            return .make(values.map { String($0) })
-        } else if let values = value as? [Float] {
-            return .make(values.map { String($0) })
-        } else if let values = value as? [Bool] {
-            return .make(values.map { String($0) })
-        } else if let value = value as? String {
-            return .make(value)
-        } else if let value = value as? Int {
-            return .make(String(value))
-        } else if let value = value as? Float {
-            return .make(String(value))
-        } else if let value = value as? Bool {
-            return .make(String(value))
-        }
-        
-        return nil
-    }
+
+	func getValues(at path: String) -> Either<[String], String>? {
+		guard let value = deepFind(path) else {
+			return nil
+		}
+
+		if let values = value as? [String] {
+			return .make(values)
+		} else if let values = value as? [Int] {
+			return .make(values.map { String($0) })
+		} else if let values = value as? [Float] {
+			return .make(values.map { String($0) })
+		} else if let values = value as? [Bool] {
+			return .make(values.map { String($0) })
+		} else if let value = value as? String {
+			return .make(value)
+		} else if let value = value as? Int {
+			return .make(String(value))
+		} else if let value = value as? Float {
+			return .make(String(value))
+		} else if let value = value as? Bool {
+			return .make(String(value))
+		}
+
+		return nil
+	}
 }
 
 extension GraphQL.ApiSingleVariableFragment {
@@ -181,37 +181,45 @@ extension GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
 
 extension ResultMap {
 	func insertInto(store: EmbarkStore, basedOn query: GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery) {
-        query.data.queryResults.forEach { queryResult in
-            let values = getValues(at: queryResult.key)
-            
-            switch values {
-            case let .left(array):
-                array.enumerated().forEach { (offset, value) in
-                    store.setValue(key: "\(queryResult.as)[\(String(offset))]", value: value)
-                }
-            case let .right(value):
-                store.setValue(key: queryResult.as, value: value)
-            case .none:
-                break
-            }
+		query.data.queryResults.forEach { queryResult in
+			let values = getValues(at: queryResult.key)
+
+			switch values {
+			case let .left(array):
+				array.enumerated()
+					.forEach { (offset, value) in
+						store.setValue(
+							key: "\(queryResult.as)[\(String(offset))]",
+							value: value
+						)
+					}
+			case let .right(value):
+				store.setValue(key: queryResult.as, value: value)
+			case .none:
+				break
+			}
 		}
 	}
 
 	func insertInto(store: EmbarkStore, basedOn mutation: GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation) {
 		mutation.data.mutationResults.compactMap { $0 }
-            .forEach { mutationResult in
-                let values = getValues(at: mutationResult.key)
-                
-                switch values {
-                case let .left(array):
-                    array.enumerated().forEach { (offset, value) in
-                        store.setValue(key: "\(mutationResult.as)[\(String(offset))]", value: value)
-                    }
-                case let .right(value):
-                    store.setValue(key: mutationResult.as, value: value)
-                case .none:
-                    break
-                }
+			.forEach { mutationResult in
+				let values = getValues(at: mutationResult.key)
+
+				switch values {
+				case let .left(array):
+					array.enumerated()
+						.forEach { (offset, value) in
+							store.setValue(
+								key: "\(mutationResult.as)[\(String(offset))]",
+								value: value
+							)
+						}
+				case let .right(value):
+					store.setValue(key: mutationResult.as, value: value)
+				case .none:
+					break
+				}
 			}
 	}
 }
@@ -262,10 +270,9 @@ extension EmbarkState {
 				ApolloClient.headers(token: ApolloClient.retreiveToken()?.token) as [AnyHashable: Any]
 
 			let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
-            
+
 			return Future { completion in
 				urlSessionClient.sendRequest(urlRequest) { result in
-                    print(result)
 					switch result {
 					case .failure: break
 					case let .success((data, response)):
@@ -274,7 +281,6 @@ extension EmbarkState {
 								with: data,
 								options: []
 							) as? ResultMap {
-								print(result)
 								if let errors = result["errors"] as? [ResultMap] {
 									if let error = errors.first,
 										let message = error["message"]
