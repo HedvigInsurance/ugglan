@@ -15,6 +15,21 @@ enum CheckoutError: Error {
 }
 
 extension Checkout: Presentable {
+    func handleError(title: String, message: String, viewController: UIViewController, completion: @escaping () -> Void) {
+        let alert = Alert<Void>(
+            title: title,
+            message: message,
+            actions: [
+                Alert.Action(
+                    title: L10n.alertOk,
+                    action: completion
+                )
+            ]
+        )
+
+        viewController.present(alert)
+    }
+    
 	func materialize() -> (UIViewController, Future<Void>) {
 		let checkoutButton = CheckoutButton()
 		let viewController = AccessoryViewController(accessoryView: checkoutButton)
@@ -64,7 +79,7 @@ extension Checkout: Presentable {
 				section.append(emailRow)
 
 				let emailTextField = UITextField(
-					value: "",
+                    value: quoteBundle.quotes.first?.email ?? "",
 					placeholder: emailMasking.placeholderText ?? "",
 					style: .default
 				)
@@ -95,7 +110,10 @@ extension Checkout: Presentable {
 				ssnRow.append(ssnTextField)
 
 				bag += ssnMasking.applyMasking(ssnTextField)
-
+                
+                let shouldHideEmailField = quoteBundle.quotes.allSatisfy { $0.email != nil }
+                emailRow.isHidden = shouldHideEmailField
+                
 				bag += form.chainAllControlResponders()
 
 				let isValidSignal = combineLatest(
@@ -123,12 +141,15 @@ extension Checkout: Presentable {
 						)
 						.onValue { _ in
 							checkoutButton.$isLoading.value = false
+                            checkoutButton.$isEnabled.value = true
 						}
-					}
-
-				bag +=
-					isValidSignal
-					.bindTo(checkoutButton.$isEnabled)
+                        .onError { error in
+                            handleError(title: L10n.simpleSignFailedTitle, message: "Please re enter your information", viewController: viewController) {
+                                checkoutButton.$isEnabled.value = false
+                                checkoutButton.$isLoading.value = false
+                            }
+                        }
+                    }
 			})
 
 		return (
@@ -145,23 +166,10 @@ extension Checkout: Presentable {
 				}
 
 				func handleError() {
-					toggleAllowDismissal()
-					checkoutButton.$isLoading.value = false
-
-					let alert = Alert<Void>(
-						title: L10n.simpleSignFailedTitle,
-						message: L10n.simpleSignFailedMessage,
-						actions: [
-							Alert.Action(
-								title: L10n.alertOk,
-								action: { _ in
-
-								}
-							)
-						]
-					)
-
-					viewController.present(alert)
+                    self.handleError(title: L10n.simpleSignFailedTitle, message: L10n.simpleSignFailedMessage, viewController: viewController) {
+                        toggleAllowDismissal()
+                        checkoutButton.$isLoading.value = false
+                    }
 				}
 
 				bag += checkoutButton.onTapSignal.onValue { _ in
@@ -196,6 +204,9 @@ extension Checkout: Presentable {
 								completion(.success)
 							}
 						}
+                        .onError { error in
+                            handleError()
+                        }
 				}
 
 				return bag
