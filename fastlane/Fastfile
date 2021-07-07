@@ -85,13 +85,6 @@ platform :ios do
       )
 
       match(
-        type: "adhoc",
-        platform: "catalyst",
-        app_identifier: "com.hedvig.example.*",
-        force: true
-      )
-
-      match(
         type: "development",
         app_identifier: "com.hedvig.app",
         force: true
