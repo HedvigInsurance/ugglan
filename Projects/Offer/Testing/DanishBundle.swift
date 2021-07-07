@@ -117,8 +117,8 @@ extension GraphQL.QuoteBundleQuery.Data {
 					),
 				],
 				bundleCost: .init(
-					monthlyGross: .init(amount: "100", currency: "DKK"),
 					monthlyDiscount: .init(amount: "100", currency: "DKK"),
+					monthlyGross: .init(amount: "100", currency: "DKK"),
 					monthlyNet: .init(amount: "100", currency: "DKK")
 				),
 				frequentlyAskedQuestions: generateFrequentlyAskedQuestions(),

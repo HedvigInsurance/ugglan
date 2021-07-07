@@ -70,20 +70,31 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 				case .willHide: self.keyboardFrame = .zero
 				}
 
-				if let presentationController = self.viewController.navigationController?
-					.presentationController
-				{
-					if let lastViewController = self.viewController.navigationController?
-						.visibleViewController
-					{
-						PresentationStyle.Detent.set(
-							lastViewController.appliedDetents,
-							on: presentationController,
-							viewController: lastViewController,
-							keyboardAnimation: event.animation
-						)
+				guard let navigationController = self.viewController.navigationController else {
+					return
+				}
+
+				if var topController = navigationController.view.window?.rootViewController {
+					while let presentedViewController = topController.presentedViewController {
+						topController = presentedViewController
+					}
+
+					if topController == navigationController {
+						if let presentationController = navigationController
+							.presentationController,
+							let lastViewController = navigationController
+								.visibleViewController
+						{
+							PresentationStyle.Detent.set(
+								lastViewController.appliedDetents,
+								on: presentationController,
+								viewController: lastViewController,
+								keyboardAnimation: event.animation
+							)
+						}
 					}
 				}
+
 			}
 	}
 
@@ -328,129 +339,141 @@ extension PresentationStyle {
 			}
 		}
 	}
-    
-    private static func presentDetentedHandler(
-        _ viewController: UIViewController,
-        _ from: UIViewController,
-        _ options: PresentationOptions,
-        detents: [Detent],
-        modally: Bool
-    ) -> PresentingViewController.Result {
-        if #available(iOS 13, *) {
-            viewController.setLargeTitleDisplayMode(options)
 
-            if modally {
-                let vc = viewController.embededInNavigationController(options)
+	private static func presentDetentedHandler(
+		_ viewController: UIViewController,
+		_ from: UIViewController,
+		_ options: PresentationOptions,
+		detents: [Detent],
+		modally: Bool
+	) -> PresentingViewController.Result {
+		if #available(iOS 13, *) {
+			viewController.setLargeTitleDisplayMode(options)
 
-                let bag = DisposeBag()
+			if modally {
+				let vc = viewController.embededInNavigationController(options)
 
-                let delegate = DetentedTransitioningDelegate(
-                    detents: detents,
-                    wantsGrabber: options.contains(.wantsGrabber),
-                    viewController: viewController
-                )
-                bag.hold(delegate)
-                vc.transitioningDelegate = delegate
-                vc.modalPresentationStyle = .custom
+				let bag = DisposeBag()
 
-                return from.modallyPresentQueued(vc, options: options) {
-                    return Future { completion in
-                        PresentationStyle.modalPresentationDismissalSetup(for: vc, options: options)
-                            .onResult(completion)
-                        return bag
-                    }
-                }
-            } else {
-                let bag = DisposeBag()
+				let delegate = DetentedTransitioningDelegate(
+					detents: detents,
+					wantsGrabber: options.contains(.wantsGrabber),
+					viewController: viewController
+				)
+				bag.hold(delegate)
+				vc.transitioningDelegate = delegate
+				vc.modalPresentationStyle = .custom
 
-                if let navigationController = from.navigationController,
-                    let presentationController = navigationController.presentationController
-                {
-                    from.lastDetentIndex = getDetentIndex(on: presentationController)
+				return from.modallyPresentQueued(vc, options: options) {
+					return Future { completion in
+						PresentationStyle.modalPresentationDismissalSetup(
+							for: vc,
+							options: options
+						)
+						.onResult(completion)
+						return bag
+					}
+				}
+			} else {
+				let bag = DisposeBag()
 
-                    Self.Detent.set(
-                        detents,
-                        on: presentationController,
-                        viewController: viewController
-                    )
-                    setGrabber(
-                        on: presentationController,
-                        to: options.contains(.wantsGrabber)
-                    )
+				if let navigationController = from.navigationController,
+					let presentationController = navigationController.presentationController
+				{
+					from.lastDetentIndex = getDetentIndex(on: presentationController)
 
-                    bag += navigationController.willPopViewControllerSignal
-                        .wait(
-                            until: navigationController
-                                .interactivePopGestureRecognizer?
-                                .map { $0 == .possible || $0 == .ended }
-                                ?? ReadSignal(true)
-                        )
-                        .debug().filter(predicate: { $0 == viewController })
-                        .onValue { _ in
-                            guard
-                                let previousViewController =
-                                    navigationController.viewControllers
-                                    .last
-                            else { return }
+					Self.Detent.set(
+						detents,
+						on: presentationController,
+						viewController: viewController
+					)
+					setGrabber(
+						on: presentationController,
+						to: options.contains(.wantsGrabber)
+					)
 
-                            func handleDismiss() {
-                                navigationController.view.backgroundColor =
-                                    previousViewController.view
-                                    .backgroundColor
-                                Self.Detent.set(
-                                    previousViewController.appliedDetents,
-                                    on: presentationController,
-                                    viewController: previousViewController,
-                                    lastDetentIndex: previousViewController
-                                        .lastDetentIndex
-                                )
-                            }
+					bag += navigationController.willPopViewControllerSignal
+						.wait(
+							until: navigationController
+								.interactivePopGestureRecognizer?
+								.map { $0 == .possible || $0 == .ended }
+								?? ReadSignal(true)
+						)
+						.debug().filter(predicate: { $0 == viewController })
+						.onValue { _ in
+							guard
+								let previousViewController =
+									navigationController.viewControllers
+									.last
+							else { return }
 
-                            if navigationController.interactivePopGestureRecognizer?
-                                .state == .ended,
-                                !(navigationController.transitionCoordinator?
-                                    .isCancelled ?? false)
-                            {
-                                handleDismiss()
-                            } else if navigationController
-                                .interactivePopGestureRecognizer?
-                                .state == .possible
-                            {
-                                handleDismiss()
-                            }
-                        }
-                }
+							func handleDismiss() {
+								navigationController.view.backgroundColor =
+									previousViewController.view
+									.backgroundColor
+								Self.Detent.set(
+									previousViewController.appliedDetents,
+									on: presentationController,
+									viewController: previousViewController,
+									lastDetentIndex: previousViewController
+										.lastDetentIndex
+								)
+							}
 
-                let defaultPresentation = PresentationStyle.default.present(
-                    viewController,
-                    from: from,
-                    options: options
-                )
+							if navigationController.interactivePopGestureRecognizer?
+								.state == .ended,
+								!(navigationController.transitionCoordinator?
+									.isCancelled ?? false)
+							{
+								handleDismiss()
+							} else if navigationController
+								.interactivePopGestureRecognizer?
+								.state == .possible
+							{
+								handleDismiss()
+							}
+						}
+				}
 
-                return (
-                    defaultPresentation.result,
-                    {
-                        bag.dispose()
-                        return defaultPresentation.dismisser()
-                    }
-                )
-            }
-        } else {
-            if modally {
-                return PresentationStyle.modal.present(
-                    viewController,
-                    from: from,
-                    options: options
-                )
-            }
+				let defaultPresentation = PresentationStyle.default.present(
+					viewController,
+					from: from,
+					options: options
+				)
 
-            return PresentationStyle.default.present(viewController, from: from, options: options)
-        }
-    }
+				return (
+					defaultPresentation.result,
+					{
+						bag.dispose()
+						return defaultPresentation.dismisser()
+					}
+				)
+			}
+		} else {
+			if modally {
+				return PresentationStyle.modal.present(
+					viewController,
+					from: from,
+					options: options
+				)
+			}
+
+			return PresentationStyle.default.present(viewController, from: from, options: options)
+		}
+	}
 
 	public static func detented(_ detents: Detent..., modally: Bool = true) -> PresentationStyle {
-        PresentationStyle(name: "detented", present: { viewController, from, options in
-            return presentDetentedHandler(viewController, from, options, detents: detents, modally: modally)
-        })
+		PresentationStyle(
+			name: "detented",
+			present: { viewController, from, options in
+				return presentDetentedHandler(
+					viewController,
+					from,
+					options,
+					detents: detents,
+					modally: modally
+				)
+			}
+		)
 	}
 }

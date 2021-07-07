@@ -13,7 +13,7 @@ struct DiscountTag {
 extension DiscountTag: Presentable {
 	func materialize() -> (UIView, Disposable) {
 		let view = UIView()
-		view.isHidden = true
+		view.animationSafeIsHidden = true
 		view.backgroundColor = .tint(.lavenderOne)
 		let bag = DisposeBag()
 
@@ -44,13 +44,13 @@ extension DiscountTag: Presentable {
 		contentStackView.addArrangedSubview(titleLabel)
 
 		bag += state.dataSignal.map { $0.redeemedCampaigns.first }
-			.onValue { campaign in
+			.animated(style: SpringAnimationStyle.lightBounce()) { campaign in
 				guard let displayValue = campaign?.displayValue else {
-					view.isHidden = true
+					view.animationSafeIsHidden = true
 					return
 				}
 
-				view.isHidden = false
+				view.animationSafeIsHidden = false
 				titleLabel.value = displayValue
 			}
 

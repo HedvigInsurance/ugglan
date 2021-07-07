@@ -98,6 +98,10 @@ class OfferState {
 		case failed
 	}
 
+	enum UpdateRedeemedCampaigns: Error {
+		case failed
+	}
+
 	private func updateCacheStartDate(quoteId: String, date: String?) {
 		self.store.update(query: self.query) {
 			(storeData: inout GraphQL.QuoteBundleQuery.Data) in
@@ -122,6 +126,57 @@ class OfferState {
 
 			storeData.quoteBundle.inception.asIndependentInceptions?.inceptions = updatedInceptions
 		}
+	}
+
+	typealias Campaign = GraphQL.QuoteBundleQuery.Data.RedeemedCampaign
+
+	private func updateCacheRedeemedCampaigns(
+		cost: GraphQL.CostFragment,
+		campaigns: [Campaign]
+	) {
+		self.store.update(query: self.query) { (storeData: inout GraphQL.QuoteBundleQuery.Data) in
+			storeData.redeemedCampaigns = campaigns
+			storeData.quoteBundle.bundleCost.fragments.costFragment = cost
+		}
+	}
+
+	func updateRedeemedCampaigns(discountCode: String) -> Future<Void> {
+		return self.client
+			.perform(
+				mutation: GraphQL.RedeemDiscountCodeMutation(
+					code: discountCode,
+					locale: Localization.Locale.currentLocale.asGraphQLLocale()
+				)
+			)
+			.flatMap { data in
+				guard let campaigns = data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns,
+					let cost = data.redeemCodeV2.asSuccessfulRedeemResult?.cost
+				else {
+					return Future(error: UpdateRedeemedCampaigns.failed)
+				}
+
+				let mappedCampaigns = campaigns.map { campaign in
+					Campaign.init(
+						displayValue: campaign.displayValue
+					)
+				}
+
+				self.updateCacheRedeemedCampaigns(
+					cost: cost.fragments.costFragment,
+					campaigns: mappedCampaigns
+				)
+
+				return Future()
+			}
+	}
+
+	func removeRedeemedCampaigns() -> Future<Void> {
+		return self.client.perform(mutation: GraphQL.RemoveDiscountMutation())
+			.flatMap { data in
+				let cost = data.removeDiscountCode.cost
+				self.updateCacheRedeemedCampaigns(cost: cost.fragments.costFragment, campaigns: [])
+				return Future()
+			}
 	}
 
 	func updateStartDate(quoteId: String, date: Date?) -> Future<Date?> {
@@ -247,7 +302,6 @@ extension Offer: Presentable {
 		}
 
 		let bag = DisposeBag()
-
 		bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }
 			.wait(until: state.isLoadingSignal.map { !$0 })
 			.distinct()
