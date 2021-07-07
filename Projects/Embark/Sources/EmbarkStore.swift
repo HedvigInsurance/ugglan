@@ -50,12 +50,38 @@ class EmbarkStore {
 		expression.tokens.expression?.evaluate(store: self)
 	}
 
-	func getValue(key: String) -> String? {
-		if let computedExpression = computedValues[key] { return parseComputedExpression(computedExpression) }
+	private func arrayRegexFor(key: String) -> String {
+		return "\(key)\\[[0-9]+\\]$"
+	}
 
-		if let store = revisions.last { return store[key] }
+	func getValues(key: String) -> [String]? {
+		if let computedExpression = computedValues[key] {
+			return [parseComputedExpression(computedExpression)].compactMap { $0 }
+		}
+
+		if let store = revisions.last {
+			let filteredStore = store.filter { (key, value) in
+				key.range(of: arrayRegexFor(key: key), options: .regularExpression) != nil
+			}
+
+			if !filteredStore.isEmpty {
+				return Array(filteredStore.values)
+			}
+
+			if let value = store[key] {
+				return [value]
+			}
+		}
 
 		return nil
+	}
+
+	func getValue(key: String) -> String? {
+		return getValues(key: key)?.first
+	}
+
+	func getValueWithNull(key: String) -> String {
+		getValue(key: key) ?? "null"
 	}
 
 	func getPrefillValue(key: String) -> String? { prefill[key] }
@@ -159,7 +185,7 @@ class EmbarkStore {
 		if let binaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectBinaryExpression {
 			switch binaryExpression.binaryType {
 			case .equals:
-				if getValue(key: binaryExpression.key) == binaryExpression.value {
+				if getValueWithNull(key: binaryExpression.key) == binaryExpression.value {
 					return binaryExpression.to
 				}
 			case .lessThan:
@@ -189,7 +215,7 @@ class EmbarkStore {
 				}
 
 			case .notEquals:
-				if getValue(key: binaryExpression.key) != binaryExpression.value {
+				if getValueWithNull(key: binaryExpression.key) != binaryExpression.value {
 					return binaryExpression.to
 				}
 			case .__unknown: break
