@@ -3,23 +3,25 @@ import Foundation
 public enum Environment: Hashable {
 	case production
 	case staging
-	case custom(endpointURL: URL, wsEndpointURL: URL, assetsEndpointURL: URL)
+	case custom(endpointURL: URL, wsEndpointURL: URL, assetsEndpointURL: URL, webBaseURL: URL)
 
 	fileprivate struct RawCustomStorage: Codable {
 		let endpointURL: URL
 		let wsEndpointURL: URL
 		let assetsEndpointURL: URL
+		let webBaseURL: URL
 	}
 
 	public var rawValue: String {
 		switch self {
 		case .production: return "production"
 		case .staging: return "staging"
-		case let .custom(endpointURL, wsEndpointURL, assetsEndpointURL):
+		case let .custom(endpointURL, wsEndpointURL, assetsEndpointURL, webBaseURL):
 			let rawCustomStorage = RawCustomStorage(
 				endpointURL: endpointURL,
 				wsEndpointURL: wsEndpointURL,
-				assetsEndpointURL: assetsEndpointURL
+				assetsEndpointURL: assetsEndpointURL,
+				webBaseURL: webBaseURL
 			)
 			let data = try? JSONEncoder().encode(rawCustomStorage)
 
@@ -53,7 +55,8 @@ public enum Environment: Hashable {
 			self = .custom(
 				endpointURL: rawCustomStorage.endpointURL,
 				wsEndpointURL: rawCustomStorage.wsEndpointURL,
-				assetsEndpointURL: rawCustomStorage.assetsEndpointURL
+				assetsEndpointURL: rawCustomStorage.assetsEndpointURL,
+				webBaseURL: rawCustomStorage.webBaseURL
 			)
 		}
 	}
@@ -82,7 +85,7 @@ public enum Environment: Hashable {
 		switch self {
 		case .staging: return URL(string: "https://graphql.dev.hedvigit.com/graphql")!
 		case .production: return URL(string: "https://giraffe.hedvig.com/graphql")!
-		case let .custom(endpointUrl, _, _): return endpointUrl
+		case let .custom(endpointUrl, _, _, _): return endpointUrl
 		}
 	}
 
@@ -90,7 +93,7 @@ public enum Environment: Hashable {
 		switch self {
 		case .staging: return URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!
 		case .production: return URL(string: "wss://giraffe.hedvig.com/subscriptions")!
-		case let .custom(_, wsEndpointURL, _): return wsEndpointURL
+		case let .custom(_, wsEndpointURL, _, _): return wsEndpointURL
 		}
 	}
 
@@ -98,7 +101,14 @@ public enum Environment: Hashable {
 		switch self {
 		case .staging: return URL(string: "https://graphql.dev.hedvigit.com")!
 		case .production: return URL(string: "https://giraffe.hedvig.com")!
-		case let .custom(_, _, assetsUrl): return assetsUrl
+		case let .custom(_, _, assetsUrl, _): return assetsUrl
+		}
+	}
+	public var webBaseURL: URL {
+		switch self {
+		case .staging: return URL(string: "https://www.dev.hedvigit.com")!
+		case .production: return URL(string: "https://www.hedvig.com")!
+		case let .custom(_, _, _, webBaseURL): return webBaseURL
 		}
 	}
 }

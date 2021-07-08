@@ -40,15 +40,7 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
         email
         displayName(locale: $locale)
         detailsTable(locale: $locale) {
-          title
-          sections {
-            title
-            rows {
-              title
-              subtitle
-              value
-            }
-          }
+          ...DetailsTableFragment
         }
         perils(locale: $locale) {
           ...PerilFragment
@@ -64,16 +56,7 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
       }
     }
     bundleCost {
-      monthlyGross {
-        ...MonetaryAmountFragment
-      }
-      monthlyDiscount {
-        ...MonetaryAmountFragment
-      }
-      monthlyNet {
-        ...MonetaryAmountFragment
-      }
-      freeUntil
+      ...CostFragment
     }
     frequentlyAskedQuestions(locale: $locale) {
       id
@@ -86,6 +69,7 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
     appConfiguration {
       showCampaignManagement
       title
+      gradientOption
     }
   }
   signMethodForQuotes(input: $ids)

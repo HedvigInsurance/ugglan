@@ -3,7 +3,7 @@ import Flow
 import UIKit
 
 extension GradientView {
-	public struct GradientOption {
+	public struct GradientOption: Equatable {
 		public init(
 			preset: GradientView.Preset,
 			shouldShimmer: Bool = true,
@@ -35,7 +35,7 @@ extension GradientView {
 			CATransform3DMakeAffineTransform(CGAffineTransform(a: 1, b: 0, c: 0, d: 2.94, tx: 0, ty: -0.97))
 		}
 
-		public func orbLayer(traitCollection: UITraitCollection) -> CAGradientLayer {
+		public func applySettings(orbLayer: CAGradientLayer, traitCollection: UITraitCollection) {
 			var colors = [UIColor]()
 
 			switch (preset, traitCollection.userInterfaceStyle) {
@@ -58,13 +58,11 @@ extension GradientView {
 			let alphaWhite = UIColor.white.withAlphaComponent(0.0)
 			colors.append(alphaWhite)
 
-			let layer = CAGradientLayer()
-			layer.type = .radial
-			layer.colors = colors.map { $0.cgColor }
-			layer.locations = [0, 1.0]
-			layer.startPoint = CGPoint(x: 0.5, y: 0.5)
-			layer.endPoint = CGPoint(x: 1.0, y: 1.0)
-			return layer
+			orbLayer.type = .radial
+			orbLayer.colors = colors.map { $0.cgColor }
+			orbLayer.locations = [0, 1.0]
+			orbLayer.startPoint = CGPoint(x: 0.5, y: 0.5)
+			orbLayer.endPoint = CGPoint(x: 1.0, y: 1.0)
 		}
 
 		public func backgroundColors(traitCollection: UITraitCollection) -> [UIColor] {
@@ -106,9 +104,13 @@ extension GradientView {
 		}
 	}
 
-	public enum Preset {
+	public enum Preset: CaseIterable {
 		case insuranceOne
 		case insuranceTwo
 		case insuranceThree
+
+		public static var random: Self {
+			Self.allCases.shuffled().randomElement()!
+		}
 	}
 }

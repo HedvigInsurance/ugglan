@@ -32,8 +32,8 @@ extension GraphQL.QuoteBundleQuery.Data {
 					)
 				],
 				bundleCost: .init(
-					monthlyGross: .init(amount: "100", currency: "SEK"),
 					monthlyDiscount: .init(amount: "100", currency: "SEK"),
+					monthlyGross: .init(amount: "100", currency: "SEK"),
 					monthlyNet: .init(amount: "100", currency: "SEK")
 				),
 				frequentlyAskedQuestions: generateFrequentlyAskedQuestions(),
@@ -50,7 +50,8 @@ extension GraphQL.QuoteBundleQuery.Data {
 				]),
 				appConfiguration: .init(
 					showCampaignManagement: true,
-					title: .logo
+					title: .logo,
+					gradientOption: .gradientOne
 				)
 			),
 			signMethodForQuotes: GraphQL.SignMethod.swedishBankId,

@@ -117,8 +117,8 @@ extension GraphQL.QuoteBundleQuery.Data {
 					),
 				],
 				bundleCost: .init(
-					monthlyGross: .init(amount: "100", currency: "DKK"),
 					monthlyDiscount: .init(amount: "100", currency: "DKK"),
+					monthlyGross: .init(amount: "100", currency: "DKK"),
 					monthlyNet: .init(amount: "100", currency: "DKK")
 				),
 				frequentlyAskedQuestions: generateFrequentlyAskedQuestions(),
@@ -133,7 +133,8 @@ extension GraphQL.QuoteBundleQuery.Data {
 				),
 				appConfiguration: .init(
 					showCampaignManagement: true,
-					title: .logo
+					title: .logo,
+					gradientOption: .gradientThree
 				)
 			),
 			signMethodForQuotes: GraphQL.SignMethod.simpleSign,

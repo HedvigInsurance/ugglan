@@ -15,6 +15,7 @@ public enum ButtonType {
 	case outlineIcon(borderColor: UIColor, textColor: UIColor, icon: ButtonIcon)
 	case pillSemiTransparent(backgroundColor: UIColor, textColor: UIColor)
 	case transparent(textColor: UIColor)
+	case transparentLarge(textColor: UIColor)
 	case iconTransparent(textColor: UIColor, icon: ButtonIcon)
 
 	public enum ButtonIcon {
@@ -48,7 +49,7 @@ public enum ButtonType {
 			return 0
 		case .pillSemiTransparent:
 			return 0.6
-		case .iconTransparent:
+		case .iconTransparent, .transparentLarge:
 			return 0.0
 		}
 	}
@@ -61,7 +62,7 @@ public enum ButtonType {
 			return 0.05
 		case .pillSemiTransparent:
 			return 0.6
-		case .iconTransparent:
+		case .iconTransparent, .transparentLarge:
 			return 0.05
 		case .transparent:
 			return 0
@@ -76,7 +77,7 @@ public enum ButtonType {
 			return 0.05
 		case .pillSemiTransparent:
 			return 0.6
-		case .iconTransparent:
+		case .iconTransparent, .transparentLarge:
 			return 0.05
 		case .transparent:
 			return 0
@@ -107,6 +108,8 @@ public enum ButtonType {
 			return .black
 		case .transparent:
 			return .clear
+		case .transparentLarge:
+			return .brand(.primaryBackground())
 		}
 	}
 
@@ -132,6 +135,8 @@ public enum ButtonType {
 			return textColor
 		case let .transparent(textColor):
 			return textColor
+		case let .transparentLarge(textColor):
+			return textColor
 		case let .standardOutlineIcon(_, textColor, _):
 			return textColor
 		}
@@ -153,6 +158,8 @@ public enum ButtonType {
 			return 30
 		case .transparent:
 			return 30
+		case .transparentLarge:
+			return 30
 		}
 	}
 
@@ -164,7 +171,7 @@ public enum ButtonType {
 			return TextStyle.brand(.subHeadline(color: .primary(state: .negative))).colored(textColor)
 		case .pillSemiTransparent:
 			return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
-		case .iconTransparent:
+		case .iconTransparent, .transparentLarge:
 			return TextStyle.brand(.subHeadline(color: .primary(state: .negative))).colored(textColor)
 		case .tinyIcon, .outlineIcon:
 			return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
@@ -186,6 +193,8 @@ public enum ButtonType {
 		case .pillSemiTransparent:
 			return 35
 		case .iconTransparent:
+			return 35
+		case .transparentLarge:
 			return 35
 		case .tinyIcon:
 			return 20
@@ -470,6 +479,12 @@ extension Button: Viewable {
 					}
 				} else {
 					iconImageView.isHidden = true
+					button.titleEdgeInsets = UIEdgeInsets(
+						top: 0,
+						left: 0,
+						bottom: 0,
+						right: 0
+					)
 				}
 			}
 
