@@ -68,7 +68,7 @@ extension Chat: Presentable {
 										}),
 									]
 								),
-                                options: [.shouldPreserveState]
+								options: [.shouldPreserveState]
 							)
 						)
 					}

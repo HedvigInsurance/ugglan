@@ -95,7 +95,7 @@ struct EmbarkOnboardingFlow: Presentable {
 									title: nil,
 									children: menuChildren
 								),
-                                options: [.menuToTrailing, .shouldPreserveState]
+								options: [.menuToTrailing, .shouldPreserveState]
 							)
 						)
 						.onValue { _ in

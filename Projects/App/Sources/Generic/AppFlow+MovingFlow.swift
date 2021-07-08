@@ -41,15 +41,15 @@ extension MovingFlow: Presentable {
 			case .chat:
 				bag += viewController.present(Chat())
 			case let .embark(name):
-                let embark = Embark(
-                    name: name,
-                    menu: menu
-                )
-                
+				let embark = Embark(
+					name: name,
+					menu: menu
+				)
+
 				bag +=
 					viewController
 					.present(
-                        embark,
+						embark,
 						options: [.autoPop]
 					)
 					.onValue { redirect in
@@ -64,12 +64,12 @@ extension MovingFlow: Presentable {
 										shouldStore: false
 									),
 									menu: Menu(title: nil, children: []),
-                                    options: [.menuToTrailing]
+									options: [.menuToTrailing]
 								)
 							)
-                            .onCancel {
-                                embark.goBack()
-                            }
+							.onCancel {
+								embark.goBack()
+							}
 							.onValue { _ in
 								#warning("handle this")
 							}
