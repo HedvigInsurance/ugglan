@@ -144,7 +144,7 @@ extension Checkout: Presentable {
                             checkoutButton.$isEnabled.value = true
 						}
                         .onError { error in
-                            handleError(title: L10n.simpleSignFailedTitle, message: "Please re enter your information", viewController: viewController) {
+                            handleError(title: L10n.simpleSignFailedTitle, message: L10n.simpleSignFailedMessage, viewController: viewController) {
                                 checkoutButton.$isEnabled.value = false
                                 checkoutButton.$isLoading.value = false
                             }
