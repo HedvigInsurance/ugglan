@@ -206,38 +206,52 @@ class OfferState {
 				self.$hasSignedQuotes.value = true
 			})
 
-		return dataSignal.map { $0.signMethodForQuotes }
-			.mapLatestToFuture { signMethod in
+		return client.fetch(query: query).map { $0.signMethodForQuotes }
+			.flatMap { signMethod in
 				switch signMethod {
 				case .approveOnly:
 					return self.client
 						.perform(mutation: GraphQL.ApproveQuotesMutation(ids: self.ids))
-						.map { data in
-							if data.approveQuotes == true {
-								self.$hasSignedQuotes.value = true
-								return SignEvent.done
-							}
+						.mapResult { result in
+							switch result {
+							case .failure:
+								return SignEvent.failed
+							case let .success(data):
+								if data.approveQuotes == true {
+									self.$hasSignedQuotes.value = true
+									return SignEvent.done
+								}
 
-							return SignEvent.failed
+								return SignEvent.failed
+							}
 						}
 				default:
 					return self.client.perform(mutation: GraphQL.SignQuotesMutation(ids: self.ids))
-						.map { data in
-							if data.signQuotes.asFailedToStartSign != nil {
+						.mapResult { result in
+							switch result {
+							case .failure:
 								return SignEvent.failed
-							} else if let session = data.signQuotes.asSwedishBankIdSession {
-								return SignEvent.swedishBankId(
-									autoStartToken: session.autoStartToken ?? "",
-									subscription: subscription
-								)
-							} else if data.signQuotes.asSimpleSignSession != nil {
-								return SignEvent.simpleSign(subscription: subscription)
-							}
+							case let .success(data):
+								if data.signQuotes.asFailedToStartSign != nil {
+									return SignEvent.failed
+								} else if let session = data.signQuotes
+									.asSwedishBankIdSession
+								{
+									return SignEvent.swedishBankId(
+										autoStartToken: session.autoStartToken
+											?? "",
+										subscription: subscription
+									)
+								} else if data.signQuotes.asSimpleSignSession != nil {
+									return SignEvent.simpleSign(
+										subscription: subscription
+									)
+								}
 
-							return SignEvent.failed
+								return SignEvent.failed
+							}
 						}
 				}
 			}
-			.future
 	}
 }

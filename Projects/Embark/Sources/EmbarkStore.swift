@@ -60,8 +60,8 @@ class EmbarkStore {
 		}
 
 		if let store = revisions.last {
-			let filteredStore = store.filter { (key, value) in
-				key.range(of: arrayRegexFor(key: key), options: .regularExpression) != nil
+			let filteredStore = store.filter { (innerKey, value) in
+				innerKey.range(of: arrayRegexFor(key: key), options: .regularExpression) != nil
 			}
 
 			if !filteredStore.isEmpty {

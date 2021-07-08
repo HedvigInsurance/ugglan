@@ -71,24 +71,27 @@ extension SignSection: Presentable {
 				innerBag += row.append(signButton)
 			case .approveOnly:
 				let signButton = Button(
-					title: "",
+					title: L10n.offerApproveChanges,
 					type: .standard(
 						backgroundColor: .brand(.secondaryButtonBackgroundColor),
 						textColor: .brand(.secondaryButtonTextColor)
 					)
 				)
 
-				innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
-					.onValue { viewController in
-						viewController.present(
-							Checkout().wrappedInCloseButton(),
-							style: .detented(.large),
-							options: [
-								.defaults, .prefersLargeTitles(true),
-								.largeTitleDisplayMode(.always),
-							]
-						)
+				let loadableSignButton = LoadableButton(button: signButton)
+
+				innerBag += loadableSignButton.onTapSignal
+					.onValue { _ in
+						loadableSignButton.isLoadingSignal.value = true
+						state.signQuotes()
+							.onValue { event in
+								if case .failed = event {
+									loadableSignButton.isLoadingSignal.value = false
+								}
+							}
 					}
+
+				innerBag += row.append(loadableSignButton)
 			case .__unknown(_):
 				break
 			}
