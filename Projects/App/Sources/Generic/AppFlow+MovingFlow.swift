@@ -58,7 +58,8 @@ extension MovingFlow: Presentable {
 											menu: Menu(
 												title: nil,
 												children: []
-											)
+											),
+                                            options: [.menuToTrailing]
 										)
 									)
 									.onValue { _ in
