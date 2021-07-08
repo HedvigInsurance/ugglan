@@ -68,6 +68,16 @@ final class StoreTests: XCTestCase {
         XCTAssertEqual(store.getValue(key: "fish3"), "90.0hej")
     }
     
+    func testThatArrayValuesWork() {
+        let store = EmbarkStore()
+        store.setValue(key: "quoteIds[0]", value: "test")
+        store.setValue(key: "quoteIds[1]", value: "test1")
+                
+        store.createRevision()
+        
+        XCTAssertEqual(store.getValues(key: "quoteIds"), ["test", "test1"])
+    }
+    
     // Store input
     let actionKey = "addBuilding"
     
