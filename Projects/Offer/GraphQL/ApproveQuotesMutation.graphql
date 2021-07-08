@@ -1,0 +1,5 @@
+mutation ApproveQuotes($ids: [ID!]!) {
+    approveQuotes(input: {
+        quoteIds: $ids
+    })
+}
