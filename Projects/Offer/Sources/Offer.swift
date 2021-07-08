@@ -10,6 +10,7 @@ import hGraphQL
 
 public enum OfferOption {
 	case menuToTrailing
+    case shouldPreserveState
 }
 
 public enum OfferIDContainer {
@@ -285,7 +286,10 @@ class OfferState {
 extension Offer: Presentable {
 	public func materialize() -> (UIViewController, Future<Void>) {
 		let viewController = UIViewController()
-		ApplicationState.preserveState(.offer)
+		
+        if options.contains(.shouldPreserveState) {
+            ApplicationState.preserveState(.offer)
+        }
 
 		Dependencies.shared.add(
 			module: Module {
