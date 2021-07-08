@@ -69,11 +69,16 @@ extension Chat: Presentable {
 									]
 								)
 							)
-                        ).onValue { _ in
-                            
-                            bag += UIApplication.shared.appDelegate
-                                .appFlow.window.present(PostOnboarding(), options: [], animated: true)
-                        }
+						)
+						.onValue { _ in
+
+							bag += UIApplication.shared.appDelegate
+								.appFlow.window.present(
+									PostOnboarding(),
+									options: [],
+									animated: true
+								)
+						}
 					}
 			case .dashboard:
 				viewController.present(LoggedIn())
