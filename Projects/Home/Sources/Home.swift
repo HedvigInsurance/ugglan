@@ -118,24 +118,21 @@ extension Home: Presentable {
 			}
 
 			sections.forEach { homeSection in
-				let bottomRow = RowView()
-				bottomRow.isLayoutMarginsRelativeArrangement = true
-				bottomRow.layoutMargins = rowInsets
-				titleSection.append(bottomRow)
-
 				switch homeSection.style {
 				case .horizontal:
 					break
 				case .vertical:
 					guard state == .active else { return }
 					let section = HomeVerticalSection(section: homeSection)
-					functionBag += bottomRow.append(section)
+					functionBag += form.append(section)
 				case .header:
 					break
 				}
+                
+                form.appendSpacing(.custom(30))
 			}
 		}
-
+        
 		bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
 			.mapLatestToFuture { _ in
 				self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
