@@ -8,9 +8,6 @@ mutation SignQuotes($ids: [ID!]!) {
         ... on SimpleSignSession {
             id
         }
-        ... on AlreadyCompleted {
-            ignore
-        }
         ... on FailedToStartSign {
             errorMessage
             errorCode
