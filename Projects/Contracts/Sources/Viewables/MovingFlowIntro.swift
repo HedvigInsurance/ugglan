@@ -68,56 +68,61 @@ extension MovingFlowIntro: Presentable {
 	public func materialize() -> (UIViewController, FiniteSignal<MovingFlowRoute>) {
 		let bag = DisposeBag()
 		let viewController = UIViewController()
-        
-        let scrollView = FormScrollView()
 
-        let form = FormView()
-        bag += viewController.install(form, scrollView: scrollView)
+		let scrollView = FormScrollView()
+
+		let form = FormView()
+		bag += viewController.install(form, scrollView: scrollView)
 
 		let imageView = UIImageView()
 		imageView.contentMode = .scaleAspectFit
 		imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
-        
-        form.append(imageView)
 
-        let titleLabel = MultilineLabel(value: "", style: .brand(.title2(color: .primary)).aligned(to: .center))
-        let descriptionLabel = MultilineLabel(value: "", style: .brand(.body(color: .secondary)).aligned(to: .center))
+		form.append(imageView)
 
-        form.appendSpacing(.top)
-        
-        bag += form.append(titleLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
-        form.appendSpacing(.inbetween)
-        bag += form.append(descriptionLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
-        
+		let titleLabel = MultilineLabel(value: "", style: .brand(.title2(color: .primary)).aligned(to: .center))
+		let descriptionLabel = MultilineLabel(
+			value: "",
+			style: .brand(.body(color: .secondary)).aligned(to: .center)
+		)
+
+		form.appendSpacing(.top)
+
+		bag += form.append(titleLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
+		form.appendSpacing(.inbetween)
+		bag += form.append(descriptionLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
+
 		bag += $section.onValueDisposePrevious { state in
 			let innerBag = DisposeBag()
-            
+
 			switch state {
 			case .manual:
-                titleLabel.$value.value = L10n.MovingIntro.manualHandlingButtonText
-                descriptionLabel.$value.value = L10n.MovingIntro.manualHandlingDescription
+				titleLabel.$value.value = L10n.MovingIntro.manualHandlingButtonText
+				descriptionLabel.$value.value = L10n.MovingIntro.manualHandlingDescription
 				imageView.image = hCoreUIAssets.helicopter.image
 			case let .existing(table):
-                titleLabel.$value.value = L10n.MovingIntro.existingMoveTitle
-                descriptionLabel.$value.value = L10n.MovingIntro.existingMoveDescription
+				titleLabel.$value.value = L10n.MovingIntro.existingMoveTitle
+				descriptionLabel.$value.value = L10n.MovingIntro.existingMoveDescription
 				imageView.image = nil
-				                
-                let section = table.fragments.detailsTableFragment
-                bag += form.append(section)
+
+				let section = table.fragments.detailsTableFragment
+				bag += form.append(section)
 			case .normal:
-                titleLabel.$value.value = L10n.MovingIntro.title
-                descriptionLabel.$value.value = L10n.MovingIntro.description
+				titleLabel.$value.value = L10n.MovingIntro.title
+				descriptionLabel.$value.value = L10n.MovingIntro.description
 				imageView.image = hCoreUIAssets.notifications.image
 			case .none:
 				break
 			}
-            
+
 			return innerBag
 		}
 
 		let activeContractBundles: Future<[GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle]> =
-			client.fetch(query: GraphQL.ActiveContractBundlesQuery(),
-                         cachePolicy: .fetchIgnoringCacheData)
+			client.fetch(
+				query: GraphQL.ActiveContractBundlesQuery(),
+				cachePolicy: .fetchIgnoringCacheData
+			)
 			.map { data in
 				data.activeContractBundles
 			}
@@ -127,7 +132,7 @@ extension MovingFlowIntro: Presentable {
 				query: GraphQL.UpcomingAgreementQuery(
 					locale: Localization.Locale.currentLocale.asGraphQLLocale()
 				),
-                cachePolicy: .fetchIgnoringCacheData
+				cachePolicy: .fetchIgnoringCacheData
 			)
 			.onValue { data in
 				if let contract = data.contracts.first(where: {
@@ -157,33 +162,48 @@ extension MovingFlowIntro: Presentable {
 						let innerBag = DisposeBag()
 
 						if let button = state.button {
-                            let buttonContainer = UIStackView()
-                            buttonContainer.isLayoutMarginsRelativeArrangement = true
-                            scrollView.addSubview(buttonContainer)
+							let buttonContainer = UIStackView()
+							buttonContainer.isLayoutMarginsRelativeArrangement = true
+							scrollView.addSubview(buttonContainer)
 
-                            buttonContainer.snp.makeConstraints { make in
-                                make.bottom.equalTo(scrollView.frameLayoutGuide.snp.bottom)
-                                make.trailing.leading.equalToSuperview()
-                            }
-                            
-                            innerBag += buttonContainer.didLayoutSignal.onValue { _ in
-                                buttonContainer.layoutMargins = UIEdgeInsets(
-                                    top: 0,
-                                    left: 15,
-                                    bottom: scrollView.safeAreaInsets.bottom == 0 ? 15 : scrollView.safeAreaInsets.bottom,
-                                    right: 15
-                                )
+							buttonContainer.snp.makeConstraints { make in
+								make.bottom.equalTo(
+									scrollView.frameLayoutGuide.snp.bottom
+								)
+								make.trailing.leading.equalToSuperview()
+							}
 
-                                let size = buttonContainer.systemLayoutSizeFitting(.zero)
-                                scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
-                                scrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
-                            }
-                            
+							innerBag += buttonContainer.didLayoutSignal.onValue { _ in
+								buttonContainer.layoutMargins = UIEdgeInsets(
+									top: 0,
+									left: 15,
+									bottom: scrollView.safeAreaInsets.bottom == 0
+										? 15 : scrollView.safeAreaInsets.bottom,
+									right: 15
+								)
+
+								let size = buttonContainer.systemLayoutSizeFitting(
+									.zero
+								)
+								scrollView.contentInset = UIEdgeInsets(
+									top: 0,
+									left: 0,
+									bottom: size.height,
+									right: 0
+								)
+								scrollView.scrollIndicatorInsets = UIEdgeInsets(
+									top: 0,
+									left: 0,
+									bottom: size.height,
+									right: 0
+								)
+							}
+
 							innerBag += buttonContainer.addArranged(button)
-                                                        
-                            innerBag += {
-                                buttonContainer.removeFromSuperview()
-                            }
+
+							innerBag += {
+								buttonContainer.removeFromSuperview()
+							}
 
 							innerBag += button.onTapSignal.onValue {
 								callbacker(.value(state.route ?? .chat))
