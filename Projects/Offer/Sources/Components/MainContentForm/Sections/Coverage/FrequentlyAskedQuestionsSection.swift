@@ -70,7 +70,7 @@ extension FrequentlyAskedQuestionsSection: Presentable {
 		innerContentContainer.snp.makeConstraints { make in make.edges.equalToSuperview() }
 
 		let innerSection = SectionView()
-		innerSection.dynamicStyle = .brandGrouped(separatorType: .standard, backgroundColor: .white)
+        innerSection.dynamicStyle = .brandGrouped(separatorType: .standard, backgroundColor: .brand(.secondaryBackground()))
 
 		bag += rowContentBackground.applyShadow { _ in
 			UIView.ShadowProperties(
