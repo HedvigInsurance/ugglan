@@ -205,47 +205,53 @@ class OfferState {
 			.onValue({ _ in
 				self.$hasSignedQuotes.value = true
 			})
-                
-        return client.fetch(query: query).map { $0.signMethodForQuotes }.flatMap { signMethod in
-            switch signMethod {
-            case .approveOnly:
-                return self.client
-                    .perform(mutation: GraphQL.ApproveQuotesMutation(ids: self.ids))
-                    .mapResult { result in
-                        switch result {
-                        case .failure:
-                            return SignEvent.failed
-                        case let .success(data):
-                            if data.approveQuotes == true {
-                                self.$hasSignedQuotes.value = true
-                                return SignEvent.done
-                            }
 
-                            return SignEvent.failed
-                        }
-                    }
-            default:
-                return self.client.perform(mutation: GraphQL.SignQuotesMutation(ids: self.ids))
-                    .mapResult { result in
-                        switch result {
-                        case .failure:
-                            return SignEvent.failed
-                        case let .success(data):
-                            if data.signQuotes.asFailedToStartSign != nil {
-                                return SignEvent.failed
-                            } else if let session = data.signQuotes.asSwedishBankIdSession {
-                                return SignEvent.swedishBankId(
-                                    autoStartToken: session.autoStartToken ?? "",
-                                    subscription: subscription
-                                )
-                            } else if data.signQuotes.asSimpleSignSession != nil {
-                                return SignEvent.simpleSign(subscription: subscription)
-                            }
+		return client.fetch(query: query).map { $0.signMethodForQuotes }
+			.flatMap { signMethod in
+				switch signMethod {
+				case .approveOnly:
+					return self.client
+						.perform(mutation: GraphQL.ApproveQuotesMutation(ids: self.ids))
+						.mapResult { result in
+							switch result {
+							case .failure:
+								return SignEvent.failed
+							case let .success(data):
+								if data.approveQuotes == true {
+									self.$hasSignedQuotes.value = true
+									return SignEvent.done
+								}
 
-                            return SignEvent.failed
-                        }
-                    }
-            }
-        }
+								return SignEvent.failed
+							}
+						}
+				default:
+					return self.client.perform(mutation: GraphQL.SignQuotesMutation(ids: self.ids))
+						.mapResult { result in
+							switch result {
+							case .failure:
+								return SignEvent.failed
+							case let .success(data):
+								if data.signQuotes.asFailedToStartSign != nil {
+									return SignEvent.failed
+								} else if let session = data.signQuotes
+									.asSwedishBankIdSession
+								{
+									return SignEvent.swedishBankId(
+										autoStartToken: session.autoStartToken
+											?? "",
+										subscription: subscription
+									)
+								} else if data.signQuotes.asSimpleSignSession != nil {
+									return SignEvent.simpleSign(
+										subscription: subscription
+									)
+								}
+
+								return SignEvent.failed
+							}
+						}
+				}
+			}
 	}
 }
