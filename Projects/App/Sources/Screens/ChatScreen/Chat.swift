@@ -67,7 +67,8 @@ extension Chat: Presentable {
 												.presentLoggedIn()
 										}),
 									]
-								)
+								),
+								options: [.shouldPreserveState]
 							)
 						)
 						.onValue { _ in
