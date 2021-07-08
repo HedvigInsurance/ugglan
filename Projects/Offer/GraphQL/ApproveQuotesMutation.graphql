@@ -1,5 +1,3 @@
 mutation ApproveQuotes($ids: [ID!]!) {
-    approveQuotes(input: {
-        quoteIds: $ids
-    })
+    approveQuotes(quoteIds: $ids)
 }
