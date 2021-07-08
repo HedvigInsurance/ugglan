@@ -196,8 +196,8 @@ extension Debug: Presentable {
 						.makeSwedishApartmentMovingFlow()
 					}
 
-                    MutationMock(GraphQL.ApproveQuotesMutation.self) { operation in
-                        .init(approveQuotes: true)
+					MutationMock(GraphQL.ApproveQuotesMutation.self) { operation in
+						.init(approveQuotes: true)
 					}
 				}
 			}
