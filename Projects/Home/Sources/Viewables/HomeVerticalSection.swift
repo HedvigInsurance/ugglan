@@ -23,11 +23,14 @@ public struct HomeVerticalSection {
 extension HomeVerticalSection: Viewable {
 	public func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
 		let bag = DisposeBag()
-        let sectionView = SectionView(headerView: UILabel(value: section.title, style: .default), footerView: nil)
-        sectionView.dynamicStyle = .brandGrouped(
-            separatorType: .none,
-            backgroundColor: .brand(.primaryBackground())
-        )
+		let sectionView = SectionView(
+			headerView: UILabel(value: section.title, style: .default),
+			footerView: nil
+		)
+		sectionView.dynamicStyle = .brandGrouped(
+			separatorType: .none,
+			backgroundColor: .brand(.primaryBackground())
+		)
 
 		section.children.forEach { child in
 			let row = RowView.titleAndIconRowView(title: child.title, icon: child.icon)

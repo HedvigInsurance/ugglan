@@ -128,11 +128,11 @@ extension Home: Presentable {
 				case .header:
 					break
 				}
-                
-                form.appendSpacing(.custom(30))
+
+				form.appendSpacing(.custom(30))
 			}
 		}
-        
+
 		bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
 			.mapLatestToFuture { _ in
 				self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
