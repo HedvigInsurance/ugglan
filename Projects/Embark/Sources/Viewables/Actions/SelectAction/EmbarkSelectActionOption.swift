@@ -20,10 +20,9 @@ extension EmbarkSelectActionOption: Viewable {
 		control.layer.cornerRadius = 8
 		bag += control.applyShadow { _ -> UIView.ShadowProperties in .embark }
 
-		if data.keys.enumerated()
+        if !data.keys.isEmpty && data.keys.enumerated()
 			.allSatisfy({ offset, key in
-				!data.values[offset].isEmpty
-					&& state.store.getPrefillValue(key: key) == data.values[offset]
+				state.store.getPrefillValue(key: key) == data.values[offset]
 			})
 		{
 			control.layer.borderWidth = 2
