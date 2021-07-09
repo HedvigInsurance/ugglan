@@ -1,0 +1,21 @@
+mutation SignOrApproveQuotes($ids: [ID!]!) {
+  signOrApproveQuotes(quoteIds: $ids) {
+    ... on SignQuoteResponse {
+      signResponse {
+        ... on SwedishBankIdSession {
+          autoStartToken
+        }
+        ... on SimpleSignSession {
+          id
+        }
+        ... on FailedToStartSign {
+          errorMessage
+          errorCode
+        }
+      }
+    }
+    ... on ApproveQuoteResponse {
+      approved
+    }
+  }
+}
