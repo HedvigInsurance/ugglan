@@ -205,39 +205,40 @@ class OfferState {
 			.onValue({ _ in
 				self.$hasSignedQuotes.value = true
 			})
-        
-        return self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.ids))
-            .mapResult { result in
-                switch result {
-                case .failure:
-                    return SignEvent.failed
-                case let .success(data):
-                    if let signQuoteReponse = data.signOrApproveQuotes.asSignQuoteResponse {
-                        if signQuoteReponse.signResponse.asFailedToStartSign != nil {
-                            return SignEvent.failed
-                        } else if let session = signQuoteReponse
-                                    .signResponse
-                            .asSwedishBankIdSession
-                        {
-                            return SignEvent.swedishBankId(
-                                autoStartToken: session.autoStartToken
-                                    ?? "",
-                                subscription: subscription
-                            )
-                        } else if signQuoteReponse.signResponse.asSimpleSignSession != nil {
-                            return SignEvent.simpleSign(
-                                subscription: subscription
-                            )
-                        }
-                    } else if let approvedResponse = data.signOrApproveQuotes.asApproveQuoteResponse {
-                        if approvedResponse.approved == true {
-                            self.$hasSignedQuotes.value = true
-                            return SignEvent.done
-                        }
-                    }
 
-                    return SignEvent.failed
-                }
-            }
+		return self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.ids))
+			.mapResult { result in
+				switch result {
+				case .failure:
+					return SignEvent.failed
+				case let .success(data):
+					if let signQuoteReponse = data.signOrApproveQuotes.asSignQuoteResponse {
+						if signQuoteReponse.signResponse.asFailedToStartSign != nil {
+							return SignEvent.failed
+						} else if let session = signQuoteReponse
+							.signResponse
+							.asSwedishBankIdSession
+						{
+							return SignEvent.swedishBankId(
+								autoStartToken: session.autoStartToken
+									?? "",
+								subscription: subscription
+							)
+						} else if signQuoteReponse.signResponse.asSimpleSignSession != nil {
+							return SignEvent.simpleSign(
+								subscription: subscription
+							)
+						}
+					} else if let approvedResponse = data.signOrApproveQuotes.asApproveQuoteResponse
+					{
+						if approvedResponse.approved == true {
+							self.$hasSignedQuotes.value = true
+							return SignEvent.done
+						}
+					}
+
+					return SignEvent.failed
+				}
+			}
 	}
 }
