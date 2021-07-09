@@ -115,40 +115,40 @@ extension GraphQL.ApiGeneratedVariableFragment {
 }
 
 extension GraphQL.ApiMultiActionVariableFragment {
-	func graphQLMap(store: EmbarkStore) -> GraphQLMap {
-		var map = GraphQLMap()
-
+	func graphQLMapArray(store: EmbarkStore) -> [ResultMap] {
+        var items: [ResultMap] = []
+        
+        func appendOrMerge(map: ResultMap, offset: Int) {
+            if items.indices.contains(offset) {
+                items[offset] = items[offset].merging(
+                    map,
+                    uniquingKeysWith: { lhs, _ in lhs }
+                )
+            } else {
+                items.insert(map, at: offset)
+            }
+        }
+        
+        let multiActionItems = store.getMultiActionItems(actionKey: key)
+        let groupedMultiActionItems = Dictionary(grouping: multiActionItems, by: { $0.index }).values
+    
 		variables.forEach { variable in
 			if let apiSingleVariableFragment = variable.fragments.apiSingleVariableFragment {
-				map = map.merging(
-					apiSingleVariableFragment.graphQLMap(store: store),
-					uniquingKeysWith: { lhs, _ in lhs }
-				)
+                groupedMultiActionItems.enumerated().forEach { offset, _ in
+                    var nestedApiSingleVariableFragment = GraphQL.ApiSingleVariableFragment(unsafeResultMap: apiSingleVariableFragment.resultMap)
+                    nestedApiSingleVariableFragment.from = "\(key)[\(offset)]\(apiSingleVariableFragment.key)"
+                    appendOrMerge(map:nestedApiSingleVariableFragment.graphQLMap(store: store), offset: offset)
+                }
 			} else if let apiGeneratedVariableFragment = variable.fragments.apiGeneratedVariableFragment {
-				map = map.merging(
-					apiGeneratedVariableFragment.graphQLMap(store: store),
-					uniquingKeysWith: { lhs, _ in lhs }
-				)
-			} else if let multiActionVariable = variable.asEmbarkApiGraphQlMultiActionVariable {
-				if let apiSingleVariableFragment = multiActionVariable.fragments
-					.apiSingleVariableFragment
-				{
-					map = map.merging(
-						apiSingleVariableFragment.graphQLMap(store: store),
-						uniquingKeysWith: { lhs, _ in lhs }
-					)
-				} else if let apiGeneratedVariableFragment = multiActionVariable.fragments
-					.apiGeneratedVariableFragment
-				{
-					map = map.merging(
-						apiGeneratedVariableFragment.graphQLMap(store: store),
-						uniquingKeysWith: { lhs, _ in lhs }
-					)
-				}
+                groupedMultiActionItems.enumerated().forEach { offset, _ in
+                    appendOrMerge(map: apiGeneratedVariableFragment.graphQLMap(store: store), offset: offset)
+                }
+			} else if let _ = variable.asEmbarkApiGraphQlMultiActionVariable {
+                fatalError("Unsupported for now")
 			}
 		}
 
-		return map
+		return items
 	}
 }
 
@@ -167,10 +167,7 @@ extension GraphQL.ApiVariablesFragment {
 				uniquingKeysWith: { lhs, _ in lhs }
 			)
 		} else if let apiMultiActionVariableFragment = fragments.apiMultiActionVariableFragment {
-			map = map.merging(
-				apiMultiActionVariableFragment.graphQLMap(store: store),
-				uniquingKeysWith: { lhs, _ in lhs }
-			)
+            map[apiMultiActionVariableFragment.key] = apiMultiActionVariableFragment.graphQLMapArray(store: store)
 		}
 
 		return map
