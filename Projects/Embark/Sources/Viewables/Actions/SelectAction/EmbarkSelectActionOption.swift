@@ -21,7 +21,7 @@ extension EmbarkSelectActionOption: Viewable {
 		bag += control.applyShadow { _ -> UIView.ShadowProperties in .embark }
 
 		if data.keys.enumerated()
-			.allSatisfy({ offset, key in state.store.getPrefillValue(key: key) == data.values[offset] })
+            .allSatisfy({ offset, key in !data.values[offset].isEmpty && state.store.getPrefillValue(key: key) == data.values[offset] })
 		{
 			control.layer.borderWidth = 2
 			bag += control.applyBorderColor { _ in UIColor.tint(.lavenderOne) }
