@@ -33,7 +33,7 @@ extension EmbarkSelectAction: Viewable {
 					stack.spacing = 10
 					stack.distribution = .fillEqually
 					view.addArrangedSubview(stack)
-                    
+
 					let optionsSlice = Array(
 						options[2 * iteration - 2..<min(2 * iteration, options.count)]
 					)
@@ -84,7 +84,9 @@ extension EmbarkSelectAction: Viewable {
 								callback(link)
 							}
 					}
-                    if optionsSlice.count < 2, options.count > 1 { stack.addArrangedSubview(UIView()) }
+					if optionsSlice.count < 2, options.count > 1 {
+						stack.addArrangedSubview(UIView())
+					}
 				}
 
 				return bag

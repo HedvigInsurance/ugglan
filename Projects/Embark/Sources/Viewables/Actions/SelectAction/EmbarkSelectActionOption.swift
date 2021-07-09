@@ -20,10 +20,11 @@ extension EmbarkSelectActionOption: Viewable {
 		control.layer.cornerRadius = 8
 		bag += control.applyShadow { _ -> UIView.ShadowProperties in .embark }
 
-        if !data.keys.isEmpty && data.keys.enumerated()
-			.allSatisfy({ offset, key in
-				state.store.getPrefillValue(key: key) == data.values[offset]
-			})
+		if !data.keys.isEmpty
+			&& data.keys.enumerated()
+				.allSatisfy({ offset, key in
+					state.store.getPrefillValue(key: key) == data.values[offset]
+				})
 		{
 			control.layer.borderWidth = 2
 			bag += control.applyBorderColor { _ in UIColor.tint(.lavenderOne) }
