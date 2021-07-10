@@ -77,8 +77,8 @@ extension Debug: Presentable {
 						)
 					}
 
-					MutationMock(GraphQL.SignQuotesMutation.self) { operation in
-						.init(signQuotes: .makeSwedishBankIdSession(autoStartToken: "token"))
+                    MutationMock(GraphQL.SignOrApproveQuotesMutation.self) { operation in
+                        .init(signOrApproveQuotes: .makeSignQuoteResponse(signResponse: .makeSwedishBankIdSession(autoStartToken: "mock")))
 					}
 				}
 			}
@@ -181,8 +181,8 @@ extension Debug: Presentable {
 						.makeDanishBundle()
 					}
 
-					MutationMock(GraphQL.SignQuotesMutation.self) { operation in
-						.init(signQuotes: .makeSimpleSignSession(id: "123"))
+                    MutationMock(GraphQL.SignOrApproveQuotesMutation.self) { operation in
+                        .init(signOrApproveQuotes: .makeSignQuoteResponse(signResponse: .makeSimpleSignSession(id: "123")))
 					}
 				}
 			}
@@ -196,8 +196,8 @@ extension Debug: Presentable {
 						.makeSwedishApartmentMovingFlow()
 					}
 
-					MutationMock(GraphQL.ApproveQuotesMutation.self) { operation in
-						.init(approveQuotes: true)
+                    MutationMock(GraphQL.SignOrApproveQuotesMutation.self) { operation in
+                        .init(signOrApproveQuotes: .makeApproveQuoteResponse(approved: true))
 					}
 				}
 			}
