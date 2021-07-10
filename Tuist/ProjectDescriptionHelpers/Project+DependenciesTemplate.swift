@@ -44,7 +44,7 @@ public enum ExternalDependencies: CaseIterable {
 			]
 		case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.41.0"))]
 		case .flow: return [.package(url: "https://github.com/HedvigInsurance/Flow", .branch("master"))]
-		case .form: return [.package(url: "https://github.com/HedvigInsurance/Form", .branch("master"))]
+        case .form: return [.package(url: "https://github.com/HedvigInsurance/Form", .revision("d5475fe96d748537420117eb25c385875e0e0e67"))]
 		case .presentation:
 			return [.package(url: "https://github.com/HedvigInsurance/Presentation", .branch("master"))]
 		case .ease: return [.package(url: "https://github.com/HedvigInsurance/Ease", .branch("master"))]

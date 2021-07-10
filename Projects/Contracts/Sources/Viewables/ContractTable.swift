@@ -40,6 +40,7 @@ extension ContractTable: Viewable {
 		let bag = DisposeBag()
 
 		let sectionStyle = SectionStyle(
+            insets: .zero,
 			rowInsets: UIEdgeInsets(top: 10, left: 15, bottom: 10, right: 15),
 			itemSpacing: 0,
 			minRowHeight: 10,

@@ -27,10 +27,7 @@ extension HomeVerticalSection: Viewable {
 			headerView: UILabel(value: section.title, style: .default),
 			footerView: nil
 		)
-		sectionView.dynamicStyle = .brandGrouped(
-			separatorType: .none,
-			backgroundColor: .brand(.primaryBackground())
-		)
+        sectionView.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
 		section.children.forEach { child in
 			let row = RowView.titleAndIconRowView(title: child.title, icon: child.icon)

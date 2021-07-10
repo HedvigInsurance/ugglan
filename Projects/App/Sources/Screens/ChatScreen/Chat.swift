@@ -89,12 +89,8 @@ extension Chat: Presentable {
 		}
 
 		let sectionStyle = SectionStyle(
-			rowInsets: UIEdgeInsets(
-				top: 0,
-				left: 0,
-				bottom: 0,
-				right: 0
-			),
+            insets: .zero,
+            rowInsets: .zero,
 			itemSpacing: 0,
 			minRowHeight: 10,
 			background: .none,
