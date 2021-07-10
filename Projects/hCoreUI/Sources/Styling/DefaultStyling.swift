@@ -293,8 +293,8 @@ extension DefaultStyling {
 		),
 		scrollView: FormScrollView.self,
 		plainTableView: ListTableView.self,
-        groupedTableView: FormTableView.self,
-        insetGroupedTableView: FormTableView.self,
+		groupedTableView: FormTableView.self,
+		insetGroupedTableView: FormTableView.self,
 		collectionView: UICollectionView.self
 	)
 }
@@ -334,11 +334,11 @@ extension DynamicSectionStyle {
 	public static func brandGroupedInset(separatorType: SeparatorType) -> DynamicSectionStyle {
 		DynamicSectionStyle { _ -> SectionStyle in
 			let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
-            
-            let headerAndFooterInset = UIEdgeInsets(top: 14, left: 8, bottom: 14, right: 8)
+
+			let headerAndFooterInset = UIEdgeInsets(top: 14, left: 8, bottom: 14, right: 8)
 
 			return Style(
-                insets: UIEdgeInsets(horizontalInset: 14, verticalInset: 0),
+				insets: UIEdgeInsets(horizontalInset: 14, verticalInset: 0),
 				rowInsets: .init(inset: 15),
 				itemSpacing: 10,
 				minRowHeight: 0,
@@ -440,7 +440,7 @@ extension DynamicSectionStyle {
 			let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
 
 			return Style(
-                insets: .zero,
+				insets: .zero,
 				rowInsets: .init(inset: 15),
 				itemSpacing: 10,
 				minRowHeight: 0,
@@ -538,7 +538,7 @@ extension DynamicSectionStyle {
 			? CGFloat.defaultCornerRadius : 0
 
 		return Style(
-            insets: .zero,
+			insets: .zero,
 			rowInsets: .init(inset: 15),
 			itemSpacing: 10,
 			minRowHeight: 0,
@@ -605,7 +605,7 @@ extension DynamicSectionStyle {
 
 	public static let brandGroupedNoBackground = DynamicSectionStyle { _ -> SectionStyle in
 		Style(
-            insets: .zero,
+			insets: .zero,
 			rowInsets: .init(inset: 15),
 			itemSpacing: 10,
 			minRowHeight: 0,

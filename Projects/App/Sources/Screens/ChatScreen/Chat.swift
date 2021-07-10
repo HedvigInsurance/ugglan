@@ -89,8 +89,8 @@ extension Chat: Presentable {
 		}
 
 		let sectionStyle = SectionStyle(
-            insets: .zero,
-            rowInsets: .zero,
+			insets: .zero,
+			rowInsets: .zero,
 			itemSpacing: 0,
 			minRowHeight: 10,
 			background: .none,
