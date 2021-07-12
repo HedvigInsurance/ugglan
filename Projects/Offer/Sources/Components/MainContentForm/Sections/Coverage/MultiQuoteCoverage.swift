@@ -13,19 +13,28 @@ struct MultiQuoteCoverage {
 
 extension MultiQuoteCoverage: Presentable {
 	func materialize() -> (SectionView, Disposable) {
-		let section = SectionView(headerView: nil, footerView: nil)
-		section.dynamicStyle = .brandGrouped(separatorType: .none)
+        let bag = DisposeBag()
 
-		let bag = DisposeBag()
-
-		bag += section.append(
-			MultilineLabel(
-				value:
-					"Read the full coverage of your insurances below.",
-				style: .brand(.body(color: .secondary))
-			)
-			.insetted(UIEdgeInsets(inset: 15))
-		)
+		let section = SectionView(headerView: {
+           let stackView = UIStackView()
+            stackView.spacing = 10
+            stackView.axis = .vertical
+                        
+            bag += stackView.addArranged(MultilineLabel(
+                value:
+                    L10n.contractCoverageMoreInfo,
+                style: .brand(.title3(color: .primary))
+            ))
+            
+            bag += stackView.addArranged(MultilineLabel(
+                value:
+                    L10n.OfferScreenMULTIPLEINSURANCES.coverageParagraph,
+                style: .brand(.body(color: .secondary))
+            ))
+            
+            return stackView
+        }(), footerView: nil)
+        section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
 		bag += quotes.map { quote -> DisposeBag in
 			let innerBag = DisposeBag()

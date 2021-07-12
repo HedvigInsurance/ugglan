@@ -22,6 +22,8 @@ extension Debug: Presentable {
 		let form = FormView()
 
 		let section = form.appendSection(headerView: UILabel(value: "Offer", style: .default), footerView: nil)
+        section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
+        
 		let presentFullScreenRow = section.appendRow(title: "Present in full screen")
 		let presentFullScreenSwitch = UISwitch()
 		presentFullScreenRow.append(presentFullScreenSwitch)

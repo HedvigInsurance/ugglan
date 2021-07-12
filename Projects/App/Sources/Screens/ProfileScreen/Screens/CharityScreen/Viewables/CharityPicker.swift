@@ -25,6 +25,7 @@ extension CharityPicker: Viewable {
 			minRowHeight: 10,
 			background: .none,
 			selectedBackground: .none,
+            shadow: .none,
 			header: .none,
 			footer: .none
 		)

@@ -331,11 +331,20 @@ extension DynamicSectionStyle {
 		}
 	}
 
-	public static func brandGroupedInset(separatorType: SeparatorType) -> DynamicSectionStyle {
+    public static func brandGroupedInset(
+        separatorType: SeparatorType,
+        border: BorderStyle = .init(
+            width: 0,
+            color: UIColor.clear,
+            cornerRadius: 8,
+            borderEdges: .all
+        ),
+        appliesShadow: Bool = true
+    ) -> DynamicSectionStyle {
 		DynamicSectionStyle { _ -> SectionStyle in
 			let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
 
-			let headerAndFooterInset = UIEdgeInsets(top: 14, left: 8, bottom: 14, right: 8)
+			let headerAndFooterInset = UIEdgeInsets(top: 14, left: 0, bottom: 14, right: 0)
 
 			return Style(
 				insets: UIEdgeInsets(horizontalInset: 14, verticalInset: 0),
@@ -347,12 +356,7 @@ extension DynamicSectionStyle {
 						.init(
 							background: .init(
 								color: .brand(.secondaryBackground()),
-								border: .init(
-									width: 0,
-									color: UIColor.clear,
-									cornerRadius: 8,
-									borderEdges: .all
-								)
+								border: border
 							),
 							topSeparator: .init(
 								style: .init(
@@ -385,12 +389,7 @@ extension DynamicSectionStyle {
 						.init(
 							background: .init(
 								color: selectedBackgroundColor,
-								border: .init(
-									width: 0,
-									color: UIColor.clear,
-									cornerRadius: 8,
-									borderEdges: .all
-								)
+								border: border
 							),
 							topSeparator: .init(
 								style: .init(
@@ -418,6 +417,7 @@ extension DynamicSectionStyle {
 							)
 						)
 				),
+                shadow: .init(opacity: appliesShadow ? 1 : 0, color: UIColor(red: 0, green: 0, blue: 0, alpha: 0.1), offset: CGSize(width: 0, height: 1), blurRadius: 2),
 				header: .init(text: .brand(.title3(color: .primary)), insets: headerAndFooterInset),
 				footer: .init(
 					text: .brand(.footnote(color: .tertiary)),
@@ -522,6 +522,7 @@ extension DynamicSectionStyle {
 							)
 						)
 				),
+                shadow: .none,
 				header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 15)),
 				footer: .init(
 					text: .brand(.footnote(color: .tertiary)),
@@ -548,7 +549,7 @@ extension DynamicSectionStyle {
 						background: .init(
 							color: backgroundColor,
 							border: .init(
-								width: 0,
+								width: 1,
 								color: .clear,
 								cornerRadius: cornerRadius,
 								borderEdges: .all
@@ -576,7 +577,7 @@ extension DynamicSectionStyle {
 						background: .init(
 							color: UIColor.tint(.yellowOne),
 							border: .init(
-								width: 0,
+								width: 1,
 								color: .clear,
 								cornerRadius: cornerRadius,
 								borderEdges: .all
@@ -598,6 +599,7 @@ extension DynamicSectionStyle {
 						)
 					)
 			),
+            shadow: .none,
 			header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
 			footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
 		)
@@ -611,6 +613,7 @@ extension DynamicSectionStyle {
 			minRowHeight: 0,
 			background: .none,
 			selectedBackground: .none,
+            shadow: .none,
 			header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
 			footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
 		)

@@ -95,6 +95,7 @@ extension Chat: Presentable {
 			minRowHeight: 10,
 			background: .none,
 			selectedBackground: .none,
+            shadow: .none,
 			header: .none,
 			footer: .none
 		)

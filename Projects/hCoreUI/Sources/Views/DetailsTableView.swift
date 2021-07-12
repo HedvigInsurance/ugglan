@@ -18,6 +18,7 @@ extension hGraphQL.GraphQL.DetailsTableFragment: Viewable {
 		)
 
 		let sectionView = SectionView(headerView: headerContainer, footerView: nil)
+        sectionView.dynamicStyle = .brandGrouped(separatorType: .none)
 		bag += {
 			sectionView.removeFromSuperview()
 		}
@@ -25,12 +26,6 @@ extension hGraphQL.GraphQL.DetailsTableFragment: Viewable {
 		sections.enumerated()
 			.forEach { (offset, section) in
 				let headerContainer = UIStackView()
-				headerContainer.edgeInsets = UIEdgeInsets(
-					top: offset == 0 ? 0 : 15,
-					left: 0,
-					bottom: 0,
-					right: 0
-				)
 				headerContainer.addArrangedSubview(
 					UILabel(
 						value: section.title,
@@ -42,6 +37,7 @@ extension hGraphQL.GraphQL.DetailsTableFragment: Viewable {
 					headerView: headerContainer,
 					footerView: nil
 				)
+                detailsSection.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 				sectionView.append(detailsSection)
 
 				section.rows.forEach { tableRow in
@@ -57,6 +53,8 @@ extension hGraphQL.GraphQL.DetailsTableFragment: Viewable {
 					)
 					row.append(valueLabel)
 				}
+                
+                sectionView.appendSpacing(.inbetween)
 			}
 
 		return (sectionView, bag)
