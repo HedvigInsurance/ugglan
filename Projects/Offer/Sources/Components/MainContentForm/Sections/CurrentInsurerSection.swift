@@ -39,7 +39,7 @@ extension CurrentInsurerSection: Presentable {
 				headerView: UILabel(value: "Your current insurance", style: .default),
 				footerView: nil
 			)
-            section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
+			section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 			sectionContainer.addArrangedSubview(section)
 
 			#warning("Translation needed — same as on line 82")
@@ -73,7 +73,7 @@ extension CurrentInsurerSection: Presentable {
 				headerView: UILabel(value: headerText, style: .default),
 				footerView: nil
 			)
-            section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
+			section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 			sectionContainer.addArrangedSubview(section)
 
 			bag +=

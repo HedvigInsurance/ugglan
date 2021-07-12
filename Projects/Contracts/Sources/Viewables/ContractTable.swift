@@ -46,7 +46,7 @@ extension ContractTable: Viewable {
 			minRowHeight: 10,
 			background: .init(all: UIColor.clear.asImage()),
 			selectedBackground: .init(all: UIColor.clear.asImage()),
-            shadow: .none,
+			shadow: .none,
 			header: .none,
 			footer: .none
 		)

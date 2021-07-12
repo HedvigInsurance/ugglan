@@ -12,8 +12,8 @@ struct CoverageSection {
 
 extension CoverageSection: Presentable {
 	func materialize() -> (SectionView, Disposable) {
-        let section = SectionView(headerView: nil, footerView: nil)
-        section.dynamicStyle = .brandGrouped(separatorType: .none)
+		let section = SectionView(headerView: nil, footerView: nil)
+		section.dynamicStyle = .brandGrouped(separatorType: .none)
 
 		let bag = DisposeBag()
 

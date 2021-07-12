@@ -331,16 +331,16 @@ extension DynamicSectionStyle {
 		}
 	}
 
-    public static func brandGroupedInset(
-        separatorType: SeparatorType,
-        border: BorderStyle = .init(
-            width: 0,
-            color: UIColor.clear,
-            cornerRadius: 8,
-            borderEdges: .all
-        ),
-        appliesShadow: Bool = true
-    ) -> DynamicSectionStyle {
+	public static func brandGroupedInset(
+		separatorType: SeparatorType,
+		border: BorderStyle = .init(
+			width: 0,
+			color: UIColor.clear,
+			cornerRadius: 8,
+			borderEdges: .all
+		),
+		appliesShadow: Bool = true
+	) -> DynamicSectionStyle {
 		DynamicSectionStyle { _ -> SectionStyle in
 			let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
 
@@ -417,7 +417,12 @@ extension DynamicSectionStyle {
 							)
 						)
 				),
-                shadow: .init(opacity: appliesShadow ? 1 : 0, color: UIColor(red: 0, green: 0, blue: 0, alpha: 0.1), offset: CGSize(width: 0, height: 1), blurRadius: 2),
+				shadow: .init(
+					opacity: appliesShadow ? 1 : 0,
+					color: UIColor(red: 0, green: 0, blue: 0, alpha: 0.1),
+					offset: CGSize(width: 0, height: 1),
+					blurRadius: 2
+				),
 				header: .init(text: .brand(.title3(color: .primary)), insets: headerAndFooterInset),
 				footer: .init(
 					text: .brand(.footnote(color: .tertiary)),
@@ -522,7 +527,7 @@ extension DynamicSectionStyle {
 							)
 						)
 				),
-                shadow: .none,
+				shadow: .none,
 				header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 15)),
 				footer: .init(
 					text: .brand(.footnote(color: .tertiary)),
@@ -599,7 +604,7 @@ extension DynamicSectionStyle {
 						)
 					)
 			),
-            shadow: .none,
+			shadow: .none,
 			header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
 			footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
 		)
@@ -613,7 +618,7 @@ extension DynamicSectionStyle {
 			minRowHeight: 0,
 			background: .none,
 			selectedBackground: .none,
-            shadow: .none,
+			shadow: .none,
 			header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
 			footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
 		)

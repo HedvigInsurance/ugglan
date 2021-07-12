@@ -13,7 +13,10 @@ struct SingleQuoteCoverage {
 
 extension SingleQuoteCoverage: Presentable {
 	func materialize() -> (SectionView, Disposable) {
-        let section = SectionView(headerView: UILabel(value: L10n.offerScreenCoverageTitle, style: .default), footerView: nil)
+		let section = SectionView(
+			headerView: UILabel(value: L10n.offerScreenCoverageTitle, style: .default),
+			footerView: nil
+		)
 		section.dynamicStyle = .brandGrouped(separatorType: .none)
 
 		let bag = DisposeBag()

@@ -8,8 +8,8 @@ extension SectionStyle {
 		itemSpacing: 0,
 		minRowHeight: 10,
 		background: .init(all: UIColor.clear.asImage()),
-        selectedBackground: .init(all: UIColor.clear.asImage()),
-        shadow: .none,
+		selectedBackground: .init(all: UIColor.clear.asImage()),
+		shadow: .none,
 		header: .none,
 		footer: .none
 	)

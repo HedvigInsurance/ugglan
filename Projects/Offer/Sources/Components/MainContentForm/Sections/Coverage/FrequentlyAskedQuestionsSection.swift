@@ -19,32 +19,32 @@ extension FrequentlyAskedQuestionsSection: Presentable {
 			headerView: UILabel(value: L10n.Offer.faqTitle, style: .default),
 			footerView: {
 				let footerStackView = UIStackView()
-                footerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 15)
+				footerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 15)
 				footerStackView.axis = .vertical
 				footerStackView.spacing = 16
-                
-                let footerDescription = UILabel(
-                    value: L10n.offerFooterSubtitle,
-                    style: .brand(.subHeadline(color: .primary)).aligned(to: .center)
-                )
-                
-                footerStackView.addArrangedSubview(footerDescription)
-                
-                let button = Button(
-                    title: L10n.offerFooterButtonText,
-                    type: .standardOutlineIcon(
-                        borderColor: .brand(.primaryText()),
-                        textColor: .brand(.primaryText()),
-                        icon: .left(image: hCoreUIAssets.chat.image, width: 24)
-                    )
-                )
+
+				let footerDescription = UILabel(
+					value: L10n.offerFooterSubtitle,
+					style: .brand(.subHeadline(color: .primary)).aligned(to: .center)
+				)
+
+				footerStackView.addArrangedSubview(footerDescription)
+
+				let button = Button(
+					title: L10n.offerFooterButtonText,
+					type: .standardOutlineIcon(
+						borderColor: .brand(.primaryText()),
+						textColor: .brand(.primaryText()),
+						icon: .left(image: hCoreUIAssets.chat.image, width: 24)
+					)
+				)
 
 				bag += footerStackView.addArranged(button)
 
 				return footerStackView
 			}()
 		)
-        section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
+		section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
 		bag += state.dataSignal.compactMap { $0.quoteBundle.frequentlyAskedQuestions }
 			.onValueDisposePrevious { frequentlyAskedQuestions in

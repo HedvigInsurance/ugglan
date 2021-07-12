@@ -24,7 +24,7 @@ extension InsurableLimits: Viewable {
 			headerView: UILabel(value: L10n.contractCoverageMoreInfo, style: .default),
 			footerView: nil
 		)
-        section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
+		section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
 		bag += insurableLimitFragmentsSignal.atOnce()
 			.onValueDisposePrevious { insurableLimitFragments in

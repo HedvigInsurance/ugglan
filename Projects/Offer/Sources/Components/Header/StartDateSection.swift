@@ -49,50 +49,63 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
 extension StartDateSection: Presentable {
 	func materialize() -> (SectionView, Disposable) {
 		let section = SectionView()
-        section.dynamicStyle = .brandGroupedInset(separatorType: .none, border: .init(width: 1, color: .brand(.primaryBorderColor), cornerRadius: .defaultCornerRadius, borderEdges: .all), appliesShadow: false)
+		section.dynamicStyle = .brandGroupedInset(
+			separatorType: .none,
+			border: .init(
+				width: 1,
+				color: .brand(.primaryBorderColor),
+				cornerRadius: .defaultCornerRadius,
+				borderEdges: .all
+			),
+			appliesShadow: false
+		)
 
 		let bag = DisposeBag()
 
 		bag += state.dataSignal.map { $0.quoteBundle }
 			.onValueDisposePrevious { quoteBundle in
-                let innerBag = DisposeBag()
+				let innerBag = DisposeBag()
 
-                let displayableStartDate = quoteBundle.displayableStartDate
-                
+				let displayableStartDate = quoteBundle.displayableStartDate
+
 				let row = RowView(
 					title: quoteBundle.canHaveIndependentStartDates
 						? L10n.offerStartDatePlural : L10n.offerStartDate
 				)
-                row.titleLabel?.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+				row.titleLabel?.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
 				let iconImageView = UIImageView()
 				iconImageView.image = hCoreUIAssets.calendar.image
 				row.prepend(iconImageView)
 				row.setCustomSpacing(17, after: iconImageView)
-                
-                let dateStyledText = StyledText(text: displayableStartDate, style: .brand(.body(color: .secondary)))
-                
-                let dateLabel = UILabel(
-                    styledText: dateStyledText
-                )
-                dateLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-                row.append(dateLabel)
-                
-                innerBag += dateLabel.didLayoutSignal.onValue {
-                    let rect = NSAttributedString(styledText: dateStyledText).boundingRect(
-                        with: CGSize(width: CGFloat(Int.max), height: CGFloat(Int.max)),
-                        options: [.usesLineFragmentOrigin, .usesFontLeading],
-                        context: nil
-                    )
-                    
-                    if rect.width > dateLabel.frame.width {
-                        row.subtitle = displayableStartDate
-                        dateLabel.isHidden = true
-                    } else {
-                        dateLabel.isHidden = false
-                        row.subtitle = nil
-                    }
-                }
-				
+
+				let dateStyledText = StyledText(
+					text: displayableStartDate,
+					style: .brand(.body(color: .secondary))
+				)
+
+				let dateLabel = UILabel(
+					styledText: dateStyledText
+				)
+				dateLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+				row.append(dateLabel)
+
+				innerBag += dateLabel.didLayoutSignal.onValue {
+					let rect = NSAttributedString(styledText: dateStyledText)
+						.boundingRect(
+							with: CGSize(width: CGFloat(Int.max), height: CGFloat(Int.max)),
+							options: [.usesLineFragmentOrigin, .usesFontLeading],
+							context: nil
+						)
+
+					if rect.width > dateLabel.frame.width {
+						row.subtitle = displayableStartDate
+						dateLabel.isHidden = true
+					} else {
+						dateLabel.isHidden = false
+						row.subtitle = nil
+					}
+				}
+
 				row.append(hCoreUIAssets.chevronRight.image)
 
 				innerBag += section.append(row).compactMap { _ in row.viewController }
