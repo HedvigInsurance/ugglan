@@ -9,15 +9,15 @@ import hCoreUI
 
 struct ContractDetail {
 	var contractRow: ContractRow
-    let state: ContractsState
+	let state: ContractsState
 
 	init(
 		contractRow: ContractRow,
-        state: ContractsState
+		state: ContractsState
 	) {
 		self.contractRow = contractRow
 		self.contractRow.allowDetailNavigation = false
-        self.state = state
+		self.state = state
 	}
 }
 

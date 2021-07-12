@@ -4,7 +4,6 @@ import Presentation
 import UIKit
 import hCore
 
-
 public indirect enum ContractFilter {
 	var displaysActiveContracts: Bool {
 		switch self {
@@ -36,14 +35,14 @@ public indirect enum ContractFilter {
 }
 
 public enum ContractRoute {
-    case openMovingFlow
+	case openMovingFlow
 }
 
 public struct Contracts {
 	let filter: ContractFilter
-    let state = ContractsState()
-    public let routeSignal = ReadWriteSignal<ContractRoute?>(nil)
-    
+	let state = ContractsState()
+	public let routeSignal = ReadWriteSignal<ContractRoute?>(nil)
+
 	public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
 	public init(filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none))) { self.filter = filter }
 }
@@ -58,12 +57,14 @@ extension Contracts: Presentable {
 		}
 
 		let bag = DisposeBag()
-        
-        bag += state.goToMovingFlowSignal.onValue { _ in
-            routeSignal.value = .openMovingFlow
-        }
 
-        bag += viewController.install(ContractTable(presentingViewController: viewController, filter: filter, state: state))
+		bag += state.goToMovingFlowSignal.onValue { _ in
+			routeSignal.value = .openMovingFlow
+		}
+
+		bag += viewController.install(
+			ContractTable(presentingViewController: viewController, filter: filter, state: state)
+		)
 
 		return (viewController, bag)
 	}
