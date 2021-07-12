@@ -20,7 +20,7 @@ struct ContractRow: Hashable {
 	let contract: GraphQL.ContractsQuery.Data.Contract
 	let displayName: String
 	let type: ContractType
-    let state: ContractsState
+	let state: ContractsState
 
 	enum ContractType {
 		case swedishApartment
@@ -31,7 +31,7 @@ struct ContractRow: Hashable {
 		case danishTravel
 		case danishAccident
 	}
-    
+
 	var allowDetailNavigation = true
 }
 
@@ -193,7 +193,7 @@ extension ContractRow: Reusable {
 							}
 
 							viewController.present(
-                                ContractDetail(contractRow: self, state: self.state),
+								ContractDetail(contractRow: self, state: self.state),
 								options: [.largeTitleDisplayMode(.never), .autoPop]
 							)
 							.onResult { _ in
