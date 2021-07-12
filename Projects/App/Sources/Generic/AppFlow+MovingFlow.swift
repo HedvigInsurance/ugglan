@@ -11,7 +11,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct MovingFlow {
+public struct MovingFlow {
 	@Inject var client: ApolloClient
 }
 
