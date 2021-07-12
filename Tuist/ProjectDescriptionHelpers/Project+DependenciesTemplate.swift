@@ -50,7 +50,7 @@ public enum ExternalDependencies: CaseIterable {
 			return [
 				.package(
 					url: "https://github.com/HedvigInsurance/Form",
-					.revision("f2c4103a6d6fe4b0d7872e8bc15010083ab03872")
+					.revision("0e8d628dd7c6ff1cfc3b77bcd1473e1030efa079")
 				)
 			]
 		case .presentation:
