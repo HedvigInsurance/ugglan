@@ -161,6 +161,13 @@ extension LoggedIn: Presentable {
 					}
 				}
 			}
+        
+        bag += contracts.routeSignal.compactMap { $0 }.onValue{ route in
+            switch route {
+            case .openMovingFlow:
+                bag += tabBarController.present(MovingFlow().wrappedInCloseButton())
+            }
+        }
 
 		if didSign {
 			tabBarController.present(WelcomePager())
@@ -199,7 +206,8 @@ extension LoggedIn: Presentable {
 					Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")
 				}
 			}
-
+        
+        
 		return (tabBarController, bag)
 	}
 }
@@ -227,3 +235,4 @@ extension Contracts {
 		]
 	}
 }
+

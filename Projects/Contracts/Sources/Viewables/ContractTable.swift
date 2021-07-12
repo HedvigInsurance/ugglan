@@ -11,6 +11,7 @@ struct ContractTable {
 	@Inject var client: ApolloClient
 	let presentingViewController: UIViewController
 	let filter: ContractFilter
+    let state: ContractsState
 }
 
 extension GraphQL.ContractsQuery.Data.Contract.CurrentAgreement {
@@ -101,7 +102,8 @@ extension ContractTable: Viewable {
 							ContractRow(
 								contract: contract,
 								displayName: contract.displayName,
-								type: contract.currentAgreement.type
+								type: contract.currentAgreement.type,
+                                state: state
 							)
 						}
 					)

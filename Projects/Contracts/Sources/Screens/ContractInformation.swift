@@ -7,7 +7,10 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ContractInformation { let contract: GraphQL.ContractsQuery.Data.Contract }
+struct ContractInformation {
+    let contract: GraphQL.ContractsQuery.Data.Contract
+    let state: ContractsState
+}
 
 extension ContractInformation: Presentable {
 	func swedishApartment() -> (DisposeBag, [Either<SectionView, Spacing>])? {
@@ -412,10 +415,17 @@ extension ContractInformation: Presentable {
 		}
 
 		bag += form.append(Spacing(height: 20))
+        
+        let section = form.appendSection()
+        
+        let changeAddressButton = ButtonRowViewWrapper(title:  L10n.HomeTab.editingSectionChangeAddressLabel, type: .standardOutlineIcon(borderColor: .black, textColor: .black, icon: .left(image: hCoreUIAssets.apartment.image, width: 32)), isEnabled: true, animate: false)
+        bag += section.append(changeAddressButton)
+        
+        bag += changeAddressButton.onTapSignal.map { true }.bindTo(state.goToMovingFlowSignal)
 
 		let changeButton = ButtonSection(text: L10n.contractDetailHomeChangeInfo, style: .normal)
 		bag += form.append(changeButton)
-
+            
 		bag += changeButton.onSelect.onValue {
 			let alert = Alert<Bool>(
 				title: L10n.myHomeChangeAlertTitle,
