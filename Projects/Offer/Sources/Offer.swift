@@ -33,8 +33,8 @@ public struct Offer {
 }
 
 public enum OfferResult {
-    case signed
-    case close
+	case signed
+	case close
 }
 
 extension Offer: Presentable {
@@ -171,20 +171,20 @@ extension Offer: Presentable {
 			FiniteSignal { callback in
 				bag += state.$hasSignedQuotes.filter(predicate: { $0 })
 					.onValue({ _ in
-                        callback(.value(.signed))
+						callback(.value(.signed))
 					})
-                
-                if let menu = menu {
-                    bag += optionsOrCloseButton.attachSinglePressMenu(
-                        viewController: viewController,
-                        menu: menu
-                    )
-                } else {
-                    optionsOrCloseButton.image = hCoreUIAssets.close.image
-                    bag += optionsOrCloseButton.onValue {
-                        callback(.value(.close))
-                    }
-                }
+
+				if let menu = menu {
+					bag += optionsOrCloseButton.attachSinglePressMenu(
+						viewController: viewController,
+						menu: menu
+					)
+				} else {
+					optionsOrCloseButton.image = hCoreUIAssets.close.image
+					bag += optionsOrCloseButton.onValue {
+						callback(.value(.close))
+					}
+				}
 
 				return DelayedDisposer(bag, delay: 2)
 			}
