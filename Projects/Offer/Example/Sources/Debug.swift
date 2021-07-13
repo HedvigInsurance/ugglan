@@ -36,23 +36,28 @@ extension Debug: Presentable {
 				mocks()
 				sharedMocks
 			}
-            
-            let offerBag = DisposeBag()
 
-            offerBag += viewController.present(
-                Offer(offerIDContainer: .stored, menu: nil, options: [.menuToTrailing]),
-				style: presentFullScreenSwitch.isOn
-					? .modally(
-						presentationStyle: .fullScreen,
-						transitionStyle: nil,
-						capturesStatusBarAppearance: nil
-					) : .detented(.large),
-				options: presentWithLargeTitleSwitch.isOn
-                    ? [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-					: [.defaults]
-            ).onValue({ result in
-                offerBag.dispose()
-            })
+			let offerBag = DisposeBag()
+
+			offerBag +=
+				viewController.present(
+					Offer(offerIDContainer: .stored, menu: nil, options: [.menuToTrailing]),
+					style: presentFullScreenSwitch.isOn
+						? .modally(
+							presentationStyle: .fullScreen,
+							transitionStyle: nil,
+							capturesStatusBarAppearance: nil
+						) : .detented(.large),
+					options: presentWithLargeTitleSwitch.isOn
+						? [
+							.defaults, .prefersLargeTitles(true),
+							.largeTitleDisplayMode(.always),
+						]
+						: [.defaults]
+				)
+				.onValue({ result in
+					offerBag.dispose()
+				})
 		}
 
 		bag += section.appendRow(title: "Swedish apartment")
