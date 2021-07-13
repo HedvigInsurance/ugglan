@@ -34,7 +34,7 @@ extension MovingFlow: Presentable {
 		return (
 			viewController,
 			Future { completion in
-				let coordinator = Self.Coordinator(
+				let coordinator = Coordinator(
 					presentFreeTextChat: {
 						viewController.present(
 							FreeTextChat().wrappedInCloseButton(),
