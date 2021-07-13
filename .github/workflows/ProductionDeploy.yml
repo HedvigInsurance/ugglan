@@ -27,7 +27,7 @@ jobs:
         SENTRY_ORG_SLUG: ${{ secrets.SENTRY_ORG_SLUG }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-      run: arch -arm64 bundle exec fastlane ios ios production_upload version_number:${{ github.event.inputs.versionNumber }}
+      run: arch -arm64 bundle exec fastlane ios production_upload version_number:${{ github.event.inputs.versionNumber }}
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
       with:
