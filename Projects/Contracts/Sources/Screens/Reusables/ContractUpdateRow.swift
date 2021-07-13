@@ -1,9 +1,26 @@
-//
-//  ContractUpdateRow.swift
-//  Contracts
-//
-//  Created by Tarik Stafford on 2021-07-13.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
+import Flow
+import Form
 import Foundation
+import Presentation
+import UIKit
+import hCore
+import hCoreUI
+
+struct ContractUpdateRow {
+
+}
+
+extension ContractUpdateRow: Reusable {
+	static func makeAndConfigure() -> (make: UIView, configure: (ContractUpdateRow) -> Disposable) {
+		let view = UIView()
+		let bag = DisposeBag()
+
+		return (
+			view,
+			{ `self` in
+
+				return bag
+			}
+		)
+	}
+}
