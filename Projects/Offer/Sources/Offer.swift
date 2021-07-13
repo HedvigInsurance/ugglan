@@ -16,13 +16,13 @@ public enum OfferOption {
 public struct Offer {
 	@Inject var client: ApolloClient
 	let offerIDContainer: OfferIDContainer
-	let menu: Menu
+	let menu: Menu?
 	let state: OfferState
 	let options: Set<OfferOption>
 
 	public init(
 		offerIDContainer: OfferIDContainer,
-		menu: Menu,
+		menu: Menu?,
 		options: Set<OfferOption> = []
 	) {
 		self.offerIDContainer = offerIDContainer
@@ -32,8 +32,13 @@ public struct Offer {
 	}
 }
 
+public enum OfferResult {
+    case signed
+    case close
+}
+
 extension Offer: Presentable {
-	public func materialize() -> (UIViewController, Future<Void>) {
+	public func materialize() -> (UIViewController, FiniteSignal<OfferResult>) {
 		let viewController = UIViewController()
 
 		if options.contains(.shouldPreserveState) {
@@ -86,22 +91,17 @@ extension Offer: Presentable {
 				}
 			}
 
-		let optionsButton = UIBarButtonItem(
+		let optionsOrCloseButton = UIBarButtonItem(
 			image: hCoreUIAssets.menuIcon.image,
 			style: .plain,
 			target: nil,
 			action: nil
 		)
 
-		bag += optionsButton.attachSinglePressMenu(
-			viewController: viewController,
-			menu: menu
-		)
-
 		if options.contains(.menuToTrailing) {
-			viewController.navigationItem.rightBarButtonItem = optionsButton
+			viewController.navigationItem.rightBarButtonItem = optionsOrCloseButton
 		} else {
-			viewController.navigationItem.leftBarButtonItem = optionsButton
+			viewController.navigationItem.leftBarButtonItem = optionsOrCloseButton
 		}
 
 		let scrollView = FormScrollView(
@@ -168,11 +168,23 @@ extension Offer: Presentable {
 
 		return (
 			viewController,
-			Future { completion in
+			FiniteSignal { callback in
 				bag += state.$hasSignedQuotes.filter(predicate: { $0 })
 					.onValue({ _ in
-						completion(.success)
+                        callback(.value(.signed))
 					})
+                
+                if let menu = menu {
+                    bag += optionsOrCloseButton.attachSinglePressMenu(
+                        viewController: viewController,
+                        menu: menu
+                    )
+                } else {
+                    optionsOrCloseButton.image = hCoreUIAssets.close.image
+                    bag += optionsOrCloseButton.onValue {
+                        callback(.value(.close))
+                    }
+                }
 
 				return DelayedDisposer(bag, delay: 2)
 			}

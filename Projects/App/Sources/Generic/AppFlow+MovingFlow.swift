@@ -20,7 +20,7 @@ extension MovingFlow: Presentable {
 		let bag = DisposeBag()
 
 		let (viewController, routeSignal) = MovingFlowIntro().materialize()
-
+        
 		return (
 			viewController,
 			Future { completion in
@@ -35,47 +35,55 @@ extension MovingFlow: Presentable {
 						)
 						.onResult(completion)
 					case let .embark(name):
+                        let embark = Embark(
+                            name: name
+                        )
+                        
 						bag +=
 							viewController
 							.present(
-								Embark(
-									name: name,
-									menu: Menu(title: nil, children: [])
-								),
+                                embark,
 								options: [.autoPop]
 							)
 							.onValue { redirect in
 								switch redirect {
 								case .mailingList:
 									break
+                                case .close:
+                                    completion(.failure(GenericError.cancelled))
 								case let .offer(ids: ids):
-									viewController.present(
+									bag += viewController.present(
 										Offer(
 											offerIDContainer: .exact(
 												ids: ids,
 												shouldStore: false
 											),
-											menu: Menu(
-												title: nil,
-												children: []
-											),
+											menu: nil,
 											options: [.menuToTrailing]
 										)
 									)
-									.onValue { _ in
-										Toasts.shared.displayToast(
-											toast: Toast(
-												symbol: .icon(
-													hCoreUIAssets
-														.circularCheckmark
-														.image
-												),
-												body: L10n
-													.movingFlowSuccessToast
-											)
-										)
-										completion(.success)
+                                    .atValue { result in
+                                        switch result {
+                                        case .close:
+                                            completion(.failure(GenericError.cancelled))
+                                        case .signed:
+                                            Toasts.shared.displayToast(
+                                                toast: Toast(
+                                                    symbol: .icon(
+                                                        hCoreUIAssets
+                                                            .circularCheckmark
+                                                            .image
+                                                    ),
+                                                    body: L10n
+                                                        .movingFlowSuccessToast
+                                                )
+                                            )
+                                            completion(.success)
+                                        }
 									}
+                                    .onEnd {
+                                        embark.goBack()
+                                    }
 								}
 							}
 					}

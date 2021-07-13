@@ -7,6 +7,7 @@ import hGraphQL
 public enum ExternalRedirect {
 	case mailingList
 	case offer(ids: [String])
+    case close
 }
 
 public class EmbarkState {
