@@ -7,20 +7,19 @@ import hCore
 import hCoreUI
 
 struct ContractUpdateRow {
-
+    
 }
 
 extension ContractUpdateRow: Reusable {
 	static func makeAndConfigure() -> (make: UIView, configure: (ContractUpdateRow) -> Disposable) {
-		let view = UIView()
+		let cardView = UIView()
 		let bag = DisposeBag()
+        
+        
 
-		return (
-			view,
-			{ `self` in
+		return (cardView, { `self` in
 
 				return bag
-			}
-		)
+			})
 	}
 }

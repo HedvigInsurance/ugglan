@@ -6,19 +6,29 @@ query UpcomingAgreement($locale: Locale!) {
 fragment UpcomingAgreementFragment on Contract {
   status {
     ... on ActiveStatus {
+      pastInception
       upcomingAgreementChange {
         ... UpcomingAgreementChangeFragment
       }
+    }
+    ... on PendingStatus {
+        pendingSince
+    }
+    ... on ActiveInFutureStatus {
+        futureInception
+    }
+    ... on ActiveInFutureAndTerminatedInFutureStatus {
+        futureInception
+        futureTermination
     }
     ... on TerminatedInFutureStatus {
-      upcomingAgreementChange {
-        ... UpcomingAgreementChangeFragment
-      }
+        futureTermination
     }
     ... on TerminatedTodayStatus {
-      upcomingAgreementChange {
-        ... UpcomingAgreementChangeFragment
-      }
+        today
+    }
+    ... on TerminatedStatus {
+        termination
     }
   }
   upcomingAgreementDetailsTable(locale: $locale) {

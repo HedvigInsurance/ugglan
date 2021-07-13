@@ -17,9 +17,7 @@ query Contracts($locale: Locale!) {
             displayName
             url
         }
-        status {
-           ...ContractStatusFragment
-        }
+        ... UpcomingAgreementFragment
         currentAgreement {
             ... on AgreementCore {
                 certificateUrl
