@@ -24,7 +24,8 @@ extension MovingFlow: Presentable {
 				Void
 			>
 		var presentOffer: (_ ids: [String]) -> Offer.Result
-        var handleEmbarkResult: (_ embark: Embark, _ result: Embark.Result, _ coordinator: Coordinator) -> Disposable
+		var handleEmbarkResult:
+			(_ embark: Embark, _ result: Embark.Result, _ coordinator: Coordinator) -> Disposable
 	}
 
 	public func materialize() -> (UIViewController, Future<Void>) {
@@ -113,39 +114,41 @@ extension MovingFlow: Presentable {
 							)
 						)
 					},
-                    handleEmbarkResult: { embark, result, coordinator in
-                        result.onValueDisposePrevious { redirect in
-                            coordinator.handleEmbarkRedirect(
-                                embark,
-                                redirect,
-                                coordinator
-                            )
-                            .atValue({ _ in
-                                Toasts.shared
-                                    .displayToast(
-                                        toast:
-                                            Toast(
-                                                symbol:
-                                                    .icon(
-                                                        hCoreUIAssets
-                                                            .circularCheckmark
-                                                            .image
-                                                    ),
-                                                body:
-                                                    L10n
-                                                    .movingFlowSuccessToast
-                                            )
-                                    )
+					handleEmbarkResult: { embark, result, coordinator in
+						result.onValueDisposePrevious { redirect in
+							coordinator.handleEmbarkRedirect(
+								embark,
+								redirect,
+								coordinator
+							)
+							.atValue({ _ in
+								Toasts.shared
+									.displayToast(
+										toast:
+											Toast(
+												symbol:
+													.icon(
+														hCoreUIAssets
+															.circularCheckmark
+															.image
+													),
+												body:
+													L10n
+													.movingFlowSuccessToast
+											)
+									)
 
-                                completion(.success)
-                            })
-                            .onError({ error in
-                                if let genericError = error as? GenericError, genericError == GenericError.cancelled {
-                                    completion(.failure(error))
-                                }
-                            })
-                        }
-                    }
+								completion(.success)
+							})
+							.onError({ error in
+								if let genericError = error as? GenericError,
+									genericError == GenericError.cancelled
+								{
+									completion(.failure(error))
+								}
+							})
+						}
+					}
 				)
 
 				bag += routeSignal.atValue { route in
@@ -154,7 +157,7 @@ extension MovingFlow: Presentable {
 						coordinator.presentFreeTextChat().onResult(completion)
 					case let .embark(name):
 						let (embark, embarkResult) = coordinator.presentEmbark(name)
-                        bag += coordinator.handleEmbarkResult(embark, embarkResult, coordinator)
+						bag += coordinator.handleEmbarkResult(embark, embarkResult, coordinator)
 					}
 				}
 
