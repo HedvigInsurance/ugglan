@@ -14,7 +14,7 @@ public func setupScreenShotTests() {
 	UIView.setAnimationsEnabled(false)
 	XCTAssertEqual(UIScreen.main.scale, 3)
 	Fonts.forceTraitCollection = UITraitCollection(preferredContentSizeCategory: .medium)
-    
+
 	#if RECORD
 		isRecording = true
 	#endif

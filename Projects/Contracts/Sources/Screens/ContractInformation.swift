@@ -343,25 +343,46 @@ extension ContractInformation: Presentable {
 		let bag = DisposeBag()
 
 		let form = FormView()
-        
-        let upcomingAgreementSection = form.appendSection(header: nil, footer: nil, style: .brandGroupedInset(separatorType: .none))
-        
-        if contract.hasUpcomingAgreementChange {
-            let date = contract.upcomingAgreementDate ?? ""
-            let address = contract.upcomingAgreementAddress ?? ""
-            
-            let card = Card(titleIcon: hCoreUIAssets.apartment.image, title: L10n.InsuranceDetails.updateDetailsSheetTitle, body: L10n.InsuranceDetails.addressUpdateBody(date, address),buttonText: L10n.InsuranceDetails.addressUpdateButton, backgroundColor: .tint(.lavenderTwo), buttonType: .standardOutline(borderColor: .brand(.primaryBorderColor), textColor: .brand(.primaryText())))
-            bag += upcomingAgreementSection.append(card).onValueDisposePrevious { _ in
-                let innerBag = DisposeBag()
-                
-                let sheet = UpcomingAddressChangeDetails(details: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment)
-                innerBag += viewController.present(sheet.withCloseButton, style: .detented(.medium))
-                
-                return innerBag
-            }
-            
-            bag += form.append(Spacing(height: 20))
-        }
+
+		let upcomingAgreementSection = form.appendSection(
+			header: nil,
+			footer: nil,
+			style: .brandGroupedInset(separatorType: .none)
+		)
+
+		if contract.hasUpcomingAgreementChange {
+			let date = contract.upcomingAgreementDate ?? ""
+			let address = contract.upcomingAgreementAddress ?? ""
+
+			let card = Card(
+				titleIcon: hCoreUIAssets.apartment.image,
+				title: L10n.InsuranceDetails.updateDetailsSheetTitle,
+				body: L10n.InsuranceDetails.addressUpdateBody(date, address),
+				buttonText: L10n.InsuranceDetails.addressUpdateButton,
+				backgroundColor: .tint(.lavenderTwo),
+				buttonType: .standardOutline(
+					borderColor: .brand(.primaryBorderColor),
+					textColor: .brand(.primaryText())
+				)
+			)
+			bag += upcomingAgreementSection.append(card)
+				.onValueDisposePrevious { _ in
+					let innerBag = DisposeBag()
+
+					let sheet = UpcomingAddressChangeDetails(
+						details: contract.upcomingAgreementDetailsTable.fragments
+							.detailsTableFragment
+					)
+					innerBag += viewController.present(
+						sheet.withCloseButton,
+						style: .detented(.medium)
+					)
+
+					return innerBag
+				}
+
+			bag += form.append(Spacing(height: 20))
+		}
 
 		if let (swedishApartmentBag, swedishApartmentContent) = swedishApartment() {
 			bag += swedishApartmentBag
@@ -434,7 +455,7 @@ extension ContractInformation: Presentable {
 		}
 
 		bag += form.append(Spacing(height: 20))
-        
+
 		let section = form.appendSection()
 
 		let changeAddressButton = ButtonRowViewWrapper(
@@ -477,32 +498,38 @@ extension ContractInformation: Presentable {
 }
 
 extension GraphQL.ContractsQuery.Data.Contract {
-    var hasUpcomingAgreementChange: Bool {
-        return status.asActiveStatus?.upcomingAgreementChange != nil
-    }
-    
-    var upcomingAgreementDate: String? {
-        let agreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments.upcomingAgreementChangeFragment.newAgreement
-        let dateString = agreement?.asSwedishApartmentAgreement?.activeFrom ?? agreement?.asSwedishHouseAgreement?.activeFrom ?? agreement?.asDanishHomeContentAgreement?.activeFrom ?? agreement?.asNorwegianHomeContentAgreement?.activeFrom
-        
-        return dateString
-    }
-    
-    var upcomingAgreementAddress: String? {
-        let upcomingAgreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments.upcomingAgreementChangeFragment.newAgreement
-        
-        if let address = upcomingAgreement?.asSwedishHouseAgreement?.address.street {
-            return address
-        } else if let address = upcomingAgreement?.asSwedishApartmentAgreement?.address.street  {
-            return address
-        } else if let address = upcomingAgreement?.asNorwegianHomeContentAgreement?.address.street  {
-            return address
-        } else if let address = upcomingAgreement?.asDanishHomeContentAgreement?.address.street  {
-            return address
-        } else {
-            return nil
-        }
-    }
+	var hasUpcomingAgreementChange: Bool {
+		return status.asActiveStatus?.upcomingAgreementChange != nil
+	}
+
+	var upcomingAgreementDate: String? {
+		let agreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
+			.upcomingAgreementChangeFragment.newAgreement
+		let dateString =
+			agreement?.asSwedishApartmentAgreement?.activeFrom
+			?? agreement?.asSwedishHouseAgreement?.activeFrom
+			?? agreement?.asDanishHomeContentAgreement?.activeFrom
+			?? agreement?.asNorwegianHomeContentAgreement?.activeFrom
+
+		return dateString
+	}
+
+	var upcomingAgreementAddress: String? {
+		let upcomingAgreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
+			.upcomingAgreementChangeFragment.newAgreement
+
+		if let address = upcomingAgreement?.asSwedishHouseAgreement?.address.street {
+			return address
+		} else if let address = upcomingAgreement?.asSwedishApartmentAgreement?.address.street {
+			return address
+		} else if let address = upcomingAgreement?.asNorwegianHomeContentAgreement?.address.street {
+			return address
+		} else if let address = upcomingAgreement?.asDanishHomeContentAgreement?.address.street {
+			return address
+		} else {
+			return nil
+		}
+	}
 }
 
 //struct ContractAddressSection {

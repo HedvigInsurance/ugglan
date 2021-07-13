@@ -9,19 +9,29 @@ import hCoreUI
 @testable import hCoreUI
 
 final class CardTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-        setupScreenShotTests()
-        isRecording = true
-        DefaultStyling.installCustom()
-    }
+	override func setUp() {
+		super.setUp()
+		setupScreenShotTests()
+		isRecording = true
+		DefaultStyling.installCustom()
+	}
 
-    func test() {
-        let card = Card(titleIcon: hCoreUIAssets.apartment.image, title: "Change address", body: "BLAH BLAH BLAH", buttonText: "See full update" ,backgroundColor: .brand(.primaryBackground()), buttonType: .standardOutline(borderColor: .brand(.primaryBorderColor), textColor: .brand(.primaryButtonTextColor)))
+	func test() {
+		let card = Card(
+			titleIcon: hCoreUIAssets.apartment.image,
+			title: "Change address",
+			body: "BLAH BLAH BLAH",
+			buttonText: "See full update",
+			backgroundColor: .brand(.primaryBackground()),
+			buttonType: .standardOutline(
+				borderColor: .brand(.primaryBorderColor),
+				textColor: .brand(.primaryButtonTextColor)
+			)
+		)
 
-        materializeViewable(card) { view in view.snp.makeConstraints { make in make.width.equalTo(400) }
+		materializeViewable(card) { view in view.snp.makeConstraints { make in make.width.equalTo(400) }
 
-            assertSnapshot(matching: view, as: .image)
-        }
-    }
+			assertSnapshot(matching: view, as: .image)
+		}
+	}
 }
