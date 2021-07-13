@@ -16,6 +16,13 @@ struct MovingFlow {
 }
 
 extension MovingFlow: Presentable {
+    struct Coordinator {
+        var presentFreeTextChat: () -> Future<Void>
+        var presentEmbark: (_ name: String) -> (Embark, Embark.Result)
+        var handleEmbarkRedirect: (_ embark: Embark, _ redirect: ExternalRedirect, _ coordinator: Coordinator) -> FiniteSignal<Void>
+        var presentOffer: (_ ids: [String]) -> Offer.Result
+    }
+    
 	public func materialize() -> (UIViewController, Future<Void>) {
 		let bag = DisposeBag()
 
@@ -24,83 +31,104 @@ extension MovingFlow: Presentable {
 		return (
 			viewController,
 			Future { completion in
+                let coordinator = Self.Coordinator(
+                    presentFreeTextChat: {
+                        viewController.present(
+                            FreeTextChat().wrappedInCloseButton(),
+                            configure: { chatViewController, _ in
+                                chatViewController.navigationItem.hidesBackButton = true
+                            }
+                        )
+                    }, presentEmbark: { name in
+                        let embark = Embark(
+                            name: name
+                        )
+                        
+                        return (
+                            embark,
+                            viewController
+                            .present(
+                                embark,
+                                options: [.autoPop]
+                            )
+                        )
+                    }, handleEmbarkRedirect: { embark, redirect, coordinator in
+                        switch redirect {
+                        case .mailingList:
+                            return FiniteSignal { callback in
+                                callback(.end(GenericError.cancelled))
+                                return NilDisposer()
+                            }
+                        case .close:
+                            return FiniteSignal { callback in
+                                callback(.end(GenericError.cancelled))
+                                return NilDisposer()
+                            }
+                        case let .offer(ids):
+                            return coordinator.presentOffer(ids).atEnd {
+                                embark.goBack()
+                            }.flatMapLatest { result -> FiniteSignal<Void> in
+                                switch result {
+                                case .close:
+                                    return FiniteSignal { callback in
+                                        callback(.end(GenericError.cancelled))
+                                        return NilDisposer()
+                                    }
+                                case .signed:
+                                    return FiniteSignal { callback in
+                                        callback(.value(()))
+                                        return NilDisposer()
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    presentOffer: { ids in
+                        viewController.present(
+                            Offer(
+                                offerIDContainer:
+                                    .exact(
+                                        ids:
+                                            ids,
+                                        shouldStore:
+                                            false
+                                    ),
+                                menu: nil,
+                                options: [
+                                    .menuToTrailing
+                                ]
+                            )
+                        )
+                    }
+                )
+                
 				bag += routeSignal.atValue { route in
 					switch route {
 					case .chat:
-						viewController.present(
-							FreeTextChat().wrappedInCloseButton(),
-							configure: { chatViewController, _ in
-								chatViewController.navigationItem.hidesBackButton = true
-							}
-						)
-						.onResult(completion)
+                        coordinator.presentFreeTextChat().onResult(completion)
 					case let .embark(name):
-						let embark = Embark(
-							name: name
-						)
-
-						bag +=
-							viewController
-							.present(
-								embark,
-								options: [.autoPop]
-							)
-							.onValue { redirect in
-								switch redirect {
-								case .mailingList:
-									break
-								case .close:
-									completion(.failure(GenericError.cancelled))
-								case let .offer(ids: ids):
-									bag +=
-										viewController.present(
-											Offer(
-												offerIDContainer:
-													.exact(
-														ids:
-															ids,
-														shouldStore:
-															false
-													),
-												menu: nil,
-												options: [
-													.menuToTrailing
-												]
-											)
-										)
-										.atValue { result in
-											switch result {
-											case .close:
-												completion(
-													.failure(
-														GenericError
-															.cancelled
-													)
-												)
-											case .signed:
-												Toasts.shared
-													.displayToast(
-														toast:
-															Toast(
-																symbol:
-																	.icon(
-																		hCoreUIAssets
-																			.circularCheckmark
-																			.image
-																	),
-																body:
-																	L10n
-																	.movingFlowSuccessToast
-															)
-													)
-												completion(.success)
-											}
-										}
-										.onEnd {
-											embark.goBack()
-										}
-								}
-							}
+                        let (embark, embarkResult) = coordinator.presentEmbark(name)
+                        bag += embarkResult.flatMapLatest { redirect in coordinator.handleEmbarkRedirect(embark, redirect, coordinator) }.atValue({ _ in
+                            Toasts.shared
+                                .displayToast(
+                                    toast:
+                                        Toast(
+                                            symbol:
+                                                .icon(
+                                                    hCoreUIAssets
+                                                        .circularCheckmark
+                                                        .image
+                                                ),
+                                            body:
+                                                L10n
+                                                .movingFlowSuccessToast
+                                        )
+                                )
+                            
+                            completion(.success)
+                        }).onError { error in
+                            completion(.failure(error))
+                        }
 					}
 				}
 
