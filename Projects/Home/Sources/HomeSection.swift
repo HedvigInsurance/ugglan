@@ -1,4 +1,5 @@
 import UIKit
+import Flow
 
 public enum HomeSectionStyle {
 	case horizontal
@@ -26,7 +27,7 @@ public struct HomeChild {
 	public init(
 		title: String,
 		icon: UIImage,
-		handler: @escaping (UIViewController) -> Void
+		handler: @escaping (UIViewController) -> Disposable
 	) {
 		self.title = title
 		self.icon = icon
@@ -35,5 +36,5 @@ public struct HomeChild {
 
 	public var title: String
 	public var icon: UIImage
-	public var handler: (UIViewController) -> Void
+	public var handler: (UIViewController) -> Disposable
 }

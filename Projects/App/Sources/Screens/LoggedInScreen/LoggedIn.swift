@@ -166,7 +166,7 @@ extension LoggedIn: Presentable {
 			.onValue { route in
 				switch route {
 				case .openMovingFlow:
-					bag += tabBarController.present(MovingFlow().wrappedInCloseButton())
+                    tabBarController.present(MovingFlowJourney.journey)
 				}
 			}
 
@@ -224,8 +224,9 @@ extension Contracts {
 						icon: hCoreUIAssets.apartment.image,
 						handler: { viewController in
 							viewController.present(
-								MovingFlow.journey
-							)
+                                MovingFlowJourney.journey
+                            )
+                            return NilDisposer()
 						}
 					)
 				]
