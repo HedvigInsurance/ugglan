@@ -20,6 +20,7 @@ struct EmbarkInput {
 	let fieldStyle: FieldStyle
 	let shouldAutoSize: Bool
 	let textFieldAlignment: NSTextAlignment
+    let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
 
 	init(
 		placeholder: String,
@@ -106,9 +107,17 @@ extension EmbarkInput: Viewable {
 		placeholderLabel.textAlignment = textFieldAlignment
 
 		bag += textField.atOnce().onValue { value in placeholderLabel.alpha = value.isEmpty ? 1 : 0 }
+        
+        bag += setIsFirstResponderSignal.onValue { firstResponder in
+            if firstResponder {
+                textField.becomeFirstResponder()
+            } else {
+                textField.resignFirstResponder()
+            }
+        }
 
 		bag += textField.didMoveToWindowSignal.delay(by: 0.5).filter(predicate: { self.shouldAutoFocus })
-			.onValue { _ in textField.becomeFirstResponder() } 
+			.onValue { _ in textField.becomeFirstResponder() }
 
 		bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }
 			.onValue { _ in textField.becomeFirstResponder() }

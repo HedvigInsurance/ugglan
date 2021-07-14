@@ -166,6 +166,15 @@ extension Action: Viewable {
 								state: self.state
 							)
 							innerBag += view.addArranged(inputSet).onValue(performCallback)
+                        } else if let addressAutocompleteAction = actionData?.asEmbarkAddressAutocompleteAction {
+                            innerBag +=
+                                view.addArranged(
+                                    EmbarkAddressAutocompleteAction(
+                                        state: self.state,
+                                        data: addressAutocompleteAction
+                                    )
+                                )
+                                .onValue(performCallback)
 						} else if let textActionSet = actionData?.asEmbarkTextActionSet?
 							.textActionSetData
 						{
