@@ -1,5 +1,5 @@
-import UIKit
 import Flow
+import UIKit
 
 public enum HomeSectionStyle {
 	case horizontal
