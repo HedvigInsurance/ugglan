@@ -224,9 +224,7 @@ extension Contracts {
 						icon: hCoreUIAssets.apartment.image,
 						handler: { viewController in
 							viewController.present(
-								MovingFlow().wrappedInCloseButton(),
-								style: .detented(.large),
-								options: [.defaults, .allowSwipeDismissAlways]
+                                MovingFlow.journey
 							)
 						}
 					)
