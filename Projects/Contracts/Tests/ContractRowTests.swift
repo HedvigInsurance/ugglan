@@ -43,8 +43,8 @@ final class ContractRowTests: XCTestCase {
 				jsonObject: .makeNorwegianHomeContentContract(status: .makeActiveStatus())
 			),
 			displayName: "NorwegianHome",
-            type: .norwegianHome,
-            state: ContractsState()
+			type: .norwegianHome,
+			state: ContractsState()
 		)
 
 		assert(activeContractRow)
@@ -56,8 +56,8 @@ final class ContractRowTests: XCTestCase {
 				)
 			),
 			displayName: "NorwegianHome",
-            type: .norwegianHome,
-            state: ContractsState()
+			type: .norwegianHome,
+			state: ContractsState()
 		)
 
 		assert(activeInFutureContractRow)
@@ -67,8 +67,8 @@ final class ContractRowTests: XCTestCase {
 				jsonObject: .makeNorwegianHomeContentContract(status: .makePendingStatus())
 			),
 			displayName: "NorwegianHome",
-            type: .norwegianHome,
-            state: ContractsState()
+			type: .norwegianHome,
+			state: ContractsState()
 		)
 
 		assert(pendingContractRow)
@@ -83,8 +83,8 @@ final class ContractRowTests: XCTestCase {
 				)
 			),
 			displayName: "NorwegianHome",
-            type: .norwegianHome,
-            state: ContractsState()
+			type: .norwegianHome,
+			state: ContractsState()
 		)
 
 		assert(activeInFutureAndTerminatedInFutureContractRow)
@@ -94,8 +94,8 @@ final class ContractRowTests: XCTestCase {
 				jsonObject: .makeNorwegianHomeContentContract(status: .makeTerminatedStatus())
 			),
 			displayName: "NorwegianHome",
-            type: .norwegianHome,
-            state: ContractsState()
+			type: .norwegianHome,
+			state: ContractsState()
 		)
 
 		assert(terminatedContractRow)
@@ -105,8 +105,8 @@ final class ContractRowTests: XCTestCase {
 		let activeContractRow = ContractRow(
 			contract: try! .init(jsonObject: .makeNorwegianTravelContract(status: .makeActiveStatus())),
 			displayName: "NorwegianTravel",
-            type: .norwegianTravel,
-            state: ContractsState()
+			type: .norwegianTravel,
+			state: ContractsState()
 		)
 
 		assert(activeContractRow)
@@ -116,8 +116,8 @@ final class ContractRowTests: XCTestCase {
 		let activeContractRow = ContractRow(
 			contract: try! .init(jsonObject: .makeSwedishHouseContract(status: .makeActiveStatus())),
 			displayName: "SwedishHouse",
-            type: .norwegianTravel,
-            state: ContractsState()
+			type: .norwegianTravel,
+			state: ContractsState()
 		)
 
 		assert(activeContractRow)
