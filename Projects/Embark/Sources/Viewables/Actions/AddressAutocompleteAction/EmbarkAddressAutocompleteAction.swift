@@ -9,7 +9,8 @@ import hGraphQL
 
 typealias EmbarkAddressAutocompleteData = EmbarkPassage.Action.AsEmbarkAddressAutocompleteAction
 
-struct EmbarkAddressAutocompleteAction {
+struct EmbarkAddressAutocompleteAction: AddressTransitionable {
+    var boxFrame: ReadWriteSignal<CGRect?> = ReadWriteSignal(CGRect.zero)
 	let state: EmbarkState
 	let data: EmbarkAddressAutocompleteData
 
@@ -38,29 +39,13 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 		box.layer.cornerRadius = 8
 		bag += box.applyShadow { _ -> UIView.ShadowProperties in .embark }
 		//animator.register(key: \.box, value: box)
-
-		let boxStack = UIStackView()
-		boxStack.axis = .vertical
-		boxStack.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-		boxStack.isLayoutMarginsRelativeArrangement = true
-		//animator.register(key: \.boxStack, value: boxStack)
-
-		box.addSubview(boxStack)
-		boxStack.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
-		view.addArrangedSubview(box)
-
-		let input = EmbarkInput(
-			placeholder: data.addressAutocompleteActionData.placeholder,
-			autocapitalisationType: .none,
-			masking: Masking(type: .none),
-			shouldAutoSize: true
-		)
-		let textSignal = boxStack.addArranged(input)
-		boxStack.isUserInteractionEnabled = false
-		//{ inputView in
-		//animator.register(key: \.input, value: inputView)
-		//}
-		textSignal.value = prefillValue
+        view.addArrangedSubview(box)
+        
+        let addressInput = AddressInput(placeholder: data.addressAutocompleteActionData.placeholder)
+        addressInput.textSignal.value = prefillValue
+        bag += box.add(addressInput) { addressInputView in
+            addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
+        }
 
 		let button = Button(
 			title: data.addressAutocompleteActionData.link.fragments.embarkLinkFragment.label,
@@ -72,7 +57,7 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 		bag += view.addArranged(button)
 		//{ buttonView in animator.register(key: \.button, value: buttonView) }
 
-		bag += textSignal.atOnce().map { text in !text.isEmpty }
+        bag += addressInput.textSignal.atOnce().map { text in !text.isEmpty }
 			.bindTo(button.isEnabled)
 
 		return (
@@ -108,35 +93,38 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 
 				bag += box.signal(for: .touchUpInside)
 					.onValue { _ in
-						box.viewController?
+                        let autocompleteView = EmbarkAddressAutocomplete(
+                            state: self.state,
+                            data: self.data
+                        )
+                        
+                        box.viewController?
 							.present(
-								EmbarkAddressAutocomplete(
-									state: self.state,
-									data: self.data
-								),
-								style: .address(view: box)
-							)
-
+								autocompleteView,
+                                style: .address(view: box)
+                            ).onValue { _ in
+                                print("FRAME FINISHED PRES")
+                            }
 						// Set first responder to avoid keyboard dismissal
-						input.setIsFirstResponderSignal.value = true
+						addressInput.setIsFirstResponderSignal.value = true
 					}
 
 				// Also hack for not hiding keyboard during transition
 				bag += NotificationCenter.default
 					.signal(forName: UIResponder.keyboardWillHideNotification)
 					.onValue { _ in
-						input.setIsFirstResponderSignal.value = true
+						addressInput.setIsFirstResponderSignal.value = true
 					}
 
-				bag += input.shouldReturn.set { _ -> Bool in let innerBag = DisposeBag()
-					innerBag += textSignal.atOnce().take(first: 1)
+				bag += addressInput.shouldReturn.set { _ -> Bool in let innerBag = DisposeBag()
+                    innerBag += addressInput.textSignal.atOnce().take(first: 1)
 						.onValue { value in complete(value)
 							innerBag.dispose()
 						}
 					return true
 				}
 
-				bag += button.onTapSignal.withLatestFrom(textSignal.atOnce().plain())
+                bag += button.onTapSignal.withLatestFrom(addressInput.textSignal.atOnce().plain())
 					.onFirstValue { _, value in complete(value) }
 
 				return bag
