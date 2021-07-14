@@ -136,9 +136,16 @@ extension Action: Viewable {
 									)
 								)
 								.onValue(performCallback)
-                        } else if let dateAction = actionData?.asEmbarkDatePickerAction {
-                            innerBag += view.addArranged(EmbarkDatePickerAction(state: self.state, data: dateAction)).onValue(performCallback)
-                        } else if let textAction = actionData?.asEmbarkTextAction {
+						} else if let dateAction = actionData?.asEmbarkDatePickerAction {
+							innerBag +=
+								view.addArranged(
+									EmbarkDatePickerAction(
+										state: self.state,
+										data: dateAction
+									)
+								)
+								.onValue(performCallback)
+						} else if let textAction = actionData?.asEmbarkTextAction {
 							innerBag +=
 								view.addArranged(
 									EmbarkTextAction(
@@ -166,15 +173,17 @@ extension Action: Viewable {
 								state: self.state
 							)
 							innerBag += view.addArranged(inputSet).onValue(performCallback)
-                        } else if let addressAutocompleteAction = actionData?.asEmbarkAddressAutocompleteAction {
-                            innerBag +=
-                                view.addArranged(
-                                    EmbarkAddressAutocompleteAction(
-                                        state: self.state,
-                                        data: addressAutocompleteAction
-                                    )
-                                )
-                                .onValue(performCallback)
+						} else if let addressAutocompleteAction = actionData?
+							.asEmbarkAddressAutocompleteAction
+						{
+							innerBag +=
+								view.addArranged(
+									EmbarkAddressAutocompleteAction(
+										state: self.state,
+										data: addressAutocompleteAction
+									)
+								)
+								.onValue(performCallback)
 						} else if let textActionSet = actionData?.asEmbarkTextActionSet?
 							.textActionSetData
 						{
