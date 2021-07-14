@@ -226,7 +226,7 @@ extension Contracts {
 							viewController.present(
 								MovingFlow().wrappedInCloseButton(),
 								style: .detented(.large),
-								options: [.defaults]
+								options: [.defaults, .allowSwipeDismissAlways]
 							)
 						}
 					)

@@ -37,19 +37,27 @@ extension Debug: Presentable {
 				sharedMocks
 			}
 
-			viewController.present(
-				Offer(offerIDContainer: .stored, menu: Menu(title: nil, children: []))
-					.wrappedInCloseButton(),
-				style: presentFullScreenSwitch.isOn
-					? .modally(
-						presentationStyle: .fullScreen,
-						transitionStyle: nil,
-						capturesStatusBarAppearance: nil
-					) : .detented(.large),
-				options: presentWithLargeTitleSwitch.isOn
-					? [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-					: [.defaults]
-			)
+			let offerBag = DisposeBag()
+
+			offerBag +=
+				viewController.present(
+					Offer(offerIDContainer: .stored, menu: nil, options: [.menuToTrailing]),
+					style: presentFullScreenSwitch.isOn
+						? .modally(
+							presentationStyle: .fullScreen,
+							transitionStyle: nil,
+							capturesStatusBarAppearance: nil
+						) : .detented(.large),
+					options: presentWithLargeTitleSwitch.isOn
+						? [
+							.defaults, .prefersLargeTitles(true),
+							.largeTitleDisplayMode(.always),
+						]
+						: [.defaults]
+				)
+				.onValue({ result in
+					offerBag.dispose()
+				})
 		}
 
 		bag += section.appendRow(title: "Swedish apartment")

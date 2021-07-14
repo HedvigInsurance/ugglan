@@ -87,27 +87,35 @@ struct EmbarkOnboardingFlow: Presentable {
 					switch redirect {
 					case .mailingList:
 						break
+					case .close:
+						break
 					case let .offer(ids):
-						viewController.present(
-							Offer(
-								offerIDContainer: .exact(ids: ids, shouldStore: true),
-								menu: Menu(
-									title: nil,
-									children: menuChildren
-								),
-								options: [.menuToTrailing, .shouldPreserveState]
-							)
-						)
-						.onValue { _ in
+						innerBag +=
 							viewController.present(
-								PostOnboarding(),
-								style: .detented(.large),
-								options: [.prefersNavigationBarHidden(true)]
+								Offer(
+									offerIDContainer: .exact(
+										ids: ids,
+										shouldStore: true
+									),
+									menu: Menu(
+										title: nil,
+										children: menuChildren
+									),
+									options: [
+										.menuToTrailing, .shouldPreserveState,
+									]
+								)
 							)
-						}
-						.onCancel {
-							embark.goBack()
-						}
+							.atValue { _ in
+								viewController.present(
+									PostOnboarding(),
+									style: .detented(.large),
+									options: [.prefersNavigationBarHidden(true)]
+								)
+							}
+							.onEnd {
+								embark.goBack()
+							}
 					}
 				}
 
