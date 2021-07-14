@@ -224,7 +224,7 @@ extension Contracts {
 						icon: hCoreUIAssets.apartment.image,
 						handler: { viewController in
 							viewController.present(
-                                MovingFlow.journey
+								MovingFlow.journey
 							)
 						}
 					)

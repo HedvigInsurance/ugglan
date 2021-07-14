@@ -13,52 +13,59 @@ import hGraphQL
 
 public struct MovingFlow {
 	@Inject var client: ApolloClient
-    
-    static func createEmbarkJourney(_ name: String) -> some ViewControllerJourneyPresentation {
-        let embark = Embark(
-            name: name
-        )
-        
-        return Presentation(embark).journey { externalRedirect in
-            switch externalRedirect {
-            case .mailingList:
-                ContinueJourney()
-            case .close:
-                DismissJourney()
-            case let .offer(ids):
-                Presentation(Offer(
-                    offerIDContainer:
-                        .exact(
-                            ids:
-                                ids,
-                            shouldStore:
-                                false
-                        ),
-                    menu: nil,
-                    options: [
-                        .menuToTrailing
-                    ]
-                )).onDismiss {
-                    embark.goBack()
-                }.journey { _ in
-                    ContinueJourney()
-                }
-            }
-        }
-    }
-    
-    static var journey: some ViewControllerJourneyPresentation {
-        Presentation(MovingFlowIntro(), style: .detented(.large), options: [.defaults]).journey { introRoute in
-            switch introRoute {
-            case .chat:
-                Presentation(FreeTextChat().wrappedInCloseButton()).journey { _ in
-                    DismissJourney()
-                }
-            case let .embark(name):
-                createEmbarkJourney(name)
-        }
-    }
-    }
+
+	static func createEmbarkJourney(_ name: String) -> some ViewControllerJourneyPresentation {
+		let embark = Embark(
+			name: name
+		)
+
+		return Presentation(embark)
+			.journey { externalRedirect in
+				switch externalRedirect {
+				case .mailingList:
+					ContinueJourney()
+				case .close:
+					DismissJourney()
+				case let .offer(ids):
+					Presentation(
+						Offer(
+							offerIDContainer:
+								.exact(
+									ids:
+										ids,
+									shouldStore:
+										false
+								),
+							menu: nil,
+							options: [
+								.menuToTrailing
+							]
+						)
+					)
+					.onDismiss {
+						embark.goBack()
+					}
+					.journey { _ in
+						ContinueJourney()
+					}
+				}
+			}
+	}
+
+	static var journey: some ViewControllerJourneyPresentation {
+		Presentation(MovingFlowIntro(), style: .detented(.large), options: [.defaults])
+			.journey { introRoute in
+				switch introRoute {
+				case .chat:
+					Presentation(FreeTextChat().wrappedInCloseButton())
+						.journey { _ in
+							DismissJourney()
+						}
+				case let .embark(name):
+					createEmbarkJourney(name)
+				}
+			}
+	}
 }
 
 extension MovingFlow: Presentable {
