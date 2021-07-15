@@ -16,36 +16,36 @@ extension Embark {
 		_ presentable: Embark,
 		@JourneyBuilder offerResultJourney: @escaping (_ result: OfferResult) -> OfferResultJourney
 	) -> some JourneyPresentation {
-        Journey(presentable) { externalRedirect in
-            switch externalRedirect {
-            case .mailingList:
-                ContinueJourney()
-            case .close:
-                DismissJourney()
-            case let .offer(ids):
-                Journey(
-                    Offer(
-                        offerIDContainer:
-                            .exact(
-                                ids:
-                                    ids,
-                                shouldStore:
-                                    false
-                            ),
-                        menu: nil,
-                        options: [
-                            .menuToTrailing
-                        ]
-                    )
-                ) { offerResult in
-                    offerResultJourney(offerResult)
-                }
-                .onDismiss {
-                    presentable.goBack()
-                }
-            }
-        }
-    }
+		Journey(presentable) { externalRedirect in
+			switch externalRedirect {
+			case .mailingList:
+				ContinueJourney()
+			case .close:
+				DismissJourney()
+			case let .offer(ids):
+				Journey(
+					Offer(
+						offerIDContainer:
+							.exact(
+								ids:
+									ids,
+								shouldStore:
+									false
+							),
+						menu: nil,
+						options: [
+							.menuToTrailing
+						]
+					)
+				) { offerResult in
+					offerResultJourney(offerResult)
+				}
+				.onDismiss {
+					presentable.goBack()
+				}
+			}
+		}
+	}
 }
 
 public struct MovingFlowJourney {
@@ -53,38 +53,39 @@ public struct MovingFlowJourney {
 		Journey(
 			MovingFlowIntro(),
 			style: .detented(.large),
-            options: [.defaults, .allowSwipeDismissAlways, .autoPop]
-        ) { introRoute in
-            switch introRoute {
-            case .chat:
-                Journey(FreeTextChat()).withDismissButton
-            case let .embark(name):
-                Embark.makeJourney(Embark(name: name)) { offerResult in
-                    switch offerResult {
-                    case .close:
-                        DismissJourney()
-                    case .signed:
-                        DismissJourney()
-                            .onPresent {
-                                Toasts.shared
-                                    .displayToast(
-                                        toast:
-                                            Toast(
-                                                symbol:
-                                                    .icon(
-                                                        hCoreUIAssets
-                                                            .circularCheckmark
-                                                            .image
-                                                    ),
-                                                body:
-                                                    L10n
-                                                    .movingFlowSuccessToast
-                                            )
-                                    )
-                            }
-                    }
-                }
-            }
-        }.withDismissButton
+			options: [.defaults, .allowSwipeDismissAlways, .autoPop]
+		) { introRoute in
+			switch introRoute {
+			case .chat:
+				Journey(FreeTextChat()).withDismissButton
+			case let .embark(name):
+				Embark.makeJourney(Embark(name: name)) { offerResult in
+					switch offerResult {
+					case .close:
+						DismissJourney()
+					case .signed:
+						DismissJourney()
+							.onPresent {
+								Toasts.shared
+									.displayToast(
+										toast:
+											Toast(
+												symbol:
+													.icon(
+														hCoreUIAssets
+															.circularCheckmark
+															.image
+													),
+												body:
+													L10n
+													.movingFlowSuccessToast
+											)
+									)
+							}
+					}
+				}
+			}
+		}
+		.withDismissButton
 	}
 }
