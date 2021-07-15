@@ -67,20 +67,7 @@ public struct MovingFlowJourney {
 						DismissJourney()
 							.onPresent {
 								Toasts.shared
-									.displayToast(
-										toast:
-											Toast(
-												symbol:
-													.icon(
-														hCoreUIAssets
-															.circularCheckmark
-															.image
-													),
-												body:
-													L10n
-													.movingFlowSuccessToast
-											)
-									)
+									.displayToast(toast: Toast(symbol: .icon(hCoreUIAssets.circularCheckmark.image),body:L10n.movingFlowSuccessToast))
 							}
 					}
 				}
