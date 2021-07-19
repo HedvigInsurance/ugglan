@@ -22,15 +22,6 @@ extension SingleQuoteCoverage: Presentable {
 		let bag = DisposeBag()
 
 		bag += section.append(
-			MultilineLabel(
-				value:
-					"Hedvig's home insurance offers good coverage for your house, your stuff and your family even when you're travelling abroad.",
-				style: .brand(.body(color: .secondary))
-			)
-			.insetted(UIEdgeInsets(horizontalInset: 15, verticalInset: 0))
-		)
-
-		bag += section.append(
 			PerilCollection(
 				perilFragmentsSignal: .init(quote.perils.map { $0.fragments.perilFragment })
 			)
