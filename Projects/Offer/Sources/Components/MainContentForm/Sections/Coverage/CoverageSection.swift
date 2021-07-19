@@ -17,16 +17,13 @@ extension CoverageSection: Presentable {
 
 		let bag = DisposeBag()
 
-		let contentWrapper = UIStackView()
-		section.append(contentWrapper)
-
 		bag += state.quotesSignal.onValueDisposePrevious { quotes in
 			let innerBag = DisposeBag()
 
 			if quotes.count > 1 {
-				innerBag += contentWrapper.addArrangedSubview(MultiQuoteCoverage(quotes: quotes))
+                innerBag += section.append(MultiQuoteCoverage(quotes: quotes))
 			} else if let quote = quotes.first {
-				innerBag += contentWrapper.addArrangedSubview(SingleQuoteCoverage(quote: quote))
+                innerBag += section.append(SingleQuoteCoverage(quote: quote), options: [.autoRemove])
 			}
 
 			return innerBag
