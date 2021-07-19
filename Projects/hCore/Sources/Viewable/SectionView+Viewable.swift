@@ -93,7 +93,7 @@ extension SectionView {
 		onCreate(matter)
 
 		return Disposer {
-            matter.removeFromSuperview()
+			matter.removeFromSuperview()
 			bag.dispose()
 			result.dispose()
 			disposable.dispose()

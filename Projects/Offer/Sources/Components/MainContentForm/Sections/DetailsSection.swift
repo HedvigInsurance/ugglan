@@ -19,13 +19,14 @@ extension DetailsSection: Presentable {
 			})
 		let bag = DisposeBag()
 
-        bag += state.quotesSignal.debounce(0.3).onValueDisposePrevious { quotes in
-            let innerBag = DisposeBag()
-            innerBag += quotes.map { quote in
-                section.append(quote.detailsTable.fragments.detailsTableFragment)
-            }
-            return innerBag
-		}
+		bag += state.quotesSignal.debounce(0.3)
+			.onValueDisposePrevious { quotes in
+				let innerBag = DisposeBag()
+				innerBag += quotes.map { quote in
+					section.append(quote.detailsTable.fragments.detailsTableFragment)
+				}
+				return innerBag
+			}
 
 		let expandableView = ExpandableContent(
 			contentView: section,
