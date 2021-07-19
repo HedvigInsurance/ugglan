@@ -23,7 +23,7 @@ extension MovingFlow: Presentable {
 		func presentFreeTextChat() -> Future<Void> {
 			viewController.present(
 				FreeTextChat().wrappedInCloseButton(),
-                style: .detented(.large),
+				style: .detented(.large),
 				configure: { chatViewController, _ in
 					chatViewController.navigationItem.hidesBackButton = true
 				}
