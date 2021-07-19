@@ -88,9 +88,9 @@ extension GraphQL.ApiSingleVariableFragment {
 		var map = GraphQLMap()
 
 		switch self.as {
-		case .int: map[key] = Int(store.getValue(key: from) ?? "")
-		case .string: map[key] = store.getValue(key: from)
-		case .boolean: map[key] = store.getValue(key: from) == "true"
+		case .int: map[key] = Int(store.getValue(key: from, includeQueue: true) ?? "")
+		case .string: map[key] = store.getValue(key: from, includeQueue: true)
+		case .boolean: map[key] = store.getValue(key: from, includeQueue: true) == "true"
 		case .__unknown: break
 		}
 

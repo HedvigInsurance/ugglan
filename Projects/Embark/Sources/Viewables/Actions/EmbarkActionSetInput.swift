@@ -32,6 +32,7 @@ struct EmbarkActionSetInputData {
 			)
 		}
 		link = numberActionSet.link.fragments.embarkLinkFragment
+        api = nil
 		self.state = state
 	}
 
@@ -48,6 +49,7 @@ struct EmbarkActionSetInputData {
 			)
 		}
 		link = textActionSet.link.fragments.embarkLinkFragment
+        api = textActionSet.api?.fragments.apiFragment
 		self.state = state
 	}
 
@@ -59,7 +61,8 @@ struct EmbarkActionSetInputData {
 	}
 
 	var actions: [Action]
-	var link: GraphQL.EmbarkLinkFragment
+	let link: GraphQL.EmbarkLinkFragment
+    let api: GraphQL.ApiFragment?
 	let state: EmbarkState
 }
 
@@ -89,7 +92,7 @@ extension EmbarkActionSetInputData: Viewable {
 			.map {
 				index,
 				action -> (
-					signal: ReadWriteSignal<String>, shouldReturn: Delegate<String, Bool>,
+					signal: ReadSignal<String>, shouldReturn: Delegate<String, Bool>,
 					action: Action
 				) in let endIndex = actions.endIndex
 				let isLastAction: Bool = index == endIndex - 1
@@ -135,12 +138,28 @@ extension EmbarkActionSetInputData: Viewable {
 				let textSignal = stack.addArranged(input)
 				textSignal.value = prefillValue
 
-				return (signal: textSignal, shouldReturn: input.shouldReturn, action: action)
+                return (signal: textSignal.map { value in
+                    if let masking = masking { return masking.unmaskedValue(text: value) }
+                    
+                    return value
+                }, shouldReturn: input.shouldReturn, action: action)
 			}
 
 		return (
 			view,
 			Signal { callback in
+                
+                let button = Button(
+                    title: link.label,
+                    type: .standard(
+                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                        textColor: .brand(.secondaryButtonTextColor)
+                    ),
+                    isEnabled: false
+                )
+                
+                let loadableButton = LoadableButton(button: button)
+                
 				func complete() {
 					actionSignals.forEach { signal, _, action in
 						self.state.store.setValue(key: action.key, value: signal.value)
@@ -153,6 +172,16 @@ extension EmbarkActionSetInputData: Viewable {
 								.joined(separator: " ")
 						)
 					}
+                    
+                    if let apiFragment = api {
+                        loadableButton.isLoadingSignal.value = true
+                        bag += state.handleApi(apiFragment: apiFragment)
+                            .onValue { link in
+                                callback(link ?? self.link)
+                            }
+                        
+                        return
+                    }
 
 					callback(link)
 				}
@@ -162,18 +191,9 @@ extension EmbarkActionSetInputData: Viewable {
 
 				view.addArrangedSubview(containerView)
 
-				let button = Button(
-					title: link.label,
-					type: .standard(
-						backgroundColor: .brand(.secondaryButtonBackgroundColor),
-						textColor: .brand(.secondaryButtonTextColor)
-					),
-					isEnabled: false
-				)
+				bag += view.addArranged(loadableButton)
 
-				bag += view.addArranged(button)
-
-				func isValid(signal: ReadWriteSignal<String>, action: Action) -> Signal<Bool> {
+				func isValid(signal: ReadSignal<String>, action: Action) -> Signal<Bool> {
 					signal.atOnce()
 						.map { text in
 							!text.isEmpty
@@ -205,7 +225,7 @@ extension EmbarkActionSetInputData: Viewable {
 
 				bag += view.chainAllControlResponders()
 
-				bag += button.onTapSignal.onValue { _ in complete() }
+				bag += loadableButton.onTapSignal.onValue { _ in complete() }
 
 				return bag
 			}
