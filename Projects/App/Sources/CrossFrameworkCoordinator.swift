@@ -85,14 +85,17 @@ struct CrossFrameworkCoordinator {
 
 		CrossFramework.presentOnboarding = { viewController in
 			if !UITraitCollection.isCatalyst { viewController.navigationController?.hero.isEnabled = false }
-			
-            switch Localization.Locale.currentLocale.market {
-            case .no:
-                viewController.present(EmbarkOnboardingFlow.journey).onValue { _ in }
-            default:
-                viewController.present(Onboarding(), options: [.defaults, .prefersNavigationBarHidden(false)])
-            }
-            
+
+			switch Localization.Locale.currentLocale.market {
+			case .no:
+				viewController.present(EmbarkOnboardingFlow.journey).onValue { _ in }
+			default:
+				viewController.present(
+					Onboarding(),
+					options: [.defaults, .prefersNavigationBarHidden(false)]
+				)
+			}
+
 		}
 
 		CrossFramework.presentLogin = { viewController in

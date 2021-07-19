@@ -16,12 +16,12 @@ class OldOfferState {
 	}
 
 	private var bag = DisposeBag()
-    
-    private let openChatCallbacker = Callbacker<Void>()
-    var openChatSignal: Signal<Void> {
-        openChatCallbacker.providedSignal
-    }
-    
+
+	private let openChatCallbacker = Callbacker<Void>()
+	var openChatSignal: Signal<Void> {
+		openChatCallbacker.providedSignal
+	}
+
 	@ReadWriteState var hasSignedQuotes = false
 
 	lazy var isLoadingSignal: ReadSignal<Bool> = {
@@ -44,10 +44,10 @@ class OldOfferState {
 	var signStatusSubscription: CoreSignal<Plain, GraphQL.SignStatusSubscription.Data> {
 		client.subscribe(subscription: GraphQL.SignStatusSubscription())
 	}
-    
-    func openChat() {
-        openChatCallbacker.callAll()
-    }
+
+	func openChat() {
+		openChatCallbacker.callAll()
+	}
 
 	enum UpdateStartDateError: Error {
 		case failed

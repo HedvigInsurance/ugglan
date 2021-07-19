@@ -105,7 +105,7 @@ extension ApplicationState {
 			return bag
 		case .loggedIn:
 			return window.present(
-                MainTabbedJourney.journey
+				MainTabbedJourney.journey
 			)
 		}
 	}

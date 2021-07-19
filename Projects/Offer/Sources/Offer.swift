@@ -35,7 +35,7 @@ public struct Offer {
 public enum OfferResult {
 	case signed
 	case close
-    case chat
+	case chat
 }
 
 extension Offer: Presentable {
@@ -170,17 +170,18 @@ extension Offer: Presentable {
 		return (
 			viewController,
 			FiniteSignal { callback in
-                let store: OfferStore = self.get()
-                
-                bag += store.map { $0.chatOpened }.filter(predicate: { $0 }).distinct()
-                    .onValue({ _ in
-                        callback(.value(.signed))
-                    })
-                
-                bag += store.map { $0.chatOpened }.filter(predicate: { $0 }).distinct().onValue { _ in
-                    callback(.value(.chat))
-                    store.send(.closeChat)
-                }
+				let store: OfferStore = self.get()
+
+				bag += store.map { $0.chatOpened }.filter(predicate: { $0 }).distinct()
+					.onValue({ _ in
+						callback(.value(.signed))
+					})
+
+				bag += store.map { $0.chatOpened }.filter(predicate: { $0 }).distinct()
+					.onValue { _ in
+						callback(.value(.chat))
+						store.send(.closeChat)
+					}
 
 				if let menu = menu {
 					bag += optionsOrCloseButton.attachSinglePressMenu(

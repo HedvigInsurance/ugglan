@@ -32,7 +32,7 @@ extension Embark {
 								shouldStore:
 									false
 							),
-                        menu: embark.menu,
+						menu: embark.menu,
 						options: [
 							.menuToTrailing
 						]
@@ -44,8 +44,8 @@ extension Embark {
 					embark.goBack()
 				}
 			}
-        }
-    }
+		}
+	}
 }
 
 public struct MovingFlowJourney {
@@ -61,8 +61,9 @@ public struct MovingFlowJourney {
 			case let .embark(name):
 				Embark.makeJourney(Embark(name: name)) { offerResult in
 					switch offerResult {
-                    case .chat:
-                        Journey(FreeTextChat(), style: .detented(.large), options: [.defaults]).withDismissButton
+					case .chat:
+						Journey(FreeTextChat(), style: .detented(.large), options: [.defaults])
+							.withDismissButton
 					case .close:
 						DismissJourney()
 					case .signed:
