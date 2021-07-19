@@ -8,7 +8,7 @@ public enum ExternalRedirect {
 	case mailingList
 	case offer(ids: [String])
 	case close
-    case chat
+	case chat
 }
 
 public class EmbarkState {
@@ -99,10 +99,10 @@ public class EmbarkState {
 					externalRedirectSignal.value = .offer(
 						ids: [store.getValue(key: "quoteId")].compactMap { $0 }
 					)
-                case .close:
-                    externalRedirectSignal.value = .close
-                case .chat:
-                    externalRedirectSignal.value = .chat
+				case .close:
+					externalRedirectSignal.value = .close
+				case .chat:
+					externalRedirectSignal.value = .chat
 				case .__unknown: fatalError("Can't external redirect to location")
 				}
 			} else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {

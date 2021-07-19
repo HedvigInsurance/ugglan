@@ -10,7 +10,7 @@ extension SettingsSection: Viewable {
 	func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
 		let bag = DisposeBag()
 		let section = SectionView(header: L10n.Profile.AppSettingsSection.title, footer: nil)
-        section.dynamicStyle = .brandGrouped(separatorType: .largeIcons)
+		section.dynamicStyle = .brandGrouped(separatorType: .largeIcons)
 
 		let appInformationRow = SettingsRow(
 			presentingViewController: presentingViewController,
