@@ -13,10 +13,10 @@ import hGraphQL
 
 extension Embark {
 	static func makeJourney<OfferResultJourney: JourneyPresentation>(
-		_ presentable: Embark,
+		_ embark: Embark,
 		@JourneyBuilder offerResultJourney: @escaping (_ result: OfferResult) -> OfferResultJourney
 	) -> some JourneyPresentation {
-		Journey(presentable) { externalRedirect in
+		Journey(embark) { externalRedirect in
 			switch externalRedirect {
 			case .mailingList:
 				ContinueJourney()
@@ -32,7 +32,7 @@ extension Embark {
 								shouldStore:
 									false
 							),
-						menu: nil,
+                        menu: embark.menu,
 						options: [
 							.menuToTrailing
 						]
@@ -41,11 +41,11 @@ extension Embark {
 					offerResultJourney(offerResult)
 				}
 				.onDismiss {
-					presentable.goBack()
+					embark.goBack()
 				}
 			}
-		}
-	}
+        }
+    }
 }
 
 public struct MovingFlowJourney {
@@ -61,6 +61,8 @@ public struct MovingFlowJourney {
 			case let .embark(name):
 				Embark.makeJourney(Embark(name: name)) { offerResult in
 					switch offerResult {
+                    case .chat:
+                        Journey(FreeTextChat(), style: .detented(.large), options: [.defaults]).withDismissButton
 					case .close:
 						DismissJourney()
 					case .signed:

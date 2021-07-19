@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 struct Checkout {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 }
 
 enum CheckoutError: Error {

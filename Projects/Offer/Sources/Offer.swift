@@ -17,7 +17,7 @@ public struct Offer {
 	@Inject var client: ApolloClient
 	let offerIDContainer: OfferIDContainer
 	let menu: Menu?
-	let state: OfferState
+	let state: OldOfferState
 	let options: Set<OfferOption>
 
 	public init(
@@ -28,13 +28,14 @@ public struct Offer {
 		self.offerIDContainer = offerIDContainer
 		self.menu = menu
 		self.options = options
-		self.state = OfferState(ids: offerIDContainer.ids)
+		self.state = OldOfferState(ids: offerIDContainer.ids)
 	}
 }
 
 public enum OfferResult {
 	case signed
 	case close
+    case chat
 }
 
 extension Offer: Presentable {
@@ -169,10 +170,17 @@ extension Offer: Presentable {
 		return (
 			viewController,
 			FiniteSignal { callback in
-				bag += state.$hasSignedQuotes.filter(predicate: { $0 })
-					.onValue({ _ in
-						callback(.value(.signed))
-					})
+                let store: OfferStore = self.get()
+                
+                bag += store.map { $0.chatOpened }.filter(predicate: { $0 }).distinct()
+                    .onValue({ _ in
+                        callback(.value(.signed))
+                    })
+                
+                bag += store.map { $0.chatOpened }.filter(predicate: { $0 }).distinct().onValue { _ in
+                    callback(.value(.chat))
+                    store.send(.closeChat)
+                }
 
 				if let menu = menu {
 					bag += optionsOrCloseButton.attachSinglePressMenu(

@@ -4,7 +4,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-class OfferState {
+class OldOfferState {
 	@Inject var client: ApolloClient
 	@Inject var store: ApolloStore
 	let ids: [String]
@@ -16,6 +16,12 @@ class OfferState {
 	}
 
 	private var bag = DisposeBag()
+    
+    private let openChatCallbacker = Callbacker<Void>()
+    var openChatSignal: Signal<Void> {
+        openChatCallbacker.providedSignal
+    }
+    
 	@ReadWriteState var hasSignedQuotes = false
 
 	lazy var isLoadingSignal: ReadSignal<Bool> = {
@@ -38,6 +44,10 @@ class OfferState {
 	var signStatusSubscription: CoreSignal<Plain, GraphQL.SignStatusSubscription.Data> {
 		client.subscribe(subscription: GraphQL.SignStatusSubscription())
 	}
+    
+    func openChat() {
+        openChatCallbacker.callAll()
+    }
 
 	enum UpdateStartDateError: Error {
 		case failed

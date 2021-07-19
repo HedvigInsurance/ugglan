@@ -53,7 +53,7 @@ extension Chat: Presentable {
 							return
 						}
 
-						viewController.present(
+						bag += viewController.present(
 							Offer(
 								offerIDContainer: .exact(ids: [id], shouldStore: true),
 								menu: Menu(

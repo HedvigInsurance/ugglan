@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct FrequentlyAskedQuestionsSection {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 }
 
 extension FrequentlyAskedQuestionsSection: Presentable {
@@ -38,6 +38,11 @@ extension FrequentlyAskedQuestionsSection: Presentable {
 						icon: .left(image: hCoreUIAssets.chat.image, width: 24)
 					)
 				)
+                
+                bag += button.onTapSignal.onValue { _ in
+                    let store: OfferStore = self.get()
+                    store.send(.openChat)
+                }
 
 				bag += footerStackView.addArranged(button)
 

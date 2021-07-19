@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 struct SignSection {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 }
 
 extension SignSection: Presentable {
