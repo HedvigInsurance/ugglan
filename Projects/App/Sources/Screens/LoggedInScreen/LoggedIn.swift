@@ -214,7 +214,11 @@ extension LoggedIn: Presentable {
 
 extension Contracts {
 	public static func getSections() -> [HomeSection] {
-		[
+        guard Localization.Locale.currentLocale.market == .se else {
+            return []
+        }
+        
+		return [
 			HomeSection(
 				title: L10n.HomeTab.editingSectionTitle,
 				style: .vertical,
