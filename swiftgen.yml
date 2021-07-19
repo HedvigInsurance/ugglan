@@ -32,7 +32,7 @@ xcassets:
         output: Projects/Offer/Sources/Derived/Assets.swift
 strings:
   inputs: 
-    - Projects/hCore/Resources/en-SE.lproj/Localizable.strings
+    - Projects/hCore/Resources/en-SE.lproj
   outputs:
     templatePath: swiftgen/localization.stencil
     output: Projects/hCore/Sources/Derived/Strings.swift

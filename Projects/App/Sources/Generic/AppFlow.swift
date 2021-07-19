@@ -89,6 +89,8 @@ struct EmbarkOnboardingFlow: Presentable {
 						break
 					case .close:
 						break
+                    case .chat:
+                        break
 					case let .offer(ids):
 						innerBag +=
 							viewController.present(

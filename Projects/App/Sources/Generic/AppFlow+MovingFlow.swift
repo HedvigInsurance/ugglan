@@ -62,6 +62,14 @@ extension MovingFlow: Presentable {
 					callback(.end(GenericError.cancelled))
 					return NilDisposer()
 				}
+            case .chat:
+                return FiniteSignal<Void> { callback in
+                    return presentFreeTextChat()
+                        .onValue { _ in
+
+                        }
+                        .disposable
+                }
 			case let .offer(ids):
 				return self.presentOffer(ids: ids)
 					.atEnd {

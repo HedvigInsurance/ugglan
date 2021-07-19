@@ -34,16 +34,14 @@ extension CurrentInsurerSection: Presentable {
 
 		let inception = quoteBundle.inception
 		if let concurrentInception = inception.asConcurrentInception {
-			#warning("Translation needed")
 			let section = SectionView(
-				headerView: UILabel(value: "Your current insurance", style: .default),
+                headerView: UILabel(value: L10n.Offer.switcherTitle(quoteBundle.quotes.count), style: .default),
 				footerView: nil
 			)
 			section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 			sectionContainer.addArrangedSubview(section)
 
-			#warning("Translation needed — same as on line 82")
-			let row = RowView(title: "Current insurer")
+            let row = RowView(title: L10n.InsuranceProvider.currentInsurer)
 			section.append(row)
 
 			let currentInsurerName = concurrentInception.currentInsurer?.displayName ?? ""

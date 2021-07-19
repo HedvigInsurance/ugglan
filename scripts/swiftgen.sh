@@ -15,7 +15,7 @@ then
     exit 0
 fi
 
-curl -o $TMPDIR/swiftgen.zip -L https://github.com/SwiftGen/SwiftGen/releases/download/6.1.0/swiftgen-6.1.0.zip
+curl -o $TMPDIR/swiftgen.zip -L https://github.com/SwiftGen/SwiftGen/releases/download/6.4.0/swiftgen-6.4.0.zip
 
 unzip $TMPDIR/swiftgen.zip -d $TMPDIR/swiftgen
 
