@@ -38,6 +38,10 @@ extension FrequentlyAskedQuestionsSection: Presentable {
 						icon: .left(image: hCoreUIAssets.chat.image, width: 24)
 					)
 				)
+                
+                bag += button.onTapSignal.onValue {
+                    state.openChatCallbacker.callAll()
+                }
 
 				bag += footerStackView.addArranged(button)
 

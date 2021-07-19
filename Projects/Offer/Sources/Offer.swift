@@ -35,6 +35,7 @@ public struct Offer {
 public enum OfferResult {
 	case signed
 	case close
+    case chat
 }
 
 extension Offer: Presentable {
@@ -173,6 +174,10 @@ extension Offer: Presentable {
 					.onValue({ _ in
 						callback(.value(.signed))
 					})
+                
+                bag += state.openChatCallbacker.onValue({ _ in
+                    callback(.value(.chat))
+                })
 
 				if let menu = menu {
 					bag += optionsOrCloseButton.attachSinglePressMenu(
