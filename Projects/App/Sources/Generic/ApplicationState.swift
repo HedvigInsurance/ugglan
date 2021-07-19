@@ -60,12 +60,12 @@ extension ApplicationState {
 		case .offer:
 			let bag = DisposeBag()
 
-            preserveState(.onboarding)
-            bag +=
-                presentRootViewController(
-                    window,
-                    animated: true
-                )
+			preserveState(.onboarding)
+			bag +=
+				presentRootViewController(
+					window,
+					animated: true
+				)
 
 			return bag
 		case .loggedIn:

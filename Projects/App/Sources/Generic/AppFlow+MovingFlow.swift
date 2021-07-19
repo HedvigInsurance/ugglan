@@ -83,12 +83,14 @@ extension MovingFlow: Presentable {
 								callback(.value(()))
 								return NilDisposer()
 							}
-                        case .chat:
-                            return FiniteSignal<Void> { callback in
-                                return presentFreeTextChat().onValue { _ in
-                                    
-                                }.disposable
-                            }
+						case .chat:
+							return FiniteSignal<Void> { callback in
+								return presentFreeTextChat()
+									.onValue { _ in
+
+									}
+									.disposable
+							}
 						}
 					}
 			}

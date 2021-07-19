@@ -107,21 +107,25 @@ struct EmbarkOnboardingFlow: Presentable {
 								)
 							)
 							.atValue { value in
-                                switch value {
-                                case .signed:
-                                    viewController.present(
-                                        PostOnboarding(),
-                                        options: [.prefersNavigationBarHidden(true)]
-                                    )
-                                case .close:
-                                    break
-                                case .chat:
-                                    viewController.present(
-                                        FreeTextChat().wrappedInCloseButton(),
-                                        style: .detented(.large),
-                                        options: [.defaults]
-                                    )
-                                }
+								switch value {
+								case .signed:
+									viewController.present(
+										PostOnboarding(),
+										options: [
+											.prefersNavigationBarHidden(
+												true
+											)
+										]
+									)
+								case .close:
+									break
+								case .chat:
+									viewController.present(
+										FreeTextChat().wrappedInCloseButton(),
+										style: .detented(.large),
+										options: [.defaults]
+									)
+								}
 							}
 							.onEnd {
 								embark.goBack()
