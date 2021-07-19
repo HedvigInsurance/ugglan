@@ -60,8 +60,8 @@ class EmbarkStore {
 		}
 
 		if let store = revisions.last {
-            let storeWithQueue = includeQueue ? queue.merging(store, uniquingKeysWith: takeLeft) : store
-            
+			let storeWithQueue = includeQueue ? queue.merging(store, uniquingKeysWith: takeLeft) : store
+
 			let filteredStore = storeWithQueue.filter { (innerKey, value) in
 				innerKey.range(of: arrayRegexFor(key: key), options: .regularExpression) != nil
 			}
@@ -78,7 +78,7 @@ class EmbarkStore {
 		return nil
 	}
 
-    func getValue(key: String, includeQueue: Bool = false) -> String? {
+	func getValue(key: String, includeQueue: Bool = false) -> String? {
 		return getValues(key: key, includeQueue: includeQueue)?.first
 	}
 
