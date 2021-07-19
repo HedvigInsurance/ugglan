@@ -32,6 +32,9 @@ extension InsurableLimits: Viewable {
 
 				innerBag += insurableLimitFragments.map { insurableLimitFragment in
 					let row = RowView(title: insurableLimitFragment.label)
+                    row.axis = .vertical
+                    row.alignment = .leading
+                    row.spacing = 5
 					section.append(row)
 
 					row.append(
