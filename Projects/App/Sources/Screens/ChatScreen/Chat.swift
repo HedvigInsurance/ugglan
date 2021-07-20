@@ -53,32 +53,37 @@ extension Chat: Presentable {
 							return
 						}
 
-						bag += viewController.present(
-							Offer(
-								offerIDContainer: .exact(ids: [id], shouldStore: true),
-								menu: Menu(
-									title: nil,
-									children: [
-										MenuChild.appInformation,
-										MenuChild.appSettings,
-										MenuChild.login(onLogin: {
-											UIApplication.shared.appDelegate
-												.appFlow
-												.presentLoggedIn()
-										}),
-									]
-								),
-								options: [.shouldPreserveState]
-							)
-						)
-						.onValue { _ in
-							bag += UIApplication.shared.appDelegate
-								.appFlow.window.present(
-									PostOnboarding(),
-									options: [],
-									animated: true
+						bag +=
+							viewController.present(
+								Offer(
+									offerIDContainer: .exact(
+										ids: [id],
+										shouldStore: true
+									),
+									menu: Menu(
+										title: nil,
+										children: [
+											MenuChild.appInformation,
+											MenuChild.appSettings,
+											MenuChild.login(onLogin: {
+												UIApplication.shared
+													.appDelegate
+													.appFlow
+													.presentLoggedIn()
+											}),
+										]
+									),
+									options: [.shouldPreserveState]
 								)
-						}
+							)
+							.onValue { _ in
+								bag += UIApplication.shared.appDelegate
+									.appFlow.window.present(
+										PostOnboarding(),
+										options: [],
+										animated: true
+									)
+							}
 					}
 			case .dashboard:
 				viewController.present(LoggedIn())
