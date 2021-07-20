@@ -125,10 +125,16 @@ extension ContractTable: Viewable {
 		)
 
 		tableKit.view.refreshControl = refreshControl
-        
-        bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
-            client.fetch(query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
-        }
+
+		bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
+			client.fetch(
+				query: GraphQL.ContractsQuery(
+					locale: Localization.Locale.currentLocale.asGraphQLLocale()
+				),
+				cachePolicy: .fetchIgnoringCacheData
+			)
+			.onValue { _ in }
+		}
 
 		return (tableKit.view, bag)
 	}
