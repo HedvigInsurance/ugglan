@@ -76,10 +76,10 @@ class OfferState {
 	}
 
 	typealias Campaign = GraphQL.QuoteBundleQuery.Data.RedeemedCampaign
-    
-    func refetch() {
-        client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
-    }
+
+	func refetch() {
+		client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
+	}
 
 	private func updateCacheRedeemedCampaigns(
 		campaigns: [Campaign]
@@ -87,8 +87,8 @@ class OfferState {
 		self.store.update(query: self.query) { (storeData: inout GraphQL.QuoteBundleQuery.Data) in
 			storeData.redeemedCampaigns = campaigns
 		}
-        
-        self.refetch()
+
+		self.refetch()
 	}
 
 	func updateRedeemedCampaigns(discountCode: String) -> Future<Void> {
