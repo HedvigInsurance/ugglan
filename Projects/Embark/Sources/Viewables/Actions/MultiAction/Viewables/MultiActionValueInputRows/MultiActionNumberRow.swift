@@ -68,6 +68,6 @@ extension MultiActionNumberRow: Viewable {
 internal extension EmbarkNumberMultiActionData {
     func displayValue(inputValue: String?) -> String? {
         guard let inputValue = inputValue else { return "" }
-        return inputValue + (self.unit ?? "")
+        return inputValue + " " + (self.unit ?? "")
     }
 }
