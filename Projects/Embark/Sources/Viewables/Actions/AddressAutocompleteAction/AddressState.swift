@@ -5,7 +5,9 @@ import hCore
 import hGraphQL
 
 class AddressState {
-    var query: GraphQL.AddressAutocompleteQuery {
-            GraphQL.QuoteBundleQuery(ids: ids, locale: Localization.Locale.currentLocale.asGraphQLLocale())
-        }
+    @Inject var client: ApolloClient
+    
+    func getSuggestions(searchTerm: String) -> Future<GraphQL.AddressAutocompleteQuery.Data> {
+        return self.client.fetch(query: GraphQL.AddressAutocompleteQuery(input: searchTerm, type: .street))
+    }
 }
