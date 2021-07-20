@@ -12,41 +12,41 @@ protocol AddressTransitionable {
 public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning {
 	let duration = 0.5
 	var presenting = true
-    let firstBox: UIView
-    let secondBox: UIView
-    let interimAddressInput: AddressInput
-    
-    init(
-        firstBox: UIView,
-        secondBox: UIView,
-        addressInput: AddressInput
-    ) {
-        self.firstBox = firstBox
-        self.secondBox = secondBox
-        self.interimAddressInput = addressInput
-    }
-    
-    private let didEndTransitionCallbacker = Callbacker<Void>()
-    var didEndTransitionSignal: Signal<Void> {
-        didEndTransitionCallbacker.providedSignal
-    }
-    
-    private let didStartTransitionCallbacker = Callbacker<Void>()
-    var didStartTransitionSignal: Signal<Void> {
-        didStartTransitionCallbacker.providedSignal
-    }
+	let firstBox: UIView
+	let secondBox: UIView
+	let interimAddressInput: AddressInput
 
-    public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+	init(
+		firstBox: UIView,
+		secondBox: UIView,
+		addressInput: AddressInput
+	) {
+		self.firstBox = firstBox
+		self.secondBox = secondBox
+		self.interimAddressInput = addressInput
+	}
+
+	private let didEndTransitionCallbacker = Callbacker<Void>()
+	var didEndTransitionSignal: Signal<Void> {
+		didEndTransitionCallbacker.providedSignal
+	}
+
+	private let didStartTransitionCallbacker = Callbacker<Void>()
+	var didStartTransitionSignal: Signal<Void> {
+		didStartTransitionCallbacker.providedSignal
+	}
+
+	public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
 		return duration
 	}
 
-    public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+	public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
 		let containerView = transitionContext.containerView
 		guard let autocompleteView = transitionContext.view(forKey: .to) else { return }
-        
-        guard let firstBoxSuperview = firstBox.superview else { return }
-        let originFrame = firstBoxSuperview.convert(firstBox.frame, to: nil)
-        
+
+		guard let firstBoxSuperview = firstBox.superview else { return }
+		let originFrame = firstBoxSuperview.convert(firstBox.frame, to: nil)
+
 		let initialFrame = presenting ? originFrame : autocompleteView.frame
 		let finalFrame = presenting ? autocompleteView.frame : originFrame
 
@@ -54,17 +54,17 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 		//containerView.addSubview(firstBox)
 		//snapshot.frame = initialFrame
 		//firstBox.alpha = 0.0
-        
-        let bag = DisposeBag()
-        let box = UIControl()
-        containerView.addSubview(box)
-        
-        bag += box.add(interimAddressInput) { addressInputView in
-            addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
-        }
-        box.frame = initialFrame
-        
-        didStartTransitionCallbacker.callAll()
+
+		let bag = DisposeBag()
+		let box = UIControl()
+		containerView.addSubview(box)
+
+		bag += box.add(interimAddressInput) { addressInputView in
+			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
+		}
+		box.frame = initialFrame
+
+		didStartTransitionCallbacker.callAll()
 
 		let moveTransform = CGAffineTransform(translationX: 0, y: initialFrame.origin.y)
 
@@ -73,22 +73,22 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 		containerView.addSubview(autocompleteView)
 		containerView.bringSubviewToFront(autocompleteView)
 		//containerView.bringSubviewToFront(snapshot)
-        containerView.bringSubviewToFront(box)
+		containerView.bringSubviewToFront(box)
 
 		autocompleteView.alpha = 0.0
-        firstBox.alpha = 0.0
-        secondBox.alpha = 0.0
-        
-        guard let secondBoxSuperview = secondBox.superview else { return }
-        let destinationFrame = secondBoxSuperview.convert(secondBox.frame, to: nil)
-        print("FRAME:", originFrame, destinationFrame)
-        
-        if presenting {
-            autocompleteView.transform = moveTransform
-            autocompleteView.clipsToBounds = true
-        }
-        
-        /*bag += autocompleteView.didLayoutSignal
+		firstBox.alpha = 0.0
+		secondBox.alpha = 0.0
+
+		guard let secondBoxSuperview = secondBox.superview else { return }
+		let destinationFrame = secondBoxSuperview.convert(secondBox.frame, to: nil)
+		print("FRAME:", originFrame, destinationFrame)
+
+		if presenting {
+			autocompleteView.transform = moveTransform
+			autocompleteView.clipsToBounds = true
+		}
+
+		/*bag += autocompleteView.didLayoutSignal
             .map { _ in secondBoxSuperview.convert(self.secondBox.frame, to: nil)}
             .animated(style: .lightBounce(delay: 0, duration: duration), animations: { frame in
                 autocompleteView.transform = .identity
@@ -104,8 +104,8 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
                 self.secondBox.alpha = 1.0
                 bag.dispose()
             }*/
-        
-        /*bag += autocompleteView.didLayoutSignal
+
+		/*bag += autocompleteView.didLayoutSignal
             .map { _ in secondBoxSuperview.convert(self.secondBox.frame, to: nil)}
             .animated(style: .easeOut(duration: duration), animations: { frame in
                 box.frame = frame
@@ -122,74 +122,74 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 			animations: {
 				autocompleteView.transform = self.presenting ? .identity : .identity
 				autocompleteView.alpha = 1.0
-                //box.frame = destinationFrame
-                box.frame = CGRect(
-                    x: destinationFrame.origin.x,
-                    y: destinationFrame.origin.y + 12,
+				//box.frame = destinationFrame
+				box.frame = CGRect(
+					x: destinationFrame.origin.x,
+					y: destinationFrame.origin.y + 12,
 					width: initialFrame.width,
 					height: initialFrame.height
 				)
-                //box.frame = destinationFrame
+				//box.frame = destinationFrame
 				//autocompleteView.center = CGPoint(x: finalFrame.midX, y: finalFrame.midY)
 				//autocompleteView.frame.origin = CGPoint(x: 0, y: 0)
 			},
 			completion: { _ in
-                self.didEndTransitionCallbacker.callAll()
+				self.didEndTransitionCallbacker.callAll()
 				transitionContext.completeTransition(true)
 				box.removeFromSuperview()
 				self.firstBox.alpha = 1.0
-                self.secondBox.alpha = 1.0
-                bag.dispose()
+				self.secondBox.alpha = 1.0
+				bag.dispose()
 			}
 		)
 	}
 }
 
 class AddressTransitionNew: NSObject, UIViewControllerAnimatedTransitioning {
-    var transitionDuration: TimeInterval
-    var firstBox: UIView
-    var secondBox: UIView
-    
-    let didBeginTransitionCallbacker = Callbacker<UIView>()
-    let didEndTransitionCallbacker = Callbacker<Void>()
-    
-    var didBeginTransitionSignal: Signal<UIView> {
-        didBeginTransitionCallbacker.providedSignal
-    }
-    var didEndTransitionSignal: Signal<Void> {
-        didEndTransitionCallbacker.providedSignal
-    }
-    
-    init(
-        duration: TimeInterval,
-        firstBox: UIView,
-        secondBox: UIView
-    ) {
-        self.transitionDuration = duration
-        self.firstBox = firstBox
-        self.secondBox = secondBox
-    }
-    
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return transitionDuration
-    }
-    
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let bag = DisposeBag()
-        didBeginTransitionCallbacker.callAll(with: transitionContext.containerView)
-        
-        bag += didEndTransitionSignal.onValue { _ in
-            transitionContext.completeTransition(true)
-            bag.dispose()
-        }
-    }
+	var transitionDuration: TimeInterval
+	var firstBox: UIView
+	var secondBox: UIView
+
+	let didBeginTransitionCallbacker = Callbacker<UIView>()
+	let didEndTransitionCallbacker = Callbacker<Void>()
+
+	var didBeginTransitionSignal: Signal<UIView> {
+		didBeginTransitionCallbacker.providedSignal
+	}
+	var didEndTransitionSignal: Signal<Void> {
+		didEndTransitionCallbacker.providedSignal
+	}
+
+	init(
+		duration: TimeInterval,
+		firstBox: UIView,
+		secondBox: UIView
+	) {
+		self.transitionDuration = duration
+		self.firstBox = firstBox
+		self.secondBox = secondBox
+	}
+
+	func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+		return transitionDuration
+	}
+
+	func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+		let bag = DisposeBag()
+		didBeginTransitionCallbacker.callAll(with: transitionContext.containerView)
+
+		bag += didEndTransitionSignal.onValue { _ in
+			transitionContext.completeTransition(true)
+			bag.dispose()
+		}
+	}
 }
 
 class AddressTransitionDelegate: NSObject, UIViewControllerTransitioningDelegate {
-    let transition: AddressTransition
+	let transition: AddressTransition
 
 	init(
-        transition: AddressTransition
+		transition: AddressTransition
 	) {
 		self.transition = transition
 	}
@@ -224,7 +224,7 @@ extension PresentationStyle {
 		_ viewController: UIViewController,
 		_ from: UIViewController,
 		_ options: PresentationOptions,
-        with transition: AddressTransition
+		with transition: AddressTransition
 	) -> PresentingViewController.Result {
 		if #available(iOS 13.0, *) {
 			let vc = viewController.embededInNavigationController(options)
@@ -252,7 +252,7 @@ extension PresentationStyle {
 	}
 
 	// TODO: rewrite to variable with getter
-    public static func address(transition: AddressTransition) -> PresentationStyle {
+	public static func address(transition: AddressTransition) -> PresentationStyle {
 		PresentationStyle(
 			name: "address",
 			present: { viewController, from, options in

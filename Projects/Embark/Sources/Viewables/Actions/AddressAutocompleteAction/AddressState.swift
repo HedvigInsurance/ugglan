@@ -5,7 +5,7 @@ import hCore
 import hGraphQL
 
 class AddressState {
-    var query: GraphQL. {
+    var query: GraphQL.AddressAutocompleteQuery {
             GraphQL.QuoteBundleQuery(ids: ids, locale: Localization.Locale.currentLocale.asGraphQLLocale())
         }
 }

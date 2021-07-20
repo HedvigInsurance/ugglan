@@ -1,4 +1,4 @@
-query AddressAutocomplete($input: String!, type: AddressAutocompleteType!) {
+query AddressAutocomplete($input: String!, $type: AddressAutocompleteType!) {
     autoCompleteAddress(input: $input, options: { type: $type }) {
         id
         address
