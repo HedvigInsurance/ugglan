@@ -369,12 +369,12 @@ extension ContractInformation: Presentable {
 				.onValueDisposePrevious { _ in
 					let innerBag = DisposeBag()
 
-					let sheet = UpcomingAddressChangeDetails(
+					let upcomingAddressChangeDetails = UpcomingAddressChangeDetails(
 						details: contract.upcomingAgreementDetailsTable.fragments
 							.detailsTableFragment
 					)
 					innerBag += viewController.present(
-						sheet.withCloseButton,
+						upcomingAddressChangeDetails.withCloseButton,
 						style: .detented(.medium)
 					)
 
@@ -531,14 +531,3 @@ extension GraphQL.ContractsQuery.Data.Contract {
 		}
 	}
 }
-
-//struct ContractAddressSection {
-//    let contract: GraphQL.ContractsQuery.Data.Contract
-//    let state: ContractsState
-//}
-//
-//extension ContractAddressSection: Reusable {
-//    func materialize(events _: ViewableEvents) -> (SectionView, Dispoab) {
-//
-//    }
-//}
