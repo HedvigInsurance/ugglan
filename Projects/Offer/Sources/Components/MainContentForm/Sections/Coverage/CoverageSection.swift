@@ -42,7 +42,10 @@ extension CoverageSection: Presentable {
 					.compactMap { $0.currentInsurer }.count ?? 0 > 0
 
 				if hasConcurrentInception || hasIndependentInceptions {
-					innerBag += section.append(CurrentInsurerSection(quoteBundle: quoteBundle), options: [.autoRemove])
+					innerBag += section.append(
+						CurrentInsurerSection(quoteBundle: quoteBundle),
+						options: [.autoRemove]
+					)
 				}
 
 				return innerBag
