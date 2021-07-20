@@ -341,19 +341,8 @@ extension DynamicSectionStyle {
 		),
 		appliesShadow: Bool = true
 	) -> DynamicSectionStyle {
-		DynamicSectionStyle { traitCollection -> SectionStyle in
+		DynamicSectionStyle { _ -> SectionStyle in
 			let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
-
-			var backgroundColor: UIColor
-
-			if #available(iOS 13.0, *) {
-				backgroundColor =
-					traitCollection.userInterfaceLevel == .elevated
-					? .brand(.primaryBackground()) : .brand(.secondaryBackground())
-			} else {
-				backgroundColor = .brand(.secondaryBackground())
-			}
-
 			let headerAndFooterInset = UIEdgeInsets(top: 14, left: 0, bottom: 14, right: 0)
 
 			return Style(
@@ -365,7 +354,7 @@ extension DynamicSectionStyle {
 					style:
 						.init(
 							background: .init(
-								color: backgroundColor,
+								color: .brand(.secondaryBackground()),
 								border: border
 							),
 							topSeparator: .init(
