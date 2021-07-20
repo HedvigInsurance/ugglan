@@ -76,15 +76,19 @@ class OfferState {
 	}
 
 	typealias Campaign = GraphQL.QuoteBundleQuery.Data.RedeemedCampaign
+    
+    func refetch() {
+        client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
+    }
 
 	private func updateCacheRedeemedCampaigns(
-		cost: GraphQL.CostFragment,
 		campaigns: [Campaign]
 	) {
 		self.store.update(query: self.query) { (storeData: inout GraphQL.QuoteBundleQuery.Data) in
 			storeData.redeemedCampaigns = campaigns
-			storeData.quoteBundle.bundleCost.fragments.costFragment = cost
 		}
+        
+        self.refetch()
 	}
 
 	func updateRedeemedCampaigns(discountCode: String) -> Future<Void> {
@@ -96,9 +100,7 @@ class OfferState {
 				)
 			)
 			.flatMap { data in
-				guard let campaigns = data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns,
-					let cost = data.redeemCodeV2.asSuccessfulRedeemResult?.cost
-				else {
+				guard let campaigns = data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns else {
 					return Future(error: UpdateRedeemedCampaigns.failed)
 				}
 
@@ -109,7 +111,6 @@ class OfferState {
 				}
 
 				self.updateCacheRedeemedCampaigns(
-					cost: cost.fragments.costFragment,
 					campaigns: mappedCampaigns
 				)
 
@@ -120,8 +121,7 @@ class OfferState {
 	func removeRedeemedCampaigns() -> Future<Void> {
 		return self.client.perform(mutation: GraphQL.RemoveDiscountMutation())
 			.flatMap { data in
-				let cost = data.removeDiscountCode.cost
-				self.updateCacheRedeemedCampaigns(cost: cost.fragments.costFragment, campaigns: [])
+				self.updateCacheRedeemedCampaigns(campaigns: [])
 				return Future()
 			}
 	}
