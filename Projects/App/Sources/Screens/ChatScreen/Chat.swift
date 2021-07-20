@@ -53,7 +53,7 @@ extension Chat: Presentable {
 							return
 						}
 
-						viewController.present(
+						bag += viewController.present(
 							Offer(
 								offerIDContainer: .exact(ids: [id], shouldStore: true),
 								menu: Menu(
@@ -72,7 +72,6 @@ extension Chat: Presentable {
 							)
 						)
 						.onValue { _ in
-
 							bag += UIApplication.shared.appDelegate
 								.appFlow.window.present(
 									PostOnboarding(),
