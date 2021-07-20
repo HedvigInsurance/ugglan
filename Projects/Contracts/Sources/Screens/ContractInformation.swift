@@ -347,7 +347,7 @@ extension ContractInformation: Presentable {
 		let upcomingAgreementSection = form.appendSection(
 			header: nil,
 			footer: nil,
-			style: .brandGroupedInset(separatorType: .none)
+            style: .brandGroupedInset(separatorType: .none, appliesShadow: false)
 		)
 
 		if contract.hasUpcomingAgreementChange {
