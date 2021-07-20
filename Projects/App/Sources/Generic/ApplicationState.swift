@@ -60,7 +60,7 @@ extension ApplicationState {
 		case .offer:
 			let bag = DisposeBag()
 
-            preserveState(.marketPicker)
+			preserveState(.marketPicker)
 			bag +=
 				presentRootViewController(
 					window,
