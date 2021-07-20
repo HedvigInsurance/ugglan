@@ -360,7 +360,10 @@ extension ContractInformation: Presentable {
 				body: L10n.InsuranceDetails.addressUpdateBody(date, address),
 				buttonText: L10n.InsuranceDetails.addressUpdateButton,
 				backgroundColor: .tint(.lavenderTwo),
-				buttonType: .outline(borderColor: .brand(.primaryText()), textColor: .brand(.primaryText()))
+				buttonType: .outline(
+					borderColor: .brand(.primaryText()),
+					textColor: .brand(.primaryText())
+				)
 			)
 			bag += upcomingAgreementSection.append(card)
 				.onValueDisposePrevious { _ in
@@ -372,7 +375,7 @@ extension ContractInformation: Presentable {
 					)
 					innerBag += viewController.present(
 						upcomingAddressChangeDetails.withCloseButton,
-                        style: .detented(.scrollViewContentSize(20), .large)
+						style: .detented(.scrollViewContentSize(20), .large)
 					)
 
 					return innerBag
