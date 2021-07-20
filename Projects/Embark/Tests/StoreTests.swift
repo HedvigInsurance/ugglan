@@ -59,13 +59,14 @@ final class StoreTests: XCTestCase {
 	func testComputedValues() {
 		let store = EmbarkStore()
 
-		store.computedValues = ["fish": "mock - 20 - 10", "fish2": "fish + 20", "fish3": "fish + 20 ++ 'hej'"]
+        store.computedValues = ["fish": "mock - 20 - 10", "fish2": "fish + 20", "fish3": "fish + 20 ++ 'hej'", "double": "20.5 + 22"]
 		store.setValue(key: "mock", value: "100")
 		store.createRevision()
 
-		XCTAssertEqual(store.getValue(key: "fish"), "70.0")
-		XCTAssertEqual(store.getValue(key: "fish2"), "90.0")
-		XCTAssertEqual(store.getValue(key: "fish3"), "90.0hej")
+		XCTAssertEqual(store.getValue(key: "fish"), "70")
+		XCTAssertEqual(store.getValue(key: "fish2"), "90")
+		XCTAssertEqual(store.getValue(key: "fish3"), "90hej")
+        XCTAssertEqual(store.getValue(key: "double"), "42.5")
 	}
 
 	func testThatArrayValuesWork() {

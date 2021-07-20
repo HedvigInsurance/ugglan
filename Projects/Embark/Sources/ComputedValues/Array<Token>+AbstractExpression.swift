@@ -1,6 +1,17 @@
 import Foundation
 
-indirect enum Expression: Equatable { case binary(operator: BinaryOperator, left: Expression?, right: Expression?)
+extension Double {
+    func removeTrailingFractions() -> String {
+        let formatter = NumberFormatter()
+        let number = NSNumber(value: self)
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 16 //maximum digits in Double after dot (maximum precision)
+        return String(formatter.string(from: number) ?? "")
+    }
+}
+
+indirect enum Expression: Equatable {
+    case binary(operator: BinaryOperator, left: Expression?, right: Expression?)
 	case string(constant: String)
 	case number(constant: Double)
 	case store(key: String)
@@ -31,7 +42,7 @@ indirect enum Expression: Equatable { case binary(operator: BinaryOperator, left
                 let rightValueDouble = Double(rightValue) ?? 0
                 
 				return String(
-					leftValueDouble + rightValueDouble
+                    (leftValueDouble + rightValueDouble).removeTrailingFractions()
 				)
 			case .subtraction:
                 let leftValue = left?.evaluate(store: store) ?? ""
@@ -41,7 +52,7 @@ indirect enum Expression: Equatable { case binary(operator: BinaryOperator, left
                 let rightValueDouble = Double(rightValue) ?? 0
                 
 				return String(
-                    leftValueDouble - rightValueDouble
+                    (leftValueDouble - rightValueDouble).removeTrailingFractions()
 				)
 			case .concatenation:
 				return (left?.evaluate(store: store) ?? "") + (right?.evaluate(store: store) ?? "")
