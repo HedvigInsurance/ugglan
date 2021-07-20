@@ -7,6 +7,8 @@ import hGraphQL
 public enum ExternalRedirect {
 	case mailingList
 	case offer(ids: [String])
+	case close
+	case chat
 }
 
 public class EmbarkState {
@@ -20,7 +22,11 @@ public class EmbarkState {
 	let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
 	let bag = DisposeBag()
 
-	public init() { defer { startTracking() } }
+	public init() {
+		defer {
+			startTracking()
+		}
+	}
 
 	enum AnimationDirection {
 		case forwards
@@ -39,6 +45,8 @@ public class EmbarkState {
 		currentPassageSignal.value = passagesSignal.value.first(where: { passage -> Bool in
 			passage.id == startPassageIDSignal.value
 		})
+		passageHistorySignal.value = []
+		store = EmbarkStore()
 		store.computedValues =
 			storySignal.value?.computedStoreValues?
 			.reduce([:]) { (prev, computedValue) -> [String: String] in
@@ -46,8 +54,6 @@ public class EmbarkState {
 				computedValues[computedValue.key] = computedValue.value
 				return computedValues
 			} ?? [:]
-		passageHistorySignal.value = []
-		store = EmbarkStore()
 	}
 
 	func startTracking() {
@@ -93,18 +99,18 @@ public class EmbarkState {
 					externalRedirectSignal.value = .offer(
 						ids: [store.getValue(key: "quoteId")].compactMap { $0 }
 					)
-				case .__unknown:
-					fatalError("Can't external redirect to location")
-					#warning("Must be handled")
 				case .close:
-					()
+					externalRedirectSignal.value = .close
 				case .chat:
-					()
+					externalRedirectSignal.value = .chat
+				case .__unknown: fatalError("Can't external redirect to location")
 				}
 			} else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {
 				EmbarkTrackingEvent(title: "Offer Redirect", properties: [:]).send()
 				externalRedirectSignal.value = .offer(
-					ids: offerRedirectKeys.compactMap { key in store.getValue(key: key) }
+					ids: offerRedirectKeys.flatMap { key in
+						store.getValues(key: key) ?? []
+					}
 				)
 			} else {
 				currentPassageSignal.value = resultingPassage

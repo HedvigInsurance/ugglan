@@ -34,8 +34,15 @@ public indirect enum ContractFilter {
 	case none
 }
 
+public enum ContractRoute {
+	case openMovingFlow
+}
+
 public struct Contracts {
 	let filter: ContractFilter
+	let state = ContractsState()
+	public let routeSignal = ReadWriteSignal<ContractRoute?>(nil)
+
 	public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
 	public init(filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none))) { self.filter = filter }
 }
@@ -51,7 +58,13 @@ extension Contracts: Presentable {
 
 		let bag = DisposeBag()
 
-		bag += viewController.install(ContractTable(presentingViewController: viewController, filter: filter))
+		bag += state.goToMovingFlowSignal.onValue { _ in
+			routeSignal.value = .openMovingFlow
+		}
+
+		bag += viewController.install(
+			ContractTable(presentingViewController: viewController, filter: filter, state: state)
+		)
 
 		return (viewController, bag)
 	}

@@ -4,14 +4,18 @@ import Foundation
 import UIKit
 import hCore
 
-public enum ButtonType { case standard(backgroundColor: UIColor, textColor: UIColor)
+public enum ButtonType {
+	case standard(backgroundColor: UIColor, textColor: UIColor)
 	case standardIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
 	case standardSmall(backgroundColor: UIColor, textColor: UIColor)
 	case standardOutline(borderColor: UIColor, textColor: UIColor)
+	case standardOutlineIcon(borderColor: UIColor, textColor: UIColor, icon: ButtonIcon)
 	case tinyIcon(backgroundColor: UIColor, textColor: UIColor, icon: ButtonIcon)
 	case outline(borderColor: UIColor, textColor: UIColor)
+	case outlineIcon(borderColor: UIColor, textColor: UIColor, icon: ButtonIcon)
 	case pillSemiTransparent(backgroundColor: UIColor, textColor: UIColor)
 	case transparent(textColor: UIColor)
+	case transparentLarge(textColor: UIColor)
 	case iconTransparent(textColor: UIColor, icon: ButtonIcon)
 
 	public enum ButtonIcon {
@@ -20,99 +24,157 @@ public enum ButtonType { case standard(backgroundColor: UIColor, textColor: UICo
 
 		var width: CGFloat {
 			switch self {
-			case let .left(_, width): return width
-			case let .right(_, width): return width
+			case let .left(_, width):
+				return width
+			case let .right(_, width):
+				return width
 			}
 		}
 
 		var image: UIImage {
 			switch self {
-			case let .left(image, _): return image
-			case let .right(image, _): return image
+			case let .left(image, _):
+				return image
+			case let .right(image, _):
+				return image
 			}
 		}
 	}
 
 	var backgroundOpacity: CGFloat {
 		switch self {
-		case .standard, .standardSmall, .standardIcon, .tinyIcon: return 1
-		case .outline, .transparent, .standardOutline: return 0
-		case .pillSemiTransparent: return 0.6
-		case .iconTransparent: return 0.0
+		case .standard, .standardSmall, .standardIcon, .tinyIcon:
+			return 1
+		case .outline, .outlineIcon, .transparent, .standardOutline, .standardOutlineIcon:
+			return 0
+		case .pillSemiTransparent:
+			return 0.6
+		case .iconTransparent, .transparentLarge:
+			return 0.0
 		}
 	}
 
 	var disabledBackgroundOpacity: CGFloat {
 		switch self {
-		case .standard, .standardSmall, .standardIcon, .tinyIcon: return 1
-		case .outline, .standardOutline: return 0.05
-		case .pillSemiTransparent: return 0.6
-		case .iconTransparent: return 0.05
-		case .transparent: return 0
+		case .standard, .standardSmall, .standardIcon, .tinyIcon:
+			return 1
+		case .outline, .outlineIcon, .standardOutline, .standardOutlineIcon:
+			return 0.05
+		case .pillSemiTransparent:
+			return 0.6
+		case .iconTransparent, .transparentLarge:
+			return 0.05
+		case .transparent:
+			return 0
 		}
 	}
 
 	var highlightedBackgroundOpacity: CGFloat {
 		switch self {
-		case .standard, .standardSmall, .standardIcon, .tinyIcon: return 1
-		case .outline, .standardOutline: return 0.05
-		case .pillSemiTransparent: return 0.6
-		case .iconTransparent: return 0.05
-		case .transparent: return 0
+		case .standard, .standardSmall, .standardIcon, .tinyIcon:
+			return 1
+		case .outline, .outlineIcon, .standardOutline, .standardOutlineIcon:
+			return 0.05
+		case .pillSemiTransparent:
+			return 0.6
+		case .iconTransparent, .transparentLarge:
+			return 0.05
+		case .transparent:
+			return 0
 		}
 	}
 
 	public var backgroundColor: UIColor {
 		switch self {
-		case let .standard(backgroundColor, _): return backgroundColor
-		case let .standardSmall(backgroundColor, _): return backgroundColor
-		case let .standardIcon(backgroundColor, _, _): return backgroundColor
-		case let .tinyIcon(backgroundColor, _, _): return backgroundColor
-		case let .outline(borderColor, _): return borderColor
-		case let .standardOutline(borderColor, _): return borderColor
-		case let .pillSemiTransparent(backgroundColor, _): return backgroundColor
-		case .iconTransparent: return .black
-		case .transparent: return .clear
+		case let .standard(backgroundColor, _):
+			return backgroundColor
+		case let .standardSmall(backgroundColor, _):
+			return backgroundColor
+		case let .standardIcon(backgroundColor, _, _):
+			return backgroundColor
+		case let .tinyIcon(backgroundColor, _, _):
+			return backgroundColor
+		case let .outline(borderColor, _):
+			return borderColor
+		case let .outlineIcon(borderColor, _, _):
+			return borderColor
+		case let .standardOutline(borderColor, _):
+			return borderColor
+		case let .pillSemiTransparent(backgroundColor, _):
+			return backgroundColor
+		case let .standardOutlineIcon(borderColor, _, _):
+			return borderColor
+		case .iconTransparent:
+			return .black
+		case .transparent:
+			return .clear
+		case .transparentLarge:
+			return .brand(.primaryBackground())
 		}
 	}
 
 	var textColor: UIColor {
 		switch self {
-		case let .standard(_, textColor): return textColor
-		case let .standardSmall(_, textColor): return textColor
-		case let .standardIcon(_, textColor, _): return textColor
-		case let .tinyIcon(_, textColor, _): return textColor
-		case let .outline(_, textColor): return textColor
-		case let .standardOutline(_, textColor): return textColor
-		case let .pillSemiTransparent(_, textColor): return textColor
-		case let .iconTransparent(textColor, _): return textColor
-		case let .transparent(textColor): return textColor
+		case let .standard(_, textColor):
+			return textColor
+		case let .standardSmall(_, textColor):
+			return textColor
+		case let .standardIcon(_, textColor, _):
+			return textColor
+		case let .tinyIcon(_, textColor, _):
+			return textColor
+		case let .outline(_, textColor):
+			return textColor
+		case let .outlineIcon(_, textColor, _):
+			return textColor
+		case let .standardOutline(_, textColor):
+			return textColor
+		case let .pillSemiTransparent(_, textColor):
+			return textColor
+		case let .iconTransparent(textColor, _):
+			return textColor
+		case let .transparent(textColor):
+			return textColor
+		case let .transparentLarge(textColor):
+			return textColor
+		case let .standardOutlineIcon(_, textColor, _):
+			return textColor
 		}
 	}
 
 	public var height: CGFloat {
 		switch self {
-		case .standard, .standardIcon, .standardOutline: return 50
-		case .standardSmall: return 34
-		case .outline: return 34
-		case .pillSemiTransparent: return 30
-		case .iconTransparent: return 30
-		case .tinyIcon: return 30
-		case .transparent: return 30
+		case .standard, .standardIcon, .standardOutline, .standardOutlineIcon:
+			return 50
+		case .standardSmall:
+			return 34
+		case .outline, .outlineIcon:
+			return 34
+		case .pillSemiTransparent:
+			return 30
+		case .iconTransparent:
+			return 30
+		case .tinyIcon:
+			return 30
+		case .transparent:
+			return 30
+		case .transparentLarge:
+			return 30
 		}
 	}
 
 	var textStyle: TextStyle {
 		switch self {
-		case .standard, .outline, .standardIcon, .standardOutline:
+		case .standard, .outline, .standardIcon, .standardOutline, .standardOutlineIcon:
 			return TextStyle.brand(.body(color: .primary(state: .negative))).colored(textColor)
 		case .standardSmall:
 			return TextStyle.brand(.subHeadline(color: .primary(state: .negative))).colored(textColor)
 		case .pillSemiTransparent:
 			return TextStyle.brand(.caption1(color: .primary(state: .negative))).colored(textColor)
-		case .iconTransparent:
+		case .iconTransparent, .transparentLarge:
 			return TextStyle.brand(.subHeadline(color: .primary(state: .negative))).colored(textColor)
-		case .tinyIcon: return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
+		case .tinyIcon, .outlineIcon:
+			return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
 		case .transparent:
 			return TextStyle.brand(.caption2(color: .primary(state: .negative))).colored(textColor)
 		}
@@ -120,55 +182,95 @@ public enum ButtonType { case standard(backgroundColor: UIColor, textColor: UICo
 
 	public var extraWidthOffset: CGFloat {
 		switch self {
-		case .standard, .standardIcon, .standardOutline: return 50
-		case .standardSmall: return 40
-		case .outline: return 35
-		case .pillSemiTransparent: return 35
-		case .iconTransparent: return 35
-		case .tinyIcon: return 20
-		case .transparent: return 35
+		case .standard, .standardIcon, .standardOutline, .standardOutlineIcon:
+			return 50
+		case .standardSmall:
+			return 40
+		case .outline:
+			return 35
+		case .outlineIcon:
+			return 35
+		case .pillSemiTransparent:
+			return 35
+		case .iconTransparent:
+			return 35
+		case .transparentLarge:
+			return 35
+		case .tinyIcon:
+			return 20
+		case .transparent:
+			return 35
 		}
 	}
 
 	var icon: ButtonIcon? {
 		switch self {
-		case let .iconTransparent(_, icon): return icon
-		case let .standardIcon(_, _, icon): return icon
-		case let .tinyIcon(_, _, icon): return icon
-		default: return nil
+		case let .iconTransparent(_, icon):
+			return icon
+		case let .standardIcon(_, _, icon):
+			return icon
+		case let .outlineIcon(_, _, icon):
+			return icon
+		case let .tinyIcon(_, _, icon):
+			return icon
+		case let .standardOutlineIcon(_, _, icon):
+			return icon
+		default:
+			return nil
 		}
 	}
 
 	var iconColor: UIColor? {
 		switch self {
-		case .iconTransparent: return textColor
-		case .standardIcon: return textColor
-		case .tinyIcon: return textColor
-		default: return nil
+		case .iconTransparent:
+			return textColor
+		case .standardIcon, .standardOutlineIcon:
+			return textColor
+		case .tinyIcon:
+			return textColor
+		case .outlineIcon:
+			return textColor
+		default:
+			return nil
 		}
 	}
 
 	var iconDistance: CGFloat {
 		switch self {
-		case .iconTransparent: return 7
-		case .standardIcon: return 4
-		case .tinyIcon: return 3
-		default: return 0
+		case .iconTransparent:
+			return 7
+		case .standardIcon:
+			return 4
+		case .tinyIcon:
+			return 4
+		case .outlineIcon, .standardOutlineIcon:
+			return 7
+		default:
+			return 0
 		}
 	}
 
 	var borderWidth: CGFloat {
 		switch self {
-		case .outline, .standardOutline: return 1
-		default: return 0
+		case .outline, .outlineIcon, .standardOutline, .standardOutlineIcon:
+			return 1
+		default:
+			return 0
 		}
 	}
 
 	var borderColor: UIColor {
 		switch self {
-		case let .outline(borderColor, _): return borderColor
-		case let .standardOutline(borderColor, _): return borderColor
-		default: return UIColor.clear
+		case let .outline(borderColor, _):
+			return borderColor
+		case let .standardOutline(borderColor, _):
+			return borderColor
+		case let .standardOutlineIcon(borderColor, _, _):
+			return borderColor
+		case let .outlineIcon(borderColor, _, _):
+			return borderColor
+		default:
+			return UIColor.clear
 		}
 	}
 }
@@ -197,7 +299,11 @@ public struct Button {
 	}
 }
 
-extension Button: Equatable { public static func == (lhs: Button, rhs: Button) -> Bool { lhs.id == rhs.id } }
+extension Button: Equatable {
+	public static func == (lhs: Button, rhs: Button) -> Bool {
+		lhs.id == rhs.id
+	}
+}
 
 extension Button: Viewable {
 	public static var trackingHandler: (_ button: Button) -> Void = { _ in }
@@ -263,7 +369,7 @@ extension Button: Viewable {
 		}
 
 		func updateDisabledStyle(buttonType: ButtonType) {
-			disabledStyleSignal.value = ButtonStyle.default.restyled { (style: inout ButtonStyle) in
+			disabledStyleSignal.value = ButtonStyle.default.restyled({ (style: inout ButtonStyle) in
 				style.buttonType = .custom
 
 				let backgroundColor: UIColor
@@ -288,24 +394,32 @@ extension Button: Viewable {
 						text: buttonType.textStyle
 					)
 				]
-			}
+			})
 		}
 
 		bag += type.atOnce()
-			.onValue { buttonType in updateStyle(buttonType: buttonType)
+			.onValue { buttonType in
+				updateStyle(buttonType: buttonType)
 				updateHighlightedStyle(buttonType: buttonType)
 				updateDisabledStyle(buttonType: buttonType)
 			}
 
 		let button = UIButton(title: "", style: styleSignal.value)
 
-		bag += isEnabled.atOnce().onValue { enabled in button.isEnabled = enabled }
+		bag += isEnabled.atOnce()
+			.onValue({ (enabled) in
+				button.isEnabled = enabled
+			})
 
-		bag += button.traitCollectionSignal.onValue { _ in updateStyle(buttonType: self.type.value)
+		bag += button.traitCollectionSignal.onValue { _ in
+			updateStyle(buttonType: self.type.value)
 			updateHighlightedStyle(buttonType: self.type.value)
 		}
 
-		bag += styleSignal.atOnce().compactMap { $0 }
+		bag +=
+			styleSignal
+			.atOnce()
+			.compactMap { $0 }
 			.bindTo(
 				transition: button,
 				style: TransitionStyle.crossDissolve(duration: 0.25),
@@ -324,7 +438,9 @@ extension Button: Viewable {
 					iconImageView.isHidden = false
 					iconImageView.image = icon.image.withRenderingMode(.alwaysTemplate)
 
-					if let iconColor = type.iconColor { iconImageView.tintColor = iconColor }
+					if let iconColor = type.iconColor {
+						iconImageView.tintColor = iconColor
+					}
 
 					iconImageView.contentMode = .scaleAspectFit
 
@@ -351,8 +467,10 @@ extension Button: Viewable {
 
 					iconImageView.snp.makeConstraints { make in
 						switch icon {
-						case .left: make.left.equalTo(type.extraWidthOffset / 2)
-						case .right: make.right.equalTo(-type.extraWidthOffset / 2)
+						case .left:
+							make.left.equalTo(type.extraWidthOffset / 2)
+						case .right:
+							make.right.equalTo(-type.extraWidthOffset / 2)
 						}
 
 						make.centerY.equalToSuperview()
@@ -361,32 +479,25 @@ extension Button: Viewable {
 					}
 				} else {
 					iconImageView.isHidden = true
+					button.titleEdgeInsets = UIEdgeInsets(
+						top: 0,
+						left: 0,
+						bottom: 0,
+						right: 0
+					)
 				}
 			}
 
-		bag += title.atOnce().withLatestFrom(type)
-			.onValueDisposePrevious { title, type in let innerBag = DisposeBag()
-
+		bag += title.atOnce()
+			.onValue { title in
 				button.setTitle(title)
-
-				let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
-
-				innerBag += button.didLayoutSignal.take(first: 1)
-					.onValue { _ in
-						button.snp.updateConstraints { make in
-							make.width.equalTo(
-								button.intrinsicContentSize.width
-									+ type.extraWidthOffset + iconWidth
-							)
-						}
-					}
-
-				return innerBag
 			}
 
 		bag += button.signal(for: .touchDown).filter { self.animate }
 			.withLatestFrom(highlightedStyleSignal.atOnce().plain())
-			.map { _, highlightedStyleSignalValue -> ButtonStyle in highlightedStyleSignalValue }
+			.map { _, highlightedStyleSignalValue -> ButtonStyle in
+				highlightedStyleSignalValue
+			}
 			.bindTo(
 				transition: button,
 				style: TransitionStyle.crossDissolve(duration: 0.25),
@@ -397,10 +508,18 @@ extension Button: Viewable {
 		let touchUpInside = button.signal(for: .touchUpInside)
 		bag += touchUpInside.feedback(type: .impactLight)
 
-		bag += touchUpInside.map { _ -> Void in () }.bindTo(onTapReadWriteSignal)
+		bag +=
+			touchUpInside.map { _ -> Void in
+				()
+			}
+			.bindTo(onTapReadWriteSignal)
 
-		bag += touchUpInside.filter { self.animate }.withLatestFrom(styleSignal.atOnce().plain())
-			.map { _, styleSignalValue -> ButtonStyle in styleSignalValue }.delay(by: 0.1)
+		bag += touchUpInside.filter { self.animate }
+			.withLatestFrom(styleSignal.atOnce().plain())
+			.map { _, styleSignalValue -> ButtonStyle in
+				styleSignalValue
+			}
+			.delay(by: 0.1)
 			.bindTo(
 				transition: button,
 				style: TransitionStyle.crossDissolve(duration: 0.25),
@@ -408,24 +527,39 @@ extension Button: Viewable {
 				\.style
 			)
 
-		bag += touchUpInside.onValue { _ in Button.trackingHandler(self) }
+		bag += touchUpInside.onValue { _ in
+			Button.trackingHandler(self)
+		}
 
-		bag += merge(button.signal(for: .touchUpOutside), button.signal(for: .touchCancel))
-			.filter { self.animate }.withLatestFrom(styleSignal.atOnce().plain())
-			.map { _, styleSignalValue -> ButtonStyle in styleSignalValue }
-			.bindTo(
-				transition: button,
-				style: TransitionStyle.crossDissolve(duration: 0.25),
-				button,
-				\.style
-			)
+		bag += merge(
+			button.signal(for: .touchUpOutside),
+			button.signal(for: .touchCancel)
+		)
+		.filter { self.animate }
+		.withLatestFrom(styleSignal.atOnce().plain())
+		.map { _, styleSignalValue -> ButtonStyle in
+			styleSignalValue
+		}
+		.bindTo(
+			transition: button,
+			style: TransitionStyle.crossDissolve(duration: 0.25),
+			button,
+			\.style
+		)
 
-		button.snp.makeConstraints { make in make.width.equalTo(0)
+		button.snp.makeConstraints { make in
+			make.width.equalTo(0)
 			make.height.equalTo(0)
 		}
 
-		bag += button.didLayoutSignal.take(first: 1)
-			.onValue { _ in let type = self.type.value
+		bag += button.didMoveToWindowSignal.onFirstValue {
+			button.snp.makeConstraints { make in
+				make.centerX.equalToSuperview()
+			}
+		}
+
+		bag += combineLatest(button.didLayoutSignal, type.atOnce().plain())
+			.onValue { _, type in
 				let iconWidth = type.icon != nil ? (type.icon?.width ?? 0) + type.iconDistance : 0
 
 				button.snp.updateConstraints { make in
@@ -435,7 +569,6 @@ extension Button: Viewable {
 					)
 					make.height.equalTo(self.type.value.height)
 				}
-				button.snp.makeConstraints { make in make.centerX.equalToSuperview() }
 			}
 
 		return (button, bag)

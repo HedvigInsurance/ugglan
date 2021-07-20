@@ -61,18 +61,11 @@ extension Embark: Presentable {
 			}
 		}
 
-		let titleHedvigLogo = UIImageView()
-		titleHedvigLogo.image = hCoreUIAssets.wordmark.image
-		titleHedvigLogo.contentMode = .scaleAspectFit
-
-		viewController.navigationItem.titleView = titleHedvigLogo
-
-		titleHedvigLogo.snp.makeConstraints { make in make.width.equalTo(80) }
+		viewController.navigationItem.titleView = .titleWordmarkView
 
 		let passage = Passage(state: state)
 		bag +=
 			form.append(passage) { passageView in var keyboardHeight: CGFloat = 20
-
 				func updatePassageViewHeight() {
 					passageView.snp.updateConstraints { make in
 						make.top.bottom.leading.trailing.equalToSuperview()
@@ -176,8 +169,8 @@ extension Embark: Presentable {
 				)
 			)
 			.valueSignal.compactMap { $0.embarkStory }
-			.onValue { embarkStory in activityIndicator.removeFromSuperview()
-
+			.onValue { embarkStory in
+				activityIndicator.removeFromSuperview()
 				self.state.storySignal.value = embarkStory
 				self.state.passagesSignal.value = embarkStory.passages
 				self.state.startPassageIDSignal.value = embarkStory.startPassage
@@ -270,34 +263,42 @@ extension Embark: Presentable {
 					bag += viewController.present(alert).onValue { _ in state.restart() }
 				}
 
-				let optionsButton = UIBarButtonItem(
+				let optionsOrCloseButton = UIBarButtonItem(
 					image: hCoreUIAssets.menuIcon.image,
 					style: .plain,
 					target: nil,
 					action: nil
 				)
 
-				bag += optionsButton.attachSinglePressMenu(
-					viewController: viewController,
-					menu: Menu(
-						title: nil,
-						children: [
-							menu,
-							Menu(
-								title: nil,
-								children: [
-									MenuChild(
-										title: L10n.embarkRestartButton,
-										style: .destructive,
-										image: hCoreUIAssets.restart.image,
-										handler: presentRestartAlert
-									)
-								]
-							),
-						]
-						.compactMap { $0 }
+				if let menu = menu {
+					bag += optionsOrCloseButton.attachSinglePressMenu(
+						viewController: viewController,
+						menu: Menu(
+							title: nil,
+							children: [
+								menu,
+								Menu(
+									title: nil,
+									children: [
+										MenuChild(
+											title: L10n.embarkRestartButton,
+											style: .destructive,
+											image: hCoreUIAssets.restart
+												.image,
+											handler: presentRestartAlert
+										)
+									]
+								),
+							]
+							.compactMap { $0 }
+						)
 					)
-				)
+				} else {
+					optionsOrCloseButton.image = hCoreUIAssets.close.image
+					bag += optionsOrCloseButton.onValue { _ in
+						callback(.value(.close))
+					}
+				}
 
 				let tooltipButton = UIButton()
 				tooltipButton.setImage(hCoreUIAssets.infoLarge.image, for: .normal)
@@ -315,7 +316,7 @@ extension Embark: Presentable {
 				}
 
 				viewController.navigationItem.setRightBarButtonItems(
-					[optionsButton, UIBarButtonItem(button: tooltipButton)],
+					[optionsOrCloseButton, UIBarButtonItem(button: tooltipButton)],
 					animated: false
 				)
 

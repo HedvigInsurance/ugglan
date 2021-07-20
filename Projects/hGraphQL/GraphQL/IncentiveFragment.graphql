@@ -11,4 +11,7 @@ fragment IncentiveFragment on Incentive {
         percentageDiscount
         percentageNumberOfMonths: quantity
     }
+    ... on IndefinitePercentageDiscount {
+        percentageDiscount
+    }
 }

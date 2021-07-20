@@ -1,6 +1,7 @@
 import Embark
 import Flow
 import Foundation
+import Offer
 import Presentation
 import UIKit
 import hCore
@@ -55,31 +56,86 @@ struct WebOnboardingFlow: Presentable {
 struct EmbarkOnboardingFlow: Presentable {
 	public func materialize() -> (UIViewController, Disposable) {
 		let menuChildren: [MenuChildable] = [
-			MenuChild.appInformation, MenuChild.appSettings,
-			MenuChild.login(onLogin: { UIApplication.shared.appDelegate.appFlow.presentLoggedIn() }),
+			MenuChild.appInformation,
+			MenuChild.appSettings,
+			MenuChild.login(onLogin: {
+				UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
+			}),
 		]
 
 		let (viewController, signal) = EmbarkPlans(menu: Menu(title: nil, children: menuChildren)).materialize()
 		viewController.navigationItem.largeTitleDisplayMode = .always
 		let bag = DisposeBag()
 
-		bag += signal.atValue { story in
-			let embark = Embark(name: story.name, menu: Menu(title: nil, children: menuChildren))
+		bag += signal.onValueDisposePrevious { story in
+			let innerBag = DisposeBag()
+			let embark = Embark(
+				name: story.name,
+				menu: Menu(
+					title: nil,
+					children: menuChildren
+				)
+			)
 
-			bag += viewController.present(embark, options: [.autoPop])
+			innerBag +=
+				viewController
+				.present(
+					embark,
+					options: [.autoPop]
+				)
 				.onValue { redirect in
 					switch redirect {
-					case .mailingList: break
+					case .mailingList:
+						break
+					case .close:
+						break
+					case .chat:
+						break
 					case let .offer(ids):
-						let webOnboardingSignal = viewController.present(
-							WebOnboardingFlow(webScreen: .webOffer(ids: ids))
-						)
-
-						bag += webOnboardingSignal.onEnd { embark.goBack() }
-
-						bag += webOnboardingSignal.nil()
+						innerBag +=
+							viewController.present(
+								Offer(
+									offerIDContainer: .exact(
+										ids: ids,
+										shouldStore: true
+									),
+									menu: Menu(
+										title: nil,
+										children: menuChildren
+									),
+									options: [
+										.menuToTrailing, .shouldPreserveState,
+									]
+								)
+							)
+							.atValue { value in
+								switch value {
+								case .signed:
+									viewController.present(
+										PostOnboarding(),
+										options: [
+											.prefersNavigationBarHidden(
+												true
+											)
+										]
+									)
+								case .close:
+									break
+								case .chat:
+									viewController.present(
+										FreeTextChat().wrappedInCloseButton(),
+										style: .detented(.large),
+										options: [.defaults]
+									)
+								}
+							}
+							.onEnd {
+								embark.goBack()
+							}
 					}
 				}
+
+			return innerBag
 		}
 
 		return (viewController, bag)

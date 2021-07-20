@@ -61,10 +61,10 @@ extension CommonClaimsCollection: Viewable {
 
 		let titleLabel = MultilineLabel(
 			value: L10n.claimsQuickChoiceHeader,
-			style: .brand(.title2(color: .primary))
+			style: .brand(.title3(color: .primary))
 		)
 		bag += stackView.addArranged(titleLabel.wrappedIn(UIStackView())) { containerStackView in
-			containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 0)
+			containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 8, verticalInset: 8)
 			containerStackView.isLayoutMarginsRelativeArrangement = true
 		}
 

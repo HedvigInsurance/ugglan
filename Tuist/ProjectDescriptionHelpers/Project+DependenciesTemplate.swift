@@ -25,10 +25,12 @@ public enum ExternalDependencies: CaseIterable {
 	public var isDevDependency: Bool { self == .runtime }
 
 	public var isResourceBundledDependency: Bool { self == .mixpanel || self == .adyen }
-    
-    public var isAppDependency: Bool { self == .firebase || self == .sentry }
 
-	public var isCoreDependency: Bool { !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency }
+	public var isAppDependency: Bool { self == .firebase || self == .sentry }
+
+	public var isCoreDependency: Bool {
+		!isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
+	}
 
 	public func swiftPackages() -> [Package] {
 		switch self {
@@ -44,7 +46,13 @@ public enum ExternalDependencies: CaseIterable {
 			]
 		case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.41.0"))]
 		case .flow: return [.package(url: "https://github.com/HedvigInsurance/Flow", .branch("master"))]
-		case .form: return [.package(url: "https://github.com/HedvigInsurance/Form", .branch("master"))]
+		case .form:
+			return [
+				.package(
+					url: "https://github.com/HedvigInsurance/Form",
+					.revision("0e8d628dd7c6ff1cfc3b77bcd1473e1030efa079")
+				)
+			]
 		case .presentation:
 			return [.package(url: "https://github.com/HedvigInsurance/Presentation", .branch("master"))]
 		case .ease: return [.package(url: "https://github.com/HedvigInsurance/Ease", .branch("master"))]
@@ -149,7 +157,8 @@ extension Project {
 		let dependencies: [TargetDependency] = [
 			externalDependencies.map { externalDependency in externalDependency.targetDependencies() }
 				.flatMap { $0 }, sdks.map { sdk in .sdk(name: sdk) },
-		].flatMap { $0 }
+		]
+		.flatMap { $0 }
 
 		let packages = externalDependencies.map { externalDependency in externalDependency.swiftPackages() }
 			.flatMap { $0 }

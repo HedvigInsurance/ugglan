@@ -15,15 +15,23 @@ struct LoggedIn {
 	@Inject var client: ApolloClient
 	let didSign: Bool
 
-	init(didSign: Bool = false) { self.didSign = didSign }
+	init(
+		didSign: Bool = false
+	) {
+		self.didSign = didSign
+	}
 }
 
-extension Notification.Name { static let shouldOpenReferrals = Notification.Name("shouldOpenReferrals") }
+extension Notification.Name {
+	static let shouldOpenReferrals = Notification.Name("shouldOpenReferrals")
+}
 
 extension LoggedIn {
 	func handleOpenReferrals(tabBarController: UITabBarController) -> Disposable {
 		NotificationCenter.default.signal(forName: .shouldOpenReferrals)
-			.onValue { _ in tabBarController.selectedIndex = 3 }
+			.onValue { _ in
+				tabBarController.selectedIndex = 3
+			}
 	}
 }
 
@@ -48,7 +56,7 @@ extension LoggedIn: Presentable {
 
 		let indexForTabsSignal = ReadWriteSignal<[Int: Tab]>([:])
 
-		let home = Home()
+		let home = Home(sections: Contracts.getSections())
 		let contracts = Contracts()
 		let keyGear = KeyGearOverview()
 		let referrals = Forever(service: ForeverServiceGraphQL())
@@ -66,7 +74,11 @@ extension LoggedIn: Presentable {
 			options: [.defaults, .prefersLargeTitles(true)]
 		)
 
-		let keyGearPresentation = Presentation(keyGear, style: .default, options: [.prefersLargeTitles(true)])
+		let keyGearPresentation = Presentation(
+			keyGear,
+			style: .default,
+			options: [.prefersLargeTitles(true)]
+		)
 
 		let referralsPresentation = Presentation(
 			referrals,
@@ -80,8 +92,12 @@ extension LoggedIn: Presentable {
 			options: [.defaults, .prefersLargeTitles(true)]
 		)
 
-		bag += client.fetch(query: GraphQL.FeaturesQuery(), cachePolicy: .fetchIgnoringCacheData).valueSignal
-			.compactMap { $0.member.features }
+		bag +=
+			client.fetch(
+				query: GraphQL.FeaturesQuery(),
+				cachePolicy: .fetchIgnoringCacheData
+			)
+			.valueSignal.compactMap { $0.member.features }
 			.onValue { features in
 				if features.contains(.keyGear) {
 					if features.contains(.referrals) {
@@ -94,7 +110,11 @@ extension LoggedIn: Presentable {
 						)
 
 						indexForTabsSignal.value = [
-							0: .home, 1: .contracts, 2: .keyGear, 3: .forever, 4: .profile,
+							0: .home,
+							1: .contracts,
+							2: .keyGear,
+							3: .forever,
+							4: .profile,
 						]
 					} else {
 						bag += tabBarController.presentTabs(
@@ -105,7 +125,10 @@ extension LoggedIn: Presentable {
 						)
 
 						indexForTabsSignal.value = [
-							0: .home, 1: .contracts, 2: .keyGear, 3: .profile,
+							0: .home,
+							1: .contracts,
+							2: .keyGear,
+							3: .profile,
 						]
 					}
 				} else {
@@ -118,7 +141,10 @@ extension LoggedIn: Presentable {
 						)
 
 						indexForTabsSignal.value = [
-							0: .home, 1: .contracts, 2: .forever, 3: .profile,
+							0: .home,
+							1: .contracts,
+							2: .forever,
+							3: .profile,
 						]
 					} else {
 						bag += tabBarController.presentTabs(
@@ -127,13 +153,28 @@ extension LoggedIn: Presentable {
 							profilePresentation
 						)
 
-						indexForTabsSignal.value = [0: .home, 1: .contracts, 2: .profile]
+						indexForTabsSignal.value = [
+							0: .home,
+							1: .contracts,
+							2: .profile,
+						]
 					}
 				}
 			}
 
+		bag += contracts.routeSignal.compactMap { $0 }
+			.onValue { route in
+				switch route {
+				case .openMovingFlow:
+					bag += tabBarController.present(MovingFlow().wrappedInCloseButton())
+				}
+			}
+
 		if didSign {
-			tabBarController.present(WelcomePager()).onValue { _ in AskForRating().ask() }
+			tabBarController.present(WelcomePager())
+				.onValue { _ in
+					AskForRating().ask()
+				}
 		} else {
 			tabBarController.presentConditionally(WhatsNewPager()).onValue { _ in }
 		}
@@ -148,12 +189,18 @@ extension LoggedIn: Presentable {
 				let tab = indexForTabs[tabBarController.selectedIndex]
 
 				switch tab {
-				case .home: ContextGradient.currentOption = .home
-				case .contracts: ContextGradient.currentOption = .none
-				case .forever: ContextGradient.currentOption = .forever
-				case .profile: ContextGradient.currentOption = .profile
-				case .keyGear: ContextGradient.currentOption = .none
-				case .none: ContextGradient.currentOption = .none
+				case .home:
+					ContextGradient.currentOption = .home
+				case .contracts:
+					ContextGradient.currentOption = .none
+				case .forever:
+					ContextGradient.currentOption = .forever
+				case .profile:
+					ContextGradient.currentOption = .profile
+				case .keyGear:
+					ContextGradient.currentOption = .none
+				case .none:
+					ContextGradient.currentOption = .none
 				}
 
 				if let debugPresentationTitle = viewController?.debugPresentationTitle {
@@ -162,5 +209,33 @@ extension LoggedIn: Presentable {
 			}
 
 		return (tabBarController, bag)
+	}
+}
+
+extension Contracts {
+	public static func getSections() -> [HomeSection] {
+		guard Localization.Locale.currentLocale.market == .se else {
+			return []
+		}
+
+		return [
+			HomeSection(
+				title: L10n.HomeTab.editingSectionTitle,
+				style: .vertical,
+				children: [
+					.init(
+						title: L10n.HomeTab.editingSectionChangeAddressLabel,
+						icon: hCoreUIAssets.apartment.image,
+						handler: { viewController in
+							viewController.present(
+								MovingFlow().wrappedInCloseButton(),
+								style: .detented(.large),
+								options: [.defaults]
+							)
+						}
+					)
+				]
+			)
+		]
 	}
 }

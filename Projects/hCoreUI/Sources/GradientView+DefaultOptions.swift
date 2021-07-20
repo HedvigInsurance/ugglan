@@ -3,22 +3,39 @@ import Flow
 import UIKit
 
 extension GradientView {
-	public struct GradientOption {
-		public init(preset: GradientView.Preset) { self.preset = preset }
+	public struct GradientOption: Equatable {
+		public init(
+			preset: GradientView.Preset,
+			shouldShimmer: Bool = true,
+			shouldAnimate: Bool = true
+		) {
+			self.preset = preset
+			self.shouldShimmer = shouldShimmer
+			self.shouldAnimate = shouldAnimate
+		}
+
+		public let shouldShimmer: Bool
+		public let shouldAnimate: Bool
 
 		public let preset: Preset
 
-		public var locations: [NSNumber] { [0, 1] }
+		public var locations: [NSNumber] {
+			[0, 1]
+		}
 
-		public var startPoint: CGPoint { CGPoint(x: 0.25, y: 0.5) }
+		public var startPoint: CGPoint {
+			CGPoint(x: 0.25, y: 0.5)
+		}
 
-		public var endPoint: CGPoint { CGPoint(x: 0.75, y: 0.5) }
+		public var endPoint: CGPoint {
+			CGPoint(x: 0.75, y: 0.5)
+		}
 
 		public var transform: CATransform3D {
 			CATransform3DMakeAffineTransform(CGAffineTransform(a: 1, b: 0, c: 0, d: 2.94, tx: 0, ty: -0.97))
 		}
 
-		public func orbLayer(traitCollection: UITraitCollection) -> CAGradientLayer {
+		public func applySettings(orbLayer: CAGradientLayer, traitCollection: UITraitCollection) {
 			var colors = [UIColor]()
 
 			switch (preset, traitCollection.userInterfaceStyle) {
@@ -34,19 +51,18 @@ extension GradientView {
 				colors.append(UIColor(red: 0.973, green: 0.726, blue: 0.574, alpha: 1))
 			case (.insuranceThree, .dark):
 				colors.append(UIColor(red: 0.925, green: 0.584, blue: 0.374, alpha: 1))
-			default: colors.append(.white)
+			default:
+				colors.append(.white)
 			}
 
 			let alphaWhite = UIColor.white.withAlphaComponent(0.0)
 			colors.append(alphaWhite)
 
-			let layer = CAGradientLayer()
-			layer.type = .radial
-			layer.colors = colors.map { $0.cgColor }
-			layer.locations = [0, 1.0]
-			layer.startPoint = CGPoint(x: 0.5, y: 0.5)
-			layer.endPoint = CGPoint(x: 1.0, y: 1.0)
-			return layer
+			orbLayer.type = .radial
+			orbLayer.colors = colors.map { $0.cgColor }
+			orbLayer.locations = [0, 1.0]
+			orbLayer.startPoint = CGPoint(x: 0.5, y: 0.5)
+			orbLayer.endPoint = CGPoint(x: 1.0, y: 1.0)
 		}
 
 		public func backgroundColors(traitCollection: UITraitCollection) -> [UIColor] {
@@ -82,14 +98,19 @@ extension GradientView {
 					UIColor(red: 0.512, green: 0.326, blue: 0.162, alpha: 1),
 					UIColor(red: 0.796, green: 0.481, blue: 0.481, alpha: 1),
 				]
-			default: return []
+			default:
+				return []
 			}
 		}
 	}
 
-	public enum Preset {
+	public enum Preset: CaseIterable {
 		case insuranceOne
 		case insuranceTwo
 		case insuranceThree
+
+		public static var random: Self {
+			Self.allCases.shuffled().randomElement()!
+		}
 	}
 }
