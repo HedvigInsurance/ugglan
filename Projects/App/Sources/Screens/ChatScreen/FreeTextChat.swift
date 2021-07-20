@@ -14,13 +14,7 @@ extension FreeTextChat: Presentable {
 		let chat = Chat()
 		let (viewController, future) = chat.materialize()
 
-		let titleHedvigLogo = UIImageView()
-		titleHedvigLogo.image = Asset.wordmark.image
-		titleHedvigLogo.contentMode = .scaleAspectFit
-
-		viewController.navigationItem.titleView = titleHedvigLogo
-
-		titleHedvigLogo.snp.makeConstraints { make in make.width.equalTo(80) }
+		viewController.navigationItem.titleView = .titleWordmarkView
 
 		bag += client.perform(mutation: GraphQL.TriggerFreeTextChatMutation())
 			.onValue { _ in

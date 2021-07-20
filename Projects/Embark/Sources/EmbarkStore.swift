@@ -54,21 +54,23 @@ class EmbarkStore {
 		return "\(key)\\[[0-9]+\\]$"
 	}
 
-	func getValues(key: String) -> [String]? {
+	func getValues(key: String, includeQueue: Bool = false) -> [String]? {
 		if let computedExpression = computedValues[key] {
 			return [parseComputedExpression(computedExpression)].compactMap { $0 }
 		}
 
 		if let store = revisions.last {
-			let filteredStore = store.filter { (key, value) in
-				key.range(of: arrayRegexFor(key: key), options: .regularExpression) != nil
+			let storeWithQueue = includeQueue ? queue.merging(store, uniquingKeysWith: takeLeft) : store
+
+			let filteredStore = storeWithQueue.filter { (innerKey, value) in
+				innerKey.range(of: arrayRegexFor(key: key), options: .regularExpression) != nil
 			}
 
 			if !filteredStore.isEmpty {
 				return Array(filteredStore.values)
 			}
 
-			if let value = store[key] {
+			if let value = storeWithQueue[key] {
 				return [value]
 			}
 		}
@@ -76,8 +78,8 @@ class EmbarkStore {
 		return nil
 	}
 
-	func getValue(key: String) -> String? {
-		return getValues(key: key)?.first
+	func getValue(key: String, includeQueue: Bool = false) -> String? {
+		return getValues(key: key, includeQueue: includeQueue)?.first
 	}
 
 	func getValueWithNull(key: String) -> String {

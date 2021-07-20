@@ -7,9 +7,12 @@ import hCore
 public enum ToastSymbol: Equatable {
 	public static func == (lhs: ToastSymbol, rhs: ToastSymbol) -> Bool {
 		switch (lhs, rhs) {
-		case let (.character(lhsCharacter), .character(rhsCharacter)): return lhsCharacter == rhsCharacter
-		case let (.icon(lhsIcon), .icon(rhsIcon)): return lhsIcon == rhsIcon
-		default: return false
+		case let (.character(lhsCharacter), .character(rhsCharacter)):
+			return lhsCharacter == rhsCharacter
+		case let (.icon(lhsIcon), .icon(rhsIcon)):
+			return lhsIcon == rhsIcon
+		default:
+			return false
 		}
 	}
 
@@ -18,7 +21,9 @@ public enum ToastSymbol: Equatable {
 }
 
 public struct Toast: Equatable {
-	public static func == (lhs: Toast, rhs: Toast) -> Bool { lhs.id == rhs.id }
+	public static func == (lhs: Toast, rhs: Toast) -> Bool {
+		lhs.id == rhs.id
+	}
 
 	private let id = UUID()
 	let symbol: ToastSymbol?
@@ -27,7 +32,9 @@ public struct Toast: Equatable {
 	let textColor: UIColor
 	let backgroundColor: UIColor
 	let duration: TimeInterval
-	public var onTap: Signal<Void> { onTapCallbacker.providedSignal }
+	public var onTap: Signal<Void> {
+		onTapCallbacker.providedSignal
+	}
 
 	private let onTapCallbacker = Callbacker<Void>()
 	let shouldHideCallbacker = Callbacker<Void>()
@@ -63,10 +70,13 @@ extension Toast: Viewable {
 			view.tintColor = textColor
 			view.contentMode = .scaleAspectFit
 
-			view.snp.makeConstraints { make in make.width.equalTo(20) }
+			view.snp.makeConstraints { make in
+				make.width.equalTo(20)
+			}
 
 			return view
-		case .none: return UIView()
+		case .none:
+			return UIView()
 		}
 	}
 
@@ -79,7 +89,9 @@ extension Toast: Viewable {
 		containerView.layer.cornerRadius = 8
 		wrapperView.addSubview(containerView)
 
-		containerView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
+		containerView.snp.makeConstraints { make in
+			make.top.bottom.trailing.leading.equalToSuperview()
+		}
 
 		bag += containerView.signal(for: .touchUpInside)
 			.atValue {
@@ -124,7 +136,9 @@ extension Toast: Viewable {
 
 		containerView.addSubview(stackView)
 
-		stackView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
+		stackView.snp.makeConstraints { make in
+			make.top.bottom.trailing.leading.equalToSuperview()
+		}
 
 		if symbol != nil {
 			let symbolContainer = UIStackView()
@@ -133,7 +147,9 @@ extension Toast: Viewable {
 
 			stackView.addArrangedSubview(symbolContainer)
 
-			symbolContainer.snp.makeConstraints { make in make.width.equalTo(20) }
+			symbolContainer.snp.makeConstraints { make in
+				make.width.equalTo(20)
+			}
 
 			symbolContainer.addArrangedSubview(symbolView)
 		}
@@ -164,13 +180,17 @@ extension Toast: Viewable {
 		chevronImageView.tintColor = textColor
 		chevronImageView.contentMode = .scaleAspectFit
 		chevronImageView.isHidden = true
-		chevronImageView.snp.makeConstraints { make in make.width.equalTo(20) }
+		chevronImageView.snp.makeConstraints { make in
+			make.width.equalTo(20)
+		}
 		chevronImageView.image = hCoreUIAssets.chevronRight.image
 
 		stackView.addArrangedSubview(chevronImageView)
 
 		bag += stackView.didMoveToWindowSignal.onValue {
-			if !self.onTapCallbacker.isEmpty { chevronImageView.isHidden = false }
+			if !self.onTapCallbacker.isEmpty {
+				chevronImageView.isHidden = false
+			}
 		}
 
 		return (wrapperView, bag)
@@ -184,7 +204,9 @@ public struct Toasts {
 	let toastCallbacker = Callbacker<Toast>()
 	let window = UIApplication.shared.keyWindow!
 
-	public func displayToast(toast: Toast) { toastCallbacker.callAll(with: toast) }
+	public func displayToast(toast: Toast) {
+		toastCallbacker.callAll(with: toast)
+	}
 
 	init() {
 		let (view, disposable) = materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
@@ -197,7 +219,7 @@ extension Toasts: Viewable {
 	public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
 		let bag = DisposeBag()
 
-		let containerView = PassTroughView()
+		let containerView = PassThroughView()
 
 		containerView.layer.zPosition = .greatestFiniteMagnitude
 
@@ -217,17 +239,24 @@ extension Toasts: Viewable {
 		let pauseSignal = ReadWriteSignal<Bool>(false)
 
 		self.bag += containerView.didLayoutSignal.onValue { _ in
-			if let parent = containerView.parent { parent.bringSubviewToFront(containerView) }
+			if let parent = containerView.parent {
+				parent.bringSubviewToFront(containerView)
+			}
 		}
 
-		containerView.snp.makeConstraints { make in make.height.equalTo(0) }
+		containerView.snp.makeConstraints { make in
+			make.height.equalTo(0)
+		}
 
-		self.bag += containerView.subviewsSignal.onValue { subviews in containerView.isHidden = subviews.isEmpty
+		self.bag += containerView.subviewsSignal.onValue { subviews in
+			containerView.isHidden = subviews.isEmpty
 
 			containerView.snp.updateConstraints { make in
 				make.height.equalTo(
 					subviews.max { (lhs, rhs) -> Bool in
-						if lhs.frame.height > rhs.frame.height { return true }
+						if lhs.frame.height > rhs.frame.height {
+							return true
+						}
 
 						return false
 					}?
@@ -236,8 +265,13 @@ extension Toasts: Viewable {
 			}
 		}
 
-		bag += toastCallbacker.compactMap { $0 }.wait(until: pauseSignal.distinct().map { !$0 }).distinct()
-			.onValueDisposePrevious { toast in let innerBag = bag.innerBag()
+		bag +=
+			toastCallbacker
+			.compactMap { $0 }
+			.wait(until: pauseSignal.distinct().map { !$0 })
+			.distinct()
+			.onValueDisposePrevious { toast in
+				let innerBag = bag.innerBag()
 				pauseSignal.value = true
 				hideBag.dispose()
 
@@ -253,7 +287,9 @@ extension Toasts: Viewable {
 						.animated(style: .lightBounce(duration: 0.25)) {
 							previousToast.alpha = 0
 						}
-						.onValue { _ in previousToast.removeFromSuperview() }
+						.onValue { _ in
+							previousToast.removeFromSuperview()
+						}
 				}
 
 				bag += containerView.add(toast) { toastView in
@@ -281,7 +317,9 @@ extension Toasts: Viewable {
 
 							var translationY = min(location.y, 0)
 
-							if location.y > 0 { translationY += location.y / 100 }
+							if location.y > 0 {
+								translationY += location.y / 100
+							}
 
 							toastView.transform = CGAffineTransform(
 								translationX: 0,
@@ -294,12 +332,20 @@ extension Toasts: Viewable {
 					innerBag += Signal(after: 0)
 						.animated(
 							style: SpringAnimationStyle.lightBounce(delay: 0, duration: 1)
-						) { _ in toastView.transform = CGAffineTransform.identity }
-						.onValue { _ in pauseSignal.value = false }
+						) { _ in
+							toastView.transform = CGAffineTransform.identity
+						}
+						.onValue { _ in
+							pauseSignal.value = false
+						}
 
 					let hideCallbacker = Callbacker<Void>()
 
-					bag += hideCallbacker.atValue { _ in pauseSignal.value = true }.throttle(1)
+					bag +=
+						hideCallbacker.atValue { _ in
+							pauseSignal.value = true
+						}
+						.throttle(1)
 						.filter(predicate: { containerView.subviews.count == 1 })
 						.animated(style: .lightBounce(duration: 1)) { _ in
 							toastView.transform = CGAffineTransform(
@@ -307,13 +353,16 @@ extension Toasts: Viewable {
 								y: -125
 							)
 						}
-						.onValue { _ in toastView.removeFromSuperview()
+						.onValue { _ in
+							toastView.removeFromSuperview()
 							innerBag.dispose()
 							pauseSignal.value = false
 						}
 
 					hideBag += Signal.animatedDelay(after: toast.duration)
-						.onValue { _ in hideCallbacker.callAll() }
+						.onValue { _ in
+							hideCallbacker.callAll()
+						}
 					innerBag += hideBag
 
 					innerBag += panGestureRecognizer.signal(forState: .ended)
@@ -329,12 +378,20 @@ extension Toasts: Viewable {
 										toastView.transform =
 											CGAffineTransform.identity
 									}
-									.onValue { _ in pauseSignal.value = false }
+									.onValue { _ in
+										pauseSignal.value = false
+									}
 							}
 						}
 
-					innerBag += toast.shouldHideCallbacker.atValue { pauseSignal.value = true }
-						.delay(by: 0.25).onValue { hideCallbacker.callAll() }
+					innerBag += toast.shouldHideCallbacker
+						.atValue {
+							pauseSignal.value = true
+						}
+						.delay(by: 0.25)
+						.onValue {
+							hideCallbacker.callAll()
+						}
 
 					innerBag += pauseSignal.distinct()
 						.onValue { pause in
@@ -342,7 +399,9 @@ extension Toasts: Viewable {
 								hideBag.dispose()
 							} else {
 								hideBag += Signal.animatedDelay(after: toast.duration)
-									.onValue { _ in hideCallbacker.callAll() }
+									.onValue { _ in
+										hideCallbacker.callAll()
+									}
 							}
 						}
 				}

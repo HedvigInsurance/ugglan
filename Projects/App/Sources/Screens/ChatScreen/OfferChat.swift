@@ -6,7 +6,9 @@ import UIKit
 import hCore
 import hGraphQL
 
-struct OfferChat { @Inject var client: ApolloClient }
+struct OfferChat {
+	@Inject var client: ApolloClient
+}
 
 extension OfferChat: Presentable {
 	func materialize() -> (UIViewController, Future<Void>) {
@@ -37,7 +39,11 @@ extension OfferChat: Presentable {
 								completion: nil
 							)
 						}
-					), Alert.Action(title: L10n.chatRestartAlertCancel, action: {}),
+					),
+					Alert.Action(
+						title: L10n.chatRestartAlertCancel,
+						action: {}
+					),
 				]
 			)
 
@@ -46,24 +52,14 @@ extension OfferChat: Presentable {
 
 		viewController.navigationItem.leftBarButtonItem = restartButton
 
-		let titleHedvigLogo = UIImageView()
-		titleHedvigLogo.image = Asset.wordmark.image
-		titleHedvigLogo.contentMode = .scaleAspectFit
-
-		viewController.navigationItem.titleView = titleHedvigLogo
-
-		titleHedvigLogo.snp.makeConstraints { make in make.width.equalTo(80) }
-
-		bag += client.perform(mutation: GraphQL.OfferClosedMutation())
-			.onValue { _ in
-				chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
-					chat.chatState.subscribe()
-				}
-			}
+		viewController.navigationItem.titleView = .titleWordmarkView
 
 		return (
 			viewController,
-			Future { completion in bag += future.onResult { result in completion(result) }
+			Future { completion in
+				bag += future.onResult { result in
+					completion(result)
+				}
 
 				return bag
 			}

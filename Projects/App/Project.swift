@@ -3,8 +3,11 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let sdkFrameworks: [TargetDependency] = [
-	.sdk(name: "libc++.tbd"), .sdk(name: "libz.tbd"), .sdk(name: "SwiftUI.framework", status: .optional),
-	.sdk(name: "SceneKit.framework"), .sdk(name: "AdSupport.framework"),
+	.sdk(name: "libc++.tbd"),
+	.sdk(name: "libz.tbd"),
+	.sdk(name: "SwiftUI.framework", status: .optional),
+	.sdk(name: "SceneKit.framework"),
+	.sdk(name: "AdSupport.framework"),
 ]
 
 let ugglanConfigurations: [CustomConfiguration] = [
@@ -54,15 +57,18 @@ let appDependencies: [TargetDependency] = [
 		.project(target: "Forever", path: .relativeToRoot("Projects/Forever")),
 		.project(target: "Contracts", path: .relativeToRoot("Projects/Contracts")),
 		.project(target: "Home", path: .relativeToRoot("Projects/Home")),
+		.project(target: "Offer", path: .relativeToRoot("Projects/Offer")),
 		.project(target: "Market", path: .relativeToRoot("Projects/Market")),
 		.project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
 		.project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
-        .project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
+		.project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
 		.project(
 			target: "ResourceBundledDependencies",
 			path: .relativeToRoot("Dependencies/ResourceBundledDependencies")
-		), .project(target: "Embark", path: .relativeToRoot("Projects/Embark")),
-	], sdkFrameworks,
+		),
+		.project(target: "Embark", path: .relativeToRoot("Projects/Embark")),
+	],
+	sdkFrameworks,
 ]
 .flatMap { $0 }
 
@@ -105,7 +111,8 @@ let project = Project(
 					.project(
 						target: "TestDependencies",
 						path: .relativeToRoot("Dependencies/TestDependencies")
-					), .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
+					),
+					.project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
 				]
 			]
 			.flatMap { $0 },
@@ -130,7 +137,9 @@ let project = Project(
 		Scheme(
 			name: "Ugglan",
 			shared: true,
-			buildAction: BuildAction(targets: ["Ugglan"]),
+			buildAction: BuildAction(
+				targets: ["Ugglan"]
+			),
 			testAction: TestAction(
 				targets: [
 					TestableTarget(
@@ -139,7 +148,9 @@ let project = Project(
 					)
 				],
 				arguments: Arguments(
-					environment: ["SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"],
+					environment: [
+						"SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"
+					],
 					launchArguments: [
 						"-UIPreferredContentSizeCategoryName": true,
 						"UICTContentSizeCategoryM": true,
@@ -151,9 +162,13 @@ let project = Project(
 		Scheme(
 			name: "Hedvig",
 			shared: true,
-			buildAction: BuildAction(targets: ["Hedvig"]),
+			buildAction: BuildAction(
+				targets: ["Hedvig"]
+			),
 			runAction: RunAction(executable: "Hedvig")
 		),
 	],
-	additionalFiles: [.folderReference(path: "GraphQL")]
+	additionalFiles: [
+		.folderReference(path: "GraphQL")
+	]
 )

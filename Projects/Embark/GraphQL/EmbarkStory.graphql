@@ -310,6 +310,9 @@ query EmbarkStory($name: String!, $locale: String!) {
             link {
               ...EmbarkLinkFragment
             }
+            api {
+                ...ApiFragment
+            }
             textActions {
               data {
                 title

@@ -10,28 +10,46 @@ import hGraphQL
 
 public struct Home {
 	public static var openClaimsHandler: (_ viewController: UIViewController) -> Void = { _ in }
+	public static var openMovingFlowHandler: (_ viewController: UIViewController) -> Void = { _ in }
 	public static var openCallMeChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
 	public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
 	public static var openConnectPaymentHandler: (_ viewController: UIViewController) -> Void = { _ in }
 
 	@Inject var client: ApolloClient
 
-	public init() {}
+	public init(
+		sections: [HomeSection]
+	) {
+		self.sections = sections
+	}
+
+	public let sections: [HomeSection]
 }
 
 extension Future {
 	func wait(until signal: ReadSignal<Bool>) -> Future<Value> {
-		Future<Value> { completion in let bag = DisposeBag()
+		Future<Value> { completion in
+			let bag = DisposeBag()
 
 			self.onValue { value in
 				bag += signal.atOnce().filter(predicate: { $0 })
-					.onValue { _ in completion(.success(value)) }
+					.onValue { _ in
+						completion(.success(value))
+					}
 			}
-			.onError { error in completion(.failure(error)) }
+			.onError { error in
+				completion(.failure(error))
+			}
 
 			return bag
 		}
 	}
+}
+
+enum HomeState {
+	case terminated
+	case future
+	case active
 }
 
 extension Home: Presentable {
@@ -46,7 +64,9 @@ extension Home: Presentable {
 			scrollEdgeAppearance.configureWithTransparentBackground()
 			scrollEdgeAppearance.largeTitleTextAttributes = scrollEdgeAppearance.largeTitleTextAttributes
 				.merging(
-					[NSAttributedString.Key.foregroundColor: UIColor.clear],
+					[
+						NSAttributedString.Key.foregroundColor: UIColor.clear
+					],
 					uniquingKeysWith: takeRight
 				)
 
@@ -56,24 +76,62 @@ extension Home: Presentable {
 		let bag = DisposeBag()
 
 		let form = FormView()
-		bag += viewController.install(form) { scrollView in let refreshControl = UIRefreshControl()
+		bag += viewController.install(form) { scrollView in
+			let refreshControl = UIRefreshControl()
 			scrollView.refreshControl = refreshControl
 			bag += self.client.refetchOnRefresh(query: GraphQL.HomeQuery(), refreshControl: refreshControl)
 
 			bag += scrollView.performEntryAnimation(
 				contentView: form,
-				onLoad: self.client.fetch(query: GraphQL.HomeQuery())
-					.wait(until: scrollView.safeToPerformEntryAnimationSignal).delay(by: 0.1)
-			) { error in print(error) }
+				onLoad: self.client
+					.fetch(query: GraphQL.HomeQuery())
+					.wait(until: scrollView.safeToPerformEntryAnimationSignal)
+					.delay(by: 0.1)
+			) { error in
+				print(error)
+			}
 		}
 
 		bag += form.append(ImportantMessagesSection())
 
+		let rowInsets = UIEdgeInsets(
+			top: 0,
+			left: 25,
+			bottom: 0,
+			right: 25
+		)
+
 		let titleSection = form.appendSection()
 		let titleRow = RowView()
-		titleRow.layoutMargins = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: 25)
 		titleRow.isLayoutMarginsRelativeArrangement = true
+		titleRow.layoutMargins = rowInsets
 		titleSection.append(titleRow)
+
+		func buildSections(functionBag: DisposeBag, state: HomeState) {
+			switch state {
+			case .active:
+				functionBag += titleRow.append(ActiveSection())
+			case .future:
+				functionBag += titleRow.append(FutureSection())
+			case .terminated:
+				functionBag += titleRow.append(TerminatedSection())
+			}
+
+			sections.forEach { homeSection in
+				switch homeSection.style {
+				case .horizontal:
+					break
+				case .vertical:
+					guard state == .active else { return }
+					let section = HomeVerticalSection(section: homeSection)
+					functionBag += form.append(section)
+				case .header:
+					break
+				}
+
+				form.appendSpacing(.custom(30))
+			}
+		}
 
 		bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
 			.mapLatestToFuture { _ in
@@ -81,36 +139,16 @@ extension Home: Presentable {
 			}
 			.nil()
 
-		bag += client.watch(query: GraphQL.HomeQuery())
-			.onValueDisposePrevious { data in let innerBag = DisposeBag()
+		bag +=
+			client
+			.watch(query: GraphQL.HomeQuery())
+			.map { data in
+				data.homeState
+			}
+			.onValueDisposePrevious { homeState in
+				let innerBag = DisposeBag()
 
-				let terminatedState = data.contracts.allSatisfy { contract -> Bool in
-					if contract.status.asActiveInFutureAndTerminatedInFutureStatus != nil {
-						return true
-					}
-
-					if contract.status.asTerminatedStatus != nil { return true }
-
-					if contract.status.asTerminatedTodayStatus != nil { return true }
-
-					return false
-				}
-
-				let futureState = data.contracts.allSatisfy { contract -> Bool in
-					if contract.status.asActiveInFutureStatus != nil { return true }
-
-					if contract.status.asPendingStatus != nil { return true }
-
-					return false
-				}
-
-				if terminatedState {
-					innerBag += titleRow.append(TerminatedSection())
-				} else if futureState {
-					innerBag += titleRow.append(FutureSection())
-				} else {
-					innerBag += titleRow.append(ActiveSection())
-				}
+				buildSections(functionBag: innerBag, state: homeState)
 
 				return innerBag
 			}
@@ -121,6 +159,35 @@ extension Home: Presentable {
 
 extension Home: Tabable {
 	public func tabBarItem() -> UITabBarItem {
-		UITabBarItem(title: L10n.HomeTab.title, image: Asset.tab.image, selectedImage: Asset.tabSelected.image)
+		UITabBarItem(
+			title: L10n.HomeTab.title,
+			image: Asset.tab.image,
+			selectedImage: Asset.tabSelected.image
+		)
+	}
+}
+
+extension GraphQL.HomeQuery.Data {
+	fileprivate var homeState: HomeState {
+		if isTerminated {
+			return .terminated
+		} else if isFuture {
+			return .future
+		} else {
+			return .active
+		}
+	}
+
+	private var isTerminated: Bool {
+		contracts.allSatisfy({ (contract) -> Bool in
+			contract.status.asActiveInFutureStatus != nil || contract.status.asTerminatedStatus != nil
+				|| contract.status.asTerminatedTodayStatus != nil
+		})
+	}
+
+	private var isFuture: Bool {
+		contracts.allSatisfy { (contract) -> Bool in
+			contract.status.asActiveInFutureStatus != nil || contract.status.asPendingStatus != nil
+		}
 	}
 }

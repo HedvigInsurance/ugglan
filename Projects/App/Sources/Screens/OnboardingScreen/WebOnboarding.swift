@@ -45,13 +45,7 @@ extension WebOnboarding: Presentable {
 
 		switch webScreen {
 		case .webOnboarding:
-			let titleHedvigLogo = UIImageView()
-			titleHedvigLogo.image = Asset.wordmark.image
-			titleHedvigLogo.contentMode = .scaleAspectFit
-
-			titleHedvigLogo.snp.makeConstraints { make in make.width.equalTo(80) }
-
-			viewController.navigationItem.titleView = titleHedvigLogo
+			viewController.navigationItem.titleView = .titleWordmarkView
 			viewController.navigationItem.leftBarButtonItem = settingsButton
 			viewController.navigationItem.rightBarButtonItems = [chatButton, restartButton]
 		case .webOffer:

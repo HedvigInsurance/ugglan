@@ -16,6 +16,7 @@ extension JSONObject {
 				insurableLimits: [],
 				termsAndConditions: .init(displayName: "mock", url: "https://www.mock.com/terms.pdf"),
 				status: status,
+				upcomingAgreementDetailsTable: .init(title: "", sections: []),
 				currentAgreement: .makeNorwegianHomeContentAgreement(
 					numberCoInsured: 0,
 					address: .init(street: "mock", postalCode: "122 22"),
@@ -36,6 +37,7 @@ extension JSONObject {
 				insurableLimits: [],
 				termsAndConditions: .init(displayName: "mock", url: "https://www.mock.com/terms.pdf"),
 				status: status,
+				upcomingAgreementDetailsTable: .init(title: "", sections: []),
 				currentAgreement: .makeNorwegianTravelAgreement(numberCoInsured: 0)
 			)
 			.jsonObject
@@ -50,6 +52,7 @@ extension JSONObject {
 				insurableLimits: [],
 				termsAndConditions: .init(displayName: "mock", url: "https://www.mock.com/terms.pdf"),
 				status: status,
+				upcomingAgreementDetailsTable: .init(title: "", sections: []),
 				currentAgreement: .makeSwedishHouseAgreement(
 					numberCoInsured: 0,
 					address: .init(street: "mock", postalCode: "122 22"),

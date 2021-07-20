@@ -14,20 +14,6 @@ import hCoreUI
 		didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
 	) -> Bool {
 		application.setup()
-		window = UIWindow(frame: UIScreen.main.bounds)
-
-		let navigationController = UINavigationController()
-		navigationController.navigationBar.prefersLargeTitles = true
-
-		window?.rootViewController = navigationController
-		window?.makeKeyAndVisible()
-
-		bag += navigationController.present(
-			Debug(),
-			style: .default,
-			options: [.largeTitleDisplayMode(.always)]
-		)
-
 		return true
 	}
 }
