@@ -80,7 +80,7 @@ extension Chat: Presentable {
 								switch offerResult {
 								case .chat:
 									viewController.present(
-										FreeTextChat(),
+                                        FreeTextChat().wrappedInCloseButton(),
 										style: .detented(.large)
 									)
 								case .close:
