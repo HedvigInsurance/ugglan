@@ -230,7 +230,7 @@ extension Contracts {
 							viewController.present(
 								MovingFlow().wrappedInCloseButton(),
 								style: .detented(.large),
-								options: [.defaults, .allowSwipeDismissAlways]
+								options: [.defaults]
 							)
 						}
 					)
