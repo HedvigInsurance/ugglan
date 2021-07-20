@@ -12,7 +12,6 @@ final class CardTests: XCTestCase {
 	override func setUp() {
 		super.setUp()
 		setupScreenShotTests()
-		isRecording = true
 		DefaultStyling.installCustom()
 	}
 
