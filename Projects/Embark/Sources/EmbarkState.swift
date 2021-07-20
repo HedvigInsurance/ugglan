@@ -93,13 +93,14 @@ public class EmbarkState {
 					externalRedirectSignal.value = .offer(
 						ids: [store.getValue(key: "quoteId")].compactMap { $0 }
 					)
-				case .__unknown: fatalError("Can't external redirect to location")
-                    #warning("Must be handled")
-                case .close:
-                    ()
-                case .chat:
-                    ()
-                }
+				case .__unknown:
+					fatalError("Can't external redirect to location")
+					#warning("Must be handled")
+				case .close:
+					()
+				case .chat:
+					()
+				}
 			} else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {
 				EmbarkTrackingEvent(title: "Offer Redirect", properties: [:]).send()
 				externalRedirectSignal.value = .offer(
