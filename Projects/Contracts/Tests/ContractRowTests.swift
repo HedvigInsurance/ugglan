@@ -44,7 +44,7 @@ final class ContractRowTests: XCTestCase {
 			),
 			displayName: "NorwegianHome",
 			type: .norwegianHome,
-			state: ContractsState()
+			state: .init()
 		)
 
 		assert(activeContractRow)
@@ -57,7 +57,7 @@ final class ContractRowTests: XCTestCase {
 			),
 			displayName: "NorwegianHome",
 			type: .norwegianHome,
-			state: ContractsState()
+			state: .init()
 		)
 
 		assert(activeInFutureContractRow)
@@ -68,7 +68,7 @@ final class ContractRowTests: XCTestCase {
 			),
 			displayName: "NorwegianHome",
 			type: .norwegianHome,
-			state: ContractsState()
+			state: .init()
 		)
 
 		assert(pendingContractRow)
@@ -84,7 +84,7 @@ final class ContractRowTests: XCTestCase {
 			),
 			displayName: "NorwegianHome",
 			type: .norwegianHome,
-			state: ContractsState()
+			state: .init()
 		)
 
 		assert(activeInFutureAndTerminatedInFutureContractRow)
@@ -95,7 +95,7 @@ final class ContractRowTests: XCTestCase {
 			),
 			displayName: "NorwegianHome",
 			type: .norwegianHome,
-			state: ContractsState()
+			state: .init()
 		)
 
 		assert(terminatedContractRow)
@@ -106,7 +106,7 @@ final class ContractRowTests: XCTestCase {
 			contract: try! .init(jsonObject: .makeNorwegianTravelContract(status: .makeActiveStatus())),
 			displayName: "NorwegianTravel",
 			type: .norwegianTravel,
-			state: ContractsState()
+			state: .init()
 		)
 
 		assert(activeContractRow)
@@ -117,7 +117,7 @@ final class ContractRowTests: XCTestCase {
 			contract: try! .init(jsonObject: .makeSwedishHouseContract(status: .makeActiveStatus())),
 			displayName: "SwedishHouse",
 			type: .norwegianTravel,
-			state: ContractsState()
+			state: .init()
 		)
 
 		assert(activeContractRow)
