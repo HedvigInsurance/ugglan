@@ -55,6 +55,7 @@ extension Card: Viewable {
 
 		let headerView = UIStackView()
 		headerView.alignment = .center
+        headerView.distribution = .fillProportionally
 		headerView.spacing = 8
 		headerWrapperView.addArrangedSubview(headerView)
 
@@ -64,6 +65,7 @@ extension Card: Viewable {
 				imageView.image = titleIcon
 				imageView.contentMode = .scaleAspectFit
 				imageView.tintColor = .typographyColor(.primary(state: .matching(backgroundColor)))
+                imageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
 				bag += $titleIcon.bindTo(imageView, \.image)
 
@@ -73,22 +75,15 @@ extension Card: Viewable {
 			}()
 		)
 
-		let titleWrapper = UIView()
-		headerView.addArrangedSubview(titleWrapper)
-
-		let titleLabel = MultilineLabel(
+		let titleLabel = UILabel(
 			value: title,
 			style: TextStyle.brand(.headline(color: .primary(state: .matching(backgroundColor))))
 				.centerAligned
 		)
-		bag += $title.bindTo(titleLabel.$value)
+        bag += $title.bindTo(titleLabel, \.value)
 
-		bag += titleWrapper.add(titleLabel) { view in
-			view.snp.makeConstraints { make in
-				make.edges.equalToSuperview()
-			}
-		}
-
+        headerView.addArrangedSubview(titleLabel)
+        
 		let bodyLabel = MultilineLabel(
 			value: body,
 			style: TextStyle.brand(.subHeadline(color: .secondary(state: .matching(backgroundColor))))
