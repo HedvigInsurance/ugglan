@@ -343,15 +343,17 @@ extension DynamicSectionStyle {
 	) -> DynamicSectionStyle {
 		DynamicSectionStyle { traitCollection -> SectionStyle in
 			let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
-            
-            var backgroundColor: UIColor
-            
-            if #available(iOS 13.0, *) {
-                backgroundColor = traitCollection.userInterfaceLevel == .elevated ? .brand(.primaryBackground()) : .brand(.secondaryBackground())
-            } else {
-                backgroundColor = .brand(.secondaryBackground())
-            }
-            
+
+			var backgroundColor: UIColor
+
+			if #available(iOS 13.0, *) {
+				backgroundColor =
+					traitCollection.userInterfaceLevel == .elevated
+					? .brand(.primaryBackground()) : .brand(.secondaryBackground())
+			} else {
+				backgroundColor = .brand(.secondaryBackground())
+			}
+
 			let headerAndFooterInset = UIEdgeInsets(top: 14, left: 0, bottom: 14, right: 0)
 
 			return Style(
