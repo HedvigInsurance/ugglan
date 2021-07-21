@@ -15,8 +15,8 @@ public struct UgglanState: Codable, EmptyInitable {
 	}
 
 	var features: [Feature]? = nil
-    
-    public init() {}
+
+	public init() {}
 }
 
 public enum UgglanAction: Codable {
@@ -37,14 +37,15 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
 					cachePolicy: .fetchIgnoringCacheData
 				)
 				.compactMap { $0.member.features }
-                .map { features in
-                    .setFeatures(
-                        features: [
-                            features.contains(.referrals) ? .referrals : nil,
-                            features.contains(.keyGear) ? .keyGear : nil
-                        ].compactMap { $0 }
-                    )
-                }
+				.map { features in
+					.setFeatures(
+						features: [
+							features.contains(.referrals) ? .referrals : nil,
+							features.contains(.keyGear) ? .keyGear : nil,
+						]
+						.compactMap { $0 }
+					)
+				}
 		default:
 			break
 		}

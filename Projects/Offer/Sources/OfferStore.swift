@@ -9,8 +9,8 @@ public struct OfferState: Codable, EmptyInitable {
 	var hasSignedQuotes = false
 	var chatOpened = false
 	var ids: [String] = []
-    
-    public init() {}
+
+	public init() {}
 }
 
 public enum OfferAction: Codable {
@@ -31,7 +31,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 		)
 	}
 
-    override public func effects(_ getState: () -> State, _ action: Action) -> Future<Action>? {
+	override public func effects(_ getState: () -> State, _ action: Action) -> Future<Action>? {
 		return nil
 	}
 

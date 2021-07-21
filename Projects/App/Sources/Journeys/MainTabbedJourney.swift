@@ -14,11 +14,11 @@ extension JourneyPresentation {
 			let store: UgglanStore = self.presentable.get()
 			let tabBarController = presenter.matter
 
-            tabBarController.selectedIndex = store.state.selectedTabIndex
+			tabBarController.selectedIndex = store.state.selectedTabIndex
 
 			presenter.bag += tabBarController.signal(for: \.selectedViewController)
 				.onValue { _ in
-                    store.send(.setSelectedTabIndex(index: tabBarController.selectedIndex))
+					store.send(.setSelectedTabIndex(index: tabBarController.selectedIndex))
 				}
 		}
 	}
@@ -103,7 +103,7 @@ struct MainTabbedJourney {
 					let store: UgglanStore = get()
 					store.send(.fetchFeatures)
 
-                    bag += store.stateSignal.compactMap { $0.features }
+					bag += store.stateSignal.compactMap { $0.features }
 						.onFirstValue { value in
 							callback(value)
 						}
