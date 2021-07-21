@@ -34,7 +34,7 @@ extension HomeVerticalSection: Viewable {
 			bag += sectionView.append(row)
 				.onValue {
 					guard let viewController = sectionView.viewController else { return }
-					child.handler(viewController)
+					bag += child.handler(viewController)
 				}
 		}
 

@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct StartDateSection { @Inject var state: OfferState }
+struct StartDateSection { @Inject var state: OldOfferState }
 
 extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
 	var canHaveIndependentStartDates: Bool {

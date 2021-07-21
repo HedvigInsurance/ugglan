@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct SwedishBankIdSign {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 
 	func presentFailedAlert(
 		_ viewController: UIViewController,

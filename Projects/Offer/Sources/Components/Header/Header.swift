@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 struct Header {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 	let scrollView: UIScrollView
 	static let trailingAlignmentBreakpoint: CGFloat = 800
 	static let trailingAlignmentFormPercentageWidth: CGFloat = 0.40

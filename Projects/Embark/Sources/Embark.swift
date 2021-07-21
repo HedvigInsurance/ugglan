@@ -12,7 +12,7 @@ import hGraphQL
 public struct Embark {
 	@Inject var client: ApolloClient
 	let name: String
-	let menu: Menu?
+	public let menu: Menu?
 	let state = EmbarkState()
 
 	public func goBack() { state.goBack() }

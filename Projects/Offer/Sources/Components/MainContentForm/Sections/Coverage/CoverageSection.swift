@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 struct CoverageSection {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 }
 
 extension CoverageSection: Presentable {

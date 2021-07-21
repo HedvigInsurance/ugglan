@@ -11,180 +11,83 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct MovingFlow {
-	@Inject var client: ApolloClient
-}
-
-extension MovingFlow: Presentable {
-	struct Coordinator {
-		let viewController: UIViewController
-		let completion: (_ result: Result<Void>) -> Void
-
-		func presentFreeTextChat() -> Future<Void> {
-			viewController.present(
-				FreeTextChat().wrappedInCloseButton(),
-				style: .detented(.large),
-				configure: { chatViewController, _ in
-					chatViewController.navigationItem.hidesBackButton = true
-				}
-			)
-		}
-
-		func presentEmbark(name: String) -> (Embark, Embark.Result) {
-			let embark = Embark(
-				name: name
-			)
-
-			return (
-				embark,
-				viewController
-					.present(
-						embark,
-						options: [.autoPop]
-					)
-			)
-		}
-
-		func handleEmbarkRedirect(
-			_ embark: Embark,
-			_ redirect: ExternalRedirect
-		) -> FiniteSignal<
-			Void
-		> {
-			switch redirect {
+extension Embark {
+	static func makeJourney<OfferResultJourney: JourneyPresentation>(
+		_ embark: Embark,
+		@JourneyBuilder offerResultJourney: @escaping (_ result: OfferResult) -> OfferResultJourney
+	) -> some JourneyPresentation {
+		Journey(embark) { externalRedirect in
+			switch externalRedirect {
 			case .mailingList:
-				return FiniteSignal { callback in
-					callback(.end(GenericError.cancelled))
-					return NilDisposer()
-				}
-			case .close:
-				return FiniteSignal { callback in
-					callback(.end(GenericError.cancelled))
-					return NilDisposer()
-				}
+				ContinueJourney()
 			case .chat:
-				return FiniteSignal<Void> { callback in
-					return presentFreeTextChat()
-						.onValue { _ in
-
-						}
-						.disposable
-				}
+				Journey(FreeTextChat(), style: .detented(.large)).withDismissButton
+			case .close:
+				DismissJourney()
 			case let .offer(ids):
-				return self.presentOffer(ids: ids)
-					.atEnd {
-						embark.goBack()
-					}
-					.flatMapLatest { result -> FiniteSignal<Void> in
-						switch result {
-						case .close:
-							return FiniteSignal { callback in
-								callback(
-									.end(
-										GenericError
-											.cancelled
-									)
-								)
-								return NilDisposer()
-							}
-						case .signed:
-							return FiniteSignal { callback in
-								callback(.value(()))
-								return NilDisposer()
-							}
-						case .chat:
-							return FiniteSignal<Void> { callback in
-								return presentFreeTextChat()
-									.onValue { _ in
-
-									}
-									.disposable
-							}
-						}
-					}
-			}
-		}
-
-		func presentOffer(ids: [String]) -> Offer.Result {
-			viewController.present(
-				Offer(
-					offerIDContainer:
-						.exact(
-							ids:
-								ids,
-							shouldStore:
-								false
-						),
-					menu: nil,
-					options: [
-						.menuToTrailing
-					]
-				)
-			)
-		}
-
-		func handleEmbarkResult(_ embark: Embark, _ result: Embark.Result) -> Disposable {
-			result.onValueDisposePrevious { redirect in
-				self.handleEmbarkRedirect(
-					embark,
-					redirect
-				)
-				.atValue({ _ in
-					Toasts.shared
-						.displayToast(
-							toast:
-								Toast(
-									symbol:
-										.icon(
-											hCoreUIAssets
-												.circularCheckmark
-												.image
-										),
-									body:
-										L10n
-										.movingFlowSuccessToast
-								)
-						)
-
-					self.completion(.success)
-				})
-				.onError({ error in
-					if let genericError = error as? GenericError,
-						genericError == GenericError.cancelled
-					{
-						self.completion(.failure(error))
-					}
-				})
+				Journey(
+					Offer(
+						offerIDContainer:
+							.exact(
+								ids:
+									ids,
+								shouldStore:
+									false
+							),
+						menu: embark.menu,
+						options: [
+							.menuToTrailing
+						]
+					)
+				) { offerResult in
+					offerResultJourney(offerResult)
+				}
+				.onDismiss {
+					embark.goBack()
+				}
 			}
 		}
 	}
+}
 
-	public func materialize() -> (UIViewController, Future<Void>) {
-		let bag = DisposeBag()
-
-		let (viewController, routeSignal) = MovingFlowIntro().materialize()
-
-		return (
-			viewController,
-			Future { completion in
-				let coordinator = Coordinator(
-					viewController: viewController
-				) { result in
-					completion(result)
-				}
-
-				bag += routeSignal.atValue { route in
-					switch route {
+public struct MovingFlowJourney {
+	static var journey: some JourneyPresentation {
+		Journey(
+			MovingFlowIntro(),
+			style: .detented(.large),
+			options: [.defaults, .allowSwipeDismissAlways, .autoPop]
+		) { introRoute in
+			switch introRoute {
+			case .chat:
+				Journey(FreeTextChat()).withDismissButton
+			case let .embark(name):
+				Embark.makeJourney(Embark(name: name)) { offerResult in
+					switch offerResult {
 					case .chat:
-						coordinator.presentFreeTextChat().onResult(completion)
-					case let .embark(name):
-						let (embark, embarkResult) = coordinator.presentEmbark(name: name)
-						bag += coordinator.handleEmbarkResult(embark, embarkResult)
+						Journey(FreeTextChat(), style: .detented(.large), options: [.defaults])
+							.withDismissButton
+					case .close:
+						DismissJourney()
+					case .signed:
+						DismissJourney()
+							.onPresent {
+								Toasts.shared
+									.displayToast(
+										toast: Toast(
+											symbol: .icon(
+												hCoreUIAssets
+													.circularCheckmark
+													.image
+											),
+											body: L10n
+												.movingFlowSuccessToast
+										)
+									)
+							}
 					}
 				}
-
-				return bag
 			}
-		)
+		}
+		.withDismissButton
 	}
 }

@@ -70,9 +70,7 @@ extension ApplicationState {
 			return bag
 		case .loggedIn:
 			return window.present(
-				LoggedIn(),
-				options: [],
-				animated: animated
+				MainTabbedJourney.journey
 			)
 		}
 	}

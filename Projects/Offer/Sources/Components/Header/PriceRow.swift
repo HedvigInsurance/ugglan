@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 struct PriceRow {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 
 	enum Placement {
 		case header

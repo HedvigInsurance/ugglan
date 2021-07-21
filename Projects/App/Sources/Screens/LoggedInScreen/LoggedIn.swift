@@ -166,7 +166,7 @@ extension LoggedIn: Presentable {
 			.onValue { route in
 				switch route {
 				case .openMovingFlow:
-					bag += tabBarController.present(MovingFlow().wrappedInCloseButton())
+					tabBarController.present(MovingFlowJourney.journey)
 				}
 			}
 
@@ -214,11 +214,7 @@ extension LoggedIn: Presentable {
 
 extension Contracts {
 	public static func getSections() -> [HomeSection] {
-		guard Localization.Locale.currentLocale.market == .se else {
-			return []
-		}
-
-		return [
+		[
 			HomeSection(
 				title: L10n.HomeTab.editingSectionTitle,
 				style: .vertical,
@@ -228,10 +224,9 @@ extension Contracts {
 						icon: hCoreUIAssets.apartment.image,
 						handler: { viewController in
 							viewController.present(
-								MovingFlow().wrappedInCloseButton(),
-								style: .detented(.large),
-								options: [.defaults]
+								MovingFlowJourney.journey
 							)
+							return NilDisposer()
 						}
 					)
 				]

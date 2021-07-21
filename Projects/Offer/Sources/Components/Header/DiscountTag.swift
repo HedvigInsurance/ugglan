@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 struct DiscountTag {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 }
 
 extension DiscountTag: Presentable {

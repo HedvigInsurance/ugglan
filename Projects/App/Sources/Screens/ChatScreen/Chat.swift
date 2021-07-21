@@ -76,23 +76,14 @@ extension Chat: Presentable {
 									options: [.shouldPreserveState]
 								)
 							)
-							.onValue { offerResult in
-								switch offerResult {
-								case .chat:
-									viewController.present(
-										FreeTextChat().wrappedInCloseButton(),
-										style: .detented(.large)
+							.onValue { _ in
+
+								bag += UIApplication.shared.appDelegate
+									.appFlow.window.present(
+										PostOnboarding(),
+										options: [],
+										animated: true
 									)
-								case .close:
-									break
-								case .signed:
-									bag += UIApplication.shared.appDelegate
-										.appFlow.window.present(
-											PostOnboarding(),
-											options: [],
-											animated: true
-										)
-								}
 							}
 					}
 			case .dashboard:
