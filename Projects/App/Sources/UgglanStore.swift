@@ -6,7 +6,7 @@ import Presentation
 import hCore
 import hGraphQL
 
-public struct UgglanState: Codable {
+public struct UgglanState: Codable, EmptyInitable {
 	var selectedTabIndex = 0
 
 	public enum Feature: Codable {
@@ -15,22 +15,20 @@ public struct UgglanState: Codable {
 	}
 
 	var features: [Feature]? = nil
+    
+    public init() {}
 }
 
-public enum UgglanAction {
-	case setSelectedTabIndex(_ index: Int)
+public enum UgglanAction: Codable {
+	case setSelectedTabIndex(index: Int)
 	case fetchFeatures
-	case setFeatures(_ features: [UgglanState.Feature]?)
+	case setFeatures(features: [UgglanState.Feature]?)
 }
 
-public final class UgglanStore: Store {
+public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
 	@Inject var client: ApolloClient
 
-	public var providedSignal: ReadWriteSignal<UgglanState>
-	public var onAction = Callbacker<UgglanAction>()
-
-	public func effects(_ state: UgglanState, _ action: UgglanAction) -> Future<UgglanAction>? {
-
+	public override func effects(_ getState: () -> UgglanState, _ action: UgglanAction) -> Future<UgglanAction>? {
 		switch action {
 		case .fetchFeatures:
 			return
@@ -39,7 +37,14 @@ public final class UgglanStore: Store {
 					cachePolicy: .fetchIgnoringCacheData
 				)
 				.compactMap { $0.member.features }
-				.map { .setFeatures([UgglanState.Feature.referrals]) }
+                .map { features in
+                    .setFeatures(
+                        features: [
+                            features.contains(.referrals) ? .referrals : nil,
+                            features.contains(.keyGear) ? .keyGear : nil
+                        ].compactMap { $0 }
+                    )
+                }
 		default:
 			break
 		}
@@ -47,7 +52,7 @@ public final class UgglanStore: Store {
 		return nil
 	}
 
-	public func reduce(_ state: UgglanState, _ action: UgglanAction) -> UgglanState {
+	public override func reduce(_ state: UgglanState, _ action: UgglanAction) -> UgglanState {
 		var newState = state
 
 		switch action {
@@ -60,11 +65,5 @@ public final class UgglanStore: Store {
 		}
 
 		return newState
-	}
-
-	public init() {
-		self.providedSignal = ReadWriteSignal(
-			Self.restore() ?? UgglanState()
-		)
 	}
 }

@@ -24,8 +24,6 @@ class OldOfferState {
 
 	@ReadWriteState var hasSignedQuotes = false
 
-	let openChatCallbacker = Callbacker<Void>()
-
 	lazy var isLoadingSignal: ReadSignal<Bool> = {
 		return client.fetch(query: query).valueSignal.plain().map { _ in false }.delay(by: 0.5)
 			.readable(initial: true)

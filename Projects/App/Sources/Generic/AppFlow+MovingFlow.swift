@@ -20,6 +20,8 @@ extension Embark {
 			switch externalRedirect {
 			case .mailingList:
 				ContinueJourney()
+            case .chat:
+                Journey(FreeTextChat(), style: .detented(.large)).withDismissButton
 			case .close:
 				DismissJourney()
 			case let .offer(ids):

@@ -172,12 +172,12 @@ extension Offer: Presentable {
 			FiniteSignal { callback in
 				let store: OfferStore = self.get()
 
-				bag += store.map { $0.chatOpened }.filter(predicate: { $0 }).distinct()
+                bag += store.stateSignal.map { $0.chatOpened }.filter(predicate: { $0 }).distinct()
 					.onValue({ _ in
 						callback(.value(.signed))
 					})
 
-				bag += store.map { $0.chatOpened }.filter(predicate: { $0 }).distinct()
+                bag += store.stateSignal.map { $0.chatOpened }.filter(predicate: { $0 }).distinct()
 					.onValue { _ in
 						callback(.value(.chat))
 						store.send(.closeChat)
