@@ -343,7 +343,6 @@ extension DynamicSectionStyle {
 	) -> DynamicSectionStyle {
 		DynamicSectionStyle { _ -> SectionStyle in
 			let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
-
 			let headerAndFooterInset = UIEdgeInsets(top: 14, left: 0, bottom: 14, right: 0)
 
 			return Style(

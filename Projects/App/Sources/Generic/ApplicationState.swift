@@ -60,47 +60,12 @@ extension ApplicationState {
 		case .offer:
 			let bag = DisposeBag()
 
-			bag += window.present(
-				Offer(
-					offerIDContainer: .stored,
-					menu: Menu(
-						title: nil,
-						children: [
-							Menu(
-								title: nil,
-								children: [
-									MenuChild.appInformation,
-									MenuChild.appSettings,
-									MenuChild.login(onLogin: {
-										UIApplication.shared.appDelegate.appFlow
-											.presentLoggedIn()
-									}),
-								]
-							),
-							Menu(
-								title: nil,
-								children: [
-									MenuChild(
-										title: L10n.embarkRestartButton,
-										style: .destructive,
-										image: hCoreUIAssets.restart.image,
-										handler: { viewController in
-											preserveState(.onboarding)
-											bag +=
-												presentRootViewController(
-													window,
-													animated: true
-												)
-										}
-									)
-								]
-							),
-						]
-					)
-				),
-				options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)],
-				animated: animated
-			)
+			preserveState(.marketPicker)
+			bag +=
+				presentRootViewController(
+					window,
+					animated: true
+				)
 
 			return bag
 		case .loggedIn:

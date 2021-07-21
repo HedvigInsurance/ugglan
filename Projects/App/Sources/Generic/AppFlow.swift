@@ -130,6 +130,8 @@ struct EmbarkOnboardingFlow: Presentable {
 						break
 					case .close:
 						break
+					case .chat:
+						break
 					case let .offer(ids):
 						innerBag +=
 							viewController.present(
@@ -147,12 +149,26 @@ struct EmbarkOnboardingFlow: Presentable {
 									]
 								)
 							)
-							.atValue { _ in
-								viewController.present(
-									PostOnboarding(),
-									style: .detented(.large),
-									options: [.prefersNavigationBarHidden(true)]
-								)
+							.atValue { value in
+								switch value {
+								case .signed:
+									viewController.present(
+										PostOnboarding(),
+										options: [
+											.prefersNavigationBarHidden(
+												true
+											)
+										]
+									)
+								case .close:
+									break
+								case .chat:
+									viewController.present(
+										FreeTextChat().wrappedInCloseButton(),
+										style: .detented(.large),
+										options: [.defaults]
+									)
+								}
 							}
 							.onEnd {
 								embark.goBack()

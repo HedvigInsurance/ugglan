@@ -55,12 +55,13 @@ extension EmbarkMessages: Viewable {
 	func replacePlaceholdersForMultiAction(message: String, values: [MultiActionStoreable]) -> String {
 		if let stringResults = getPlaceHolders(message: message) {
 			var replacedMessage = message
-			stringResults.forEach { _ in
-				let key = message.replacingOccurrences(
+			stringResults.forEach { placeholder in
+				let key = placeholder.replacingOccurrences(
 					of: "[\\{\\}]",
 					with: "",
 					options: [.regularExpression]
 				)
+
 				let result = values.first(where: { $0.componentKey == key })?.inputValue
 				replacedMessage = replacedMessage.replacingOccurrences(of: message, with: result ?? key)
 			}

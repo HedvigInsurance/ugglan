@@ -344,6 +344,46 @@ extension ContractInformation: Presentable {
 
 		let form = FormView()
 
+		let upcomingAgreementSection = form.appendSection(
+			header: nil,
+			footer: nil,
+			style: .brandGroupedInset(separatorType: .none, appliesShadow: false)
+		)
+
+		if contract.hasUpcomingAgreementChange {
+			let date = contract.upcomingAgreementDate ?? ""
+			let address = contract.upcomingAgreementAddress ?? ""
+
+			let card = Card(
+				titleIcon: hCoreUIAssets.apartment.image,
+				title: L10n.InsuranceDetails.updateDetailsSheetTitle,
+				body: L10n.InsuranceDetails.addressUpdateBody(date, address),
+				buttonText: L10n.InsuranceDetails.addressUpdateButton,
+				backgroundColor: .tint(.lavenderTwo),
+				buttonType: .outline(
+					borderColor: .brand(.primaryText()),
+					textColor: .brand(.primaryText())
+				)
+			)
+			bag += upcomingAgreementSection.append(card)
+				.onValueDisposePrevious { _ in
+					let innerBag = DisposeBag()
+
+					let upcomingAddressChangeDetails = UpcomingAddressChangeDetails(
+						details: contract.upcomingAgreementDetailsTable.fragments
+							.detailsTableFragment
+					)
+					innerBag += viewController.present(
+						upcomingAddressChangeDetails.withCloseButton,
+						style: .detented(.scrollViewContentSize(20), .large)
+					)
+
+					return innerBag
+				}
+
+			bag += form.append(Spacing(height: 20))
+		}
+
 		if let (swedishApartmentBag, swedishApartmentContent) = swedishApartment() {
 			bag += swedishApartmentBag
 			swedishApartmentContent.forEach { content in
@@ -418,41 +458,77 @@ extension ContractInformation: Presentable {
 
 		let section = form.appendSection()
 
-		let changeAddressButton = ButtonRowViewWrapper(
-			title: L10n.HomeTab.editingSectionChangeAddressLabel,
-			type: .standardOutlineIcon(
-				borderColor: .black,
-				textColor: .black,
-				icon: .left(image: hCoreUIAssets.apartment.image, width: 32)
-			),
-			isEnabled: true,
-			animate: false
-		)
-		bag += section.append(changeAddressButton)
-
-		bag += changeAddressButton.onTapSignal.map { true }.bindTo(state.goToMovingFlowSignal)
-
-		let changeButton = ButtonSection(text: L10n.contractDetailHomeChangeInfo, style: .normal)
-		bag += form.append(changeButton)
-
-		bag += changeButton.onSelect.onValue {
-			let alert = Alert<Bool>(
-				title: L10n.myHomeChangeAlertTitle,
-				message: L10n.myHomeChangeAlertMessage,
-				actions: [
-					Alert.Action(title: L10n.myHomeChangeAlertActionCancel) { false },
-					Alert.Action(title: L10n.myHomeChangeAlertActionConfirm) { true },
-				]
+		if Localization.Locale.currentLocale.market == .se {
+			let changeAddressButton = ButtonRowViewWrapper(
+				title: L10n.HomeTab.editingSectionChangeAddressLabel,
+				type: .standardOutline(
+					borderColor: .brand(.primaryText()),
+					textColor: .brand(.primaryText())
+				),
+				isEnabled: true,
+				animate: false
 			)
+			bag += section.append(changeAddressButton)
 
-			viewController.present(alert)
-				.onValue { shouldContinue in
-					if shouldContinue { Contracts.openFreeTextChatHandler(viewController) }
-				}
+			bag += changeAddressButton.onTapSignal.map { true }.bindTo(state.goToMovingFlowSignal)
+		} else {
+			let changeButton = ButtonSection(text: L10n.contractDetailHomeChangeInfo, style: .normal)
+			bag += form.append(changeButton)
+
+			bag += changeButton.onSelect.onValue {
+				let alert = Alert<Bool>(
+					title: L10n.myHomeChangeAlertTitle,
+					message: L10n.myHomeChangeAlertMessage,
+					actions: [
+						Alert.Action(title: L10n.myHomeChangeAlertActionCancel) { false },
+						Alert.Action(title: L10n.myHomeChangeAlertActionConfirm) { true },
+					]
+				)
+
+				viewController.present(alert)
+					.onValue { shouldContinue in
+						if shouldContinue { Contracts.openFreeTextChatHandler(viewController) }
+					}
+			}
 		}
 
 		bag += viewController.install(form, options: [])
 
 		return (viewController, bag)
+	}
+}
+
+extension GraphQL.ContractsQuery.Data.Contract {
+	var hasUpcomingAgreementChange: Bool {
+		return status.asActiveStatus?.upcomingAgreementChange != nil
+	}
+
+	var upcomingAgreementDate: String? {
+		let agreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
+			.upcomingAgreementChangeFragment.newAgreement
+		let dateString =
+			agreement?.asSwedishApartmentAgreement?.activeFrom
+			?? agreement?.asSwedishHouseAgreement?.activeFrom
+			?? agreement?.asDanishHomeContentAgreement?.activeFrom
+			?? agreement?.asNorwegianHomeContentAgreement?.activeFrom
+
+		return dateString
+	}
+
+	var upcomingAgreementAddress: String? {
+		let upcomingAgreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
+			.upcomingAgreementChangeFragment.newAgreement
+
+		if let address = upcomingAgreement?.asSwedishHouseAgreement?.address.street {
+			return address
+		} else if let address = upcomingAgreement?.asSwedishApartmentAgreement?.address.street {
+			return address
+		} else if let address = upcomingAgreement?.asNorwegianHomeContentAgreement?.address.street {
+			return address
+		} else if let address = upcomingAgreement?.asDanishHomeContentAgreement?.address.street {
+			return address
+		} else {
+			return nil
+		}
 	}
 }

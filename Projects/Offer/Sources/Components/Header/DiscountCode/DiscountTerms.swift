@@ -22,29 +22,6 @@ extension DiscountTerms: Viewable {
 
 		containerStackView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
-		#warning("Check link - directs to Hedvig.com's 404")
-		let termsAndConditionsString = L10n.referralAddcouponTcLink
-		let textStyle = TextStyle.brand(.footnote(color: .secondary)).leftAligned
-
-		let termsLabelText = L10n.referralAddcouponTc(termsAndConditionsString)
-			.attributedStringWithVariableStyles(
-				[termsAndConditionsString: textStyle.colored(.tint(.lavenderOne))],
-				fallbackStyle: textStyle
-			)
-
-		let label = UILabel()
-		label.isUserInteractionEnabled = false
-		label.numberOfLines = 0
-		label.lineBreakMode = .byWordWrapping
-		label.attributedText = termsLabelText
-
-		bag += label.didLayoutSignal.onValue { label.preferredMaxLayoutWidth = label.frame.size.width }
-
-		label.setNeedsLayout()
-		label.layoutIfNeeded()
-
-		containerStackView.addArrangedSubview(label)
-
 		return (view, bag)
 	}
 }

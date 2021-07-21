@@ -36,7 +36,7 @@ extension SignSection: Presentable {
 					.onValue { viewController in
 						viewController.present(
 							SwedishBankIdSign(),
-							style: .detented(.medium),
+							style: .detented(.preferredContentSize),
 							options: [
 								.defaults, .prefersLargeTitles(true),
 								.largeTitleDisplayMode(.always),

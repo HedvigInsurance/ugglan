@@ -42,7 +42,7 @@ extension BankIDLoginSweden {
 extension BankIDLoginSweden: Presentable {
 	func materialize() -> (UIViewController, Future<Void>) {
 		let viewController = UIViewController()
-		viewController.preferredPresentationStyle = .detented(.medium, .large)
+		viewController.preferredPresentationStyle = .detented(.large)
 		let bag = DisposeBag()
 
 		let view = UIView()
@@ -97,11 +97,27 @@ extension BankIDLoginSweden: Presentable {
 		var statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .brand(.headline(color: .primary)))
 		bag += containerView.addArranged(statusLabel)
 
+		let bankIDOnAnotherDeviceContainer = UIStackView()
+		containerView.addArrangedSubview(bankIDOnAnotherDeviceContainer)
+
+		let bankIDOnAnotherDeviceButton = Button(
+			title: L10n.bankidOnAnotherDevice,
+			type: .standardOutline(borderColor: .brand(.primaryText()), textColor: .brand(.primaryText()))
+		)
+		bag += bankIDOnAnotherDeviceContainer.addArranged(bankIDOnAnotherDeviceButton)
+
+		bag += bankIDOnAnotherDeviceButton.onTapSignal.onValue({ _ in
+			viewController.present(BankIDLoginQR())
+		})
+
 		let closeButtonContainer = UIStackView()
 		closeButtonContainer.animationSafeIsHidden = true
 		containerView.addArrangedSubview(closeButtonContainer)
 
-		let closeButton = Button(title: "Stäng", type: .standard(backgroundColor: .purple, textColor: .white))
+		let closeButton = Button(
+			title: L10n.generalCloseButton,
+			type: .standard(backgroundColor: .purple, textColor: .white)
+		)
 		bag += closeButtonContainer.addArranged(closeButton)
 
 		let statusSignal =

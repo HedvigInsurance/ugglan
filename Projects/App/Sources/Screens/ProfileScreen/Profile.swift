@@ -28,11 +28,14 @@ extension Profile: Presentable {
 		let settingsSection = SettingsSection(presentingViewController: viewController)
 		bag += form.append(settingsSection)
 
+		form.appendSpacing(.custom(20))
+
 		let query = GraphQL.ProfileQuery()
 
 		bag += client.watch(query: query).bindTo(profileSection.dataSignal)
 
-		bag += viewController.install(form) { scrollView in let refreshControl = UIRefreshControl()
+		bag += viewController.install(form) { scrollView in
+			let refreshControl = UIRefreshControl()
 			bag += self.client.refetchOnRefresh(query: query, refreshControl: refreshControl)
 
 			scrollView.refreshControl = refreshControl

@@ -150,6 +150,10 @@ extension SwedishBankIdSign: Presentable {
 		var statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .brand(.headline(color: .primary)))
 		bag += containerView.addArranged(statusLabel)
 
+		bag += containerStackView.didLayoutSignal.onValue { _ in
+			viewController.preferredContentSize = containerStackView.systemLayoutSizeFitting(.zero)
+		}
+
 		return (
 			viewController,
 			Future { completion in

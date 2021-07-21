@@ -1,4 +1,4 @@
-TMPDIR=/tmp
+TMPDIR=/tmp/swiftgen-6.4.0
 
 mkdir Projects/hCoreUI/Sources/Derived
 mkdir Projects/App/Sources/Derived
@@ -9,14 +9,16 @@ mkdir Projects/Home/Sources/Derived
 mkdir Projects/Market/Sources/Derived
 mkdir Projects/Offer/Sources/Derived
 
-if [[ -f $TMPDIR/swiftgen/bin/swiftgen ]]
+if [[ -f $TMPDIR/bin/swiftgen ]]
 then
-    $TMPDIR/swiftgen/bin/swiftgen
+    $TMPDIR/bin/swiftgen
     exit 0
 fi
 
-curl -o $TMPDIR/swiftgen.zip -L https://github.com/SwiftGen/SwiftGen/releases/download/6.1.0/swiftgen-6.1.0.zip
+mkdir $TMPDIR
 
-unzip $TMPDIR/swiftgen.zip -d $TMPDIR/swiftgen
+curl -o $TMPDIR/swiftgen.zip -L https://github.com/SwiftGen/SwiftGen/releases/download/6.4.0/swiftgen-6.4.0.zip
 
-$TMPDIR/swiftgen/bin/swiftgen
+unzip $TMPDIR/swiftgen.zip -d $TMPDIR
+
+$TMPDIR/bin/swiftgen
