@@ -35,8 +35,8 @@ extension EmbarkAddressAutocomplete: Presentable {
 		let bag = DisposeBag()
 
 		let view = UIView()
-        view.backgroundColor = .brand(.primaryBackground())
-        viewController.view = view
+		view.backgroundColor = .brand(.primaryBackground())
+		viewController.view = view
 		//view.axis = .vertical
 		//view.distribution = .equalSpacing
 		//view.alignment = .top
@@ -79,8 +79,8 @@ extension EmbarkAddressAutocomplete: Presentable {
 		}
 
 		bag += setIsFirstResponderSignal.bindTo(addressInput.setIsFirstResponderSignal)
-        
-        /*let scrollView = UIScrollView()
+
+		/*let scrollView = UIScrollView()
         let form = FormView()
         scrollView.embedView(form, scrollAxis: .vertical)
         view.addSubview(scrollView)
@@ -88,7 +88,7 @@ extension EmbarkAddressAutocomplete: Presentable {
             make.top.equalTo(headerBackground.snp.bottom)
             make.bottom.trailing.leading.equalToSuperview()
         }
-        
+
 
         let section = form.appendSection(header: nil, footer: nil)
 
@@ -104,16 +104,19 @@ extension EmbarkAddressAutocomplete: Presentable {
                 }
                 return innerBag
             }*/
-        let tableKit = TableKit<EmptySection, Either<AddressRow, AddressNotFoundRow>>(style: .default, holdIn: bag)
-        
+		let tableKit = TableKit<EmptySection, Either<AddressRow, AddressNotFoundRow>>(
+			style: .default,
+			holdIn: bag
+		)
+
 		bag += tableKit.delegate.heightForCell.set { index -> CGFloat in
-            switch tableKit.table[index] {
-            case .left(let addressRow):
-                return addressRow.cellHeight
-            case.right(let notFoundROw):
-                return notFoundROw.cellHeight
-            }
-        }
+			switch tableKit.table[index] {
+			case .left(let addressRow):
+				return addressRow.cellHeight
+			case .right(let notFoundROw):
+				return notFoundROw.cellHeight
+			}
+		}
 
 		view.addSubview(tableKit.view)
 		tableKit.view.backgroundColor = .brand(.primaryBackground())
@@ -121,37 +124,43 @@ extension EmbarkAddressAutocomplete: Presentable {
 			make.top.equalTo(headerBackground.snp.bottom)
 			make.bottom.trailing.leading.equalToSuperview()
 		}
-        
-        bag += addressInput.textSignal.filter { $0 != "" }.mapLatestToFuture { text in
-            addressState.getSuggestions(searchTerm: text, suggestion: addressState.pickedSuggestionSignal.value)
-        }
-        .onValue { suggestions in
-            var rows: [Either<AddressRow, AddressNotFoundRow>] = suggestions.map { .make(AddressRow(suggestion: $0)) }
-            rows.append(.make(AddressNotFoundRow()))
-            var table = Table(rows: rows)
-            table.removeEmptySections()
-            tableKit.set(table, animation: .fade)
-        }
-        
-        bag += tableKit.delegate.didSelectRow.onValue { row in
-            switch row {
-            case .left(let addressRow):
-                // did select suggestion
-                let suggestion = addressRow.suggestion
-                addressState.pickedSuggestionSignal.value = suggestion
-                addressInput.textSignal.value = addressState.formatAddressLine(from: suggestion)
-                print(suggestion.address)
-            case .right(let notFoundRow):
-                // did select cannot find address
-                ()
-            }
-        }
-        
-        bag += addressState.pickedSuggestionSignal.onValue { suggestion in
-            
-        }
-        
-        /*bag += addressInput.textSignal.filter { $0 != "" }.mapLatestToFuture { text in
+
+		bag += addressInput.textSignal.filter { $0 != "" }
+			.mapLatestToFuture { text in
+				addressState.getSuggestions(
+					searchTerm: text,
+					suggestion: addressState.pickedSuggestionSignal.value
+				)
+			}
+			.onValue { suggestions in
+				var rows: [Either<AddressRow, AddressNotFoundRow>] = suggestions.map {
+					.make(AddressRow(suggestion: $0))
+				}
+				rows.append(.make(AddressNotFoundRow()))
+				var table = Table(rows: rows)
+				table.removeEmptySections()
+				tableKit.set(table, animation: .fade)
+			}
+
+		bag += tableKit.delegate.didSelectRow.onValue { row in
+			switch row {
+			case .left(let addressRow):
+				// did select suggestion
+				let suggestion = addressRow.suggestion
+				addressState.pickedSuggestionSignal.value = suggestion
+				addressInput.textSignal.value = addressState.formatAddressLine(from: suggestion)
+				print(suggestion.address)
+			case .right(let notFoundRow):
+				// did select cannot find address
+				()
+			}
+		}
+
+		bag += addressState.pickedSuggestionSignal.onValue { suggestion in
+
+		}
+
+		/*bag += addressInput.textSignal.filter { $0 != "" }.mapLatestToFuture { text in
             addressState.getSuggestions(searchTerm: text, suggestion: addressState.pickedSuggestionSignal.value)
         }
         .onValueDisposePrevious { addressSuggestions -> Disposable? in
@@ -161,7 +170,7 @@ extension EmbarkAddressAutocomplete: Presentable {
                 let row = KeyValueRow()
                 row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
                 row.keySignal.value = address.address
-                
+
                 return section.append(row)
             }
             return innerBag
