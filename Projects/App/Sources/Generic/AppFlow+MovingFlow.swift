@@ -188,8 +188,7 @@ extension MovingFlow: Presentable {
 				bag += routeSignal.atValue { route in
 					switch route {
 					case .chat:
-						//						coordinator.presentFreeTextChat().onResult(completion)
-						bag += coordinator.presentFinalScreen(didSucceed: true)
+						coordinator.presentFreeTextChat().onResult(completion)
 					case let .embark(name):
 						let (embark, embarkResult) = coordinator.presentEmbark(name: name)
 						bag += coordinator.handleEmbarkResult(embark, embarkResult)
