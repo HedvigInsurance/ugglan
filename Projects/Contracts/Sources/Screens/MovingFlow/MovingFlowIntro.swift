@@ -136,7 +136,7 @@ extension MovingFlowIntro: Presentable {
 			)
 			.onValue { data in
 				if let contract = data.contracts.first(where: {
-                    $0.status.asActiveStatus?.upcomingAgreementChange != nil
+					$0.status.asActiveStatus?.upcomingAgreementChange != nil
 				}) {
 					$section.value = .existing(contract.upcomingAgreementDetailsTable)
 				} else {

@@ -76,8 +76,8 @@ extension MovingFlow: Presentable {
 						embark.goBack()
 					}
 					.flatMapLatest { result -> FiniteSignal<Void> in
-                        let didSucceed = result == .signed
-                        
+						let didSucceed = result == .signed
+
 						switch result {
 						case .close:
 							return FiniteSignal { callback in
@@ -89,8 +89,8 @@ extension MovingFlow: Presentable {
 								)
 								return NilDisposer()
 							}
-                        case .signed, .chat:
-                           return presentFinalScreen(didSucceed: didSucceed)
+						case .signed, .chat:
+							return presentFinalScreen(didSucceed: didSucceed)
 						}
 					}
 			}
@@ -113,18 +113,19 @@ extension MovingFlow: Presentable {
 				)
 			)
 		}
-        
-        func presentFinalScreen(didSucceed: Bool) -> FiniteSignal<Void> {
-            let value = didSucceed ? MovingFlowResultValue.signed : MovingFlowResultValue.chat
-            return viewController.present(MovingFlowResult(result: value)).flatMapLatest { route -> FiniteSignal<Void>  in
-                switch route {
-                case .chat:
-                    return presentFreeTextChat().valueSignal
-                case .embark:
-                    return FiniteSignal { _ in NilDisposer() }
-                }
-            }
-        }
+
+		func presentFinalScreen(didSucceed: Bool) -> FiniteSignal<Void> {
+			let value = didSucceed ? MovingFlowResultValue.signed : MovingFlowResultValue.chat
+			return viewController.present(MovingFlowResult(result: value))
+				.flatMapLatest { route -> FiniteSignal<Void> in
+					switch route {
+					case .chat:
+						return presentFreeTextChat().valueSignal
+					case .embark:
+						return FiniteSignal { _ in NilDisposer() }
+					}
+				}
+		}
 
 		func handleEmbarkResult(_ embark: Embark, _ result: Embark.Result) -> Disposable {
 			result.onValueDisposePrevious { redirect in
