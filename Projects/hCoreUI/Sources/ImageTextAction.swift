@@ -97,12 +97,12 @@ extension ImageTextAction: Viewable {
 		headerImageView.contentMode = .scaleAspectFit
 		headerImageView.tintColor = .brand(.primaryTintColor)
 
-        if let size = image.size {
-            headerImageView.snp.makeConstraints { make in
-                make.height.equalTo(size.height)
-                make.width.equalTo(size.width)
-            }
-        }
+		if let size = image.size {
+			headerImageView.snp.makeConstraints { make in
+				make.height.equalTo(size.height)
+				make.width.equalTo(size.width)
+			}
+		}
 
 		headerImageContainer.addArrangedSubview(headerImageView)
 		view.addArrangedSubview(headerImageContainer)
