@@ -28,10 +28,10 @@ struct EmbarkAddressAutocomplete: AddressTransitionable {
 	}
 }
 
-fileprivate func ignoreNBSP(lhs: String, rhs: String) -> Bool {
-    let cleanedLhs = lhs.replacingOccurrences(of: "\u{00a0}", with: " ")
-    let cleanedRhs = rhs.replacingOccurrences(of: "\u{00a0}", with: " ")
-    return cleanedLhs == cleanedRhs
+private func ignoreNBSP(lhs: String, rhs: String) -> Bool {
+	let cleanedLhs = lhs.replacingOccurrences(of: "\u{00a0}", with: " ")
+	let cleanedRhs = rhs.replacingOccurrences(of: "\u{00a0}", with: " ")
+	return cleanedLhs == cleanedRhs
 }
 
 extension EmbarkAddressAutocomplete: Presentable {
@@ -131,36 +131,50 @@ extension EmbarkAddressAutocomplete: Presentable {
 			make.bottom.trailing.leading.equalToSuperview()
 		}
 
-        bag += textSignal
-            .filter { $0 != "" }
-            .distinct(ignoreNBSP)
+		bag +=
+			textSignal
+			.filter { $0 != "" }
+			.distinct(ignoreNBSP)
 			.mapLatestToFuture { text in
 				addressState.getSuggestions(
 					searchTerm: text,
-                    suggestion: addressState.pickedSuggestionSignal.value
+					suggestion: addressState.pickedSuggestionSignal.value
 				)
 			}
 			.onValue { suggestions in
 				var rows: [Either<AddressRow, AddressNotFoundRow>] = suggestions.map {
-                    .make(AddressRow(suggestion: $0, addressLine: addressState.formatAddressLine(from: $0), postalLine: addressState.formatPostalLine(from: $0)))
+					.make(
+						AddressRow(
+							suggestion: $0,
+							addressLine: addressState.formatAddressLine(from: $0),
+							postalLine: addressState.formatPostalLine(from: $0)
+						)
+					)
 				}
 				rows.append(.make(AddressNotFoundRow()))
 				var table = Table(rows: rows)
 				table.removeEmptySections()
 				tableKit.set(table, animation: .fade)
 			}
-        
-        bag += addressState.pickedSuggestionSignal.compactMap{ $0 }.map {addressState.formatAddressLine(from: $0)}.onValue { text in
-            addressInput.text = text
-        }
+
+		bag += addressState.pickedSuggestionSignal.compactMap { $0 }
+			.map { addressState.formatAddressLine(from: $0) }
+			.onValue { text in
+				addressInput.text = text
+			}
 
 		bag += tableKit.delegate.didSelectRow.onValueDisposePrevious { row -> Disposable? in
-            let innerBag = DisposeBag()
+			let innerBag = DisposeBag()
 			switch row {
 			case .left(let addressRow):
 				// did select suggestion
 				let suggestion = addressRow.suggestion
-                innerBag += addressState.confirm(suggestion, withPreviousSuggestion: addressState.pickedSuggestionSignal.value).valueSignal.compactMap { $0 }.bindTo(addressState.confirmedSuggestionSignal)
+				innerBag +=
+					addressState.confirm(
+						suggestion,
+						withPreviousSuggestion: addressState.pickedSuggestionSignal.value
+					)
+					.valueSignal.compactMap { $0 }.bindTo(addressState.confirmedSuggestionSignal)
 				addressState.pickedSuggestionSignal.value = suggestion
 				//addressInput.textSignal.value = addressState.formatAddressLine(from: suggestion)
 				print(suggestion.address)
@@ -168,7 +182,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 				// did select cannot find address
 				()
 			}
-            return innerBag
+			return innerBag
 		}
 
 		bag += addressState.pickedSuggestionSignal.onValue { suggestion in
