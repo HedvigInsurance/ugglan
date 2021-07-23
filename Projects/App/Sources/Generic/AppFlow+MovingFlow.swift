@@ -89,8 +89,16 @@ extension MovingFlow: Presentable {
 								)
 								return NilDisposer()
 							}
-						case .signed, .chat:
+						case .signed:
 							return presentFinalScreen(didSucceed: didSucceed)
+                        case .chat:
+                            return FiniteSignal<Void> { callback in
+                                return presentFreeTextChat()
+                                    .onValue { _ in
+
+                                    }
+                                    .disposable
+                            }
 						}
 					}
 			}

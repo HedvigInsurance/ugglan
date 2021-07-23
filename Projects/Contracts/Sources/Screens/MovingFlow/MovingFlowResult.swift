@@ -27,98 +27,34 @@ extension MovingFlowResult: Presentable {
 	public func materialize() -> (UIViewController, FiniteSignal<MovingFlowRoute>) {
 		let viewController = UIViewController()
 		let bag = DisposeBag()
-
-		let scrollView = FormScrollView()
-
-		let form = FormView()
-
-		form.appendSpacing(.top)
-
-		let titleLabel = MultilineLabel(
-			value: result.title,
-			style: .brand(.title2(color: .primary)).aligned(to: .center)
-		)
-		let descriptionLabel = MultilineLabel(
-			value: result.description,
-			style: .brand(.body(color: .secondary)).aligned(to: .center)
-		)
-
-		let imageView = UIImageView()
-		imageView.image = result.image
-		imageView.contentMode = .scaleAspectFit
-		imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
-
-		form.append(imageView)
-		form.appendSpacing(.inbetween)
-		bag += form.append(titleLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
-		form.appendSpacing(.inbetween)
-		bag += form.append(descriptionLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
-
-		let buttonStack = UIStackView()
-		buttonStack.edgeInsets = .init(
-			top: 0,
-			left: 16,
-			bottom: 16 + viewController.view.safeAreaInsets.bottom,
-			right: 16
-		)
-		bag += buttonStack.addArranged(result.button)
-
-		bag += viewController.install(form, scrollView: scrollView)
-
-		let buttonContainer = UIStackView()
-		buttonContainer.isLayoutMarginsRelativeArrangement = true
-		scrollView.addSubview(buttonContainer)
-
-		buttonContainer.snp.makeConstraints { make in
-			make.bottom.equalTo(
-				scrollView.frameLayoutGuide.snp.bottom
-			)
-			make.trailing.leading.equalToSuperview()
-		}
-
-		bag += buttonContainer.didLayoutSignal.onValue { _ in
-			buttonContainer.layoutMargins = UIEdgeInsets(
-				top: 0,
-				left: 15,
-				bottom: scrollView.safeAreaInsets.bottom == 0
-					? 15 : scrollView.safeAreaInsets.bottom,
-				right: 15
-			)
-
-			let size = buttonContainer.systemLayoutSizeFitting(
-				.zero
-			)
-			scrollView.contentInset = UIEdgeInsets(
-				top: 0,
-				left: 0,
-				bottom: size.height,
-				right: 0
-			)
-			scrollView.scrollIndicatorInsets = UIEdgeInsets(
-				top: 0,
-				left: 0,
-				bottom: size.height,
-				right: 0
-			)
-		}
+        
+        func image() -> ImageWithOptions {
+            return .init(image: result.image, size: nil, contentMode: .scaleAspectFit)
+        }
 
 		return (
 			viewController,
 			FiniteSignal { callbacker in
-
-				bag += buttonContainer.addArranged(result.button) { control in
-					bag += control.signal(for: .touchUpInside)
-						.onValue {
-							switch result {
-							case .signed:
-								callbacker(.end)
-							case .chat:
-								callbacker(.value(.chat))
-							}
-						}
-				}
-
-				return bag
+                
+                let imageTextAction = ImageTextAction(image: image(), title: result.title, body: result.description, actions: [(result, result.button)], showLogo: false)
+                
+                bag += viewController.view.add(imageTextAction) { view in
+                    view.snp.makeConstraints { make in
+                        make.edges.equalToSuperview()
+                    }
+                    
+                
+                    
+                }.onValue { button in
+                    switch button {
+                    case .signed:
+                        callbacker(.end)
+                    case .chat:
+                        callbacker(.value(.chat))
+                    }
+                }
+                
+                return bag
 			}
 		)
 	}
@@ -168,7 +104,7 @@ extension MovingFlowResultValue {
 				title: L10n.MovingConfirmation.Success.buttonText,
 				type: .standardOutline(
 					borderColor: .brand(.primaryBorderColor),
-					textColor: .brand(.secondaryButtonTextColor)
+					textColor: .brand(.primaryButtonTextColor)
 				)
 			)
 		}
