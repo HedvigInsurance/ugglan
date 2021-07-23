@@ -27,34 +27,40 @@ extension MovingFlowResult: Presentable {
 	public func materialize() -> (UIViewController, FiniteSignal<MovingFlowRoute>) {
 		let viewController = UIViewController()
 		let bag = DisposeBag()
-        
-        func image() -> ImageWithOptions {
-            return .init(image: result.image, size: nil, contentMode: .scaleAspectFit)
-        }
+
+		func image() -> ImageWithOptions {
+			return .init(image: result.image, size: nil, contentMode: .scaleAspectFit)
+		}
 
 		return (
 			viewController,
 			FiniteSignal { callbacker in
-                
-                let imageTextAction = ImageTextAction(image: image(), title: result.title, body: result.description, actions: [(result, result.button)], showLogo: false)
-                
-                bag += viewController.view.add(imageTextAction) { view in
-                    view.snp.makeConstraints { make in
-                        make.edges.equalToSuperview()
-                    }
-                    
-                
-                    
-                }.onValue { button in
-                    switch button {
-                    case .signed:
-                        callbacker(.end)
-                    case .chat:
-                        callbacker(.value(.chat))
-                    }
-                }
-                
-                return bag
+
+				let imageTextAction = ImageTextAction(
+					image: image(),
+					title: result.title,
+					body: result.description,
+					actions: [(result, result.button)],
+					showLogo: false
+				)
+
+				bag += viewController.view
+					.add(imageTextAction) { view in
+						view.snp.makeConstraints { make in
+							make.edges.equalToSuperview()
+						}
+
+					}
+					.onValue { button in
+						switch button {
+						case .signed:
+							callbacker(.end)
+						case .chat:
+							callbacker(.value(.chat))
+						}
+					}
+
+				return bag
 			}
 		)
 	}

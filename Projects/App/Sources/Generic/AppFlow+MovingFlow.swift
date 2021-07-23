@@ -91,14 +91,14 @@ extension MovingFlow: Presentable {
 							}
 						case .signed:
 							return presentFinalScreen(didSucceed: didSucceed)
-                        case .chat:
-                            return FiniteSignal<Void> { callback in
-                                return presentFreeTextChat()
-                                    .onValue { _ in
+						case .chat:
+							return FiniteSignal<Void> { callback in
+								return presentFreeTextChat()
+									.onValue { _ in
 
-                                    }
-                                    .disposable
-                            }
+									}
+									.disposable
+							}
 						}
 					}
 			}
@@ -188,7 +188,8 @@ extension MovingFlow: Presentable {
 				bag += routeSignal.atValue { route in
 					switch route {
 					case .chat:
-						coordinator.presentFreeTextChat().onResult(completion)
+						//						coordinator.presentFreeTextChat().onResult(completion)
+						bag += coordinator.presentFinalScreen(didSucceed: true)
 					case let .embark(name):
 						let (embark, embarkResult) = coordinator.presentEmbark(name: name)
 						bag += coordinator.handleEmbarkResult(embark, embarkResult)
