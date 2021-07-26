@@ -20,30 +20,33 @@ extension JourneyPresentation {
 				}
 		}
 	}
-    
-    /// Makes a tab active when store emits an action and true is returned in closure
-    func makeTabSelected<S: Store>(
-        _ storeType: S.Type,
-        _ when: @escaping (_ action: S.Action) -> Bool
-    ) -> Self {
-        onAction(storeType) { action, presenter in
-            guard let tabBarController = presenter.viewController.tabBarController else {
-                return
-            }
-            
-            if when(action), let presenterIndex = tabBarController.viewControllers?.firstIndex(of: presenter.viewController) {
-                tabBarController.selectedIndex = presenterIndex
-            }
-        }
-    }
+
+	/// Makes a tab active when store emits an action and true is returned in closure
+	func makeTabSelected<S: Store>(
+		_ storeType: S.Type,
+		_ when: @escaping (_ action: S.Action) -> Bool
+	) -> Self {
+		onAction(storeType) { action, presenter in
+			guard let tabBarController = presenter.viewController.tabBarController else {
+				return
+			}
+
+			if when(action),
+				let presenterIndex = tabBarController.viewControllers?
+					.firstIndex(of: presenter.viewController)
+			{
+				tabBarController.selectedIndex = presenterIndex
+			}
+		}
+	}
 }
 
 extension JourneyPresentation where P: Tabable {
-    var configureTabBarItem: Self {
-        addConfiguration { presenter in
-            presenter.viewController.tabBarItem = self.presentable.tabBarItem()
-        }
-    }
+	var configureTabBarItem: Self {
+		addConfiguration { presenter in
+			presenter.viewController.tabBarItem = self.presentable.tabBarItem()
+		}
+	}
 }
 
 struct Loader: Presentable {

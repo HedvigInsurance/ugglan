@@ -97,7 +97,7 @@ extension PostOnboarding: Presentable {
 
 		func presentLoggedIn() {
 			let appDelegate = UIApplication.shared.appDelegate
-            appDelegate.bag += appDelegate.appFlow.window.present(MainTabbedJourney.journey)
+			appDelegate.bag += appDelegate.appFlow.window.present(MainTabbedJourney.journey)
 		}
 
 		bag += client.isSwitchingInsurance.onValue { isSwitching in

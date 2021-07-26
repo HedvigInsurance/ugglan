@@ -19,19 +19,19 @@ public enum OfferAction: ActionProtocol {
 	case closeChat
 	case query
 
-    #if compiler(<5.5)
-    public func encode(to encoder: Encoder) throws {
-        #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-        fatalError()
-    }
+	#if compiler(<5.5)
+		public func encode(to encoder: Encoder) throws {
+			#warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
+			fatalError()
+		}
 
-    public init(
-        from decoder: Decoder
-    ) throws {
-        #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-        fatalError()
-    }
-    #endif
+		public init(
+			from decoder: Decoder
+		) throws {
+			#warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
+			fatalError()
+		}
+	#endif
 }
 
 public final class OfferStore: StateStore<OfferState, OfferAction> {

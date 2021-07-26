@@ -174,7 +174,7 @@ extension BankIDLoginSweden: Presentable {
 							AnalyticsCoordinator().setUserId()
 
 							let window = appDelegate.appFlow.window
-                            bag += window.present(MainTabbedJourney.journey)
+							bag += window.present(MainTabbedJourney.journey)
 						}
 					}
 

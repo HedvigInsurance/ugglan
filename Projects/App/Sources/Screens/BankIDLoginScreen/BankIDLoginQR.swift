@@ -33,7 +33,7 @@ extension BankIDLoginQR: Presentable {
 					title: L10n.demoModeStart,
 					action: {
 						UIApplication.shared.appDelegate.bag += UIApplication.shared.keyWindow?
-                        .present(MainTabbedJourney.journey)
+							.present(MainTabbedJourney.journey)
 					}
 				), .init(title: L10n.demoModeCancel, style: .cancel, action: {}),
 			])

@@ -107,7 +107,8 @@ public enum ExternalDependencies: CaseIterable {
 		case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
 		case .flow: return [.package(product: "Flow")]
 		case .form: return [.package(product: "Form")]
-		case .presentation: return [.package(product: "Presentation"), .package(product: "PresentationDebugSupport")]
+		case .presentation:
+			return [.package(product: "Presentation"), .package(product: "PresentationDebugSupport")]
 		case .ease: return [.package(product: "Ease")]
 		case .dynamiccolor: return [.package(product: "DynamicColor")]
 		case .disk: return [.package(product: "Disk")]

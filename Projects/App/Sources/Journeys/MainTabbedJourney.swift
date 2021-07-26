@@ -6,30 +6,30 @@ import Foundation
 import Home
 import Presentation
 import UIKit
-import hCoreUI
 import hCore
+import hCoreUI
 
 struct MainTabbedJourney {
 	static var homeTab: some JourneyPresentation {
-        let home = Home(sections: [
-            HomeSection(
-                title: L10n.HomeTab.editingSectionTitle,
-                style: .vertical,
-                children: [
-                    .init(
-                        title: L10n.HomeTab.editingSectionChangeAddressLabel,
-                        icon: hCoreUIAssets.apartment.image,
-                        handler: { viewController in
-                            viewController.present(
-                                MovingFlowJourney.journey
-                            )
-                            .onValue { _ in }
-                            return NilDisposer()
-                        }
-                    )
-                ]
-            )
-        ])
+		let home = Home(sections: [
+			HomeSection(
+				title: L10n.HomeTab.editingSectionTitle,
+				style: .vertical,
+				children: [
+					.init(
+						title: L10n.HomeTab.editingSectionChangeAddressLabel,
+						icon: hCoreUIAssets.apartment.image,
+						handler: { viewController in
+							viewController.present(
+								MovingFlowJourney.journey
+							)
+							.onValue { _ in }
+							return NilDisposer()
+						}
+					)
+				]
+			)
+		])
 
 		return Journey(home, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
 			.configureTabBarItem
@@ -50,11 +50,11 @@ struct MainTabbedJourney {
 	}
 
 	static var keyGearTab: some JourneyPresentation {
-        Journey(
-            KeyGearOverview(),
+		Journey(
+			KeyGearOverview(),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
 		)
-        .configureTabBarItem
+		.configureTabBarItem
 		.onTabSelected {
 			ContextGradient.currentOption = .none
 		}
@@ -62,24 +62,24 @@ struct MainTabbedJourney {
 
 	static var foreverTab: some JourneyPresentation {
 		Journey(
-            Forever(service: ForeverServiceGraphQL()),
+			Forever(service: ForeverServiceGraphQL()),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
 		)
-        .configureTabBarItem
+		.configureTabBarItem
 		.onTabSelected {
 			ContextGradient.currentOption = .forever
 		}
-        .makeTabSelected(UgglanStore.self) { action in
-            action == .makeForeverTabActive
-        }
+		.makeTabSelected(UgglanStore.self) { action in
+			action == .makeForeverTabActive
+		}
 	}
 
 	static var profileTab: some JourneyPresentation {
-        Journey(
+		Journey(
 			Profile(),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
 		)
-        .configureTabBarItem
+		.configureTabBarItem
 		.onTabSelected {
 			ContextGradient.currentOption = .profile
 		}
