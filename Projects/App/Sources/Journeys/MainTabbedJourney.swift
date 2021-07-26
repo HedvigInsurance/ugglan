@@ -7,62 +7,82 @@ import Home
 import Presentation
 import UIKit
 import hCoreUI
-
+import hCore
 
 struct MainTabbedJourney {
 	static var homeTab: some JourneyPresentation {
-		let home = Home(sections: Contracts.getSections())
+        let home = Home(sections: [
+            HomeSection(
+                title: L10n.HomeTab.editingSectionTitle,
+                style: .vertical,
+                children: [
+                    .init(
+                        title: L10n.HomeTab.editingSectionChangeAddressLabel,
+                        icon: hCoreUIAssets.apartment.image,
+                        handler: { viewController in
+                            viewController.present(
+                                MovingFlowJourney.journey
+                            )
+                            .onValue { _ in }
+                            return NilDisposer()
+                        }
+                    )
+                ]
+            )
+        ])
 
 		return Journey(home, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
-			.addConfiguration { presenter in
-				presenter.viewController.tabBarItem = home.tabBarItem()
-            }.onTabActive {
-                ContextGradient.currentOption = .home
-            }
+			.configureTabBarItem
+			.onTabSelected {
+				ContextGradient.currentOption = .home
+			}
 	}
 
 	static var contractsTab: some JourneyPresentation {
-		let contracts = Contracts()
-
-		return Journey(Contracts(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
-			.addConfiguration { presenter in
-				presenter.viewController.tabBarItem = contracts.tabBarItem()
-			}.onTabActive {
-                ContextGradient.currentOption = .none
-            }
+		Journey(
+			Contracts(),
+			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+		)
+		.configureTabBarItem
+		.onTabSelected {
+			ContextGradient.currentOption = .none
+		}
 	}
 
 	static var keyGearTab: some JourneyPresentation {
-		let keyGearOverview = KeyGearOverview()
-
-		return Journey(keyGearOverview, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
-			.addConfiguration { presenter in
-				presenter.viewController.tabBarItem = keyGearOverview.tabBarItem()
-			}.onTabActive {
-                ContextGradient.currentOption = .none
-            }
+        Journey(
+            KeyGearOverview(),
+			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+		)
+        .configureTabBarItem
+		.onTabSelected {
+			ContextGradient.currentOption = .none
+		}
 	}
 
 	static var foreverTab: some JourneyPresentation {
-		let forever = Forever(service: ForeverServiceGraphQL())
-
-		return Journey(forever, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
-			.addConfiguration { presenter in
-				presenter.viewController.tabBarItem = forever.tabBarItem()
-			}.onTabActive {
-                ContextGradient.currentOption = .forever
-            }
+		Journey(
+            Forever(service: ForeverServiceGraphQL()),
+			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+		)
+        .configureTabBarItem
+		.onTabSelected {
+			ContextGradient.currentOption = .forever
+		}
+        .makeTabSelected(UgglanStore.self) { action in
+            action == .makeForeverTabActive
+        }
 	}
 
 	static var profileTab: some JourneyPresentation {
-		let profile = Profile()
-
-		return Journey(Profile(), options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
-			.addConfiguration { presenter in
-				presenter.viewController.tabBarItem = profile.tabBarItem()
-			}.onTabActive {
-                ContextGradient.currentOption = .profile
-            }
+        Journey(
+			Profile(),
+			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+		)
+        .configureTabBarItem
+		.onTabSelected {
+			ContextGradient.currentOption = .profile
+		}
 	}
 
 	static var journey: some JourneyPresentation {
@@ -88,7 +108,7 @@ struct MainTabbedJourney {
 					profileTab
 				}
 			)
-			.tabIndexReducer()
+			.storeTabIndex()
 		}
 	}
 }

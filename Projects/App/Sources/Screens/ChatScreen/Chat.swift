@@ -87,7 +87,7 @@ extension Chat: Presentable {
 							}
 					}
 			case .dashboard:
-				viewController.present(LoggedIn())
+                viewController.present(MainTabbedJourney.journey).onValue { _ in }
 			case .login:
 				viewController.present(Login(), style: .detented(.medium))
 			}

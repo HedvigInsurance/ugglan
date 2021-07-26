@@ -20,6 +20,10 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+#if DEBUG
+    import PresentationDebugSupport
+#endif
+
 let log = Logger.self
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -100,7 +104,8 @@ let log = Logger.self
 			guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
 			bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 				.onValue { _ in
-					NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
+                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                    store.send(.makeForeverTabActive)
 				}
 
 			Mixpanel.mainInstance().track(event: "DEEP_LINK_FOREVER")
@@ -288,6 +293,13 @@ let log = Logger.self
 
 		Messaging.messaging().delegate = self
 		UNUserNotificationCenter.current().delegate = self
+        
+        #if DEBUG
+        
+        PresentableStoreContainer.debugger = PresentableStoreDebugger()
+        PresentableStoreContainer.debugger?.startServer()
+        
+        #endif
 
 		// treat an empty token as a newly downloaded app and setLastNewsSeen
 		if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
@@ -422,9 +434,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 			} else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
 				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 					.onValue { _ in
-						NotificationCenter.default.post(
-							Notification(name: .shouldOpenReferrals)
-						)
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        store.send(.makeForeverTabActive)
 					}
 			} else if notificationType == "CONNECT_DIRECT_DEBIT" {
 				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }

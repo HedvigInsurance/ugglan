@@ -22,7 +22,7 @@ public enum ExternalDependencies: CaseIterable {
 
 	public var isTestDependency: Bool { self == .snapshottesting }
 
-	public var isDevDependency: Bool { self == .runtime }
+	public var isDevDependency: Bool { false }
 
 	public var isResourceBundledDependency: Bool { self == .mixpanel || self == .adyen }
 
@@ -36,7 +36,7 @@ public enum ExternalDependencies: CaseIterable {
 		switch self {
 		case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .upToNextMajor(from: "3.8.4"))]
 		case .runtime:
-			return [.package(url: "https://github.com/wickwirew/Runtime", .upToNextMajor(from: "2.2.2"))]
+			return [.package(url: "https://github.com/wickwirew/Runtime", .exact("2.2.2"))]
 		case .firebase:
 			return [
 				.package(
@@ -107,7 +107,7 @@ public enum ExternalDependencies: CaseIterable {
 		case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
 		case .flow: return [.package(product: "Flow")]
 		case .form: return [.package(product: "Form")]
-		case .presentation: return [.package(product: "Presentation")]
+		case .presentation: return [.package(product: "Presentation"), .package(product: "PresentationDebugSupport")]
 		case .ease: return [.package(product: "Ease")]
 		case .dynamiccolor: return [.package(product: "DynamicColor")]
 		case .disk: return [.package(product: "Disk")]
