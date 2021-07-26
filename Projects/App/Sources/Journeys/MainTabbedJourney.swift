@@ -108,7 +108,7 @@ struct MainTabbedJourney {
 					profileTab
 				}
 			)
-			.storeTabIndex()
+			.syncTabIndex()
 		}
 	}
 }
