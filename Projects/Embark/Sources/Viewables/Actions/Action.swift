@@ -78,10 +78,12 @@ extension Action: Viewable {
 			let viewHeight =
 				view.systemLayoutSizeFitting(.zero).height
 				+ (view.viewController?.view.safeAreaInsets.bottom ?? 0) + extraPadding
-            
-            let staticHeight = view.frame.height + (view.viewController?.view.safeAreaInsets.bottom ?? 0) + extraPadding
-            let heightToTranslate = max(viewHeight, staticHeight)
-            
+
+			let staticHeight =
+				view.frame.height + (view.viewController?.view.safeAreaInsets.bottom ?? 0)
+				+ extraPadding
+			let heightToTranslate = max(viewHeight, staticHeight)
+
 			view.transform =
 				isHidden
 				? CGAffineTransform(translationX: 0, y: heightToTranslate) : CGAffineTransform.identity
@@ -140,9 +142,16 @@ extension Action: Viewable {
 									)
 								)
 								.onValue(performCallback)
-                        } else if let dateAction = actionData?.asEmbarkDatePickerAction {
-                            innerBag += view.addArranged(EmbarkDatePickerAction(state: self.state, data: dateAction)).onValue(performCallback)
-                        } else if let textAction = actionData?.asEmbarkTextAction {
+						} else if let dateAction = actionData?.asEmbarkDatePickerAction {
+							innerBag +=
+								view.addArranged(
+									EmbarkDatePickerAction(
+										state: self.state,
+										data: dateAction
+									)
+								)
+								.onValue(performCallback)
+						} else if let textAction = actionData?.asEmbarkTextAction {
 							innerBag +=
 								view.addArranged(
 									EmbarkTextAction(
