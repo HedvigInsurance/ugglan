@@ -50,6 +50,25 @@ extension Embark {
 	}
 }
 
+fileprivate extension JourneyPresentation {
+    var withCompletedToast: Self {
+        onPresent {
+            Toasts.shared
+                .displayToast(
+                    toast: Toast(
+                        symbol: .icon(
+                            hCoreUIAssets
+                                .circularCheckmark
+                                .image
+                        ),
+                        body: L10n
+                            .movingFlowSuccessToast
+                    )
+                )
+        }
+    }
+}
+
 public struct MovingFlowJourney {
 	static var journey: some JourneyPresentation {
 		Journey(
@@ -69,21 +88,9 @@ public struct MovingFlowJourney {
 					case .close:
 						DismissJourney()
 					case .signed:
-						DismissJourney()
-							.onPresent {
-								Toasts.shared
-									.displayToast(
-										toast: Toast(
-											symbol: .icon(
-												hCoreUIAssets
-													.circularCheckmark
-													.image
-											),
-											body: L10n
-												.movingFlowSuccessToast
-										)
-									)
-							}
+                        Journey(MovingFlowSuccess()) { _ in
+                            DismissJourney().withCompletedToast
+                        }
 					}
 				}
 			}
