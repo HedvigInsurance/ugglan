@@ -18,9 +18,10 @@ extension JourneyPresentation {
 				.onValue { _ in
 					store.send(.setSelectedTabIndex(index: tabBarController.selectedIndex))
 				}
-        }.onState(UgglanStore.self) { state, presenter in
-            presenter.matter.selectedIndex = state.selectedTabIndex
-        }
+		}
+		.onState(UgglanStore.self) { state, presenter in
+			presenter.matter.selectedIndex = state.selectedTabIndex
+		}
 	}
 
 	/// Makes a tab active when store emits an action and true is returned in closure
