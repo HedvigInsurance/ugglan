@@ -9,29 +9,29 @@ import hCoreUI
 import hGraphQL
 
 public struct MovingFlowSuccess {
-    public init() {}
+	public init() {}
 }
 
 extension MovingFlowSuccess: Presentable {
 	public func materialize() -> (UIViewController, Signal<Void>) {
 		let viewController = UIViewController()
 		let bag = DisposeBag()
-        
-        let button = Button(
-            title: L10n.MovingConfirmation.Success.buttonText,
-            type: .standardOutline(
-                borderColor: .brand(.primaryBorderColor),
-                textColor: .brand(.primaryButtonTextColor)
-            )
-        )
-        
-        let imageTextAction = ImageTextAction(
-            image: .init(image: hCoreUIAssets.welcome.image, size: nil, contentMode: .scaleAspectFit),
-            title: L10n.MovingConfirmation.Success.title,
-            body: L10n.MovingConfirmation.SuccessNoDate.paragraphCopy(""),
-            actions: [((), button)],
-            showLogo: false
-        )
+
+		let button = Button(
+			title: L10n.MovingConfirmation.Success.buttonText,
+			type: .standardOutline(
+				borderColor: .brand(.primaryBorderColor),
+				textColor: .brand(.primaryButtonTextColor)
+			)
+		)
+
+		let imageTextAction = ImageTextAction(
+			image: .init(image: hCoreUIAssets.welcome.image, size: nil, contentMode: .scaleAspectFit),
+			title: L10n.MovingConfirmation.Success.title,
+			body: L10n.MovingConfirmation.SuccessNoDate.paragraphCopy(""),
+			actions: [((), button)],
+			showLogo: false
+		)
 
 		return (
 			viewController,
@@ -44,7 +44,7 @@ extension MovingFlowSuccess: Presentable {
 
 					}
 					.onValue { _ in
-                        callback(())
+						callback(())
 					}
 
 				return bag

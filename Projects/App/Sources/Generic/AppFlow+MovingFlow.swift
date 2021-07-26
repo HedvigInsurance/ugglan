@@ -50,23 +50,23 @@ extension Embark {
 	}
 }
 
-fileprivate extension JourneyPresentation {
-    var withCompletedToast: Self {
-        onPresent {
-            Toasts.shared
-                .displayToast(
-                    toast: Toast(
-                        symbol: .icon(
-                            hCoreUIAssets
-                                .circularCheckmark
-                                .image
-                        ),
-                        body: L10n
-                            .movingFlowSuccessToast
-                    )
-                )
-        }
-    }
+extension JourneyPresentation {
+	fileprivate var withCompletedToast: Self {
+		onPresent {
+			Toasts.shared
+				.displayToast(
+					toast: Toast(
+						symbol: .icon(
+							hCoreUIAssets
+								.circularCheckmark
+								.image
+						),
+						body: L10n
+							.movingFlowSuccessToast
+					)
+				)
+		}
+	}
 }
 
 public struct MovingFlowJourney {
@@ -88,9 +88,9 @@ public struct MovingFlowJourney {
 					case .close:
 						DismissJourney()
 					case .signed:
-                        Journey(MovingFlowSuccess()) { _ in
-                            DismissJourney().withCompletedToast
-                        }
+						Journey(MovingFlowSuccess()) { _ in
+							DismissJourney().withCompletedToast
+						}
 					}
 				}
 			}
