@@ -5,7 +5,7 @@ import Presentation
 import hCore
 import hGraphQL
 
-public struct OfferState: Codable, EmptyInitable {
+public struct OfferState: StateProtocol {
 	var hasSignedQuotes = false
 	var chatOpened = false
 	var ids: [String] = []
@@ -13,11 +13,21 @@ public struct OfferState: Codable, EmptyInitable {
 	public init() {}
 }
 
-public enum OfferAction: Codable {
+public enum OfferAction: ActionProtocol {
 	case hasSignedQuotes(value: Bool)
 	case openChat
 	case closeChat
 	case query
+    
+    public func encode(to encoder: Encoder) throws {
+        #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
+        fatalError()
+    }
+    
+    public init(from decoder: Decoder) throws {
+        #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
+        fatalError()
+    }
 }
 
 public final class OfferStore: StateStore<OfferState, OfferAction> {

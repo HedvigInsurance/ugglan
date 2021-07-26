@@ -225,7 +225,7 @@ extension Contracts {
 						handler: { viewController in
 							viewController.present(
 								MovingFlowJourney.journey
-							)
+                            ).onValue { _ in }
 							return NilDisposer()
 						}
 					)

@@ -6,7 +6,7 @@ import Presentation
 import hCore
 import hGraphQL
 
-public struct UgglanState: Codable, EmptyInitable {
+public struct UgglanState: StateProtocol {
 	var selectedTabIndex = 0
 
 	public enum Feature: Codable {
@@ -19,10 +19,20 @@ public struct UgglanState: Codable, EmptyInitable {
 	public init() {}
 }
 
-public enum UgglanAction: Codable {
+public enum UgglanAction: ActionProtocol {
 	case setSelectedTabIndex(index: Int)
 	case fetchFeatures
 	case setFeatures(features: [UgglanState.Feature]?)
+    
+    public func encode(to encoder: Encoder) throws {
+        #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
+        fatalError()
+    }
+    
+    public init(from decoder: Decoder) throws {
+        #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
+        fatalError()
+    }
 }
 
 public final class UgglanStore: StateStore<UgglanState, UgglanAction> {

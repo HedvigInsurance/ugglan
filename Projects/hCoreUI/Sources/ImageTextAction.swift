@@ -97,8 +97,8 @@ extension ImageTextAction: Viewable {
 		headerImageView.contentMode = .scaleAspectFit
 		headerImageView.tintColor = .brand(.primaryTintColor)
 
-		headerImageView.snp.makeConstraints { make in make.height.equalTo(image.size?.height ?? 270)
-
+		headerImageView.snp.makeConstraints { make in
+            make.height.equalTo(image.size?.height ?? 270)
 			if let width = image.size?.width { make.width.equalTo(width) }
 		}
 
