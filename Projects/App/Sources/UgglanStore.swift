@@ -9,7 +9,7 @@ import hGraphQL
 public struct UgglanState: StateProtocol {
 	var selectedTabIndex: Int = 0
 
-	public enum Feature: Codable {
+	public enum Feature: String, Codable {
 		case referrals
 		case keyGear
 	}
