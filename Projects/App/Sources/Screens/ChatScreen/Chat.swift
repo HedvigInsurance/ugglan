@@ -34,7 +34,7 @@ extension JourneyPresentation {
 
 enum ChatResult {
 	case offer(ids: [String])
-	case mainTabbedJourney
+	case loggedIn
 	case login
 
 	var journey: some JourneyPresentation {
@@ -57,14 +57,14 @@ enum ChatResult {
 					case .menu:
 						ContinueJourney()
 					case .signed:
-						PostOnboardingJourney.journey
+                        AppJourney.postOnboarding
 					}
 				}
 				.hidesBackButton
-			case .mainTabbedJourney:
-				MainTabbedJourney.journey
+            case .loggedIn:
+                AppJourney.loggedIn
 			case .login:
-				LoginJourney.journey
+                AppJourney.login
 			}
 		}
 	}
@@ -252,7 +252,7 @@ extension Chat: Presentable {
 								callback(.offer(ids: [id]))
 							}
 					case .dashboard:
-						callback(.mainTabbedJourney)
+						callback(.loggedIn)
 					case .login:
 						callback(.login)
 					}

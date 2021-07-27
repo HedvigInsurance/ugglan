@@ -9,8 +9,8 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct MainTabbedJourney {
-	static var homeTab: some JourneyPresentation {
+extension AppJourney {
+	fileprivate static var homeTab: some JourneyPresentation {
 		let home = Home(sections: [
 			HomeSection(
 				title: L10n.HomeTab.editingSectionTitle,
@@ -38,7 +38,7 @@ struct MainTabbedJourney {
 			}
 	}
 
-	static var contractsTab: some JourneyPresentation {
+    fileprivate static var contractsTab: some JourneyPresentation {
 		Journey(
 			Contracts(),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
@@ -54,7 +54,7 @@ struct MainTabbedJourney {
 		}
 	}
 
-	static var keyGearTab: some JourneyPresentation {
+    fileprivate static var keyGearTab: some JourneyPresentation {
 		Journey(
 			KeyGearOverview(),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
@@ -65,7 +65,7 @@ struct MainTabbedJourney {
 		}
 	}
 
-	static var foreverTab: some JourneyPresentation {
+    fileprivate static var foreverTab: some JourneyPresentation {
 		Journey(
 			Forever(service: ForeverServiceGraphQL()),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
@@ -79,7 +79,7 @@ struct MainTabbedJourney {
 		}
 	}
 
-	static var profileTab: some JourneyPresentation {
+    fileprivate static var profileTab: some JourneyPresentation {
 		Journey(
 			Profile(),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
@@ -90,7 +90,7 @@ struct MainTabbedJourney {
 		}
 	}
 
-	static var journey: some JourneyPresentation {
+	static var loggedIn: some JourneyPresentation {
 		Journey(FeaturesLoader(), options: []) { features in
 			TabbedJourney(
 				{

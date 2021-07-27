@@ -54,10 +54,12 @@ extension ContractTableFooter: Viewable {
 
 					innerBag += section.append(terminatedRow).compactMap { form.viewController }
 						.onValue { viewController in
-							viewController.present(
+							innerBag += viewController.present(
 								Contracts(filter: .terminated(ifEmpty: .none)),
 								options: [.defaults, .largeTitleDisplayMode(.never)]
-							)
+                            ).onValue { _ in
+                                
+                            }
 						}
 
 					innerBag += { section.removeFromSuperview() }

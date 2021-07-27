@@ -5,18 +5,25 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import Offer
 
-struct MainJourney {
-	static var journey: some JourneyPresentation {
-		Journey(MarketPicker()) { _ in
-			Journey(Marketing()) { marketingResult in
-				switch marketingResult {
-				case .onboard:
-					OnboardingJourney.journey
-				case .login:
-					LoginJourney.journey
-				}
-			}
-		}
+extension AppJourney {
+	static var main: some JourneyPresentation {
+        GroupJourney {
+            switch ApplicationState.currentState {
+            case .onboardingChat, .onboarding:
+                AppJourney.onboarding
+            case .offer:
+                AppJourney.storedOnboardingOffer
+            case .loggedIn:
+                AppJourney.loggedIn
+            default:
+                AppJourney.marketPicker
+            }
+        }.onAction(UgglanStore.self) { action in
+            if action == .showLoggedIn {
+                AppJourney.loggedIn
+            }
+        }
 	}
 }

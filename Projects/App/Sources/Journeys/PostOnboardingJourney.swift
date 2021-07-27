@@ -5,11 +5,11 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct PostOnboardingJourney {
-	static var journey: some JourneyPresentation {
+extension AppJourney {
+	static var postOnboarding: some JourneyPresentation {
 		Journey(PostOnboarding(), options: [.prefersNavigationBarHidden(true)]) { _ in
 			Journey(WelcomePager()) { _ in
-				MainTabbedJourney.journey.onPresent {
+                AppJourney.loggedIn.onPresent {
 					AskForRating().ask()
 				}
 			}

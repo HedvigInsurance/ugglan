@@ -80,7 +80,7 @@ public struct MovingFlowJourney {
 		) { introRoute in
 			switch introRoute {
 			case .chat:
-				Journey(FreeTextChat()).withDismissButton
+                Journey(FreeTextChat()).withDismissButton
 			case let .embark(name):
 				Embark.makeJourney(Embark(name: name)) { offerResult in
 					switch offerResult {

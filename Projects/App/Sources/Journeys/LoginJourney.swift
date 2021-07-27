@@ -7,8 +7,8 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct LoginJourney {
-	static var bankIDSweden: some JourneyPresentation {
+extension AppJourney {
+	fileprivate static var bankIDSweden: some JourneyPresentation {
 		Journey(
 			BankIDLoginSweden(),
 			style: .detented(.medium, .large)
@@ -18,24 +18,24 @@ struct LoginJourney {
 				Journey(BankIDLoginQR()) { result in
 					switch result {
 					case .loggedIn:
-						MainTabbedJourney.journey
+                        AppJourney.loggedIn
 					}
 				}
 			case .loggedIn:
-				MainTabbedJourney.journey
+                AppJourney.loggedIn
 			}
 		}
 		.withDismissButton
 	}
 
-	static var simpleSign: some JourneyPresentation {
+    fileprivate static var simpleSign: some JourneyPresentation {
 		Journey(SimpleSignLoginView(), style: .detented(.medium)) { id in
 			Journey(WebViewLogin(idNumber: id), style: .detented(.large))
 		}
 		.withDismissButton
 	}
 
-	static var journey: some JourneyPresentation {
+	static var login: some JourneyPresentation {
 		MarketGroupJourney { market in
 			switch market {
 			case .se:
@@ -43,7 +43,7 @@ struct LoginJourney {
 			case .no, .dk:
 				simpleSign
 			}
-		}
+        }
 	}
 }
 

@@ -5,8 +5,8 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct OnboardingJourney {
-	static var journey: some JourneyPresentation {
+extension AppJourney {
+	static var onboarding: some JourneyPresentation {
 		MarketGroupJourney { market in
 			switch market {
 			case .se:
@@ -15,7 +15,7 @@ struct OnboardingJourney {
 				}
 			case .dk:
 				Journey(WebOnboarding(webScreen: .webOnboarding)) { value in
-					PostOnboardingJourney.journey
+                    AppJourney.postOnboarding
 				}
 			case .no:
 				EmbarkOnboardingJourney.journey

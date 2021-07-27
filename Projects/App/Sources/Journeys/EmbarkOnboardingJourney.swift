@@ -41,7 +41,7 @@ struct EmbarkOnboardingJourney {
 						)
 						.withDismissButton
 					case .signed:
-						PostOnboardingJourney.journey
+                        AppJourney.postOnboarding
 					case .close:
 						ContinueJourney()
 					case let .menu(action):

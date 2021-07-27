@@ -44,7 +44,7 @@ let log = Logger.self
 
 		bag += ApolloClient.initAndRegisterClient()
 			.onValue { _ in ChatState.shared = ChatState()
-				self.bag += ApplicationState.presentRootViewController(self.window)
+                self.bag += self.window.present(AppJourney.main)
 			}
 	}
 
@@ -66,6 +66,21 @@ let log = Logger.self
 
 		return handleDeepLink(dynamicLinkUrl)
 	}
+    
+    func setToken(_ token: String) {
+        ApolloClient.cache = InMemoryNormalizedCache()
+        ApolloClient.saveToken(token: token)
+
+        ApolloClient.initAndRegisterClient()
+            .always {
+                ChatState.shared = ChatState()
+                self.bag +=
+                self
+                    .window.present(
+                        AppJourney.loggedIn
+                    )
+            }
+    }
 
 	func registerForPushNotifications() -> Future<Void> {
 		Future { completion in
@@ -318,7 +333,7 @@ let log = Logger.self
 
 				AnalyticsCoordinator().setUserId()
 
-				self.bag += ApplicationState.presentRootViewController(self.window)
+                self.bag += self.window.present(AppJourney.main)
 			}
 			.onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
 				self.bag += client.fetch(query: GraphQL.FeaturesQuery())
