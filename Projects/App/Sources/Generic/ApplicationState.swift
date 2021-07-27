@@ -32,22 +32,22 @@ extension ApplicationState {
 		guard let applicationState = currentState
 		else {
 			return window.present(
-                MainJourney.journey
+				MainJourney.journey
 			)
 		}
 
 		switch applicationState {
 		case .marketPicker, .languagePicker:
 			return window.present(
-                MainJourney.journey
+				MainJourney.journey
 			)
 		case .marketing:
 			return window.present(
-                MainJourney.journey
+				MainJourney.journey
 			)
 		case .onboardingChat, .onboarding:
 			return window.present(
-                OnboardingJourney.journey
+				OnboardingJourney.journey
 			)
 		case .offer:
 			let bag = DisposeBag()

@@ -109,8 +109,9 @@ struct MainTabbedJourney {
 				}
 			)
 			.syncTabIndex()
-        }.onPresent {
-            ApplicationState.preserveState(.loggedIn)
-        }
+		}
+		.onPresent {
+			ApplicationState.preserveState(.loggedIn)
+		}
 	}
 }

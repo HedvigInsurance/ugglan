@@ -13,7 +13,7 @@ import hGraphQL
 
 public struct MarketPicker {
 	@Inject var client: ApolloClient
-    public init() {}
+	public init() {}
 }
 
 extension MarketPicker: Presentable {
@@ -108,83 +108,104 @@ extension MarketPicker: Presentable {
 
 		bag += form.didMoveToWindowSignal.onValue { ContextGradient.currentOption = .none }
 
-        return (viewController, Signal { callback in
-            bag += client.fetch(query: GraphQL.MarketQuery()).valueSignal
-                .onValue { data in
-                    if let bestMatchedLocale = data.availableLocales.first(where: { locale -> Bool in
-                        locale.rawValue.lowercased().contains(data.geo.countryIsoCode.lowercased())
-                    }) {
-                        let locale = Localization.Locale(rawValue: bestMatchedLocale.rawValue)!
-                        let market = Market(rawValue: locale.market.rawValue)!
-                        pickedMarketSignal.value = market
-                    } else {
-                        pickedMarketSignal.value = .sweden
-                    }
+		return (
+			viewController,
+			Signal { callback in
+				bag += client.fetch(query: GraphQL.MarketQuery()).valueSignal
+					.onValue { data in
+						if let bestMatchedLocale = data.availableLocales.first(where: {
+							locale -> Bool in
+							locale.rawValue.lowercased()
+								.contains(data.geo.countryIsoCode.lowercased())
+						}) {
+							let locale = Localization.Locale(
+								rawValue: bestMatchedLocale.rawValue
+							)!
+							let market = Market(rawValue: locale.market.rawValue)!
+							pickedMarketSignal.value = market
+						} else {
+							pickedMarketSignal.value = .sweden
+						}
 
-                    Localization.Locale.currentLocale = pickedMarketSignal.value.preferredLanguage
+						Localization.Locale.currentLocale =
+							pickedMarketSignal.value.preferredLanguage
 
-                    let section = form.appendSection()
-                    if #available(iOS 13.0, *) { section.overrideUserInterfaceStyle = .dark }
+						let section = form.appendSection()
+						if #available(iOS 13.0, *) {
+							section.overrideUserInterfaceStyle = .dark
+						}
 
-                    let marketRow = MarketRow(
-                        market: pickedMarketSignal.value,
-                        availableLocales: data.availableLocales
-                    )
-                    bag += section.append(marketRow)
+						let marketRow = MarketRow(
+							market: pickedMarketSignal.value,
+							availableLocales: data.availableLocales
+						)
+						bag += section.append(marketRow)
 
-                    bag += marketRow.$market.onValue { newMarket in
-                        Localization.Locale.currentLocale = newMarket.preferredLanguage
-                    }
+						bag += marketRow.$market.onValue { newMarket in
+							Localization.Locale.currentLocale = newMarket.preferredLanguage
+						}
 
-                    let languageRow = LanguageRow(currentMarket: pickedMarketSignal.value)
-                    bag += section.append(languageRow)
-                    bag += marketRow.$market.bindTo(languageRow.$currentMarket)
+						let languageRow = LanguageRow(currentMarket: pickedMarketSignal.value)
+						bag += section.append(languageRow)
+						bag += marketRow.$market.bindTo(languageRow.$currentMarket)
 
-                    bag += form.append(Spacing(height: 36))
+						bag += form.append(Spacing(height: 36))
 
-                    let continueButton = Button(
-                        title: "",
-                        type: .standard(backgroundColor: .white, textColor: .black)
-                    )
-                    bag += form.append(
-                        continueButton.insetted(UIEdgeInsets(horizontalInset: 15, verticalInset: 0)) {
-                            buttonView in buttonView.hero.id = "ContinueButton"
-                            buttonView.hero.modifiers = [.spring(stiffness: 400, damping: 100)]
+						let continueButton = Button(
+							title: "",
+							type: .standard(backgroundColor: .white, textColor: .black)
+						)
+						bag += form.append(
+							continueButton.insetted(
+								UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+							) {
+								buttonView in buttonView.hero.id = "ContinueButton"
+								buttonView.hero.modifiers = [
+									.spring(stiffness: 400, damping: 100)
+								]
 
-                            bag += localeUpdatedSignal.atOnce()
-                                .transition(
-                                    style: .crossDissolve(duration: 0.25),
-                                    with: buttonView
-                                ) { _ in
-                                    continueButton.title.value =
-                                        L10n.MarketLanguageScreen.continueButtonText
-                                }
-                        }
-                    )
+								bag += localeUpdatedSignal.atOnce()
+									.transition(
+										style: .crossDissolve(duration: 0.25),
+										with: buttonView
+									) { _ in
+										continueButton.title.value =
+											L10n.MarketLanguageScreen
+											.continueButtonText
+									}
+							}
+						)
 
-                    bag += continueButton.onTapSignal.onValue {
-                        guard let navigationController = viewController.navigationController else {
-                            return
-                        }
-                        if !UITraitCollection.isCatalyst {
-                            navigationController.hero.isEnabled = true
-                            navigationController.hero.navigationAnimationType = .fade
-                        }
-                        callback(())
-                    }
+						bag += continueButton.onTapSignal.onValue {
+							guard
+								let navigationController = viewController
+									.navigationController
+							else {
+								return
+							}
+							if !UITraitCollection.isCatalyst {
+								navigationController.hero.isEnabled = true
+								navigationController.hero.navigationAnimationType =
+									.fade
+							}
+							callback(())
+						}
 
-                    bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().delay(by: 1.25)
-                        .take(first: 1)
-                        .animated(
-                            style: .lightBounce(duration: 0.75),
-                            animations: { _ in form.transform = CGAffineTransform.identity
-                                form.alpha = 1
-                                form.layoutIfNeeded()
-                            }
-                        )
-                }
-            
-            return bag
-        })
+						bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
+							.delay(by: 1.25)
+							.take(first: 1)
+							.animated(
+								style: .lightBounce(duration: 0.75),
+								animations: { _ in
+									form.transform = CGAffineTransform.identity
+									form.alpha = 1
+									form.layoutIfNeeded()
+								}
+							)
+					}
+
+				return bag
+			}
+		)
 	}
 }

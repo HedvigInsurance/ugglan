@@ -32,10 +32,15 @@ extension WelcomePager: Presentable {
 				}
 			}
 
-        return (viewController, Signal { callback in
-            return future.onValue {
-                callback(())
-            }.disposable
-        })
+		return (
+			viewController,
+			Signal { callback in
+				return
+					future.onValue {
+						callback(())
+					}
+					.disposable
+			}
+		)
 	}
 }

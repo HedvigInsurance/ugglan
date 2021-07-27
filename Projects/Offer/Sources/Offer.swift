@@ -161,14 +161,14 @@ extension Offer: Presentable {
 			viewController,
 			FiniteSignal { callback in
 				let store: OfferStore = self.get()
-            
-                bag += store.onAction(.openChat) {
-                    callback(.value(.chat))
-                }
-            
-                bag += store.onAction(.didSign) {
-                    callback(.value(.signed))
-                }
+
+				bag += store.onAction(.openChat) {
+					callback(.value(.chat))
+				}
+
+				bag += store.onAction(.didSign) {
+					callback(.value(.signed))
+				}
 
 				if let menu = menu {
 					bag += optionsOrCloseButton.attachSinglePressMenu(

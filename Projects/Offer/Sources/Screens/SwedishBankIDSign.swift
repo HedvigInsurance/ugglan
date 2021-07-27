@@ -167,10 +167,10 @@ extension SwedishBankIdSign: Presentable {
 				})
 
 				viewController.navigationItem.rightBarButtonItem = cancelButton
-            
-                let store: OfferStore = get()
 
-                bag += store.signQuotes()
+				let store: OfferStore = get()
+
+				bag += store.signQuotes()
 					.onValue { signEvent in
 						switch signEvent {
 						case let .swedishBankId(autoStartToken, subscription):

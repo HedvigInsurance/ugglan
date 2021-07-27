@@ -83,10 +83,10 @@ extension SignSection: Presentable {
 				innerBag += loadableSignButton.onTapSignal
 					.onValue { _ in
 						loadableSignButton.isLoadingSignal.value = true
-                        
-                        let store: OfferStore = get()
-                        
-                        bag += store.signQuotes()
+
+						let store: OfferStore = get()
+
+						bag += store.signQuotes()
 							.onValue { event in
 								if case .failed = event {
 									loadableSignButton.isLoadingSignal.value = false

@@ -189,10 +189,10 @@ extension Checkout: Presentable {
 					checkoutButton.$isLoading.value = true
 
 					toggleAllowDismissal()
-                    
-                    let store: OfferStore = get()
 
-                    bag += store.signQuotes()
+					let store: OfferStore = get()
+
+					bag += store.signQuotes()
 						.onValue { signEvent in
 							switch signEvent {
 							case .swedishBankId, .failed:

@@ -16,8 +16,8 @@ public struct Marketing {
 }
 
 public enum MarketingResult {
-    case onboard
-    case login
+	case onboard
+	case login
 }
 
 extension Marketing: Presentable {
@@ -96,42 +96,51 @@ extension Marketing: Presentable {
 
 		contentStackView.snp.makeConstraints { make in make.bottom.trailing.leading.equalToSuperview() }
 
-        return (viewController, Signal { callback in
-            
-            let onboardButton = Button(
-                title: L10n.marketingGetHedvig,
-                type: .standard(backgroundColor: .white, textColor: .black)
-            )
+		return (
+			viewController,
+			Signal { callback in
 
-            bag += onboardButton.onTapSignal.onValue { _ in
-                if #available(iOS 13.0, *) {
-                    viewController.navigationController?.navigationBar.overrideUserInterfaceStyle =
-                        .unspecified
-                } else {
-                    viewController.navigationController?.navigationBar.barStyle = .default
-                }
-                if !UITraitCollection.isCatalyst { viewController.navigationController?.hero.isEnabled = false }
+				let onboardButton = Button(
+					title: L10n.marketingGetHedvig,
+					type: .standard(backgroundColor: .white, textColor: .black)
+				)
 
-                callback(.onboard)
-            }
+				bag += onboardButton.onTapSignal.onValue { _ in
+					if #available(iOS 13.0, *) {
+						viewController.navigationController?.navigationBar
+							.overrideUserInterfaceStyle =
+							.unspecified
+					} else {
+						viewController.navigationController?.navigationBar.barStyle = .default
+					}
+					if !UITraitCollection.isCatalyst {
+						viewController.navigationController?.hero.isEnabled = false
+					}
 
-            bag += contentStackView.addArranged(onboardButton) { buttonView in buttonView.hero.id = "ContinueButton"
-                buttonView.hero.modifiers = [.spring(stiffness: 400, damping: 100)]
-            }
+					callback(.onboard)
+				}
 
-            let loginButton = Button(
-                title: L10n.marketingLogin,
-                type: .standardOutline(borderColor: .white, textColor: .white)
-            )
+				bag += contentStackView.addArranged(onboardButton) { buttonView in
+					buttonView.hero.id = "ContinueButton"
+					buttonView.hero.modifiers = [.spring(stiffness: 400, damping: 100)]
+				}
 
-            bag += loginButton.onTapSignal.onValue { _ in
-                if !UITraitCollection.isCatalyst { viewController.navigationController?.hero.isEnabled = false }
-                callback(.login)
-            }
+				let loginButton = Button(
+					title: L10n.marketingLogin,
+					type: .standardOutline(borderColor: .white, textColor: .white)
+				)
 
-            bag += contentStackView.addArranged(loginButton)
-            
-            return bag
-        })
+				bag += loginButton.onTapSignal.onValue { _ in
+					if !UITraitCollection.isCatalyst {
+						viewController.navigationController?.hero.isEnabled = false
+					}
+					callback(.login)
+				}
+
+				bag += contentStackView.addArranged(loginButton)
+
+				return bag
+			}
+		)
 	}
 }
