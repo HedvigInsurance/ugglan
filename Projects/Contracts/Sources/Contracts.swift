@@ -47,8 +47,12 @@ public struct Contracts {
 	public init(filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none))) { self.filter = filter }
 }
 
+public enum ContractsResult {
+    case movingFlow
+}
+
 extension Contracts: Presentable {
-	public func materialize() -> (UIViewController, Disposable) {
+	public func materialize() -> (UIViewController, Signal<ContractsResult>) {
 		let viewController = UIViewController()
 
 		if filter.displaysActiveContracts {
@@ -58,15 +62,17 @@ extension Contracts: Presentable {
 
 		let bag = DisposeBag()
 
-		bag += state.goToMovingFlowSignal.onValue { _ in
-			routeSignal.value = .openMovingFlow
-		}
-
 		bag += viewController.install(
 			ContractTable(presentingViewController: viewController, filter: filter, state: state)
 		)
 
-		return (viewController, bag)
+        return (viewController, Signal { callback in
+            bag += state.goToMovingFlowSignal.onValue { _ in
+                callback(.movingFlow)
+            }
+            
+            return bag
+        })
 	}
 }
 

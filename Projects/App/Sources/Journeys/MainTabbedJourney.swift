@@ -42,7 +42,12 @@ struct MainTabbedJourney {
 		Journey(
 			Contracts(),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-		)
+        ) { result in
+            switch result {
+            case .movingFlow:
+                MovingFlowJourney.journey
+            }
+        }
 		.configureTabBarItem
 		.onTabSelected {
 			ContextGradient.currentOption = .none
