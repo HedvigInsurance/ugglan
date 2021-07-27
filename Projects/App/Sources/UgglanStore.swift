@@ -77,7 +77,7 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
 						exchangeToken: exchangeToken.removingPercentEncoding ?? ""
 					)
 				)
-                .map(on: .main) { response in
+				.map(on: .main) { response in
 					guard
 						let token = response.exchangeToken
 							.asExchangeTokenSuccessResponse?
