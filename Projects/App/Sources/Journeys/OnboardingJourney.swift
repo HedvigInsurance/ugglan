@@ -7,8 +7,8 @@ import hCoreUI
 
 struct OnboardingJourney {
 	static var journey: some JourneyPresentation {
-		GroupJourney {
-			switch Localization.Locale.currentLocale.market {
+		MarketGroupJourney { market in
+			switch market {
 			case .se:
 				Journey(OnboardingChat()) { result in
 					result.journey

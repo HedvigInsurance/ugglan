@@ -50,7 +50,7 @@ extension ProfileSection: Viewable {
 			)
 		}
 
-		bag += dataSignal.atOnce().map { $0?.insuranceCost?.fragments.costFragment.monthlyNet.amount }.debug()
+		bag += dataSignal.atOnce().map { $0?.insuranceCost?.fragments.costFragment.monthlyNet.amount }
 			.toInt().bindTo(myPaymentRow.monthlyCostSignal)
 
 		return (section, bag)
