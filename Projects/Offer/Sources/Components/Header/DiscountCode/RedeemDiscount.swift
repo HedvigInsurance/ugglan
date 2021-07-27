@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct RedeemDiscount {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 }
 
 extension RedeemDiscount: Presentable {

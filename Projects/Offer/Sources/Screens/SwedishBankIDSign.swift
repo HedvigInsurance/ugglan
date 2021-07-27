@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct SwedishBankIdSign {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 
 	func presentFailedAlert(
 		_ viewController: UIViewController,
@@ -168,7 +168,9 @@ extension SwedishBankIdSign: Presentable {
 
 				viewController.navigationItem.rightBarButtonItem = cancelButton
 
-				state.signQuotes()
+				let store: OfferStore = get()
+
+				bag += store.signQuotes()
 					.onValue { signEvent in
 						switch signEvent {
 						case let .swedishBankId(autoStartToken, subscription):

@@ -27,8 +27,13 @@ public struct EmbarkPlans {
 	public init(menu: Menu? = nil) { self.menu = menu }
 }
 
+public enum EmbarkPlansResult {
+	case story(value: EmbarkStory)
+	case menu(action: MenuChildAction)
+}
+
 extension EmbarkPlans: Presentable {
-	public func materialize() -> (UIViewController, FiniteSignal<EmbarkStory>) {
+	public func materialize() -> (UIViewController, FiniteSignal<EmbarkPlansResult>) {
 		let viewController = UIViewController()
 		let bag = DisposeBag()
 
@@ -37,18 +42,6 @@ extension EmbarkPlans: Presentable {
 		let dynamicSectionStyle = DynamicSectionStyle { _ in sectionStyle }
 
 		viewController.navigationItem.title = L10n.OnboardingStartpage.screenTitle
-
-		if let menu = menu {
-			let optionsButton = UIBarButtonItem(
-				image: hCoreUIAssets.menuIcon.image,
-				style: .plain,
-				target: nil,
-				action: nil
-			)
-			viewController.navigationItem.rightBarButtonItem = optionsButton
-
-			bag += optionsButton.attachSinglePressMenu(viewController: viewController, menu: menu)
-		}
 
 		let style = DynamicTableViewFormStyle(section: dynamicSectionStyle, form: .default)
 
@@ -148,9 +141,27 @@ extension EmbarkPlans: Presentable {
 
 		return (
 			viewController,
-			FiniteSignal<EmbarkStory> { callback in
+			FiniteSignal { callback in
+				if let menu = menu {
+					let optionsButton = UIBarButtonItem(
+						image: hCoreUIAssets.menuIcon.image,
+						style: .plain,
+						target: nil,
+						action: nil
+					)
+					viewController.navigationItem.rightBarButtonItem = optionsButton
+
+					bag += optionsButton.attachSinglePressMenu(
+						viewController: viewController,
+						menu: menu
+					) { action in
+						callback(.value(.menu(action: action)))
+					}
+				}
+
 				bag += continueButton.onTapSignal.withLatestFrom(selectedPlan.atOnce().plain())
-					.compactMap { _, story in story }.onValue { story in callback(.value(story)) }
+					.compactMap { _, story in story }
+					.onValue { story in callback(.value(.story(value: story))) }
 
 				return bag
 			}

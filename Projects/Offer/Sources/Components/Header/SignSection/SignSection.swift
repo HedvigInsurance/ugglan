@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 struct SignSection {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 }
 
 extension SignSection: Presentable {
@@ -83,7 +83,10 @@ extension SignSection: Presentable {
 				innerBag += loadableSignButton.onTapSignal
 					.onValue { _ in
 						loadableSignButton.isLoadingSignal.value = true
-						state.signQuotes()
+
+						let store: OfferStore = get()
+
+						bag += store.signQuotes()
 							.onValue { event in
 								if case .failed = event {
 									loadableSignButton.isLoadingSignal.value = false

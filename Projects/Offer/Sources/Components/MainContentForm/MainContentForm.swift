@@ -8,7 +8,7 @@ import hCoreUI
 
 struct MainContentForm {
 	let scrollView: UIScrollView
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 }
 
 extension MainContentForm: Presentable {

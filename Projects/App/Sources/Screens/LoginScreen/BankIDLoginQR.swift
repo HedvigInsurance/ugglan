@@ -7,8 +7,12 @@ import hCoreUI
 
 struct BankIDLoginQR {}
 
+enum BankIDLoginQRResult {
+	case loggedIn
+}
+
 extension BankIDLoginQR: Presentable {
-	func materialize() -> (UIViewController, Disposable) {
+	func materialize() -> (UIViewController, Signal<BankIDLoginQRResult>) {
 		let viewController = UIViewController()
 		let bag = DisposeBag()
 
@@ -26,23 +30,6 @@ extension BankIDLoginQR: Presentable {
 			action: nil
 		)
 		moreBarButtonItem.tintColor = .brand(.primaryText())
-
-		bag += moreBarButtonItem.onValue { _ in
-			let alert = Alert<Void>(actions: [
-				.init(
-					title: L10n.demoModeStart,
-					action: {
-						UIApplication.shared.appDelegate.bag += UIApplication.shared.keyWindow?
-							.present(LoggedIn(), options: [])
-					}
-				), .init(title: L10n.demoModeCancel, style: .cancel, action: {}),
-			])
-
-			viewController.present(
-				alert,
-				style: .sheet(from: moreBarButtonItem.view, rect: moreBarButtonItem.view?.frame)
-			)
-		}
 
 		viewController.navigationItem.rightBarButtonItem = moreBarButtonItem
 
@@ -113,6 +100,31 @@ extension BankIDLoginQR: Presentable {
 		bag += Signal(every: 10).atOnce().mapLatestToFuture { BankIDLoginSweden().generateAutoStartToken() }
 			.transition(style: .crossDissolve(duration: 0.5), with: imageView, animations: generateQRCode)
 
-		return (viewController, bag)
+		return (
+			viewController,
+			Signal { callback in
+
+				bag += moreBarButtonItem.onValue { _ in
+					let alert = Alert<Void>(actions: [
+						.init(
+							title: L10n.demoModeStart,
+							action: {
+								callback(.loggedIn)
+							}
+						), .init(title: L10n.demoModeCancel, style: .cancel, action: {}),
+					])
+
+					viewController.present(
+						alert,
+						style: .sheet(
+							from: moreBarButtonItem.view,
+							rect: moreBarButtonItem.view?.frame
+						)
+					)
+				}
+
+				return bag
+			}
+		)
 	}
 }

@@ -11,7 +11,6 @@ import hGraphQL
 public struct Home {
 	public static var openClaimsHandler: (_ viewController: UIViewController) -> Void = { _ in }
 	public static var openMovingFlowHandler: (_ viewController: UIViewController) -> Void = { _ in }
-	public static var openCallMeChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
 	public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
 	public static var openConnectPaymentHandler: (_ viewController: UIViewController) -> Void = { _ in }
 

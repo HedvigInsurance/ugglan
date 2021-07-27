@@ -17,7 +17,7 @@ public struct Offer {
 	@Inject var client: ApolloClient
 	let offerIDContainer: OfferIDContainer
 	let menu: Menu?
-	let state: OfferState
+	let state: OldOfferState
 	let options: Set<OfferOption>
 
 	public init(
@@ -28,7 +28,7 @@ public struct Offer {
 		self.offerIDContainer = offerIDContainer
 		self.menu = menu
 		self.options = options
-		self.state = OfferState(ids: offerIDContainer.ids)
+		self.state = OldOfferState(ids: offerIDContainer.ids)
 	}
 }
 
@@ -36,6 +36,7 @@ public enum OfferResult {
 	case signed
 	case close
 	case chat
+	case menu(_ action: MenuChildAction)
 }
 
 extension Offer: Presentable {
@@ -157,33 +158,26 @@ extension Offer: Presentable {
 				}
 			}
 
-		bag += state.$hasSignedQuotes.filter(predicate: { $0 }).flatMapLatest { _ in state.dataSignal }
-			.onValue { data in
-				Analytics.track(
-					"QUOTES_SIGNED",
-					properties: [
-						"quoteIds": data.quoteBundle.quotes.map { $0.id }
-					]
-				)
-			}
-
 		return (
 			viewController,
 			FiniteSignal { callback in
-				bag += state.$hasSignedQuotes.filter(predicate: { $0 })
-					.onValue({ _ in
-						callback(.value(.signed))
-					})
+				let store: OfferStore = self.get()
 
-				bag += state.openChatCallbacker.onValue({ _ in
+				bag += store.onAction(.openChat) {
 					callback(.value(.chat))
-				})
+				}
+
+				bag += store.onAction(.didSign) {
+					callback(.value(.signed))
+				}
 
 				if let menu = menu {
 					bag += optionsOrCloseButton.attachSinglePressMenu(
 						viewController: viewController,
 						menu: menu
-					)
+					) { action in
+						callback(.value(.menu(action)))
+					}
 				} else {
 					optionsOrCloseButton.image = hCoreUIAssets.close.image
 					bag += optionsOrCloseButton.onValue {
