@@ -22,7 +22,7 @@ import hGraphQL
 
 #if DEBUG
 	import PresentationDebugSupport
-import Offer
+	import Offer
 #endif
 
 let log = Logger.self
@@ -34,14 +34,14 @@ let log = Logger.self
 	func logout() {
 		ApolloClient.cache = InMemoryNormalizedCache()
 		ApolloClient.deleteToken()
-        
-        // remove all persisted state
-        UgglanStore.destroy()
-        OfferStore.destroy()
-        
-        // create new store container to remove all old store instances
-        globalPresentableStoreContainer = PresentableStoreContainer()
-        
+
+		// remove all persisted state
+		UgglanStore.destroy()
+		OfferStore.destroy()
+
+		// create new store container to remove all old store instances
+		globalPresentableStoreContainer = PresentableStoreContainer()
+
 		bag += ApolloClient.initAndRegisterClient()
 			.onValue { _ in ChatState.shared = ChatState()
 				self.bag += ApplicationState.presentRootViewController(self.window)

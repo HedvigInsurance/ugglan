@@ -11,7 +11,7 @@ struct OnboardingJourney {
 			switch Localization.Locale.currentLocale.market {
 			case .se:
 				Journey(OnboardingChat()) { result in
-                    result.journey
+					result.journey
 				}
 			case .dk:
 				Journey(WebOnboarding(webScreen: .webOnboarding)) { value in

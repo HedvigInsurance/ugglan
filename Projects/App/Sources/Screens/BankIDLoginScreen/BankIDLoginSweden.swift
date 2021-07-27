@@ -13,8 +13,8 @@ struct BankIDLoginSweden {
 }
 
 enum BankIDLoginSwedenResult {
-    case qrCode
-    case loggedIn
+	case qrCode
+	case loggedIn
 }
 
 extension BankIDLoginSweden {
@@ -140,23 +140,27 @@ extension BankIDLoginSweden: Presentable {
 		return (
 			viewController,
 			Signal { callback in
-                generateAutoStartToken()
-                .onValue { url in
-                    if UIApplication.shared.canOpenURL(url) {
-                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                    } else {
-                        callback(.qrCode)
-                    }
-                }
-            
-                bag += bankIDOnAnotherDeviceButton.onTapSignal.onValue { _ in
-                    callback(.qrCode)
-                }
-				
+				generateAutoStartToken()
+					.onValue { url in
+						if UIApplication.shared.canOpenURL(url) {
+							UIApplication.shared.open(
+								url,
+								options: [:],
+								completionHandler: nil
+							)
+						} else {
+							callback(.qrCode)
+						}
+					}
+
+				bag += bankIDOnAnotherDeviceButton.onTapSignal.onValue { _ in
+					callback(.qrCode)
+				}
+
 				bag += statusSignal.distinct()
 					.onValue { authState in
 						if authState == .success {
-                            callback(.loggedIn)
+							callback(.loggedIn)
 						}
 					}
 

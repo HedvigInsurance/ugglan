@@ -9,18 +9,18 @@ struct OnboardingChat { @Inject var client: ApolloClient }
 
 enum OnboardingChatResult {
 	case menu(action: MenuChildAction)
-    case chat(result: ChatResult)
-    
-    var journey: some JourneyPresentation {
-        GroupJourney {
-            switch self {
-                case let .menu(action):
-                action.journey
-                case let .chat(result):
-                result.journey
-            }
-        }
-    }
+	case chat(result: ChatResult)
+
+	var journey: some JourneyPresentation {
+		GroupJourney {
+			switch self {
+			case let .menu(action):
+				action.journey
+			case let .chat(result):
+				result.journey
+			}
+		}
+	}
 }
 
 extension OnboardingChat: Presentable {
@@ -80,10 +80,10 @@ extension OnboardingChat: Presentable {
 				) { action in
 					callback(.menu(action: action))
 				}
-            
-                bag += signal.onValue { result in
-                    callback(.chat(result: result))
-                }
+
+				bag += signal.onValue { result in
+					callback(.chat(result: result))
+				}
 
 				return bag
 			}

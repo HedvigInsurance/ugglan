@@ -16,9 +16,9 @@ struct EmbarkOnboardingJourney {
 		]
 
 		return Journey(
-            EmbarkPlans(menu: Menu(title: nil, children: menuChildren)),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        ) { plansResult in
+			EmbarkPlans(menu: Menu(title: nil, children: menuChildren)),
+			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+		) { plansResult in
 			switch plansResult {
 			case let .menu(action):
 				action.journey

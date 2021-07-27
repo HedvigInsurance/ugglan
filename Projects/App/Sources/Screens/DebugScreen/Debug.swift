@@ -106,7 +106,12 @@ import hGraphQL
 											)
 									)
 									.onValue { _ in
-                                        UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(MainTabbedJourney.journey)
+										UIApplication.shared.appDelegate.bag +=
+											UIApplication.shared.appDelegate
+											.window.present(
+												MainTabbedJourney
+													.journey
+											)
 									}
 								}
 						}

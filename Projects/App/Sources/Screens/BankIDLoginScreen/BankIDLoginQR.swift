@@ -8,7 +8,7 @@ import hCoreUI
 struct BankIDLoginQR {}
 
 enum BankIDLoginQRResult {
-    case loggedIn
+	case loggedIn
 }
 
 extension BankIDLoginQR: Presentable {
@@ -100,25 +100,31 @@ extension BankIDLoginQR: Presentable {
 		bag += Signal(every: 10).atOnce().mapLatestToFuture { BankIDLoginSweden().generateAutoStartToken() }
 			.transition(style: .crossDissolve(duration: 0.5), with: imageView, animations: generateQRCode)
 
-        return (viewController, Signal { callback in
-            
-            bag += moreBarButtonItem.onValue { _ in
-                let alert = Alert<Void>(actions: [
-                    .init(
-                        title: L10n.demoModeStart,
-                        action: {
-                            callback(.loggedIn)
-                        }
-                    ), .init(title: L10n.demoModeCancel, style: .cancel, action: {}),
-                ])
+		return (
+			viewController,
+			Signal { callback in
 
-                viewController.present(
-                    alert,
-                    style: .sheet(from: moreBarButtonItem.view, rect: moreBarButtonItem.view?.frame)
-                )
-            }
-            
-            return bag
-        })
+				bag += moreBarButtonItem.onValue { _ in
+					let alert = Alert<Void>(actions: [
+						.init(
+							title: L10n.demoModeStart,
+							action: {
+								callback(.loggedIn)
+							}
+						), .init(title: L10n.demoModeCancel, style: .cancel, action: {}),
+					])
+
+					viewController.present(
+						alert,
+						style: .sheet(
+							from: moreBarButtonItem.view,
+							rect: moreBarButtonItem.view?.frame
+						)
+					)
+				}
+
+				return bag
+			}
+		)
 	}
 }
