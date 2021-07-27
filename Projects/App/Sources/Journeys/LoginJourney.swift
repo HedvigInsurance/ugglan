@@ -18,17 +18,17 @@ extension AppJourney {
 				Journey(BankIDLoginQR()) { result in
 					switch result {
 					case .loggedIn:
-                        AppJourney.loggedIn
+						AppJourney.loggedIn
 					}
 				}
 			case .loggedIn:
-                AppJourney.loggedIn
+				AppJourney.loggedIn
 			}
 		}
 		.withDismissButton
 	}
 
-    fileprivate static var simpleSign: some JourneyPresentation {
+	fileprivate static var simpleSign: some JourneyPresentation {
 		Journey(SimpleSignLoginView(), style: .detented(.medium)) { id in
 			Journey(WebViewLogin(idNumber: id), style: .detented(.large))
 		}
@@ -43,7 +43,7 @@ extension AppJourney {
 			case .no, .dk:
 				simpleSign
 			}
-        }
+		}
 	}
 }
 

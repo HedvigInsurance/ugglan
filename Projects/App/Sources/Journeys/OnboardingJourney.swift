@@ -15,7 +15,7 @@ extension AppJourney {
 				}
 			case .dk:
 				Journey(WebOnboarding(webScreen: .webOnboarding)) { value in
-                    AppJourney.postOnboarding
+					AppJourney.postOnboarding
 				}
 			case .no:
 				EmbarkOnboardingJourney.journey

@@ -9,7 +9,7 @@ extension AppJourney {
 	static var postOnboarding: some JourneyPresentation {
 		Journey(PostOnboarding(), options: [.prefersNavigationBarHidden(true)]) { _ in
 			Journey(WelcomePager()) { _ in
-                AppJourney.loggedIn.onPresent {
+				AppJourney.loggedIn.onPresent {
 					AskForRating().ask()
 				}
 			}

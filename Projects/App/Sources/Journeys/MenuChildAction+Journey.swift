@@ -25,7 +25,7 @@ extension MenuChildAction {
 				)
 				.withDismissButton
 			case MenuChildAction.login:
-                AppJourney.login
+				AppJourney.login
 			default:
 				ContinueJourney()
 			}

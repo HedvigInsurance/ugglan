@@ -3,9 +3,9 @@ import Flow
 import Foundation
 import Offer
 import Presentation
+import UIKit
 import hCore
 import hGraphQL
-import UIKit
 
 public struct UgglanState: StateProtocol {
 	var selectedTabIndex: Int = 0
@@ -26,8 +26,8 @@ public enum UgglanAction: ActionProtocol {
 	case fetchFeatures
 	case setFeatures(features: [UgglanState.Feature]?)
 	case showLoggedIn
-    case exchangePaymentLink(link: String)
-    case exchangeFailed
+	case exchangePaymentLink(link: String)
+	case exchangeFailed
 
 	#if compiler(<5.5)
 		public func encode(to encoder: Encoder) throws {
@@ -65,28 +65,29 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
 						.compactMap { $0 }
 					)
 				}
-        case let .exchangePaymentLink(link):
-            let afterHashbang = link.split(separator: "#").last
-            let exchangeToken =
-                afterHashbang?.replacingOccurrences(of: "exchange-token=", with: "")
-                ?? ""
+		case let .exchangePaymentLink(link):
+			let afterHashbang = link.split(separator: "#").last
+			let exchangeToken =
+				afterHashbang?.replacingOccurrences(of: "exchange-token=", with: "")
+				?? ""
 
-            return client.perform(
-                mutation: GraphQL.ExchangeTokenMutation(
-                    exchangeToken: exchangeToken.removingPercentEncoding ?? ""
-                )
-            )
-            .map { response in
-                guard
-                    let token = response.exchangeToken
-                        .asExchangeTokenSuccessResponse?
-                        .token
-                else { return .exchangeFailed }
-                
-                UIApplication.shared.appDelegate.setToken(token)
-                
-                return .showLoggedIn
-            }
+			return
+				client.perform(
+					mutation: GraphQL.ExchangeTokenMutation(
+						exchangeToken: exchangeToken.removingPercentEncoding ?? ""
+					)
+				)
+				.map { response in
+					guard
+						let token = response.exchangeToken
+							.asExchangeTokenSuccessResponse?
+							.token
+					else { return .exchangeFailed }
+
+					UIApplication.shared.appDelegate.setToken(token)
+
+					return .showLoggedIn
+				}
 		default:
 			break
 		}

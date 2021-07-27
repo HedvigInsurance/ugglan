@@ -38,7 +38,7 @@ extension AppJourney {
 			}
 	}
 
-    fileprivate static var contractsTab: some JourneyPresentation {
+	fileprivate static var contractsTab: some JourneyPresentation {
 		Journey(
 			Contracts(),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
@@ -54,7 +54,7 @@ extension AppJourney {
 		}
 	}
 
-    fileprivate static var keyGearTab: some JourneyPresentation {
+	fileprivate static var keyGearTab: some JourneyPresentation {
 		Journey(
 			KeyGearOverview(),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
@@ -65,7 +65,7 @@ extension AppJourney {
 		}
 	}
 
-    fileprivate static var foreverTab: some JourneyPresentation {
+	fileprivate static var foreverTab: some JourneyPresentation {
 		Journey(
 			Forever(service: ForeverServiceGraphQL()),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
@@ -79,7 +79,7 @@ extension AppJourney {
 		}
 	}
 
-    fileprivate static var profileTab: some JourneyPresentation {
+	fileprivate static var profileTab: some JourneyPresentation {
 		Journey(
 			Profile(),
 			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]

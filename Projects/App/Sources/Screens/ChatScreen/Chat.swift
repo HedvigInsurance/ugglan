@@ -57,14 +57,14 @@ enum ChatResult {
 					case .menu:
 						ContinueJourney()
 					case .signed:
-                        AppJourney.postOnboarding
+						AppJourney.postOnboarding
 					}
 				}
 				.hidesBackButton
-            case .loggedIn:
-                AppJourney.loggedIn
+			case .loggedIn:
+				AppJourney.loggedIn
 			case .login:
-                AppJourney.login
+				AppJourney.login
 			}
 		}
 	}
