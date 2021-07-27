@@ -36,7 +36,7 @@ public enum OfferResult {
 	case signed
 	case close
 	case chat
-    case menu(_ action: MenuChildAction)
+	case menu(_ action: MenuChildAction)
 }
 
 extension Offer: Presentable {
@@ -175,9 +175,9 @@ extension Offer: Presentable {
 					bag += optionsOrCloseButton.attachSinglePressMenu(
 						viewController: viewController,
 						menu: menu
-                    ) { action in
-                        callback(.value(.menu(action)))
-                    }
+					) { action in
+						callback(.value(.menu(action)))
+					}
 				} else {
 					optionsOrCloseButton.image = hCoreUIAssets.close.image
 					bag += optionsOrCloseButton.onValue {

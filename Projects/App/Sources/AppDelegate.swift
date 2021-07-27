@@ -405,7 +405,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
 		if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
 			if notificationType == "NEW_MESSAGE" {
-                #warning("handle this")
+				#warning("handle this")
 			} else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
 				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 					.onValue { _ in

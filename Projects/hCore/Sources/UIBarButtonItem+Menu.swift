@@ -8,11 +8,13 @@ public enum MenuStyle { case `default`, destructive }
 public protocol MenuChildable {}
 
 public struct MenuChildAction: Equatable {
-    let identifier: String
-    
-    public init(identifier: String) {
-        self.identifier = identifier
-    }
+	let identifier: String
+
+	public init(
+		identifier: String
+	) {
+		self.identifier = identifier
+	}
 }
 
 public struct MenuChild: MenuChildable {
@@ -25,7 +27,7 @@ public struct MenuChild: MenuChildable {
 		title: String,
 		style: MenuStyle,
 		image: UIImage?,
-        action: MenuChildAction
+		action: MenuChildAction
 	) {
 		self.title = title
 		self.style = style
@@ -47,7 +49,11 @@ public struct Menu: MenuChildable {
 	}
 }
 
-@available(iOS 14, *) func composeMenu(_ menu: Menu, viewController: UIViewController, onAction: @escaping (_ action: MenuChildAction) -> Void) -> UIMenu {
+@available(iOS 14, *) func composeMenu(
+	_ menu: Menu,
+	viewController: UIViewController,
+	onAction: @escaping (_ action: MenuChildAction) -> Void
+) -> UIMenu {
 	UIMenu(
 		title: menu.title ?? "",
 		options: [.displayInline],
@@ -57,7 +63,7 @@ public struct Menu: MenuChildable {
 					title: menuChild.title,
 					image: menuChild.image,
 					attributes: menuChild.style == .destructive ? .destructive : []
-                ) { _ in onAction(menuChild.action) }
+				) { _ in onAction(menuChild.action) }
 			} else if let menu = menuChild as? Menu {
 				return composeMenu(menu, viewController: viewController, onAction: onAction)
 			}
@@ -67,7 +73,11 @@ public struct Menu: MenuChildable {
 	)
 }
 
-func composeAlertActions(_ children: [MenuChildable], viewController: UIViewController, onAction: @escaping (_ action: MenuChildAction) -> Void) -> [Alert<Void>.Action] {
+func composeAlertActions(
+	_ children: [MenuChildable],
+	viewController: UIViewController,
+	onAction: @escaping (_ action: MenuChildAction) -> Void
+) -> [Alert<Void>.Action] {
 	children.map { menuChild -> [Alert<Void>.Action] in
 		if let menuChild = menuChild as? MenuChild {
 			return [
@@ -86,7 +96,11 @@ func composeAlertActions(_ children: [MenuChildable], viewController: UIViewCont
 }
 
 extension UIBarButtonItem {
-    public func attachSinglePressMenu(viewController: UIViewController, menu: Menu, onAction: @escaping (_ action: MenuChildAction) -> Void) -> Disposable {
+	public func attachSinglePressMenu(
+		viewController: UIViewController,
+		menu: Menu,
+		onAction: @escaping (_ action: MenuChildAction) -> Void
+	) -> Disposable {
 		let bag = DisposeBag()
 
 		if #available(iOS 14, *) {
@@ -96,7 +110,11 @@ extension UIBarButtonItem {
 				let alert = Alert<Void>(
 					title: menu.title,
 					actions: [
-						composeAlertActions(menu.children, viewController: viewController, onAction: onAction),
+						composeAlertActions(
+							menu.children,
+							viewController: viewController,
+							onAction: onAction
+						),
 						[Alert.Action(title: L10n.alertCancel, style: .cancel) { _ in }],
 					]
 					.flatMap { $0 }

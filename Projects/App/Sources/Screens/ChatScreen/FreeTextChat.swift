@@ -22,8 +22,8 @@ extension FreeTextChat: Presentable {
 					chat.chatState.subscribe()
 				}
 			}
-        
-        bag += signal.nil()
+
+		bag += signal.nil()
 
 		return (
 			viewController,

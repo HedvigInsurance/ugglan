@@ -207,18 +207,23 @@ extension AppInfo: Presentable {
 }
 
 extension MenuChildAction {
-    static var appInformation: MenuChildAction {
-        MenuChildAction(identifier: "app-information")
-    }
-    
-    static var appSettings: MenuChildAction {
-        MenuChildAction(identifier: "app-settings")
-    }
+	static var appInformation: MenuChildAction {
+		MenuChildAction(identifier: "app-information")
+	}
+
+	static var appSettings: MenuChildAction {
+		MenuChildAction(identifier: "app-settings")
+	}
 }
 
 extension MenuChild {
 	static var appInformation: MenuChild {
-        MenuChild(title: L10n.aboutScreenTitle, style: .default, image: hCoreUIAssets.infoLarge.image, action: .appInformation)
+		MenuChild(
+			title: L10n.aboutScreenTitle,
+			style: .default,
+			image: hCoreUIAssets.infoLarge.image,
+			action: .appInformation
+		)
 	}
 
 	static var appSettings: MenuChild {
@@ -226,7 +231,7 @@ extension MenuChild {
 			title: L10n.Profile.AppSettingsSection.title,
 			style: .default,
 			image: hCoreUIAssets.settingsIcon.image,
-            action: .appSettings
+			action: .appSettings
 		)
 	}
 }

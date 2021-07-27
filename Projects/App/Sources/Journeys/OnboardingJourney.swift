@@ -10,12 +10,12 @@ struct OnboardingJourney {
 		GroupJourney {
 			switch Localization.Locale.currentLocale.market {
 			case .se:
-                Journey(OnboardingChat()) { result in
-                    switch result {
-                    case let .menu(action):
-                        action.journey
-                    }
-                }
+				Journey(OnboardingChat()) { result in
+					switch result {
+					case let .menu(action):
+						action.journey
+					}
+				}
 			case .dk:
 				Journey(WebOnboardingFlow(webScreen: .webOnboarding)) { value in
 					PostOnboardingJourney.journey

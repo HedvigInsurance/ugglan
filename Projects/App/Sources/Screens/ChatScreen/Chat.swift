@@ -25,9 +25,9 @@ enum NavigationEvent {
 }
 
 enum ChatResult {
-    case offer(ids: [String])
-    case mainTabbedJourney
-    case login
+	case offer(ids: [String])
+	case mainTabbedJourney
+	case login
 }
 
 extension Chat: Presentable {
@@ -196,26 +196,29 @@ extension Chat: Presentable {
 		return (
 			viewController,
 			Signal { callback in
-				
-            bag += navigateCallbacker.onValue { navigationEvent in
-                switch navigationEvent {
-                case .offer:
-                    client.fetch(query: GraphQL.LastQuoteOfMemberQuery())
-                        .onValue { data in
-                            guard let id = data.lastQuoteOfMember.asCompleteQuote?.id else {
-                                return
-                            }
 
-                            callback(.offer(ids: [id]))
-                        }
-                case .dashboard:
-                    callback(.mainTabbedJourney)
-                case .login:
-                    callback(.login)
-                }
-            }
-            
-                return bag
+				bag += navigateCallbacker.onValue { navigationEvent in
+					switch navigationEvent {
+					case .offer:
+						client.fetch(query: GraphQL.LastQuoteOfMemberQuery())
+							.onValue { data in
+								guard
+									let id = data.lastQuoteOfMember.asCompleteQuote?
+										.id
+								else {
+									return
+								}
+
+								callback(.offer(ids: [id]))
+							}
+					case .dashboard:
+						callback(.mainTabbedJourney)
+					case .login:
+						callback(.login)
+					}
+				}
+
+				return bag
 			}
 		)
 	}

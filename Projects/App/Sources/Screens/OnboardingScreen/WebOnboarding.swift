@@ -14,8 +14,8 @@ struct WebOnboarding {
 }
 
 enum WebOnboardingResult {
-    case menu(action: MenuChildAction)
-    case postOnboarding
+	case menu(action: MenuChildAction)
+	case postOnboarding
 }
 
 extension WebOnboarding: Presentable {
@@ -131,25 +131,25 @@ extension WebOnboarding: Presentable {
 		return (
 			viewController,
 			Signal { callback in
-            
-            bag += settingsButton.attachSinglePressMenu(
-                viewController: viewController,
-                menu: Menu(
-                    title: "",
-                    children: [
-                        MenuChild.appInformation,
-                        MenuChild.appSettings,
-                        MenuChild.login
-                    ]
-                )
-            ) { action in
-                callback(.menu(action: action))
-                }
-            
+
+				bag += settingsButton.attachSinglePressMenu(
+					viewController: viewController,
+					menu: Menu(
+						title: "",
+						children: [
+							MenuChild.appInformation,
+							MenuChild.appSettings,
+							MenuChild.login,
+						]
+					)
+				) { action in
+					callback(.menu(action: action))
+				}
+
 				bag += webView.signal(for: \.url)
 					.map { url in let urlString = String(describing: url)
 
-                        if urlString.contains("connect-payment") { callback(.postOnboarding) }
+						if urlString.contains("connect-payment") { callback(.postOnboarding) }
 					}
 
 				return bag

@@ -24,7 +24,7 @@ public enum UgglanAction: ActionProtocol {
 	case makeForeverTabActive
 	case fetchFeatures
 	case setFeatures(features: [UgglanState.Feature]?)
-    case showMainTabbedJourney
+	case showMainTabbedJourney
 
 	#if compiler(<5.5)
 		public func encode(to encoder: Encoder) throws {

@@ -8,7 +8,7 @@ import hCore
 struct OnboardingChat { @Inject var client: ApolloClient }
 
 enum OnboardingChatResult {
-    case menu(action: MenuChildAction)
+	case menu(action: MenuChildAction)
 }
 
 extension OnboardingChat: Presentable {
@@ -54,22 +54,25 @@ extension OnboardingChat: Presentable {
 
 		bag += future.onValue { _ in }
 
-        return (viewController, Signal { callback in
-            bag += settingsButton.attachSinglePressMenu(
-                viewController: viewController,
-                menu: Menu(
-                    title: nil,
-                    children: [
-                        MenuChild.appInformation,
-                        MenuChild.appSettings,
-                        MenuChild.login
-                    ]
-                )
-            ) { action in
-                callback(.menu(action: action))
-            }
-            
-            return bag
-        })
+		return (
+			viewController,
+			Signal { callback in
+				bag += settingsButton.attachSinglePressMenu(
+					viewController: viewController,
+					menu: Menu(
+						title: nil,
+						children: [
+							MenuChild.appInformation,
+							MenuChild.appSettings,
+							MenuChild.login,
+						]
+					)
+				) { action in
+					callback(.menu(action: action))
+				}
+
+				return bag
+			}
+		)
 	}
 }

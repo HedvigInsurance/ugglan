@@ -28,8 +28,8 @@ public struct EmbarkPlans {
 }
 
 public enum EmbarkPlansResult {
-    case story(value: EmbarkStory)
-    case menu(action: MenuChildAction)
+	case story(value: EmbarkStory)
+	case menu(action: MenuChildAction)
 }
 
 extension EmbarkPlans: Presentable {
@@ -142,22 +142,26 @@ extension EmbarkPlans: Presentable {
 		return (
 			viewController,
 			FiniteSignal { callback in
-                if let menu = menu {
-                    let optionsButton = UIBarButtonItem(
-                        image: hCoreUIAssets.menuIcon.image,
-                        style: .plain,
-                        target: nil,
-                        action: nil
-                    )
-                    viewController.navigationItem.rightBarButtonItem = optionsButton
+				if let menu = menu {
+					let optionsButton = UIBarButtonItem(
+						image: hCoreUIAssets.menuIcon.image,
+						style: .plain,
+						target: nil,
+						action: nil
+					)
+					viewController.navigationItem.rightBarButtonItem = optionsButton
 
-                    bag += optionsButton.attachSinglePressMenu(viewController: viewController, menu: menu) { action in
-                        callback(.value(.menu(action: action)))
-                    }
-                }
-                
+					bag += optionsButton.attachSinglePressMenu(
+						viewController: viewController,
+						menu: menu
+					) { action in
+						callback(.value(.menu(action: action)))
+					}
+				}
+
 				bag += continueButton.onTapSignal.withLatestFrom(selectedPlan.atOnce().plain())
-                .compactMap { _, story in story }.onValue { story in callback(.value(.story(value: story))) }
+					.compactMap { _, story in story }
+					.onValue { story in callback(.value(.story(value: story))) }
 
 				return bag
 			}

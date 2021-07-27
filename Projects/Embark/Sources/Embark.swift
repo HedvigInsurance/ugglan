@@ -27,9 +27,9 @@ public struct Embark {
 }
 
 extension MenuChildAction {
-    static var restart: MenuChildAction {
-        MenuChildAction(identifier: "embark-restart")
-    }
+	static var restart: MenuChildAction {
+		MenuChildAction(identifier: "embark-restart")
+	}
 }
 
 extension Embark: Presentable {
@@ -291,21 +291,21 @@ extension Embark: Presentable {
 											style: .destructive,
 											image: hCoreUIAssets.restart
 												.image,
-                                            action: .restart
+											action: .restart
 										)
 									]
 								),
 							]
 							.compactMap { $0 }
 						)
-                    ) { action in
-                        if action == .restart {
-                            presentRestartAlert(viewController)
-                            return
-                        }
-                        
-                        callback(.value(.menu(action)))
-                    }
+					) { action in
+						if action == .restart {
+							presentRestartAlert(viewController)
+							return
+						}
+
+						callback(.value(.menu(action)))
+					}
 				} else {
 					optionsOrCloseButton.image = hCoreUIAssets.close.image
 					bag += optionsOrCloseButton.onValue { _ in
