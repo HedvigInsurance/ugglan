@@ -13,12 +13,12 @@ let sdkFrameworks: [TargetDependency] = [
 let ugglanConfigurations: [CustomConfiguration] = [
 	.debug(
 		name: "Debug",
-		settings: ["PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.test.app"],
+        settings: ["PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.test.app", "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER"],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 	),
 	.release(
 		name: "Release",
-		settings: [:],
+		settings: ["OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER"],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 	),
 ]

@@ -21,7 +21,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-#if DEBUG
+#if PRESENTATION_DEBUGGER
 	import PresentationDebugSupport
 #endif
 
@@ -318,7 +318,7 @@ let log = Logger.self
 		Messaging.messaging().delegate = self
 		UNUserNotificationCenter.current().delegate = self
 
-		#if DEBUG
+		#if PRESENTATION_DEBUGGER
 
 			PresentableStoreContainer.debugger = PresentableStoreDebugger()
 			PresentableStoreContainer.debugger?.startServer()
