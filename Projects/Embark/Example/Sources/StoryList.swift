@@ -30,16 +30,17 @@ extension StoryList: Presentable {
 					options: [.defaults, .largeTitleDisplayMode(.never)]
 				)
 				.onValueDisposePrevious { result in
-                    switch result {
-                    case let .story(value: story):
-                        return viewController.present(
-                            Embark(name: story.name),
-                            options: [.defaults, .autoPop]
-                        )
-                        .nil()
-                    default:
-                        return NilDisposer()
-                    }
+					switch result {
+					case let .story(value: story):
+						return
+							viewController.present(
+								Embark(name: story.name),
+								options: [.defaults, .autoPop]
+							)
+							.nil()
+					default:
+						return NilDisposer()
+					}
 				}
 		}
 
