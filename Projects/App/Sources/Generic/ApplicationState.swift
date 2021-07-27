@@ -32,30 +32,22 @@ extension ApplicationState {
 		guard let applicationState = currentState
 		else {
 			return window.present(
-				MarketPicker(),
-				options: [.defaults],
-				animated: animated
+                MainJourney.journey
 			)
 		}
 
 		switch applicationState {
 		case .marketPicker, .languagePicker:
 			return window.present(
-				MarketPicker(),
-				options: [.defaults],
-				animated: animated
+                MainJourney.journey
 			)
 		case .marketing:
 			return window.present(
-				Marketing(),
-				options: [.defaults],
-				animated: animated
+                MainJourney.journey
 			)
 		case .onboardingChat, .onboarding:
 			return window.present(
-				Onboarding(),
-				options: [.defaults, .prefersLargeTitles(true)],
-				animated: animated
+                OnboardingJourney.journey
 			)
 		case .offer:
 			let bag = DisposeBag()

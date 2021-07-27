@@ -7,14 +7,14 @@ import hCore
 import hGraphQL
 
 public struct UgglanState: StateProtocol {
-	var selectedTabIndex = 0
+    var selectedTabIndex: Int = 0
 
 	public enum Feature: Codable {
 		case referrals
 		case keyGear
 	}
 
-	var features: [Feature]? = nil
+    var features: [Feature]?
 
 	public init() {}
 }

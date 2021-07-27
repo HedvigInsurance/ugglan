@@ -31,7 +31,7 @@ struct PostOnboarding {
 		bag += paymentButton.onTapSignal.onValue { _ in onAction(.payment) }
 
 		let payment = ImageTextAction<TableAction>(
-			image: .init(image: Asset.paymentSetupIllustration.image),
+            image: .init(image: Asset.paymentSetupIllustration.image),
 			title: L10n.PayInExplainer.headline,
 			body: isSwitching ? L10n.onboardingConnectDdBodySwitchers : L10n.PayInExplainer.body,
 			actions: [(.payment, paymentButton)],
@@ -72,7 +72,7 @@ struct PostOnboarding {
 }
 
 extension PostOnboarding: Presentable {
-	func materialize() -> (UIViewController, Disposable) {
+	func materialize() -> (UIViewController, Signal<Void>) {
 		let bag = DisposeBag()
 		let viewController = UIViewController()
 		viewController.navigationItem.hidesBackButton = true
@@ -95,37 +95,34 @@ extension PostOnboarding: Presentable {
 
 		bag += viewController.install(collectionKit)
 
-		func presentLoggedIn() {
-			let appDelegate = UIApplication.shared.appDelegate
-			appDelegate.bag += appDelegate.appFlow.window.present(MainTabbedJourney.journey)
-		}
-
-		bag += client.isSwitchingInsurance.onValue { isSwitching in
-			let (table, disposable) = self.makeTable(isSwitching: isSwitching) { action in
-				switch action {
-				case .payment:
-					viewController.present(
-						PaymentSetup(
-							setupType: .postOnboarding,
-							urlScheme: Bundle.main.urlScheme ?? ""
-						),
-						style: .modally(
-							presentationStyle: .formSheet,
-							transitionStyle: nil,
-							capturesStatusBarAppearance: true
-						)
-					)
-					.onResult { _ in collectionKit.scrollToNextItem() }
-				case .push:
-					UIApplication.shared.appDelegate.registerForPushNotifications()
-						.onValue { _ in presentLoggedIn() }
-				case .pushSkip: presentLoggedIn()
-				}
-			}
-			collectionKit.table = table
-			bag += disposable
-		}
-
-		return (viewController, bag)
+        return (viewController, Signal { callback in
+            bag += client.isSwitchingInsurance.onValue { isSwitching in
+                let (table, disposable) = self.makeTable(isSwitching: isSwitching) { action in
+                    switch action {
+                    case .payment:
+                        viewController.present(
+                            PaymentSetup(
+                                setupType: .postOnboarding,
+                                urlScheme: Bundle.main.urlScheme ?? ""
+                            ),
+                            style: .modally(
+                                presentationStyle: .formSheet,
+                                transitionStyle: nil,
+                                capturesStatusBarAppearance: true
+                            )
+                        )
+                        .onResult { _ in collectionKit.scrollToNextItem() }
+                    case .push:
+                        UIApplication.shared.appDelegate.registerForPushNotifications()
+                            .onValue { _ in callback(()) }
+                    case .pushSkip: callback(())
+                    }
+                }
+                collectionKit.table = table
+                bag += disposable
+            }
+            
+            return bag
+        })
 	}
 }

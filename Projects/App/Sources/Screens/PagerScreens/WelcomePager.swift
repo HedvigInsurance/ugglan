@@ -10,7 +10,7 @@ import hGraphQL
 struct WelcomePager { @Inject var client: ApolloClient }
 
 extension WelcomePager: Presentable {
-	func materialize() -> (UIViewController, Future<Void>) {
+	func materialize() -> (UIViewController, Signal<Void>) {
 		var pager = Pager(
 			title: "",
 			buttonContinueTitle: L10n.newMemberProceed,
@@ -32,6 +32,10 @@ extension WelcomePager: Presentable {
 				}
 			}
 
-		return (viewController, future)
+        return (viewController, Signal { callback in
+            return future.onValue {
+                callback(())
+            }.disposable
+        })
 	}
 }

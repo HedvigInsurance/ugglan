@@ -83,26 +83,6 @@ struct CrossFrameworkCoordinator {
 			viewController.present(FreeTextChat().wrappedInCloseButton(), style: .detented(.large))
 		}
 
-		CrossFramework.presentOnboarding = { viewController in
-			if !UITraitCollection.isCatalyst { viewController.navigationController?.hero.isEnabled = false }
-
-			switch Localization.Locale.currentLocale.market {
-			case .no:
-				viewController.present(EmbarkOnboardingFlow.journey).onValue { _ in }
-			default:
-				viewController.present(
-					Onboarding(),
-					options: [.defaults, .prefersNavigationBarHidden(false)]
-				)
-			}
-
-		}
-
-		CrossFramework.presentLogin = { viewController in
-			viewController.present(Login(), options: [.defaults, .allowSwipeDismissAlways, .autoPop])
-				.onValue { UIApplication.shared.appDelegate.appFlow.presentLoggedIn() }
-		}
-
 		CrossFramework.onRequestLogout = { UIApplication.shared.appDelegate.logout() }
 	}
 }

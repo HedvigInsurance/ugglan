@@ -189,8 +189,10 @@ extension Checkout: Presentable {
 					checkoutButton.$isLoading.value = true
 
 					toggleAllowDismissal()
+                    
+                    let store: OfferStore = get()
 
-					state.signQuotes()
+                    bag += store.signQuotes()
 						.onValue { signEvent in
 							switch signEvent {
 							case .swedishBankId, .failed:
@@ -216,9 +218,6 @@ extension Checkout: Presentable {
 							case .done:
 								completion(.success)
 							}
-						}
-						.onError { error in
-							handleError()
 						}
 				}
 

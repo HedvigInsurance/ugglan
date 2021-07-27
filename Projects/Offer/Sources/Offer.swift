@@ -157,31 +157,18 @@ extension Offer: Presentable {
 				}
 			}
 
-		bag += state.$hasSignedQuotes.filter(predicate: { $0 }).flatMapLatest { _ in state.dataSignal }
-			.onValue { data in
-				Analytics.track(
-					"QUOTES_SIGNED",
-					properties: [
-						"quoteIds": data.quoteBundle.quotes.map { $0.id }
-					]
-				)
-			}
-
 		return (
 			viewController,
 			FiniteSignal { callback in
 				let store: OfferStore = self.get()
-
-				bag += store.stateSignal.map { $0.chatOpened }.filter(predicate: { $0 }).distinct()
-					.onValue({ _ in
-						callback(.value(.signed))
-					})
-
-				bag += store.stateSignal.map { $0.chatOpened }.filter(predicate: { $0 }).distinct()
-					.onValue { _ in
-						callback(.value(.chat))
-						store.send(.closeChat)
-					}
+            
+                bag += store.onAction(.openChat) {
+                    callback(.value(.chat))
+                }
+            
+                bag += store.onAction(.didSign) {
+                    callback(.value(.signed))
+                }
 
 				if let menu = menu {
 					bag += optionsOrCloseButton.attachSinglePressMenu(
