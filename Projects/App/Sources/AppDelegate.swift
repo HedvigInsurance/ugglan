@@ -19,10 +19,10 @@ import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
+import Offer
 
 #if DEBUG
 	import PresentationDebugSupport
-	import Offer
 #endif
 
 let log = Logger.self
