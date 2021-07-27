@@ -48,7 +48,7 @@ public struct Contracts {
 }
 
 public enum ContractsResult {
-    case movingFlow
+	case movingFlow
 }
 
 extension Contracts: Presentable {
@@ -66,13 +66,16 @@ extension Contracts: Presentable {
 			ContractTable(presentingViewController: viewController, filter: filter, state: state)
 		)
 
-        return (viewController, Signal { callback in
-            bag += state.goToMovingFlowSignal.onValue { _ in
-                callback(.movingFlow)
-            }
-            
-            return bag
-        })
+		return (
+			viewController,
+			Signal { callback in
+				bag += state.goToMovingFlowSignal.onValue { _ in
+					callback(.movingFlow)
+				}
+
+				return bag
+			}
+		)
 	}
 }
 
