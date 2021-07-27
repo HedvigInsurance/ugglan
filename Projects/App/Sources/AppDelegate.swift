@@ -9,6 +9,7 @@ import Form
 import Foundation
 import Hero
 import Mixpanel
+import Offer
 import Payment
 import Presentation
 import Sentry
@@ -19,7 +20,6 @@ import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
-import Offer
 
 #if DEBUG
 	import PresentationDebugSupport
