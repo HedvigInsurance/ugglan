@@ -25,7 +25,7 @@ extension MenuChildAction {
 				)
 				.withDismissButton
 			case MenuChildAction.login:
-				Journey(Login(), style: .detented(.large))
+                LoginJourney.journey
 			default:
 				ContinueJourney()
 			}

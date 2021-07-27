@@ -22,20 +22,29 @@ import hGraphQL
 
 #if DEBUG
 	import PresentationDebugSupport
+import Offer
 #endif
 
 let log = Logger.self
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
 	let bag = DisposeBag()
-	let appFlow = AppFlow(window: UIWindow(frame: UIScreen.main.bounds))
+	let window = UIWindow(frame: UIScreen.main.bounds)
 
 	func logout() {
 		ApolloClient.cache = InMemoryNormalizedCache()
 		ApolloClient.deleteToken()
+        
+        // remove all persisted state
+        UgglanStore.destroy()
+        OfferStore.destroy()
+        
+        // create new store container to remove all old store instances
+        globalPresentableStoreContainer = PresentableStoreContainer()
+        
 		bag += ApolloClient.initAndRegisterClient()
 			.onValue { _ in ChatState.shared = ChatState()
-				self.bag += ApplicationState.presentRootViewController(self.appFlow.window)
+				self.bag += ApplicationState.presentRootViewController(self.window)
 			}
 	}
 
@@ -89,7 +98,7 @@ let log = Logger.self
 	func handleDeepLink(_ dynamicLinkUrl: URL) -> Bool {
 		if dynamicLinkUrl.pathComponents.contains("direct-debit") {
 			guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-			guard let rootViewController = appFlow.window.rootViewController else { return false }
+			guard let rootViewController = window.rootViewController else { return false }
 
 			Mixpanel.mainInstance().track(event: "DEEP_LINK_DIRECT_DEBIT")
 
@@ -282,10 +291,10 @@ let log = Logger.self
 		let launch = Launch()
 
 		let (launchView, launchFuture) = launch.materialize()
-		appFlow.window.rootView.addSubview(launchView)
+		window.rootView.addSubview(launchView)
 		launchView.layer.zPosition = .greatestFiniteMagnitude - 2
 
-		appFlow.window.makeKeyAndVisible()
+		window.makeKeyAndVisible()
 
 		launchView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
@@ -309,7 +318,7 @@ let log = Logger.self
 
 				AnalyticsCoordinator().setUserId()
 
-				self.bag += ApplicationState.presentRootViewController(self.appFlow.window)
+				self.bag += ApplicationState.presentRootViewController(self.window)
 			}
 			.onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
 				self.bag += client.fetch(query: GraphQL.FeaturesQuery())
@@ -329,7 +338,7 @@ let log = Logger.self
 
 				if #available(iOS 13, *) {
 					self.bag += toast.onTap.onValue {
-						self.appFlow.window.rootViewController?
+						self.window.rootViewController?
 							.present(
 								UIHostingController(rootView: Debug()),
 								style: .detented(.medium, .large),
@@ -415,7 +424,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 			} else if notificationType == "CONNECT_DIRECT_DEBIT" {
 				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 					.onValue { _ in
-						self.appFlow.window.rootViewController?
+						self.window.rootViewController?
 							.present(
 								PaymentSetup(
 									setupType: .initial,
@@ -428,7 +437,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 			} else if notificationType == "PAYMENT_FAILED" {
 				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 					.onValue { _ in
-						self.appFlow.window.rootViewController?
+						self.window.rootViewController?
 							.present(
 								PaymentSetup(
 									setupType: .replacement,

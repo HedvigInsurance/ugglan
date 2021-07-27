@@ -12,6 +12,11 @@ struct BankIDLoginSweden {
 	@Inject var client: ApolloClient
 }
 
+enum BankIDLoginSwedenResult {
+    case qrCode
+    case loggedIn
+}
+
 extension BankIDLoginSweden {
 	enum AutoStartTokenError: Error {
 		case failedToGenerate
@@ -40,7 +45,7 @@ extension BankIDLoginSweden {
 }
 
 extension BankIDLoginSweden: Presentable {
-	func materialize() -> (UIViewController, Future<Void>) {
+	func materialize() -> (UIViewController, Signal<BankIDLoginSwedenResult>) {
 		let viewController = UIViewController()
 		viewController.preferredPresentationStyle = .detented(.large)
 		let bag = DisposeBag()
@@ -106,20 +111,6 @@ extension BankIDLoginSweden: Presentable {
 		)
 		bag += bankIDOnAnotherDeviceContainer.addArranged(bankIDOnAnotherDeviceButton)
 
-		bag += bankIDOnAnotherDeviceButton.onTapSignal.onValue({ _ in
-			viewController.present(BankIDLoginQR())
-		})
-
-		let closeButtonContainer = UIStackView()
-		closeButtonContainer.animationSafeIsHidden = true
-		containerView.addArrangedSubview(closeButtonContainer)
-
-		let closeButton = Button(
-			title: L10n.generalCloseButton,
-			type: .standard(backgroundColor: .purple, textColor: .white)
-		)
-		bag += closeButtonContainer.addArranged(closeButton)
-
 		let statusSignal =
 			client.subscribe(
 				subscription: GraphQL.AuthStatusSubscription()
@@ -146,35 +137,26 @@ extension BankIDLoginSweden: Presentable {
 				statusLabel.value = statusText
 			}
 
-		generateAutoStartToken()
-			.onValue { url in
-				if UIApplication.shared.canOpenURL(url) {
-					UIApplication.shared.open(url, options: [:], completionHandler: nil)
-				} else {
-					viewController.present(BankIDLoginQR())
-				}
-			}
-
 		return (
 			viewController,
-			Future { completion in
-				bag += closeButton.onTapSignal.onValue {
-					completion(.failure(FailedError.failed))
-				}
-
+			Signal { callback in
+                generateAutoStartToken()
+                .onValue { url in
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    } else {
+                        callback(.qrCode)
+                    }
+                }
+            
+                bag += bankIDOnAnotherDeviceButton.onTapSignal.onValue { _ in
+                    callback(.qrCode)
+                }
+				
 				bag += statusSignal.distinct()
 					.onValue { authState in
 						if authState == .success {
-							let appDelegate = UIApplication.shared.appDelegate
-
-							if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-								appDelegate.registerFCMToken(fcmToken)
-							}
-
-							AnalyticsCoordinator().setUserId()
-
-							let window = appDelegate.appFlow.window
-							bag += window.present(MainTabbedJourney.journey)
+                            callback(.loggedIn)
 						}
 					}
 

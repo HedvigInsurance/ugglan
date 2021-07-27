@@ -106,8 +106,7 @@ import hGraphQL
 											)
 									)
 									.onValue { _ in
-										UIApplication.shared.appDelegate.appFlow
-											.presentLoggedIn()
+                                        UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(MainTabbedJourney.journey)
 									}
 								}
 						}
@@ -118,9 +117,9 @@ import hGraphQL
 						"Go to market picker",
 						action: {
 							ApplicationState.preserveState(.marketPicker)
-							UIApplication.shared.appDelegate.appFlow.bag +=
+							UIApplication.shared.appDelegate.bag +=
 								ApplicationState.presentRootViewController(
-									UIApplication.shared.appDelegate.appFlow.window
+									UIApplication.shared.appDelegate.window
 								)
 						}
 					)

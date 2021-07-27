@@ -9,6 +9,18 @@ struct OnboardingChat { @Inject var client: ApolloClient }
 
 enum OnboardingChatResult {
 	case menu(action: MenuChildAction)
+    case chat(result: ChatResult)
+    
+    var journey: some JourneyPresentation {
+        GroupJourney {
+            switch self {
+                case let .menu(action):
+                action.journey
+                case let .chat(result):
+                result.journey
+            }
+        }
+    }
 }
 
 extension OnboardingChat: Presentable {
@@ -18,7 +30,7 @@ extension OnboardingChat: Presentable {
 		ApplicationState.preserveState(.onboardingChat)
 
 		let chat = Chat()
-		let (viewController, future) = chat.materialize()
+		let (viewController, signal) = chat.materialize()
 		viewController.navigationItem.hidesBackButton = true
 
 		chat.chatState.fetch()
@@ -52,8 +64,6 @@ extension OnboardingChat: Presentable {
 
 		viewController.navigationItem.titleView = .titleWordmarkView
 
-		bag += future.onValue { _ in }
-
 		return (
 			viewController,
 			Signal { callback in
@@ -70,6 +80,10 @@ extension OnboardingChat: Presentable {
 				) { action in
 					callback(.menu(action: action))
 				}
+            
+                bag += signal.onValue { result in
+                    callback(.chat(result: result))
+                }
 
 				return bag
 			}

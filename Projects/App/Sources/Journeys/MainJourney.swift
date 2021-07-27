@@ -14,7 +14,7 @@ struct MainJourney {
 				case .onboard:
 					OnboardingJourney.journey
 				case .login:
-					Journey(Login(), style: .detented(.large))
+                    LoginJourney.journey
 				}
 			}
 		}

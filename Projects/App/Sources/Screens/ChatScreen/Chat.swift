@@ -24,10 +24,45 @@ enum NavigationEvent {
 	case dashboard, offer, login
 }
 
+extension JourneyPresentation {
+    public var hidesBackButton: Self {
+        addConfiguration { presenter in
+            presenter.viewController.navigationItem.hidesBackButton = true
+        }
+    }
+}
+
 enum ChatResult {
 	case offer(ids: [String])
 	case mainTabbedJourney
 	case login
+    
+    var journey: some JourneyPresentation {
+        GroupJourney {
+            switch self {
+                case let .offer(ids):
+                    Journey(
+                        Offer(offerIDContainer: .exact(ids: ids, shouldStore: true), menu: nil, options: [.shouldPreserveState])
+                    ) { offerResult in
+                        switch offerResult {
+                        case .chat:
+                            Journey(FreeTextChat(), style: .detented(.large), options: [.defaults])
+                                .withDismissButton
+                        case .close:
+                            DismissJourney()
+                        case .menu:
+                            ContinueJourney()
+                        case .signed:
+                            PostOnboardingJourney.journey
+                        }
+                    }.hidesBackButton
+                case .mainTabbedJourney:
+                    MainTabbedJourney.journey
+            case .login:
+                LoginJourney.journey
+            }
+        }
+    }
 }
 
 extension Chat: Presentable {
