@@ -7,8 +7,12 @@ import hCore
 
 struct OnboardingChat { @Inject var client: ApolloClient }
 
+enum OnboardingChatResult {
+    case menu(action: MenuChildAction)
+}
+
 extension OnboardingChat: Presentable {
-	func materialize() -> (UIViewController, Disposable) {
+	func materialize() -> (UIViewController, Signal<OnboardingChatResult>) {
 		let bag = DisposeBag()
 
 		ApplicationState.preserveState(.onboardingChat)
@@ -24,19 +28,6 @@ extension OnboardingChat: Presentable {
 		settingsButton.tintColor = .brand(.primaryText())
 
 		viewController.navigationItem.leftBarButtonItem = settingsButton
-
-		bag += settingsButton.attachSinglePressMenu(
-			viewController: viewController,
-			menu: Menu(
-				title: nil,
-				children: [
-					MenuChild.appInformation, MenuChild.appSettings,
-					MenuChild.login(onLogin: {
-						UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
-					}),
-				]
-			)
-		)
 
 		let restartButton = UIBarButtonItem()
 		restartButton.image = Asset.restart.image
@@ -63,6 +54,22 @@ extension OnboardingChat: Presentable {
 
 		bag += future.onValue { _ in }
 
-		return (viewController, bag)
+        return (viewController, Signal { callback in
+            bag += settingsButton.attachSinglePressMenu(
+                viewController: viewController,
+                menu: Menu(
+                    title: nil,
+                    children: [
+                        MenuChild.appInformation,
+                        MenuChild.appSettings,
+                        MenuChild.login
+                    ]
+                )
+            ) { action in
+                callback(.menu(action: action))
+            }
+            
+            return bag
+        })
 	}
 }

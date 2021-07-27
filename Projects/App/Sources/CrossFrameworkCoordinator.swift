@@ -48,7 +48,7 @@ struct CrossFrameworkCoordinator {
 		}
 		ChatButton.openChatHandler = { chatButton in
 			chatButton.presentingViewController.present(
-				FreeTextChat().wrappedInCloseButton(),
+                FreeTextChat().withCloseButton,
 				style: .detented(.large)
 			)
 		}
@@ -64,12 +64,8 @@ struct CrossFrameworkCoordinator {
 			)
 		}
 
-		Home.openCallMeChatHandler = { viewController in
-			viewController.present(CallMeChat().wrappedInCloseButton(), style: .detented(.large))
-		}
-
 		Home.openFreeTextChatHandler = { viewController in
-			viewController.present(FreeTextChat().wrappedInCloseButton(), style: .detented(.large))
+            viewController.present(FreeTextChat().withCloseButton, style: .detented(.large))
 		}
 
 		Home.openConnectPaymentHandler = { viewController in
@@ -80,7 +76,7 @@ struct CrossFrameworkCoordinator {
 		}
 
 		Contracts.openFreeTextChatHandler = { viewController in
-			viewController.present(FreeTextChat().wrappedInCloseButton(), style: .detented(.large))
+            viewController.present(FreeTextChat().withCloseButton, style: .detented(.large))
 		}
 
 		CrossFramework.onRequestLogout = { UIApplication.shared.appDelegate.logout() }

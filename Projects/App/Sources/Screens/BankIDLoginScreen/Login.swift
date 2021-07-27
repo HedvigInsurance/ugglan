@@ -36,10 +36,14 @@ struct WebLoginFlow: Presentable {
 	}
 }
 
+extension MenuChildAction {
+    static var login: MenuChildAction {
+        MenuChildAction(identifier: "login")
+    }
+}
+
 extension MenuChild {
-	public static func login(onLogin: @escaping () -> Void) -> MenuChild {
-		MenuChild(title: L10n.settingsLoginRow, style: .default, image: hCoreUIAssets.memberCard.image) {
-			viewController in viewController.present(Login(), style: .detented(.large)).onValue(onLogin)
-		}
-	}
+    public static var login: MenuChild {
+        MenuChild(title: L10n.settingsLoginRow, style: .default, image: hCoreUIAssets.memberCard.image, action: .login)
+    }
 }

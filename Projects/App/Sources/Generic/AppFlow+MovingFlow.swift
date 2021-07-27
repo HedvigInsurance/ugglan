@@ -45,7 +45,9 @@ extension Embark {
 				.onDismiss {
 					embark.goBack()
 				}
-			}
+            case let .menu(action):
+                action.journey
+            }
 		}
 	}
 }
@@ -87,6 +89,8 @@ public struct MovingFlowJourney {
 							.withDismissButton
 					case .close:
 						DismissJourney()
+                    case .menu:
+                        ContinueJourney()
 					case .signed:
 						Journey(MovingFlowSuccess()) { _ in
 							DismissJourney().withCompletedToast

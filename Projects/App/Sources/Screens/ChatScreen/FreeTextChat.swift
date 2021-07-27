@@ -9,10 +9,10 @@ import hGraphQL
 struct FreeTextChat { @Inject var client: ApolloClient }
 
 extension FreeTextChat: Presentable {
-	func materialize() -> (UIViewController, Future<Void>) {
+	func materialize() -> (UIViewController, Disposable) {
 		let bag = DisposeBag()
 		let chat = Chat()
-		let (viewController, future) = chat.materialize()
+		let (viewController, signal) = chat.materialize()
 
 		viewController.navigationItem.titleView = .titleWordmarkView
 
@@ -22,16 +22,12 @@ extension FreeTextChat: Presentable {
 					chat.chatState.subscribe()
 				}
 			}
+        
+        bag += signal.nil()
 
 		return (
 			viewController,
-			Future { completion in bag += future.onResult { result in completion(result) }
-
-				return Disposer {
-					future.cancel()
-					bag.dispose()
-				}
-			}
+			bag
 		)
 	}
 }

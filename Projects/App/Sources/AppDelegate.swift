@@ -405,32 +405,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
 		if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
 			if notificationType == "NEW_MESSAGE" {
-				if ApplicationState.currentState == .onboardingChat {
-					return
-				} else if ApplicationState.currentState == .offer {
-					bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
-						.filter { $0 }
-						.onValue { _ in
-							self.appFlow.window.rootViewController?
-								.present(
-									OfferChat(),
-									style: .modally(
-										presentationStyle: .pageSheet,
-										transitionStyle: nil,
-										capturesStatusBarAppearance: true
-									)
-								)
-						}
-					return
-				} else if ApplicationState.currentState == .loggedIn {
-					bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
-						.filter { $0 }
-						.onValue { _ in
-							self.appFlow.window.rootViewController?
-								.present(FreeTextChat(), style: .detented(.large))
-						}
-					return
-				}
+                #warning("handle this")
 			} else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
 				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 					.onValue { _ in

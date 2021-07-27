@@ -13,8 +13,13 @@ struct WebOnboarding {
 	let webScreen: WebOnboardingScreen
 }
 
+enum WebOnboardingResult {
+    case menu(action: MenuChildAction)
+    case postOnboarding
+}
+
 extension WebOnboarding: Presentable {
-	func materialize() -> (UIViewController, Signal<Void>) {
+	func materialize() -> (UIViewController, Signal<WebOnboardingResult>) {
 		let viewController = UIViewController()
 		let bag = DisposeBag()
 
@@ -23,19 +28,6 @@ extension WebOnboarding: Presentable {
 		let settingsButton = UIBarButtonItem()
 		settingsButton.image = Asset.menuIcon.image
 		settingsButton.tintColor = .brand(.primaryText())
-
-		bag += settingsButton.attachSinglePressMenu(
-			viewController: viewController,
-			menu: Menu(
-				title: "",
-				children: [
-					MenuChild.appInformation, MenuChild.appSettings,
-					MenuChild.login(onLogin: {
-						UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
-					}),
-				]
-			)
-		)
 
 		let restartButton = UIBarButtonItem()
 		restartButton.image = Asset.restart.image
@@ -139,10 +131,25 @@ extension WebOnboarding: Presentable {
 		return (
 			viewController,
 			Signal { callback in
+            
+            bag += settingsButton.attachSinglePressMenu(
+                viewController: viewController,
+                menu: Menu(
+                    title: "",
+                    children: [
+                        MenuChild.appInformation,
+                        MenuChild.appSettings,
+                        MenuChild.login
+                    ]
+                )
+            ) { action in
+                callback(.menu(action: action))
+                }
+            
 				bag += webView.signal(for: \.url)
 					.map { url in let urlString = String(describing: url)
 
-						if urlString.contains("connect-payment") { callback(()) }
+                        if urlString.contains("connect-payment") { callback(.postOnboarding) }
 					}
 
 				return bag

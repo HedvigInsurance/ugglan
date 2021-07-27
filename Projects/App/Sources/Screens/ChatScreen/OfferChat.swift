@@ -11,7 +11,7 @@ struct OfferChat {
 }
 
 extension OfferChat: Presentable {
-	func materialize() -> (UIViewController, Future<Void>) {
+	func materialize() -> (UIViewController, Disposable) {
 		let bag = DisposeBag()
 		let chat = Chat()
 		let (viewController, future) = chat.materialize()
@@ -56,13 +56,7 @@ extension OfferChat: Presentable {
 
 		return (
 			viewController,
-			Future { completion in
-				bag += future.onResult { result in
-					completion(result)
-				}
-
-				return bag
-			}
+			bag
 		)
 	}
 }

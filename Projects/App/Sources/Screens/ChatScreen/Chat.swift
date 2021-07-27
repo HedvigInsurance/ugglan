@@ -24,8 +24,14 @@ enum NavigationEvent {
 	case dashboard, offer, login
 }
 
+enum ChatResult {
+    case offer(ids: [String])
+    case mainTabbedJourney
+    case login
+}
+
 extension Chat: Presentable {
-	func materialize() -> (UIViewController, Future<Void>) {
+	func materialize() -> (UIViewController, Signal<ChatResult>) {
 		let bag = DisposeBag()
 
 		chatState.allowNewMessageToast = false
@@ -43,55 +49,6 @@ extension Chat: Presentable {
 
 		let viewController = AccessoryViewController(accessoryView: chatInput)
 		viewController.navigationItem.largeTitleDisplayMode = .never
-
-		bag += navigateCallbacker.onValue { navigationEvent in
-			switch navigationEvent {
-			case .offer:
-				client.fetch(query: GraphQL.LastQuoteOfMemberQuery())
-					.onValue { data in
-						guard let id = data.lastQuoteOfMember.asCompleteQuote?.id else {
-							return
-						}
-
-						bag +=
-							viewController.present(
-								Offer(
-									offerIDContainer: .exact(
-										ids: [id],
-										shouldStore: true
-									),
-									menu: Menu(
-										title: nil,
-										children: [
-											MenuChild.appInformation,
-											MenuChild.appSettings,
-											MenuChild.login(onLogin: {
-												UIApplication.shared
-													.appDelegate
-													.appFlow
-													.presentLoggedIn()
-											}),
-										]
-									),
-									options: [.shouldPreserveState]
-								)
-							)
-							.onValue { _ in
-
-								bag += UIApplication.shared.appDelegate
-									.appFlow.window.present(
-										PostOnboarding(),
-										options: [],
-										animated: true
-									)
-							}
-					}
-			case .dashboard:
-				viewController.present(MainTabbedJourney.journey).onValue { _ in }
-			case .login:
-				viewController.present(Login(), style: .detented(.medium))
-			}
-		}
 
 		let sectionStyle = SectionStyle(
 			insets: .zero,
@@ -238,8 +195,27 @@ extension Chat: Presentable {
 
 		return (
 			viewController,
-			Future { _ in
-				bag
+			Signal { callback in
+				
+            bag += navigateCallbacker.onValue { navigationEvent in
+                switch navigationEvent {
+                case .offer:
+                    client.fetch(query: GraphQL.LastQuoteOfMemberQuery())
+                        .onValue { data in
+                            guard let id = data.lastQuoteOfMember.asCompleteQuote?.id else {
+                                return
+                            }
+
+                            callback(.offer(ids: [id]))
+                        }
+                case .dashboard:
+                    callback(.mainTabbedJourney)
+                case .login:
+                    callback(.login)
+                }
+            }
+            
+                return bag
 			}
 		)
 	}
