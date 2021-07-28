@@ -56,7 +56,8 @@ extension AppJourney {
 					case .signed:
 						Journey(MovingFlowSuccess()) { _ in
 							DismissJourney().withCompletedToast
-                        }.hidesBackButton.withJourneyDismissButton
+						}
+						.hidesBackButton.withJourneyDismissButton
 					}
 				}
 			}
