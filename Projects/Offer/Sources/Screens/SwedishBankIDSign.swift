@@ -187,7 +187,8 @@ extension SwedishBankIdSign: Presentable {
 					}
 
 				bag += store.onAction(
-					.sign(event: .failed),
+					.sign(event: .failed)
+                    )
 					{
 						presentErrorAlert(
 							viewController,
@@ -195,14 +196,13 @@ extension SwedishBankIdSign: Presentable {
 							completion: completion
 						)
 					}
-				)
 
 				bag += store.onAction(
-					.sign(event: .done),
+					.sign(event: .done)
+                )
 					{
 						completion(.success)
 					}
-				)
 
 				bag += store.stateSignal.compactMap { $0.swedishBankIDStatusCode }
 					.onValue { statusCode in
