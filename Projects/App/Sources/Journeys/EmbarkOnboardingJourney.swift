@@ -23,7 +23,7 @@ struct EmbarkOnboardingJourney {
 			case let .menu(action):
 				action.journey
 			case let .story(story):
-                AppJourney.embark(
+				AppJourney.embark(
 					Embark(
 						name: story.name,
 						menu: Menu(

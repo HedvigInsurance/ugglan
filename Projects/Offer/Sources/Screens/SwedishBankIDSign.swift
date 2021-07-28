@@ -165,49 +165,58 @@ extension SwedishBankIdSign: Presentable {
 				viewController.navigationItem.rightBarButtonItem = cancelButton
 
 				let store: OfferStore = get()
-                store.send(.startSign)
-            
-                bag += store.stateSignal.compactMap { $0.swedishBankIDAutoStartToken }.onFirstValue { autoStartToken in
-                    let urlScheme = Bundle.main.urlScheme ?? ""
-                    guard
-                        let url = URL(
-                            string:
-                                "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
-                        )
-                    else { return }
+				store.send(.startSign)
 
-                    if UIApplication.shared.canOpenURL(url) {
-                        UIApplication.shared.open(
-                            url,
-                            options: [:],
-                            completionHandler: nil
-                        )
-                    }
-                }
-            
-            bag += store.onAction(.sign(event: .failed), {
-                presentErrorAlert(viewController, code: store.state.swedishBankIDStatusCode ?? "", completion: completion)
-            })
-            
-            bag += store.stateSignal.compactMap { $0.swedishBankIDStatusCode }.onValue { statusCode in
-                let statusText: String
+				bag += store.stateSignal.compactMap { $0.swedishBankIDAutoStartToken }
+					.onFirstValue { autoStartToken in
+						let urlScheme = Bundle.main.urlScheme ?? ""
+						guard
+							let url = URL(
+								string:
+									"bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
+							)
+						else { return }
 
-                switch statusCode {
-                case "noClient", "outstandingTransaction":
-                    statusText = L10n.signStartBankid
-                case "userSign":
-                    viewController.navigationItem
-                        .rightBarButtonItem = nil
-                    statusText = L10n.signInProgress
-                case "userCancel", "cancelled":
-                    statusText = L10n.signCanceled
-                default:
-                    statusText =
-                        L10n.signFailedReasonUnknown
-                }
+						if UIApplication.shared.canOpenURL(url) {
+							UIApplication.shared.open(
+								url,
+								options: [:],
+								completionHandler: nil
+							)
+						}
+					}
 
-                statusLabel.value = statusText
-            }
+				bag += store.onAction(
+					.sign(event: .failed),
+					{
+						presentErrorAlert(
+							viewController,
+							code: store.state.swedishBankIDStatusCode ?? "",
+							completion: completion
+						)
+					}
+				)
+
+				bag += store.stateSignal.compactMap { $0.swedishBankIDStatusCode }
+					.onValue { statusCode in
+						let statusText: String
+
+						switch statusCode {
+						case "noClient", "outstandingTransaction":
+							statusText = L10n.signStartBankid
+						case "userSign":
+							viewController.navigationItem
+								.rightBarButtonItem = nil
+							statusText = L10n.signInProgress
+						case "userCancel", "cancelled":
+							statusText = L10n.signCanceled
+						default:
+							statusText =
+								L10n.signFailedReasonUnknown
+						}
+
+						statusLabel.value = statusText
+					}
 
 				return DelayedDisposer(bag, delay: 2)
 			}

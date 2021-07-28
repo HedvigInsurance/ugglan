@@ -21,7 +21,7 @@ extension AppJourney {
 						icon: hCoreUIAssets.apartment.image,
 						handler: { viewController in
 							viewController.present(
-                                AppJourney.movingFlow
+								AppJourney.movingFlow
 							)
 							.onValue { _ in }
 							return NilDisposer()
@@ -45,7 +45,7 @@ extension AppJourney {
 		) { result in
 			switch result {
 			case .movingFlow:
-                AppJourney.movingFlow
+				AppJourney.movingFlow
 			}
 		}
 		.configureTabBarItem

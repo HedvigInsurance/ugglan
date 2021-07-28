@@ -191,15 +191,15 @@ extension Checkout: Presentable {
 					toggleAllowDismissal()
 
 					let store: OfferStore = get()
-                    store.send(.startSign)
-                    
-                    bag += store.onAction(.sign(event: .failed)) {
-                        handleError()
-                    }
+					store.send(.startSign)
 
-                    bag += store.onAction(.sign(event: .done)) {
-                        completion(.success)
-                    }
+					bag += store.onAction(.sign(event: .failed)) {
+						handleError()
+					}
+
+					bag += store.onAction(.sign(event: .done)) {
+						completion(.success)
+					}
 				}
 
 				return bag

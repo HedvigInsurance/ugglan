@@ -30,7 +30,6 @@ extension JourneyPresentation {
 	}
 }
 
-
 extension AppJourney {
 	static var movingFlow: some JourneyPresentation {
 		Journey(
@@ -41,14 +40,15 @@ extension AppJourney {
 			case .chat:
 				Journey(FreeTextChat()).withJourneyDismissButton
 			case let .embark(name):
-                AppJourney.embark(Embark(name: name)) { offerResult in
+				AppJourney.embark(Embark(name: name)) { offerResult in
 					switch offerResult {
 					case .chat:
 						Journey(
-                            FreeTextChat(),
-                            style: .detented(.large),
-                            options: [.defaults]
-                        ).withDismissButton
+							FreeTextChat(),
+							style: .detented(.large),
+							options: [.defaults]
+						)
+						.withDismissButton
 					case .close:
 						DismissJourney()
 					case .menu:
@@ -58,7 +58,7 @@ extension AppJourney {
 							DismissJourney().withCompletedToast
 						}
 					}
-                }
+				}
 			}
 		}
 		.withDismissButton

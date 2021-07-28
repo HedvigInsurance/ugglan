@@ -162,13 +162,13 @@ extension Offer: Presentable {
 			viewController,
 			FiniteSignal { callback in
 				let store: OfferStore = self.get()
-                store.send(.set(ids: self.offerIDContainer.ids))
+				store.send(.set(ids: self.offerIDContainer.ids))
 
 				bag += store.onAction(.openChat) {
 					callback(.value(.chat))
 				}
 
-                bag += store.onAction(.sign(event: .done)) {
+				bag += store.onAction(.sign(event: .done)) {
 					callback(.value(.signed))
 				}
 
