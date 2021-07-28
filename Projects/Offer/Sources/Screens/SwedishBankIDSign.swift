@@ -145,7 +145,7 @@ extension SwedishBankIdSign: Presentable {
 
 		var statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .brand(.headline(color: .primary)))
 		bag += containerView.addArranged(statusLabel)
-
+        
 		bag += containerStackView.didLayoutSignal.onValue { _ in
 			viewController.preferredContentSize = containerStackView.systemLayoutSizeFitting(.zero)
 		}
@@ -196,6 +196,15 @@ extension SwedishBankIdSign: Presentable {
 						)
 					}
 				)
+            
+            
+                bag += store.onAction(
+                    .sign(event: .done),
+                    {
+                        completion(.success)
+                    }
+                )
+
 
 				bag += store.stateSignal.compactMap { $0.swedishBankIDStatusCode }
 					.onValue { statusCode in

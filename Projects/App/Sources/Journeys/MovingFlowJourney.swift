@@ -40,7 +40,7 @@ extension AppJourney {
 			case .chat:
 				Journey(FreeTextChat()).withJourneyDismissButton
 			case let .embark(name):
-				AppJourney.embark(Embark(name: name)) { offerResult in
+				AppJourney.embark(Embark(name: name), storeOffer: false) { offerResult in
 					switch offerResult {
 					case .chat:
 						Journey(
