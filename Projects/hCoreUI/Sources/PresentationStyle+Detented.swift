@@ -193,7 +193,7 @@ extension UIViewController {
 
 	public var currentDetentSignal: ReadWriteSignal<PresentationStyle.Detent?> {
 		Signal { [unowned self] callback in
-            let bag = DisposeBag()
+			let bag = DisposeBag()
 
 			bag += (self.view as? UIScrollView)?.panGestureRecognizer
 				.onValue { _ in callback(self.currentDetent) }
@@ -202,11 +202,13 @@ extension UIViewController {
 
 			return bag
 		}
-		.distinct().readable {
-            self.currentDetent
-        }.writable { detent in
-            self.currentDetent = detent
-        }
+		.distinct()
+		.readable {
+			self.currentDetent
+		}
+		.writable { detent in
+			self.currentDetent = detent
+		}
 	}
 
 	private static var _lastDetentIndex: UInt8 = 1
@@ -371,16 +373,17 @@ extension PresentationStyle {
 
 				return from.modallyPresentQueued(vc, options: options) {
 					return Future { completion in
-						let dismissal = PresentationStyle.modalPresentationDismissalSetup(
-							for: vc,
-							options: options
-						)
-						.onResult(completion)
-                        
-                        return Disposer {
-                            bag.dispose()
-                            dismissal.cancel()
-                        }
+						let dismissal =
+							PresentationStyle.modalPresentationDismissalSetup(
+								for: vc,
+								options: options
+							)
+							.onResult(completion)
+
+						return Disposer {
+							bag.dispose()
+							dismissal.cancel()
+						}
 					}
 				}
 			} else {
