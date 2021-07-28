@@ -47,7 +47,7 @@ extension MovingFlowSuccess: Presentable {
 						callback(())
 					}
 
-				return bag
+				return DelayedDisposer(bag, delay: 2)
 			}
 		)
 	}

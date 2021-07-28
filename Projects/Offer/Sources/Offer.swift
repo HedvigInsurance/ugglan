@@ -169,7 +169,7 @@ extension Offer: Presentable {
 				}
 
 				bag += store.onAction(.sign(event: .done)) {
-					callback(.value(.signed))
+                    callback(.value(.signed))
 				}
 
 				if let menu = menu {
