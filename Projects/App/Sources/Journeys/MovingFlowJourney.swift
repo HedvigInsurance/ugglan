@@ -11,47 +11,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-extension Embark {
-	static func makeJourney<OfferResultJourney: JourneyPresentation>(
-		_ embark: Embark,
-		@JourneyBuilder offerResultJourney: @escaping (_ result: OfferResult) -> OfferResultJourney
-	) -> some JourneyPresentation {
-		Journey(embark) { externalRedirect in
-			switch externalRedirect {
-			case .mailingList:
-				ContinueJourney()
-			case .chat:
-				Journey(FreeTextChat(), style: .detented(.large)).withDismissButton
-			case .close:
-				DismissJourney()
-			case let .offer(ids):
-				Journey(
-					Offer(
-						offerIDContainer:
-							.exact(
-								ids:
-									ids,
-								shouldStore:
-									false
-							),
-						menu: embark.menu,
-						options: [
-							.menuToTrailing
-						]
-					)
-				) { offerResult in
-					offerResultJourney(offerResult)
-				}
-				.onDismiss {
-					embark.goBack()
-				}
-			case let .menu(action):
-				action.journey
-			}
-		}
-	}
-}
-
 extension JourneyPresentation {
 	fileprivate var withCompletedToast: Self {
 		onPresent {
@@ -71,22 +30,25 @@ extension JourneyPresentation {
 	}
 }
 
-public struct MovingFlowJourney {
-	static var journey: some JourneyPresentation {
+
+extension AppJourney {
+	static var movingFlow: some JourneyPresentation {
 		Journey(
 			MovingFlowIntro(),
-			style: .detented(.large),
-			options: [.defaults, .allowSwipeDismissAlways, .autoPop]
+			style: .detented(.large)
 		) { introRoute in
 			switch introRoute {
 			case .chat:
-				Journey(FreeTextChat()).withDismissButton
+				Journey(FreeTextChat()).withJourneyDismissButton
 			case let .embark(name):
-				Embark.makeJourney(Embark(name: name)) { offerResult in
+                AppJourney.embark(Embark(name: name)) { offerResult in
 					switch offerResult {
 					case .chat:
-						Journey(FreeTextChat(), style: .detented(.large), options: [.defaults])
-							.withDismissButton
+						Journey(
+                            FreeTextChat(),
+                            style: .detented(.large),
+                            options: [.defaults]
+                        ).withDismissButton
 					case .close:
 						DismissJourney()
 					case .menu:
@@ -96,7 +58,7 @@ public struct MovingFlowJourney {
 							DismissJourney().withCompletedToast
 						}
 					}
-				}
+                }
 			}
 		}
 		.withDismissButton

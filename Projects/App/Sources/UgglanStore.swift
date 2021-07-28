@@ -47,7 +47,7 @@ public enum UgglanAction: ActionProtocol {
 public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
 	@Inject var client: ApolloClient
 
-	public override func effects(_ getState: () -> UgglanState, _ action: UgglanAction) -> Future<UgglanAction>? {
+	public override func effects(_ getState: () -> UgglanState, _ action: UgglanAction) -> FiniteSignal<UgglanAction>? {
 		switch action {
 		case .fetchFeatures:
 			return
@@ -65,6 +65,7 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
 						.compactMap { $0 }
 					)
 				}
+                .valueThenEndSignal
 		case let .exchangePaymentLink(link):
 			let afterHashbang = link.split(separator: "#").last
 			let exchangeToken =
@@ -88,6 +89,7 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
 
 					return .showLoggedIn
 				}
+                .valueThenEndSignal
 		default:
 			break
 		}

@@ -85,13 +85,11 @@ extension SignSection: Presentable {
 						loadableSignButton.isLoadingSignal.value = true
 
 						let store: OfferStore = get()
+                        store.send(.startSign)
 
-						bag += store.signQuotes()
-							.onValue { event in
-								if case .failed = event {
-									loadableSignButton.isLoadingSignal.value = false
-								}
-							}
+                        bag += store.onAction(.sign(event: .failed), {
+                            loadableSignButton.isLoadingSignal.value = false
+                        })
 					}
 
 				innerBag += row.append(loadableSignButton)

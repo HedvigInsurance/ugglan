@@ -191,34 +191,15 @@ extension Checkout: Presentable {
 					toggleAllowDismissal()
 
 					let store: OfferStore = get()
+                    store.send(.startSign)
+                    
+                    bag += store.onAction(.sign(event: .failed)) {
+                        handleError()
+                    }
 
-					bag += store.signQuotes()
-						.onValue { signEvent in
-							switch signEvent {
-							case .swedishBankId, .failed:
-								handleError()
-							case let .simpleSign(subscription):
-								bag +=
-									subscription.filter {
-										$0.signStatus?.status?.signState
-											== .failed
-									}
-									.onFirstValue { _ in
-										handleError()
-									}
-
-								bag +=
-									subscription.filter {
-										$0.signStatus?.status?.signState
-											== .completed
-									}
-									.onValue { _ in
-										completion(.success)
-									}
-							case .done:
-								completion(.success)
-							}
-						}
+                    bag += store.onAction(.sign(event: .done)) {
+                        completion(.success)
+                    }
 				}
 
 				return bag
