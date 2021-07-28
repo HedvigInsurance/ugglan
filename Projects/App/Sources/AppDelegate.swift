@@ -29,11 +29,11 @@ let log = Logger.self
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
 	let bag = DisposeBag()
-    let window: UIWindow = {
-        var window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = UIViewController()
-        return window
-    }()
+	let window: UIWindow = {
+		var window = UIWindow(frame: UIScreen.main.bounds)
+		window.rootViewController = UIViewController()
+		return window
+	}()
 
 	func logout() {
 		ApolloClient.cache = InMemoryNormalizedCache()
