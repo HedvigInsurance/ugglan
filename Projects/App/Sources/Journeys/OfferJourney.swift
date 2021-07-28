@@ -8,11 +8,14 @@ extension AppJourney {
 		Journey(
 			Offer(
 				offerIDContainer: .stored,
-                menu: Menu(title: nil, children: [
-                    MenuChild.appInformation,
-                    MenuChild.appSettings,
-                    MenuChild.login,
-                ]),
+				menu: Menu(
+					title: nil,
+					children: [
+						MenuChild.appInformation,
+						MenuChild.appSettings,
+						MenuChild.login,
+					]
+				),
 				options: [
 					.menuToTrailing
 				]

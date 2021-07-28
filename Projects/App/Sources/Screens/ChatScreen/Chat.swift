@@ -44,22 +44,25 @@ enum ChatResult {
 				Journey(
 					Offer(
 						offerIDContainer: .exact(ids: ids, shouldStore: true),
-						menu: Menu(title: nil, children: [
-                            MenuChild.appInformation,
-                            MenuChild.appSettings,
-                            MenuChild.login,
-                        ]),
+						menu: Menu(
+							title: nil,
+							children: [
+								MenuChild.appInformation,
+								MenuChild.appSettings,
+								MenuChild.login,
+							]
+						),
 						options: [.shouldPreserveState]
 					)
 				) { offerResult in
 					switch offerResult {
 					case .chat:
 						Journey(
-                            FreeTextChat(),
-                            style: .detented(.large),
-                            options: [.defaults]
-                        )
-							.withDismissButton
+							FreeTextChat(),
+							style: .detented(.large),
+							options: [.defaults]
+						)
+						.withDismissButton
 					case .close:
 						DismissJourney()
 					case .menu:

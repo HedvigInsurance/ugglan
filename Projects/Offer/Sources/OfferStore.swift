@@ -100,11 +100,11 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 			if event == .done {
 				newState.hasSignedQuotes = true
 			}
-            
-            if event == .failed {
-                newState.swedishBankIDStatusCode = nil
-                newState.swedishBankIDAutoStartToken = nil
-            }
+
+			if event == .failed {
+				newState.swedishBankIDStatusCode = nil
+				newState.swedishBankIDAutoStartToken = nil
+			}
 		case let .startSwedishBankIDSign(autoStartToken):
 			newState.swedishBankIDAutoStartToken = autoStartToken
 		default:
@@ -126,7 +126,7 @@ extension OfferStore {
 				.distinct()
 				.onValue({ _ in
 					callback(.value(.sign(event: OfferAction.SignEvent.done)))
-                    callback(.end)
+					callback(.end)
 				})
 
 			bag += subscription.compactMap { $0.signStatus?.status?.collectStatus?.code }
@@ -140,7 +140,7 @@ extension OfferStore {
 					switch result {
 					case .failure:
 						callback(.value(.sign(event: OfferAction.SignEvent.failed)))
-                        callback(.end)
+						callback(.end)
 					case let .success(data):
 						if let signQuoteReponse = data.signOrApproveQuotes.asSignQuoteResponse {
 							if signQuoteReponse.signResponse.asFailedToStartSign != nil {
@@ -152,7 +152,7 @@ extension OfferStore {
 										)
 									)
 								)
-                                callback(.end)
+								callback(.end)
 							} else if let session = signQuoteReponse
 								.signResponse
 								.asSwedishBankIdSession
@@ -185,12 +185,12 @@ extension OfferStore {
 								callback(
 									.value(.sign(event: OfferAction.SignEvent.done))
 								)
-                                callback(.end)
+								callback(.end)
 							}
-                        } else {
-                            callback(.value(.sign(event: OfferAction.SignEvent.failed)))
-                            callback(.end)
-                        }
+						} else {
+							callback(.value(.sign(event: OfferAction.SignEvent.failed)))
+							callback(.end)
+						}
 					}
 				}
 
