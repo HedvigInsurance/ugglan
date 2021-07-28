@@ -188,21 +188,19 @@ extension SwedishBankIdSign: Presentable {
 
 				bag += store.onAction(
 					.sign(event: .failed)
-                    )
-					{
-						presentErrorAlert(
-							viewController,
-							code: store.state.swedishBankIDStatusCode ?? "",
-							completion: completion
-						)
-					}
+				) {
+					presentErrorAlert(
+						viewController,
+						code: store.state.swedishBankIDStatusCode ?? "",
+						completion: completion
+					)
+				}
 
 				bag += store.onAction(
 					.sign(event: .done)
-                )
-					{
-						completion(.success)
-					}
+				) {
+					completion(.success)
+				}
 
 				bag += store.stateSignal.compactMap { $0.swedishBankIDStatusCode }
 					.onValue { statusCode in
