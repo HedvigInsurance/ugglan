@@ -20,12 +20,13 @@ extension AppJourney {
 					case .loggedIn:
 						AppJourney.loggedIn
 					}
-				}
+                }.withJourneyDismissButton
 			case .loggedIn:
 				AppJourney.loggedIn
 			}
 		}
 		.withDismissButton
+        .mapJourneyDismissToCancel
 	}
 
 	fileprivate static var simpleSign: some JourneyPresentation {
