@@ -16,7 +16,7 @@ public enum HomeAction: ActionProtocol {
 	case openMovingFlow
 	case openClaims
 	case connectPayments
-	case setMemberContractState(MemberContractState)
+    case setMemberContractState(state: MemberContractState)
 
 	#if compiler(<5.5)
 		public func encode(to encoder: Encoder) throws {
@@ -47,7 +47,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
 				.fetch(query: GraphQL.HomeQuery())
 				.compactMap { $0.homeState }
 				.map { state in
-					.setMemberContractState(state)
+                    .setMemberContractState(state: state)
 				}
 				.valueThenEndSignal
 		default:

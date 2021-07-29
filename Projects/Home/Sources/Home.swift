@@ -73,17 +73,14 @@ extension Home: Presentable {
 			let refreshControl = UIRefreshControl()
 			scrollView.refreshControl = refreshControl
 
-			bag += refreshControl.store(
-				store: store,
-				onReload: {
-					.fetchMemberState
-				},
-				endLoadOn: .setMemberContractState(.active),
-				.setMemberContractState(.terminated),
-				.setMemberContractState(.future)
-			)
+            bag += refreshControl.store(store, send: {
+                .fetchMemberState
+            }, endOn: .setMemberContractState(state: .active),
+            .setMemberContractState(state: .future),
+            .setMemberContractState(state: .terminated)
+            )
 
-			let future = store.stateSignal.atOnce().compactMap { $0.memberContractState }.future
+            let future = store.stateSignal.atOnce().filter(predicate: { $0.memberContractState != .loading}).future
 
 			bag += scrollView.performEntryAnimation(
 				contentView: form,
@@ -108,10 +105,12 @@ extension Home: Presentable {
 		titleRow.layoutMargins = rowInsets
 		titleSection.append(titleRow)
 
-		func buildSections(functionBag: DisposeBag, state: MemberContractState) {
+		func buildSections(state: MemberContractState) -> Disposable {
+            let innerBag = DisposeBag()
+            
 			switch state {
 			case .active:
-				functionBag += titleRow.append(ActiveSection())
+                innerBag += titleRow.append(ActiveSection())
 
 				let section = HomeVerticalSection(
 					section: .init(
@@ -123,21 +122,22 @@ extension Home: Presentable {
 								icon: hCoreUIAssets.apartment.image,
 								handler: {
 									store.send(.openMovingFlow)
-									return NilDisposer()
 								}
 							)
 						]
 					)
 				)
-				functionBag += form.append(section)
+                innerBag += form.append(section)
 				form.appendSpacing(.custom(30))
 			case .future:
-				functionBag += titleRow.append(FutureSection())
+                innerBag += titleRow.append(FutureSection())
 			case .terminated:
-				functionBag += titleRow.append(TerminatedSection())
+                innerBag += titleRow.append(TerminatedSection())
 			case .loading:
 				break
 			}
+            
+            return innerBag
 		}
 
 		bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
@@ -153,7 +153,7 @@ extension Home: Presentable {
 				bag += store.stateSignal.atOnce().map { $0.memberContractState }
 					.onValueDisposePrevious { state in
 						let innerBag = DisposeBag()
-						buildSections(functionBag: innerBag, state: state)
+						innerBag += buildSections(state: state)
 						return innerBag
 					}
 
@@ -185,22 +185,5 @@ extension Home: Tabable {
 			image: Asset.tab.image,
 			selectedImage: Asset.tabSelected.image
 		)
-	}
-}
-
-extension UIRefreshControl {
-	func store<S: Store>(store: S, onReload: @escaping () -> S.Action, endLoadOn: S.Action...) -> Disposable {
-		let bag = DisposeBag()
-
-		bag += self.onValue {
-			store.send(onReload())
-			bag += store.actionSignal.onValue { action in
-				if endLoadOn.contains(action) {
-					self.endRefreshing()
-				}
-			}
-		}
-
-		return bag
 	}
 }
