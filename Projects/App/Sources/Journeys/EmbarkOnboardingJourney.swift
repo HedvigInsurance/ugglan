@@ -30,7 +30,8 @@ struct EmbarkOnboardingJourney {
 							title: nil,
 							children: menuChildren
 						)
-					)
+					),
+					storeOffer: true
 				) { offerResult in
 					switch offerResult {
 					case .chat:

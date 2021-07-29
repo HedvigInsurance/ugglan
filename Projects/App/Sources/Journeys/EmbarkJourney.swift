@@ -6,9 +6,18 @@ import Presentation
 extension AppJourney {
 	static func embark<OfferResultJourney: JourneyPresentation>(
 		_ embark: Embark,
+		storeOffer: Bool,
 		@JourneyBuilder offerResultJourney: @escaping (_ result: OfferResult) -> OfferResultJourney
 	) -> some JourneyPresentation {
-		Journey(embark) { externalRedirect in
+		var offerOptions: Set<OfferOption> = [
+			.menuToTrailing
+		]
+
+		if storeOffer {
+			offerOptions.insert(.shouldPreserveState)
+		}
+
+		return Journey(embark) { externalRedirect in
 			switch externalRedirect {
 			case .mailingList:
 				ContinueJourney()
@@ -24,12 +33,10 @@ extension AppJourney {
 								ids:
 									ids,
 								shouldStore:
-									false
+									storeOffer
 							),
 						menu: embark.menu,
-						options: [
-							.menuToTrailing
-						]
+						options: offerOptions
 					)
 				) { offerResult in
 					offerResultJourney(offerResult)

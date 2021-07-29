@@ -1,13 +1,21 @@
 import Foundation
 import Offer
 import Presentation
+import hCore
 
 extension AppJourney {
 	static var storedOnboardingOffer: some JourneyPresentation {
 		Journey(
 			Offer(
 				offerIDContainer: .stored,
-				menu: nil,
+				menu: Menu(
+					title: nil,
+					children: [
+						MenuChild.appInformation,
+						MenuChild.appSettings,
+						MenuChild.login,
+					]
+				),
 				options: [
 					.menuToTrailing
 				]

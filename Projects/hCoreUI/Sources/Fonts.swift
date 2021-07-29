@@ -13,7 +13,9 @@ public enum Fonts {
 
 		let font = CGFont(provider!)
 		var error: Unmanaged<CFError>?
+
 		CTFontManagerRegisterGraphicsFont(font!, &error)
+		error?.release()
 
 		return UIFont(name: favoritStdBookFontName, size: UIFont.labelFontSize)!
 	}()
