@@ -29,7 +29,7 @@ extension Launch: Presentable {
 			Future { completion in
 				bag += self.completeAnimationCallbacker.delay(by: 0.1)
 					.animated(style: AnimationStyle.easeOut(duration: 0.5)) {
-                        containerView.alpha = 0
+						containerView.alpha = 0
 					}
 					.onValue { _ in completion(.success(())) }
 
