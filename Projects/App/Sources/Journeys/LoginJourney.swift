@@ -27,7 +27,6 @@ extension AppJourney {
 			}
 		}
 		.withDismissButton
-		.mapJourneyDismissToCancel
 	}
 
 	fileprivate static var simpleSign: some JourneyPresentation {

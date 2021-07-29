@@ -170,12 +170,12 @@ let log = Logger.self
 	}
 
 	func setupDebugger() {
-		#if PRESENTATION_DEBUGGER
-
-			globalPresentableStoreContainer.debugger = PresentableStoreDebugger()
-			globalPresentableStoreContainer.debugger?.startServer()
-
-		#endif
+        #if PRESENTATION_DEBUGGER
+            #if compiler(>=5.5)
+            globalPresentableStoreContainer.debugger = PresentableStoreDebugger()
+            globalPresentableStoreContainer.debugger?.startServer()
+            #endif
+        #endif
 	}
 
 	var mixpanelToken: String? { Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String }
