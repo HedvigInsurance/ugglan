@@ -324,13 +324,6 @@ let log = Logger.self
 		Messaging.messaging().delegate = self
 		UNUserNotificationCenter.current().delegate = self
 
-		#if PRESENTATION_DEBUGGER
-			#if compiler(>=5.5)
-				PresentableStoreContainer.debugger = PresentableStoreDebugger()
-				PresentableStoreContainer.debugger?.startServer()
-			#endif
-		#endif
-
 		// treat an empty token as a newly downloaded app and setLastNewsSeen
 		if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
 
