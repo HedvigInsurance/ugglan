@@ -41,8 +41,8 @@ let log = Logger.self
 
 		// create new store container to remove all old store instances
 		globalPresentableStoreContainer = PresentableStoreContainer()
-        
-        setupDebugger()
+
+		setupDebugger()
 
 		bag += ApolloClient.initAndRegisterClient()
 			.onValue { _ in ChatState.shared = ChatState()
@@ -162,15 +162,15 @@ let log = Logger.self
 			annotation: ""
 		)
 	}
-    
-    func setupDebugger() {
-        #if PRESENTATION_DEBUGGER
 
-            globalPresentableStoreContainer.debugger = PresentableStoreDebugger()
-            globalPresentableStoreContainer.debugger?.startServer()
+	func setupDebugger() {
+		#if PRESENTATION_DEBUGGER
 
-        #endif
-    }
+			globalPresentableStoreContainer.debugger = PresentableStoreDebugger()
+			globalPresentableStoreContainer.debugger?.startServer()
+
+		#endif
+	}
 
 	var mixpanelToken: String? { Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String }
 
@@ -186,7 +186,7 @@ let log = Logger.self
 			options.environment = Environment.current.displayName
 			options.enableAutoSessionTracking = true
 		}
-        
+
 		if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
 			Shake.setup()
 		}
@@ -320,7 +320,7 @@ let log = Logger.self
 		window.rootView.addSubview(launchView)
 		launchView.layer.zPosition = .greatestFiniteMagnitude - 2
 
-        window.rootViewController = UIViewController()
+		window.rootViewController = UIViewController()
 		window.makeKeyAndVisible()
 
 		launchView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
@@ -332,8 +332,8 @@ let log = Logger.self
 
 		// treat an empty token as a newly downloaded app and setLastNewsSeen
 		if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
-        
-        setupDebugger()
+
+		setupDebugger()
 
 		bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
 			.atValue { _ in Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
