@@ -337,13 +337,13 @@ let log = Logger.self
 
 		bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
 			.atValue { _ in
-                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+				Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
 				AnalyticsCoordinator().setUserId()
 
 				self.bag += self.window.present(AppJourney.main)
-                
-                launch.completeAnimationCallbacker.callAll()
+
+				launch.completeAnimationCallbacker.callAll()
 			}
 
 		bag += launchFuture.onValue { _ in launchView.removeFromSuperview()
