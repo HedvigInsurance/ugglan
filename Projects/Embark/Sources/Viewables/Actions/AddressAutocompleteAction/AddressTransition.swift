@@ -15,7 +15,7 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 	let firstBox: UIView
 	let secondBox: UIView
 	let interimAddressInput: AddressInput
-    var initialBoxFrame = CGRect.zero
+	var initialBoxFrame = CGRect.zero
 
 	init(
 		firstBox: UIView,
@@ -58,18 +58,18 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 		firstBox.alpha = 0.0
 		secondBox.alpha = 0.0
 
-        if presenting {
-            guard let firstBoxSuperview = firstBox.superview else { return }
-            initialBoxFrame = firstBoxSuperview.convert(firstBox.frame, to: nil)
-        }
-        
+		if presenting {
+			guard let firstBoxSuperview = firstBox.superview else { return }
+			initialBoxFrame = firstBoxSuperview.convert(firstBox.frame, to: nil)
+		}
+
 		guard let secondBoxSuperview = secondBox.superview else { return }
 		var destinationFrame = secondBoxSuperview.convert(secondBox.frame, to: nil)
-        if presenting {
-            // Hack. autocompleteView should layout first, then we get the correct y position, but then animations are not working.
-            destinationFrame.origin.y = destinationFrame.origin.y + 12
-        }
-        
+		if presenting {
+			// Hack. autocompleteView should layout first, then we get the correct y position, but then animations are not working.
+			destinationFrame.origin.y = destinationFrame.origin.y + 12
+		}
+
 		let initialFrame = presenting ? initialBoxFrame : destinationFrame
 		let finalFrame = presenting ? destinationFrame : initialBoxFrame
 
@@ -80,8 +80,8 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
 		}
 		box.frame = initialFrame
-        
-        didStartTransitionCallbacker.callAll(with: presenting)
+
+		didStartTransitionCallbacker.callAll(with: presenting)
 
 		containerView.bringSubviewToFront(box)
 

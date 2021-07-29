@@ -45,8 +45,8 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 		bag += box.didMoveToWindowSignal.delay(by: 0.5)
 			.onValue { _ in addressInput.setIsFirstResponderSignal.value = true }
 
-        bag += addressInput.textSignal.latestTwo().filter { $0.1.count - $0.0.count == 1 }
-            .filter { _ in !isTransitioningSignal.value }
+		bag += addressInput.textSignal.latestTwo().filter { $0.1.count - $0.0.count == 1 }
+			.filter { _ in !isTransitioningSignal.value }
 			.onValueDisposePrevious { _, text -> Disposable in
 				let bag = DisposeBag()
 				isTransitioningSignal.value = true
@@ -65,16 +65,17 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 					addressInput: interimAddressInput
 				)
 
-				bag += transition.didStartTransitionSignal.onValueDisposePrevious { presenting -> Disposable in
+				bag += transition.didStartTransitionSignal.onValueDisposePrevious {
+					presenting -> Disposable in
 					let innerBag = DisposeBag()
 					interimAddressInput.text =
 						presenting ? addressInput.text : autocompleteView.text
-                    if presenting {
-                        innerBag += addressInput.textSignal.onValue { text in
-                            interimAddressInput.text = text
-                        }
-                    }
-                    return innerBag
+					if presenting {
+						innerBag += addressInput.textSignal.onValue { text in
+							interimAddressInput.text = text
+						}
+					}
+					return innerBag
 				}
 
 				bag += transition.didEndTransitionSignal.onValue { presenting in
@@ -85,21 +86,21 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 						addressInput.text = interimAddressInput.text
 						addressInput.setIsFirstResponderSignal.value = true
 					}
-                }
+				}
 
 				box.viewController?
 					.present(
 						autocompleteView,
 						style: .address(transition: transition)
-                    )
+					)
 					.onValue { address in
 						print("DONE HERE:", address)
-                        isTransitioningSignal.value = false
+						isTransitioningSignal.value = false
 					}
 					.onError { _ in
 						// Didn't find no address
 						print("Errore")
-                        isTransitioningSignal.value = false
+						isTransitioningSignal.value = false
 					}
 				return bag
 			}

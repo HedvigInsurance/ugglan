@@ -21,7 +21,7 @@ struct EmbarkInput {
 	let shouldAutoSize: Bool
 	let textFieldAlignment: NSTextAlignment
 	let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
-    let didEditSignal = ReadWriteSignal<Void>(())
+	let didEditSignal = ReadWriteSignal<Void>(())
 
 	init(
 		placeholder: String,
@@ -103,7 +103,7 @@ extension EmbarkInput: Viewable {
 		}
 
 		paddingView.addArrangedSubview(textField)
-        bag += textField.signal(for: .editingChanged).bindTo(didEditSignal)
+		bag += textField.signal(for: .editingChanged).bindTo(didEditSignal)
 
 		let placeholderLabel = UILabel(value: placeholder.value, style: .brand(.largeTitle(color: .primary)))
 		placeholderLabel.textAlignment = textFieldAlignment
@@ -123,7 +123,7 @@ extension EmbarkInput: Viewable {
 
 		bag += view.signal(for: .touchDown).filter { !textField.isFirstResponder }
 			.onValue { _ in textField.becomeFirstResponder() }
-        
+
 		bag += masking.applyMasking(textField)
 
 		bag += textField.shouldReturn.set { value -> Bool in self.shouldReturn.call(value) ?? false }
