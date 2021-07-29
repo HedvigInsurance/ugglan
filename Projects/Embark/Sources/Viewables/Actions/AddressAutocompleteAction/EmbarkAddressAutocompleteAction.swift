@@ -45,10 +45,11 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 		bag += box.didMoveToWindowSignal.delay(by: 0.5)
 			.onValue { _ in addressInput.setIsFirstResponderSignal.value = true }
 
-        bag += addressInput.textSignal.latestTwo().filter { $0.1.count > $0.0.count }.filter { _ in !isTransitioningSignal.value }
+		bag += addressInput.textSignal.latestTwo().filter { $0.1.count > $0.0.count }
+			.filter { _ in !isTransitioningSignal.value }
 			.onValueDisposePrevious { _, text -> Disposable in
-                let bag = DisposeBag()
-                print("SIGNAL:", text)
+				let bag = DisposeBag()
+				print("SIGNAL:", text)
 				//bag += box.signal(for: .touchUpInside).onValue { _ in
 				isTransitioningSignal.value = true
 
@@ -68,24 +69,25 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 
 				bag += transition.didStartTransitionSignal.onValue { presenting in
 					let innerBag = DisposeBag()
-                    print("Text:", autocompleteView.text)
-                    interimAddressInput.text = presenting ? addressInput.text : autocompleteView.text
-                    interimAddressInput.text = "HEJSAN"
+					print("Text:", autocompleteView.text)
+					interimAddressInput.text =
+						presenting ? addressInput.text : autocompleteView.text
+					interimAddressInput.text = "HEJSAN"
 				}
 
 				bag += addressInput.textSignal.onValue { text in
-                    interimAddressInput.text = text
+					interimAddressInput.text = text
 				}
 
 				bag += transition.didEndTransitionSignal.onValue { presenting in
-                    if presenting {
-                        autocompleteView.text = interimAddressInput.text
-                        autocompleteView.setIsFirstResponderSignal.value = true
-                    } else {
-                        print("Text 2:", interimAddressInput.text)
-                        addressInput.text = interimAddressInput.text
-                        addressInput.setIsFirstResponderSignal.value = true
-                    }
+					if presenting {
+						autocompleteView.text = interimAddressInput.text
+						autocompleteView.setIsFirstResponderSignal.value = true
+					} else {
+						print("Text 2:", interimAddressInput.text)
+						addressInput.text = interimAddressInput.text
+						addressInput.setIsFirstResponderSignal.value = true
+					}
 					isTransitioningSignal.value = false
 				}
 
@@ -93,13 +95,15 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 					.present(
 						autocompleteView,
 						style: .address(transition: transition)
-                    ).onValue { address in
-                        print("DONE HERE:", address)
-                    }.onError { _ in
-                        // Didn't find no address
-                        print("Errore")
-                    }
-                return bag
+					)
+					.onValue { address in
+						print("DONE HERE:", address)
+					}
+					.onError { _ in
+						// Didn't find no address
+						print("Errore")
+					}
+				return bag
 			}
 
 		let button = Button(

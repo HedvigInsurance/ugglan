@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 enum AddressAutocompleteError: Error {
-    case cantFindAddress
+	case cantFindAddress
 }
 
 struct EmbarkAddressAutocomplete: AddressTransitionable {
@@ -107,16 +107,17 @@ extension EmbarkAddressAutocomplete: Presentable {
 
 		bag +=
 			textSignal
-            .distinct(ignoreNBSP)
-            .atValue { text in
-                // Reset suggestion for empty input field
-                if text == "" { addressState.pickedSuggestionSignal.value = nil }
-                // Reset confirmed address if it doesn't match the updated search term
-                if let previousPickedSuggestion = addressState.pickedSuggestionSignal.value,
-                   addressState.formatAddressLine(from: previousPickedSuggestion) != text {
-                    addressState.pickedSuggestionSignal.value = nil
-                }
-            }
+			.distinct(ignoreNBSP)
+			.atValue { text in
+				// Reset suggestion for empty input field
+				if text == "" { addressState.pickedSuggestionSignal.value = nil }
+				// Reset confirmed address if it doesn't match the updated search term
+				if let previousPickedSuggestion = addressState.pickedSuggestionSignal.value,
+					addressState.formatAddressLine(from: previousPickedSuggestion) != text
+				{
+					addressState.pickedSuggestionSignal.value = nil
+				}
+			}
 			.filter { $0 != "" }
 			.mapLatestToFuture { text in
 				addressState.getSuggestions(
@@ -147,37 +148,39 @@ extension EmbarkAddressAutocomplete: Presentable {
 			}
 
 		return (
-            viewController,
-            Future { completion in
-                bag += tableKit.delegate.didSelectRow.onValueDisposePrevious { row -> Disposable? in
-                    let innerBag = DisposeBag()
-                    switch row {
-                    case .left(let addressRow):
-                        // did select suggestion
-                        let suggestion = addressRow.suggestion
-                        innerBag +=
-                            addressState.confirm(
-                                suggestion,
-                                withPreviousSuggestion: addressState.pickedSuggestionSignal.value
-                            )
-                            .valueSignal.compactMap { $0 }.bindTo(addressState.confirmedSuggestionSignal)
-                        addressState.pickedSuggestionSignal.value = suggestion
-                        //addressInput.textSignal.value = addressState.formatAddressLine(from: suggestion)
-                        print(suggestion.address)
-                    case .right(let notFoundRow):
-                        // did select cannot find address
-                        completion(.failure(AddressAutocompleteError.cantFindAddress))
-                    }
-                    return innerBag
-                }
-                
-                bag += addressState.confirmedSuggestionSignal.compactMap { $0 }
-                    .onValue { address in
-                        completion(.success(address.address))
-                    }
-                
-                return bag
-            }
-        )
+			viewController,
+			Future { completion in
+				bag += tableKit.delegate.didSelectRow.onValueDisposePrevious { row -> Disposable? in
+					let innerBag = DisposeBag()
+					switch row {
+					case .left(let addressRow):
+						// did select suggestion
+						let suggestion = addressRow.suggestion
+						innerBag +=
+							addressState.confirm(
+								suggestion,
+								withPreviousSuggestion: addressState
+									.pickedSuggestionSignal.value
+							)
+							.valueSignal.compactMap { $0 }
+							.bindTo(addressState.confirmedSuggestionSignal)
+						addressState.pickedSuggestionSignal.value = suggestion
+						//addressInput.textSignal.value = addressState.formatAddressLine(from: suggestion)
+						print(suggestion.address)
+					case .right(let notFoundRow):
+						// did select cannot find address
+						completion(.failure(AddressAutocompleteError.cantFindAddress))
+					}
+					return innerBag
+				}
+
+				bag += addressState.confirmedSuggestionSignal.compactMap { $0 }
+					.onValue { address in
+						completion(.success(address.address))
+					}
+
+				return bag
+			}
+		)
 	}
 }

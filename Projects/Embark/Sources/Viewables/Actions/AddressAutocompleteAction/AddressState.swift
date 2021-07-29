@@ -82,7 +82,7 @@ class AddressState {
 	func confirm(
 		_ suggestion: AddressSuggestion,
 		withPreviousSuggestion previousSuggestion: AddressSuggestion?
-	) -> Future<AddressSuggestion?> {   
+	) -> Future<AddressSuggestion?> {
 		if !isComplete(suggestion: suggestion) { return Future(nil) }
 		if suggestion.floor != nil && suggestion.apartment != nil { return Future(suggestion) }
 		if let previousSuggestion = previousSuggestion, suggestion == previousSuggestion {

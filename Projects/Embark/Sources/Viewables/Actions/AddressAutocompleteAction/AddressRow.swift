@@ -49,9 +49,9 @@ extension AddressRow: Reusable {
 				if let postalLine = self.postalLine {
 					postalCodeLabel.value = postalLine
 					postalCodeLabel.animationSafeIsHidden = false
-                } else {
-                    postalCodeLabel.animationSafeIsHidden = true
-                }
+				} else {
+					postalCodeLabel.animationSafeIsHidden = true
+				}
 
 				return NilDisposer()
 			}
