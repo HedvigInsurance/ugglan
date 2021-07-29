@@ -28,12 +28,8 @@ extension Launch: Presentable {
 			containerView,
 			Future { completion in
 				bag += self.completeAnimationCallbacker.delay(by: 0.1)
-					.animated(style: AnimationStyle.easeOut(duration: 0.3)) {
-						imageView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-					}
-					.animated(style: AnimationStyle.easeOut(duration: 0.3)) {
-						containerView.alpha = 0
-						imageView.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+					.animated(style: AnimationStyle.easeOut(duration: 0.5)) {
+                        containerView.alpha = 0
 					}
 					.onValue { _ in completion(.success(())) }
 
