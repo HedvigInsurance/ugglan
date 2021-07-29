@@ -336,15 +336,14 @@ let log = Logger.self
 		setupDebugger()
 
 		bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-			.atValue { _ in Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+			.atValue { _ in
+                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
 				AnalyticsCoordinator().setUserId()
 
 				self.bag += self.window.present(AppJourney.main)
-			}
-			.onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
-				self.bag += client.fetch(query: GraphQL.FeaturesQuery())
-					.onValue { _ in launch.completeAnimationCallbacker.callAll() }
+                
+                launch.completeAnimationCallbacker.callAll()
 			}
 
 		bag += launchFuture.onValue { _ in launchView.removeFromSuperview()
