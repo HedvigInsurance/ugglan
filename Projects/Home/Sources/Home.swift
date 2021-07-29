@@ -9,20 +9,16 @@ import hCoreUI
 import hGraphQL
 
 public struct Home {
-	public static var openClaimsHandler: (_ viewController: UIViewController) -> Void = { _ in }
-	public static var openMovingFlowHandler: (_ viewController: UIViewController) -> Void = { _ in }
-	public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
-	public static var openConnectPaymentHandler: (_ viewController: UIViewController) -> Void = { _ in }
-
 	@Inject var client: ApolloClient
+    
+    public init() {}
+}
 
-	public init(
-		sections: [HomeSection]
-	) {
-		self.sections = sections
-	}
-
-	public let sections: [HomeSection]
+public enum HomeResult {
+    case startMovingFlow
+    case openClaims
+    case openFreeTextChat
+    case openConnectPayments
 }
 
 extension Future {
@@ -45,14 +41,12 @@ extension Future {
 	}
 }
 
-enum HomeState {
-	case terminated
-	case future
-	case active
-}
-
 extension Home: Presentable {
-	public func materialize() -> (UIViewController, Disposable) {
+	public func materialize() -> (UIViewController, Signal<HomeResult>) {
+        let store: HomeStore = self.get()
+        
+        store.send(.fetchMemberState)
+        
 		let viewController = UIViewController()
 		viewController.title = L10n.HomeTab.title
 		viewController.installChatButton(allowsChatHint: true)
@@ -78,14 +72,16 @@ extension Home: Presentable {
 		bag += viewController.install(form) { scrollView in
 			let refreshControl = UIRefreshControl()
 			scrollView.refreshControl = refreshControl
-			bag += self.client.refetchOnRefresh(query: GraphQL.HomeQuery(), refreshControl: refreshControl)
+            
+            bag += refreshControl.store(store: store, onReload: {
+                .fetchMemberState
+            }, endLoadOn: .setMemberContractState(.active), .setMemberContractState(.terminated), .setMemberContractState(.future))
+            
+            let future = store.stateSignal.atOnce().compactMap { $0.memberContractState }.future
 
 			bag += scrollView.performEntryAnimation(
 				contentView: form,
-				onLoad: self.client
-					.fetch(query: GraphQL.HomeQuery())
-					.wait(until: scrollView.safeToPerformEntryAnimationSignal)
-					.delay(by: 0.1)
+				onLoad: future
 			) { error in
 				print(error)
 			}
@@ -106,29 +102,32 @@ extension Home: Presentable {
 		titleRow.layoutMargins = rowInsets
 		titleSection.append(titleRow)
 
-		func buildSections(functionBag: DisposeBag, state: HomeState) {
+		func buildSections(functionBag: DisposeBag, state: MemberContractState) {
 			switch state {
 			case .active:
 				functionBag += titleRow.append(ActiveSection())
-			case .future:
-				functionBag += titleRow.append(FutureSection())
+                
+                let section = HomeVerticalSection(section: .init(title: L10n.HomeTab.editingSectionTitle,
+                                                                 style: .vertical,
+                                                                 children: [
+                                                                    .init(
+                                                                        title: L10n.HomeTab.editingSectionChangeAddressLabel,
+                                                                        icon: hCoreUIAssets.apartment.image,
+                                                                        handler: {
+                                                                            store.send(.openMovingFlow)
+                                                                            return NilDisposer()
+                                                                        }
+                                                                    )
+                                                                 ]
+                ))
+                functionBag += form.append(section)
+                form.appendSpacing(.custom(30))
+            case .future:
+                functionBag += titleRow.append(FutureSection())
 			case .terminated:
 				functionBag += titleRow.append(TerminatedSection())
-			}
-
-			sections.forEach { homeSection in
-				switch homeSection.style {
-				case .horizontal:
-					break
-				case .vertical:
-					guard state == .active else { return }
-					let section = HomeVerticalSection(section: homeSection)
-					functionBag += form.append(section)
-				case .header:
-					break
-				}
-
-				form.appendSpacing(.custom(30))
+            case .loading:
+                break
 			}
 		}
 
@@ -138,21 +137,31 @@ extension Home: Presentable {
 			}
 			.nil()
 
-		bag +=
-			client
-			.watch(query: GraphQL.HomeQuery())
-			.map { data in
-				data.homeState
-			}
-			.onValueDisposePrevious { homeState in
-				let innerBag = DisposeBag()
-
-				buildSections(functionBag: innerBag, state: homeState)
-
-				return innerBag
-			}
-
-		return (viewController, bag)
+        return (viewController, Signal { callbacker in
+            
+            bag += store.stateSignal.atOnce().map { $0.memberContractState }.onValueDisposePrevious { state in
+                let innerBag = DisposeBag()
+                buildSections(functionBag: innerBag, state: state)
+                return innerBag
+            }
+            
+            bag += store.actionSignal.onValue { action in
+                switch action {
+                case .openFreeTextChat:
+                    callbacker(.openFreeTextChat)
+                case .openMovingFlow:
+                    callbacker(.startMovingFlow)
+                case .openClaims:
+                    callbacker(.openClaims)
+                case .connectPayments:
+                    callbacker(.openConnectPayments)
+                default:
+                    break
+                }
+            }
+            
+            return bag
+        })
 	}
 }
 
@@ -166,27 +175,20 @@ extension Home: Tabable {
 	}
 }
 
-extension GraphQL.HomeQuery.Data {
-	fileprivate var homeState: HomeState {
-		if isTerminated {
-			return .terminated
-		} else if isFuture {
-			return .future
-		} else {
-			return .active
-		}
-	}
 
-	private var isTerminated: Bool {
-		contracts.allSatisfy({ (contract) -> Bool in
-			contract.status.asActiveInFutureStatus != nil || contract.status.asTerminatedStatus != nil
-				|| contract.status.asTerminatedTodayStatus != nil
-		})
-	}
-
-	private var isFuture: Bool {
-		contracts.allSatisfy { (contract) -> Bool in
-			contract.status.asActiveInFutureStatus != nil || contract.status.asPendingStatus != nil
-		}
-	}
+extension UIRefreshControl {
+    func store<S: Store>(store: S, onReload: @escaping () -> S.Action, endLoadOn: S.Action...) -> Disposable {
+        let bag = DisposeBag()
+    
+        bag += self.onValue {
+            store.send(onReload())
+            bag += store.actionSignal.onValue { action in
+                if endLoadOn.contains(action) {
+                    self.endRefreshing()
+                }
+            }
+        }
+     
+        return bag
+    }
 }

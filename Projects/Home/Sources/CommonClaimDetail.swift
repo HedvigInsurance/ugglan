@@ -64,8 +64,10 @@ extension CommonClaimDetail: Presentable {
 				)
 			)
 			bag += topCardContentView.addArranged(claimButton)
-
-			bag += claimButton.onTapSignal.onValue { _ in Home.openClaimsHandler(viewController) }
+            
+            let store: HomeStore = self.get()
+            
+            bag += claimButton.onTapSignal.onValue { store.send(.openFreeTextChat) }
 
 			bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))
 		} else {

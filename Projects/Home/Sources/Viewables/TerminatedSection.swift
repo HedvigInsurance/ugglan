@@ -10,41 +10,45 @@ import hGraphQL
 
 struct TerminatedSection { @Inject var client: ApolloClient }
 
-extension TerminatedSection: Viewable {
-	func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
-		let bag = DisposeBag()
-		let section = SectionView()
-		section.dynamicStyle = .brandGrouped(separatorType: .none)
+extension TerminatedSection: Presentable {
+    func materialize() -> (SectionView, Disposable) {
+        let bag = DisposeBag()
+        let section = SectionView()
+        section.dynamicStyle = .brandGrouped(separatorType: .none)
 
-		var titleLabel = MultilineLabel(value: "", style: .brand(.largeTitle(color: .primary)))
-		bag += section.append(titleLabel)
+        var titleLabel = MultilineLabel(value: "", style: .brand(.largeTitle(color: .primary)))
+        bag += section.append(titleLabel)
 
-		section.appendSpacing(.inbetween)
+        section.appendSpacing(.inbetween)
 
-		client.fetch(query: GraphQL.HomeQuery())
-			.onValue { data in
-				titleLabel.value = L10n.HomeTab.terminatedWelcomeTitle(data.member.firstName ?? "")
-			}
+        client.fetch(query: GraphQL.HomeQuery())
+            .onValue { data in
+                titleLabel.value = L10n.HomeTab.terminatedWelcomeTitle(data.member.firstName ?? "")
+            }
 
-		let subtitleLabel = MultilineLabel(
-			value: L10n.HomeTab.terminatedBody,
-			style: .brand(.body(color: .secondary))
-		)
-		bag += section.append(subtitleLabel)
+        let subtitleLabel = MultilineLabel(
+            value: L10n.HomeTab.terminatedBody,
+            style: .brand(.body(color: .secondary))
+        )
+        bag += section.append(subtitleLabel)
 
-		section.appendSpacing(.top)
+        section.appendSpacing(.top)
 
-		let button = Button(
-			title: L10n.HomeTab.claimButtonText,
-			type: .standardOutline(
-				borderColor: .brand(.secondaryButtonBackgroundColor),
-				textColor: .brand(.secondaryButtonBackgroundColor)
-			)
-		)
-		bag += section.append(button)
+        let button = Button(
+            title: L10n.HomeTab.claimButtonText,
+            type: .standardOutline(
+                borderColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonBackgroundColor)
+            )
+        )
+        bag += section.append(button)
+        
+        let store: HomeStore = self.get()
 
-		bag += button.onTapSignal.compactMap { section.viewController }.onValue(Home.openClaimsHandler)
+        bag += button.onTapSignal.onValue {
+            store.send(.openFreeTextChat)
+        }
 
-		return (section, bag)
-	}
+        return (section, bag)
+    }
 }

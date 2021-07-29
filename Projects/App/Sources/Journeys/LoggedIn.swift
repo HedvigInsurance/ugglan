@@ -8,40 +8,35 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import Payment
 
 extension AppJourney {
-	fileprivate static var homeTab: some JourneyPresentation {
-		let home = Home(sections: [
-			HomeSection(
-				title: L10n.HomeTab.editingSectionTitle,
-				style: .vertical,
-				children: [
-					.init(
-						title: L10n.HomeTab.editingSectionChangeAddressLabel,
-						icon: hCoreUIAssets.apartment.image,
-						handler: { viewController in
-							viewController.present(
-								AppJourney.movingFlow
-							)
-							.onValue { _ in }
-							return NilDisposer()
-						}
-					)
-				]
-			)
-		])
-
-		return Journey(home, options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
-			.configureTabBarItem
-			.onTabSelected {
-				ContextGradient.currentOption = .home
-			}
-	}
-
-	fileprivate static var contractsTab: some JourneyPresentation {
-		Journey(
-			Contracts(),
-			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+    fileprivate static var homeTab: some JourneyPresentation {
+        Journey(
+            Home(),
+            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+        ) { result in
+            switch result {
+            case .startMovingFlow:
+                AppJourney.movingFlow
+            case .openClaims:
+                claimsHandler
+            case .openFreeTextChat:
+                freeTextChat
+            case .openConnectPayments:
+                paymentSetup
+            }
+        }
+        .configureTabBarItem
+        .onTabSelected {
+            ContextGradient.currentOption = .home
+        }
+    }
+    
+    fileprivate static var contractsTab: some JourneyPresentation {
+        Journey(
+            Contracts(),
+            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
 		) { result in
 			switch result {
 			case .movingFlow:

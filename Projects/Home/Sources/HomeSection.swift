@@ -27,7 +27,7 @@ public struct HomeChild {
 	public init(
 		title: String,
 		icon: UIImage,
-		handler: @escaping (UIViewController) -> Disposable
+		handler: @escaping () -> Disposable
 	) {
 		self.title = title
 		self.icon = icon
@@ -36,5 +36,5 @@ public struct HomeChild {
 
 	public var title: String
 	public var icon: UIImage
-	public var handler: (UIViewController) -> Disposable
+	public var handler: () -> Disposable
 }
