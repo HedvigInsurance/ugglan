@@ -13,6 +13,7 @@ struct AddressInput {
 	private let setTextSignal = ReadWriteSignal<String>("")
 	let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
 	let shouldReturn = Delegate<String, Bool>()
+    let didEditSignal = ReadWriteSignal<Void>(())
 
 	var text: String {
 		get {
@@ -54,6 +55,7 @@ extension AddressInput: Viewable {
 		let inputTextSignal = boxStack.addArranged(input)
 		bag += inputTextSignal.bindTo(textSignal)
 		bag += setTextSignal.bindTo(inputTextSignal)
+        bag += input.didEditSignal.bindTo(didEditSignal)
 
 		bag += input.shouldReturn.set { value -> Bool in self.shouldReturn.call(value) ?? false }
 
