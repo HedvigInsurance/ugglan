@@ -73,14 +73,18 @@ extension Home: Presentable {
 			let refreshControl = UIRefreshControl()
 			scrollView.refreshControl = refreshControl
 
-            bag += refreshControl.store(store, send: {
-                .fetchMemberState
-            }, endOn: .setMemberContractState(state: .active),
-            .setMemberContractState(state: .future),
-            .setMemberContractState(state: .terminated)
-            )
+			bag += refreshControl.store(
+				store,
+				send: {
+					.fetchMemberState
+				},
+				endOn: .setMemberContractState(state: .active),
+				.setMemberContractState(state: .future),
+				.setMemberContractState(state: .terminated)
+			)
 
-            let future = store.stateSignal.atOnce().filter(predicate: { $0.memberContractState != .loading}).future
+			let future = store.stateSignal.atOnce()
+				.filter(predicate: { $0.memberContractState != .loading }).future
 
 			bag += scrollView.performEntryAnimation(
 				contentView: form,
@@ -106,11 +110,11 @@ extension Home: Presentable {
 		titleSection.append(titleRow)
 
 		func buildSections(state: MemberContractState) -> Disposable {
-            let innerBag = DisposeBag()
-            
+			let innerBag = DisposeBag()
+
 			switch state {
 			case .active:
-                innerBag += titleRow.append(ActiveSection())
+				innerBag += titleRow.append(ActiveSection())
 
 				let section = HomeVerticalSection(
 					section: .init(
@@ -127,17 +131,17 @@ extension Home: Presentable {
 						]
 					)
 				)
-                innerBag += form.append(section)
+				innerBag += form.append(section)
 				form.appendSpacing(.custom(30))
 			case .future:
-                innerBag += titleRow.append(FutureSection())
+				innerBag += titleRow.append(FutureSection())
 			case .terminated:
-                innerBag += titleRow.append(TerminatedSection())
+				innerBag += titleRow.append(TerminatedSection())
 			case .loading:
 				break
 			}
-            
-            return innerBag
+
+			return innerBag
 		}
 
 		bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)

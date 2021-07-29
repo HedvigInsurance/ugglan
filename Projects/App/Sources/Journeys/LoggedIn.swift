@@ -20,11 +20,11 @@ extension AppJourney {
 			case .startMovingFlow:
 				AppJourney.movingFlow
 			case .openClaims:
-                AppJourney.claimsHandler
+				AppJourney.claimsHandler
 			case .openFreeTextChat:
-                AppJourney.freeTextChat
+				AppJourney.freeTextChat
 			case .openConnectPayments:
-                AppJourney.paymentSetup
+				AppJourney.paymentSetup
 			}
 		}
 		.configureTabBarItem
