@@ -13,11 +13,11 @@ struct AddressRow: Hashable {
 	}
 
 	func hash(into hasher: inout Hasher) { hasher.combine(id) }
-    
-    let suggestion: AddressSuggestion
-    let addressLine: String
-    let postalLine: String?
-    var cellHeight: CGFloat { postalLine != nil ? 66 : 54 }
+
+	let suggestion: AddressSuggestion
+	let addressLine: String
+	let postalLine: String?
+	var cellHeight: CGFloat { postalLine != nil ? 66 : 54 }
 }
 
 extension AddressRow: Reusable {
@@ -39,16 +39,18 @@ extension AddressRow: Reusable {
 			value: L10n.ReferallsInviteeStates.invitedYou,
 			style: .brand(.subHeadline(color: .secondary))
 		)
-        postalCodeLabel.animationSafeIsHidden = true
+		postalCodeLabel.animationSafeIsHidden = true
 		mainTextContainer.addArrangedSubview(postalCodeLabel)
 
 		return (
 			stackView,
 			{ `self` in
 				addressLabel.value = self.addressLine
-                if let postalLine = self.postalLine {
-                    postalCodeLabel.value = postalLine
-                    postalCodeLabel.animationSafeIsHidden = false
+				if let postalLine = self.postalLine {
+					postalCodeLabel.value = postalLine
+					postalCodeLabel.animationSafeIsHidden = false
+                } else {
+                    postalCodeLabel.animationSafeIsHidden = true
                 }
 
 				return NilDisposer()

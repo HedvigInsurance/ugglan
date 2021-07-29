@@ -6,6 +6,10 @@ import UIKit
 import hCore
 import hCoreUI
 
+enum AddressAutocompleteError: Error {
+    case cantFindAddress
+}
+
 struct EmbarkAddressAutocomplete: AddressTransitionable {
 	var boxFrame: ReadWriteSignal<CGRect?> = ReadWriteSignal(CGRect.zero)
 	let textSignal = ReadWriteSignal<String>("")
@@ -28,14 +32,14 @@ struct EmbarkAddressAutocomplete: AddressTransitionable {
 	}
 }
 
-fileprivate func ignoreNBSP(lhs: String, rhs: String) -> Bool {
-    let cleanedLhs = lhs.replacingOccurrences(of: "\u{00a0}", with: " ")
-    let cleanedRhs = rhs.replacingOccurrences(of: "\u{00a0}", with: " ")
-    return cleanedLhs == cleanedRhs
+private func ignoreNBSP(lhs: String, rhs: String) -> Bool {
+	let cleanedLhs = lhs.replacingOccurrences(of: "\u{00a0}", with: " ")
+	let cleanedRhs = rhs.replacingOccurrences(of: "\u{00a0}", with: " ")
+	return cleanedLhs == cleanedRhs
 }
 
 extension EmbarkAddressAutocomplete: Presentable {
-	func materialize() -> (UIViewController, Disposable) {
+	func materialize() -> (UIViewController, Future<String?>) {
 		let viewController = UIViewController()
 		viewController.title = "Address"
 		let bag = DisposeBag()
@@ -43,12 +47,6 @@ extension EmbarkAddressAutocomplete: Presentable {
 		let view = UIView()
 		view.backgroundColor = .brand(.primaryBackground())
 		viewController.view = view
-		//view.axis = .vertical
-		//view.distribution = .equalSpacing
-		//view.alignment = .top
-		//view.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 20, right: 20)
-		//view.isLayoutMarginsRelativeArrangement = true
-		//view.spacing = 15
 
 		let headerBackground = UIView()
 		headerBackground.backgroundColor = .brand(.secondaryBackground())
@@ -86,30 +84,6 @@ extension EmbarkAddressAutocomplete: Presentable {
 
 		bag += setIsFirstResponderSignal.bindTo(addressInput.setIsFirstResponderSignal)
 
-		/*let scrollView = UIScrollView()
-        let form = FormView()
-        scrollView.embedView(form, scrollAxis: .vertical)
-        view.addSubview(scrollView)
-        scrollView.snp.makeConstraints { make in
-            make.top.equalTo(headerBackground.snp.bottom)
-            make.bottom.trailing.leading.equalToSuperview()
-        }
-
-
-        let section = form.appendSection(header: nil, footer: nil)
-
-        bag += resultsSignal
-            .atOnce()
-            .onValueDisposePrevious { addresses -> Disposable? in let innerBag = DisposeBag()
-                innerBag += addresses.map { address -> Disposable in
-                    let row = KeyValueRow()
-                    row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
-
-                    row.keySignal.value = address
-                    return section.append(row)
-                }
-                return innerBag
-            }*/
 		let tableKit = TableKit<EmptySection, Either<AddressRow, AddressNotFoundRow>>(
 			style: .default,
 			holdIn: bag
@@ -131,74 +105,79 @@ extension EmbarkAddressAutocomplete: Presentable {
 			make.bottom.trailing.leading.equalToSuperview()
 		}
 
-        bag += textSignal
-            .filter { $0 != "" }
+		bag +=
+			textSignal
             .distinct(ignoreNBSP)
+            .atValue { text in
+                // Reset suggestion for empty input field
+                if text == "" { addressState.pickedSuggestionSignal.value = nil }
+                // Reset confirmed address if it doesn't match the updated search term
+                if let previousPickedSuggestion = addressState.pickedSuggestionSignal.value,
+                   addressState.formatAddressLine(from: previousPickedSuggestion) != text {
+                    addressState.pickedSuggestionSignal.value = nil
+                }
+            }
+			.filter { $0 != "" }
 			.mapLatestToFuture { text in
 				addressState.getSuggestions(
 					searchTerm: text,
-                    suggestion: addressState.pickedSuggestionSignal.value
+					suggestion: addressState.pickedSuggestionSignal.value
 				)
 			}
 			.onValue { suggestions in
 				var rows: [Either<AddressRow, AddressNotFoundRow>] = suggestions.map {
-                    .make(AddressRow(suggestion: $0, addressLine: addressState.formatAddressLine(from: $0), postalLine: addressState.formatPostalLine(from: $0)))
+					.make(
+						AddressRow(
+							suggestion: $0,
+							addressLine: addressState.formatAddressLine(from: $0),
+							postalLine: addressState.formatPostalLine(from: $0)
+						)
+					)
 				}
 				rows.append(.make(AddressNotFoundRow()))
 				var table = Table(rows: rows)
 				table.removeEmptySections()
 				tableKit.set(table, animation: .fade)
 			}
-        
-        bag += addressState.pickedSuggestionSignal.compactMap{ $0 }.map {addressState.formatAddressLine(from: $0)}.onValue { text in
-            addressInput.text = text
-        }
 
-		bag += tableKit.delegate.didSelectRow.onValueDisposePrevious { row -> Disposable? in
-            let innerBag = DisposeBag()
-			switch row {
-			case .left(let addressRow):
-				// did select suggestion
-				let suggestion = addressRow.suggestion
-                innerBag += addressState.confirm(suggestion, withPreviousSuggestion: addressState.pickedSuggestionSignal.value).valueSignal.compactMap { $0 }.bindTo(addressState.confirmedSuggestionSignal)
-				addressState.pickedSuggestionSignal.value = suggestion
-				//addressInput.textSignal.value = addressState.formatAddressLine(from: suggestion)
-				print(suggestion.address)
-			case .right(let notFoundRow):
-				// did select cannot find address
-				()
+		bag += addressState.pickedSuggestionSignal.compactMap { $0 }
+			.map { addressState.formatAddressLine(from: $0) }
+			.onValue { text in
+				addressInput.text = text
 			}
-            return innerBag
-		}
 
-		bag += addressState.pickedSuggestionSignal.onValue { suggestion in
-
-		}
-
-		/*bag += addressInput.textSignal.filter { $0 != "" }.mapLatestToFuture { text in
-            addressState.getSuggestions(searchTerm: text, suggestion: addressState.pickedSuggestionSignal.value)
-        }
-        .onValueDisposePrevious { addressSuggestions -> Disposable? in
-            let innerBag = DisposeBag()
-            innerBag += addressSuggestions.autoCompleteAddress.map { address -> Disposable in
-                let rowWrapper = UIControl()
-                let row = KeyValueRow()
-                row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
-                row.keySignal.value = address.address
-
-                return section.append(row)
+		return (
+            viewController,
+            Future { completion in
+                bag += tableKit.delegate.didSelectRow.onValueDisposePrevious { row -> Disposable? in
+                    let innerBag = DisposeBag()
+                    switch row {
+                    case .left(let addressRow):
+                        // did select suggestion
+                        let suggestion = addressRow.suggestion
+                        innerBag +=
+                            addressState.confirm(
+                                suggestion,
+                                withPreviousSuggestion: addressState.pickedSuggestionSignal.value
+                            )
+                            .valueSignal.compactMap { $0 }.bindTo(addressState.confirmedSuggestionSignal)
+                        addressState.pickedSuggestionSignal.value = suggestion
+                        //addressInput.textSignal.value = addressState.formatAddressLine(from: suggestion)
+                        print(suggestion.address)
+                    case .right(let notFoundRow):
+                        // did select cannot find address
+                        completion(.failure(AddressAutocompleteError.cantFindAddress))
+                    }
+                    return innerBag
+                }
+                
+                bag += addressState.confirmedSuggestionSignal.compactMap { $0 }
+                    .onValue { address in
+                        completion(.success(address.address))
+                    }
+                
+                return bag
             }
-            return innerBag
-        }*/
-
-		/*bag += addressInput.textSignal.onValue { text in
-			bag += addressState.getSuggestions(searchTerm: text, suggestion: addressState.pickedSuggestionSignal.value)
-				.map { data in
-					data.autoCompleteAddress.map { $0.address }
-				}
-				.bindTo(resultsSignal)
-		}*/
-
-		return (viewController, bag)
+        )
 	}
 }

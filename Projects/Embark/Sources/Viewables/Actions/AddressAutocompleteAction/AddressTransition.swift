@@ -26,13 +26,13 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 		self.interimAddressInput = addressInput
 	}
 
-	private let didEndTransitionCallbacker = Callbacker<Void>()
-	var didEndTransitionSignal: Signal<Void> {
+	private let didEndTransitionCallbacker = Callbacker<Bool>()
+	var didEndTransitionSignal: Signal<Bool> {
 		didEndTransitionCallbacker.providedSignal
 	}
 
-	private let didStartTransitionCallbacker = Callbacker<Void>()
-	var didStartTransitionSignal: Signal<Void> {
+	private let didStartTransitionCallbacker = Callbacker<Bool>()
+	var didStartTransitionSignal: Signal<Bool> {
 		didStartTransitionCallbacker.providedSignal
 	}
 
@@ -42,49 +42,45 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 
 	public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
 		let containerView = transitionContext.containerView
-		guard let autocompleteView = transitionContext.view(forKey: .to) else { return }
+		var _autocompleteView = transitionContext.view(forKey: .to)
+        if let fromView = transitionContext.view(forKey: .from), !presenting {
+            _autocompleteView = fromView
+        }
+        guard let autocompleteView = _autocompleteView else { return }
 
-		guard let firstBoxSuperview = firstBox.superview else { return }
-		let originFrame = firstBoxSuperview.convert(firstBox.frame, to: nil)
+        if presenting {
+            containerView.addSubview(autocompleteView)
+            containerView.bringSubviewToFront(autocompleteView)
+            autocompleteView.alpha = 0.0
+        }
+        
+        didStartTransitionCallbacker.callAll(with: presenting)
 
-		let initialFrame = presenting ? originFrame : autocompleteView.frame
-		let finalFrame = presenting ? autocompleteView.frame : originFrame
-
-		guard let snapshot = firstBox.snapshotView(afterScreenUpdates: false) else { return }
-		//containerView.addSubview(firstBox)
-		//snapshot.frame = initialFrame
-		//firstBox.alpha = 0.0
-
-		let bag = DisposeBag()
-		let box = UIControl()
-		containerView.addSubview(box)
-
-		bag += box.add(interimAddressInput) { addressInputView in
-			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
-		}
-		box.frame = initialFrame
-
-		didStartTransitionCallbacker.callAll()
-
-		let moveTransform = CGAffineTransform(translationX: 0, y: initialFrame.origin.y)
-
-		let finalCoords = autocompleteView.convert(CGPoint(x: 20, y: 0), to: containerView)
-
-		containerView.addSubview(autocompleteView)
-		containerView.bringSubviewToFront(autocompleteView)
-		//containerView.bringSubviewToFront(snapshot)
-		containerView.bringSubviewToFront(box)
-
-		autocompleteView.alpha = 0.0
 		firstBox.alpha = 0.0
 		secondBox.alpha = 0.0
+        
+        guard let firstBoxSuperview = firstBox.superview else { return }
+        let originFrame = firstBoxSuperview.convert(firstBox.frame, to: nil)
 
 		guard let secondBoxSuperview = secondBox.superview else { return }
 		let destinationFrame = secondBoxSuperview.convert(secondBox.frame, to: nil)
 		print("FRAME:", originFrame, destinationFrame)
+        
+        let initialFrame = presenting ? originFrame : destinationFrame
+        let finalFrame = presenting ? destinationFrame : originFrame
+        
+        let bag = DisposeBag()
+        let box = UIControl()
+        containerView.addSubview(box)
+        bag += box.add(interimAddressInput) { addressInputView in
+            addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
+        }
+        box.frame = initialFrame
+        
+        containerView.bringSubviewToFront(box)
 
 		if presenting {
-			autocompleteView.transform = moveTransform
+			autocompleteView.transform = CGAffineTransform(translationX: 0, y: initialFrame.origin.y)
 			autocompleteView.clipsToBounds = true
 		}
 
@@ -120,21 +116,16 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 			usingSpringWithDamping: 1.5,
 			initialSpringVelocity: 0.2,
 			animations: {
-				autocompleteView.transform = self.presenting ? .identity : .identity
-				autocompleteView.alpha = 1.0
+				autocompleteView.transform = self.presenting ? .identity : CGAffineTransform(translationX: 0, y: finalFrame.origin.y)
+                autocompleteView.alpha = self.presenting ? 1.0 : 0.0
 				//box.frame = destinationFrame
-				box.frame = CGRect(
-					x: destinationFrame.origin.x,
-					y: destinationFrame.origin.y + 12,
-					width: initialFrame.width,
-					height: initialFrame.height
-				)
+				box.frame = finalFrame // add 12 to get correnct height
 				//box.frame = destinationFrame
 				//autocompleteView.center = CGPoint(x: finalFrame.midX, y: finalFrame.midY)
 				//autocompleteView.frame.origin = CGPoint(x: 0, y: 0)
 			},
 			completion: { _ in
-				self.didEndTransitionCallbacker.callAll()
+                self.didEndTransitionCallbacker.callAll(with: self.presenting)
 				transitionContext.completeTransition(true)
 				box.removeFromSuperview()
 				self.firstBox.alpha = 1.0
@@ -211,11 +202,13 @@ class AddressTransitionDelegate: NSObject, UIViewControllerTransitioningDelegate
         )*/
 
 		//transition.presenting = true
+        transition.presenting = true
 		return transition
 	}
 
 	func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-		return nil
+        transition.presenting = false
+		return transition
 	}
 }
 
@@ -234,6 +227,7 @@ extension PresentationStyle {
 			bag.hold(delegate)
 			vc.transitioningDelegate = delegate
 			vc.modalPresentationStyle = .automatic
+            vc.isModalInPresentation = true
 
 			return from.modallyPresentQueued(vc, options: options) {
 				return Future { completion in
