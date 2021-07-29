@@ -85,7 +85,7 @@ extension Presentable where Matter: UIViewController {
 
 					bag += finiteSignal.onEvent(callback)
 
-					return DelayedDisposer(bag, delay: 2)
+					return DelayedDisposer(bag, delay: 1)
 				}
 			)
 		}
@@ -126,7 +126,7 @@ extension Presentable where Matter: UIViewController {
 
 					bag += { future.cancel() }
 
-					return DelayedDisposer(bag, delay: 2)
+					return DelayedDisposer(bag, delay: 1)
 				}
 			)
 		}
