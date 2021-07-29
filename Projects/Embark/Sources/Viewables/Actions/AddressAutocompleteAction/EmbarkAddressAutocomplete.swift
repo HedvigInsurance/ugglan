@@ -119,7 +119,6 @@ extension EmbarkAddressAutocomplete: Presentable {
 				}
 			}
 			.filter { $0 != "" }
-			.distinct(ignoreNBSP)
 			.mapLatestToFuture { text in
 				addressState.getSuggestions(
 					searchTerm: text,
