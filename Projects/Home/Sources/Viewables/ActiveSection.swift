@@ -14,9 +14,9 @@ extension ActiveSection: Presentable {
 	func materialize() -> (SectionView, Disposable) {
 		let bag = DisposeBag()
 		let section = SectionView()
-        
-        let store: HomeStore = self.get()
-        
+
+		let store: HomeStore = self.get()
+
 		section.dynamicStyle = .brandGrouped(separatorType: .none)
 
 		var label = MultilineLabel(value: "", style: .brand(.largeTitle(color: .primary)))
@@ -26,7 +26,7 @@ extension ActiveSection: Presentable {
 			.onValue { data in label.value = L10n.HomeTab.welcomeTitle(data.member.firstName ?? "") }
 
 		section.appendSpacing(.top)
-        
+
 		let claimButton = Button(
 			title: L10n.HomeTab.claimButtonText,
 			type: .standard(
@@ -35,9 +35,9 @@ extension ActiveSection: Presentable {
 			)
 		)
 		bag += section.append(claimButton)
-        bag += claimButton.onTapSignal.onValue {
-            store.send(.openClaims)
-        }
+		bag += claimButton.onTapSignal.onValue {
+			store.send(.openClaims)
+		}
 
 		section.appendSpacing(.inbetween)
 
@@ -57,7 +57,7 @@ extension ActiveSection: Presentable {
 					buttonDoneTitle: L10n.ClaimsExplainer.buttonStartClaim,
 					pages: []
 				) { viewController in
-                    store.send(.openClaims)
+					store.send(.openClaims)
 					return Future(.forever)
 				}
 				viewController.present(pager)

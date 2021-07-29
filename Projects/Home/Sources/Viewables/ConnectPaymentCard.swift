@@ -1,7 +1,7 @@
 import Apollo
 import Flow
-import Presentation
 import Foundation
+import Presentation
 import SnapKit
 import UIKit
 import hCore
@@ -28,8 +28,8 @@ extension ConnectPaymentCard: Presentable {
 			.onValueDisposePrevious { status -> Disposable? in let bag = DisposeBag()
 
 				if status == .needsSetup {
-                    let store: HomeStore = self.get()
-                    
+					let store: HomeStore = self.get()
+
 					bag += stackView.addArranged(Spacing(height: 56), onCreate: animateIn)
 					bag +=
 						stackView.addArranged(
@@ -54,7 +54,7 @@ extension ConnectPaymentCard: Presentable {
 						)
 						.compactMap { _ in stackView.viewController }
 						.onValue { viewController in
-                            store.send(.connectPayments)
+							store.send(.connectPayments)
 						}
 				}
 

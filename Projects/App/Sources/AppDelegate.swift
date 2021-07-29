@@ -22,9 +22,9 @@ import hCoreUI
 import hGraphQL
 
 #if PRESENTATION_DEBUGGER
-#if compiler(>=5.5)
-	import PresentationDebugSupport
-#endif
+	#if compiler(>=5.5)
+		import PresentationDebugSupport
+	#endif
 #endif
 
 let log = Logger.self
@@ -325,10 +325,10 @@ let log = Logger.self
 		UNUserNotificationCenter.current().delegate = self
 
 		#if PRESENTATION_DEBUGGER
-        #if compiler(>=5.5)
-			PresentableStoreContainer.debugger = PresentableStoreDebugger()
-			PresentableStoreContainer.debugger?.startServer()
-        #endif
+			#if compiler(>=5.5)
+				PresentableStoreContainer.debugger = PresentableStoreDebugger()
+				PresentableStoreContainer.debugger?.startServer()
+			#endif
 		#endif
 
 		// treat an empty token as a newly downloaded app and setLastNewsSeen

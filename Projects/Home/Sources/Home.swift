@@ -10,15 +10,15 @@ import hGraphQL
 
 public struct Home {
 	@Inject var client: ApolloClient
-    
-    public init() {}
+
+	public init() {}
 }
 
 public enum HomeResult {
-    case startMovingFlow
-    case openClaims
-    case openFreeTextChat
-    case openConnectPayments
+	case startMovingFlow
+	case openClaims
+	case openFreeTextChat
+	case openConnectPayments
 }
 
 extension Future {
@@ -43,10 +43,10 @@ extension Future {
 
 extension Home: Presentable {
 	public func materialize() -> (UIViewController, Signal<HomeResult>) {
-        let store: HomeStore = self.get()
-        
-        store.send(.fetchMemberState)
-        
+		let store: HomeStore = self.get()
+
+		store.send(.fetchMemberState)
+
 		let viewController = UIViewController()
 		viewController.title = L10n.HomeTab.title
 		viewController.installChatButton(allowsChatHint: true)
@@ -72,12 +72,18 @@ extension Home: Presentable {
 		bag += viewController.install(form) { scrollView in
 			let refreshControl = UIRefreshControl()
 			scrollView.refreshControl = refreshControl
-            
-            bag += refreshControl.store(store: store, onReload: {
-                .fetchMemberState
-            }, endLoadOn: .setMemberContractState(.active), .setMemberContractState(.terminated), .setMemberContractState(.future))
-            
-            let future = store.stateSignal.atOnce().compactMap { $0.memberContractState }.future
+
+			bag += refreshControl.store(
+				store: store,
+				onReload: {
+					.fetchMemberState
+				},
+				endLoadOn: .setMemberContractState(.active),
+				.setMemberContractState(.terminated),
+				.setMemberContractState(.future)
+			)
+
+			let future = store.stateSignal.atOnce().compactMap { $0.memberContractState }.future
 
 			bag += scrollView.performEntryAnimation(
 				contentView: form,
@@ -106,28 +112,31 @@ extension Home: Presentable {
 			switch state {
 			case .active:
 				functionBag += titleRow.append(ActiveSection())
-                
-                let section = HomeVerticalSection(section: .init(title: L10n.HomeTab.editingSectionTitle,
-                                                                 style: .vertical,
-                                                                 children: [
-                                                                    .init(
-                                                                        title: L10n.HomeTab.editingSectionChangeAddressLabel,
-                                                                        icon: hCoreUIAssets.apartment.image,
-                                                                        handler: {
-                                                                            store.send(.openMovingFlow)
-                                                                            return NilDisposer()
-                                                                        }
-                                                                    )
-                                                                 ]
-                ))
-                functionBag += form.append(section)
-                form.appendSpacing(.custom(30))
-            case .future:
-                functionBag += titleRow.append(FutureSection())
+
+				let section = HomeVerticalSection(
+					section: .init(
+						title: L10n.HomeTab.editingSectionTitle,
+						style: .vertical,
+						children: [
+							.init(
+								title: L10n.HomeTab.editingSectionChangeAddressLabel,
+								icon: hCoreUIAssets.apartment.image,
+								handler: {
+									store.send(.openMovingFlow)
+									return NilDisposer()
+								}
+							)
+						]
+					)
+				)
+				functionBag += form.append(section)
+				form.appendSpacing(.custom(30))
+			case .future:
+				functionBag += titleRow.append(FutureSection())
 			case .terminated:
 				functionBag += titleRow.append(TerminatedSection())
-            case .loading:
-                break
+			case .loading:
+				break
 			}
 		}
 
@@ -137,31 +146,35 @@ extension Home: Presentable {
 			}
 			.nil()
 
-        return (viewController, Signal { callbacker in
-            
-            bag += store.stateSignal.atOnce().map { $0.memberContractState }.onValueDisposePrevious { state in
-                let innerBag = DisposeBag()
-                buildSections(functionBag: innerBag, state: state)
-                return innerBag
-            }
-            
-            bag += store.actionSignal.onValue { action in
-                switch action {
-                case .openFreeTextChat:
-                    callbacker(.openFreeTextChat)
-                case .openMovingFlow:
-                    callbacker(.startMovingFlow)
-                case .openClaims:
-                    callbacker(.openClaims)
-                case .connectPayments:
-                    callbacker(.openConnectPayments)
-                default:
-                    break
-                }
-            }
-            
-            return bag
-        })
+		return (
+			viewController,
+			Signal { callbacker in
+
+				bag += store.stateSignal.atOnce().map { $0.memberContractState }
+					.onValueDisposePrevious { state in
+						let innerBag = DisposeBag()
+						buildSections(functionBag: innerBag, state: state)
+						return innerBag
+					}
+
+				bag += store.actionSignal.onValue { action in
+					switch action {
+					case .openFreeTextChat:
+						callbacker(.openFreeTextChat)
+					case .openMovingFlow:
+						callbacker(.startMovingFlow)
+					case .openClaims:
+						callbacker(.openClaims)
+					case .connectPayments:
+						callbacker(.openConnectPayments)
+					default:
+						break
+					}
+				}
+
+				return bag
+			}
+		)
 	}
 }
 
@@ -175,20 +188,19 @@ extension Home: Tabable {
 	}
 }
 
-
 extension UIRefreshControl {
-    func store<S: Store>(store: S, onReload: @escaping () -> S.Action, endLoadOn: S.Action...) -> Disposable {
-        let bag = DisposeBag()
-    
-        bag += self.onValue {
-            store.send(onReload())
-            bag += store.actionSignal.onValue { action in
-                if endLoadOn.contains(action) {
-                    self.endRefreshing()
-                }
-            }
-        }
-     
-        return bag
-    }
+	func store<S: Store>(store: S, onReload: @escaping () -> S.Action, endLoadOn: S.Action...) -> Disposable {
+		let bag = DisposeBag()
+
+		bag += self.onValue {
+			store.send(onReload())
+			bag += store.actionSignal.onValue { action in
+				if endLoadOn.contains(action) {
+					self.endRefreshing()
+				}
+			}
+		}
+
+		return bag
+	}
 }

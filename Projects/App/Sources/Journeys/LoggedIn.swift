@@ -4,39 +4,39 @@ import Forever
 import Form
 import Foundation
 import Home
+import Payment
 import Presentation
 import UIKit
 import hCore
 import hCoreUI
-import Payment
 
 extension AppJourney {
-    fileprivate static var homeTab: some JourneyPresentation {
-        Journey(
-            Home(),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        ) { result in
-            switch result {
-            case .startMovingFlow:
-                AppJourney.movingFlow
-            case .openClaims:
-                claimsHandler
-            case .openFreeTextChat:
-                freeTextChat
-            case .openConnectPayments:
-                paymentSetup
-            }
-        }
-        .configureTabBarItem
-        .onTabSelected {
-            ContextGradient.currentOption = .home
-        }
-    }
-    
-    fileprivate static var contractsTab: some JourneyPresentation {
-        Journey(
-            Contracts(),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+	fileprivate static var homeTab: some JourneyPresentation {
+		Journey(
+			Home(),
+			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+		) { result in
+			switch result {
+			case .startMovingFlow:
+				AppJourney.movingFlow
+			case .openClaims:
+				claimsHandler
+			case .openFreeTextChat:
+				freeTextChat
+			case .openConnectPayments:
+				paymentSetup
+			}
+		}
+		.configureTabBarItem
+		.onTabSelected {
+			ContextGradient.currentOption = .home
+		}
+	}
+
+	fileprivate static var contractsTab: some JourneyPresentation {
+		Journey(
+			Contracts(),
+			options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
 		) { result in
 			switch result {
 			case .movingFlow:
