@@ -12,7 +12,7 @@ struct AddressInput {
 	private let setTextSignal = ReadWriteSignal<String>("")
 	let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
 	let shouldReturn = Delegate<String, Bool>()
-    let postalCodeSignal = ReadWriteSignal<String>("")
+	let postalCodeSignal = ReadWriteSignal<String>("")
 
 	var text: String {
 		get {
@@ -32,10 +32,10 @@ extension AddressInput: Viewable {
 		box.backgroundColor = .brand(.secondaryBackground())
 		box.layer.cornerRadius = 8
 		bag += box.applyShadow { _ -> UIView.ShadowProperties in .embark }
-        
-        box.snp.makeConstraints { make in
-            make.height.equalTo(70)
-        }
+
+		box.snp.makeConstraints { make in
+			make.height.equalTo(70)
+		}
 
 		let boxStack = UIStackView()
 		boxStack.axis = .vertical
@@ -52,31 +52,32 @@ extension AddressInput: Viewable {
 			autocapitalisationType: .none,
 			masking: Masking(type: .none),
 			shouldAutoFocus: false,
-            fieldStyle: .embarkInputLarge,
+			fieldStyle: .embarkInputLarge,
 			shouldAutoSize: true
 		)
 
 		let inputTextSignal = boxStack.addArranged(input)
 		bag += inputTextSignal.bindTo(textSignal)
 		bag += setTextSignal.bindTo(inputTextSignal)
-        
-        let postalCodeLabel = UILabel(
-            value: "7100 Vejle",
-            style: .brand(.subHeadline(color: .secondary)).centerAligned
-        )
-        boxStack.addArrangedSubview(postalCodeLabel)
-        postalCodeLabel.animationSafeIsHidden = true
-        
-        bag += postalCodeSignal.distinct().onValue { postalCode in
-            postalCodeLabel.text = postalCode
-            if postalCode == "" {
-                postalCodeLabel.animationSafeIsHidden = true
-                input.fieldStyleSignal.value = .embarkInputLarge
-            } else {
-                postalCodeLabel.animationSafeIsHidden = false
-                input.fieldStyleSignal.value = .embarkInputSmall
-            }
-        }
+
+		let postalCodeLabel = UILabel(
+			value: "7100 Vejle",
+			style: .brand(.subHeadline(color: .secondary)).centerAligned
+		)
+		boxStack.addArrangedSubview(postalCodeLabel)
+		postalCodeLabel.animationSafeIsHidden = true
+
+		bag += postalCodeSignal.distinct()
+			.onValue { postalCode in
+				postalCodeLabel.text = postalCode
+				if postalCode == "" {
+					postalCodeLabel.animationSafeIsHidden = true
+					input.fieldStyleSignal.value = .embarkInputLarge
+				} else {
+					postalCodeLabel.animationSafeIsHidden = false
+					input.fieldStyleSignal.value = .embarkInputSmall
+				}
+			}
 
 		bag += input.shouldReturn.set { value -> Bool in self.shouldReturn.call(value) ?? false }
 

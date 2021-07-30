@@ -72,7 +72,7 @@ class AddressState {
 	}
 
 	func formatPostalLine(from suggestion: AddressSuggestion?) -> String? {
-        guard let suggestion = suggestion else { return nil }
+		guard let suggestion = suggestion else { return nil }
 		if let city = suggestion.city, let postalCode = suggestion.postalCode {
 			return postalCode + " " + city
 		}
