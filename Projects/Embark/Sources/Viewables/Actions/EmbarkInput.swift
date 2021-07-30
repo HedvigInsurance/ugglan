@@ -21,7 +21,7 @@ struct EmbarkInput {
 	let shouldAutoSize: Bool
 	let textFieldAlignment: NSTextAlignment
 	let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
-	let didEditSignal = ReadWriteSignal<Void>(())
+    let fieldStyleSignal: ReadWriteSignal<FieldStyle>
 
 	init(
 		placeholder: String,
@@ -47,6 +47,7 @@ struct EmbarkInput {
 		self.masking = masking
 		self.shouldAutoFocus = shouldAutoFocus
 		self.fieldStyle = fieldStyle
+        fieldStyleSignal = ReadWriteSignal(fieldStyle)
 		self.shouldAutoSize = shouldAutoSize
 		self.textFieldAlignment = textFieldAlignment
 	}
@@ -87,6 +88,8 @@ extension EmbarkInput: Viewable {
 		textField.placeholder = placeholder.value
 		textField.adjustsFontSizeToFitWidth = shouldAutoSize
 		textField.textAlignment = textFieldAlignment
+        
+        bag += fieldStyleSignal.bindTo(textField, \.style)
 
 		bag += combineLatest(
 			textContentTypeSignal.atOnce(),
@@ -103,7 +106,6 @@ extension EmbarkInput: Viewable {
 		}
 
 		paddingView.addArrangedSubview(textField)
-		bag += textField.signal(for: .editingChanged).bindTo(didEditSignal)
 
 		let placeholderLabel = UILabel(value: placeholder.value, style: .brand(.largeTitle(color: .primary)))
 		placeholderLabel.textAlignment = textFieldAlignment

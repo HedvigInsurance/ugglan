@@ -19,8 +19,9 @@ struct EmbarkAddressAutocomplete: AddressTransitionable {
 	let state: EmbarkState
 	let data: EmbarkAddressAutocompleteData
 	let resultsSignal = ReadWriteSignal<[String]>([])
+    let searchSignal = ReadWriteSignal<String>("")
 
-	let addressState = AddressState()
+    let addressState: AddressState
 
 	var text: String {
 		get {
@@ -36,6 +37,10 @@ private func ignoreNBSP(lhs: String, rhs: String) -> Bool {
 	let cleanedLhs = lhs.replacingOccurrences(of: "\u{00a0}", with: " ")
 	let cleanedRhs = rhs.replacingOccurrences(of: "\u{00a0}", with: " ")
 	return cleanedLhs == cleanedRhs
+}
+
+private func removeNBSP(from string: String) -> String {
+    return string.replacingOccurrences(of: "\u{00a0}", with: " ")
 }
 
 extension EmbarkAddressAutocomplete: Presentable {
@@ -104,48 +109,61 @@ extension EmbarkAddressAutocomplete: Presentable {
 			make.top.equalTo(headerBackground.snp.bottom)
 			make.bottom.trailing.leading.equalToSuperview()
 		}
-
+        
+        bag += searchSignal.mapLatestToFuture { text in
+            addressState.getSuggestions(
+                searchTerm: text,
+                suggestion: addressState.pickedSuggestionSignal.value
+            )
+        }
+        .onValue { suggestions in
+            var rows: [Either<AddressRow, AddressNotFoundRow>] = suggestions.map {
+                .make(
+                    AddressRow(
+                        suggestion: $0,
+                        addressLine: addressState.formatAddressLine(from: $0),
+                        postalLine: addressState.formatPostalLine(from: $0)
+                    )
+                )
+            }
+            rows.append(.make(AddressNotFoundRow()))
+            var table = Table(rows: rows)
+            table.removeEmptySections()
+            tableKit.set(table, animation: .fade)
+        }
+        
 		bag +=
 			textSignal
 			.distinct(ignoreNBSP)
+            .map { removeNBSP(from: $0) }
 			.atValue { text in
 				// Reset suggestion for empty input field
 				if text == "" { addressState.pickedSuggestionSignal.value = nil }
 				// Reset confirmed address if it doesn't match the updated search term
 				if let previousPickedSuggestion = addressState.pickedSuggestionSignal.value,
-					addressState.formatAddressLine(from: previousPickedSuggestion) != text
+                   !addressState.isMatchingStreetName(text,  previousPickedSuggestion)
 				{
 					addressState.pickedSuggestionSignal.value = nil
 				}
 			}
 			.filter { $0 != "" }
-			.mapLatestToFuture { text in
-				addressState.getSuggestions(
-					searchTerm: text,
-					suggestion: addressState.pickedSuggestionSignal.value
-				)
-			}
-			.onValue { suggestions in
-				var rows: [Either<AddressRow, AddressNotFoundRow>] = suggestions.map {
-					.make(
-						AddressRow(
-							suggestion: $0,
-							addressLine: addressState.formatAddressLine(from: $0),
-							postalLine: addressState.formatPostalLine(from: $0)
-						)
-					)
-				}
-				rows.append(.make(AddressNotFoundRow()))
-				var table = Table(rows: rows)
-				table.removeEmptySections()
-				tableKit.set(table, animation: .fade)
-			}
+            .bindTo(searchSignal)
+        
 
-		bag += addressState.pickedSuggestionSignal.compactMap { $0 }
-			.map { addressState.formatAddressLine(from: $0) }
-			.onValue { text in
-				addressInput.text = text
-			}
+        bag += addressState.pickedSuggestionSignal.atValue { suggestion in
+            if suggestion == nil {
+                addressInput.postalCodeSignal.value = ""
+            }
+        }.compactMap { $0 }
+            .map { (addressLine: addressState.formatAddressLine(from: $0), postalLine: addressState.formatPostalLine(from: $0)) }
+			.onValue { addressLine, postalLine in
+                if ignoreNBSP(lhs: addressLine, rhs: addressInput.text) {
+                    searchSignal.value = addressLine
+                } else {
+                    addressInput.text = addressLine
+                }
+                addressInput.postalCodeSignal.value = postalLine ?? ""
+            }
 
 		return (
 			viewController,
@@ -165,9 +183,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 							.valueSignal.compactMap { $0 }
 							.bindTo(addressState.confirmedSuggestionSignal)
 						addressState.pickedSuggestionSignal.value = suggestion
-						//addressInput.textSignal.value = addressState.formatAddressLine(from: suggestion)
-						print(suggestion.address)
-					case .right(let notFoundRow):
+					case .right(_):
 						// did select cannot find address
 						completion(.failure(AddressAutocompleteError.cantFindAddress))
 					}

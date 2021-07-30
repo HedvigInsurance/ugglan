@@ -14,6 +14,7 @@ struct EmbarkAddressAutocompleteAction: AddressTransitionable {
 	var isTransitioningSignal = ReadWriteSignal<Bool>(false)
 	let state: EmbarkState
 	let data: EmbarkAddressAutocompleteData
+    let addressState = AddressState()
 
 	var prefillValue: String {
 		guard let value = state.store.getPrefillValue(key: data.addressAutocompleteActionData.key) else {
@@ -44,7 +45,7 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 		}
 		bag += box.didMoveToWindowSignal.delay(by: 0.5)
 			.onValue { _ in addressInput.setIsFirstResponderSignal.value = true }
-
+        
 		bag += addressInput.textSignal.latestTwo().filter { $0.1.count - $0.0.count == 1 }
 			.filter { _ in !isTransitioningSignal.value }
 			.onValueDisposePrevious { _, text -> Disposable in
@@ -53,7 +54,8 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 
 				var autocompleteView = EmbarkAddressAutocomplete(
 					state: self.state,
-					data: self.data
+					data: self.data,
+                    addressState: self.addressState
 				)
 
 				var interimAddressInput = AddressInput(
@@ -68,6 +70,7 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 				bag += transition.didStartTransitionSignal.onValueDisposePrevious {
 					presenting -> Disposable in
 					let innerBag = DisposeBag()
+                    interimAddressInput.postalCodeSignal.value = addressState.formatPostalLine(from: addressState.pickedSuggestionSignal.value) ?? ""
 					interimAddressInput.text =
 						presenting ? addressInput.text : autocompleteView.text
 					if presenting {
@@ -85,18 +88,22 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 					} else {
 						addressInput.text = interimAddressInput.text
 						addressInput.setIsFirstResponderSignal.value = true
+                        addressInput.postalCodeSignal.value = addressState.formatPostalLine(from: addressState.pickedSuggestionSignal.value) ?? ""
 					}
 				}
 
 				box.viewController?
 					.present(
-						autocompleteView,
+                        autocompleteView.wrappedInCloseButton(),
 						style: .address(transition: transition)
 					)
 					.onValue { address in
 						print("DONE HERE:", address)
 						isTransitioningSignal.value = false
 					}
+                    .onCancel {
+                        print("Cancellll")
+                    }
 					.onError { _ in
 						// Didn't find no address
 						print("Errore")
