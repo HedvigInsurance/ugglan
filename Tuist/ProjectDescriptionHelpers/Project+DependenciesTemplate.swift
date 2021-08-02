@@ -54,7 +54,7 @@ public enum ExternalDependencies: CaseIterable {
 				)
 			]
 		case .presentation:
-			return [.package(url: "https://github.com/HedvigInsurance/Presentation", .branch("master"))]
+            return [.package(url: "https://github.com/HedvigInsurance/Presentation", .exact("2.0.0"))]
 		case .ease: return [.package(url: "https://github.com/HedvigInsurance/Ease", .branch("master"))]
 		case .dynamiccolor:
 			return [
