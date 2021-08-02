@@ -21,7 +21,6 @@ struct EmbarkInput {
 	let shouldAutoSize: Bool
 	let textFieldAlignment: NSTextAlignment
 	let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
-	let fieldStyleSignal: ReadWriteSignal<FieldStyle>
 
 	init(
 		placeholder: String,
@@ -47,7 +46,6 @@ struct EmbarkInput {
 		self.masking = masking
 		self.shouldAutoFocus = shouldAutoFocus
 		self.fieldStyle = fieldStyle
-		fieldStyleSignal = ReadWriteSignal(fieldStyle)
 		self.shouldAutoSize = shouldAutoSize
 		self.textFieldAlignment = textFieldAlignment
 	}
@@ -88,8 +86,6 @@ extension EmbarkInput: Viewable {
 		textField.placeholder = placeholder.value
 		textField.adjustsFontSizeToFitWidth = shouldAutoSize
 		textField.textAlignment = textFieldAlignment
-
-		bag += fieldStyleSignal.bindTo(textField, \.style)
 
 		bag += combineLatest(
 			textContentTypeSignal.atOnce(),

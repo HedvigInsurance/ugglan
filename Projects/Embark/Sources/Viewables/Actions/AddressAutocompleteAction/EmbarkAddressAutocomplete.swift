@@ -12,8 +12,6 @@ enum AddressAutocompleteError: Error {
 
 struct EmbarkAddressAutocomplete: AddressTransitionable {
 	var boxFrame: ReadWriteSignal<CGRect?> = ReadWriteSignal(CGRect.zero)
-	let textSignal = ReadWriteSignal<String>("")
-	private let setTextSignal = ReadWriteSignal<String>("")
 	let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
 	let box = UIControl()
 	let state: EmbarkState
@@ -22,24 +20,15 @@ struct EmbarkAddressAutocomplete: AddressTransitionable {
 	let searchSignal = ReadWriteSignal<String>("")
 
 	let addressState: AddressState
-
-	var text: String {
-		get {
-			return textSignal.value
-		}
-		set(newText) {
-			setTextSignal.value = newText
-		}
-	}
 }
 
-private func ignoreNBSP(lhs: String, rhs: String) -> Bool {
+func ignoreNBSP(lhs: String, rhs: String) -> Bool {
 	let cleanedLhs = lhs.replacingOccurrences(of: "\u{00a0}", with: " ")
 	let cleanedRhs = rhs.replacingOccurrences(of: "\u{00a0}", with: " ")
 	return cleanedLhs == cleanedRhs
 }
 
-private func removeNBSP(from string: String) -> String {
+func removeNBSP(from string: String) -> String {
 	return string.replacingOccurrences(of: "\u{00a0}", with: " ")
 }
 
@@ -78,14 +67,14 @@ extension EmbarkAddressAutocomplete: Presentable {
 
 		headerView.addArrangedSubview(box)
 
-		var addressInput = AddressInput(placeholder: data.addressAutocompleteActionData.placeholder)
+		var addressInput = AddressInput(placeholder: data.addressAutocompleteActionData.placeholder, addressState: addressState)
 		bag += box.add(addressInput) { addressInputView in
 			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
 		}
-		bag += addressInput.textSignal.bindTo(textSignal)
-		bag += setTextSignal.onValue { newText in
-			addressInput.text = newText
-		}
+		//bag += addressInput.textSignal.bindTo(textSignal)
+		//bag += setTextSignal.onValue { newText in
+		//	addressInput.text = newText
+		//}
 
 		bag += setIsFirstResponderSignal.bindTo(addressInput.setIsFirstResponderSignal)
 
@@ -134,42 +123,21 @@ extension EmbarkAddressAutocomplete: Presentable {
 			}
 
 		bag +=
-			textSignal
+            combineLatest(addressState.textSignal.atOnce().plain(), view.didLayoutSignal)
+            .map { $0.0 }
 			.distinct(ignoreNBSP)
-			.map { removeNBSP(from: $0) }
-			.atValue { text in
-				// Reset suggestion for empty input field
-				if text == "" { addressState.pickedSuggestionSignal.value = nil }
-				// Reset confirmed address if it doesn't match the updated search term
-				if let previousPickedSuggestion = addressState.pickedSuggestionSignal.value,
-					!addressState.isMatchingStreetName(text, previousPickedSuggestion)
-				{
-					addressState.pickedSuggestionSignal.value = nil
-				}
-			}
 			.filter { $0 != "" }
 			.bindTo(searchSignal)
 
 		bag += addressState.pickedSuggestionSignal
-			.atValue { suggestion in
-				if suggestion == nil {
-					addressInput.postalCodeSignal.value = ""
-				}
-			}
 			.compactMap { $0 }
-			.map {
-				(
-					addressLine: addressState.formatAddressLine(from: $0),
-					postalLine: addressState.formatPostalLine(from: $0)
-				)
-			}
-			.onValue { addressLine, postalLine in
-				if ignoreNBSP(lhs: addressLine, rhs: addressInput.text) {
+			.map { addressState.formatAddressLine(from: $0) }
+			.onValue { addressLine in
+                if ignoreNBSP(lhs: addressLine, rhs: addressState.textSignal.value) {
 					searchSignal.value = addressLine
 				} else {
-					addressInput.text = addressLine
+                    addressState.textSignal.value = addressLine
 				}
-				addressInput.postalCodeSignal.value = postalLine ?? ""
 			}
 
 		return (
@@ -199,6 +167,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 
 				bag += addressState.confirmedSuggestionSignal.compactMap { $0 }
 					.onValue { address in
+                        addressState.textSignal.value = addressState.formatAddressLine(from: address)
 						completion(.success(address.address))
 					}
 

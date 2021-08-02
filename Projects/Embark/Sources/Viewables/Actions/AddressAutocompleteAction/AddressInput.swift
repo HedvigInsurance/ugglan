@@ -8,20 +8,11 @@ import hGraphQL
 
 struct AddressInput {
 	let placeholder: String
-	let textSignal = ReadWriteSignal<String>("")
-	private let setTextSignal = ReadWriteSignal<String>("")
 	let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
 	let shouldReturn = Delegate<String, Bool>()
 	let postalCodeSignal = ReadWriteSignal<String>("")
-
-	var text: String {
-		get {
-			return textSignal.value
-		}
-		set(newText) {
-			setTextSignal.value = newText
-		}
-	}
+    
+    let addressState: AddressState
 }
 
 extension AddressInput: Viewable {
@@ -36,6 +27,7 @@ extension AddressInput: Viewable {
 		box.snp.makeConstraints { make in
 			make.height.equalTo(70)
 		}
+        box.isUserInteractionEnabled = false
 
 		let boxStack = UIStackView()
 		boxStack.axis = .vertical
@@ -45,39 +37,74 @@ extension AddressInput: Viewable {
 		boxStack.snp.makeConstraints { make in
 			make.top.bottom.right.left.equalToSuperview()
 		}
-		box.isUserInteractionEnabled = false
 
 		let input = EmbarkInput(
 			placeholder: placeholder,
 			autocapitalisationType: .none,
 			masking: Masking(type: .none),
 			shouldAutoFocus: false,
-			fieldStyle: .embarkInputLarge,
+			fieldStyle: .embarkInputSmall,
 			shouldAutoSize: true
 		)
 
 		let inputTextSignal = boxStack.addArranged(input)
-		bag += inputTextSignal.bindTo(textSignal)
-		bag += setTextSignal.bindTo(inputTextSignal)
+        
+        bag += addressState.textSignal.distinct(ignoreNBSP).bidirectionallyBindTo(inputTextSignal)
+        
+        bag += box.didLayoutSignal.atOnce().onValue { _ in
+            inputTextSignal.value = addressState.textSignal.value
+            box.layoutSubviews()
+            box.layoutIfNeeded()
+        }
 
 		let postalCodeLabel = UILabel(
-			value: "7100 Vejle",
+			value: "",
 			style: .brand(.subHeadline(color: .secondary)).centerAligned
 		)
 		boxStack.addArrangedSubview(postalCodeLabel)
 		postalCodeLabel.animationSafeIsHidden = true
+        postalCodeLabel.alpha = 0.0
+        
+        bag += addressState.pickedSuggestionSignal.atOnce()
+            .map { addressState.formatPostalLine(from: $0) }
+            .onValue { postalLine in
+                postalCodeSignal.value = postalLine ?? ""
+            }
+        
+        bag +=
+            addressState.textSignal
+            .distinct(ignoreNBSP)
+            .map { removeNBSP(from: $0) }
+            .onValue { text in
+                // Reset suggestion for empty input field
+                if text == "" { addressState.pickedSuggestionSignal.value = nil }
+                // Reset confirmed address if it doesn't match the updated search term
+                if let previousPickedSuggestion = addressState.pickedSuggestionSignal.value {
+                    if !addressState.isMatchingStreetName(text, previousPickedSuggestion) {
+                        addressState.pickedSuggestionSignal.value = nil
+                    }
+                    if text != addressState.formatAddressLine(from: previousPickedSuggestion) {
+                        addressState.confirmedSuggestionSignal.value = nil
+                    }
+                }
+                if let previousPickedSuggestion = addressState.pickedSuggestionSignal.value,
+                    !addressState.isMatchingStreetName(text, previousPickedSuggestion)
+                {
+                    addressState.pickedSuggestionSignal.value = nil
+                }
+            }
 
-		bag += postalCodeSignal.distinct()
-			.onValue { postalCode in
-				postalCodeLabel.text = postalCode
+        bag += postalCodeSignal.atOnce()
+            .animated(style: .lightBounce(), animations: { postalCode in
 				if postalCode == "" {
+                    postalCodeLabel.alpha = 0.0
 					postalCodeLabel.animationSafeIsHidden = true
-					input.fieldStyleSignal.value = .embarkInputLarge
 				} else {
+                    postalCodeLabel.text = postalCode
+                    postalCodeLabel.alpha = 1.0
 					postalCodeLabel.animationSafeIsHidden = false
-					input.fieldStyleSignal.value = .embarkInputSmall
 				}
-			}
+			})
 
 		bag += input.shouldReturn.set { value -> Bool in self.shouldReturn.call(value) ?? false }
 

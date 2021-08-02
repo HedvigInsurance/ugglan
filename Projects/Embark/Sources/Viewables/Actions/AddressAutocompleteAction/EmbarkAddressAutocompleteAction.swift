@@ -30,36 +30,38 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 		let view = UIStackView()
 		view.axis = .vertical
 		view.spacing = 10
-		//let animator = ViewableAnimator(state: .notLoading, handler: self, views: AnimatorViews())
-		//animator.register(key: \.view, value: view)
 
 		let bag = DisposeBag()
 
 		let box = UIControl()
 		view.addArrangedSubview(box)
 
-		var addressInput = AddressInput(placeholder: data.addressAutocompleteActionData.placeholder)
-		addressInput.text = prefillValue
+		let addressInput = AddressInput(placeholder: data.addressAutocompleteActionData.placeholder, addressState: addressState)
+        addressState.textSignal.value = prefillValue
 		bag += box.add(addressInput) { addressInputView in
 			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
 		}
 		bag += box.didMoveToWindowSignal.delay(by: 0.5)
 			.onValue { _ in addressInput.setIsFirstResponderSignal.value = true }
-
-		bag += addressInput.textSignal.latestTwo().filter { $0.1.count - $0.0.count == 1 }
+        
+        let touchSignal = box.signal(for: .touchUpInside).atOnce()
+        let typeSignal = addressState.textSignal.latestTwo().filter { $0.1.count - $0.0.count == 1 }.toVoid()
+            
+        bag += combineLatest(touchSignal, typeSignal)
 			.filter { _ in !isTransitioningSignal.value }
-			.onValueDisposePrevious { _, text -> Disposable in
+			.onValueDisposePrevious { _ -> Disposable in
 				let bag = DisposeBag()
 				isTransitioningSignal.value = true
 
-				var autocompleteView = EmbarkAddressAutocomplete(
+				let autocompleteView = EmbarkAddressAutocomplete(
 					state: self.state,
 					data: self.data,
 					addressState: self.addressState
 				)
 
-				var interimAddressInput = AddressInput(
-					placeholder: data.addressAutocompleteActionData.placeholder
+				let interimAddressInput = AddressInput(
+					placeholder: data.addressAutocompleteActionData.placeholder,
+                    addressState: addressState
 				)
 				let transition = AddressTransition(
 					firstBox: box,
@@ -70,31 +72,27 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 				bag += transition.didStartTransitionSignal.onValueDisposePrevious {
 					presenting -> Disposable in
 					let innerBag = DisposeBag()
-					interimAddressInput.postalCodeSignal.value =
-						addressState.formatPostalLine(
-							from: addressState.pickedSuggestionSignal.value
-						) ?? ""
-					interimAddressInput.text =
-						presenting ? addressInput.text : autocompleteView.text
-					if presenting {
-						innerBag += addressInput.textSignal.onValue { text in
-							interimAddressInput.text = text
-						}
-					}
+					//interimAddressInput.text =
+					//	presenting ? addressInput.text : autocompleteView.text
+					//if presenting {
+					//	innerBag += addressInput.textSignal.onValue { text in
+					//		interimAddressInput.text = text
+					//	}
+					//}
 					return innerBag
 				}
 
 				bag += transition.didEndTransitionSignal.onValue { presenting in
 					if presenting {
-						autocompleteView.text = interimAddressInput.text
+						//autocompleteView.text = interimAddressInput.text
 						autocompleteView.setIsFirstResponderSignal.value = true
 					} else {
-						addressInput.text = interimAddressInput.text
+						//addressInput.text = interimAddressInput.text
 						addressInput.setIsFirstResponderSignal.value = true
-						addressInput.postalCodeSignal.value =
-							addressState.formatPostalLine(
-								from: addressState.pickedSuggestionSignal.value
-							) ?? ""
+						//addressInput.postalCodeSignal.value =
+						//	addressState.formatPostalLine(
+						//		from: addressState.pickedSuggestionSignal.value
+						//	) ?? ""
 					}
 				}
 
@@ -106,9 +104,6 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 					.onValue { address in
 						print("DONE HERE:", address)
 						isTransitioningSignal.value = false
-					}
-					.onCancel {
-						print("Cancellll")
 					}
 					.onError { _ in
 						// Didn't find no address
@@ -127,7 +122,7 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 		)
 		bag += view.addArranged(button)
 
-		bag += addressInput.textSignal.atOnce().map { text in !text.isEmpty }
+		bag += addressState.textSignal.atOnce().map { text in !text.isEmpty }
 			.bindTo(button.isEnabled)
 
 		return (
@@ -137,8 +132,7 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 					if let passageName = self.state.passageNameSignal.value {
 						self.state.store.setValue(key: "\(passageName)Result", value: value)
 					}
-
-					//let unmaskedValue = self.masking?.unmaskedValue(text: value) ?? value
+                    
 					self.state.store.setValue(
 						key: self.data.addressAutocompleteActionData.key,
 						value: value
@@ -187,14 +181,14 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 					}
 
 				bag += addressInput.shouldReturn.set { _ -> Bool in let innerBag = DisposeBag()
-					innerBag += addressInput.textSignal.atOnce().take(first: 1)
+					innerBag += addressState.textSignal.atOnce().take(first: 1)
 						.onValue { value in complete(value)
 							innerBag.dispose()
 						}
 					return true
 				}
 
-				bag += button.onTapSignal.withLatestFrom(addressInput.textSignal.atOnce().plain())
+				bag += button.onTapSignal.withLatestFrom(addressState.textSignal.atOnce().plain())
 					.onFirstValue { _, value in complete(value) }
 
 				return bag
