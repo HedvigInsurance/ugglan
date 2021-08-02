@@ -70,26 +70,27 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 		)
 	}
 
-    public override func effects(_ getState: () -> OfferState, _ action: OfferAction) -> FiniteSignal<OfferAction>? {
-        switch action {
-        case let .sign(event):
-            if event == .done {
-                Analytics.track(
-                    "QUOTES_SIGNED",
-                    properties: [
-                        "quoteIds": getState().ids
-                    ]
-                )
-            }
-        case .startSign:
-            return signQuotesEffect()
-        default:
-            return nil
-        }
+	public override func effects(_ getState: () -> OfferState, _ action: OfferAction) -> FiniteSignal<OfferAction>?
+	{
+		switch action {
+		case let .sign(event):
+			if event == .done {
+				Analytics.track(
+					"QUOTES_SIGNED",
+					properties: [
+						"quoteIds": getState().ids
+					]
+				)
+			}
+		case .startSign:
+			return signQuotesEffect()
+		default:
+			return nil
+		}
 
-        return nil
-    }
-    
+		return nil
+	}
+
 	override public func reduce(_ state: OfferState, _ action: OfferAction) -> OfferState {
 		var newState = state
 
