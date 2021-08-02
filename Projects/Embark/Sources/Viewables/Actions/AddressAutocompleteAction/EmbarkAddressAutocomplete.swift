@@ -67,7 +67,10 @@ extension EmbarkAddressAutocomplete: Presentable {
 
 		headerView.addArrangedSubview(box)
 
-		var addressInput = AddressInput(placeholder: data.addressAutocompleteActionData.placeholder, addressState: addressState)
+		var addressInput = AddressInput(
+			placeholder: data.addressAutocompleteActionData.placeholder,
+			addressState: addressState
+		)
 		bag += box.add(addressInput) { addressInputView in
 			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
 		}
@@ -123,8 +126,8 @@ extension EmbarkAddressAutocomplete: Presentable {
 			}
 
 		bag +=
-            combineLatest(addressState.textSignal.atOnce().plain(), view.didLayoutSignal)
-            .map { $0.0 }
+			combineLatest(addressState.textSignal.atOnce().plain(), view.didLayoutSignal)
+			.map { $0.0 }
 			.distinct(ignoreNBSP)
 			.filter { $0 != "" }
 			.bindTo(searchSignal)
@@ -133,10 +136,10 @@ extension EmbarkAddressAutocomplete: Presentable {
 			.compactMap { $0 }
 			.map { addressState.formatAddressLine(from: $0) }
 			.onValue { addressLine in
-                if ignoreNBSP(lhs: addressLine, rhs: addressState.textSignal.value) {
+				if ignoreNBSP(lhs: addressLine, rhs: addressState.textSignal.value) {
 					searchSignal.value = addressLine
 				} else {
-                    addressState.textSignal.value = addressLine
+					addressState.textSignal.value = addressLine
 				}
 			}
 
@@ -167,7 +170,9 @@ extension EmbarkAddressAutocomplete: Presentable {
 
 				bag += addressState.confirmedSuggestionSignal.compactMap { $0 }
 					.onValue { address in
-                        addressState.textSignal.value = addressState.formatAddressLine(from: address)
+						addressState.textSignal.value = addressState.formatAddressLine(
+							from: address
+						)
 						completion(.success(address.address))
 					}
 

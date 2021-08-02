@@ -36,18 +36,21 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 		let box = UIControl()
 		view.addArrangedSubview(box)
 
-		let addressInput = AddressInput(placeholder: data.addressAutocompleteActionData.placeholder, addressState: addressState)
-        addressState.textSignal.value = prefillValue
+		let addressInput = AddressInput(
+			placeholder: data.addressAutocompleteActionData.placeholder,
+			addressState: addressState
+		)
+		addressState.textSignal.value = prefillValue
 		bag += box.add(addressInput) { addressInputView in
 			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
 		}
 		bag += box.didMoveToWindowSignal.delay(by: 0.5)
 			.onValue { _ in addressInput.setIsFirstResponderSignal.value = true }
-        
-        let touchSignal = box.signal(for: .touchUpInside).atOnce()
-        let typeSignal = addressState.textSignal.latestTwo().filter { $0.1.count - $0.0.count == 1 }.toVoid()
-            
-        bag += combineLatest(touchSignal, typeSignal)
+
+		let touchSignal = box.signal(for: .touchUpInside).atOnce()
+		let typeSignal = addressState.textSignal.latestTwo().filter { $0.1.count - $0.0.count == 1 }.toVoid()
+
+		bag += combineLatest(touchSignal, typeSignal)
 			.filter { _ in !isTransitioningSignal.value }
 			.onValueDisposePrevious { _ -> Disposable in
 				let bag = DisposeBag()
@@ -61,7 +64,7 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 
 				let interimAddressInput = AddressInput(
 					placeholder: data.addressAutocompleteActionData.placeholder,
-                    addressState: addressState
+					addressState: addressState
 				)
 				let transition = AddressTransition(
 					firstBox: box,
@@ -132,7 +135,7 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 					if let passageName = self.state.passageNameSignal.value {
 						self.state.store.setValue(key: "\(passageName)Result", value: value)
 					}
-                    
+
 					self.state.store.setValue(
 						key: self.data.addressAutocompleteActionData.key,
 						value: value

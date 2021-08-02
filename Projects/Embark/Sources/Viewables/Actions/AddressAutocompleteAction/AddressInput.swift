@@ -11,8 +11,8 @@ struct AddressInput {
 	let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
 	let shouldReturn = Delegate<String, Bool>()
 	let postalCodeSignal = ReadWriteSignal<String>("")
-    
-    let addressState: AddressState
+
+	let addressState: AddressState
 }
 
 extension AddressInput: Viewable {
@@ -27,7 +27,7 @@ extension AddressInput: Viewable {
 		box.snp.makeConstraints { make in
 			make.height.equalTo(70)
 		}
-        box.isUserInteractionEnabled = false
+		box.isUserInteractionEnabled = false
 
 		let boxStack = UIStackView()
 		boxStack.axis = .vertical
@@ -48,14 +48,15 @@ extension AddressInput: Viewable {
 		)
 
 		let inputTextSignal = boxStack.addArranged(input)
-        
-        bag += addressState.textSignal.distinct(ignoreNBSP).bidirectionallyBindTo(inputTextSignal)
-        
-        bag += box.didLayoutSignal.atOnce().onValue { _ in
-            inputTextSignal.value = addressState.textSignal.value
-            box.layoutSubviews()
-            box.layoutIfNeeded()
-        }
+
+		bag += addressState.textSignal.distinct(ignoreNBSP).bidirectionallyBindTo(inputTextSignal)
+
+		bag += box.didLayoutSignal.atOnce()
+			.onValue { _ in
+				inputTextSignal.value = addressState.textSignal.value
+				box.layoutSubviews()
+				box.layoutIfNeeded()
+			}
 
 		let postalCodeLabel = UILabel(
 			value: "",
@@ -63,48 +64,51 @@ extension AddressInput: Viewable {
 		)
 		boxStack.addArrangedSubview(postalCodeLabel)
 		postalCodeLabel.animationSafeIsHidden = true
-        postalCodeLabel.alpha = 0.0
-        
-        bag += addressState.pickedSuggestionSignal.atOnce()
-            .map { addressState.formatPostalLine(from: $0) }
-            .onValue { postalLine in
-                postalCodeSignal.value = postalLine ?? ""
-            }
-        
-        bag +=
-            addressState.textSignal
-            .distinct(ignoreNBSP)
-            .map { removeNBSP(from: $0) }
-            .onValue { text in
-                // Reset suggestion for empty input field
-                if text == "" { addressState.pickedSuggestionSignal.value = nil }
-                // Reset confirmed address if it doesn't match the updated search term
-                if let previousPickedSuggestion = addressState.pickedSuggestionSignal.value {
-                    if !addressState.isMatchingStreetName(text, previousPickedSuggestion) {
-                        addressState.pickedSuggestionSignal.value = nil
-                    }
-                    if text != addressState.formatAddressLine(from: previousPickedSuggestion) {
-                        addressState.confirmedSuggestionSignal.value = nil
-                    }
-                }
-                if let previousPickedSuggestion = addressState.pickedSuggestionSignal.value,
-                    !addressState.isMatchingStreetName(text, previousPickedSuggestion)
-                {
-                    addressState.pickedSuggestionSignal.value = nil
-                }
-            }
+		postalCodeLabel.alpha = 0.0
 
-        bag += postalCodeSignal.atOnce()
-            .animated(style: .lightBounce(), animations: { postalCode in
-				if postalCode == "" {
-                    postalCodeLabel.alpha = 0.0
-					postalCodeLabel.animationSafeIsHidden = true
-				} else {
-                    postalCodeLabel.text = postalCode
-                    postalCodeLabel.alpha = 1.0
-					postalCodeLabel.animationSafeIsHidden = false
+		bag += addressState.pickedSuggestionSignal.atOnce()
+			.map { addressState.formatPostalLine(from: $0) }
+			.onValue { postalLine in
+				postalCodeSignal.value = postalLine ?? ""
+			}
+
+		bag +=
+			addressState.textSignal
+			.distinct(ignoreNBSP)
+			.map { removeNBSP(from: $0) }
+			.onValue { text in
+				// Reset suggestion for empty input field
+				if text == "" { addressState.pickedSuggestionSignal.value = nil }
+				// Reset confirmed address if it doesn't match the updated search term
+				if let previousPickedSuggestion = addressState.pickedSuggestionSignal.value {
+					if !addressState.isMatchingStreetName(text, previousPickedSuggestion) {
+						addressState.pickedSuggestionSignal.value = nil
+					}
+					if text != addressState.formatAddressLine(from: previousPickedSuggestion) {
+						addressState.confirmedSuggestionSignal.value = nil
+					}
 				}
-			})
+				if let previousPickedSuggestion = addressState.pickedSuggestionSignal.value,
+					!addressState.isMatchingStreetName(text, previousPickedSuggestion)
+				{
+					addressState.pickedSuggestionSignal.value = nil
+				}
+			}
+
+		bag += postalCodeSignal.atOnce()
+			.animated(
+				style: .lightBounce(),
+				animations: { postalCode in
+					if postalCode == "" {
+						postalCodeLabel.alpha = 0.0
+						postalCodeLabel.animationSafeIsHidden = true
+					} else {
+						postalCodeLabel.text = postalCode
+						postalCodeLabel.alpha = 1.0
+						postalCodeLabel.animationSafeIsHidden = false
+					}
+				}
+			)
 
 		bag += input.shouldReturn.set { value -> Bool in self.shouldReturn.call(value) ?? false }
 

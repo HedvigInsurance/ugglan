@@ -23,7 +23,7 @@ class AddressState {
 
 	let pickedSuggestionSignal: ReadWriteSignal<AddressSuggestion?> = ReadWriteSignal(nil)
 	let confirmedSuggestionSignal: ReadWriteSignal<AddressSuggestion?> = ReadWriteSignal(nil)
-    let textSignal = ReadWriteSignal("")
+	let textSignal = ReadWriteSignal("")
 
 	func getSuggestions(searchTerm: String, suggestion: AddressSuggestion?) -> Future<[AddressSuggestion]> {
 		let queryParams = getApiQueryParams(searchTerm, suggestion)
