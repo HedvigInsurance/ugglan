@@ -15,12 +15,12 @@ extension AppJourney {
 				}
 			case .dk:
 				Journey(WebOnboarding(webScreen: .webOnboarding)) { value in
-                    switch value {
-                    case let .menu(action):
-                        action.journey
-                    case .postOnboarding:
-                        AppJourney.postOnboarding
-                    }
+					switch value {
+					case let .menu(action):
+						action.journey
+					case .postOnboarding:
+						AppJourney.postOnboarding
+					}
 				}
 			case .no:
 				EmbarkOnboardingJourney.journey
