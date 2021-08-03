@@ -74,7 +74,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 		bag += box.add(addressInput) { addressInputView in
 			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
 		}
-        
+
 		bag += setIsFirstResponderSignal.bindTo(addressInput.setIsFirstResponderSignal)
 
 		let tableKit = TableKit<EmptySection, Either<AddressRow, AddressNotFoundRow>>(
@@ -98,34 +98,34 @@ extension EmbarkAddressAutocomplete: Presentable {
 			make.bottom.trailing.leading.equalToSuperview()
 		}
 
-        bag += NotificationCenter.default
-            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
-            .compactMap { notification in notification.keyboardInfo }
-            .animated(
-                mapStyle: { (keyboardInfo) -> AnimationStyle in
-                    AnimationStyle(
-                        options: keyboardInfo.animationCurve,
-                        duration: keyboardInfo.animationDuration,
-                        delay: 0
-                    )
-                },
-                animations: { keyboardInfo in
-                    tableKit.view.scrollIndicatorInsets = UIEdgeInsets(
-                        top: 0,
-                        left: 0,
-                        bottom: keyboardInfo.height - tableKit.view.safeAreaInsets.bottom,
-                        right: 0
-                    )
-                    tableKit.view.contentInset = UIEdgeInsets(
-                        top: 0,
-                        left: 0,
-                        bottom: keyboardInfo.height - 20 - tableKit.view.safeAreaInsets.bottom,
-                        right: 0
-                    )
-                    tableKit.view.layoutIfNeeded()
-                }
-            )
-        
+		bag += NotificationCenter.default
+			.signal(forName: UIResponder.keyboardWillChangeFrameNotification)
+			.compactMap { notification in notification.keyboardInfo }
+			.animated(
+				mapStyle: { (keyboardInfo) -> AnimationStyle in
+					AnimationStyle(
+						options: keyboardInfo.animationCurve,
+						duration: keyboardInfo.animationDuration,
+						delay: 0
+					)
+				},
+				animations: { keyboardInfo in
+					tableKit.view.scrollIndicatorInsets = UIEdgeInsets(
+						top: 0,
+						left: 0,
+						bottom: keyboardInfo.height - tableKit.view.safeAreaInsets.bottom,
+						right: 0
+					)
+					tableKit.view.contentInset = UIEdgeInsets(
+						top: 0,
+						left: 0,
+						bottom: keyboardInfo.height - 20 - tableKit.view.safeAreaInsets.bottom,
+						right: 0
+					)
+					tableKit.view.layoutIfNeeded()
+				}
+			)
+
 		bag +=
 			searchSignal.mapLatestToFuture { text in
 				addressState.getSuggestions(

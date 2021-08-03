@@ -84,7 +84,11 @@ extension AddressInput: Viewable {
 					if !addressState.isMatchingStreetName(text, previousPickedSuggestion) {
 						addressState.pickedSuggestionSignal.value = nil
 					}
-                    if text != addressState.formatAddressLine(from: addressState.confirmedSuggestionSignal.value) {
+					if text
+						!= addressState.formatAddressLine(
+							from: addressState.confirmedSuggestionSignal.value
+						)
+					{
 						addressState.confirmedSuggestionSignal.value = nil
 					}
 				}
