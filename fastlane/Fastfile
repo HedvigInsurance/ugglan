@@ -474,7 +474,7 @@ platform :ios do
                 codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
                 include_bitcode: false,
                 catalyst_platform: "ios",
-                skip_package_dependencies_resolution: true,
+                skip_package_dependencies_resolution: false,
                 xcpretty_formatter: ENV["GEM_HOME"] + "/gems/xcpretty-json-formatter-0.1.1/lib/json_formatter.rb",
                 derived_data_path: is_ci ? "../../../DerivedData" : nil,
                 archive_path: is_ci ? "build" : nil,
