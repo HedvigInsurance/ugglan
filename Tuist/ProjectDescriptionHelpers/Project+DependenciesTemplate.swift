@@ -50,7 +50,7 @@ public enum ExternalDependencies: CaseIterable {
 			return [
 				.package(
 					url: "https://github.com/HedvigInsurance/Form",
-                    .exact("3.0.7")
+					.exact("3.0.7")
 				)
 			]
 		case .presentation:
