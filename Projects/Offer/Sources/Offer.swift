@@ -16,13 +16,13 @@ public enum OfferOption {
 public struct Offer {
 	@Inject var client: ApolloClient
 	let offerIDContainer: OfferIDContainer
-	let menu: Menu?
+    let menu: hCore.Menu?
 	let state: OldOfferState
 	let options: Set<OfferOption>
 
 	public init(
 		offerIDContainer: OfferIDContainer,
-		menu: Menu?,
+        menu: hCore.Menu?,
 		options: Set<OfferOption> = []
 	) {
 		self.offerIDContainer = offerIDContainer

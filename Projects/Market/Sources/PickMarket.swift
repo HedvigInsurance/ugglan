@@ -6,48 +6,58 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import SwiftUI
 
-struct PickMarket {
-	let currentMarket: Market
-	let availableLocales: [GraphQL.Locale]
+struct PickMarketView: View {
+    let currentMarket: Market
+    let availableLocales: [GraphQL.Locale]
+    var store: MarketStore
+    
+    var body: some View {
+        hForm {
+            hSectionList(Market.allCases, id: \.title) { market in
+                hRow {
+                    Image(uiImage: market.icon)
+                    Spacer(minLength: 16)
+                    hText(text: market.title, style: .body)
+                    if market == currentMarket {
+                        Image(uiImage: Asset.checkmark.image)
+                    }
+                }.onTap {
+                    store.send(.selectMarket(market: market))
+                }
+            }.dividerInsets(.leading, 50)
+        }
+    }
 }
 
-extension PickMarket: Presentable {
-	func materialize() -> (UIViewController, Future<Market>) {
-		let viewController = UIViewController()
-		viewController.title = L10n.MarketLanguageScreen.marketLabel
-		let bag = DisposeBag()
+struct PickMarket: Presentable {
+    let currentMarket: Market
+    let availableLocales: [GraphQL.Locale]
+    
+    func materialize() -> (UIViewController, Future<Market>) {
+        let store: MarketStore = get()
+        
+        let viewController = UIHostingController(
+            rootView: PickMarketView(
+                currentMarket: currentMarket,
+                availableLocales: availableLocales,
+                store: store
+            )
+        )
+        
+        viewController.navigationItem.title = "test"
+        
+        return (viewController, Future { completion in
+            let bag = DisposeBag()
+            
+            bag += store.actionSignal.onValue { action in
+                if case let .selectMarket(market) = action {
+                    completion(.success(market))
+                }
+            }
 
-		let form = FormView()
-		bag += viewController.install(form)
-
-		let section = form.appendSection()
-
-		return (
-			viewController,
-			Future { completion in
-				Market.allCases
-					.filter { market in
-						availableLocales.first { locale -> Bool in
-							locale.rawValue.lowercased().contains(market.id)
-						} != nil
-					}
-					.forEach { market in let row = RowView(title: market.title)
-
-						let iconImageView = UIImageView()
-						iconImageView.contentMode = .scaleAspectFit
-						iconImageView.image = market.icon
-						row.prepend(iconImageView)
-
-						row.setCustomSpacing(16, after: iconImageView)
-
-						if market == currentMarket { row.append(Asset.checkmark.image) }
-
-						bag += section.append(row).onValue { completion(.success(market)) }
-					}
-
-				return bag
-			}
-		)
-	}
+            return bag
+        })
+    }
 }

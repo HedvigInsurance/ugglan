@@ -3,7 +3,7 @@ import UIKit
 import hCore
 import hGraphQL
 
-public enum Market: String, CaseIterable {
+public enum Market: String, CaseIterable, Codable {
 	case sweden = "SE"
 	case norway = "NO"
 	case denmark = "DK"

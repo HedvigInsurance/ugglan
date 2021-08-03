@@ -30,7 +30,7 @@ extension PayoutDetailsSection: Viewable {
 			payOutOptions.onValue { options in
 				viewController.present(
 					AdyenPayOut(adyenOptions: options, urlScheme: urlScheme).wrappedInCloseButton(),
-					style: .detented(.scrollViewContentSize(20)),
+					style: .detented(.scrollViewContentSize),
 					options: [.defaults, .allowSwipeDismissAlways]
 				)
 			}

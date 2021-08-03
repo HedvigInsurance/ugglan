@@ -5,6 +5,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
 
 public struct MarketRow {
 	@ReadWriteState var market: Market
@@ -57,9 +58,8 @@ extension MarketRow: Viewable {
 		bag += events.onSelect.compactMap { row.viewController }
 			.onValue { viewController in
 				viewController.present(
-					PickMarket(currentMarket: market, availableLocales: availableLocales)
-						.wrappedInCloseButton(),
-					style: .detented(.scrollViewContentSize(20))
+                    PickMarket(currentMarket: market, availableLocales: availableLocales),
+                    style: .detented(.scrollViewContentSize)
 				)
 				.onValue { newMarket in $market.value = newMarket }
 			}

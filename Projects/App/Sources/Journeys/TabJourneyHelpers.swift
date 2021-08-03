@@ -74,7 +74,7 @@ struct Loader: Presentable {
 				activityIndicatorView.snp.remakeConstraints { make in
 					make.center.equalTo(scrollView.frameLayoutGuide.snp.center)
 				}
-			}
+            }
 		)
 	}
 }

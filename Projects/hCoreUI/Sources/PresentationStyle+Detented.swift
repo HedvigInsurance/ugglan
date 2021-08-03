@@ -3,6 +3,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import SwiftUI
 
 func setGrabber(on presentationController: UIPresentationController, to value: Bool) {
 	let grabberKey = ["_", "setWants", "Grabber:"]
@@ -49,6 +50,16 @@ func setWantsBottomAttachedInCompactHeight(on presentationController: UIPresenta
 	}
 }
 
+func containerViewSafeAreaChanged(on presentationController: UIPresentationController) {
+    let key = ["_containerViewSafeAreaInsetsDidChange"]
+
+    let selector = NSSelectorFromString(key.joined())
+
+    if presentationController.responds(to: selector) {
+        presentationController.perform(selector)
+    }
+}
+
 extension Notification {
 	fileprivate var endFrame: CGRect? {
 		(userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
@@ -59,6 +70,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 	var detents: [PresentationStyle.Detent]
 	var wantsGrabber: Bool
 	var viewController: UIViewController
+    var isFirstPass = false
 	let bag = DisposeBag()
 	var keyboardFrame: CGRect = .zero
 
@@ -122,8 +134,16 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 			presenting: presenting
 		)
 
-		PresentationStyle.Detent.set(detents, on: presentationController, viewController: viewController)
+        PresentationStyle.Detent.set([
+            .custom("zero", { viewController, containerView in
+                return -50
+            })
+        ], on: presentationController, viewController: viewController)
 		setGrabber(on: presentationController, to: wantsGrabber)
+        
+        Signal(after: 0.05).future.onValue { _ in
+            PresentationStyle.Detent.set(self.detents, on: presentationController, viewController: self.viewController)
+        }
 
 		return presentationController
 	}
@@ -234,6 +254,16 @@ extension UIViewController {
 	}
 }
 
+protocol SwiftUIRootViewProvider {
+    var anyView: AnyView { get }
+}
+
+extension UIHostingController: SwiftUIRootViewProvider {
+    var anyView: AnyView {
+        return AnyView(self.rootView)
+    }
+}
+
 extension PresentationStyle {
 	public enum Detent: Equatable {
 		public static func == (lhs: PresentationStyle.Detent, rhs: PresentationStyle.Detent) -> Bool {
@@ -251,19 +281,25 @@ extension PresentationStyle {
 			_ containerViewBlock: (_ viewController: UIViewController, _ containerView: UIView) -> CGFloat
 		)
 
-		public static func scrollViewContentSize(_ extraPadding: CGFloat = 0) -> Detent {
+        public static var scrollViewContentSize: Detent {
 			.custom("scrollViewContentSize") { viewController, containerView in
-				guard let scrollView = viewController.view as? UIScrollView else { return 0 }
+                let allScrollViewDescendants = containerView.allDescendants(ofType: UIScrollView.self)
+                guard let scrollView = allScrollViewDescendants.first(where: { _ in true }) else {
+                    return 0
+                }
 
 				let transitioningDelegate =
 					viewController.navigationController?.transitioningDelegate
 					as? DetentedTransitioningDelegate
 				let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
-
-				let minimumBottomInset: CGFloat = 30 + extraPadding
-
-				return scrollView.contentSize.height + keyboardHeight + containerView.safeAreaInsets.top
-					+ max(containerView.safeAreaInsets.bottom, minimumBottomInset)
+                                
+                let totalHeight: CGFloat = scrollView.contentSize.height
+                + keyboardHeight
+                + containerView.safeAreaInsets.top
+                + containerView.safeAreaInsets.bottom
+                + 10
+                
+				return totalHeight
 			}
 		}
 
