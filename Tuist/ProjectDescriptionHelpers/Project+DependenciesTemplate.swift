@@ -61,7 +61,7 @@ public enum ExternalDependencies: CaseIterable {
 					.upToNextMajor(from: "2.0.1")
 				)
 			]
-		case .ease: return [.package(url: "https://github.com/HedvigInsurance/Ease", .branch("master"))]
+		case .ease: return [.package(url: "https://github.com/HedvigInsurance/Ease", .upToNextMajor(from: "2.0.3"))]
 		case .dynamiccolor:
 			return [
 				.package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
