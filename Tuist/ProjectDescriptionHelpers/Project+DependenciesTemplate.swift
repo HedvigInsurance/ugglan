@@ -74,7 +74,12 @@ public enum ExternalDependencies: CaseIterable {
 		case .snapkit:
 			return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.0.1"))]
 		case .markdownkit:
-			return [.package(url: "https://github.com/bmoliveira/MarkdownKit", .upToNextMajor(from: "1.7.1"))]
+			return [
+				.package(
+					url: "https://github.com/bmoliveira/MarkdownKit",
+					.upToNextMajor(from: "1.7.1")
+				)
+			]
 		case .mixpanel:
 			return [
 				.package(
