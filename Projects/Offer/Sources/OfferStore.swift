@@ -70,8 +70,10 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 		)
 	}
 
-	public override func effects(_ getState: () -> OfferState, _ action: OfferAction) -> FiniteSignal<OfferAction>?
-	{
+	public override func effects(
+		_ getState: () -> OfferState,
+		_ action: OfferAction
+	) -> FiniteSignal<OfferAction>? {
 		switch action {
 		case let .sign(event):
 			if event == .done {
