@@ -28,7 +28,7 @@ extension AddressNotFoundRow: Reusable {
 		return (
 			stackView,
 			{ `self` in
-                addressLabel.value = L10n.embarkAddressAutocompleteNoAddress
+				addressLabel.value = L10n.embarkAddressAutocompleteNoAddress
 
 				return NilDisposer()
 			}

@@ -153,7 +153,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 			combineLatest(addressState.textSignal.atOnce().plain(), view.didLayoutSignal)
 			.map { $0.0 }
 			.distinct(ignoreNBSP)
-            .filter { !$0.isEmpty }
+			.filter { !$0.isEmpty }
 			.bindTo(searchSignal)
 
 		bag += addressState.pickedSuggestionSignal
