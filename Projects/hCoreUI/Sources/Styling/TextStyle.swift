@@ -3,7 +3,7 @@ import Foundation
 import UIKit
 
 extension TextStyle { public enum BrandTextStyle {
-    case largeTitle(color: UIColor.TypographyColor)
+	case largeTitle(color: UIColor.TypographyColor)
 	case title1(color: UIColor.TypographyColor)
 	case title2(color: UIColor.TypographyColor)
 	case title3(color: UIColor.TypographyColor)
@@ -49,7 +49,7 @@ extension TextStyle { public enum BrandTextStyle {
 
 	var textStyle: TextStyle {
 		TextStyle.default.restyled { (style: inout TextStyle) in
-            style.font = font
+			style.font = font
 			style.color = color
 			style.adjustsFontForContentSizeCategory = true
 		}
