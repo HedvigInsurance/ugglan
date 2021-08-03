@@ -49,18 +49,18 @@ struct FormScroller<Content: View>: UIViewControllerRepresentable, Equatable {
 	}
 
 	func makeCoordinator() -> Coordinator {
-        ()
+		()
 	}
-    
+
 	static func == (lhs: Self, rhs: Self) -> Bool {
-        return lhs.forceRefresh != rhs.forceRefresh
+		return lhs.forceRefresh != rhs.forceRefresh
 	}
 }
 
 final class FormScrollViewController<Content: View>: UIViewController, ObservableObject {
 	let hostingController: UIHostingController<Content>
-    let axis: Axis
-    
+	let axis: Axis
+
 	lazy var scrollView: UIScrollView = {
 		let scrollView = UIScrollView()
 		scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -110,9 +110,9 @@ final class FormScrollViewController<Content: View>: UIViewController, Observabl
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		self.view.addSubview(self.scrollView)
-        self.scrollView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+		self.scrollView.snp.makeConstraints { make in
+			make.edges.equalToSuperview()
+		}
 		self.view.setNeedsUpdateConstraints()
 		self.view.updateConstraintsIfNeeded()
 		self.view.layoutIfNeeded()

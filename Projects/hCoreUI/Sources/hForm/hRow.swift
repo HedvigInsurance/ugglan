@@ -47,15 +47,16 @@ public struct hRow<Content: View>: View {
 
 	public var body: some View {
 		VStack(spacing: 0) {
-            HStack {
-                content
+			HStack {
+				content
 			}
 			.padding([.horizontal], 15)
 			.padding([.vertical], 15)
 			if position == .middle || position == .top {
 				hRowDivider()
 			}
-		}.contentShape(Rectangle())
+		}
+		.contentShape(Rectangle())
 	}
 }
 
