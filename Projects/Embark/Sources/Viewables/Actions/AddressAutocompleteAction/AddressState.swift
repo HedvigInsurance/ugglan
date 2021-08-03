@@ -57,7 +57,9 @@ class AddressState {
 		return (searchTerm, .street)
 	}
 
-	func formatAddressLine(from suggestion: AddressSuggestion) -> String {
+	func formatAddressLine(from suggestion: AddressSuggestion?) -> String {
+        guard let suggestion = suggestion else { return "" }
+        
 		if let streetName = suggestion.streetName, let streetNumber = suggestion.streetNumber {
 			var displayAddress = "\(streetName) \(streetNumber)"
 			if let floor = suggestion.floor {

@@ -67,18 +67,14 @@ extension EmbarkAddressAutocomplete: Presentable {
 
 		headerView.addArrangedSubview(box)
 
-		var addressInput = AddressInput(
+		let addressInput = AddressInput(
 			placeholder: data.addressAutocompleteActionData.placeholder,
 			addressState: addressState
 		)
 		bag += box.add(addressInput) { addressInputView in
 			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
 		}
-		//bag += addressInput.textSignal.bindTo(textSignal)
-		//bag += setTextSignal.onValue { newText in
-		//	addressInput.text = newText
-		//}
-
+        
 		bag += setIsFirstResponderSignal.bindTo(addressInput.setIsFirstResponderSignal)
 
 		let tableKit = TableKit<EmptySection, Either<AddressRow, AddressNotFoundRow>>(
@@ -102,6 +98,34 @@ extension EmbarkAddressAutocomplete: Presentable {
 			make.bottom.trailing.leading.equalToSuperview()
 		}
 
+        bag += NotificationCenter.default
+            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
+            .compactMap { notification in notification.keyboardInfo }
+            .animated(
+                mapStyle: { (keyboardInfo) -> AnimationStyle in
+                    AnimationStyle(
+                        options: keyboardInfo.animationCurve,
+                        duration: keyboardInfo.animationDuration,
+                        delay: 0
+                    )
+                },
+                animations: { keyboardInfo in
+                    tableKit.view.scrollIndicatorInsets = UIEdgeInsets(
+                        top: 0,
+                        left: 0,
+                        bottom: keyboardInfo.height - tableKit.view.safeAreaInsets.bottom,
+                        right: 0
+                    )
+                    tableKit.view.contentInset = UIEdgeInsets(
+                        top: 0,
+                        left: 0,
+                        bottom: keyboardInfo.height - 20 - tableKit.view.safeAreaInsets.bottom,
+                        right: 0
+                    )
+                    tableKit.view.layoutIfNeeded()
+                }
+            )
+        
 		bag +=
 			searchSignal.mapLatestToFuture { text in
 				addressState.getSuggestions(
@@ -150,7 +174,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 					let innerBag = DisposeBag()
 					switch row {
 					case .left(let addressRow):
-						// did select suggestion
+						// Did select suggestion
 						let suggestion = addressRow.suggestion
 						innerBag +=
 							addressState.confirm(
@@ -162,7 +186,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 							.bindTo(addressState.confirmedSuggestionSignal)
 						addressState.pickedSuggestionSignal.value = suggestion
 					case .right(_):
-						// did select cannot find address
+						// Did select cannot find address
 						completion(.failure(AddressAutocompleteError.cantFindAddress))
 					}
 					return innerBag

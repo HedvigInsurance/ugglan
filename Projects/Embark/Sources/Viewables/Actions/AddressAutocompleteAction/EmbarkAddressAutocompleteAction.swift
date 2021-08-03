@@ -47,74 +47,8 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 		bag += box.didMoveToWindowSignal.delay(by: 0.5)
 			.onValue { _ in addressInput.setIsFirstResponderSignal.value = true }
 
-		let touchSignal = box.signal(for: .touchUpInside).atOnce()
-		let typeSignal = addressState.textSignal.latestTwo().filter { $0.1.count - $0.0.count == 1 }.toVoid()
-
-		bag += combineLatest(touchSignal, typeSignal)
-			.filter { _ in !isTransitioningSignal.value }
-			.onValueDisposePrevious { _ -> Disposable in
-				let bag = DisposeBag()
-				isTransitioningSignal.value = true
-
-				let autocompleteView = EmbarkAddressAutocomplete(
-					state: self.state,
-					data: self.data,
-					addressState: self.addressState
-				)
-
-				let interimAddressInput = AddressInput(
-					placeholder: data.addressAutocompleteActionData.placeholder,
-					addressState: addressState
-				)
-				let transition = AddressTransition(
-					firstBox: box,
-					secondBox: autocompleteView.box,
-					addressInput: interimAddressInput
-				)
-
-				bag += transition.didStartTransitionSignal.onValueDisposePrevious {
-					presenting -> Disposable in
-					let innerBag = DisposeBag()
-					//interimAddressInput.text =
-					//	presenting ? addressInput.text : autocompleteView.text
-					//if presenting {
-					//	innerBag += addressInput.textSignal.onValue { text in
-					//		interimAddressInput.text = text
-					//	}
-					//}
-					return innerBag
-				}
-
-				bag += transition.didEndTransitionSignal.onValue { presenting in
-					if presenting {
-						//autocompleteView.text = interimAddressInput.text
-						autocompleteView.setIsFirstResponderSignal.value = true
-					} else {
-						//addressInput.text = interimAddressInput.text
-						addressInput.setIsFirstResponderSignal.value = true
-						//addressInput.postalCodeSignal.value =
-						//	addressState.formatPostalLine(
-						//		from: addressState.pickedSuggestionSignal.value
-						//	) ?? ""
-					}
-				}
-
-				box.viewController?
-					.present(
-						autocompleteView.wrappedInCloseButton(),
-						style: .address(transition: transition)
-					)
-					.onValue { address in
-						print("DONE HERE:", address)
-						isTransitioningSignal.value = false
-					}
-					.onError { _ in
-						// Didn't find no address
-						print("Errore")
-						isTransitioningSignal.value = false
-					}
-				return bag
-			}
+		let touchSignal = box.signal(for: .touchUpInside).readable()
+        let typeSignal = addressState.textSignal.latestTwo().filter { $0.1.count - $0.0.count == 1 }.toVoid().readable()
 
 		let button = Button(
 			title: data.addressAutocompleteActionData.link.fragments.embarkLinkFragment.label,
@@ -124,9 +58,8 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 			)
 		)
 		bag += view.addArranged(button)
-
-		bag += addressState.textSignal.atOnce().map { text in !text.isEmpty }
-			.bindTo(button.isEnabled)
+        
+        bag += addressState.confirmedSuggestionSignal.atOnce().map { suggestion in suggestion != nil}.bindTo(button.isEnabled)
 
 		return (
 			view,
@@ -157,25 +90,16 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 						)
 					}
 				}
-
-				//bag += box.signal(for: .touchUpInside)
-				//	.onValue { _ in
-				/*let autocompleteView = EmbarkAddressAutocomplete(
-							state: self.state,
-							data: self.data
-						)*/
-
-				/*box.viewController?
-							.present(
-								autocompleteView,
-                                style: .address(firstView: box, secondView: autocompleteView.box)
-							)*/
-				// Set first responder to avoid keyboard dismissal
-				//		addressInput.setIsFirstResponderSignal.value = true
-				//	}
-
+                
+                func completeWithoutAddress() {
+                    self.state.store.setValue(key: self.data.addressAutocompleteActionData.key, value: "ADDRESS_NOT_FOUND")
+                    callback(
+                        self.data.addressAutocompleteActionData.link.fragments
+                            .embarkLinkFragment
+                    )
+                }
+                
 				// Also hack for not hiding keyboard during transition
-
 				bag += NotificationCenter.default
 					.signal(forName: UIResponder.keyboardWillHideNotification)
 					.filter(predicate: { _ in isTransitioningSignal.value })
@@ -183,16 +107,68 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 						addressInput.setIsFirstResponderSignal.value = true
 					}
 
-				bag += addressInput.shouldReturn.set { _ -> Bool in let innerBag = DisposeBag()
-					innerBag += addressState.textSignal.atOnce().take(first: 1)
-						.onValue { value in complete(value)
+                bag += addressInput.shouldReturn.set { _ -> Bool in let innerBag = DisposeBag()
+					innerBag += addressState.confirmedSuggestionSignal.atOnce().take(first: 1)
+                        .compactMap { $0 }
+						.onValue { value in complete(addressState.formatAddressLine(from: value))
 							innerBag.dispose()
 						}
 					return true
 				}
 
-				bag += button.onTapSignal.withLatestFrom(addressState.textSignal.atOnce().plain())
-					.onFirstValue { _, value in complete(value) }
+				bag += button.onTapSignal.withLatestFrom(addressState.confirmedSuggestionSignal.atOnce().plain())
+                    .compactMap { $0.1 }
+                    .map { confirmedAddress in addressState.formatAddressLine(from: confirmedAddress) }
+					.onFirstValue { value in complete(value) }
+                
+                bag += combineLatest(touchSignal, typeSignal)
+                    .filter { _ in !isTransitioningSignal.value }
+                    .onValueDisposePrevious { _ -> Disposable in
+                        let bag = DisposeBag()
+                        isTransitioningSignal.value = true
+
+                        let autocompleteView = EmbarkAddressAutocomplete(
+                            state: self.state,
+                            data: self.data,
+                            addressState: self.addressState
+                        )
+
+                        let interimAddressInput = AddressInput(
+                            placeholder: data.addressAutocompleteActionData.placeholder,
+                            addressState: addressState
+                        )
+                        let transition = AddressTransition(
+                            firstBox: box,
+                            secondBox: autocompleteView.box,
+                            addressInput: interimAddressInput
+                        )
+
+                        bag += transition.didEndTransitionSignal.onValue { presenting in
+                            if presenting {
+                                autocompleteView.setIsFirstResponderSignal.value = true
+                            } else {
+                                addressInput.setIsFirstResponderSignal.value = true
+                            }
+                        }
+
+                        box.viewController?
+                            .present(
+                                autocompleteView.wrappedInCloseButton(),
+                                style: .address(transition: transition)
+                            )
+                            .onValue { address in
+                                print("DONE HERE:", address)
+                                isTransitioningSignal.value = false
+                            }
+                            .onError { error in
+                                // Didn't find no address
+                                isTransitioningSignal.value = false
+                                if let error = error as? AddressAutocompleteError, error == .cantFindAddress {
+                                    completeWithoutAddress()
+                                }
+                            }
+                        return bag
+                    }
 
 				return bag
 			}
