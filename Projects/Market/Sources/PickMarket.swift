@@ -48,8 +48,7 @@ struct PickMarket: Presentable {
 				store: store
 			)
 		)
-
-		viewController.navigationItem.title = "test"
+        viewController.title = L10n.MarketLanguageScreen.marketLabel
 
 		return (
 			viewController,
