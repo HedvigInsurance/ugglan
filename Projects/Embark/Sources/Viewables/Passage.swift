@@ -26,7 +26,6 @@ extension Passage: Viewable {
 		let action = Action(state: state)
 
 		bag += state.currentPassageSignal.onValue { passage in print("API", passage?.api ?? "none") }
-		bag += state.currentPassageSignal.onValue { passage in print("ACTION", passage?.action ?? "none") }
 
 		bag += state.apiResponseSignal.onValue { link in
 			guard let link = link else { return }

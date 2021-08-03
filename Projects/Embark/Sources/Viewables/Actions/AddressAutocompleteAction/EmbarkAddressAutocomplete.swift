@@ -86,8 +86,8 @@ extension EmbarkAddressAutocomplete: Presentable {
 			switch tableKit.table[index] {
 			case .left(let addressRow):
 				return addressRow.cellHeight
-			case .right(let notFoundROw):
-				return notFoundROw.cellHeight
+			case .right(let notFoundRow):
+				return notFoundRow.cellHeight
 			}
 		}
 
@@ -153,7 +153,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 			combineLatest(addressState.textSignal.atOnce().plain(), view.didLayoutSignal)
 			.map { $0.0 }
 			.distinct(ignoreNBSP)
-			.filter { $0 != "" }
+            .filter { !$0.isEmpty }
 			.bindTo(searchSignal)
 
 		bag += addressState.pickedSuggestionSignal

@@ -78,7 +78,6 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 		addressState.confirmedSuggestionSignal.value = addressFromStore
 		addressState.pickedSuggestionSignal.value = addressFromStore
 		addressState.textSignal.value = addressState.formatAddressLine(from: addressFromStore)
-		//addressState.textSignal.value = prefillValue
 
 		bag += box.add(addressInput) { addressInputView in
 			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
@@ -114,7 +113,6 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 
 					clearStoreValues()
 					for (key, value) in selectionDict {
-						print(key.rawValue)
 						self.state.store.setValue(key: key.rawValue, value: value)
 					}
 
@@ -224,11 +222,9 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 								style: .address(transition: transition)
 							)
 							.onValue { address in
-								print("DONE HERE:", address)
 								isTransitioningSignal.value = false
 							}
 							.onError { error in
-								// Didn't find no address
 								isTransitioningSignal.value = false
 								if let error = error as? AddressAutocompleteError,
 									error == .cantFindAddress

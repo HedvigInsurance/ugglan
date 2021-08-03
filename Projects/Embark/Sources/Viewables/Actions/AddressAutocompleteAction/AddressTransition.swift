@@ -89,6 +89,7 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 			autocompleteView.transform = CGAffineTransform(translationX: 0, y: initialFrame.origin.y)
 			autocompleteView.clipsToBounds = true
 		}
+        
 		UIView.animate(
 			withDuration: duration,
 			delay: 0.0,
