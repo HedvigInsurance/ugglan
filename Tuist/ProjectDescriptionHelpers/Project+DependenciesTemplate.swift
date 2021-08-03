@@ -46,7 +46,7 @@ public enum ExternalDependencies: CaseIterable {
 			]
 		case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.41.0"))]
 		case .flow:
-			return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "3.0.8"))]
+			return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.7"))]
 		case .form:
 			return [
 				.package(
@@ -74,7 +74,7 @@ public enum ExternalDependencies: CaseIterable {
 		case .snapkit:
 			return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.0.1"))]
 		case .markdownkit:
-			return [.package(url: "https://github.com/HedvigInsurance/MarkdownKit", .branch("master"))]
+			return [.package(url: "https://github.com/bmoliveira/MarkdownKit", .upToNextMajor(from: "1.7.1"))]
 		case .mixpanel:
 			return [
 				.package(
