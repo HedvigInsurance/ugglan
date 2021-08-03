@@ -8,6 +8,48 @@ typealias SearchType = GraphQL.AddressAutocompleteType
 typealias SuggestionData = GraphQL.AddressAutocompleteQuery.Data
 typealias AddressSuggestion = SuggestionData.AutoCompleteAddress
 
+enum AddressStoreKeys: String, CaseIterable {
+    case id = "bbrId"
+    case address = "fullAddress"
+    case street
+    case streetName
+    case streetNumber
+    case zipCode
+    case city
+    case floor
+    case apartment
+    case addressSearchTerm
+}
+
+extension AddressSuggestion {
+    func toDict() -> [AddressStoreKeys: String]? {
+        guard let id = self.id,
+              let streetName = self.streetName,
+              let streetNumber = self.streetNumber,
+              let zipCode = self.postalCode,
+              let city = self.city
+        else { return nil }
+        
+        let address = self.address
+        let street = streetName + " " + streetNumber
+        
+        var dict: [AddressStoreKeys: String] = [
+            .id: id,
+            .street: street,
+            .zipCode: zipCode,
+            .city: city,
+            .streetName: streetName,
+            .streetNumber: streetNumber,
+            .address: address
+        ]
+        
+        if let floor = self.floor { dict[.floor] = floor }
+        if let apartment = self.apartment { dict[.apartment] = apartment }
+        
+        return dict
+    }
+}
+
 extension AddressSuggestion: Equatable {
 	public static func == (
 		lhs: GraphQL.AddressAutocompleteQuery.Data.AutoCompleteAddress,

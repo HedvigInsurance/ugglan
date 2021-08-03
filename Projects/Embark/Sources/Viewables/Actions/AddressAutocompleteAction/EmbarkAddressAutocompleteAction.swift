@@ -23,6 +23,40 @@ struct EmbarkAddressAutocompleteAction: AddressTransitionable {
 
 		return value
 	}
+    
+    private func clearStoreValues() {
+        AddressStoreKeys.allCases.forEach { key in
+            state.store.setValue(key: key.rawValue, value: "")
+        }
+    }
+    
+    private func getValueFor(key: AddressStoreKeys) -> String? {
+        let value = state.store.getValue(key: key.rawValue)
+        if value == "" {
+            return nil
+        } else {
+            return value
+        }
+    }
+    
+    var addressFromStore: AddressSuggestion? {
+        let suggestion = AddressSuggestion(
+            id: getValueFor(key: .id),
+            address: getValueFor(key: .address) ?? "",
+            streetName: getValueFor(key: .streetName),
+            streetNumber: getValueFor(key: .streetNumber),
+            floor: getValueFor(key: .floor),
+            apartment: getValueFor(key: .apartment),
+            postalCode: getValueFor(key: .zipCode),
+            city: getValueFor(key: .city)
+        )
+        
+        if addressState.isComplete(suggestion: suggestion) {
+            return suggestion
+        } else {
+            return nil
+        }
+    }
 }
 
 extension EmbarkAddressAutocompleteAction: Viewable {
@@ -40,7 +74,12 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 			placeholder: data.addressAutocompleteActionData.placeholder,
 			addressState: addressState
 		)
-		addressState.textSignal.value = prefillValue
+        
+        addressState.confirmedSuggestionSignal.value = addressFromStore
+        addressState.pickedSuggestionSignal.value = addressFromStore
+        addressState.textSignal.value = addressState.formatAddressLine(from: addressFromStore)
+		//addressState.textSignal.value = prefillValue
+        
 		bag += box.add(addressInput) { addressInputView in
 			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
 		}
@@ -66,16 +105,28 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 		return (
 			view,
 			Signal { callback in
-				func complete(_ value: String) {
+				func complete(_ selection: AddressSuggestion) {
+                    let addressLine = addressState.formatAddressLine(from: selection)
+                    guard let selectionDict = selection.toDict() else {
+                        completeWithoutAddress()
+                        return
+                    }
+                    
+                    clearStoreValues()
+                    for (key, value) in selectionDict {
+                        print(key.rawValue)
+                        self.state.store.setValue(key: key.rawValue, value: value)
+                    }
+                    
 					if let passageName = self.state.passageNameSignal.value {
-						self.state.store.setValue(key: "\(passageName)Result", value: value)
+						self.state.store.setValue(key: "\(passageName)Result", value: addressLine)
 					}
 
 					self.state.store.setValue(
 						key: self.data.addressAutocompleteActionData.key,
-						value: value
+						value: addressLine
 					)
-
+                    
 					self.state.store.createRevision()
 
 					if let apiFragment = self.data.addressAutocompleteActionData.api?.fragments
@@ -94,10 +145,14 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 				}
 
 				func completeWithoutAddress() {
+                    clearStoreValues()
+                    self.state.store.setValue(key: AddressStoreKeys.addressSearchTerm.rawValue, value: addressState.textSignal.value)
+                    
 					self.state.store.setValue(
 						key: self.data.addressAutocompleteActionData.key,
 						value: "ADDRESS_NOT_FOUND"
 					)
+                    
 					callback(
 						self.data.addressAutocompleteActionData.link.fragments
 							.embarkLinkFragment
@@ -116,7 +171,7 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 					innerBag += addressState.confirmedSuggestionSignal.atOnce().take(first: 1)
 						.compactMap { $0 }
 						.onValue { value in
-							complete(addressState.formatAddressLine(from: value))
+							complete(value)
 							innerBag.dispose()
 						}
 					return true
@@ -125,9 +180,6 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 				bag += button.onTapSignal
 					.withLatestFrom(addressState.confirmedSuggestionSignal.atOnce().plain())
 					.compactMap { $0.1 }
-					.map { confirmedAddress in
-						addressState.formatAddressLine(from: confirmedAddress)
-					}
 					.onFirstValue { value in complete(value) }
 
 				bag += combineLatest(touchSignal, typeSignal)
