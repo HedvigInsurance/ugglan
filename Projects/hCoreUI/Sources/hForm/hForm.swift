@@ -2,6 +2,7 @@ import Combine
 import Foundation
 import SwiftUI
 import UIKit
+import hCore
 
 struct FormScroller<Content: View>: UIViewControllerRepresentable, Equatable {
 	typealias UIViewControllerType = FormScrollViewController<Content>

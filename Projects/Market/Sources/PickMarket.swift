@@ -8,10 +8,26 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct PickMarketView: View {
+struct PickMarket: PresentableView {
+    typealias Result = Future<Market>
+    
 	let currentMarket: Market
 	let availableLocales: [GraphQL.Locale]
-	var store: MarketStore
+	@PresentableStore var store: MarketStore
+    
+    var result: Future<Market> {
+        Future { completion in
+            let bag = DisposeBag()
+
+            bag += store.actionSignal.onValue { action in
+                if case let .selectMarket(market) = action {
+                    completion(.success(market))
+                }
+            }
+
+            return bag
+        }
+    }
 
 	var body: some View {
 		hForm {
@@ -30,39 +46,6 @@ struct PickMarketView: View {
 				}
 			}
 			.dividerInsets(.leading, 50)
-		}
-	}
-}
-
-struct PickMarket: Presentable {
-	let currentMarket: Market
-	let availableLocales: [GraphQL.Locale]
-
-	func materialize() -> (UIViewController, Future<Market>) {
-		let store: MarketStore = get()
-
-		let viewController = UIHostingController(
-			rootView: PickMarketView(
-				currentMarket: currentMarket,
-				availableLocales: availableLocales,
-				store: store
-			)
-		)
-		viewController.title = L10n.MarketLanguageScreen.marketLabel
-
-		return (
-			viewController,
-			Future { completion in
-				let bag = DisposeBag()
-
-				bag += store.actionSignal.onValue { action in
-					if case let .selectMarket(market) = action {
-						completion(.success(market))
-					}
-				}
-
-				return bag
-			}
-		)
+        }.presentableTitle(L10n.MarketLanguageScreen.marketLabel)
 	}
 }
