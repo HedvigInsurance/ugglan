@@ -45,7 +45,8 @@ public enum ExternalDependencies: CaseIterable {
 				)
 			]
 		case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.41.0"))]
-		case .flow: return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "3.0.8"))]
+		case .flow:
+			return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "3.0.8"))]
 		case .form:
 			return [
 				.package(
@@ -54,7 +55,12 @@ public enum ExternalDependencies: CaseIterable {
 				)
 			]
 		case .presentation:
-			return [.package(url: "https://github.com/HedvigInsurance/Presentation", .upToNextMajor(from: "2.0.1"))]
+			return [
+				.package(
+					url: "https://github.com/HedvigInsurance/Presentation",
+					.upToNextMajor(from: "2.0.1")
+				)
+			]
 		case .ease: return [.package(url: "https://github.com/HedvigInsurance/Ease", .branch("master"))]
 		case .dynamiccolor:
 			return [
