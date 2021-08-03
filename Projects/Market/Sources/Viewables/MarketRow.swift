@@ -58,12 +58,14 @@ extension MarketRow: Viewable {
 		bag += events.onSelect.compactMap { row.viewController }
 			.onValue { viewController in
 				viewController.present(
-                    PickMarket(currentMarket: market, availableLocales: availableLocales).wrappedInCloseButton(),
-                    style: .detented(.scrollViewContentSize),
-                    options: [.defaults, .prefersLargeTitles(true)]
-                ).onValue { market in
-                    $market.value = market
-                }
+					PickMarket(currentMarket: market, availableLocales: availableLocales)
+						.wrappedInCloseButton(),
+					style: .detented(.scrollViewContentSize),
+					options: [.defaults, .prefersLargeTitles(true)]
+				)
+				.onValue { market in
+					$market.value = market
+				}
 			}
 
 		return (row, bag)
