@@ -48,7 +48,7 @@ struct PickMarket: Presentable {
 				store: store
 			)
 		)
-        viewController.title = L10n.MarketLanguageScreen.marketLabel
+		viewController.title = L10n.MarketLanguageScreen.marketLabel
 
 		return (
 			viewController,
