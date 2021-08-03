@@ -17,9 +17,10 @@ struct PickMarketView: View {
 		hForm {
 			hSectionList(Market.allCases, id: \.title) { market in
 				hRow {
-					Image(uiImage: market.icon)
-					Spacer(minLength: 16)
-					hText(text: market.title, style: .body)
+                    Image(uiImage: market.icon)
+                    Spacer().frame(width: 16)
+                    hText(text: market.title, style: .body)
+                    Spacer()
 					if market == currentMarket {
 						Image(uiImage: Asset.checkmark.image)
 					}
