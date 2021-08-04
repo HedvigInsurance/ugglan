@@ -72,7 +72,7 @@ struct PostOnboarding {
 }
 
 extension PostOnboarding: Presentable {
-	func materialize() -> (UIViewController, Disposable) {
+	func materialize() -> (UIViewController, Signal<Void>) {
 		let bag = DisposeBag()
 		let viewController = UIViewController()
 		viewController.navigationItem.hidesBackButton = true
@@ -95,37 +95,37 @@ extension PostOnboarding: Presentable {
 
 		bag += viewController.install(collectionKit)
 
-		func presentLoggedIn() {
-			let appDelegate = UIApplication.shared.appDelegate
-			appDelegate.bag += appDelegate.appFlow.window.present(LoggedIn(didSign: true), animated: true)
-		}
-
-		bag += client.isSwitchingInsurance.onValue { isSwitching in
-			let (table, disposable) = self.makeTable(isSwitching: isSwitching) { action in
-				switch action {
-				case .payment:
-					viewController.present(
-						PaymentSetup(
-							setupType: .postOnboarding,
-							urlScheme: Bundle.main.urlScheme ?? ""
-						),
-						style: .modally(
-							presentationStyle: .formSheet,
-							transitionStyle: nil,
-							capturesStatusBarAppearance: true
-						)
-					)
-					.onResult { _ in collectionKit.scrollToNextItem() }
-				case .push:
-					UIApplication.shared.appDelegate.registerForPushNotifications()
-						.onValue { _ in presentLoggedIn() }
-				case .pushSkip: presentLoggedIn()
+		return (
+			viewController,
+			Signal { callback in
+				bag += client.isSwitchingInsurance.onValue { isSwitching in
+					let (table, disposable) = self.makeTable(isSwitching: isSwitching) { action in
+						switch action {
+						case .payment:
+							viewController.present(
+								PaymentSetup(
+									setupType: .postOnboarding,
+									urlScheme: Bundle.main.urlScheme ?? ""
+								),
+								style: .modally(
+									presentationStyle: .formSheet,
+									transitionStyle: nil,
+									capturesStatusBarAppearance: true
+								)
+							)
+							.onResult { _ in collectionKit.scrollToNextItem() }
+						case .push:
+							UIApplication.shared.appDelegate.registerForPushNotifications()
+								.onValue { _ in callback(()) }
+						case .pushSkip: callback(())
+						}
+					}
+					collectionKit.table = table
+					bag += disposable
 				}
-			}
-			collectionKit.table = table
-			bag += disposable
-		}
 
-		return (viewController, bag)
+				return bag
+			}
+		)
 	}
 }

@@ -4,7 +4,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-class OfferState {
+class OldOfferState {
 	@Inject var client: ApolloClient
 	@Inject var store: ApolloStore
 	let ids: [String]
@@ -16,9 +16,13 @@ class OfferState {
 	}
 
 	private var bag = DisposeBag()
-	@ReadWriteState var hasSignedQuotes = false
 
-	let openChatCallbacker = Callbacker<Void>()
+	private let openChatCallbacker = Callbacker<Void>()
+	var openChatSignal: Signal<Void> {
+		openChatCallbacker.providedSignal
+	}
+
+	@ReadWriteState var hasSignedQuotes = false
 
 	lazy var isLoadingSignal: ReadSignal<Bool> = {
 		return client.fetch(query: query).valueSignal.plain().map { _ in false }.delay(by: 0.5)
@@ -39,6 +43,10 @@ class OfferState {
 
 	var signStatusSubscription: CoreSignal<Plain, GraphQL.SignStatusSubscription.Data> {
 		client.subscribe(subscription: GraphQL.SignStatusSubscription())
+	}
+
+	func openChat() {
+		openChatCallbacker.callAll()
 	}
 
 	enum UpdateStartDateError: Error {
@@ -77,14 +85,18 @@ class OfferState {
 
 	typealias Campaign = GraphQL.QuoteBundleQuery.Data.RedeemedCampaign
 
+	func refetch() {
+		client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
+	}
+
 	private func updateCacheRedeemedCampaigns(
-		cost: GraphQL.CostFragment,
 		campaigns: [Campaign]
 	) {
 		self.store.update(query: self.query) { (storeData: inout GraphQL.QuoteBundleQuery.Data) in
 			storeData.redeemedCampaigns = campaigns
-			storeData.quoteBundle.bundleCost.fragments.costFragment = cost
 		}
+
+		self.refetch()
 	}
 
 	func updateRedeemedCampaigns(discountCode: String) -> Future<Void> {
@@ -96,9 +108,7 @@ class OfferState {
 				)
 			)
 			.flatMap { data in
-				guard let campaigns = data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns,
-					let cost = data.redeemCodeV2.asSuccessfulRedeemResult?.cost
-				else {
+				guard let campaigns = data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns else {
 					return Future(error: UpdateRedeemedCampaigns.failed)
 				}
 
@@ -109,7 +119,6 @@ class OfferState {
 				}
 
 				self.updateCacheRedeemedCampaigns(
-					cost: cost.fragments.costFragment,
 					campaigns: mappedCampaigns
 				)
 
@@ -120,8 +129,7 @@ class OfferState {
 	func removeRedeemedCampaigns() -> Future<Void> {
 		return self.client.perform(mutation: GraphQL.RemoveDiscountMutation())
 			.flatMap { data in
-				let cost = data.removeDiscountCode.cost
-				self.updateCacheRedeemedCampaigns(cost: cost.fragments.costFragment, campaigns: [])
+				self.updateCacheRedeemedCampaigns(campaigns: [])
 				return Future()
 			}
 	}
@@ -186,61 +194,6 @@ class OfferState {
 						cachePolicy: .fetchIgnoringCacheData
 					)
 					.toVoid()
-			}
-	}
-
-	enum SignEvent {
-		case swedishBankId(
-			autoStartToken: String,
-			subscription: CoreSignal<Plain, GraphQL.SignStatusSubscription.Data>
-		)
-		case simpleSign(subscription: CoreSignal<Plain, GraphQL.SignStatusSubscription.Data>)
-		case done
-		case failed
-	}
-
-	func signQuotes() -> Future<SignEvent> {
-		let subscription = signStatusSubscription
-
-		bag += subscription.map { $0.signStatus?.status?.signState == .completed }.filter(predicate: { $0 })
-			.distinct()
-			.onValue({ _ in
-				self.$hasSignedQuotes.value = true
-			})
-
-		return self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.ids))
-			.mapResult { result in
-				switch result {
-				case .failure:
-					return SignEvent.failed
-				case let .success(data):
-					if let signQuoteReponse = data.signOrApproveQuotes.asSignQuoteResponse {
-						if signQuoteReponse.signResponse.asFailedToStartSign != nil {
-							return SignEvent.failed
-						} else if let session = signQuoteReponse
-							.signResponse
-							.asSwedishBankIdSession
-						{
-							return SignEvent.swedishBankId(
-								autoStartToken: session.autoStartToken
-									?? "",
-								subscription: subscription
-							)
-						} else if signQuoteReponse.signResponse.asSimpleSignSession != nil {
-							return SignEvent.simpleSign(
-								subscription: subscription
-							)
-						}
-					} else if let approvedResponse = data.signOrApproveQuotes.asApproveQuoteResponse
-					{
-						if approvedResponse.approved == true {
-							self.$hasSignedQuotes.value = true
-							return SignEvent.done
-						}
-					}
-
-					return SignEvent.failed
-				}
 			}
 	}
 }

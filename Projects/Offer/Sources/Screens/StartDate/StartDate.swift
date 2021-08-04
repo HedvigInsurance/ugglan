@@ -9,7 +9,7 @@ import hGraphQL
 
 struct StartDate {
 	let quoteBundle: GraphQL.QuoteBundleQuery.Data.QuoteBundle
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 }
 
 extension StartDate: Presentable {

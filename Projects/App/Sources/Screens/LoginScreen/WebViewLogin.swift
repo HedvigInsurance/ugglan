@@ -13,7 +13,7 @@ struct WebViewLogin {
 }
 
 extension WebViewLogin: Presentable {
-	func materialize() -> (UIViewController, Future<Void>) {
+	func materialize() -> (UIViewController, Signal<Void>) {
 		let viewController = UIViewController()
 		let bag = DisposeBag()
 
@@ -65,11 +65,11 @@ extension WebViewLogin: Presentable {
 
 		return (
 			viewController,
-			Future { completion in
+			Signal { callback in
 				bag += client.subscribe(subscription: GraphQL.AuthStatusSubscription())
 					.compactMap { $0.authStatus?.status }
 					.filter(predicate: { status -> Bool in status == .success }).take(first: 1)
-					.onValue { _ in completion(.success) }
+					.onValue { _ in callback(()) }
 				return bag
 			}
 		)

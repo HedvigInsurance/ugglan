@@ -9,6 +9,7 @@ public enum ExternalRedirect {
 	case offer(ids: [String])
 	case close
 	case chat
+	case menu(_ action: MenuChildAction)
 }
 
 public class EmbarkState {

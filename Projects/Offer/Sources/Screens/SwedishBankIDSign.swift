@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct SwedishBankIdSign {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 
 	func presentFailedAlert(
 		_ viewController: UIViewController,
@@ -38,14 +38,10 @@ struct SwedishBankIdSign {
 
 	func presentErrorAlert(
 		_ viewController: UIViewController,
-		data: GraphQL.SignStatusSubscription.Data,
+		code: String,
 		completion: @escaping (_ result: Flow.Result<Void>) -> Void
 	) {
-		guard let code = data.signStatus?.status?.collectStatus?.code,
-			let state = data.signStatus?.status?.signState
-		else { return }
-
-		if code == "userCancel", state == .failed {
+		if code == "userCancel" {
 			let alert = Alert<Void>(
 				title: L10n.bankidUserCancelTitle,
 				message: L10n.bankidUserCancelMessage,
@@ -65,7 +61,7 @@ struct SwedishBankIdSign {
 			)
 
 			viewController.present(alert)
-		} else if code == "expiredTransaction", state == .failed {
+		} else if code == "expiredTransaction" {
 			let alert = Alert<Void>(
 				title: L10n.bankidInactiveTitle,
 				message: L10n.bankidInactiveMessage,
@@ -85,7 +81,7 @@ struct SwedishBankIdSign {
 			)
 
 			viewController.present(alert)
-		} else if state == .failed {
+		} else {
 			presentFailedAlert(viewController, completion: completion)
 		}
 	}
@@ -168,70 +164,63 @@ extension SwedishBankIdSign: Presentable {
 
 				viewController.navigationItem.rightBarButtonItem = cancelButton
 
-				state.signQuotes()
-					.onValue { signEvent in
-						switch signEvent {
-						case let .swedishBankId(autoStartToken, subscription):
-							let urlScheme = Bundle.main.urlScheme ?? ""
-							guard
-								let url = URL(
-									string:
-										"bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
-								)
-							else { return }
+				let store: OfferStore = get()
+				store.send(.startSign)
 
-							if UIApplication.shared.canOpenURL(url) {
-								UIApplication.shared.open(
-									url,
-									options: [:],
-									completionHandler: nil
-								)
-							}
+				bag += store.stateSignal.compactMap { $0.swedishBankIDAutoStartToken }
+					.onFirstValue { autoStartToken in
+						let urlScheme = Bundle.main.urlScheme ?? ""
+						guard
+							let url = URL(
+								string:
+									"bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
+							)
+						else { return }
 
-							bag +=
-								subscription.compactMap {
-									$0.signStatus?.status?.collectStatus?.code
-								}
-								.onValue { code in
-									let statusText: String
-
-									switch code {
-									case "noClient", "outstandingTransaction":
-										statusText = L10n.signStartBankid
-									case "userSign":
-										viewController.navigationItem
-											.rightBarButtonItem = nil
-										statusText = L10n.signInProgress
-									case "userCancel", "cancelled":
-										statusText = L10n.signCanceled
-									default:
-										statusText =
-											L10n.signFailedReasonUnknown
-									}
-
-									statusLabel.value = statusText
-								}
-
-							bag +=
-								subscription.filter {
-									$0.signStatus?.status?.signState == .completed
-								}
-								.onValue { _ in
-									completion(.success)
-								}
-
-							bag += subscription.onValue { data in
-								presentErrorAlert(
-									viewController,
-									data: data,
-									completion: completion
-								)
-							}
-						case .failed, .simpleSign:
-							presentFailedAlert(viewController, completion: completion)
-						case .done:
-							completion(.success)
+						if UIApplication.shared.canOpenURL(url) {
+							UIApplication.shared.open(
+								url,
+								options: [:],
+								completionHandler: nil
+							)
 						}
+					}
+
+				bag += store.onAction(
+					.sign(event: .failed)
+				) {
+					presentErrorAlert(
+						viewController,
+						code: store.state.swedishBankIDStatusCode ?? "",
+						completion: completion
+					)
+				}
+
+				bag += store.onAction(
+					.sign(event: .done)
+				) {
+					completion(.success)
+				}
+
+				bag += store.stateSignal.compactMap { $0.swedishBankIDStatusCode }
+					.onValue { statusCode in
+						let statusText: String
+
+						switch statusCode {
+						case "noClient", "outstandingTransaction":
+							statusText = L10n.signStartBankid
+						case "userSign":
+							viewController.navigationItem
+								.rightBarButtonItem = nil
+							statusText = L10n.signInProgress
+						case "userCancel", "cancelled":
+							statusText = L10n.signCanceled
+						default:
+							statusText =
+								L10n.signFailedReasonUnknown
+						}
+
+						statusLabel.value = statusText
 					}
 
 				return DelayedDisposer(bag, delay: 2)

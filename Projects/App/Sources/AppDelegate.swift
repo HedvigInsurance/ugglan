@@ -9,6 +9,7 @@ import Form
 import Foundation
 import Hero
 import Mixpanel
+import Offer
 import Payment
 import Presentation
 import Sentry
@@ -20,18 +21,36 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+#if PRESENTATION_DEBUGGER
+	import PresentationDebugSupport
+#endif
+
 let log = Logger.self
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
 	let bag = DisposeBag()
-	let appFlow = AppFlow(window: UIWindow(frame: UIScreen.main.bounds))
+	let window: UIWindow = {
+		var window = UIWindow(frame: UIScreen.main.bounds)
+		window.rootViewController = UIViewController()
+		return window
+	}()
 
 	func logout() {
 		ApolloClient.cache = InMemoryNormalizedCache()
 		ApolloClient.deleteToken()
+
+		// remove all persisted state
+		UgglanStore.destroy()
+		OfferStore.destroy()
+
+		// create new store container to remove all old store instances
+		globalPresentableStoreContainer = PresentableStoreContainer()
+
+		setupDebugger()
+
 		bag += ApolloClient.initAndRegisterClient()
 			.onValue { _ in ChatState.shared = ChatState()
-				self.bag += ApplicationState.presentRootViewController(self.appFlow.window)
+				self.bag += self.window.present(AppJourney.main)
 			}
 	}
 
@@ -52,6 +71,21 @@ let log = Logger.self
 		guard let dynamicLinkUrl = URL(string: dynamicLink.value) else { return false }
 
 		return handleDeepLink(dynamicLinkUrl)
+	}
+
+	func setToken(_ token: String) {
+		ApolloClient.cache = InMemoryNormalizedCache()
+		ApolloClient.saveToken(token: token)
+
+		ApolloClient.initAndRegisterClient()
+			.always {
+				ChatState.shared = ChatState()
+				self.bag +=
+					self
+					.window.present(
+						AppJourney.loggedIn
+					)
+			}
 	}
 
 	func registerForPushNotifications() -> Future<Void> {
@@ -85,7 +119,7 @@ let log = Logger.self
 	func handleDeepLink(_ dynamicLinkUrl: URL) -> Bool {
 		if dynamicLinkUrl.pathComponents.contains("direct-debit") {
 			guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-			guard let rootViewController = appFlow.window.rootViewController else { return false }
+			guard let rootViewController = window.rootViewController else { return false }
 
 			Mixpanel.mainInstance().track(event: "DEEP_LINK_DIRECT_DEBIT")
 
@@ -100,7 +134,8 @@ let log = Logger.self
 			guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
 			bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 				.onValue { _ in
-					NotificationCenter.default.post(Notification(name: .shouldOpenReferrals))
+					let store: UgglanStore = globalPresentableStoreContainer.get()
+					store.send(.makeForeverTabActive)
 				}
 
 			Mixpanel.mainInstance().track(event: "DEEP_LINK_FOREVER")
@@ -130,6 +165,15 @@ let log = Logger.self
 			sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
 			annotation: ""
 		)
+	}
+
+	func setupDebugger() {
+		#if PRESENTATION_DEBUGGER
+
+			globalPresentableStoreContainer.debugger = PresentableStoreDebugger()
+			globalPresentableStoreContainer.debugger?.startServer()
+
+		#endif
 	}
 
 	var mixpanelToken: String? { Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String }
@@ -277,10 +321,11 @@ let log = Logger.self
 		let launch = Launch()
 
 		let (launchView, launchFuture) = launch.materialize()
-		appFlow.window.rootView.addSubview(launchView)
+		window.rootView.addSubview(launchView)
 		launchView.layer.zPosition = .greatestFiniteMagnitude - 2
 
-		appFlow.window.makeKeyAndVisible()
+		window.rootViewController = UIViewController()
+		window.makeKeyAndVisible()
 
 		launchView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
@@ -292,16 +337,17 @@ let log = Logger.self
 		// treat an empty token as a newly downloaded app and setLastNewsSeen
 		if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
 
+		setupDebugger()
+
 		bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-			.atValue { _ in Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+			.atValue { _ in
+				Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
 				AnalyticsCoordinator().setUserId()
 
-				self.bag += ApplicationState.presentRootViewController(self.appFlow.window)
-			}
-			.onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
-				self.bag += client.fetch(query: GraphQL.FeaturesQuery())
-					.onValue { _ in launch.completeAnimationCallbacker.callAll() }
+				self.bag += self.window.present(AppJourney.main)
+
+				launch.completeAnimationCallbacker.callAll()
 			}
 
 		bag += launchFuture.onValue { _ in launchView.removeFromSuperview()
@@ -317,7 +363,7 @@ let log = Logger.self
 
 				if #available(iOS 13, *) {
 					self.bag += toast.onTap.onValue {
-						self.appFlow.window.rootViewController?
+						self.window.rootViewController?
 							.present(
 								UIHostingController(rootView: Debug()),
 								style: .detented(.medium, .large),
@@ -393,43 +439,17 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
 		if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
 			if notificationType == "NEW_MESSAGE" {
-				if ApplicationState.currentState == .onboardingChat {
-					return
-				} else if ApplicationState.currentState == .offer {
-					bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
-						.filter { $0 }
-						.onValue { _ in
-							self.appFlow.window.rootViewController?
-								.present(
-									OfferChat(),
-									style: .modally(
-										presentationStyle: .pageSheet,
-										transitionStyle: nil,
-										capturesStatusBarAppearance: true
-									)
-								)
-						}
-					return
-				} else if ApplicationState.currentState == .loggedIn {
-					bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
-						.filter { $0 }
-						.onValue { _ in
-							self.appFlow.window.rootViewController?
-								.present(FreeTextChat(), style: .detented(.large))
-						}
-					return
-				}
+				#warning("handle this")
 			} else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
 				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 					.onValue { _ in
-						NotificationCenter.default.post(
-							Notification(name: .shouldOpenReferrals)
-						)
+						let store: UgglanStore = globalPresentableStoreContainer.get()
+						store.send(.makeForeverTabActive)
 					}
 			} else if notificationType == "CONNECT_DIRECT_DEBIT" {
 				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 					.onValue { _ in
-						self.appFlow.window.rootViewController?
+						self.window.rootViewController?
 							.present(
 								PaymentSetup(
 									setupType: .initial,
@@ -442,7 +462,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 			} else if notificationType == "PAYMENT_FAILED" {
 				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
 					.onValue { _ in
-						self.appFlow.window.rootViewController?
+						self.window.rootViewController?
 							.present(
 								PaymentSetup(
 									setupType: .replacement,

@@ -12,6 +12,11 @@ struct BankIDLoginSweden {
 	@Inject var client: ApolloClient
 }
 
+enum BankIDLoginSwedenResult {
+	case qrCode
+	case loggedIn
+}
+
 extension BankIDLoginSweden {
 	enum AutoStartTokenError: Error {
 		case failedToGenerate
@@ -40,9 +45,9 @@ extension BankIDLoginSweden {
 }
 
 extension BankIDLoginSweden: Presentable {
-	func materialize() -> (UIViewController, Future<Void>) {
+	func materialize() -> (UIViewController, Signal<BankIDLoginSwedenResult>) {
 		let viewController = UIViewController()
-		viewController.preferredPresentationStyle = .detented(.medium, .large)
+		viewController.preferredPresentationStyle = .detented(.large)
 		let bag = DisposeBag()
 
 		let view = UIView()
@@ -97,12 +102,14 @@ extension BankIDLoginSweden: Presentable {
 		var statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .brand(.headline(color: .primary)))
 		bag += containerView.addArranged(statusLabel)
 
-		let closeButtonContainer = UIStackView()
-		closeButtonContainer.animationSafeIsHidden = true
-		containerView.addArrangedSubview(closeButtonContainer)
+		let bankIDOnAnotherDeviceContainer = UIStackView()
+		containerView.addArrangedSubview(bankIDOnAnotherDeviceContainer)
 
-		let closeButton = Button(title: "Stäng", type: .standard(backgroundColor: .purple, textColor: .white))
-		bag += closeButtonContainer.addArranged(closeButton)
+		let bankIDOnAnotherDeviceButton = Button(
+			title: L10n.bankidOnAnotherDevice,
+			type: .standardOutline(borderColor: .brand(.primaryText()), textColor: .brand(.primaryText()))
+		)
+		bag += bankIDOnAnotherDeviceContainer.addArranged(bankIDOnAnotherDeviceButton)
 
 		let statusSignal =
 			client.subscribe(
@@ -130,35 +137,30 @@ extension BankIDLoginSweden: Presentable {
 				statusLabel.value = statusText
 			}
 
-		generateAutoStartToken()
-			.onValue { url in
-				if UIApplication.shared.canOpenURL(url) {
-					UIApplication.shared.open(url, options: [:], completionHandler: nil)
-				} else {
-					viewController.present(BankIDLoginQR())
-				}
-			}
-
 		return (
 			viewController,
-			Future { completion in
-				bag += closeButton.onTapSignal.onValue {
-					completion(.failure(FailedError.failed))
+			Signal { callback in
+				generateAutoStartToken()
+					.onValue { url in
+						if UIApplication.shared.canOpenURL(url) {
+							UIApplication.shared.open(
+								url,
+								options: [:],
+								completionHandler: nil
+							)
+						} else {
+							callback(.qrCode)
+						}
+					}
+
+				bag += bankIDOnAnotherDeviceButton.onTapSignal.onValue { _ in
+					callback(.qrCode)
 				}
 
 				bag += statusSignal.distinct()
 					.onValue { authState in
 						if authState == .success {
-							let appDelegate = UIApplication.shared.appDelegate
-
-							if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-								appDelegate.registerFCMToken(fcmToken)
-							}
-
-							AnalyticsCoordinator().setUserId()
-
-							let window = appDelegate.appFlow.window
-							bag += window.present(LoggedIn(), animated: true)
+							callback(.loggedIn)
 						}
 					}
 

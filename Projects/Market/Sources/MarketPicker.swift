@@ -13,13 +13,11 @@ import hGraphQL
 
 public struct MarketPicker {
 	@Inject var client: ApolloClient
-	var didFinish: () -> Void
-
-	public init(didFinish: @escaping () -> Void = {}) { self.didFinish = didFinish }
+	public init() {}
 }
 
 extension MarketPicker: Presentable {
-	public func materialize() -> (UIViewController, Disposable) {
+	public func materialize() -> (UIViewController, Signal<Void>) {
 		let viewController = UIViewController()
 
 		if #available(iOS 13.0, *) {
@@ -108,83 +106,106 @@ extension MarketPicker: Presentable {
 		form.transform = CGAffineTransform(translationX: 0, y: 100)
 		form.alpha = 0
 
-		bag += client.fetch(query: GraphQL.MarketQuery()).valueSignal
-			.onValue { data in
-				if let bestMatchedLocale = data.availableLocales.first(where: { locale -> Bool in
-					locale.rawValue.lowercased().contains(data.geo.countryIsoCode.lowercased())
-				}) {
-					let locale = Localization.Locale(rawValue: bestMatchedLocale.rawValue)!
-					let market = Market(rawValue: locale.market.rawValue)!
-					pickedMarketSignal.value = market
-				} else {
-					pickedMarketSignal.value = .sweden
-				}
-
-				Localization.Locale.currentLocale = pickedMarketSignal.value.preferredLanguage
-
-				let section = form.appendSection()
-				if #available(iOS 13.0, *) { section.overrideUserInterfaceStyle = .dark }
-
-				let marketRow = MarketRow(
-					market: pickedMarketSignal.value,
-					availableLocales: data.availableLocales
-				)
-				bag += section.append(marketRow)
-
-				bag += marketRow.$market.onValue { newMarket in
-					Localization.Locale.currentLocale = newMarket.preferredLanguage
-				}
-
-				let languageRow = LanguageRow(currentMarket: pickedMarketSignal.value)
-				bag += section.append(languageRow)
-				bag += marketRow.$market.bindTo(languageRow.$currentMarket)
-
-				bag += form.append(Spacing(height: 36))
-
-				let continueButton = Button(
-					title: "",
-					type: .standard(backgroundColor: .white, textColor: .black)
-				)
-				bag += form.append(
-					continueButton.insetted(UIEdgeInsets(horizontalInset: 15, verticalInset: 0)) {
-						buttonView in buttonView.hero.id = "ContinueButton"
-						buttonView.hero.modifiers = [.spring(stiffness: 400, damping: 100)]
-
-						bag += localeUpdatedSignal.atOnce()
-							.transition(
-								style: .crossDissolve(duration: 0.25),
-								with: buttonView
-							) { _ in
-								continueButton.title.value =
-									L10n.MarketLanguageScreen.continueButtonText
-							}
-					}
-				)
-
-				bag += continueButton.onTapSignal.onValue {
-					guard let navigationController = viewController.navigationController else {
-						return
-					}
-					if !UITraitCollection.isCatalyst {
-						navigationController.hero.isEnabled = true
-						navigationController.hero.navigationAnimationType = .fade
-					}
-					viewController.present(Marketing())
-				}
-
-				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().delay(by: 1.25)
-					.take(first: 1)
-					.animated(
-						style: .lightBounce(duration: 0.75),
-						animations: { _ in form.transform = CGAffineTransform.identity
-							form.alpha = 1
-							form.layoutIfNeeded()
-						}
-					)
-			}
-
 		bag += form.didMoveToWindowSignal.onValue { ContextGradient.currentOption = .none }
 
-		return (viewController, bag)
+		return (
+			viewController,
+			Signal { callback in
+				bag += client.fetch(query: GraphQL.MarketQuery()).valueSignal
+					.onValue { data in
+						if let bestMatchedLocale = data.availableLocales.first(where: {
+							locale -> Bool in
+							locale.rawValue.lowercased()
+								.contains(data.geo.countryIsoCode.lowercased())
+						}) {
+							let locale = Localization.Locale(
+								rawValue: bestMatchedLocale.rawValue
+							)!
+							let market = Market(rawValue: locale.market.rawValue)!
+							pickedMarketSignal.value = market
+						} else {
+							pickedMarketSignal.value = .sweden
+						}
+
+						Localization.Locale.currentLocale =
+							pickedMarketSignal.value.preferredLanguage
+
+						let section = form.appendSection()
+						if #available(iOS 13.0, *) {
+							section.overrideUserInterfaceStyle = .dark
+						}
+
+						let marketRow = MarketRow(
+							market: pickedMarketSignal.value,
+							availableLocales: data.availableLocales
+						)
+						bag += section.append(marketRow)
+
+						bag += marketRow.$market.onValue { newMarket in
+							Localization.Locale.currentLocale = newMarket.preferredLanguage
+						}
+
+						let languageRow = LanguageRow(currentMarket: pickedMarketSignal.value)
+						bag += section.append(languageRow)
+						bag += marketRow.$market.bindTo(languageRow.$currentMarket)
+
+						bag += form.append(Spacing(height: 36))
+
+						let continueButton = Button(
+							title: "",
+							type: .standard(backgroundColor: .white, textColor: .black)
+						)
+						bag += form.append(
+							continueButton.insetted(
+								UIEdgeInsets(horizontalInset: 15, verticalInset: 0)
+							) {
+								buttonView in buttonView.hero.id = "ContinueButton"
+								buttonView.hero.modifiers = [
+									.spring(stiffness: 400, damping: 100)
+								]
+
+								bag += localeUpdatedSignal.atOnce()
+									.transition(
+										style: .crossDissolve(duration: 0.25),
+										with: buttonView
+									) { _ in
+										continueButton.title.value =
+											L10n.MarketLanguageScreen
+											.continueButtonText
+									}
+							}
+						)
+
+						bag += continueButton.onTapSignal.onValue {
+							guard
+								let navigationController = viewController
+									.navigationController
+							else {
+								return
+							}
+							if !UITraitCollection.isCatalyst {
+								navigationController.hero.isEnabled = true
+								navigationController.hero.navigationAnimationType =
+									.fade
+							}
+							callback(())
+						}
+
+						bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
+							.delay(by: 1.25)
+							.take(first: 1)
+							.animated(
+								style: .lightBounce(duration: 0.75),
+								animations: { _ in
+									form.transform = CGAffineTransform.identity
+									form.alpha = 1
+									form.layoutIfNeeded()
+								}
+							)
+					}
+
+				return bag
+			}
+		)
 	}
 }

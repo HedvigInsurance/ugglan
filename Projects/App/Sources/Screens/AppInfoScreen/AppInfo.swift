@@ -206,29 +206,32 @@ extension AppInfo: Presentable {
 	}
 }
 
+extension MenuChildAction {
+	static var appInformation: MenuChildAction {
+		MenuChildAction(identifier: "app-information")
+	}
+
+	static var appSettings: MenuChildAction {
+		MenuChildAction(identifier: "app-settings")
+	}
+}
+
 extension MenuChild {
 	static var appInformation: MenuChild {
-		MenuChild(title: L10n.aboutScreenTitle, style: .default, image: hCoreUIAssets.infoLarge.image) {
-			viewController in
-			viewController.present(
-				AppInfo(type: .appInformation).withCloseButton,
-				style: .detented(.large),
-				options: [.defaults, .largeTitleDisplayMode(.always), .prefersLargeTitles(true)]
-			)
-		}
+		MenuChild(
+			title: L10n.aboutScreenTitle,
+			style: .default,
+			image: hCoreUIAssets.infoLarge.image,
+			action: .appInformation
+		)
 	}
 
 	static var appSettings: MenuChild {
 		MenuChild(
 			title: L10n.Profile.AppSettingsSection.title,
 			style: .default,
-			image: hCoreUIAssets.settingsIcon.image
-		) { viewController in
-			viewController.present(
-				AppInfo(type: .appSettings).withCloseButton,
-				style: .detented(.large),
-				options: [.defaults, .largeTitleDisplayMode(.always), .prefersLargeTitles(true)]
-			)
-		}
+			image: hCoreUIAssets.settingsIcon.image,
+			action: .appSettings
+		)
 	}
 }

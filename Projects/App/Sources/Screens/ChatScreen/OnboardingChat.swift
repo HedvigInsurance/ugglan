@@ -7,14 +7,30 @@ import hCore
 
 struct OnboardingChat { @Inject var client: ApolloClient }
 
+enum OnboardingChatResult {
+	case menu(action: MenuChildAction)
+	case chat(result: ChatResult)
+
+	var journey: some JourneyPresentation {
+		GroupJourney {
+			switch self {
+			case let .menu(action):
+				action.journey
+			case let .chat(result):
+				result.journey
+			}
+		}
+	}
+}
+
 extension OnboardingChat: Presentable {
-	func materialize() -> (UIViewController, Disposable) {
+	func materialize() -> (UIViewController, Signal<OnboardingChatResult>) {
 		let bag = DisposeBag()
 
 		ApplicationState.preserveState(.onboardingChat)
 
 		let chat = Chat()
-		let (viewController, future) = chat.materialize()
+		let (viewController, signal) = chat.materialize()
 		viewController.navigationItem.hidesBackButton = true
 
 		chat.chatState.fetch()
@@ -24,19 +40,6 @@ extension OnboardingChat: Presentable {
 		settingsButton.tintColor = .brand(.primaryText())
 
 		viewController.navigationItem.leftBarButtonItem = settingsButton
-
-		bag += settingsButton.attachSinglePressMenu(
-			viewController: viewController,
-			menu: Menu(
-				title: nil,
-				children: [
-					MenuChild.appInformation, MenuChild.appSettings,
-					MenuChild.login(onLogin: {
-						UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
-					}),
-				]
-			)
-		)
 
 		let restartButton = UIBarButtonItem()
 		restartButton.image = Asset.restart.image
@@ -61,8 +64,29 @@ extension OnboardingChat: Presentable {
 
 		viewController.navigationItem.titleView = .titleWordmarkView
 
-		bag += future.onValue { _ in }
+		return (
+			viewController,
+			Signal { callback in
+				bag += settingsButton.attachSinglePressMenu(
+					viewController: viewController,
+					menu: Menu(
+						title: nil,
+						children: [
+							MenuChild.appInformation,
+							MenuChild.appSettings,
+							MenuChild.login,
+						]
+					)
+				) { action in
+					callback(.menu(action: action))
+				}
 
-		return (viewController, bag)
+				bag += signal.onValue { result in
+					callback(.chat(result: result))
+				}
+
+				return bag
+			}
+		)
 	}
 }

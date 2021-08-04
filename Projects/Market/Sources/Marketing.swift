@@ -15,8 +15,13 @@ public struct Marketing {
 	public init() {}
 }
 
+public enum MarketingResult {
+	case onboard
+	case login
+}
+
 extension Marketing: Presentable {
-	public func materialize() -> (UIViewController, Disposable) {
+	public func materialize() -> (UIViewController, Signal<MarketingResult>) {
 		let viewController = UIViewController()
 
 		if #available(iOS 13.0, *) {
@@ -91,35 +96,51 @@ extension Marketing: Presentable {
 
 		contentStackView.snp.makeConstraints { make in make.bottom.trailing.leading.equalToSuperview() }
 
-		let onboardButton = Button(
-			title: L10n.marketingGetHedvig,
-			type: .standard(backgroundColor: .white, textColor: .black)
-		)
+		return (
+			viewController,
+			Signal { callback in
 
-		bag += onboardButton.onTapSignal.onValue { _ in
-			if #available(iOS 13.0, *) {
-				viewController.navigationController?.navigationBar.overrideUserInterfaceStyle =
-					.unspecified
-			} else {
-				viewController.navigationController?.navigationBar.barStyle = .default
+				let onboardButton = Button(
+					title: L10n.marketingGetHedvig,
+					type: .standard(backgroundColor: .white, textColor: .black)
+				)
+
+				bag += onboardButton.onTapSignal.onValue { _ in
+					if #available(iOS 13.0, *) {
+						viewController.navigationController?.navigationBar
+							.overrideUserInterfaceStyle =
+							.unspecified
+					} else {
+						viewController.navigationController?.navigationBar.barStyle = .default
+					}
+					if !UITraitCollection.isCatalyst {
+						viewController.navigationController?.hero.isEnabled = false
+					}
+
+					callback(.onboard)
+				}
+
+				bag += contentStackView.addArranged(onboardButton) { buttonView in
+					buttonView.hero.id = "ContinueButton"
+					buttonView.hero.modifiers = [.spring(stiffness: 400, damping: 100)]
+				}
+
+				let loginButton = Button(
+					title: L10n.marketingLogin,
+					type: .standardOutline(borderColor: .white, textColor: .white)
+				)
+
+				bag += loginButton.onTapSignal.onValue { _ in
+					if !UITraitCollection.isCatalyst {
+						viewController.navigationController?.hero.isEnabled = false
+					}
+					callback(.login)
+				}
+
+				bag += contentStackView.addArranged(loginButton)
+
+				return bag
 			}
-
-			CrossFramework.presentOnboarding(viewController)
-		}
-
-		bag += contentStackView.addArranged(onboardButton) { buttonView in buttonView.hero.id = "ContinueButton"
-			buttonView.hero.modifiers = [.spring(stiffness: 400, damping: 100)]
-		}
-
-		let loginButton = Button(
-			title: L10n.marketingLogin,
-			type: .standardOutline(borderColor: .white, textColor: .white)
 		)
-
-		bag += loginButton.onTapSignal.onValue { _ in CrossFramework.presentLogin(viewController) }
-
-		bag += contentStackView.addArranged(loginButton)
-
-		return (viewController, bag)
 	}
 }

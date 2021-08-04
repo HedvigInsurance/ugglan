@@ -24,8 +24,65 @@ enum NavigationEvent {
 	case dashboard, offer, login
 }
 
+extension JourneyPresentation {
+	public var hidesBackButton: Self {
+		addConfiguration { presenter in
+			presenter.viewController.navigationItem.hidesBackButton = true
+		}
+	}
+}
+
+enum ChatResult {
+	case offer(ids: [String])
+	case loggedIn
+	case login
+
+	var journey: some JourneyPresentation {
+		GroupJourney {
+			switch self {
+			case let .offer(ids):
+				Journey(
+					Offer(
+						offerIDContainer: .exact(ids: ids, shouldStore: true),
+						menu: Menu(
+							title: nil,
+							children: [
+								MenuChild.appInformation,
+								MenuChild.appSettings,
+								MenuChild.login,
+							]
+						),
+						options: [.shouldPreserveState]
+					)
+				) { offerResult in
+					switch offerResult {
+					case .chat:
+						Journey(
+							FreeTextChat(),
+							style: .detented(.large),
+							options: [.defaults]
+						)
+						.withDismissButton
+					case .close:
+						DismissJourney()
+					case .signed:
+						AppJourney.postOnboarding
+					case let .menu(action):
+						action.journey
+					}
+				}
+				.hidesBackButton
+			case .loggedIn:
+				AppJourney.loggedIn
+			case .login:
+				AppJourney.login
+			}
+		}
+	}
+}
+
 extension Chat: Presentable {
-	func materialize() -> (UIViewController, Future<Void>) {
+	func materialize() -> (UIViewController, Signal<ChatResult>) {
 		let bag = DisposeBag()
 
 		chatState.allowNewMessageToast = false
@@ -43,64 +100,6 @@ extension Chat: Presentable {
 
 		let viewController = AccessoryViewController(accessoryView: chatInput)
 		viewController.navigationItem.largeTitleDisplayMode = .never
-
-		bag += navigateCallbacker.onValue { navigationEvent in
-			switch navigationEvent {
-			case .offer:
-				client.fetch(query: GraphQL.LastQuoteOfMemberQuery())
-					.onValue { data in
-						guard let id = data.lastQuoteOfMember.asCompleteQuote?.id else {
-							return
-						}
-
-						bag +=
-							viewController.present(
-								Offer(
-									offerIDContainer: .exact(
-										ids: [id],
-										shouldStore: true
-									),
-									menu: Menu(
-										title: nil,
-										children: [
-											MenuChild.appInformation,
-											MenuChild.appSettings,
-											MenuChild.login(onLogin: {
-												UIApplication.shared
-													.appDelegate
-													.appFlow
-													.presentLoggedIn()
-											}),
-										]
-									),
-									options: [.shouldPreserveState]
-								)
-							)
-							.onValue { offerResult in
-								switch offerResult {
-								case .chat:
-									viewController.present(
-										FreeTextChat().wrappedInCloseButton(),
-										style: .detented(.large)
-									)
-								case .close:
-									break
-								case .signed:
-									bag += UIApplication.shared.appDelegate
-										.appFlow.window.present(
-											PostOnboarding(),
-											options: [],
-											animated: true
-										)
-								}
-							}
-					}
-			case .dashboard:
-				viewController.present(LoggedIn())
-			case .login:
-				viewController.present(Login(), style: .detented(.medium))
-			}
-		}
 
 		let sectionStyle = SectionStyle(
 			insets: .zero,
@@ -247,8 +246,30 @@ extension Chat: Presentable {
 
 		return (
 			viewController,
-			Future { _ in
-				bag
+			Signal { callback in
+
+				bag += navigateCallbacker.onValue { navigationEvent in
+					switch navigationEvent {
+					case .offer:
+						client.fetch(query: GraphQL.LastQuoteOfMemberQuery())
+							.onValue { data in
+								guard
+									let id = data.lastQuoteOfMember.asCompleteQuote?
+										.id
+								else {
+									return
+								}
+
+								callback(.offer(ids: [id]))
+							}
+					case .dashboard:
+						callback(.loggedIn)
+					case .login:
+						callback(.login)
+					}
+				}
+
+				return bag
 			}
 		)
 	}

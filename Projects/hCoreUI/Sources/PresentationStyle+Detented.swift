@@ -64,7 +64,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 
 	func listenToKeyboardFrame() {
 		bag += viewController.view.keyboardSignal(priority: .highest)
-			.onValue { event in
+			.onValue { [unowned self] event in
 				switch event {
 				case let .willShow(frame, _): self.keyboardFrame = frame
 				case .willHide: self.keyboardFrame = .zero
@@ -192,7 +192,8 @@ extension UIViewController {
 	}
 
 	public var currentDetentSignal: ReadWriteSignal<PresentationStyle.Detent?> {
-		Signal { callback in let bag = DisposeBag()
+		Signal { [unowned self] callback in
+			let bag = DisposeBag()
 
 			bag += (self.view as? UIScrollView)?.panGestureRecognizer
 				.onValue { _ in callback(self.currentDetent) }
@@ -201,7 +202,13 @@ extension UIViewController {
 
 			return bag
 		}
-		.distinct().readable { self.currentDetent }.writable { detent in self.currentDetent = detent }
+		.distinct()
+		.readable {
+			self.currentDetent
+		}
+		.writable { detent in
+			self.currentDetent = detent
+		}
 	}
 
 	private static var _lastDetentIndex: UInt8 = 1
@@ -366,12 +373,17 @@ extension PresentationStyle {
 
 				return from.modallyPresentQueued(vc, options: options) {
 					return Future { completion in
-						PresentationStyle.modalPresentationDismissalSetup(
-							for: vc,
-							options: options
-						)
-						.onResult(completion)
-						return bag
+						let dismissal =
+							PresentationStyle.modalPresentationDismissalSetup(
+								for: vc,
+								options: options
+							)
+							.onResult(completion)
+
+						return Disposer {
+							bag.dispose()
+							dismissal.cancel()
+						}
 					}
 				}
 			} else {

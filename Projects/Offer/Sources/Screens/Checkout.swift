@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 struct Checkout {
-	@Inject var state: OfferState
+	@Inject var state: OldOfferState
 }
 
 enum CheckoutError: Error {
@@ -190,36 +190,16 @@ extension Checkout: Presentable {
 
 					toggleAllowDismissal()
 
-					state.signQuotes()
-						.onValue { signEvent in
-							switch signEvent {
-							case .swedishBankId, .failed:
-								handleError()
-							case let .simpleSign(subscription):
-								bag +=
-									subscription.filter {
-										$0.signStatus?.status?.signState
-											== .failed
-									}
-									.onFirstValue { _ in
-										handleError()
-									}
+					let store: OfferStore = get()
+					store.send(.startSign)
 
-								bag +=
-									subscription.filter {
-										$0.signStatus?.status?.signState
-											== .completed
-									}
-									.onValue { _ in
-										completion(.success)
-									}
-							case .done:
-								completion(.success)
-							}
-						}
-						.onError { error in
-							handleError()
-						}
+					bag += store.onAction(.sign(event: .failed)) {
+						handleError()
+					}
+
+					bag += store.onAction(.sign(event: .done)) {
+						completion(.success)
+					}
 				}
 
 				return bag

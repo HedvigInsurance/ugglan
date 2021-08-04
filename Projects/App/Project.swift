@@ -13,12 +13,15 @@ let sdkFrameworks: [TargetDependency] = [
 let ugglanConfigurations: [CustomConfiguration] = [
 	.debug(
 		name: "Debug",
-		settings: ["PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.test.app"],
+		settings: [
+			"PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.test.app",
+			"OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
+		],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 	),
 	.release(
 		name: "Release",
-		settings: [:],
+		settings: ["OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER"],
 		xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
 	),
 ]
@@ -86,7 +89,7 @@ let project = Project(
 			platform: .iOS,
 			product: .app,
 			bundleId: "com.hedvig.test.app",
-			deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+			deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
 			infoPlist: "Config/Test/Info.plist",
 			sources: ["Sources/**"],
 			resources: ["Resources/**", "Config/Test/Resources/**"],
@@ -100,7 +103,7 @@ let project = Project(
 			platform: .iOS,
 			product: .unitTests,
 			bundleId: "com.hedvig.AppTests",
-			deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+			deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
 			infoPlist: .default,
 			sources: ["Tests/**"],
 			resources: [],
@@ -123,7 +126,7 @@ let project = Project(
 			platform: .iOS,
 			product: .app,
 			bundleId: "com.hedvig.app",
-			deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+			deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
 			infoPlist: "Config/Production/Info.plist",
 			sources: ["Sources/**"],
 			resources: ["Resources/**", "Config/Production/Resources/**"],
