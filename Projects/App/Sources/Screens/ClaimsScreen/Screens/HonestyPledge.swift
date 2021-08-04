@@ -47,6 +47,7 @@ struct SlideDragger: View {
 	var hasDraggedOnce: Bool
 	var dragOffsetX: CGFloat
 	var size = CGSize(width: 50, height: 50)
+    @State var hasNotifiedStore = false
 
 	@PresentableStore var store: UgglanStore
 
@@ -69,7 +70,8 @@ struct SlideDragger: View {
 			)
 			.animation(hasDraggedOnce && dragOffsetX == 0 ? .spring() : nil)
 			.onReceive(Just(hasDraggedOnce && dragOffsetX > (geo.size.width - size.width))) { value in
-				if value {
+				if value && !hasNotifiedStore {
+                    hasNotifiedStore = true
 					store.send(.didAcceptHonestyPledge)
 				}
 			}
@@ -80,7 +82,6 @@ struct SlideDragger: View {
 struct SlideToConfirm: View {
 	@State var hasDraggedOnce = false
 	@GestureState var dragOffsetX: CGFloat = 0
-	@PresentableStore var store: UgglanStore
 
 	var labelOpacity: Double {
 		1 - (Double(max(dragOffsetX, 0)) / 100)
@@ -126,8 +127,8 @@ struct HonestyPledge: PresentableView {
 	var result: Signal<Void> {
 		Signal { callback in
 			let bag = DisposeBag()
-
-			bag += store.onAction(
+            
+            bag += store.onAction(
 				.didAcceptHonestyPledge,
 				{
 					callback(())
@@ -135,7 +136,7 @@ struct HonestyPledge: PresentableView {
 			)
 
 			return bag
-		}
+        }
 	}
 
 	var body: some View {
