@@ -4,116 +4,134 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import SwiftUI
+import Combine
 
-struct HonestyPledge {
-	enum PushNotificationsAction { case ask, skip }
-
-	func pushNotificationsPresentable() -> PresentableViewable<
-		ImageTextAction<PushNotificationsAction>, PushNotificationsAction
-	> {
-		let pushNotificationsDoButton = Button(
-			title: L10n.claimsActivateNotificationsCta,
-			type: .standard(
-				backgroundColor: .brand(.primaryButtonBackgroundColor),
-				textColor: .brand(.primaryButtonTextColor)
-			)
-		)
-
-		let pushNotificationsSkipButton = Button(
-			title: L10n.claimsActivateNotificationsDismiss,
-			type: .transparent(textColor: .brand(.link))
-		)
-
-		let pushNotificationsAction = ImageTextAction<PushNotificationsAction>(
-			image: .init(image: Asset.activatePushNotificationsIllustration.image),
-			title: L10n.claimsActivateNotificationsHeadline,
-			body: L10n.claimsActivateNotificationsBody,
-			actions: [(.ask, pushNotificationsDoButton), (.skip, pushNotificationsSkipButton)],
-			showLogo: false
-		)
-
-		return PresentableViewable(viewable: pushNotificationsAction) { viewController in
-			viewController.navigationItem.hidesBackButton = true
-		}
-	}
+struct SlideTrack: View {
+    var hasDraggedOnce: Bool
+    var labelOpacity: Double
+    
+    var body: some View {
+        ZStack {
+            VStack(alignment: .center) {
+                hText(text: L10n.claimsPledgeSlideLabel, style: .body)
+            }
+            .frame(maxWidth: .infinity)
+            .opacity(labelOpacity)
+            .animation(hasDraggedOnce && labelOpacity == 1 ? .easeInOut : nil)
+        }
+        .frame(height: 50)
+        .frame(maxWidth: .infinity)
+        .background(Color(UIColor.brand(.primaryBackground())))
+        .cornerRadius(25)
+    }
 }
 
-extension HonestyPledge: Presentable {
-	func materialize() -> (UIViewController, Future<Void>) {
-		let viewController = UIViewController()
-		viewController.title = L10n.honestyPledgeTitle
+struct DraggerGeometryEffect: GeometryEffect {
+    var dragOffsetX: CGFloat
+    var draggerSize: CGSize
+    
+    var animatableData: CGFloat {
+        get { dragOffsetX }
+        set { dragOffsetX = newValue }
+    }
+    
+    func effectValue(size: CGSize) -> ProjectionTransform {
+        let value = max(dragOffsetX, 0)
+        let finalOffsetX = min(value, size.width - draggerSize.width)
+        return ProjectionTransform(CGAffineTransform(translationX: finalOffsetX, y: 0))
+    }
+}
 
-		let bag = DisposeBag()
+struct SlideDragger: View {
+    var hasDraggedOnce: Bool
+    var dragOffsetX: CGFloat
+    var size = CGSize(width: 50, height: 50)
+    
+    @PresentableStore var store: UgglanStore
+    
+    var body: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                ZStack {
+                    Image(uiImage: Asset.continue.image)
+                }
+                .frame(width: size.width, height: size.height)
+                .background(Color(UIColor.brand(.link)))
+                .clipShape(Circle())
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .modifier(DraggerGeometryEffect(
+                dragOffsetX: dragOffsetX,
+                draggerSize: size
+            ))
+            .animation(hasDraggedOnce && dragOffsetX == 0 ? .spring() : nil)
+            .onReceive(Just(hasDraggedOnce && dragOffsetX > (geo.size.width - size.width))) { value in
+                if value {
+                    store.send(.didAcceptHonestyPledge)
+                }
+            }
+        }
+    }
+}
 
-		let containerStackView = UIStackView()
-		containerStackView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 15, right: 15)
-		containerStackView.isLayoutMarginsRelativeArrangement = true
-		containerStackView.axis = .vertical
-		containerStackView.distribution = .equalSpacing
+struct SlideToConfirm: View {
+    @State var hasDraggedOnce = false
+    @GestureState var dragOffsetX: CGFloat = 0
+    @PresentableStore var store: UgglanStore
+    
+    var labelOpacity: Double {
+        1 - (Double(max(dragOffsetX, 0)) / 100)
+    }
+    
+    var body: some View {
+        ZStack(alignment: .leading) {
+            SlideTrack(
+                hasDraggedOnce: hasDraggedOnce,
+                labelOpacity: labelOpacity
+            )
+            SlideDragger(
+                hasDraggedOnce: hasDraggedOnce,
+                dragOffsetX: dragOffsetX
+            )
+        }.gesture(DragGesture().updating($dragOffsetX, body: { value, state, _ in
+            if value.startLocation.x > 50 {
+                state = (value.startLocation.x * (value.translation.width / 100)) + value.translation.width
+            } else {
+                state = value.translation.width
+            }
+        }).onChanged({ _ in
+            hasDraggedOnce = true
+        }))
+    }
+}
 
-		let topContentStackView = UIStackView()
-		topContentStackView.axis = .vertical
-		topContentStackView.spacing = 10
-
-		containerStackView.addArrangedSubview(topContentStackView)
-
-		let descriptionLabel = MultilineLabel(
-			value: L10n.honestyPledgeDescription,
-			style: .brand(.body(color: .secondary))
-		)
-		bag += topContentStackView.addArranged(descriptionLabel)
-
-		let slideToClaim = SlideToClaim()
-		bag += containerStackView.addArranged(slideToClaim.wrappedIn(UIStackView())) { slideToClaimStackView in
-			slideToClaimStackView.isLayoutMarginsRelativeArrangement = true
-		}
-
-		let view = UIView()
-		view.backgroundColor = .brand(.secondaryBackground())
-		viewController.view = view
-
-		view.addSubview(containerStackView)
-
-		containerStackView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
-
-		bag += containerStackView.didLayoutSignal.onValue { _ in
-			viewController.preferredContentSize = containerStackView.systemLayoutSizeFitting(.zero)
-		}
-
-		return (
-			viewController,
-			Future { completion in
-				bag += slideToClaim.onValue {
-					func presentClaimsChat() {
-						viewController.present(
-							ClaimsChat().withCloseButton,
-							style: .detented(.large, modally: false)
-						)
-						.onResult(completion)
-					}
-
-					if UIApplication.shared.isRegisteredForRemoteNotifications {
-						presentClaimsChat()
-					} else {
-						bag +=
-							viewController.present(
-								self.pushNotificationsPresentable(),
-								style: .detented(.large, modally: false)
-							)
-							.onValue { action in
-								if action == .ask {
-									UIApplication.shared.appDelegate
-										.registerForPushNotifications()
-										.onValue { _ in presentClaimsChat() }
-								} else {
-									presentClaimsChat()
-								}
-							}
-					}
-				}
-
-				return DelayedDisposer(bag, delay: 1)
-			}
-		)
-	}
+struct HonestyPledge: PresentableView {
+    typealias Result = Signal<Void>
+    @PresentableStore var store: UgglanStore
+    
+    var result: Signal<Void> {
+        Signal { callback in
+            let bag = DisposeBag()
+            
+            bag += store.onAction(.didAcceptHonestyPledge, {
+                callback(())
+            })
+            
+            return bag
+        }
+    }
+    
+    var body: some View {
+        hForm {
+            VStack {
+                hText(text: L10n.honestyPledgeDescription, style: .body)
+                    .foregroundColor(Color(UIColor.brand(.secondaryText)))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 20)
+                    .padding(.bottom, 20)
+                SlideToConfirm()
+            }.padding(14)
+        }.presentableTitle(L10n.honestyPledgeTitle)
+    }
 }

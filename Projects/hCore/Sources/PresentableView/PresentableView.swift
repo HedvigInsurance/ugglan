@@ -34,6 +34,17 @@ extension EnvironmentValues {
 	}
 }
 
+private struct EnvironmentPresentableViewUpperScrollView: EnvironmentKey {
+    static let defaultValue: UIScrollView? = nil
+}
+
+extension EnvironmentValues {
+    public var presentableViewUpperScrollView: UIScrollView? {
+        get { self[EnvironmentPresentableViewUpperScrollView.self] }
+        set { self[EnvironmentPresentableViewUpperScrollView.self] = newValue }
+    }
+}
+
 public struct PresentableViewNavigationBarConfigurer: ViewModifier {
 	@SwiftUI.Environment(\.navigationItem) var navigationItem: UINavigationItem?
 	var configurer: (_ navigationItem: UINavigationItem) -> Void
@@ -67,14 +78,14 @@ extension View {
 
 public class ViewHostingController<RootView: View>: UIViewController {
 	let hostingController: UIHostingController<AnyView>
+    let scrollView = UIScrollView()
 
 	init(
 		rootView: RootView
 	) {
 		self.hostingController = UIHostingController(rootView: AnyView(EmptyView()))
-		super.init(nibName: nil, bundle: nil)
-
-		self.hostingController.rootView = AnyView(rootView.environment(\.navigationItem, self.navigationItem))
+        super.init(nibName: nil, bundle: nil)
+        self.hostingController.rootView = AnyView(rootView.environment(\.navigationItem, self.navigationItem).environment(\.presentableViewUpperScrollView, scrollView))
 	}
 
 	required init?(
@@ -85,12 +96,15 @@ public class ViewHostingController<RootView: View>: UIViewController {
 
 	public override func viewDidLoad() {
 		super.viewDidLoad()
+        view.addSubview(scrollView)
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        scrollView.backgroundColor = .white
+        scrollView.isScrollEnabled = true
+
 		self.addChild(hostingController)
 		view.addSubview(hostingController.view)
 		hostingController.didMove(toParent: self)
-
-		hostingController.view.snp.makeConstraints { make in
-			make.edges.equalToSuperview()
-		}
 	}
 }

@@ -8,7 +8,6 @@ public enum ExternalDependencies: CaseIterable {
 	case flow
 	case form
 	case presentation
-	case ease
 	case dynamiccolor
 	case disk
 	case snapkit
@@ -61,8 +60,6 @@ public enum ExternalDependencies: CaseIterable {
 					.upToNextMajor(from: "2.0.1")
 				)
 			]
-		case .ease:
-			return [.package(url: "https://github.com/HedvigInsurance/Ease", .upToNextMajor(from: "2.0.3"))]
 		case .dynamiccolor:
 			return [
 				.package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
@@ -121,7 +118,6 @@ public enum ExternalDependencies: CaseIterable {
 		case .form: return [.package(product: "Form")]
 		case .presentation:
 			return [.package(product: "Presentation"), .package(product: "PresentationDebugSupport")]
-		case .ease: return [.package(product: "Ease")]
 		case .dynamiccolor: return [.package(product: "DynamicColor")]
 		case .disk: return [.package(product: "Disk")]
 		case .snapkit: return [.package(product: "SnapKit")]
