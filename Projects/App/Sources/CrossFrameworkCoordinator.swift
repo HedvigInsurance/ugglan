@@ -55,8 +55,9 @@ struct CrossFrameworkCoordinator {
 
 		Home.openClaimsHandler = { viewController in
 			viewController.present(
-                AppJourney.claimsJourney
-            ).onValue { _ in }
+				AppJourney.claimsJourney
+			)
+			.onValue { _ in }
 		}
 
 		Home.openFreeTextChatHandler = { viewController in
