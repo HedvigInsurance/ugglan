@@ -14,6 +14,17 @@ struct AddressInput {
 	let masking = Masking(type: .none)
 
 	let addressState: AddressState
+    
+    private func layoutPostalCode(withCode postalCode: String, label: UILabel) {
+        if postalCode == "" {
+            label.alpha = 0.0
+            label.animationSafeIsHidden = true
+        } else {
+            label.text = postalCode
+            label.alpha = 1.0
+            label.animationSafeIsHidden = false
+        }
+    }
 }
 
 extension AddressInput: Viewable {
@@ -36,7 +47,7 @@ extension AddressInput: Viewable {
 		boxStack.isLayoutMarginsRelativeArrangement = true
 		box.addSubview(boxStack)
 		boxStack.snp.makeConstraints { make in
-			make.top.bottom.right.left.equalToSuperview()
+			make.center.right.left.equalToSuperview()
 		}
 
 		let input = EmbarkInput(
@@ -99,19 +110,15 @@ extension AddressInput: Viewable {
 					addressState.pickedSuggestionSignal.value = nil
 				}
 			}
+        
+        bag += postalCodeSignal.atOnce().take(first: 1).onValue { postalCode in
+            layoutPostalCode(withCode: postalCode, label: postalCodeLabel)
+        }
 
-		bag += postalCodeSignal.atOnce()
-			.animated(
-				style: .lightBounce(),
+        bag += postalCodeSignal.distinct().animated(
+                style: .lightBounce(),
 				animations: { postalCode in
-					if postalCode == "" {
-						postalCodeLabel.alpha = 0.0
-						postalCodeLabel.animationSafeIsHidden = true
-					} else {
-						postalCodeLabel.text = postalCode
-						postalCodeLabel.alpha = 1.0
-						postalCodeLabel.animationSafeIsHidden = false
-					}
+                    layoutPostalCode(withCode: postalCode, label: postalCodeLabel)
 				}
 			)
 

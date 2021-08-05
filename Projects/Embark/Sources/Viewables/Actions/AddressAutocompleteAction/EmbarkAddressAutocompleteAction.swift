@@ -208,7 +208,7 @@ extension EmbarkAddressAutocompleteAction: Viewable {
 							addressInput: interimAddressInput
 						)
 
-						bag += transition.didEndTransitionSignal.onValue { presenting in
+                        bag += transition.didEndTransitionSignal.onValue { presenting in
 							if presenting {
 								autocompleteView.setIsFirstResponderSignal.value = true
 							} else {
