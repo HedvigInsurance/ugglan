@@ -63,12 +63,11 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 			initialBoxFrame = firstBoxSuperview.convert(firstBox.frame, to: nil)
 		}
 
+        autocompleteView.setNeedsLayout()
+        autocompleteView.layoutIfNeeded()
+        
 		guard let secondBoxSuperview = secondBox.superview else { return }
-		var destinationFrame = secondBoxSuperview.convert(secondBox.frame, to: nil)
-		if presenting {
-			// Hack. autocompleteView should layout first, then we get the correct y position, but then animations are not working.
-			destinationFrame.origin.y = destinationFrame.origin.y + 12
-		}
+		let destinationFrame = secondBoxSuperview.convert(secondBox.frame, to: nil)
 
 		let initialFrame = presenting ? initialBoxFrame : destinationFrame
 		let finalFrame = presenting ? destinationFrame : initialBoxFrame

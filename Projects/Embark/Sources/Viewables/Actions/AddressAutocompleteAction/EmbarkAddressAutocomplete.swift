@@ -18,18 +18,9 @@ struct EmbarkAddressAutocomplete: AddressTransitionable {
 	let data: EmbarkAddressAutocompleteData
 	let resultsSignal = ReadWriteSignal<[String]>([])
 	let searchSignal = ReadWriteSignal<String>("")
+    let masking = Masking(type: .none)
 
 	let addressState: AddressState
-}
-
-func ignoreNBSP(lhs: String, rhs: String) -> Bool {
-	let cleanedLhs = lhs.replacingOccurrences(of: "\u{00a0}", with: " ")
-	let cleanedRhs = rhs.replacingOccurrences(of: "\u{00a0}", with: " ")
-	return cleanedLhs == cleanedRhs
-}
-
-func removeNBSP(from string: String) -> String {
-	return string.replacingOccurrences(of: "\u{00a0}", with: " ")
 }
 
 extension EmbarkAddressAutocomplete: Presentable {
@@ -152,7 +143,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 		bag +=
 			combineLatest(addressState.textSignal.atOnce().plain(), view.didLayoutSignal)
 			.map { $0.0 }
-			.distinct(ignoreNBSP)
+            .distinct(masking.equalUnmasked)
 			.filter { !$0.isEmpty }
 			.bindTo(searchSignal)
 
@@ -160,7 +151,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 			.compactMap { $0 }
 			.map { addressState.formatAddressLine(from: $0) }
 			.onValue { addressLine in
-				if ignoreNBSP(lhs: addressLine, rhs: addressState.textSignal.value) {
+                if masking.equalUnmasked(lhs: addressLine, rhs: addressState.textSignal.value) {
 					searchSignal.value = addressLine
 				} else {
 					addressState.textSignal.value = addressLine
