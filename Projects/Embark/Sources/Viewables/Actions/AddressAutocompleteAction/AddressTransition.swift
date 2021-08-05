@@ -63,9 +63,9 @@ public class AddressTransition: NSObject, UIViewControllerAnimatedTransitioning 
 			initialBoxFrame = firstBoxSuperview.convert(firstBox.frame, to: nil)
 		}
 
-        autocompleteView.setNeedsLayout()
-        autocompleteView.layoutIfNeeded()
-        
+		autocompleteView.setNeedsLayout()
+		autocompleteView.layoutIfNeeded()
+
 		guard let secondBoxSuperview = secondBox.superview else { return }
 		let destinationFrame = secondBoxSuperview.convert(secondBox.frame, to: nil)
 

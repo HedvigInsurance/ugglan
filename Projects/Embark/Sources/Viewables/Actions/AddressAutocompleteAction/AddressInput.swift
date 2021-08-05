@@ -11,7 +11,7 @@ struct AddressInput {
 	let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
 	let shouldReturn = Delegate<String, Bool>()
 	let postalCodeSignal = ReadWriteSignal<String>("")
-    let masking = Masking(type: .none)
+	let masking = Masking(type: .none)
 
 	let addressState: AddressState
 }
@@ -50,7 +50,7 @@ extension AddressInput: Viewable {
 
 		let inputTextSignal = boxStack.addArranged(input)
 
-        bag += addressState.textSignal.distinct(masking.equalUnmasked).bidirectionallyBindTo(inputTextSignal)
+		bag += addressState.textSignal.distinct(masking.equalUnmasked).bidirectionallyBindTo(inputTextSignal)
 
 		bag += box.didLayoutSignal.atOnce()
 			.onValue { _ in
@@ -75,8 +75,8 @@ extension AddressInput: Viewable {
 
 		bag +=
 			addressState.textSignal
-            .distinct(masking.equalUnmasked)
-            .map { masking.unmaskedValue(text: $0) }
+			.distinct(masking.equalUnmasked)
+			.map { masking.unmaskedValue(text: $0) }
 			.onValue { text in
 				// Reset suggestion for empty input field
 				if text == "" { addressState.pickedSuggestionSignal.value = nil }

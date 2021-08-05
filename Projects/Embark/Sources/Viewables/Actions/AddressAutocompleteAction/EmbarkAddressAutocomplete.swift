@@ -18,7 +18,7 @@ struct EmbarkAddressAutocomplete: AddressTransitionable {
 	let data: EmbarkAddressAutocompleteData
 	let resultsSignal = ReadWriteSignal<[String]>([])
 	let searchSignal = ReadWriteSignal<String>("")
-    let masking = Masking(type: .none)
+	let masking = Masking(type: .none)
 
 	let addressState: AddressState
 }
@@ -143,7 +143,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 		bag +=
 			combineLatest(addressState.textSignal.atOnce().plain(), view.didLayoutSignal)
 			.map { $0.0 }
-            .distinct(masking.equalUnmasked)
+			.distinct(masking.equalUnmasked)
 			.filter { !$0.isEmpty }
 			.bindTo(searchSignal)
 
@@ -151,7 +151,7 @@ extension EmbarkAddressAutocomplete: Presentable {
 			.compactMap { $0 }
 			.map { addressState.formatAddressLine(from: $0) }
 			.onValue { addressLine in
-                if masking.equalUnmasked(lhs: addressLine, rhs: addressState.textSignal.value) {
+				if masking.equalUnmasked(lhs: addressLine, rhs: addressState.textSignal.value) {
 					searchSignal.value = addressLine
 				} else {
 					addressState.textSignal.value = addressLine
