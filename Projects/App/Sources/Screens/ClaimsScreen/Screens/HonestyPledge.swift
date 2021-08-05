@@ -47,7 +47,7 @@ struct SlideDragger: View {
 	var hasDraggedOnce: Bool
 	var dragOffsetX: CGFloat
 	var size = CGSize(width: 50, height: 50)
-    @State var hasNotifiedStore = false
+	@State var hasNotifiedStore = false
 
 	@PresentableStore var store: UgglanStore
 
@@ -71,7 +71,7 @@ struct SlideDragger: View {
 			.animation(hasDraggedOnce && dragOffsetX == 0 ? .spring() : nil)
 			.onReceive(Just(hasDraggedOnce && dragOffsetX > (geo.size.width - size.width))) { value in
 				if value && !hasNotifiedStore {
-                    hasNotifiedStore = true
+					hasNotifiedStore = true
 					store.send(.didAcceptHonestyPledge)
 				}
 			}
@@ -127,8 +127,8 @@ struct HonestyPledge: PresentableView {
 	var result: Signal<Void> {
 		Signal { callback in
 			let bag = DisposeBag()
-            
-            bag += store.onAction(
+
+			bag += store.onAction(
 				.didAcceptHonestyPledge,
 				{
 					callback(())
@@ -136,20 +136,22 @@ struct HonestyPledge: PresentableView {
 			)
 
 			return bag
-        }
+		}
 	}
 
 	var body: some View {
 		hForm {
 			VStack {
-				hText(text: L10n.honestyPledgeDescription, style: .body)
-					.foregroundColor(Color(UIColor.brand(.secondaryText)))
-					.fixedSize(horizontal: false, vertical: true)
-					.padding(.top, 20)
-					.padding(.bottom, 20)
-				SlideToConfirm()
+                HStack {
+                    hText(text: L10n.honestyPledgeDescription, style: .body)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .foregroundColor(Color(UIColor.brand(.secondaryText)))
+                }.padding(.bottom, 20)
+                SlideToConfirm()
 			}
-			.padding(14)
+            .padding(.bottom, 20)
+            .padding(.leading, 15)
+            .padding(.trailing, 15)
 		}
 		.presentableTitle(L10n.honestyPledgeTitle)
 	}

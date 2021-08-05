@@ -121,6 +121,10 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 		super.init()
 		listenToKeyboardFrame()
 	}
+    
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return nil
+    }
 
 	func presentationController(
 		forPresented presented: UIViewController,
@@ -148,7 +152,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 		)
 		setGrabber(on: presentationController, to: wantsGrabber)
 
-		Signal(after: 0.05).future
+        Signal(after: 0.05).future
 			.onValue { _ in
 				PresentationStyle.Detent.set(
 					self.detents,
@@ -305,20 +309,12 @@ extension PresentationStyle {
 					as? DetentedTransitioningDelegate
 				let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
-				let prefersLargeTitles =
-					viewController.navigationController?.navigationBar.prefersLargeTitles ?? false
-				let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
-
-				let largeTitlesActive = prefersLargeTitles && (largeTitleDisplayMode != .never)
-
 				let totalHeight: CGFloat =
 					scrollView.contentSize.height
+                    + scrollView.adjustedContentInset.top
 					+ keyboardHeight
-					+ containerView.safeAreaInsets.top
-					+ containerView.safeAreaInsets.bottom
 					+ 10
-					+ (largeTitlesActive ? 52 : 0)
-
+                
 				return totalHeight
 			}
 		}

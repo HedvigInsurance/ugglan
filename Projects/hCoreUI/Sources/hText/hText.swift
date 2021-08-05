@@ -3,8 +3,8 @@ import SwiftUI
 import UIKit
 
 public struct hText: View {
-	let text: String
-	let style: UIFont.TextStyle
+	public let text: String
+	public let style: UIFont.TextStyle
 
 	public init(
 		text: String,
