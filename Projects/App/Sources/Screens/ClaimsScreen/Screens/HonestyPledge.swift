@@ -142,16 +142,17 @@ struct HonestyPledge: PresentableView {
 	var body: some View {
 		hForm {
 			VStack {
-                HStack {
-                    hText(text: L10n.honestyPledgeDescription, style: .body)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .foregroundColor(Color(UIColor.brand(.secondaryText)))
-                }.padding(.bottom, 20)
-                SlideToConfirm()
+				HStack {
+					hText(text: L10n.honestyPledgeDescription, style: .body)
+						.fixedSize(horizontal: false, vertical: true)
+						.foregroundColor(Color(UIColor.brand(.secondaryText)))
+				}
+				.padding(.bottom, 20)
+				SlideToConfirm()
 			}
-            .padding(.bottom, 20)
-            .padding(.leading, 15)
-            .padding(.trailing, 15)
+			.padding(.bottom, 20)
+			.padding(.leading, 15)
+			.padding(.trailing, 15)
 		}
 		.presentableTitle(L10n.honestyPledgeTitle)
 	}

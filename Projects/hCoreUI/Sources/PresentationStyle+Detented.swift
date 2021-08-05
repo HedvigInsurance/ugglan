@@ -121,10 +121,14 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 		super.init()
 		listenToKeyboardFrame()
 	}
-    
-    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return nil
-    }
+
+	func animationController(
+		forPresented presented: UIViewController,
+		presenting: UIViewController,
+		source: UIViewController
+	) -> UIViewControllerAnimatedTransitioning? {
+		return nil
+	}
 
 	func presentationController(
 		forPresented presented: UIViewController,
@@ -152,7 +156,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 		)
 		setGrabber(on: presentationController, to: wantsGrabber)
 
-        Signal(after: 0.05).future
+		Signal(after: 0.05).future
 			.onValue { _ in
 				PresentationStyle.Detent.set(
 					self.detents,
@@ -311,10 +315,10 @@ extension PresentationStyle {
 
 				let totalHeight: CGFloat =
 					scrollView.contentSize.height
-                    + scrollView.adjustedContentInset.top
+					+ scrollView.adjustedContentInset.top
 					+ keyboardHeight
 					+ 10
-                
+
 				return totalHeight
 			}
 		}

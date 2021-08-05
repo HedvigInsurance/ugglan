@@ -23,7 +23,11 @@ struct ClaimsAskForPushnotifications: Presentable {
 		)
 
 		let pushNotificationsAction = ImageTextAction<PushNotificationsAction>(
-            image: .init(image: Asset.activatePushNotificationsIllustration.image, size: CGSize(width: CGFloat.infinity, height: 200), contentMode: .scaleAspectFit),
+			image: .init(
+				image: Asset.activatePushNotificationsIllustration.image,
+				size: CGSize(width: CGFloat.infinity, height: 200),
+				contentMode: .scaleAspectFit
+			),
 			title: L10n.claimsActivateNotificationsHeadline,
 			body: L10n.claimsActivateNotificationsBody,
 			actions: [(.ask, pushNotificationsDoButton), (.skip, pushNotificationsSkipButton)],

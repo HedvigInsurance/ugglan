@@ -10,7 +10,10 @@ extension AppJourney {
 		Journey(
 			HonestyPledge(),
 			style: .detented(.scrollViewContentSize),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always), .allowSwipeDismissAlways]
+			options: [
+				.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
+				.allowSwipeDismissAlways,
+			]
 		) { _ in
 			Journey(
 				ClaimsAskForPushnotifications(),

@@ -1,5 +1,5 @@
-import ProjectDescription
 import Foundation
+import ProjectDescription
 
 public enum ExternalDependencies: CaseIterable {
 	case adyen
@@ -19,7 +19,7 @@ public enum ExternalDependencies: CaseIterable {
 	case hero
 	case snapshottesting
 	case shake
-    case reveal
+	case reveal
 
 	public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -102,7 +102,7 @@ public enum ExternalDependencies: CaseIterable {
 				)
 			]
 		case .shake: return [.package(url: "https://github.com/shakebugs/shake-ios", .exact("14.1.5"))]
-        case .reveal: return []
+		case .reveal: return []
 		}
 	}
 
@@ -130,7 +130,14 @@ public enum ExternalDependencies: CaseIterable {
 		case .hero: return [.package(product: "Hero")]
 		case .snapshottesting: return [.package(product: "SnapshotTesting")]
 		case .shake: return [.package(product: "Shake")]
-        case .reveal: return [.xcFramework(path: .relativeToRoot("\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Application Support/Reveal/RevealServer/RevealServer.xcframework"))]
+		case .reveal:
+			return [
+				.xcFramework(
+					path: .relativeToRoot(
+						"\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Application Support/Reveal/RevealServer/RevealServer.xcframework"
+					)
+				)
+			]
 		}
 	}
 }
