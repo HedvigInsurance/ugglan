@@ -14,17 +14,17 @@ struct AddressInput {
 	let masking = Masking(type: .none)
 
 	let addressState: AddressState
-    
-    private func layoutPostalCode(withCode postalCode: String, label: UILabel) {
-        if postalCode == "" {
-            label.alpha = 0.0
-            label.animationSafeIsHidden = true
-        } else {
-            label.text = postalCode
-            label.alpha = 1.0
-            label.animationSafeIsHidden = false
-        }
-    }
+
+	private func layoutPostalCode(withCode postalCode: String, label: UILabel) {
+		if postalCode == "" {
+			label.alpha = 0.0
+			label.animationSafeIsHidden = true
+		} else {
+			label.text = postalCode
+			label.alpha = 1.0
+			label.animationSafeIsHidden = false
+		}
+	}
 }
 
 extension AddressInput: Viewable {
@@ -110,15 +110,17 @@ extension AddressInput: Viewable {
 					addressState.pickedSuggestionSignal.value = nil
 				}
 			}
-        
-        bag += postalCodeSignal.atOnce().take(first: 1).onValue { postalCode in
-            layoutPostalCode(withCode: postalCode, label: postalCodeLabel)
-        }
 
-        bag += postalCodeSignal.distinct().animated(
-                style: .lightBounce(),
+		bag += postalCodeSignal.atOnce().take(first: 1)
+			.onValue { postalCode in
+				layoutPostalCode(withCode: postalCode, label: postalCodeLabel)
+			}
+
+		bag += postalCodeSignal.distinct()
+			.animated(
+				style: .lightBounce(),
 				animations: { postalCode in
-                    layoutPostalCode(withCode: postalCode, label: postalCodeLabel)
+					layoutPostalCode(withCode: postalCode, label: postalCodeLabel)
 				}
 			)
 
