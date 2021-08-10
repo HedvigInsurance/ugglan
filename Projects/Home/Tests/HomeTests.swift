@@ -6,6 +6,7 @@ import Testing
 import TestingUtil
 import XCTest
 import hCore
+import Presentation
 import hCoreUI
 import hGraphQL
 
@@ -26,7 +27,14 @@ class HomeTests: XCTestCase {
 
 		let window = UIWindow()
 
-		bag += window.present(Home(sections: []))
+		bag += window.present(
+            Journey(
+                Home(),
+                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+            ) { result in
+                return DismissJourney()
+            }
+        )
 
 		let waitForApollo = expectation(description: "wait for apollo")
 

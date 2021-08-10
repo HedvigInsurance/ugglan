@@ -32,7 +32,7 @@ final class ConnectPaymentCardTests: XCTestCase {
 
 		let waitForApollo = expectation(description: "wait for apollo")
 
-		let (view, bag) = card.materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
+		let (view, bag) = card.materialize()
 		self.bag += bag
 
 		apolloClient.fetch(query: GraphQL.PayInMethodStatusQuery()).delay(by: 0.1)
@@ -55,7 +55,7 @@ final class ConnectPaymentCardTests: XCTestCase {
 
 		let waitForApollo = expectation(description: "wait for apollo")
 
-		let (view, bag) = card.materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
+		let (view, bag) = card.materialize()
 		self.bag += bag
 
 		apolloClient.fetch(query: GraphQL.PayInMethodStatusQuery()).delay(by: 0.1)

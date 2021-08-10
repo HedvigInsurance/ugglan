@@ -34,15 +34,17 @@ extension Debug: Presentable {
 				networkTransport: MockNetworkTransport(body: body),
 				store: ApolloStore()
 			)
-
+            
 			Dependencies.shared.add(module: Module { () -> ApolloClient in apolloClient })
 
-			bag += UIApplication.shared.keyWindow?
+            bag += viewController.view.window?
 				.present(
-					Home(sections: []),
-					options: [
-						.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
-					]
+                    Journey(
+                        Home(),
+                        options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+                    ) { result in
+                        return DismissJourney()
+                    }
 				)
 		}
 
