@@ -131,12 +131,14 @@ public enum ExternalDependencies: CaseIterable {
 		case .snapshottesting: return [.package(product: "SnapshotTesting")]
 		case .shake: return [.package(product: "Shake")]
 		case .reveal:
-            let path = Path("\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Application Support/Reveal/RevealServer/RevealServer.xcframework")
-            
-            guard FileManager.default.fileExists(atPath: path.pathString) else {
-                return []
-            }
-            
+			let path = Path(
+				"\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Application Support/Reveal/RevealServer/RevealServer.xcframework"
+			)
+
+			guard FileManager.default.fileExists(atPath: path.pathString) else {
+				return []
+			}
+
 			return [
 				.xcFramework(
 					path: path
