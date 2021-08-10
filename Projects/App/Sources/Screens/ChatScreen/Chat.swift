@@ -65,10 +65,10 @@ enum ChatResult {
 						.withDismissButton
 					case .close:
 						DismissJourney()
-					case .menu:
-						ContinueJourney()
 					case .signed:
 						AppJourney.postOnboarding
+					case let .menu(action):
+						action.journey
 					}
 				}
 				.hidesBackButton

@@ -31,7 +31,9 @@ extension AppJourney {
 
 	fileprivate static var simpleSign: some JourneyPresentation {
 		Journey(SimpleSignLoginView(), style: .detented(.medium)) { id in
-			Journey(WebViewLogin(idNumber: id), style: .detented(.large))
+			Journey(WebViewLogin(idNumber: id), style: .detented(.large)) { _ in
+				AppJourney.loggedIn
+			}
 		}
 		.withDismissButton
 	}
