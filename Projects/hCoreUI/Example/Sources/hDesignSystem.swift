@@ -118,7 +118,6 @@ struct hDesignSystem: PresentableView {
 		.environment(\.colorScheme, darkMode ? .dark : .light)
 		.presentableTitle("hDesignSystem")
 	}
-
 }
 
 struct ContentView_Previews: PreviewProvider {
