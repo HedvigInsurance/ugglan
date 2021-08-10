@@ -36,8 +36,9 @@ struct RowButtonStyle: SwiftUI.ButtonStyle {
 
 public struct hRow<Content: View>: View {
 	@SwiftUI.Environment(\.hRowPosition) var position: hRowPosition
-
+    
 	var content: Content
+    private var shouldShowChevron: Bool = false
 
 	public init(
 		@ViewBuilder _ builder: () -> Content
@@ -46,18 +47,34 @@ public struct hRow<Content: View>: View {
 	}
 
 	public var body: some View {
-		VStack(spacing: 0) {
-			HStack {
-				content
-			}
-			.padding([.horizontal], 15)
-			.padding([.vertical], 15)
-			if position == .middle || position == .top {
-				hRowDivider()
-			}
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading) {
+                HStack {
+                    content
+                    if shouldShowChevron {
+                        Spacer()
+                        Image(uiImage: hCoreUIAssets.chevronRight.image)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding([.horizontal], 15)
+            .padding([.vertical], 15)
+            if position == .middle || position == .top {
+                hRowDivider()
+            }
 		}
 		.contentShape(Rectangle())
 	}
+}
+
+extension hRow {
+    /// Adds a chevron to trailing, indicating a tappable row
+    public var showChevron: Self {
+        var new = self
+        new.shouldShowChevron = true
+        return new
+    }
 }
 
 extension hRow {
@@ -65,7 +82,7 @@ extension hRow {
 		SwiftUI.Button(
 			action: onTap,
 			label: {
-				self
+                self.showChevron
 			}
 		)
 		.buttonStyle(RowButtonStyle())
