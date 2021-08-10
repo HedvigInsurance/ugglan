@@ -21,7 +21,12 @@ class IgnoredSafeAreaHostingController<Content: SwiftUI.View>: UIHostingControll
 			(sself: AnyObject!) -> UIEdgeInsets in
 			return .zero
 		}
-		guard let safeAreaInsetsMethod = class_getInstanceMethod(_class.self, #selector(getter:UIView.safeAreaInsets)) else {
+		guard
+			let safeAreaInsetsMethod = class_getInstanceMethod(
+				_class.self,
+				#selector(getter:UIView.safeAreaInsets)
+			)
+		else {
 			return
 		}
 		class_replaceMethod(
@@ -35,7 +40,11 @@ class IgnoredSafeAreaHostingController<Content: SwiftUI.View>: UIHostingControll
 			(sself: AnyObject!) -> UILayoutGuide? in return nil
 		}
 
-		guard let safeAreaLayoutGuideMethod = class_getInstanceMethod(_class.self, #selector(getter:UIView.safeAreaLayoutGuide))
+		guard
+			let safeAreaLayoutGuideMethod = class_getInstanceMethod(
+				_class.self,
+				#selector(getter:UIView.safeAreaLayoutGuide)
+			)
 		else { return }
 		class_replaceMethod(
 			_class,
@@ -51,31 +60,33 @@ class IgnoredSafeAreaHostingController<Content: SwiftUI.View>: UIHostingControll
 }
 
 struct TransferEnvironment: ViewModifier {
-    var environment: EnvironmentValues
-    
-    func body(content: Content) -> some View {
-        return Group {
-            content
-        }.environment(\.self, environment)
-    }
+	var environment: EnvironmentValues
+
+	func body(content: Content) -> some View {
+		return Group {
+			content
+		}
+		.environment(\.self, environment)
+	}
 }
 
 struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresentable, Equatable {
 	let hostingController: IgnoredSafeAreaHostingController<AnyView>
-    let backgroundHostingController: IgnoredSafeAreaHostingController<AnyView>
+	let backgroundHostingController: IgnoredSafeAreaHostingController<AnyView>
 	var content: () -> Content
-    var backgroundContent: () -> BackgroundContent
+	var backgroundContent: () -> BackgroundContent
 	@SwiftUI.Environment(\.presentableViewUpperScrollView) var upperScrollView
-    @SwiftUI.Environment(\.userInterfaceLevel) var userInterfaceLevel
-    @SwiftUI.Environment(\.colorScheme) var colorScheme
+	@SwiftUI.Environment(\.userInterfaceLevel) var userInterfaceLevel
+	@SwiftUI.Environment(\.colorScheme) var colorScheme
 
 	init(
-        @ViewBuilder backgroundContent: @escaping () -> BackgroundContent,
+		@ViewBuilder backgroundContent: @escaping () -> BackgroundContent,
 		@ViewBuilder content: @escaping () -> Content
 	) {
 		self.hostingController = IgnoredSafeAreaHostingController(rootView: AnyView(EmptyView())).apply()
-        self.backgroundHostingController = IgnoredSafeAreaHostingController(rootView: AnyView(EmptyView())).apply()
-        self.backgroundContent = backgroundContent
+		self.backgroundHostingController = IgnoredSafeAreaHostingController(rootView: AnyView(EmptyView()))
+			.apply()
+		self.backgroundContent = backgroundContent
 		self.content = content
 	}
 
@@ -87,8 +98,8 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
 		self.hostingController.view.setNeedsLayout()
 		self.hostingController.view.layoutIfNeeded()
 
-        let width: CGFloat = (self.upperScrollView?.frame.width ?? 0)
-        
+		let width: CGFloat = (self.upperScrollView?.frame.width ?? 0)
+
 		let contentSize: CGSize = self.hostingController.view.systemLayoutSizeFitting(
 			CGSize(width: width, height: .infinity)
 		)
@@ -107,51 +118,51 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
 		}
 
 		setSize()
-        self.upperScrollView?.addSubview(self.backgroundHostingController.view)
-        
-        if let upperScrollView = self.upperScrollView {
-            self.backgroundHostingController.view.snp.makeConstraints { make in
-                make.edges.equalTo(upperScrollView.frameLayoutGuide)
-            }
-        }
-        
+		self.upperScrollView?.addSubview(self.backgroundHostingController.view)
+
+		if let upperScrollView = self.upperScrollView {
+			self.backgroundHostingController.view.snp.makeConstraints { make in
+				make.edges.equalTo(upperScrollView.frameLayoutGuide)
+			}
+		}
+
 		self.upperScrollView?.addSubview(self.hostingController.view)
 		self.hostingController.view.backgroundColor = .clear
-        
+
 		return UIView()
 	}
 
 	func updateUIView(_ uiView: UIView, context: Context) {
-        backgroundHostingController.rootView = AnyView(
-            backgroundContent()
-                .modifier(TransferEnvironment(environment: context.environment))
-                .environment(\.presentableViewUpperScrollView, upperScrollView)
-        )
-        self.backgroundHostingController.view.setNeedsUpdateConstraints()
-        self.backgroundHostingController.view.setNeedsLayout()
-        self.backgroundHostingController.view.layoutIfNeeded()
-                
+		backgroundHostingController.rootView = AnyView(
+			backgroundContent()
+				.modifier(TransferEnvironment(environment: context.environment))
+				.environment(\.presentableViewUpperScrollView, upperScrollView)
+		)
+		self.backgroundHostingController.view.setNeedsUpdateConstraints()
+		self.backgroundHostingController.view.setNeedsLayout()
+		self.backgroundHostingController.view.layoutIfNeeded()
+
 		self.hostingController.rootView = AnyView(
-            content()
-                .modifier(TransferEnvironment(environment: context.environment))
-                .environment(\.presentableViewUpperScrollView, upperScrollView)
-    		)
+			content()
+				.modifier(TransferEnvironment(environment: context.environment))
+				.environment(\.presentableViewUpperScrollView, upperScrollView)
+		)
 		self.hostingController.view.setNeedsLayout()
 		self.hostingController.view.layoutIfNeeded()
 		setSize()
 	}
 
 	static func == (lhs: Self, rhs: Self) -> Bool {
-        return lhs.userInterfaceLevel == rhs.userInterfaceLevel && lhs.colorScheme == rhs.colorScheme
+		return lhs.userInterfaceLevel == rhs.userInterfaceLevel && lhs.colorScheme == rhs.colorScheme
 	}
 }
 
 struct WidthConstrainer: ViewModifier {
-    @Environment(\.presentableViewUpperScrollView) var upperScrollView
-    
-    func body(content: Content) -> some View {
-        content.frame(maxWidth: upperScrollView?.frame.width ?? 0)
-    }
+	@Environment(\.presentableViewUpperScrollView) var upperScrollView
+
+	func body(content: Content) -> some View {
+		content.frame(maxWidth: upperScrollView?.frame.width ?? 0)
+	}
 }
 
 public struct hForm<Content: View>: View {
@@ -164,12 +175,13 @@ public struct hForm<Content: View>: View {
 	}
 
 	public var body: some View {
-        UpperFormScroller(backgroundContent: {
-            Rectangle().fill(hBackgroundColor.primary).frame(maxWidth: .infinity, maxHeight: .infinity)
-        }) {
+		UpperFormScroller(backgroundContent: {
+			Rectangle().fill(hBackgroundColor.primary).frame(maxWidth: .infinity, maxHeight: .infinity)
+		}) {
 			VStack {
-                content
-            }.frame(maxWidth: .infinity)
-        }
+				content
+			}
+			.frame(maxWidth: .infinity)
+		}
 	}
 }
