@@ -13,6 +13,16 @@ extension EnvironmentValues {
 	}
 }
 
+extension String {
+    public func hText(_ style: UIFont.TextStyle? = nil) -> hText {
+        if let style = style {
+            return hCoreUI.hText(self, style: style)
+        } else {
+            return hCoreUI.hText(self)
+        }
+    }
+}
+
 public struct hText: View {
 	public var text: String
 	public var style: UIFont.TextStyle?

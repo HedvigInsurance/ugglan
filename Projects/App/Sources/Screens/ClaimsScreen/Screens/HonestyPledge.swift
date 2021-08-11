@@ -14,7 +14,7 @@ struct SlideTrack: View {
 	var body: some View {
 		ZStack {
 			VStack(alignment: .center) {
-				hText(text: L10n.claimsPledgeSlideLabel, style: .body)
+                L10n.claimsPledgeSlideLabel.hText(.body)
 			}
 			.frame(maxWidth: .infinity)
 			.opacity(labelOpacity)
@@ -143,9 +143,9 @@ struct HonestyPledge: PresentableView {
 		hForm {
 			VStack {
 				HStack {
-					hText(text: L10n.honestyPledgeDescription, style: .body)
-						.fixedSize(horizontal: false, vertical: true)
-						.foregroundColor(Color(UIColor.brand(.secondaryText)))
+                    L10n.honestyPledgeDescription.hText(.body)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .foregroundColor(hLabelColor.secondary)
 				}
 				.padding(.bottom, 20)
 				SlideToConfirm()
