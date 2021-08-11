@@ -8,7 +8,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-
 struct PickMarket: PresentableView {
 	typealias Result = Future<Market>
 
@@ -36,9 +35,9 @@ struct PickMarket: PresentableView {
 				hRow {
 					Image(uiImage: market.icon)
 					Spacer().frame(width: 16)
-                    market.title.hText()
+					market.title.hText()
 				}
-                .withSelectedAccessory(market == currentMarket)
+				.withSelectedAccessory(market == currentMarket)
 				.onTap {
 					store.send(.selectMarket(market: market))
 				}

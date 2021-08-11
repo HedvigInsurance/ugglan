@@ -38,15 +38,15 @@ public struct hRow<Content: View, Accessory: View>: View {
 	@SwiftUI.Environment(\.hRowPosition) var position: hRowPosition
 
 	var content: Content
-    var accessory: Accessory
-    
-    public init(
-        _ accessory: Accessory,
-        @ViewBuilder _ builder: () -> Content
-    ) {
-        self.content = builder()
-        self.accessory = accessory
-    }
+	var accessory: Accessory
+
+	public init(
+		_ accessory: Accessory,
+		@ViewBuilder _ builder: () -> Content
+	) {
+		self.content = builder()
+		self.accessory = accessory
+	}
 
 	public var body: some View {
 		VStack(alignment: .leading, spacing: 0) {
@@ -68,77 +68,77 @@ public struct hRow<Content: View, Accessory: View>: View {
 }
 
 extension hRow where Accessory == EmptyView {
-    public init(
-        @ViewBuilder _ builder: () -> Content
-    ) {
-        self.content = builder()
-        self.accessory = EmptyView()
-    }
+	public init(
+		@ViewBuilder _ builder: () -> Content
+	) {
+		self.content = builder()
+		self.accessory = EmptyView()
+	}
 }
 
 public struct ChevronAccessory: View {
-    public var body: some View {
-        Spacer()
-        Image(uiImage: hCoreUIAssets.chevronRight.image)
-    }
+	public var body: some View {
+		Spacer()
+		Image(uiImage: hCoreUIAssets.chevronRight.image)
+	}
 }
 
 public struct EmptyAccessory: View {
-    public var body: some View {
-        EmptyView()
-    }
+	public var body: some View {
+		EmptyView()
+	}
 }
 
 public struct SelectedAccessory: View {
-    var selected: Bool
-    
-    public var body: some View {
-        Spacer()
-        if selected {
-            Image(uiImage: hCoreUIAssets.checkmark.image)
-        }
-    }
+	var selected: Bool
+
+	public var body: some View {
+		Spacer()
+		if selected {
+			Image(uiImage: hCoreUIAssets.checkmark.image)
+		}
+	}
 }
 
 extension hRow {
 	/// Adds a chevron to trailing, indicating a tappable row
 	public var withChevronAccessory: hRow<Content, ChevronAccessory> {
-        hRow<Content, ChevronAccessory>(ChevronAccessory()) {
-            content
-        }
+		hRow<Content, ChevronAccessory>(ChevronAccessory()) {
+			content
+		}
 	}
-    
-    /// Adds an accessory indicating that row is currently selected
-    public func withSelectedAccessory(_ selected: Bool) ->  hRow<Content, SelectedAccessory> {
-        hRow<Content, SelectedAccessory>(SelectedAccessory(selected: selected)) {
-            content
-        }
-    }
-    
-    /// Adds an empty accessory
-    public var withEmptyAccessory: hRow<Content, EmptyAccessory> {
-        hRow<Content, EmptyAccessory>(EmptyAccessory()) {
-            content
-        }
-    }
+
+	/// Adds an accessory indicating that row is currently selected
+	public func withSelectedAccessory(_ selected: Bool) -> hRow<Content, SelectedAccessory> {
+		hRow<Content, SelectedAccessory>(SelectedAccessory(selected: selected)) {
+			content
+		}
+	}
+
+	/// Adds an empty accessory
+	public var withEmptyAccessory: hRow<Content, EmptyAccessory> {
+		hRow<Content, EmptyAccessory>(EmptyAccessory()) {
+			content
+		}
+	}
 }
 
 extension hRow {
-    // add chevron accessory when no accessory is defined
-    func withTapAccessory() -> some View where Accessory == EmptyView {
-        self.withChevronAccessory
-    }
-    
-    /// assume consumer doesn't want an additional accessory when they've manually defined one
-    func withTapAccessory() -> some View {
-        self
-    }
-    
+	// add chevron accessory when no accessory is defined
+	func withTapAccessory() -> some View where Accessory == EmptyView {
+		self.withChevronAccessory
+	}
+
+	/// assume consumer doesn't want an additional accessory when they've manually defined one
+	func withTapAccessory() -> some View {
+		self
+	}
+
 	public func onTap(_ onTap: @escaping () -> Void) -> some View {
 		SwiftUI.Button(
 			action: onTap,
 			label: {
-                self.withTapAccessory()
+				self.withTapAccessory()
 			}
 		)
 		.buttonStyle(RowButtonStyle())
