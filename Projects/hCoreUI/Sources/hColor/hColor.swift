@@ -125,16 +125,35 @@ struct hColorViewModifier<Color: hColor>: ViewModifier {
 	@Environment(\.colorScheme) var colorScheme
 	@Environment(\.userInterfaceLevel) var userInterfaceLevel
 	var color: Color?
+    var colorType: ColorType
+    
+    enum ColorType {
+        case tintColor
+        case foregroundColor
+    }
 
 	func body(content: Content) -> some View {
-		content.foregroundColor(color?.colorFor(colorScheme, userInterfaceLevel).color)
+        Group {
+            switch colorType {
+            case .tintColor:
+                content.accentColor(color?.colorFor(colorScheme, userInterfaceLevel).color)
+            case .foregroundColor:
+                content.foregroundColor(color?.colorFor(colorScheme, userInterfaceLevel).color)
+            }
+        }
 	}
 }
 
 extension View {
 	public func foregroundColor<Color: hColor>(_ color: Color?) -> some View {
-		self.modifier(hColorViewModifier(color: color))
+        self.modifier(hColorViewModifier(color: color, colorType: .foregroundColor))
 	}
+}
+
+extension View {
+    public func tint<Color: hColor>(_ color: Color?) -> some View {
+        self.modifier(hColorViewModifier(color: color, colorType: .tintColor))
+    }
 }
 
 public struct hColorLevel<InnerHColor: hColor>: hColor {

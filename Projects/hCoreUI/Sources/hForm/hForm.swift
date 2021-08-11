@@ -182,6 +182,7 @@ public struct hForm<Content: View>: View {
 				content
 			}
 			.frame(maxWidth: .infinity)
-		}
+            .tint(hTintColor.lavenderOne)
+        }
 	}
 }

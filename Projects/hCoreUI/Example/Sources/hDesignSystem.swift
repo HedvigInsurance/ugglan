@@ -5,7 +5,25 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct MainForm: View {
+struct ButtonShowcase<Content: View>: View {
+    let title: String
+    
+    @ViewBuilder
+    let content: Content
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            hText(title, style: .headline)
+                .foregroundColor(hLabelColor.secondary)
+                .padding(.bottom, 10)
+            VStack(spacing: 10) {
+                content
+            }
+        }.frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+struct FormShowcase: View {
 	let rows = [
 		"Row one",
 		"Row two",
@@ -17,67 +35,49 @@ struct MainForm: View {
 		Group {
 			hSection(header: hText("Buttons")) {
 				hRow {
-					VStack(alignment: .leading) {
-						hText("Large Button - Filled", style: .headline)
-							.foregroundColor(hLabelColor.secondary)
-							.padding(.bottom, 10)
-						VStack {
-							hButton.LargeButtonFilled {
+                    ButtonShowcase(title: "Large Button - Filled") {
+                        hButton.LargeButtonFilled {
 
-							} content: {
-								hText("Enabled")
-							}
-							hButton.LargeButtonFilled {
+                        } content: {
+                            hText("Enabled")
+                        }
+                        hButton.LargeButtonFilled {
 
-							} content: {
-								hText("Disabled")
-							}
-							.disabled(true)
-						}
-					}
-					.frame(maxWidth: .infinity, alignment: .leading)
+                        } content: {
+                            hText("Disabled")
+                        }
+                        .disabled(true)
+                    }
 				}
 				hRow {
-					VStack(alignment: .leading) {
-						hText("Large Button - Outlined", style: .headline)
-							.foregroundColor(hLabelColor.secondary)
-							.padding(.bottom, 10)
-						VStack {
-							hButton.LargeButtonOutlined {
+                    ButtonShowcase(title: "Large Button - Outlined") {
+                        hButton.LargeButtonOutlined {
 
-							} content: {
-								hText("Enabled")
-							}
-							hButton.LargeButtonOutlined {
+                        } content: {
+                            hText("Enabled")
+                        }
+                        hButton.LargeButtonOutlined {
 
-							} content: {
-								hText("Disabled")
-							}
-							.disabled(true)
-						}
-					}
-					.frame(maxWidth: .infinity, alignment: .leading)
+                        } content: {
+                            hText("Disabled")
+                        }
+                        .disabled(true)
+                    }
 				}
 				hRow {
-					VStack(alignment: .leading) {
-						hText("Large Button - Text", style: .headline)
-							.foregroundColor(hLabelColor.secondary)
-							.padding(.bottom, 10)
-						VStack {
-							hButton.LargeButtonText {
+                    ButtonShowcase(title: "Large Button - Text") {
+                        hButton.LargeButtonText {
 
-							} content: {
-								hText("Enabled")
-							}
-							hButton.LargeButtonText {
+                        } content: {
+                            hText("Enabled")
+                        }
+                        hButton.LargeButtonText {
 
-							} content: {
-								hText("Disabled")
-							}
-							.disabled(true)
-						}
-					}
-					.frame(maxWidth: .infinity, alignment: .leading)
+                        } content: {
+                            hText("Disabled")
+                        }
+                        .disabled(true)
+                    }
 				}
 			}
 
@@ -110,18 +110,12 @@ struct hDesignSystem: PresentableView {
 		hForm {
 			hSection(header: hText("Settings")) {
 				hRow {
-					Toggle("Dark mode", isOn: $darkMode)
+                    Toggle("Dark mode", isOn: $darkMode)
 				}
 			}
-			MainForm()
+            FormShowcase()
 		}
 		.environment(\.colorScheme, darkMode ? .dark : .light)
 		.presentableTitle("hDesignSystem")
-	}
-}
-
-struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		MainForm()
 	}
 }
