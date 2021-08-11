@@ -6,21 +6,22 @@ import hCore
 import hCoreUI
 
 struct ButtonShowcase<Content: View>: View {
-    let title: String
-    
-    @ViewBuilder
-    let content: Content
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            hText(title, style: .headline)
-                .foregroundColor(hLabelColor.secondary)
-                .padding(.bottom, 10)
-            VStack(spacing: 10) {
-                content
-            }
-        }.frame(maxWidth: .infinity, alignment: .leading)
-    }
+	let title: String
+
+	@ViewBuilder
+	let content: Content
+
+	var body: some View {
+		VStack(alignment: .leading) {
+			hText(title, style: .headline)
+				.foregroundColor(hLabelColor.secondary)
+				.padding(.bottom, 10)
+			VStack(spacing: 10) {
+				content
+			}
+		}
+		.frame(maxWidth: .infinity, alignment: .leading)
+	}
 }
 
 struct FormShowcase: View {
@@ -35,49 +36,49 @@ struct FormShowcase: View {
 		Group {
 			hSection(header: hText("Buttons")) {
 				hRow {
-                    ButtonShowcase(title: "Large Button - Filled") {
-                        hButton.LargeButtonFilled {
+					ButtonShowcase(title: "Large Button - Filled") {
+						hButton.LargeButtonFilled {
 
-                        } content: {
-                            hText("Enabled")
-                        }
-                        hButton.LargeButtonFilled {
+						} content: {
+							hText("Enabled")
+						}
+						hButton.LargeButtonFilled {
 
-                        } content: {
-                            hText("Disabled")
-                        }
-                        .disabled(true)
-                    }
+						} content: {
+							hText("Disabled")
+						}
+						.disabled(true)
+					}
 				}
 				hRow {
-                    ButtonShowcase(title: "Large Button - Outlined") {
-                        hButton.LargeButtonOutlined {
+					ButtonShowcase(title: "Large Button - Outlined") {
+						hButton.LargeButtonOutlined {
 
-                        } content: {
-                            hText("Enabled")
-                        }
-                        hButton.LargeButtonOutlined {
+						} content: {
+							hText("Enabled")
+						}
+						hButton.LargeButtonOutlined {
 
-                        } content: {
-                            hText("Disabled")
-                        }
-                        .disabled(true)
-                    }
+						} content: {
+							hText("Disabled")
+						}
+						.disabled(true)
+					}
 				}
 				hRow {
-                    ButtonShowcase(title: "Large Button - Text") {
-                        hButton.LargeButtonText {
+					ButtonShowcase(title: "Large Button - Text") {
+						hButton.LargeButtonText {
 
-                        } content: {
-                            hText("Enabled")
-                        }
-                        hButton.LargeButtonText {
+						} content: {
+							hText("Enabled")
+						}
+						hButton.LargeButtonText {
 
-                        } content: {
-                            hText("Disabled")
-                        }
-                        .disabled(true)
-                    }
+						} content: {
+							hText("Disabled")
+						}
+						.disabled(true)
+					}
 				}
 			}
 
@@ -110,10 +111,10 @@ struct hDesignSystem: PresentableView {
 		hForm {
 			hSection(header: hText("Settings")) {
 				hRow {
-                    Toggle("Dark mode", isOn: $darkMode)
+					Toggle("Dark mode", isOn: $darkMode)
 				}
 			}
-            FormShowcase()
+			FormShowcase()
 		}
 		.environment(\.colorScheme, darkMode ? .dark : .light)
 		.presentableTitle("hDesignSystem")
