@@ -2,7 +2,6 @@ import Flow
 import Form
 import Foundation
 import Presentation
-import SwiftUI
 import UIKit
 
 func setGrabber(on presentationController: UIPresentationController, to value: Bool) {
@@ -50,16 +49,6 @@ func setWantsBottomAttachedInCompactHeight(on presentationController: UIPresenta
 	}
 }
 
-func containerViewSafeAreaChanged(on presentationController: UIPresentationController) {
-	let key = ["_containerViewSafeAreaInsetsDidChange"]
-
-	let selector = NSSelectorFromString(key.joined())
-
-	if presentationController.responds(to: selector) {
-		presentationController.perform(selector)
-	}
-}
-
 extension Notification {
 	fileprivate var endFrame: CGRect? {
 		(userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
@@ -70,7 +59,6 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 	var detents: [PresentationStyle.Detent]
 	var wantsGrabber: Bool
 	var viewController: UIViewController
-	var isFirstPass = false
 	let bag = DisposeBag()
 	var keyboardFrame: CGRect = .zero
 
@@ -271,16 +259,6 @@ extension UIViewController {
 				objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
 			)
 		}
-	}
-}
-
-protocol SwiftUIRootViewProvider {
-	var anyView: AnyView { get }
-}
-
-extension UIHostingController: SwiftUIRootViewProvider {
-	var anyView: AnyView {
-		return AnyView(self.rootView)
 	}
 }
 
