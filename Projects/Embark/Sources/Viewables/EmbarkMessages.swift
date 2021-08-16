@@ -167,13 +167,16 @@ extension EmbarkMessages: Viewable {
 							let responseText = self.replacePlaceholders(
 								message: msgText ?? embarkResponseExpression.text
 							)
-							let messageBubble = MessageBubble(
-								text: responseText,
-								delay: 0,
-								animated: true,
-								messageType: .replied
-							)
-							bag += view.addArranged(messageBubble)
+                            
+                            if responseText != autoResponseKey {
+                                let messageBubble = MessageBubble(
+                                    text: responseText,
+                                    delay: 0,
+                                    animated: true,
+                                    messageType: .replied
+                                )
+                                bag += view.addArranged(messageBubble)
+                            }
 						} else if let embarkGroupedResponse = previousResponse?.response?
 							.asEmbarkGroupedResponse
 						{
