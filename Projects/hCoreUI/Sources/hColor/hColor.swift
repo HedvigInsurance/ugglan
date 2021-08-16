@@ -104,7 +104,6 @@ public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: h
 		)
 	}
 
-	/// Returns a hColor where light and dark has been flipped
 	public var inverted: hColorScheme<DarkInnerHColor, LightInnerHColor> {
 		hColorScheme<DarkInnerHColor, LightInnerHColor>(
 			light: dark,
@@ -201,7 +200,6 @@ public struct hColorLevel<InnerHColor: hColor>: hColor {
 		)
 	}
 
-	/// Returns a hColor where light and dark has been flipped
 	public var inverted: Self {
 		Self(
 			base: elevated,
