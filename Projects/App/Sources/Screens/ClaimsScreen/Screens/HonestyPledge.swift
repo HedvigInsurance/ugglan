@@ -110,7 +110,7 @@ struct SlideToConfirm: View {
 				dragOffsetX: dragOffsetX
 			)
 		}
-		.overlay(
+		.background(
 			DidAcceptPledgeNotifier(
 				canNotify: hasDraggedOnce,
 				dragOffsetX: dragOffsetX
