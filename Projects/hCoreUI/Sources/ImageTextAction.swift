@@ -97,14 +97,20 @@ extension ImageTextAction: Viewable {
 		headerImageView.contentMode = .scaleAspectFit
 		headerImageView.tintColor = .brand(.primaryTintColor)
 
+		headerImageContainer.addArrangedSubview(headerImageView)
+
 		if let size = image.size {
 			headerImageView.snp.makeConstraints { make in
 				make.height.equalTo(size.height)
-				make.width.equalTo(size.width)
+
+				if size.width == .infinity {
+					make.width.equalToSuperview()
+				} else {
+					make.width.equalTo(size.width)
+				}
 			}
 		}
 
-		headerImageContainer.addArrangedSubview(headerImageView)
 		view.addArrangedSubview(headerImageContainer)
 
 		var titleLabel = MultilineLabel(

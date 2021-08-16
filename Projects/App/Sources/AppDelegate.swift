@@ -22,7 +22,9 @@ import hCoreUI
 import hGraphQL
 
 #if PRESENTATION_DEBUGGER
-	import PresentationDebugSupport
+	#if compiler(>=5.5)
+		import PresentationDebugSupport
+	#endif
 #endif
 
 let log = Logger.self
@@ -169,10 +171,10 @@ let log = Logger.self
 
 	func setupDebugger() {
 		#if PRESENTATION_DEBUGGER
-
-			globalPresentableStoreContainer.debugger = PresentableStoreDebugger()
-			globalPresentableStoreContainer.debugger?.startServer()
-
+			#if compiler(>=5.5)
+				globalPresentableStoreContainer.debugger = PresentableStoreDebugger()
+				globalPresentableStoreContainer.debugger?.startServer()
+			#endif
 		#endif
 	}
 

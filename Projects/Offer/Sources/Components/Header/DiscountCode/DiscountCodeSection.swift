@@ -95,7 +95,7 @@ extension DiscountCodeSection: Presentable {
 			section.viewController?
 				.present(
 					redeemDiscount.wrappedInCloseButton(),
-					style: .detented(.scrollViewContentSize(20), .large),
+					style: .detented(.scrollViewContentSize, .large),
 					options: [
 						.defaults, .prefersLargeTitles(false),
 						.largeTitleDisplayMode(.never),

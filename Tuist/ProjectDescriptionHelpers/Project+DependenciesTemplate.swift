@@ -1,3 +1,4 @@
+import Foundation
 import ProjectDescription
 
 public enum ExternalDependencies: CaseIterable {
@@ -8,7 +9,6 @@ public enum ExternalDependencies: CaseIterable {
 	case flow
 	case form
 	case presentation
-	case ease
 	case dynamiccolor
 	case disk
 	case snapkit
@@ -19,6 +19,7 @@ public enum ExternalDependencies: CaseIterable {
 	case hero
 	case snapshottesting
 	case shake
+	case reveal
 
 	public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -61,8 +62,6 @@ public enum ExternalDependencies: CaseIterable {
 					.upToNextMajor(from: "2.0.1")
 				)
 			]
-		case .ease:
-			return [.package(url: "https://github.com/HedvigInsurance/Ease", .upToNextMajor(from: "2.0.3"))]
 		case .dynamiccolor:
 			return [
 				.package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
@@ -103,6 +102,7 @@ public enum ExternalDependencies: CaseIterable {
 				)
 			]
 		case .shake: return [.package(url: "https://github.com/shakebugs/shake-ios", .exact("14.1.5"))]
+		case .reveal: return []
 		}
 	}
 
@@ -121,7 +121,6 @@ public enum ExternalDependencies: CaseIterable {
 		case .form: return [.package(product: "Form")]
 		case .presentation:
 			return [.package(product: "Presentation"), .package(product: "PresentationDebugSupport")]
-		case .ease: return [.package(product: "Ease")]
 		case .dynamiccolor: return [.package(product: "DynamicColor")]
 		case .disk: return [.package(product: "Disk")]
 		case .snapkit: return [.package(product: "SnapKit")]
@@ -131,6 +130,20 @@ public enum ExternalDependencies: CaseIterable {
 		case .hero: return [.package(product: "Hero")]
 		case .snapshottesting: return [.package(product: "SnapshotTesting")]
 		case .shake: return [.package(product: "Shake")]
+		case .reveal:
+			let path = Path(
+				"\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Application Support/Reveal/RevealServer/RevealServer.xcframework"
+			)
+
+			guard FileManager.default.fileExists(atPath: path.pathString) else {
+				return []
+			}
+
+			return [
+				.xcFramework(
+					path: path
+				)
+			]
 		}
 	}
 }
