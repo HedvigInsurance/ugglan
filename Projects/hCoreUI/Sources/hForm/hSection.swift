@@ -48,16 +48,16 @@ public struct RowViewBuilder {
 }
 
 struct hShadowModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content.shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
-    }
+	func body(content: Content) -> some View {
+		content.shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+	}
 }
 
 extension View {
-    /// adds a Hedvig shadow to the view
-    public func hShadow() -> some View {
-        self.modifier(hShadowModifier())
-    }
+	/// adds a Hedvig shadow to the view
+	public func hShadow() -> some View {
+		self.modifier(hShadowModifier())
+	}
 }
 
 struct hSectionContainer<Content: View>: View {
@@ -79,7 +79,7 @@ struct hSectionContainer<Content: View>: View {
 				hBackgroundColor.tertiary
 			)
 			.cornerRadius(.defaultCornerRadius)
-            .hShadow()
+			.hShadow()
 		}
 		.frame(maxWidth: .infinity)
 	}
