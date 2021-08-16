@@ -23,7 +23,7 @@ extension EmbarkSelectActionOption: Viewable {
 		if !data.keys.isEmpty
 			&& data.keys.enumerated()
 				.allSatisfy({ offset, key in
-					state.store.getPrefillValue(key: key) == data.values[offset]
+                    state.store.state.embarkValues.getPrefillValue(key: key) == data.values[offset]
 				})
 		{
 			control.layer.borderWidth = 2

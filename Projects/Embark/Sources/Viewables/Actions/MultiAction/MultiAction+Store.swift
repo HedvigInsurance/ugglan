@@ -42,7 +42,7 @@ internal struct MultiActionStoreable {
 	var storeKey: String { baseKey + "[\(String(index ?? 0))]" + componentKey }
 }
 
-extension EmbarkStore {
+extension KeyValueStore {
 	func addMultiActionItems(
 		actionKey: String,
 		componentValues: [[String: String]],

@@ -98,19 +98,21 @@ extension EmbarkDatePickerAction: Viewable {
 			Signal { callback in
 
 				bag += button.onTapSignal.onValue {
-					self.state.store.setValue(
+                    self.state.store.send(.setValue(
 						key: data.storeKey,
 						value: datePicker.date.localDateString
-					)
+					))
 
 					if let passageName = self.state.passageNameSignal.value {
-						self.state.store.setValue(
-							key: "\(passageName)Result",
-							value: datePicker.date.localDateString
-						)
+						self.state.store.send(
+                            .setValue(
+                                key: "\(passageName)Result",
+                                value: datePicker.date.localDateString
+                            )
+                        )
 					}
 
-					self.state.store.createRevision()
+                    self.state.store.send(.createRevision)
 
 					callback(data.next.fragments.embarkLinkFragment)
 				}

@@ -127,7 +127,7 @@ extension EmbarkActionSetInputData: Viewable {
 				}
 
 				var prefillValue: String {
-					guard let key = action.key, let value = state.store.getPrefillValue(key: key)
+                    guard let key = action.key, let value = state.store.state.embarkValues.getPrefillValue(key: key)
 					else { return "" }
 
 					if let masking = masking { return masking.maskValueFromStore(text: value) }
@@ -164,15 +164,15 @@ extension EmbarkActionSetInputData: Viewable {
 
 				func complete() {
 					actionSignals.forEach { signal, _, action in
-						self.state.store.setValue(key: action.key, value: signal.value)
+                        self.state.store.send(.setValue(key: action.key, value: signal.value))
 					}
 
 					if let passageName = self.state.passageNameSignal.value {
-						self.state.store.setValue(
+                        self.state.store.send(.setValue(
 							key: "\(passageName)Result",
 							value: actionSignals.map { $0.signal.value }
 								.joined(separator: " ")
-						)
+						))
 					}
 
 					if let apiFragment = api {

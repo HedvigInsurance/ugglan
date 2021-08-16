@@ -104,7 +104,7 @@ extension MultiAction: Viewable {
 		bag += view.didMoveToWindowSignal.onValue {
             guard let key = data.key else { return }
             
-            let componentValues = self.state.store.getComponentValues(actionKey: key, data: data)
+            let componentValues = self.state.store.state.embarkValues.getComponentValues(actionKey: key, data: data)
             
             dataSource.lazyLoadDataSource(allValues: componentValues)
 		}
@@ -149,10 +149,10 @@ extension MultiAction: Viewable {
 
 					let rows = dataSource.rows.compactMap { $0.left }
 
-					self.state.store.addMultiActionItems(
+                    self.state.store.state.embarkValues.addMultiActionItems(
 						actionKey: key,
                         componentValues: rows.map { $0.values.mapValues { $0.inputValue }}
-					) { self.state.store.createRevision() }
+                    ) { self.state.store.send(.createRevision) }
 					callback(data.link.fragments.embarkLinkFragment)
 				}
 

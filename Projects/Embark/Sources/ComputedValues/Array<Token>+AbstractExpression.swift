@@ -30,7 +30,7 @@ indirect enum Expression: Equatable {
 		}
 	}
 
-	func evaluate(store: EmbarkStore) -> String? {
+	func evaluate(store: KeyValueStore) -> String? {
 		switch self {
 		case let .binary(op, left, right):
 			switch op {

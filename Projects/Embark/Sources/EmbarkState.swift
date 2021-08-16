@@ -13,7 +13,6 @@ public enum ExternalRedirect {
 }
 
 public class EmbarkState {
-	var store = EmbarkStore()
 	var edgePanGestureRecognizer: UIScreenEdgePanGestureRecognizer?
 	let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
 	let startPassageIDSignal = ReadWriteSignal<String?>(nil)
@@ -22,7 +21,8 @@ public class EmbarkState {
 	let passageHistorySignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
 	let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
 	let bag = DisposeBag()
-
+    var store: EmbarkStateStore = .init()
+    
 	public init() {
 		defer {
 			startTracking()
@@ -47,21 +47,20 @@ public class EmbarkState {
 			passage.id == startPassageIDSignal.value
 		})
 		passageHistorySignal.value = []
-		store = EmbarkStore()
-		store.computedValues =
-			storySignal.value?.computedStoreValues?
-			.reduce([:]) { (prev, computedValue) -> [String: String] in
-				var computedValues: [String: String] = prev
-				computedValues[computedValue.key] = computedValue.value
-				return computedValues
-			} ?? [:]
+        let computedValues = storySignal.value?.computedStoreValues?
+            .reduce([:]) { (prev, computedValue) -> [String: String] in
+                var computedValues: [String: String] = prev
+                computedValues[computedValue.key] = computedValue.value
+                return computedValues
+            } ?? [:]
+        store.send(.setComputeValues(values: computedValues))
 	}
 
 	func startTracking() {
 		bag += currentPassageSignal.readOnly().compactMap { $0?.tracks }
 			.onValue(on: .background) { tracks in
 				tracks.forEach { track in
-					track.trackingEvent(storeValues: self.store.getAllValues()).send()
+					track.trackingEvent(storeValues: self.store.state.embarkValues.getAllValues()).send()
 				}
 			}
 	}
@@ -73,12 +72,12 @@ public class EmbarkState {
 		var history = passageHistorySignal.value
 		history.removeLast()
 		passageHistorySignal.value = history
-		store.removeLastRevision()
+        store.send(.removeRevision)
 	}
 
 	func goTo(passageName: String, pushHistoryEntry: Bool = true) {
 		animationDirectionSignal.value = .forwards
-		store.createRevision()
+        store.send(.createRevision)
 
 		if let newPassage = passagesSignal.value.first(where: { passage -> Bool in passage.name == passageName }
 		) {
@@ -98,7 +97,7 @@ public class EmbarkState {
 				case .mailingList: externalRedirectSignal.value = .mailingList
 				case .offer:
 					externalRedirectSignal.value = .offer(
-						ids: [store.getValue(key: "quoteId")].compactMap { $0 }
+                        ids: [store.state.embarkValues.getValue(key: "quoteId")].compactMap { $0 }
 					)
 				case .close:
 					externalRedirectSignal.value = .close
@@ -110,7 +109,7 @@ public class EmbarkState {
 				EmbarkTrackingEvent(title: "Offer Redirect", properties: [:]).send()
 				externalRedirectSignal.value = .offer(
 					ids: offerRedirectKeys.flatMap { key in
-						store.getValues(key: key) ?? []
+                        store.state.embarkValues.getValues(key: key) ?? []
 					}
 				)
 			} else {
@@ -122,7 +121,7 @@ public class EmbarkState {
 	private func handleRedirects(
 		passage: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
 	) -> GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage? {
-		passage.redirects.map { redirect in store.shouldRedirectTo(redirect: redirect) }
+		passage.redirects.map { redirect in store.state.embarkValues.shouldRedirectTo(redirect: redirect) }
 			.map { redirectTo in
 				passagesSignal.value.first(where: { passage -> Bool in passage.name == redirectTo })
 			}

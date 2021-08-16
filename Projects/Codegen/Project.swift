@@ -14,7 +14,7 @@ let project = Project(
 			infoPlist: "Info.plist",
 			sources: ["Sources/**"],
 			resources: [],
-			dependencies: [.package(product: "ApolloCodegenLib")]
+            dependencies: [.package(product: "ApolloCodegenLib")]
 		)
 	],
 	schemes: [

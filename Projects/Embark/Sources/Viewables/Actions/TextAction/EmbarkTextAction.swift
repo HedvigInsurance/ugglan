@@ -21,7 +21,7 @@ struct EmbarkTextAction {
 	}
 
 	var prefillValue: String {
-		guard let value = state.store.getPrefillValue(key: data.textActionData.key) else { return "" }
+        guard let value = state.store.state.embarkValues.getPrefillValue(key: data.textActionData.key) else { return "" }
 
 		if let masking = masking { return masking.maskValueFromStore(text: value) }
 
@@ -85,25 +85,25 @@ extension EmbarkTextAction: Viewable {
 			Signal { callback in
 				func complete(_ value: String) {
 					if let passageName = self.state.passageNameSignal.value {
-						self.state.store.setValue(key: "\(passageName)Result", value: value)
+                        self.state.store.send(.setValue(key: "\(passageName)Result", value: value))
 					}
 
 					let unmaskedValue = self.masking?.unmaskedValue(text: value) ?? value
-					self.state.store.setValue(
+					self.state.store.send(.setValue(
 						key: self.data.textActionData.key,
 						value: unmaskedValue
-					)
+					))
 
 					if let derivedValues = self.masking?.derivedValues(text: value) {
 						derivedValues.forEach { key, value in
-							self.state.store.setValue(
+							self.state.store.send(.setValue(
 								key: "\(self.data.textActionData.key)\(key)",
 								value: value
-							)
+							))
 						}
 					}
 
-					self.state.store.createRevision()
+                    self.state.store.send(.createRevision)
 
 					if let apiFragment = self.data.textActionData.api?.fragments.apiFragment {
 						bag += animator.setState(.loading).filter(predicate: { $0 })

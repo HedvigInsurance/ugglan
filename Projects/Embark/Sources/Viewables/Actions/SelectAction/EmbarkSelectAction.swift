@@ -67,18 +67,18 @@ extension EmbarkSelectAction: Viewable {
 								result.keys.enumerated()
 									.forEach { offset, key in
 										let value = result.values[offset]
-										self.state.store.setValue(
+										self.state.store.send(.setValue(
 											key: key,
 											value: value
-										)
+										))
 									}
 
 								if let passageName = self.state.passageNameSignal.value
 								{
-									self.state.store.setValue(
+									self.state.store.send(.setValue(
 										key: "\(passageName)Result",
 										value: result.textValue
-									)
+									))
 								}
 
 								callback(link)

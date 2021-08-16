@@ -84,7 +84,7 @@ extension ResultMap {
 }
 
 extension GraphQL.ApiSingleVariableFragment {
-	func graphQLMap(store: EmbarkStore) -> GraphQLMap {
+	func graphQLMap(store: KeyValueStore) -> GraphQLMap {
 		var map = GraphQLMap()
 
 		switch self.as {
@@ -99,7 +99,7 @@ extension GraphQL.ApiSingleVariableFragment {
 }
 
 extension GraphQL.ApiGeneratedVariableFragment {
-	func graphQLMap(store: EmbarkStore) -> GraphQLMap {
+	func graphQLMap(store: KeyValueStore) -> GraphQLMap {
 		var map = GraphQLMap()
 
 		switch type {
@@ -115,7 +115,7 @@ extension GraphQL.ApiGeneratedVariableFragment {
 }
 
 extension GraphQL.ApiMultiActionVariableFragment {
-	func graphQLMapArray(store: EmbarkStore) -> [ResultMap] {
+	func graphQLMapArray(store: KeyValueStore) -> [ResultMap] {
 		var items: [ResultMap] = []
 
 		func appendOrMerge(map: ResultMap, offset: Int) {
@@ -165,7 +165,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
 }
 
 extension GraphQL.ApiVariablesFragment {
-	func graphQLMap(store: EmbarkStore) -> GraphQLMap {
+	func graphQLMap(store: KeyValueStore) -> GraphQLMap {
 		var map = GraphQLMap()
 
 		if let apiSingleVariableFragment = fragments.apiSingleVariableFragment {
@@ -189,7 +189,7 @@ extension GraphQL.ApiVariablesFragment {
 }
 
 extension GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery.Datum {
-	func graphQLVariables(store: EmbarkStore) -> GraphQLMap {
+	func graphQLVariables(store: KeyValueStore) -> GraphQLMap {
 		var map = GraphQLMap()
 
 		variables.forEach { variable in
@@ -204,7 +204,7 @@ extension GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery.Datum {
 }
 
 extension GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
-	func graphQLVariables(store: EmbarkStore) -> GraphQLMap {
+	func graphQLVariables(store: KeyValueStore) -> GraphQLMap {
 		var map = GraphQLMap()
 
 		variables.forEach { variable in
@@ -219,7 +219,7 @@ extension GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
 }
 
 extension ResultMap {
-	func insertInto(store: EmbarkStore, basedOn query: GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery) {
+	func insertInto(store: KeyValueStore, basedOn query: GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery) {
 		query.data.queryResults.forEach { queryResult in
 			let values = getValues(at: queryResult.key)
 
@@ -240,7 +240,7 @@ extension ResultMap {
 		}
 	}
 
-	func insertInto(store: EmbarkStore, basedOn mutation: GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation) {
+	func insertInto(store: KeyValueStore, basedOn mutation: GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation) {
 		mutation.data.mutationResults.compactMap { $0 }
 			.forEach { mutationResult in
 				let values = getValues(at: mutationResult.key)
@@ -360,20 +360,20 @@ extension EmbarkState {
 		if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
 			return performHTTPCall(
 				queryApi.data.query,
-				variables: queryApi.data.graphQLVariables(store: store)
+                variables: queryApi.data.graphQLVariables(store: store.state.embarkValues)
 			)
 			.onValue { resultMap in guard let resultMap = resultMap else { return }
 
-				resultMap.insertInto(store: self.store, basedOn: queryApi)
+                resultMap.insertInto(store: self.store.state.embarkValues, basedOn: queryApi)
 			}
 		} else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
 			return performHTTPCall(
 				mutationApi.data.mutation,
-				variables: mutationApi.data.graphQLVariables(store: store)
+				variables: mutationApi.data.graphQLVariables(store: store.state.embarkValues)
 			)
 			.onValue { resultMap in guard let resultMap = resultMap else { return }
 
-				resultMap.insertInto(store: self.store, basedOn: mutationApi)
+				resultMap.insertInto(store: self.store.state.embarkValues, basedOn: mutationApi)
 			}
 		}
 
