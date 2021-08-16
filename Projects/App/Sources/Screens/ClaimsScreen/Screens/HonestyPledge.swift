@@ -54,7 +54,7 @@ struct SlideDragger: View {
 				ZStack {
 					Image(uiImage: Asset.continue.image)
 				}
-                .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
+				.frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
 				.background(hTintColor.lavenderOne)
 				.clipShape(Circle())
 			}
@@ -62,7 +62,7 @@ struct SlideDragger: View {
 			.modifier(
 				DraggerGeometryEffect(
 					dragOffsetX: dragOffsetX,
-                    draggerSize: SlideDragger.size
+					draggerSize: SlideDragger.size
 				)
 			)
 			.animation(shouldAnimate && dragOffsetX == 0 ? .spring() : nil)
@@ -71,22 +71,24 @@ struct SlideDragger: View {
 }
 
 struct DidAcceptPledgeNotifier: View {
-    var canNotify: Bool
-    var dragOffsetX: CGFloat
-    
-    @State var hasNotifiedStore = false
-    @PresentableStore var store: UgglanStore
-    
-    var body: some View {
-        GeometryReader { geo in
-            Color.clear.onReceive(Just(canNotify && dragOffsetX > (geo.size.width - SlideDragger.size.width))) { value in
-                if value && !hasNotifiedStore {
-                    hasNotifiedStore = true
-                    store.send(.didAcceptHonestyPledge)
-                }
-            }
-        }
-    }
+	var canNotify: Bool
+	var dragOffsetX: CGFloat
+
+	@State var hasNotifiedStore = false
+	@PresentableStore var store: UgglanStore
+
+	var body: some View {
+		GeometryReader { geo in
+			Color.clear.onReceive(
+				Just(canNotify && dragOffsetX > (geo.size.width - SlideDragger.size.width))
+			) { value in
+				if value && !hasNotifiedStore {
+					hasNotifiedStore = true
+					store.send(.didAcceptHonestyPledge)
+				}
+			}
+		}
+	}
 }
 
 struct SlideToConfirm: View {
@@ -100,17 +102,20 @@ struct SlideToConfirm: View {
 	var body: some View {
 		ZStack(alignment: .leading) {
 			SlideTrack(
-                shouldAnimate: hasDraggedOnce,
+				shouldAnimate: hasDraggedOnce,
 				labelOpacity: labelOpacity
 			)
 			SlideDragger(
-                shouldAnimate: hasDraggedOnce,
+				shouldAnimate: hasDraggedOnce,
 				dragOffsetX: dragOffsetX
 			)
-        }.overlay(DidAcceptPledgeNotifier(
-            canNotify: hasDraggedOnce,
-            dragOffsetX: dragOffsetX
-        ))
+		}
+		.overlay(
+			DidAcceptPledgeNotifier(
+				canNotify: hasDraggedOnce,
+				dragOffsetX: dragOffsetX
+			)
+		)
 		.gesture(
 			DragGesture()
 				.updating(
