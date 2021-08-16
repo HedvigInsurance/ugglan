@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 
 struct SlideTrack: View {
-	var hasDraggedOnce: Bool
+	var shouldAnimate: Bool
 	var labelOpacity: Double
 
 	var body: some View {
@@ -18,7 +18,7 @@ struct SlideTrack: View {
 			}
 			.frame(maxWidth: .infinity)
 			.opacity(labelOpacity)
-			.animation(hasDraggedOnce && labelOpacity == 1 ? .easeInOut : nil)
+			.animation(shouldAnimate && labelOpacity == 1 ? .easeInOut : nil)
 		}
 		.frame(height: 50)
 		.frame(maxWidth: .infinity)
@@ -44,12 +44,9 @@ struct DraggerGeometryEffect: GeometryEffect {
 }
 
 struct SlideDragger: View {
-	var hasDraggedOnce: Bool
+	var shouldAnimate: Bool
 	var dragOffsetX: CGFloat
-	var size = CGSize(width: 50, height: 50)
-	@State var hasNotifiedStore = false
-
-	@PresentableStore var store: UgglanStore
+	static var size = CGSize(width: 50, height: 50)
 
 	var body: some View {
 		GeometryReader { geo in
@@ -57,7 +54,7 @@ struct SlideDragger: View {
 				ZStack {
 					Image(uiImage: Asset.continue.image)
 				}
-				.frame(width: size.width, height: size.height)
+                .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
 				.background(hTintColor.lavenderOne)
 				.clipShape(Circle())
 			}
@@ -65,18 +62,31 @@ struct SlideDragger: View {
 			.modifier(
 				DraggerGeometryEffect(
 					dragOffsetX: dragOffsetX,
-					draggerSize: size
+                    draggerSize: SlideDragger.size
 				)
 			)
-			.animation(hasDraggedOnce && dragOffsetX == 0 ? .spring() : nil)
-			.onReceive(Just(hasDraggedOnce && dragOffsetX > (geo.size.width - size.width))) { value in
-				if value && !hasNotifiedStore {
-					hasNotifiedStore = true
-					store.send(.didAcceptHonestyPledge)
-				}
-			}
+			.animation(shouldAnimate && dragOffsetX == 0 ? .spring() : nil)
 		}
 	}
+}
+
+struct DidAcceptPledgeNotifier: View {
+    var canNotify: Bool
+    var dragOffsetX: CGFloat
+    
+    @State var hasNotifiedStore = false
+    @PresentableStore var store: UgglanStore
+    
+    var body: some View {
+        GeometryReader { geo in
+            Color.clear.onReceive(Just(canNotify && dragOffsetX > (geo.size.width - SlideDragger.size.width))) { value in
+                if value && !hasNotifiedStore {
+                    hasNotifiedStore = true
+                    store.send(.didAcceptHonestyPledge)
+                }
+            }
+        }
+    }
 }
 
 struct SlideToConfirm: View {
@@ -90,14 +100,17 @@ struct SlideToConfirm: View {
 	var body: some View {
 		ZStack(alignment: .leading) {
 			SlideTrack(
-				hasDraggedOnce: hasDraggedOnce,
+                shouldAnimate: hasDraggedOnce,
 				labelOpacity: labelOpacity
 			)
 			SlideDragger(
-				hasDraggedOnce: hasDraggedOnce,
+                shouldAnimate: hasDraggedOnce,
 				dragOffsetX: dragOffsetX
 			)
-		}
+        }.overlay(DidAcceptPledgeNotifier(
+            canNotify: hasDraggedOnce,
+            dragOffsetX: dragOffsetX
+        ))
 		.gesture(
 			DragGesture()
 				.updating(
