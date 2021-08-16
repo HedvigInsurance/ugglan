@@ -45,7 +45,7 @@ extension MultiAction: Viewable {
 		view.addArrangedSubview(collectionKit.view)
 
 		bag += dataSource.$rows.atOnce().map { Table<EmptySection, MultiActionRow>(rows: $0) }
-            .onValue { table in collectionKit.set(table) }
+			.onValue { table in collectionKit.set(table) }
 
 		func present() -> FiniteSignal<[String: MultiActionValue]>? {
 			let components = data.components.map { (component) -> MultiActionComponent in
@@ -53,7 +53,8 @@ extension MultiAction: Viewable {
 					return .dropDown(dropDownAction)
 				} else if let switchAction = component.asEmbarkSwitchAction?.switchActionData {
 					return .switch(switchAction)
-                } else if let numberAction = component.asEmbarkMultiActionNumberAction?.numberActionData {
+				} else if let numberAction = component.asEmbarkMultiActionNumberAction?.numberActionData
+				{
 					return .number(numberAction)
 				}
 
@@ -102,25 +103,31 @@ extension MultiAction: Viewable {
 		}
 
 		bag += view.didMoveToWindowSignal.onValue {
-            guard let key = data.key else { return }
-            
-            let componentValues = self.state.store.state.embarkValues.getComponentValues(actionKey: key, data: data)
-            
-            dataSource.lazyLoadDataSource(allValues: componentValues)
+			guard let key = data.key else { return }
+
+			let componentValues = self.state.store.state.embarkValues.getComponentValues(
+				actionKey: key,
+				data: data
+			)
+
+			dataSource.lazyLoadDataSource(allValues: componentValues)
 		}
 
 		return (
 			view,
 			Signal { callback in
 
-                bag += collectionKit.view.didLayoutSignal.animated(style: .mediumBounce(delay: 0.2), animations: { _ in
-                    collectionKit.view.snp.makeConstraints { make in
-                        make.height.equalTo(
-                            collectionKit.view.collectionViewLayout
-                                .collectionViewContentSize.height
-                        )
-                    }
-                })
+				bag += collectionKit.view.didLayoutSignal.animated(
+					style: .mediumBounce(delay: 0.2),
+					animations: { _ in
+						collectionKit.view.snp.makeConstraints { make in
+							make.height.equalTo(
+								collectionKit.view.collectionViewLayout
+									.collectionViewContentSize.height
+							)
+						}
+					}
+				)
 
 				bag += collectionKit.view.signal(for: \.contentSize)
 					.onValue { size in
@@ -149,10 +156,10 @@ extension MultiAction: Viewable {
 
 					let rows = dataSource.rows.compactMap { $0.left }
 
-                    self.state.store.state.embarkValues.addMultiActionItems(
+					self.state.store.state.embarkValues.addMultiActionItems(
 						actionKey: key,
-                        componentValues: rows.map { $0.values.mapValues { $0.inputValue }}
-                    ) { self.state.store.send(.createRevision) }
+						componentValues: rows.map { $0.values.mapValues { $0.inputValue } }
+					) { self.state.store.send(.createRevision) }
 					callback(data.link.fragments.embarkLinkFragment)
 				}
 
@@ -169,27 +176,40 @@ typealias MultiActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Ac
 
 typealias MultiActionRow = Either<MultiActionValueRow, MultiActionAddObjectRow>
 
-
-internal extension MultiActionStoreable {
-    func zip(with data: MultiActionData) -> MultiActionValue {
-        if let switchAction = data.components.first(where: { $0.asEmbarkSwitchAction?.switchActionData.key == self.componentKey })?.asEmbarkSwitchAction {
-            return .init(inputValue: self.inputValue, displayValue: switchAction.switchActionData.displayValue(inputValue: self.inputValue), isValid: true)
-        } else if let numberAction = data.components.first(where: { $0.asEmbarkMultiActionNumberAction?.numberActionData.key == self.componentKey })?.asEmbarkMultiActionNumberAction {
-            return .init(inputValue: self.inputValue, displayValue: numberAction.numberActionData.displayValue(inputValue: self.inputValue), isValid: true)
-        } else if componentKey.contains("Label") {
-            return .init(inputValue: self.inputValue, displayValue: self.inputValue)
-        } else {
-            return.init(inputValue: self.inputValue)
-        }
-    }
+extension MultiActionStoreable {
+	func zip(with data: MultiActionData) -> MultiActionValue {
+		if let switchAction = data.components.first(where: {
+			$0.asEmbarkSwitchAction?.switchActionData.key == self.componentKey
+		})?
+		.asEmbarkSwitchAction {
+			return .init(
+				inputValue: self.inputValue,
+				displayValue: switchAction.switchActionData.displayValue(inputValue: self.inputValue),
+				isValid: true
+			)
+		} else if let numberAction = data.components.first(where: {
+			$0.asEmbarkMultiActionNumberAction?.numberActionData.key == self.componentKey
+		})?
+		.asEmbarkMultiActionNumberAction {
+			return .init(
+				inputValue: self.inputValue,
+				displayValue: numberAction.numberActionData.displayValue(inputValue: self.inputValue),
+				isValid: true
+			)
+		} else if componentKey.contains("Label") {
+			return .init(inputValue: self.inputValue, displayValue: self.inputValue)
+		} else {
+			return .init(inputValue: self.inputValue)
+		}
+	}
 }
 
-internal extension EmbarkSwitchActionData {
-    func displayValue(inputValue: String?) -> String? {
-        if let inputValue = inputValue, inputValue == "true" {
-            return label
-        } else {
-            return nil
-        }
-    }
+extension EmbarkSwitchActionData {
+	func displayValue(inputValue: String?) -> String? {
+		if let inputValue = inputValue, inputValue == "true" {
+			return label
+		} else {
+			return nil
+		}
+	}
 }

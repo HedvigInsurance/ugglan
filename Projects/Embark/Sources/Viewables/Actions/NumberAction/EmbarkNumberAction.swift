@@ -48,9 +48,11 @@ extension EmbarkNumberAction: Viewable {
 			Signal { callback in
 				func handleSubmit(textValue: String) {
 					let key = self.data.key
-                    self.state.store.state.embarkValues.setValue(key: key, value: textValue)
+					self.state.store.state.embarkValues.setValue(key: key, value: textValue)
 					if let passageName = self.state.passageNameSignal.value {
-                        self.state.store.send(.setValue(key: "\(passageName)Result", value: textValue))
+						self.state.store.send(
+							.setValue(key: "\(passageName)Result", value: textValue)
+						)
 					}
 					callback(self.data.link.fragments.embarkLinkFragment)
 				}
@@ -66,7 +68,7 @@ extension EmbarkNumberAction: Viewable {
 				)
 				let (textInputView, textSignal) = textField.materialize(events: events)
 				textSignal.value = masking.maskValueFromStore(
-                    text: state.store.state.embarkValues.getPrefillValue(key: data.key) ?? ""
+					text: state.store.state.embarkValues.getPrefillValue(key: data.key) ?? ""
 				)
 				boxStack.addArrangedSubview(textInputView)
 

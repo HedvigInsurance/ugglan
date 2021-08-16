@@ -136,7 +136,10 @@ extension InsuranceProviderAction: Viewable {
 					bag += delegate.$selectedProvider.atOnce().bindTo($selectedProvider)
 
 					func findSelectedProvider(provider: GraphQL.InsuranceProviderFragment) -> Bool {
-                        provider.name == self.state.store.state.embarkValues.getPrefillValue(key: self.data.key)
+						provider.name
+							== self.state.store.state.embarkValues.getPrefillValue(
+								key: self.data.key
+							)
 					}
 
 					let selectedProviderIndex = providers.firstIndex(where: findSelectedProvider)
@@ -164,17 +167,21 @@ extension InsuranceProviderAction: Viewable {
 					.compactMap { _, provider in provider }
 					.onValue { provider in
 						if let passageName = self.state.passageNameSignal.value {
-                            self.state.store.send(.setValue(
-                                key: "\(passageName)Result",
-                                value: provider.name
-                            ))
+							self.state.store.send(
+								.setValue(
+									key: "\(passageName)Result",
+									value: provider.name
+								)
+							)
 						}
 
 						if provider.name != L10n.externalInsuranceProviderOtherOption {
-                            self.state.store.send(.setValue(
-								key: self.data.key,
-								value: provider.id
-							))
+							self.state.store.send(
+								.setValue(
+									key: self.data.key,
+									value: provider.id
+								)
+							)
 							callback(self.data.embarkLinkFragment)
 						} else {
 							outerContainer.viewController?

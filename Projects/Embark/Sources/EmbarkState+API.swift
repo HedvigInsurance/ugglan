@@ -360,11 +360,11 @@ extension EmbarkState {
 		if let queryApi = apiFragment.asEmbarkApiGraphQlQuery {
 			return performHTTPCall(
 				queryApi.data.query,
-                variables: queryApi.data.graphQLVariables(store: store.state.embarkValues)
+				variables: queryApi.data.graphQLVariables(store: store.state.embarkValues)
 			)
 			.onValue { resultMap in guard let resultMap = resultMap else { return }
 
-                resultMap.insertInto(store: self.store.state.embarkValues, basedOn: queryApi)
+				resultMap.insertInto(store: self.store.state.embarkValues, basedOn: queryApi)
 			}
 		} else if let mutationApi = apiFragment.asEmbarkApiGraphQlMutation {
 			return performHTTPCall(

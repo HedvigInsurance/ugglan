@@ -16,7 +16,7 @@ extension EmbarkMessages: Viewable {
 	func parse(_ expressions: [GraphQL.ExpressionFragment]) -> String? {
 		guard
 			let expression = expressions.first(where: { fragment in
-                self.state.store.state.embarkValues.passes(expression: fragment)
+				self.state.store.state.embarkValues.passes(expression: fragment)
 			})
 		else { return nil }
 
@@ -42,7 +42,7 @@ extension EmbarkMessages: Viewable {
 					with: "",
 					options: [.regularExpression]
 				)
-                let result = self.state.store.state.embarkValues.getValue(key: key)
+				let result = self.state.store.state.embarkValues.getValue(key: key)
 				replacedMessage = replacedMessage.replacingOccurrences(of: message, with: result ?? key)
 			}
 
@@ -123,7 +123,7 @@ extension EmbarkMessages: Viewable {
 		func configureEach(each: GraphQL.ResponseFragment.AsEmbarkGroupedResponse.Each?) -> [String] {
 			guard let each = each else { return [] }
 			let msgText = parse(each.content.expressions.map { $0.fragments.expressionFragment })
-            let storeItems = state.store.state.embarkValues.getMultiActionItems(actionKey: each.key)
+			let storeItems = state.store.state.embarkValues.getMultiActionItems(actionKey: each.key)
 			let dictionary = Dictionary(grouping: storeItems, by: { $0.index })
 			let msgs = dictionary.map { _, values in
 				replacePlaceholdersForMultiAction(message: msgText ?? each.content.text, values: values)

@@ -21,8 +21,8 @@ public class EmbarkState {
 	let passageHistorySignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
 	let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
 	let bag = DisposeBag()
-    var store: EmbarkStateStore = .init()
-    
+	var store: EmbarkStateStore = .init()
+
 	public init() {
 		defer {
 			startTracking()
@@ -47,20 +47,22 @@ public class EmbarkState {
 			passage.id == startPassageIDSignal.value
 		})
 		passageHistorySignal.value = []
-        let computedValues = storySignal.value?.computedStoreValues?
-            .reduce([:]) { (prev, computedValue) -> [String: String] in
-                var computedValues: [String: String] = prev
-                computedValues[computedValue.key] = computedValue.value
-                return computedValues
-            } ?? [:]
-        store.send(.setComputeValues(values: computedValues))
+		let computedValues =
+			storySignal.value?.computedStoreValues?
+			.reduce([:]) { (prev, computedValue) -> [String: String] in
+				var computedValues: [String: String] = prev
+				computedValues[computedValue.key] = computedValue.value
+				return computedValues
+			} ?? [:]
+		store.send(.setComputeValues(values: computedValues))
 	}
 
 	func startTracking() {
 		bag += currentPassageSignal.readOnly().compactMap { $0?.tracks }
 			.onValue(on: .background) { tracks in
 				tracks.forEach { track in
-					track.trackingEvent(storeValues: self.store.state.embarkValues.getAllValues()).send()
+					track.trackingEvent(storeValues: self.store.state.embarkValues.getAllValues())
+						.send()
 				}
 			}
 	}
@@ -72,12 +74,12 @@ public class EmbarkState {
 		var history = passageHistorySignal.value
 		history.removeLast()
 		passageHistorySignal.value = history
-        store.send(.removeRevision)
+		store.send(.removeRevision)
 	}
 
 	func goTo(passageName: String, pushHistoryEntry: Bool = true) {
 		animationDirectionSignal.value = .forwards
-        store.send(.createRevision)
+		store.send(.createRevision)
 
 		if let newPassage = passagesSignal.value.first(where: { passage -> Bool in passage.name == passageName }
 		) {
@@ -97,7 +99,8 @@ public class EmbarkState {
 				case .mailingList: externalRedirectSignal.value = .mailingList
 				case .offer:
 					externalRedirectSignal.value = .offer(
-                        ids: [store.state.embarkValues.getValue(key: "quoteId")].compactMap { $0 }
+						ids: [store.state.embarkValues.getValue(key: "quoteId")]
+							.compactMap { $0 }
 					)
 				case .close:
 					externalRedirectSignal.value = .close
@@ -109,7 +112,7 @@ public class EmbarkState {
 				EmbarkTrackingEvent(title: "Offer Redirect", properties: [:]).send()
 				externalRedirectSignal.value = .offer(
 					ids: offerRedirectKeys.flatMap { key in
-                        store.state.embarkValues.getValues(key: key) ?? []
+						store.state.embarkValues.getValues(key: key) ?? []
 					}
 				)
 			} else {
