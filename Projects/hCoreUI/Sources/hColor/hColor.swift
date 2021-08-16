@@ -364,10 +364,10 @@ public struct hLabelColor {
 	}
 }
 
-struct hTintColor {
+public struct hTintColor {
 	public static var lavenderOne: some hColor {
 		hColorScheme(
-			light: Color(hexString: "121212"),
+			light: Color(hexString: "C9ABF5"),
 			dark: Color(hexString: "BE9BF3")
 		)
 	}

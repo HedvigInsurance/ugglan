@@ -22,7 +22,7 @@ struct SlideTrack: View {
 		}
 		.frame(height: 50)
 		.frame(maxWidth: .infinity)
-		.background(Color(UIColor.brand(.primaryBackground())))
+        .background(hBackgroundColor.secondary)
 		.cornerRadius(25)
 	}
 }
@@ -58,7 +58,7 @@ struct SlideDragger: View {
 					Image(uiImage: Asset.continue.image)
 				}
 				.frame(width: size.width, height: size.height)
-				.background(Color(UIColor.brand(.link)))
+                .background(hTintColor.lavenderOne)
 				.clipShape(Circle())
 			}
 			.frame(maxWidth: .infinity, alignment: .leading)
@@ -92,7 +92,7 @@ struct SlideToConfirm: View {
 			SlideTrack(
 				hasDraggedOnce: hasDraggedOnce,
 				labelOpacity: labelOpacity
-			)
+            )
 			SlideDragger(
 				hasDraggedOnce: hasDraggedOnce,
 				dragOffsetX: dragOffsetX
