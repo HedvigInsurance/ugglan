@@ -86,10 +86,10 @@ public enum MemberContractState: String, Codable, Equatable {
 
 extension GraphQL.HomeQuery.Data {
 	fileprivate var homeState: MemberContractState {
-		if isTerminated {
-			return .terminated
-		} else if isFuture {
+		if isFuture {
 			return .future
+		} else if isTerminated {
+			return .terminated
 		} else {
 			return .active
 		}
