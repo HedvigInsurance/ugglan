@@ -137,7 +137,7 @@ extension hRow {
 		SwiftUI.Button(
 			action: onTap,
 			label: {
-				self.withChevronAccessory
+				self
 			}
 		)
 		.buttonStyle(RowButtonStyle())
