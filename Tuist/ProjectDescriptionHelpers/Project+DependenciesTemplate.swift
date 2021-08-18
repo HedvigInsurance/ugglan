@@ -38,7 +38,7 @@ public enum ExternalDependencies: CaseIterable {
 
 	public func swiftPackages() -> [Package] {
 		switch self {
-		case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .upToNextMajor(from: "3.8.4"))]
+		case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .upToNextMajor(from: "4.0.0"))]
 		case .runtime:
 			return [.package(url: "https://github.com/wickwirew/Runtime", .exact("2.2.2"))]
 		case .firebase:
@@ -143,7 +143,7 @@ public enum ExternalDependencies: CaseIterable {
 			}
 
 			return [
-				.xcFramework(
+				.xcframework(
 					path: path
 				)
 			]
@@ -155,7 +155,8 @@ extension Project {
 	public static func dependenciesFramework(
 		name: String,
 		externalDependencies: [ExternalDependencies],
-		sdks: [String] = []
+		sdks: [String] = [],
+        supportsMacCatalyst: Bool = true
 	) -> Project {
 		let frameworkConfigurations: [CustomConfiguration] = [
 			.debug(
@@ -203,7 +204,7 @@ extension Project {
 					platform: .iOS,
 					product: .framework,
 					bundleId: "com.hedvig.\(name)",
-					deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+                    deploymentTarget: .iOS(targetVersion: "12.0", devices: supportsMacCatalyst ? [.iphone, .ipad, .mac] : [.iphone, .ipad]),
 					infoPlist: .default,
 					sources: ["Sources/**/*.swift"],
 					resources: [],

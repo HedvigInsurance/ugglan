@@ -65,6 +65,7 @@ let appDependencies: [TargetDependency] = [
 		.project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
 		.project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
 		.project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
+        .project(target: "NonMacDependencies", path: .relativeToRoot("Dependencies/NonMacDependencies")),
 		.project(
 			target: "ResourceBundledDependencies",
 			path: .relativeToRoot("Dependencies/ResourceBundledDependencies")
