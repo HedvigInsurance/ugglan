@@ -267,10 +267,10 @@ public struct Masking {
 }
 
 extension Masking: ViewModifier {
-	public func body(content: Content) -> some View {
-		content
-			.keyboardType(keyboardType)
-			.textContentType(textContentType)
-			.autocapitalization(autocapitalizationType)
-	}
+    public func body(content: Content) -> some View {
+        content
+            .keyboardType(keyboardType)
+            .textContentType(textContentType)
+            .autocapitalization(autocapitalizationType)
+    }
 }
