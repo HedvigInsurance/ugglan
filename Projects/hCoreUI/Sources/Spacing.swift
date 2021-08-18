@@ -5,24 +5,24 @@ import UIKit
 import hCore
 
 public struct Spacing {
-	public init(height: Float) { self.height = height }
+    public init(height: Float) { self.height = height }
 
-	public let height: Float
-	public let isHiddenSignal = ReadWriteSignal<Bool>(false)
+    public let height: Float
+    public let isHiddenSignal = ReadWriteSignal<Bool>(false)
 }
 
 extension Spacing: Viewable {
-	public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-		let bag = DisposeBag()
+    public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+        let bag = DisposeBag()
 
-		let view = UIView()
+        let view = UIView()
 
-		view.snp.makeConstraints { make in make.height.equalTo(self.height).priority(.required) }
+        view.snp.makeConstraints { make in make.height.equalTo(self.height).priority(.required) }
 
-		view.layoutIfNeeded()
+        view.layoutIfNeeded()
 
-		bag += isHiddenSignal.bindTo(view, \.isHidden)
+        bag += isHiddenSignal.bindTo(view, \.isHidden)
 
-		return (view, bag)
-	}
+        return (view, bag)
+    }
 }
