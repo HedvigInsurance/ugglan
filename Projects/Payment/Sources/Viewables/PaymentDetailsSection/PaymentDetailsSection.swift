@@ -94,7 +94,7 @@ extension PaymentDetailsSection: Viewable {
 
 			self.presentingViewController.present(
 				applyDiscount.wrappedInCloseButton(),
-				style: .detented(.scrollViewContentSize(20), .large),
+				style: .detented(.scrollViewContentSize, .large),
 				options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
 			)
 		}

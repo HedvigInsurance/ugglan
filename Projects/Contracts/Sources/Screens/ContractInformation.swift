@@ -375,7 +375,7 @@ extension ContractInformation: Presentable {
 					)
 					innerBag += viewController.present(
 						upcomingAddressChangeDetails.withCloseButton,
-						style: .detented(.scrollViewContentSize(20), .large)
+						style: .detented(.scrollViewContentSize, .large)
 					)
 
 					return innerBag

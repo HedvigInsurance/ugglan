@@ -2,52 +2,48 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
 
-struct PickMarket {
+struct PickMarket: PresentableView {
+	typealias Result = Future<Market>
+
 	let currentMarket: Market
 	let availableLocales: [GraphQL.Locale]
-}
+	@PresentableStore var store: MarketStore
 
-extension PickMarket: Presentable {
-	func materialize() -> (UIViewController, Future<Market>) {
-		let viewController = UIViewController()
-		viewController.title = L10n.MarketLanguageScreen.marketLabel
-		let bag = DisposeBag()
+	var result: Future<Market> {
+		Future { completion in
+			let bag = DisposeBag()
 
-		let form = FormView()
-		bag += viewController.install(form)
-
-		let section = form.appendSection()
-
-		return (
-			viewController,
-			Future { completion in
-				Market.allCases
-					.filter { market in
-						availableLocales.first { locale -> Bool in
-							locale.rawValue.lowercased().contains(market.id)
-						} != nil
-					}
-					.forEach { market in let row = RowView(title: market.title)
-
-						let iconImageView = UIImageView()
-						iconImageView.contentMode = .scaleAspectFit
-						iconImageView.image = market.icon
-						row.prepend(iconImageView)
-
-						row.setCustomSpacing(16, after: iconImageView)
-
-						if market == currentMarket { row.append(Asset.checkmark.image) }
-
-						bag += section.append(row).onValue { completion(.success(market)) }
-					}
-
-				return bag
+			bag += store.actionSignal.onValue { action in
+				if case let .selectMarket(market) = action {
+					completion(.success(market))
+				}
 			}
-		)
+
+			return bag
+		}
+	}
+
+	var body: some View {
+		hForm {
+			hSection(Market.allCases, id: \.title) { market in
+				hRow {
+					Image(uiImage: market.icon)
+					Spacer().frame(width: 16)
+					market.title.hText()
+				}
+				.withSelectedAccessory(market == currentMarket)
+				.onTap {
+					store.send(.selectMarket(market: market))
+				}
+			}
+			.dividerInsets(.leading, 50)
+		}
+		.presentableTitle(L10n.MarketLanguageScreen.marketLabel)
 	}
 }

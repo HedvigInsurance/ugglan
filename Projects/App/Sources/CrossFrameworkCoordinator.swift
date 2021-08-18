@@ -52,7 +52,6 @@ struct CrossFrameworkCoordinator {
 				style: .detented(.large)
 			)
 		}
-
 		Contracts.openFreeTextChatHandler = { viewController in
 			viewController.present(FreeTextChat().withCloseButton, style: .detented(.large))
 		}
