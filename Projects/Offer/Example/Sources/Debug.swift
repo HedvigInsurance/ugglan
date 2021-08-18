@@ -283,7 +283,7 @@ extension Debug {
 	static var journey: some JourneyPresentation {
 		HostingJourney(
 			DebugStore.self,
-			Debug()
+            rootView: Debug()
 		) { action in
 			switch action {
 			case let .openOffer(fullscreen, prefersLargeTitles):
