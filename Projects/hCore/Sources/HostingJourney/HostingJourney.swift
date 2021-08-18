@@ -12,8 +12,8 @@ public struct PresentableStore<S: Store> {
 	public init() {}
 }
 
-public struct HostingJourney<RootView: View, S: Store>: JourneyPresentation {
-	public typealias P = AnyPresentable<UIViewController, Signal<S.Action>>
+public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
+	public typealias P = AnyPresentable<UIViewController, Result>
 
 	public var onDismiss: (Error?) -> Void
 
@@ -27,13 +27,13 @@ public struct HostingJourney<RootView: View, S: Store>: JourneyPresentation {
 
 	public let presentable: P
 
-	public init<InnerJourney: JourneyPresentation>(
+    public init<S: Store, InnerJourney: JourneyPresentation>(
 		_ storeType: S.Type,
 		rootView: RootView,
 		style: PresentationStyle = .default,
 		options: PresentationOptions = [.defaults, .autoPop],
 		@JourneyBuilder _ content: @escaping (_ action: S.Action) -> InnerJourney
-	) {
+    ) where Result == Signal<S.Action> {
 		self.style = style
 		self.options = options
 		self.configure = { _ in }
@@ -109,6 +109,25 @@ public struct HostingJourney<RootView: View, S: Store>: JourneyPresentation {
 			previousPresenter = nil
 		}
 	}
+    
+    public init(
+        rootView: RootView,
+        style: PresentationStyle = .default,
+        options: PresentationOptions = [.defaults, .autoPop]
+    ) where Result == Disposable {
+        self.style = style
+        self.options = options
+        self.configure = { _ in }
+        self.presentable = AnyPresentable(materialize: {
+            let controller = ViewHostingController(rootView: rootView)
+            return (
+                controller,
+                NilDisposer()
+            )
+        })
+        onDismiss = { _ in}
+        self.transform = { $0 }
+    }
 }
 
 private struct EnvironmentPresentableViewUpperScrollView: EnvironmentKey {
