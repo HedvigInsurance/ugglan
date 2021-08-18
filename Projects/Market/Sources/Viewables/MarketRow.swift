@@ -1,6 +1,7 @@
 import Flow
 import Form
 import Foundation
+import Presentation
 import UIKit
 import hCore
 import hCoreUI
@@ -59,9 +60,12 @@ extension MarketRow: Viewable {
 				viewController.present(
 					PickMarket(currentMarket: market, availableLocales: availableLocales)
 						.wrappedInCloseButton(),
-					style: .detented(.scrollViewContentSize(20))
+					style: .detented(.scrollViewContentSize),
+					options: [.defaults, .prefersLargeTitles(true)]
 				)
-				.onValue { newMarket in $market.value = newMarket }
+				.onValue { market in
+					$market.value = market
+				}
 			}
 
 		return (row, bag)

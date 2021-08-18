@@ -110,6 +110,14 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 		listenToKeyboardFrame()
 	}
 
+	func animationController(
+		forPresented presented: UIViewController,
+		presenting: UIViewController,
+		source: UIViewController
+	) -> UIViewControllerAnimatedTransitioning? {
+		return nil
+	}
+
 	func presentationController(
 		forPresented presented: UIViewController,
 		presenting: UIViewController?,
@@ -122,8 +130,28 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 			presenting: presenting
 		)
 
-		PresentationStyle.Detent.set(detents, on: presentationController, viewController: viewController)
+		PresentationStyle.Detent.set(
+			[
+				.custom(
+					"zero",
+					{ viewController, containerView in
+						return -50
+					}
+				)
+			],
+			on: presentationController,
+			viewController: viewController
+		)
 		setGrabber(on: presentationController, to: wantsGrabber)
+
+		Signal(after: 0.05).future
+			.onValue { _ in
+				PresentationStyle.Detent.set(
+					self.detents,
+					on: presentationController,
+					viewController: self.viewController
+				)
+			}
 
 		return presentationController
 	}
@@ -251,19 +279,25 @@ extension PresentationStyle {
 			_ containerViewBlock: (_ viewController: UIViewController, _ containerView: UIView) -> CGFloat
 		)
 
-		public static func scrollViewContentSize(_ extraPadding: CGFloat = 0) -> Detent {
+		public static var scrollViewContentSize: Detent {
 			.custom("scrollViewContentSize") { viewController, containerView in
-				guard let scrollView = viewController.view as? UIScrollView else { return 0 }
+				let allScrollViewDescendants = containerView.allDescendants(ofType: UIScrollView.self)
+				guard let scrollView = allScrollViewDescendants.first(where: { _ in true }) else {
+					return 0
+				}
 
 				let transitioningDelegate =
 					viewController.navigationController?.transitioningDelegate
 					as? DetentedTransitioningDelegate
 				let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
-				let minimumBottomInset: CGFloat = 30 + extraPadding
+				let totalHeight: CGFloat =
+					scrollView.contentSize.height
+					+ scrollView.adjustedContentInset.top
+					+ keyboardHeight
+					+ 10
 
-				return scrollView.contentSize.height + keyboardHeight + containerView.safeAreaInsets.top
-					+ max(containerView.safeAreaInsets.bottom, minimumBottomInset)
+				return totalHeight
 			}
 		}
 

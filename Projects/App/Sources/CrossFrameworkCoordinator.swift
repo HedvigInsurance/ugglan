@@ -55,13 +55,9 @@ struct CrossFrameworkCoordinator {
 
 		Home.openClaimsHandler = { viewController in
 			viewController.present(
-				HonestyPledge().wrappedInCloseButton(),
-				style: .detented(.preferredContentSize),
-				options: [
-					.defaults, .allowSwipeDismissAlways, .prefersLargeTitles(true),
-					.largeTitleDisplayMode(.always),
-				]
+				AppJourney.claimsJourney
 			)
+			.onValue { _ in }
 		}
 
 		Home.openFreeTextChatHandler = { viewController in

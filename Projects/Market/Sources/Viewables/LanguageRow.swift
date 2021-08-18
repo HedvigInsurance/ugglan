@@ -47,7 +47,7 @@ extension LanguageRow: Viewable {
 			.onValue { viewController in
 				viewController.present(
 					PickLanguage(currentMarket: currentMarket).wrappedInCloseButton(),
-					style: .detented(.scrollViewContentSize(20))
+					style: .detented(.scrollViewContentSize)
 				)
 				.onValue { locale in Localization.Locale.currentLocale = locale }
 			}
