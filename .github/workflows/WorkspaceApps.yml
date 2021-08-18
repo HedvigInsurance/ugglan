@@ -12,7 +12,7 @@ on:
 
 jobs:
   build_ugglan:
-    runs-on: OneMachine
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
     - name: Bundle install
@@ -27,14 +27,14 @@ jobs:
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
         S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
         S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-      run: arch -arm64 bundle exec fastlane ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
+      run: arch -arm64 bundle exec fastlane ios --verbose build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
         name: Ugglan.ipa
         path: fastlane/build_output/Ugglan.ipa
   build_embark:
-    runs-on: OneMachine
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
     - name: Bundle install
@@ -49,14 +49,14 @@ jobs:
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
         S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
         S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-      run: arch -arm64 bundle exec fastlane ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
+      run: arch -arm64 bundle exec fastlane ios --verbose build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
         name: EmbarkExample.ipa
         path: fastlane/build_output/EmbarkExample.ipa
   build_hedvig:
-    runs-on: OneMachine
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
     - name: Bundle install
@@ -71,14 +71,14 @@ jobs:
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
         S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
         S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-      run: arch -arm64 bundle exec fastlane ios build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig
+      run: arch -arm64 bundle exec fastlane ios --verbose build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
         name: Hedvig.ipa
         path: fastlane/build_output/Hedvig.ipa
   build_home:
-    runs-on: OneMachine
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
     - name: Bundle install
@@ -93,14 +93,14 @@ jobs:
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
         S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
         S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-      run: arch -arm64 bundle exec fastlane ios build path:Projects/Home/Home.xcodeproj scheme:HomeExample
+      run: arch -arm64 bundle exec fastlane ios --verbose build path:Projects/Home/Home.xcodeproj scheme:HomeExample
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
         name: HomeExample.ipa
         path: fastlane/build_output/HomeExample.ipa
   build_forever:
-    runs-on: OneMachine
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
     - name: Bundle install
@@ -115,14 +115,14 @@ jobs:
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
         S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
         S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-      run: arch -arm64 bundle exec fastlane ios build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample
+      run: arch -arm64 bundle exec fastlane ios --verbose build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
         name: ForeverExample.ipa
         path: fastlane/build_output/ForeverExample.ipa
   build_offer:
-    runs-on: OneMachine
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
     - name: Bundle install
@@ -137,7 +137,7 @@ jobs:
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
         S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
         S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-      run: arch -arm64 bundle exec fastlane ios build path:Projects/Offer/Offer.xcodeproj scheme:OfferExample
+      run: arch -arm64 bundle exec fastlane ios --verbose build path:Projects/Offer/Offer.xcodeproj scheme:OfferExample
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
