@@ -156,7 +156,7 @@ extension Project {
 		name: String,
 		externalDependencies: [ExternalDependencies],
 		sdks: [String] = [],
-        supportsMacCatalyst: Bool = true
+		supportsMacCatalyst: Bool = true
 	) -> Project {
 		let frameworkConfigurations: [CustomConfiguration] = [
 			.debug(
@@ -204,7 +204,11 @@ extension Project {
 					platform: .iOS,
 					product: .framework,
 					bundleId: "com.hedvig.\(name)",
-                    deploymentTarget: .iOS(targetVersion: "12.0", devices: supportsMacCatalyst ? [.iphone, .ipad, .mac] : [.iphone, .ipad]),
+					deploymentTarget: .iOS(
+						targetVersion: "12.0",
+						devices: supportsMacCatalyst
+							? [.iphone, .ipad, .mac] : [.iphone, .ipad]
+					),
 					infoPlist: .default,
 					sources: ["Sources/**/*.swift"],
 					resources: [],
