@@ -29,8 +29,10 @@ public enum ExternalDependencies: CaseIterable {
 
 	public var isAppDependency: Bool { self == .firebase || self == .sentry }
 
+	public var isNonMacDependency: Bool { self == .shake }
+
 	public var isCoreDependency: Bool {
-		!isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
+		!isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency && !isNonMacDependency
 	}
 
 	public func swiftPackages() -> [Package] {
