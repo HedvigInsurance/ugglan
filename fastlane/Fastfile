@@ -481,10 +481,6 @@ platform :ios do
         scheme = options[:scheme]
         project_path = options[:path]
         catalyst_platform = options[:catalyst_platform] || "ios"
-
-        if catalyst_platform == "macos"
-            sh("cd ../; scripts/patch-platform-filter.sh")
-        end
         
         if catalyst_platform == "macos"
             match(
