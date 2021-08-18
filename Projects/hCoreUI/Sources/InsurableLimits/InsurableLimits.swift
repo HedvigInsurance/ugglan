@@ -7,51 +7,51 @@ import hCore
 import hGraphQL
 
 public struct InsurableLimits {
-	let insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>
+  let insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>
 
-	public init(
-		insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>
-	) {
-		self.insurableLimitFragmentsSignal = insurableLimitFragmentsSignal
-	}
+  public init(
+    insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>
+  ) {
+    self.insurableLimitFragmentsSignal = insurableLimitFragmentsSignal
+  }
 }
 
 extension InsurableLimits: Viewable {
-	public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-		let bag = DisposeBag()
+  public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+    let bag = DisposeBag()
 
-		let section = SectionView(
-			headerView: UILabel(value: L10n.contractCoverageMoreInfo, style: .default),
-			footerView: nil
-		)
-		section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
+    let section = SectionView(
+      headerView: UILabel(value: L10n.contractCoverageMoreInfo, style: .default),
+      footerView: nil
+    )
+    section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
-		bag += insurableLimitFragmentsSignal.atOnce()
-			.onValueDisposePrevious { insurableLimitFragments in
-				let innerBag = DisposeBag()
+    bag += insurableLimitFragmentsSignal.atOnce()
+      .onValueDisposePrevious { insurableLimitFragments in
+        let innerBag = DisposeBag()
 
-				innerBag += insurableLimitFragments.map { insurableLimitFragment in
-					let row = RowView(title: insurableLimitFragment.label)
-					row.axis = .vertical
-					row.alignment = .leading
-					row.spacing = 5
-					section.append(row)
+        innerBag += insurableLimitFragments.map { insurableLimitFragment in
+          let row = RowView(title: insurableLimitFragment.label)
+          row.axis = .vertical
+          row.alignment = .leading
+          row.spacing = 5
+          section.append(row)
 
-					row.append(
-						UILabel(
-							value: insurableLimitFragment.limit,
-							style: .brand(.body(color: .secondary))
-						)
-					)
+          row.append(
+            UILabel(
+              value: insurableLimitFragment.limit,
+              style: .brand(.body(color: .secondary))
+            )
+          )
 
-					return Disposer {
-						section.remove(row)
-					}
-				}
+          return Disposer {
+            section.remove(row)
+          }
+        }
 
-				return innerBag
-			}
+        return innerBag
+      }
 
-		return (section, bag)
-	}
+    return (section, bag)
+  }
 }

@@ -1,25 +1,25 @@
 import Foundation
 
 struct SingleSelectOption: Equatable {
-	let type: OptionType
-	let text: String
-	let value: String
+  let type: OptionType
+  let text: String
+  let value: String
 
-	enum ViewType: Equatable {
-		case dashboard, offer
+  enum ViewType: Equatable {
+    case dashboard, offer
 
-		static func from(rawValue: String) -> ViewType {
-			switch rawValue {
-			case "DASHBOARD": return .dashboard
-			case "OFFER": return .offer
-			default: return .dashboard
-			}
-		}
-	}
+    static func from(rawValue: String) -> ViewType {
+      switch rawValue {
+      case "DASHBOARD": return .dashboard
+      case "OFFER": return .offer
+      default: return .dashboard
+      }
+    }
+  }
 
-	enum OptionType: Equatable {
-		case selection
-		case link(view: ViewType)
-		case login
-	}
+  enum OptionType: Equatable {
+    case selection
+    case link(view: ViewType)
+    case login
+  }
 }

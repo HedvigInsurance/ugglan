@@ -6,53 +6,53 @@ import hCore
 import hGraphQL
 
 struct ProfileSection {
-	let dataSignal: ReadWriteSignal<GraphQL.ProfileQuery.Data?> = ReadWriteSignal(nil)
-	let presentingViewController: UIViewController
+  let dataSignal: ReadWriteSignal<GraphQL.ProfileQuery.Data?> = ReadWriteSignal(nil)
+  let presentingViewController: UIViewController
 }
 
 extension ProfileSection: Viewable {
-	func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
-		let bag = DisposeBag()
-		let section = SectionView(header: nil, footer: nil)
-		section.dynamicStyle = .brandGrouped(separatorType: .largeIcons)
-		section.isHidden = true
+  func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
+    let bag = DisposeBag()
+    let section = SectionView(header: nil, footer: nil)
+    section.dynamicStyle = .brandGrouped(separatorType: .largeIcons)
+    section.isHidden = true
 
-		bag += dataSignal.map { $0 == nil }.bindTo(section, \.isHidden)
+    bag += dataSignal.map { $0 == nil }.bindTo(section, \.isHidden)
 
-		let myInfoRow = MyInfoRow(presentingViewController: presentingViewController)
+    let myInfoRow = MyInfoRow(presentingViewController: presentingViewController)
 
-		bag += section.append(myInfoRow) { row in
-			bag += self.presentingViewController.registerForPreviewing(
-				sourceView: row.viewRepresentation,
-				previewable: myInfoRow
-			)
-		}
+    bag += section.append(myInfoRow) { row in
+      bag += self.presentingViewController.registerForPreviewing(
+        sourceView: row.viewRepresentation,
+        previewable: myInfoRow
+      )
+    }
 
-		bag += dataSignal.atOnce().compactMap { $0?.member }
-			.filter { $0.firstName != nil && $0.lastName != nil }
-			.map { (firstName: $0.firstName!, lastName: $0.lastName!) }.bindTo(myInfoRow.nameSignal)
+    bag += dataSignal.atOnce().compactMap { $0?.member }
+      .filter { $0.firstName != nil && $0.lastName != nil }
+      .map { (firstName: $0.firstName!, lastName: $0.lastName!) }.bindTo(myInfoRow.nameSignal)
 
-		let myCharityRow = MyCharityRow(presentingViewController: presentingViewController)
-		bag += section.append(myCharityRow) { row in
-			bag += self.presentingViewController.registerForPreviewing(
-				sourceView: row.viewRepresentation,
-				previewable: myCharityRow
-			)
-		}
+    let myCharityRow = MyCharityRow(presentingViewController: presentingViewController)
+    bag += section.append(myCharityRow) { row in
+      bag += self.presentingViewController.registerForPreviewing(
+        sourceView: row.viewRepresentation,
+        previewable: myCharityRow
+      )
+    }
 
-		bag += dataSignal.atOnce().map { $0?.cashback?.name }.bindTo(myCharityRow.charityNameSignal)
+    bag += dataSignal.atOnce().map { $0?.cashback?.name }.bindTo(myCharityRow.charityNameSignal)
 
-		let myPaymentRow = MyPaymentRow(presentingViewController: presentingViewController)
-		bag += section.append(myPaymentRow) { row in
-			bag += self.presentingViewController.registerForPreviewing(
-				sourceView: row.viewRepresentation,
-				previewable: myPaymentRow
-			)
-		}
+    let myPaymentRow = MyPaymentRow(presentingViewController: presentingViewController)
+    bag += section.append(myPaymentRow) { row in
+      bag += self.presentingViewController.registerForPreviewing(
+        sourceView: row.viewRepresentation,
+        previewable: myPaymentRow
+      )
+    }
 
-		bag += dataSignal.atOnce().map { $0?.insuranceCost?.fragments.costFragment.monthlyNet.amount }
-			.toInt().bindTo(myPaymentRow.monthlyCostSignal)
+    bag += dataSignal.atOnce().map { $0?.insuranceCost?.fragments.costFragment.monthlyNet.amount }
+      .toInt().bindTo(myPaymentRow.monthlyCostSignal)
 
-		return (section, bag)
-	}
+    return (section, bag)
+  }
 }

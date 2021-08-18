@@ -9,26 +9,26 @@ import hCore
 @testable import hCoreUI
 
 final class TooltipTests: XCTestCase {
-	override func setUp() {
-		super.setUp()
-		setupScreenShotTests()
-	}
+  override func setUp() {
+    super.setUp()
+    setupScreenShotTests()
+  }
 
-	func testScreenshot() {
-		let tooltip = Tooltip(id: "mock", value: "mock", sourceRect: .zero)
+  func testScreenshot() {
+    let tooltip = Tooltip(id: "mock", value: "mock", sourceRect: .zero)
 
-		let viewController = UIViewController()
+    let viewController = UIViewController()
 
-		let bag = DisposeBag()
-		let view = UIView()
-		viewController.view.addSubview(view)
-		bag += view.present(tooltip)
+    let bag = DisposeBag()
+    let view = UIView()
+    viewController.view.addSubview(view)
+    bag += view.present(tooltip)
 
-		view.snp.makeConstraints { make in make.width.equalTo(2)
-			make.height.equalTo(2)
-			make.top.right.equalToSuperview()
-		}
+    view.snp.makeConstraints { make in make.width.equalTo(2)
+      make.height.equalTo(2)
+      make.top.right.equalToSuperview()
+    }
 
-		assertSnapshot(matching: viewController, as: .image)
-	}
+    assertSnapshot(matching: viewController, as: .image)
+  }
 }

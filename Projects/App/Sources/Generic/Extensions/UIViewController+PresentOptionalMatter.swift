@@ -4,17 +4,17 @@ import Presentation
 import UIKit
 
 extension UIViewController {
-	func present<P: Presentable>(_ presentable: P) -> Future<Void>
-	where P.Matter == UIViewController?, P.Result == Future<Void> {
-		let (matter, result) = presentable.materialize()
+  func present<P: Presentable>(_ presentable: P) -> Future<Void>
+  where P.Matter == UIViewController?, P.Result == Future<Void> {
+    let (matter, result) = presentable.materialize()
 
-		if let matter = matter {
-			let anyPresentable = AnyPresentable(materialize: { () -> (UIViewController, Future<Void>) in
-				(matter, result)
-			})
-			return present(anyPresentable)
-		}
+    if let matter = matter {
+      let anyPresentable = AnyPresentable(materialize: { () -> (UIViewController, Future<Void>) in
+        (matter, result)
+      })
+      return present(anyPresentable)
+    }
 
-		return result
-	}
+    return result
+  }
 }

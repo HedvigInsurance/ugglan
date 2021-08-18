@@ -8,25 +8,25 @@ import hCoreUI
 import hGraphQL
 
 struct QuoteCoverage {
-	let quote: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote
+  let quote: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote
 }
 
 extension QuoteCoverage: Presentable {
-	func materialize() -> (UIViewController, Disposable) {
-		let viewController = UIViewController()
-		viewController.title = "Coverage"
-		let bag = DisposeBag()
+  func materialize() -> (UIViewController, Disposable) {
+    let viewController = UIViewController()
+    viewController.title = "Coverage"
+    let bag = DisposeBag()
 
-		let form = FormView()
+    let form = FormView()
 
-		bag += form.append(SingleQuoteCoverage(quote: quote))
+    bag += form.append(SingleQuoteCoverage(quote: quote))
 
-		form.appendSpacing(.top)
+    form.appendSpacing(.top)
 
-		let scrollView = FormScrollView()
-		scrollView.backgroundColor = .brand(.primaryBackground())
-		bag += viewController.install(form, scrollView: scrollView)
+    let scrollView = FormScrollView()
+    scrollView.backgroundColor = .brand(.primaryBackground())
+    bag += viewController.install(form, scrollView: scrollView)
 
-		return (viewController, bag)
-	}
+    return (viewController, bag)
+  }
 }

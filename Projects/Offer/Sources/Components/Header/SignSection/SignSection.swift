@@ -7,102 +7,102 @@ import hCore
 import hCoreUI
 
 struct SignSection {
-	@Inject var state: OldOfferState
+  @Inject var state: OldOfferState
 }
 
 extension SignSection: Presentable {
-	func materialize() -> (SectionView, Disposable) {
-		let section = SectionView()
-		let bag = DisposeBag()
+  func materialize() -> (SectionView, Disposable) {
+    let section = SectionView()
+    let bag = DisposeBag()
 
-		let row = RowView()
-		section.append(row)
+    let row = RowView()
+    section.append(row)
 
-		bag += state.dataSignal.onValueDisposePrevious { data in
-			let innerBag = DisposeBag()
+    bag += state.dataSignal.onValueDisposePrevious { data in
+      let innerBag = DisposeBag()
 
-			switch data.signMethodForQuotes {
-			case .swedishBankId:
-				let signButton = Button(
-					title: L10n.offerSignButton,
-					type: .standardIcon(
-						backgroundColor: .brand(.secondaryButtonBackgroundColor),
-						textColor: .brand(.secondaryButtonTextColor),
-						icon: .left(image: hCoreUIAssets.bankIdLogo.image, width: 20)
-					)
-				)
+      switch data.signMethodForQuotes {
+      case .swedishBankId:
+        let signButton = Button(
+          title: L10n.offerSignButton,
+          type: .standardIcon(
+            backgroundColor: .brand(.secondaryButtonBackgroundColor),
+            textColor: .brand(.secondaryButtonTextColor),
+            icon: .left(image: hCoreUIAssets.bankIdLogo.image, width: 20)
+          )
+        )
 
-				innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
-					.onValue { viewController in
-						viewController.present(
-							SwedishBankIdSign(),
-							style: .detented(.preferredContentSize),
-							options: [
-								.defaults, .prefersLargeTitles(true),
-								.largeTitleDisplayMode(.always),
-							]
-						)
-					}
+        innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
+          .onValue { viewController in
+            viewController.present(
+              SwedishBankIdSign(),
+              style: .detented(.preferredContentSize),
+              options: [
+                .defaults, .prefersLargeTitles(true),
+                .largeTitleDisplayMode(.always),
+              ]
+            )
+          }
 
-				innerBag += row.append(signButton)
-			case .norwegianBankId, .danishBankId:
-				break
-			case .simpleSign:
-				let signButton = Button(
-					title: L10n.offerSignButton,
-					type: .standard(
-						backgroundColor: .brand(.secondaryButtonBackgroundColor),
-						textColor: .brand(.secondaryButtonTextColor)
-					)
-				)
+        innerBag += row.append(signButton)
+      case .norwegianBankId, .danishBankId:
+        break
+      case .simpleSign:
+        let signButton = Button(
+          title: L10n.offerSignButton,
+          type: .standard(
+            backgroundColor: .brand(.secondaryButtonBackgroundColor),
+            textColor: .brand(.secondaryButtonTextColor)
+          )
+        )
 
-				innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
-					.onValue { viewController in
-						viewController.present(
-							Checkout().wrappedInCloseButton(),
-							style: .detented(.large),
-							options: [
-								.defaults, .prefersLargeTitles(true),
-								.largeTitleDisplayMode(.always),
-							]
-						)
-					}
+        innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
+          .onValue { viewController in
+            viewController.present(
+              Checkout().wrappedInCloseButton(),
+              style: .detented(.large),
+              options: [
+                .defaults, .prefersLargeTitles(true),
+                .largeTitleDisplayMode(.always),
+              ]
+            )
+          }
 
-				innerBag += row.append(signButton)
-			case .approveOnly:
-				let signButton = Button(
-					title: L10n.offerApproveChanges,
-					type: .standard(
-						backgroundColor: .brand(.secondaryButtonBackgroundColor),
-						textColor: .brand(.secondaryButtonTextColor)
-					)
-				)
+        innerBag += row.append(signButton)
+      case .approveOnly:
+        let signButton = Button(
+          title: L10n.offerApproveChanges,
+          type: .standard(
+            backgroundColor: .brand(.secondaryButtonBackgroundColor),
+            textColor: .brand(.secondaryButtonTextColor)
+          )
+        )
 
-				let loadableSignButton = LoadableButton(button: signButton)
+        let loadableSignButton = LoadableButton(button: signButton)
 
-				innerBag += loadableSignButton.onTapSignal
-					.onValue { _ in
-						loadableSignButton.isLoadingSignal.value = true
+        innerBag += loadableSignButton.onTapSignal
+          .onValue { _ in
+            loadableSignButton.isLoadingSignal.value = true
 
-						let store: OfferStore = get()
-						store.send(.startSign)
+            let store: OfferStore = get()
+            store.send(.startSign)
 
-						bag += store.onAction(
-							.sign(event: .failed),
-							{
-								loadableSignButton.isLoadingSignal.value = false
-							}
-						)
-					}
+            bag += store.onAction(
+              .sign(event: .failed),
+              {
+                loadableSignButton.isLoadingSignal.value = false
+              }
+            )
+          }
 
-				innerBag += row.append(loadableSignButton)
-			case .__unknown(_):
-				break
-			}
+        innerBag += row.append(loadableSignButton)
+      case .__unknown(_):
+        break
+      }
 
-			return innerBag
-		}
+      return innerBag
+    }
 
-		return (section, bag)
-	}
+    return (section, bag)
+  }
 }

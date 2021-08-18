@@ -9,40 +9,40 @@ import hCoreUI
 struct HeaderForm {}
 
 extension HeaderForm: Presentable {
-	func materialize() -> (UIView, Disposable) {
-		let bag = DisposeBag()
+  func materialize() -> (UIView, Disposable) {
+    let bag = DisposeBag()
 
-		let backgroundView = UIView()
-		backgroundView.layer.masksToBounds = true
-		backgroundView.layer.cornerRadius = .defaultCornerRadius
-		backgroundView.backgroundColor = .brand(.secondaryBackground())
+    let backgroundView = UIView()
+    backgroundView.layer.masksToBounds = true
+    backgroundView.layer.cornerRadius = .defaultCornerRadius
+    backgroundView.backgroundColor = .brand(.secondaryBackground())
 
-		let form = FormView()
-		form.dynamicStyle = DynamicFormStyle { _ in
-			.init(insets: .zero)
-		}
+    let form = FormView()
+    form.dynamicStyle = DynamicFormStyle { _ in
+      .init(insets: .zero)
+    }
 
-		backgroundView.addSubview(form)
+    backgroundView.addSubview(form)
 
-		form.snp.makeConstraints { make in
-			make.edges.equalToSuperview()
-		}
+    form.snp.makeConstraints { make in
+      make.edges.equalToSuperview()
+    }
 
-		bag += form.append(DiscountTag())
+    bag += form.append(DiscountTag())
 
-		let section = form.appendSection()
-		section.dynamicStyle = .brandGroupedNoBackground
+    let section = form.appendSection()
+    section.dynamicStyle = .brandGroupedNoBackground
 
-		section.appendSpacing(.custom(30))
+    section.appendSpacing(.custom(30))
 
-		bag += section.append(PriceRow(placement: .header))
+    bag += section.append(PriceRow(placement: .header))
 
-		bag += form.append(StartDateSection())
+    bag += form.append(StartDateSection())
 
-		bag += form.append(SignSection())
+    bag += form.append(SignSection())
 
-		bag += form.append(DiscountCodeSection())
+    bag += form.append(DiscountCodeSection())
 
-		return (backgroundView, bag)
-	}
+    return (backgroundView, bag)
+  }
 }

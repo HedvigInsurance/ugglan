@@ -4,157 +4,157 @@ import XCTest
 @testable import Embark
 
 final class StoreTests: XCTestCase {
-	override func setUp() { super.setUp() }
+  override func setUp() { super.setUp() }
 
-	override func tearDown() { super.tearDown() }
+  override func tearDown() { super.tearDown() }
 
-	func testThatRevisionIsCreated() {
-		let store = EmbarkStore()
-		store.createRevision()
-		store.createRevision()
-		XCTAssertTrue(store.revisions.count == 3)
-	}
+  func testThatRevisionIsCreated() {
+    let store = EmbarkStore()
+    store.createRevision()
+    store.createRevision()
+    XCTAssertTrue(store.revisions.count == 3)
+  }
 
-	func testThatValuesAreSetAfterCommitting() {
-		let store = EmbarkStore()
-		store.setValue(key: "test", value: "test")
+  func testThatValuesAreSetAfterCommitting() {
+    let store = EmbarkStore()
+    store.setValue(key: "test", value: "test")
 
-		XCTAssertTrue(store.getValue(key: "test") == nil)
+    XCTAssertTrue(store.getValue(key: "test") == nil)
 
-		store.createRevision()
+    store.createRevision()
 
-		XCTAssertTrue(store.getValue(key: "test") == "test")
-	}
+    XCTAssertTrue(store.getValue(key: "test") == "test")
+  }
 
-	func testThatValuesArePoppedCorrectly() {
-		let store = EmbarkStore()
-		store.setValue(key: "test", value: "test")
-		store.createRevision()
+  func testThatValuesArePoppedCorrectly() {
+    let store = EmbarkStore()
+    store.setValue(key: "test", value: "test")
+    store.createRevision()
 
-		XCTAssertTrue(store.getValue(key: "test") == "test")
+    XCTAssertTrue(store.getValue(key: "test") == "test")
 
-		store.removeLastRevision()
+    store.removeLastRevision()
 
-		XCTAssertTrue(store.getValue(key: "test") == nil)
-	}
+    XCTAssertTrue(store.getValue(key: "test") == nil)
+  }
 
-	func testHandlesArrayKVs() {
-		let store = EmbarkStore()
-		store.setValue(key: "[test,test2]", value: "[mock,mock2]")
-		store.createRevision()
-		XCTAssertTrue(store.getValue(key: "test") == "mock")
-		XCTAssertTrue(store.getValue(key: "test2") == "mock2")
-	}
+  func testHandlesArrayKVs() {
+    let store = EmbarkStore()
+    store.setValue(key: "[test,test2]", value: "[mock,mock2]")
+    store.createRevision()
+    XCTAssertTrue(store.getValue(key: "test") == "mock")
+    XCTAssertTrue(store.getValue(key: "test2") == "mock2")
+  }
 
-	func testAlwaysKeepsOneRevision() {
-		let store = EmbarkStore()
-		store.createRevision()
-		store.createRevision()
-		store.removeLastRevision()
-		store.removeLastRevision()
-		store.removeLastRevision()
-		XCTAssertTrue(store.revisions.count == 1)
-	}
+  func testAlwaysKeepsOneRevision() {
+    let store = EmbarkStore()
+    store.createRevision()
+    store.createRevision()
+    store.removeLastRevision()
+    store.removeLastRevision()
+    store.removeLastRevision()
+    XCTAssertTrue(store.revisions.count == 1)
+  }
 
-	func testComputedValues() {
-		let store = EmbarkStore()
+  func testComputedValues() {
+    let store = EmbarkStore()
 
-		store.computedValues = [
-			"fish": "mock - 20 - 10", "fish2": "fish + 20", "fish3": "fish + 20 ++ 'hej'",
-			"double": "20.5 + 22",
-		]
-		store.setValue(key: "mock", value: "100")
-		store.createRevision()
+    store.computedValues = [
+      "fish": "mock - 20 - 10", "fish2": "fish + 20", "fish3": "fish + 20 ++ 'hej'",
+      "double": "20.5 + 22",
+    ]
+    store.setValue(key: "mock", value: "100")
+    store.createRevision()
 
-		XCTAssertEqual(store.getValue(key: "fish"), "70")
-		XCTAssertEqual(store.getValue(key: "fish2"), "90")
-		XCTAssertEqual(store.getValue(key: "fish3"), "90hej")
-		XCTAssertEqual(store.getValue(key: "double"), "42.5")
-	}
+    XCTAssertEqual(store.getValue(key: "fish"), "70")
+    XCTAssertEqual(store.getValue(key: "fish2"), "90")
+    XCTAssertEqual(store.getValue(key: "fish3"), "90hej")
+    XCTAssertEqual(store.getValue(key: "double"), "42.5")
+  }
 
-	func testThatArrayValuesWork() {
-		let store = EmbarkStore()
-		store.setValue(key: "quoteIds[0]", value: "test")
-		store.setValue(key: "quoteIds[1]", value: "test1")
+  func testThatArrayValuesWork() {
+    let store = EmbarkStore()
+    store.setValue(key: "quoteIds[0]", value: "test")
+    store.setValue(key: "quoteIds[1]", value: "test1")
 
-		store.createRevision()
+    store.createRevision()
 
-		XCTAssertEqual(store.getValues(key: "quoteIds"), ["test", "test1"])
-	}
+    XCTAssertEqual(store.getValues(key: "quoteIds"), ["test", "test1"])
+  }
 
-	// Store input
-	let actionKey = "addBuilding"
+  // Store input
+  let actionKey = "addBuilding"
 
-	let componentValues = [
-		[
-			"numberAction": "10",
-			"switchAction": "true",
-			"dropDownAction": "garage",
-			"dropDownAction.Label": "GARAGE",
-		],
-		[
-			"numberAction": "12",
-			"switchAction": "false",
-			"dropDownAction": "shed",
-			"dropDownAction.Label": "GARAGE",
-		],
-		[
-			"numberAction": "14",
-			"switchAction": "true",
-			"dropDownAction": "gazebo",
-			"dropDownAction.Label": "GARAGE",
-		],
-	]
+  let componentValues = [
+    [
+      "numberAction": "10",
+      "switchAction": "true",
+      "dropDownAction": "garage",
+      "dropDownAction.Label": "GARAGE",
+    ],
+    [
+      "numberAction": "12",
+      "switchAction": "false",
+      "dropDownAction": "shed",
+      "dropDownAction.Label": "GARAGE",
+    ],
+    [
+      "numberAction": "14",
+      "switchAction": "true",
+      "dropDownAction": "gazebo",
+      "dropDownAction.Label": "GARAGE",
+    ],
+  ]
 
-	let storedMultiActionValues = [
-		"addBuilding[0]numberAction": "10",
-		"addBuilding[0]switchAction": "true",
-		"addBuilding[0]dropDownAction": "garage",
-		"addBuilding[0]dropDownAction.Label": "GARAGE",
-		"addBuilding[1]numberAction": "12",
-		"addBuilding[1]switchAction": "false",
-		"addBuilding[1]dropDownAction": "shed",
-		"addBuilding[1]dropDownAction.Label": "GARAGE",
-		"addBuilding[2]numberAction": "14",
-		"addBuilding[2]switchAction": "true",
-		"addBuilding[2]dropDownAction": "gazebo",
-		"addBuilding[2]dropDownAction.Label": "GARAGE",
-	]
+  let storedMultiActionValues = [
+    "addBuilding[0]numberAction": "10",
+    "addBuilding[0]switchAction": "true",
+    "addBuilding[0]dropDownAction": "garage",
+    "addBuilding[0]dropDownAction.Label": "GARAGE",
+    "addBuilding[1]numberAction": "12",
+    "addBuilding[1]switchAction": "false",
+    "addBuilding[1]dropDownAction": "shed",
+    "addBuilding[1]dropDownAction.Label": "GARAGE",
+    "addBuilding[2]numberAction": "14",
+    "addBuilding[2]switchAction": "true",
+    "addBuilding[2]dropDownAction": "gazebo",
+    "addBuilding[2]dropDownAction.Label": "GARAGE",
+  ]
 
-	private let mockedData = MultiActionData(
-		addLabel: "asd",
-		key: "asd",
-		maxAmount: "4",
-		link: .init(name: "", label: ""),
-		components: []
-	)
+  private let mockedData = MultiActionData(
+    addLabel: "asd",
+    key: "asd",
+    maxAmount: "4",
+    link: .init(name: "", label: ""),
+    components: []
+  )
 
-	func testAddMutliAction() {
-		let store = EmbarkStore()
+  func testAddMutliAction() {
+    let store = EmbarkStore()
 
-		store.addMultiActionItems(actionKey: actionKey, componentValues: componentValues) {}
+    store.addMultiActionItems(actionKey: actionKey, componentValues: componentValues) {}
 
-		store.createRevision()
+    store.createRevision()
 
-		let storeValues = store.getAllValues()
+    let storeValues = store.getAllValues()
 
-		XCTAssertEqual(storedMultiActionValues, storeValues)
-	}
+    XCTAssertEqual(storedMultiActionValues, storeValues)
+  }
 
-	func testGetMultiActionItems() {
-		let store = EmbarkStore()
+  func testGetMultiActionItems() {
+    let store = EmbarkStore()
 
-		store.addMultiActionItems(actionKey: actionKey, componentValues: componentValues) {}
+    store.addMultiActionItems(actionKey: actionKey, componentValues: componentValues) {}
 
-		let values = store.getComponentValues(actionKey: actionKey, data: mockedData)
-			.map { dic in
-				return dic.reduce([String: String]()) { (dict, values) in
-					var dict = dict
-					dict[values.key] = values.value.inputValue
-					return dict
-				}
-			}
+    let values = store.getComponentValues(actionKey: actionKey, data: mockedData)
+      .map { dic in
+        return dic.reduce([String: String]()) { (dict, values) in
+          var dict = dict
+          dict[values.key] = values.value.inputValue
+          return dict
+        }
+      }
 
-		XCTAssertEqual(values, componentValues)
-	}
+    XCTAssertEqual(values, componentValues)
+  }
 }

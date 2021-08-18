@@ -4,21 +4,21 @@ import UIKit
 import hCore
 
 public struct Divider {
-	public let backgroundColor: UIColor
+  public let backgroundColor: UIColor
 
-	public init(backgroundColor: UIColor) { self.backgroundColor = backgroundColor }
+  public init(backgroundColor: UIColor) { self.backgroundColor = backgroundColor }
 }
 
 extension Divider: Viewable {
-	public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-		let divider = UIView()
+  public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+    let divider = UIView()
 
-		let bag = DisposeBag()
+    let bag = DisposeBag()
 
-		divider.backgroundColor = backgroundColor
+    divider.backgroundColor = backgroundColor
 
-		divider.snp.makeConstraints { make in make.height.equalTo(CGFloat.hairlineWidth) }
+    divider.snp.makeConstraints { make in make.height.equalTo(CGFloat.hairlineWidth) }
 
-		return (divider, bag)
-	}
+    return (divider, bag)
+  }
 }
