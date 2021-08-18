@@ -11,12 +11,29 @@ public final class FormScrollView: UIScrollView, GradientScroller {
 	) {
 		super.init(frame: frame)
 
-        if appliesGradient { addGradient(into: bag) }
+		if appliesGradient {
+			addGradient(into: bag)
+		}
 	}
 
-	@available(*, unavailable) required init?(
+	public init(
+		frame: CGRect,
+		appliesGradient: Bool
+	) {
+		super.init(frame: frame)
+		self.appliesGradient = appliesGradient
+
+		if appliesGradient {
+			addGradient(into: bag)
+		}
+	}
+
+	@available(*, unavailable)
+	required init?(
 		coder _: NSCoder
-	) { fatalError("init(coder:) has not been implemented") }
+	) {
+		fatalError("init(coder:) has not been implemented")
+	}
 
 	override public func didMoveToWindow() {
 		super.didMoveToWindow()

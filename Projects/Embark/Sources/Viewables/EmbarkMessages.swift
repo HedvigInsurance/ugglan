@@ -55,12 +55,13 @@ extension EmbarkMessages: Viewable {
 	func replacePlaceholdersForMultiAction(message: String, values: [MultiActionStoreable]) -> String {
 		if let stringResults = getPlaceHolders(message: message) {
 			var replacedMessage = message
-			stringResults.forEach { _ in
-				let key = message.replacingOccurrences(
+			stringResults.forEach { placeholder in
+				let key = placeholder.replacingOccurrences(
 					of: "[\\{\\}]",
 					with: "",
 					options: [.regularExpression]
 				)
+
 				let result = values.first(where: { $0.componentKey == key })?.inputValue
 				replacedMessage = replacedMessage.replacingOccurrences(of: message, with: result ?? key)
 			}
@@ -166,13 +167,16 @@ extension EmbarkMessages: Viewable {
 							let responseText = self.replacePlaceholders(
 								message: msgText ?? embarkResponseExpression.text
 							)
-							let messageBubble = MessageBubble(
-								text: responseText,
-								delay: 0,
-								animated: true,
-								messageType: .replied
-							)
-							bag += view.addArranged(messageBubble)
+
+							if responseText != autoResponseKey {
+								let messageBubble = MessageBubble(
+									text: responseText,
+									delay: 0,
+									animated: true,
+									messageType: .replied
+								)
+								bag += view.addArranged(messageBubble)
+							}
 						} else if let embarkGroupedResponse = previousResponse?.response?
 							.asEmbarkGroupedResponse
 						{

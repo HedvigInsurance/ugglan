@@ -1,81 +1,114 @@
 import Flow
 import Foundation
+import Presentation
 import UIKit
 import hCore
 
-public struct ExpandableContent<Content: Viewable>
-where Content.Matter: UIView, Content.Result == Disposable, Content.Events == ViewableEvents {
-	let content: Content
-	public let isExpanded: ReadWriteSignal<Bool>
+public struct ExpandableContent {
+	let contentView: UIView
+	let isExpanded: ReadWriteSignal<Bool>
+	let collapsedMaxHeight: CGFloat
 
 	public init(
-		content: Content,
-		isExpanded: ReadWriteSignal<Bool>
+		contentView: UIView,
+		isExpanded: ReadWriteSignal<Bool>,
+		collapsedMaxHeight: CGFloat
 	) {
-		self.content = content
+		self.contentView = contentView
 		self.isExpanded = isExpanded
+		self.collapsedMaxHeight = collapsedMaxHeight
 	}
 }
 
-extension ExpandableContent: Viewable {
-	public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+extension ExpandableContent: Presentable {
+	public func materialize() -> (UIView, Disposable) {
 		let bag = DisposeBag()
 		let outerContainer = UIView()
 
 		let scrollView = UIScrollView()
 		scrollView.backgroundColor = .brand(.primaryBackground())
 
+		let buttonIsHiddenSignal = ReadWriteSignal(false)
+
 		let tapGestureRecognizer = UITapGestureRecognizer()
 		outerContainer.addGestureRecognizer(tapGestureRecognizer)
 
-		bag += tapGestureRecognizer.signal(forState: .recognized).map { true }.bindTo(isExpanded)
+		bag +=
+			tapGestureRecognizer
+			.signal(forState: .recognized)
+			.filter(predicate: { _ in !buttonIsHiddenSignal.value })
+			.map { true }
+			.bindTo(isExpanded)
 
 		outerContainer.addSubview(scrollView)
 
 		let expandButton = Button(
 			title: "",
-			type: .standard(
-				backgroundColor: .brand(.primaryButtonBackgroundColor),
-				textColor: .brand(.primaryButtonTextColor)
+			type: .outlineIcon(
+				borderColor: .brand(.secondaryButtonBackgroundColor),
+				textColor: .brand(.secondaryButtonBackgroundColor),
+				icon: .left(image: hCoreUIAssets.chevronDown.image, width: 10)
 			)
 		)
 		let buttonHalfHeight = expandButton.type.value.height / 2
 
-		scrollView.snp.makeConstraints { make in make.top.trailing.leading.equalToSuperview()
+		scrollView.snp.makeConstraints { make in
+			make.top.trailing.leading.equalToSuperview()
 			make.bottom.equalToSuperview().inset(buttonHalfHeight)
 		}
 
 		scrollView.isScrollEnabled = false
 		scrollView.layer.cornerRadius = 13
 
-		let (contentView, contentDisposable) = content.materialize(
-			events: ViewableEvents(wasAddedCallbacker: Callbacker())
-		)
 		scrollView.embedView(contentView, scrollAxis: .vertical)
 
-		bag += contentDisposable
+		let shadowView = UIView()
 
-		bag += combineLatest(scrollView.contentSizeSignal.atOnce(), isExpanded.atOnce())
-			.animated(style: .mediumBounce()) { size, _ in
-				outerContainer.snp.remakeConstraints { make in make.width.equalTo(size.width)
-					let outerContainerHeight = buttonHalfHeight + size.height
-					make.height.equalTo(
+		func rerenderHeight(size: CGSize) {
+			outerContainer.snp.remakeConstraints { make in
+				make.width.equalTo(size.width)
+				let outerContainerHeight = buttonHalfHeight + size.height
+
+				if collapsedMaxHeight > (size.height + (size.height * 0.1)) {
+					shadowView.isHidden = true
+					buttonIsHiddenSignal.value = true
+					make.height.equalTo(size.height)
+				} else {
+					shadowView.isHidden = false
+					buttonIsHiddenSignal.value = false
+
+					let totalHeight =
 						self.isExpanded.value
-							? outerContainerHeight + (buttonHalfHeight * 2)
-							: outerContainerHeight * 0.5
+						? outerContainerHeight + (buttonHalfHeight * 2)
+						: outerContainerHeight * 0.5
+					make.height.equalTo(
+						totalHeight
 					)
 				}
-				outerContainer.layoutSuperviewsIfNeeded()
-				outerContainer.subviews.forEach { subview in
-					if subview is UIStackView { subview.layoutIfNeeded() }
-				}
-				scrollView.subviews.forEach { subview in subview.layoutIfNeeded() }
 			}
+
+			outerContainer.layoutSuperviewsIfNeeded()
+			outerContainer.subviews.forEach { subview in
+				if subview is UIStackView {
+					subview.layoutIfNeeded()
+				}
+			}
+			scrollView.subviews.forEach { subview in
+				subview.layoutIfNeeded()
+			}
+		}
+
+		bag += scrollView.contentSizeSignal.atOnce()
+			.onValue({ size in
+				rerenderHeight(size: size)
+			})
+
+		bag += isExpanded.animated(style: .mediumBounce()) { _ in
+			rerenderHeight(size: scrollView.contentSize)
+		}
 
 		bag += expandButton.onTapSignal.withLatestFrom(isExpanded.atOnce().plain()).map { !$1 }
 			.bindTo(isExpanded)
-
-		let shadowView = UIView()
 
 		let gradient = CAGradientLayer()
 		gradient.locations = [0, 0.5, 1]
@@ -90,41 +123,75 @@ extension ExpandableContent: Viewable {
 			]
 		}
 
-		bag += shadowView.traitCollectionSignal.atOnce().onValue { _ in setGradientColors() }
+		bag += shadowView.traitCollectionSignal.atOnce()
+			.onValue { _ in
+				setGradientColors()
+			}
 
-		bag += shadowView.didLayoutSignal.onValue { _ in gradient.frame = shadowView.bounds }
-
-		outerContainer.addSubview(shadowView)
-
-		shadowView.snp.makeConstraints { make in make.width.centerX.equalToSuperview()
-			make.bottom.equalToSuperview().inset(buttonHalfHeight)
-			make.height.equalToSuperview()
+		bag += shadowView.didLayoutSignal.onValue { _ in
+			gradient.frame = shadowView.bounds
 		}
 
-		bag += outerContainer.add(expandButton.wrappedIn(UIStackView())) { buttonView in
+		outerContainer.addSubview(shadowView)
+		outerContainer.clipsToBounds = true
+
+		shadowView.snp.makeConstraints { make in
+			make.width.centerX.equalToSuperview()
+			make.bottom.equalTo(outerContainer.snp.bottom).inset(buttonHalfHeight)
+			make.height.lessThanOrEqualTo(300)
+		}
+
+		let buttonContainer = UIStackView()
+		outerContainer.addSubview(buttonContainer)
+		buttonContainer.snp.makeConstraints { make in
+			make.bottom.centerX.equalToSuperview()
+		}
+
+		bag += buttonContainer.addArranged(expandButton) { buttonView in
+			bag += buttonIsHiddenSignal.atOnce()
+				.onValue { isHidden in
+					buttonView.isHidden = isHidden
+				}
+
 			bag += isExpanded.atOnce()
-				.map { !$0 ? L10n.expandableContentExpand : L10n.expandableContentCollapse }
 				.onValue { value in
 					UIView.transition(
 						with: buttonView,
 						duration: 0.25,
 						options: .transitionCrossDissolve,
 						animations: {
-							expandButton.title.value = value
+							expandButton.title.value =
+								value
+								? L10n.expandableContentCollapse
+								: L10n.expandableContentExpand
+							expandButton.type.value = .outlineIcon(
+								borderColor: .brand(.secondaryButtonBackgroundColor),
+								textColor: .brand(.secondaryButtonBackgroundColor),
+								icon: .left(
+									image: value
+										? hCoreUIAssets.chevronUp.image
+										: hCoreUIAssets.chevronDown.image,
+									width: 10
+								)
+							)
 							buttonView.layoutIfNeeded()
+							buttonContainer.layoutIfNeeded()
 						},
 						completion: nil
 					)
 				}
 
-			buttonView.snp.makeConstraints { make in make.bottom.equalToSuperview()
-				make.centerX.equalToSuperview()
+			buttonView.snp.makeConstraints { make in
+				make.edges.equalToSuperview()
 			}
 		}
 
-		bag += isExpanded.atOnce()
-			.animated(mapStyle: { $0 ? .easeOut(duration: 0.25) : .easeOut(duration: 0.25, delay: 0.30) }) {
-				isExpanded in shadowView.alpha = isExpanded ? 0 : 1
+		bag +=
+			isExpanded
+			.atOnce()
+			.animated(mapStyle: { $0 ? .easeOut(duration: 0.25) : .easeOut(duration: 0) }) { isExpanded in
+				shadowView.alpha = isExpanded ? 0 : 1
+				shadowView.layoutIfNeeded()
 			}
 
 		return (outerContainer, bag)

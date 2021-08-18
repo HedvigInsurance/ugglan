@@ -1,0 +1,13 @@
+query ActiveContractBundles {
+     activeContractBundles {
+        id
+        contracts {
+          id
+          inception
+          termination
+      }
+        angelStories {
+          addressChange
+        }
+  }
+}

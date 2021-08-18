@@ -35,13 +35,13 @@ extension MultiActionNumberRow: Viewable {
 
 		let masking = Masking(type: .digits)
 		let numberField = EmbarkInput(
-            placeholder: data.placeholder,
+			placeholder: data.placeholder,
 			keyboardType: masking.keyboardType,
 			textContentType: masking.textContentType,
 			autocapitalisationType: masking.autocapitalizationType,
 			insets: .zero,
-            masking: masking,
-            shouldAutoFocus: false,
+			masking: masking,
+			shouldAutoFocus: false,
 			fieldStyle: .embarkInputSmall,
 			textFieldAlignment: .right
 		)
@@ -53,8 +53,8 @@ extension MultiActionNumberRow: Viewable {
 					.onValue { text in
 						let value = MultiActionValue(
 							inputValue: text,
-                            displayValue: data.displayValue(inputValue: text),
-                            isValid: true
+							displayValue: data.displayValue(inputValue: text),
+							isValid: true
 						)
 						callback([data.key: value])
 					}
@@ -65,9 +65,9 @@ extension MultiActionNumberRow: Viewable {
 	}
 }
 
-internal extension EmbarkNumberMultiActionData {
-    func displayValue(inputValue: String?) -> String? {
-        guard let inputValue = inputValue else { return "" }
-        return inputValue + (self.unit ?? "")
-    }
+extension EmbarkNumberMultiActionData {
+	func displayValue(inputValue: String?) -> String? {
+		guard let inputValue = inputValue else { return "" }
+		return inputValue + " " + (self.unit ?? "")
+	}
 }

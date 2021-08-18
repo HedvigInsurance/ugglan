@@ -13,8 +13,13 @@ struct WebOnboarding {
 	let webScreen: WebOnboardingScreen
 }
 
+enum WebOnboardingResult {
+	case menu(action: MenuChildAction)
+	case postOnboarding
+}
+
 extension WebOnboarding: Presentable {
-	func materialize() -> (UIViewController, Signal<Void>) {
+	func materialize() -> (UIViewController, Signal<WebOnboardingResult>) {
 		let viewController = UIViewController()
 		let bag = DisposeBag()
 
@@ -24,19 +29,6 @@ extension WebOnboarding: Presentable {
 		settingsButton.image = Asset.menuIcon.image
 		settingsButton.tintColor = .brand(.primaryText())
 
-		bag += settingsButton.attachSinglePressMenu(
-			viewController: viewController,
-			menu: Menu(
-				title: "",
-				children: [
-					MenuChild.appInformation, MenuChild.appSettings,
-					MenuChild.login(onLogin: {
-						UIApplication.shared.appDelegate.appFlow.presentLoggedIn()
-					}),
-				]
-			)
-		)
-
 		let restartButton = UIBarButtonItem()
 		restartButton.image = Asset.restart.image
 		restartButton.tintColor = .brand(.primaryText())
@@ -45,13 +37,7 @@ extension WebOnboarding: Presentable {
 
 		switch webScreen {
 		case .webOnboarding:
-			let titleHedvigLogo = UIImageView()
-			titleHedvigLogo.image = Asset.wordmark.image
-			titleHedvigLogo.contentMode = .scaleAspectFit
-
-			titleHedvigLogo.snp.makeConstraints { make in make.width.equalTo(80) }
-
-			viewController.navigationItem.titleView = titleHedvigLogo
+			viewController.navigationItem.titleView = .titleWordmarkView
 			viewController.navigationItem.leftBarButtonItem = settingsButton
 			viewController.navigationItem.rightBarButtonItems = [chatButton, restartButton]
 		case .webOffer:
@@ -145,24 +131,29 @@ extension WebOnboarding: Presentable {
 		return (
 			viewController,
 			Signal { callback in
+
+				bag += settingsButton.attachSinglePressMenu(
+					viewController: viewController,
+					menu: Menu(
+						title: "",
+						children: [
+							MenuChild.appInformation,
+							MenuChild.appSettings,
+							MenuChild.login,
+						]
+					)
+				) { action in
+					callback(.menu(action: action))
+				}
+
 				bag += webView.signal(for: \.url)
 					.map { url in let urlString = String(describing: url)
 
-						if urlString.contains("connect-payment") { callback(()) }
+						if urlString.contains("connect-payment") { callback(.postOnboarding) }
 					}
 
 				return bag
 			}
 		)
-	}
-}
-
-extension Environment {
-	var baseUrl: String {
-		switch self {
-		case .production: return "www.hedvig.com"
-		case .staging: return "www.dev.hedvigit.com"
-		case .custom: return "www.dev.hedvigit.com"
-		}
 	}
 }

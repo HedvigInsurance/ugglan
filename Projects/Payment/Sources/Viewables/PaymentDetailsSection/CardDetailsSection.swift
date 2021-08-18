@@ -29,7 +29,7 @@ extension CardDetailsSection: Viewable {
 			payInOptions.onValue { options in
 				viewController.present(
 					AdyenPayIn(adyenOptions: options, urlScheme: urlScheme).wrappedInCloseButton(),
-					style: .detented(.scrollViewContentSize(20)),
+					style: .detented(.scrollViewContentSize),
 					options: [.defaults, .allowSwipeDismissAlways]
 				)
 			}

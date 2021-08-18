@@ -1,0 +1,12 @@
+mutation RedeemDiscountCode($code: String!, $locale: Locale!) {
+    redeemCodeV2(code: $code) {
+        ... on SuccessfulRedeemResult {
+            cost {
+                ...CostFragment
+            }
+            campaigns {
+                displayValue(locale: $locale)
+            }
+        }
+    }
+}

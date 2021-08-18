@@ -10,14 +10,15 @@ extension BarButtonStyle {
 
 extension DefaultStyling {
 	public static let tabBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
-		if trait.userInterfaceStyle == .dark { return UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.00) }
+		if trait.userInterfaceStyle == .dark {
+			return UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.00)
+		}
 
 		return UIColor.white
 	})
 
-	@available(iOS 13, *) public static func applyCommonNavigationBarStyling(
-		_ appearance: UINavigationBarAppearance
-	) {
+	@available(iOS 13, *)
+	public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
 		appearance.titleTextAttributes = [
 			NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
 			NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
@@ -31,10 +32,13 @@ extension DefaultStyling {
 			hCoreUIAssets.backButton.image,
 			transitionMaskImage: hCoreUIAssets.backButton.image
 		)
-		appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.clear]
+		appearance.backButtonAppearance.normal.titleTextAttributes = [
+			.foregroundColor: UIColor.clear
+		]
 	}
 
-	@available(iOS 13, *) public static func setNavigationBarAppearance() {
+	@available(iOS 13, *)
+	public static func setNavigationBarAppearance() {
 		func scrollEdgeAppearance() -> UINavigationBarAppearance {
 			let appearance = UINavigationBarAppearance()
 			appearance.configureWithTransparentBackground()
@@ -46,7 +50,9 @@ extension DefaultStyling {
 		}
 
 		func shadowImage(for traitCollection: UITraitCollection) -> UIImage? {
-			if traitCollection.userInterfaceLevel == .elevated { return UIColor.clear.asImage() }
+			if traitCollection.userInterfaceLevel == .elevated {
+				return UIColor.clear.asImage()
+			}
 
 			return UIColor.brand(.primaryBorderColor).resolvedColor(with: traitCollection).asImage()
 		}
@@ -74,44 +80,56 @@ extension DefaultStyling {
 		}
 
 		let lightAndBaseTrait = UITraitCollection(traitsFrom: [
-			UITraitCollection(userInterfaceStyle: .light), UITraitCollection(userInterfaceLevel: .base),
+			UITraitCollection(userInterfaceStyle: .light),
+			UITraitCollection(userInterfaceLevel: .base),
 		])
-		UINavigationBar.appearance(for: lightAndBaseTrait).standardAppearance = standardAppearance(
+		UINavigationBar.appearance(
 			for: lightAndBaseTrait
 		)
-		UINavigationBar.appearance(for: lightAndBaseTrait).compactAppearance = compactAppearance(
+		.standardAppearance = standardAppearance(for: lightAndBaseTrait)
+		UINavigationBar.appearance(
 			for: lightAndBaseTrait
 		)
+		.compactAppearance = compactAppearance(for: lightAndBaseTrait)
 
 		let darkAndBaseTrait = UITraitCollection(traitsFrom: [
-			UITraitCollection(userInterfaceStyle: .dark), UITraitCollection(userInterfaceLevel: .base),
+			UITraitCollection(userInterfaceStyle: .dark),
+			UITraitCollection(userInterfaceLevel: .base),
 		])
-		UINavigationBar.appearance(for: darkAndBaseTrait).standardAppearance = standardAppearance(
+		UINavigationBar.appearance(
 			for: darkAndBaseTrait
 		)
-		UINavigationBar.appearance(for: darkAndBaseTrait).compactAppearance = compactAppearance(
+		.standardAppearance = standardAppearance(for: darkAndBaseTrait)
+		UINavigationBar.appearance(
 			for: darkAndBaseTrait
 		)
+		.compactAppearance = compactAppearance(for: darkAndBaseTrait)
 
 		let lightAndElevatedTrait = UITraitCollection(traitsFrom: [
-			UITraitCollection(userInterfaceStyle: .light), UITraitCollection(userInterfaceLevel: .elevated),
+			UITraitCollection(userInterfaceStyle: .light),
+			UITraitCollection(userInterfaceLevel: .elevated),
 		])
-		UINavigationBar.appearance(for: lightAndElevatedTrait).standardAppearance = standardAppearance(
+		UINavigationBar.appearance(
 			for: lightAndElevatedTrait
 		)
-		UINavigationBar.appearance(for: lightAndElevatedTrait).compactAppearance = compactAppearance(
+		.standardAppearance = standardAppearance(for: lightAndElevatedTrait)
+		UINavigationBar.appearance(
 			for: lightAndElevatedTrait
 		)
+		.compactAppearance = compactAppearance(for: lightAndElevatedTrait)
 
 		let darkAndElevatedTrait = UITraitCollection(traitsFrom: [
-			UITraitCollection(userInterfaceStyle: .dark), UITraitCollection(userInterfaceLevel: .elevated),
+			UITraitCollection(userInterfaceStyle: .dark),
+			UITraitCollection(userInterfaceLevel: .elevated),
 		])
-		UINavigationBar.appearance(for: darkAndElevatedTrait).standardAppearance = standardAppearance(
+		UINavigationBar.appearance(
 			for: darkAndElevatedTrait
 		)
-		UINavigationBar.appearance(for: darkAndElevatedTrait).compactAppearance = compactAppearance(
+		.standardAppearance = standardAppearance(for: darkAndElevatedTrait)
+		UINavigationBar.appearance(
 			for: darkAndElevatedTrait
 		)
+		.compactAppearance = compactAppearance(for: darkAndElevatedTrait)
 
 		UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance()
 	}
@@ -120,9 +138,10 @@ extension DefaultStyling {
 		ListTableView.appearance().backgroundColor = .brand(.primaryBackground())
 
 		for view in [FormScrollView.self, FormTableView.self] {
-			view.appearance(for: UITraitCollection(userInterfaceIdiom: .pad)).backgroundColor = .brand(
-				.primaryBackground()
+			view.appearance(
+				for: UITraitCollection(userInterfaceIdiom: .pad)
 			)
+			.backgroundColor = .brand(.primaryBackground())
 			view.appearance().backgroundColor = .brand(.primaryBackground())
 
 			if #available(iOS 13.0, *) {
@@ -152,20 +171,30 @@ extension DefaultStyling {
 		UITabBar.appearance().tintColor = .brand(.primaryText())
 
 		if #available(iOS 13.0, *) {
-			UITabBar.appearance(for: UITraitCollection(userInterfaceStyle: .dark)).backgroundImage =
+			UITabBar.appearance(
+				for: UITraitCollection(userInterfaceStyle: .dark)
+			)
+			.backgroundImage =
 				tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
 				.asImage()
 
-			UITabBar.appearance(for: UITraitCollection(userInterfaceStyle: .light)).backgroundImage =
+			UITabBar.appearance(
+				for: UITraitCollection(userInterfaceStyle: .light)
+			)
+			.backgroundImage =
 				tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
 				.asImage()
 
-			UITabBar.appearance(for: UITraitCollection(userInterfaceStyle: .dark)).shadowImage =
-				UIColor.brand(.primaryBorderColor)
+			UITabBar.appearance(
+				for: UITraitCollection(userInterfaceStyle: .dark)
+			)
+			.shadowImage = UIColor.brand(.primaryBorderColor)
 				.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
 
-			UITabBar.appearance(for: UITraitCollection(userInterfaceStyle: .light)).shadowImage =
-				UIColor.brand(.primaryBorderColor)
+			UITabBar.appearance(
+				for: UITraitCollection(userInterfaceStyle: .light)
+			)
+			.shadowImage = UIColor.brand(.primaryBorderColor)
 				.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
 		} else {
 			UITabBar.appearance().backgroundImage = tabBarBackgroundColor.asImage()
@@ -174,12 +203,16 @@ extension DefaultStyling {
 
 		UITabBarItem.appearance()
 			.setTitleTextAttributes(
-				[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
+				[
+					NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
+				],
 				for: .normal
 			)
 		UITabBarItem.appearance()
 			.setTitleTextAttributes(
-				[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
+				[
+					NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
+				],
 				for: .selected
 			)
 
@@ -189,13 +222,17 @@ extension DefaultStyling {
 
 		UIBarButtonItem.appearance()
 			.setTitleTextAttributes(
-				[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
+				[
+					NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
+				],
 				for: .normal
 			)
 
 		UIBarButtonItem.appearance()
 			.setTitleTextAttributes(
-				[NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)],
+				[
+					NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
+				],
 				for: .highlighted
 			)
 
@@ -257,119 +294,138 @@ extension DefaultStyling {
 		scrollView: FormScrollView.self,
 		plainTableView: ListTableView.self,
 		groupedTableView: FormTableView.self,
+		insetGroupedTableView: FormTableView.self,
 		collectionView: UICollectionView.self
 	)
 }
 
 extension DynamicSectionStyle {
-	internal static let brandPlain = DynamicSectionStyle { _ -> SectionStyle in fatalError("never use plain style")
+	internal static let brandPlain = DynamicSectionStyle { _ -> SectionStyle in
+		fatalError("never use plain style")
 	}
 
 	public enum SeparatorType {
 		case largeIcons, standard, none
+		case custom(_ left: CGFloat)
 
 		var color: UIColor {
 			switch self {
-			case .largeIcons, .standard: return UIColor.brand(.primaryBorderColor)
-			case .none: return UIColor.clear
+			case .largeIcons, .standard, .custom:
+				return UIColor.brand(.primaryBorderColor)
+			case .none:
+				return UIColor.clear
 			}
 		}
 
 		var left: CGFloat {
 			switch self {
-			case .largeIcons: return 75
-			case .standard: return 15
-			case .none: return 0
+			case .largeIcons:
+				return 75
+			case .standard:
+				return 15
+			case .none:
+				return 0
+			case let .custom(left):
+				return left
 			}
 		}
 	}
 
-	public static func brandGroupedInset(separatorType: SeparatorType) -> DynamicSectionStyle {
+	public static func brandGroupedInset(
+		separatorType: SeparatorType,
+		border: BorderStyle = .init(
+			width: 0,
+			color: UIColor.clear,
+			cornerRadius: 8,
+			borderEdges: .all
+		),
+		appliesShadow: Bool = true
+	) -> DynamicSectionStyle {
 		DynamicSectionStyle { _ -> SectionStyle in
 			let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
+			let headerAndFooterInset = UIEdgeInsets(top: 14, left: 0, bottom: 14, right: 0)
 
 			return Style(
+				insets: UIEdgeInsets(horizontalInset: 14, verticalInset: 0),
 				rowInsets: .init(inset: 15),
 				itemSpacing: 10,
 				minRowHeight: 0,
 				background: .init(
-					style: .init(
-						background: .init(
-							color: .brand(.secondaryBackground()),
-							border: .init(
-								width: 0,
-								color: UIColor.clear,
-								cornerRadius: 8,
-								borderEdges: .all
-							)
-						),
-						topSeparator: .init(
-							style: .init(
-								width: 1 / UIScreen.main.scale,
-								color: separatorType.color
+					style:
+						.init(
+							background: .init(
+								color: .brand(.secondaryBackground()),
+								border: border
 							),
-							insets: UIEdgeInsets(
-								top: 0,
-								left: separatorType.left,
-								bottom: 0,
-								right: 0
-							)
-						),
-						bottomSeparator: .init(
-							style: .init(
-								width: 1 / UIScreen.main.scale,
-								color: separatorType.color
+							topSeparator: .init(
+								style: .init(
+									width: 1 / UIScreen.main.scale,
+									color: separatorType.color
+								),
+								insets: UIEdgeInsets(
+									top: 0,
+									left: separatorType.left,
+									bottom: 0,
+									right: 0
+								)
 							),
-							insets: UIEdgeInsets(
-								top: 0,
-								left: separatorType.left,
-								bottom: 0,
-								right: 0
+							bottomSeparator: .init(
+								style: .init(
+									width: 1 / UIScreen.main.scale,
+									color: separatorType.color
+								),
+								insets: UIEdgeInsets(
+									top: 0,
+									left: separatorType.left,
+									bottom: 0,
+									right: 0
+								)
 							)
 						)
-					)
 				),
 				selectedBackground: .init(
-					style: .init(
-						background: .init(
-							color: selectedBackgroundColor,
-							border: .init(
-								width: 0,
-								color: UIColor.clear,
-								cornerRadius: 8,
-								borderEdges: .all
-							)
-						),
-						topSeparator: .init(
-							style: .init(
-								width: 1 / UIScreen.main.scale,
-								color: separatorType.color
+					style:
+						.init(
+							background: .init(
+								color: selectedBackgroundColor,
+								border: border
 							),
-							insets: UIEdgeInsets(
-								top: 0,
-								left: separatorType.left,
-								bottom: 0,
-								right: 0
-							)
-						),
-						bottomSeparator: .init(
-							style: .init(
-								width: 1 / UIScreen.main.scale,
-								color: separatorType.color
+							topSeparator: .init(
+								style: .init(
+									width: 1 / UIScreen.main.scale,
+									color: separatorType.color
+								),
+								insets: UIEdgeInsets(
+									top: 0,
+									left: separatorType.left,
+									bottom: 0,
+									right: 0
+								)
 							),
-							insets: UIEdgeInsets(
-								top: 0,
-								left: separatorType.left,
-								bottom: 0,
-								right: 0
+							bottomSeparator: .init(
+								style: .init(
+									width: 1 / UIScreen.main.scale,
+									color: separatorType.color
+								),
+								insets: UIEdgeInsets(
+									top: 0,
+									left: separatorType.left,
+									bottom: 0,
+									right: 0
+								)
 							)
 						)
-					)
 				),
-				header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 15)),
+				shadow: .init(
+					opacity: appliesShadow ? 1 : 0,
+					color: UIColor(red: 0, green: 0, blue: 0, alpha: 0.1),
+					offset: CGSize(width: 0, height: 1),
+					blurRadius: 2
+				),
+				header: .init(text: .brand(.title3(color: .primary)), insets: headerAndFooterInset),
 				footer: .init(
 					text: .brand(.footnote(color: .tertiary)),
-					insets: UIEdgeInsets(inset: 15)
+					insets: headerAndFooterInset
 				)
 			)
 		}
@@ -377,90 +433,100 @@ extension DynamicSectionStyle {
 
 	public static func brandGrouped(
 		separatorType: SeparatorType,
-		borderColor: UIColor = .clear
+		borderColor: UIColor = .clear,
+		backgroundColor: UIColor = .clear,
+		roundedCornerRadius: CGFloat = .defaultCornerRadius,
+		shouldRoundCorners: @escaping (_ traitCollection: UITraitCollection) -> Bool = { trait in
+			trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular
+		}
 	) -> DynamicSectionStyle {
 		DynamicSectionStyle { trait -> SectionStyle in
 			let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
-			let isPad = trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular
 
 			return Style(
+				insets: .zero,
 				rowInsets: .init(inset: 15),
 				itemSpacing: 10,
 				minRowHeight: 0,
 				background: .init(
-					style: .init(
-						background: .init(
-							color: .clear,
-							border: .init(
-								width: 1 / UIScreen.main.scale,
-								color: borderColor,
-								cornerRadius: isPad ? 8 : 0,
-								borderEdges: .all
-							)
-						),
-						topSeparator: .init(
-							style: .init(
-								width: 1 / UIScreen.main.scale,
-								color: separatorType.color
+					style:
+						.init(
+							background: .init(
+								color: backgroundColor,
+								border: .init(
+									width: 1 / UIScreen.main.scale,
+									color: borderColor,
+									cornerRadius: shouldRoundCorners(trait)
+										? roundedCornerRadius : 0,
+									borderEdges: .all
+								)
 							),
-							insets: UIEdgeInsets(
-								top: 0,
-								left: separatorType.left,
-								bottom: 0,
-								right: 0
-							)
-						),
-						bottomSeparator: .init(
-							style: .init(
-								width: 1 / UIScreen.main.scale,
-								color: separatorType.color
+							topSeparator: .init(
+								style: .init(
+									width: 1 / UIScreen.main.scale,
+									color: separatorType.color
+								),
+								insets: UIEdgeInsets(
+									top: 0,
+									left: separatorType.left,
+									bottom: 0,
+									right: 0
+								)
 							),
-							insets: UIEdgeInsets(
-								top: 0,
-								left: separatorType.left,
-								bottom: 0,
-								right: 0
+							bottomSeparator: .init(
+								style: .init(
+									width: 1 / UIScreen.main.scale,
+									color: separatorType.color
+								),
+								insets: UIEdgeInsets(
+									top: 0,
+									left: separatorType.left,
+									bottom: 0,
+									right: 0
+								)
 							)
 						)
-					)
 				),
 				selectedBackground: .init(
-					style: .init(
-						background: .init(
-							color: selectedBackgroundColor,
-							border: .init(
-								width: 1 / UIScreen.main.scale,
-								color: borderColor,
-								cornerRadius: isPad ? 8 : 0,
-								borderEdges: .all
-							)
-						),
-						topSeparator: .init(
-							style: .init(
-								width: 1 / UIScreen.main.scale,
-								color: separatorType.color
+					style:
+						.init(
+							background: .init(
+								color: selectedBackgroundColor,
+								border: .init(
+									width: 1 / UIScreen.main.scale,
+									color: borderColor,
+									cornerRadius: shouldRoundCorners(trait)
+										? roundedCornerRadius : 0,
+									borderEdges: .all
+								)
 							),
-							insets: UIEdgeInsets(
-								top: 0,
-								left: separatorType.left,
-								bottom: 0,
-								right: 0
-							)
-						),
-						bottomSeparator: .init(
-							style: .init(
-								width: 1 / UIScreen.main.scale,
-								color: separatorType.color
+							topSeparator: .init(
+								style: .init(
+									width: 1 / UIScreen.main.scale,
+									color: separatorType.color
+								),
+								insets: UIEdgeInsets(
+									top: 0,
+									left: separatorType.left,
+									bottom: 0,
+									right: 0
+								)
 							),
-							insets: UIEdgeInsets(
-								top: 0,
-								left: separatorType.left,
-								bottom: 0,
-								right: 0
+							bottomSeparator: .init(
+								style: .init(
+									width: 1 / UIScreen.main.scale,
+									color: separatorType.color
+								),
+								insets: UIEdgeInsets(
+									top: 0,
+									left: separatorType.left,
+									bottom: 0,
+									right: 0
+								)
 							)
 						)
-					)
 				),
+				shadow: .none,
 				header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 15)),
 				footer: .init(
 					text: .brand(.footnote(color: .tertiary)),
@@ -477,63 +543,67 @@ extension DynamicSectionStyle {
 			? CGFloat.defaultCornerRadius : 0
 
 		return Style(
+			insets: .zero,
 			rowInsets: .init(inset: 15),
 			itemSpacing: 10,
 			minRowHeight: 0,
 			background: .init(
-				style: .init(
-					background: .init(
-						color: backgroundColor,
-						border: .init(
-							width: 0,
-							color: .clear,
-							cornerRadius: cornerRadius,
-							borderEdges: .all
+				style:
+					.init(
+						background: .init(
+							color: backgroundColor,
+							border: .init(
+								width: 1,
+								color: .clear,
+								cornerRadius: cornerRadius,
+								borderEdges: .all
+							)
+						),
+						topSeparator: .init(
+							style: .init(
+								width: .hairlineWidth,
+								color: UIColor.brand(.primaryBorderColor)
+							),
+							insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
+						),
+						bottomSeparator: .init(
+							style: .init(
+								width: .hairlineWidth,
+								color: UIColor.brand(.primaryBorderColor)
+							),
+							insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
 						)
-					),
-					topSeparator: .init(
-						style: .init(
-							width: .hairlineWidth,
-							color: UIColor.brand(.primaryBorderColor)
-						),
-						insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-					),
-					bottomSeparator: .init(
-						style: .init(
-							width: .hairlineWidth,
-							color: UIColor.brand(.primaryBorderColor)
-						),
-						insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
 					)
-				)
 			),
 			selectedBackground: .init(
-				style: .init(
-					background: .init(
-						color: UIColor.tint(.yellowOne),
-						border: .init(
-							width: 0,
-							color: .clear,
-							cornerRadius: cornerRadius,
-							borderEdges: .all
+				style:
+					.init(
+						background: .init(
+							color: UIColor.tint(.yellowOne),
+							border: .init(
+								width: 1,
+								color: .clear,
+								cornerRadius: cornerRadius,
+								borderEdges: .all
+							)
+						),
+						topSeparator: .init(
+							style: .init(
+								width: .hairlineWidth,
+								color: UIColor.brand(.primaryBorderColor)
+							),
+							insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
+						),
+						bottomSeparator: .init(
+							style: .init(
+								width: .hairlineWidth,
+								color: UIColor.brand(.primaryBorderColor)
+							),
+							insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
 						)
-					),
-					topSeparator: .init(
-						style: .init(
-							width: .hairlineWidth,
-							color: UIColor.brand(.primaryBorderColor)
-						),
-						insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
-					),
-					bottomSeparator: .init(
-						style: .init(
-							width: .hairlineWidth,
-							color: UIColor.brand(.primaryBorderColor)
-						),
-						insets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
 					)
-				)
 			),
+			shadow: .none,
 			header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
 			footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
 		)
@@ -541,11 +611,13 @@ extension DynamicSectionStyle {
 
 	public static let brandGroupedNoBackground = DynamicSectionStyle { _ -> SectionStyle in
 		Style(
+			insets: .zero,
 			rowInsets: .init(inset: 15),
 			itemSpacing: 10,
 			minRowHeight: 0,
 			background: .none,
 			selectedBackground: .none,
+			shadow: .none,
 			header: .init(text: .brand(.title3(color: .primary)), insets: UIEdgeInsets(inset: 8)),
 			footer: .init(text: .brand(.footnote(color: .tertiary)), insets: UIEdgeInsets(inset: 8))
 		)
@@ -554,7 +626,7 @@ extension DynamicSectionStyle {
 
 extension DynamicFormStyle {
 	static let brandPlain = DynamicFormStyle { trait -> FormStyle in
-		if trait.userInterfaceIdiom == .pad, trait.horizontalSizeClass == .regular {
+		if trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular {
 			return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
 		}
 
@@ -566,7 +638,7 @@ extension DynamicFormStyle {
 	}
 
 	static let brandGrouped = DynamicFormStyle { trait -> FormStyle in
-		if trait.userInterfaceIdiom == .pad, trait.horizontalSizeClass == .regular {
+		if trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular {
 			return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
 		}
 
@@ -578,7 +650,7 @@ extension DynamicFormStyle {
 	}
 
 	public static let brandInset = DynamicFormStyle { trait -> FormStyle in
-		if trait.userInterfaceIdiom == .pad, trait.horizontalSizeClass == .regular {
+		if trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular {
 			return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
 		}
 

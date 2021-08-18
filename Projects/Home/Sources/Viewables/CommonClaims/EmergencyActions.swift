@@ -82,11 +82,13 @@ extension EmergencyActions: Viewable {
 		let bag = DisposeBag()
 
 		let sectionStyle = SectionStyle(
+			insets: .zero,
 			rowInsets: UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15),
 			itemSpacing: 0,
 			minRowHeight: 10,
 			background: .none,
 			selectedBackground: .none,
+			shadow: .none,
 			header: .none,
 			footer: .none
 		)

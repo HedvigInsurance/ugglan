@@ -1,3 +1,4 @@
+import Foundation
 import ProjectDescription
 
 public enum ExternalDependencies: CaseIterable {
@@ -8,7 +9,6 @@ public enum ExternalDependencies: CaseIterable {
 	case flow
 	case form
 	case presentation
-	case ease
 	case dynamiccolor
 	case disk
 	case snapkit
@@ -19,25 +19,25 @@ public enum ExternalDependencies: CaseIterable {
 	case hero
 	case snapshottesting
 	case shake
+	case reveal
 
 	public var isTestDependency: Bool { self == .snapshottesting }
 
-	public var isDevDependency: Bool { self == .runtime }
+	public var isDevDependency: Bool { false }
 
-	public var isResourceBundledDependency: Bool { self == .mixpanel }
-	public var isAppDependency: Bool { self == .sentry }
-	public var isNonMacDependency: Bool { self == .shake }
+	public var isResourceBundledDependency: Bool { self == .mixpanel || self == .adyen }
+
+	public var isAppDependency: Bool { self == .firebase || self == .sentry }
 
 	public var isCoreDependency: Bool {
 		!isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
-			&& !isNonMacDependency
 	}
 
 	public func swiftPackages() -> [Package] {
 		switch self {
-		case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .upToNextMajor(from: "4.0.0"))]
+		case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .upToNextMajor(from: "3.8.4"))]
 		case .runtime:
-			return [.package(url: "https://github.com/wickwirew/Runtime", .upToNextMajor(from: "2.2.2"))]
+			return [.package(url: "https://github.com/wickwirew/Runtime", .exact("2.2.2"))]
 		case .firebase:
 			return [
 				.package(
@@ -46,11 +46,22 @@ public enum ExternalDependencies: CaseIterable {
 				)
 			]
 		case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.41.0"))]
-		case .flow: return [.package(url: "https://github.com/HedvigInsurance/Flow", .branch("master"))]
-		case .form: return [.package(url: "https://github.com/HedvigInsurance/Form", .branch("master"))]
+		case .flow:
+			return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.7"))]
+		case .form:
+			return [
+				.package(
+					url: "https://github.com/HedvigInsurance/Form",
+					.exact("3.0.8")
+				)
+			]
 		case .presentation:
-			return [.package(url: "https://github.com/HedvigInsurance/Presentation", .branch("master"))]
-		case .ease: return [.package(url: "https://github.com/HedvigInsurance/Ease", .branch("master"))]
+			return [
+				.package(
+					url: "https://github.com/HedvigInsurance/Presentation",
+					.upToNextMajor(from: "2.0.1")
+				)
+			]
 		case .dynamiccolor:
 			return [
 				.package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
@@ -62,7 +73,12 @@ public enum ExternalDependencies: CaseIterable {
 		case .snapkit:
 			return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.0.1"))]
 		case .markdownkit:
-			return [.package(url: "https://github.com/HedvigInsurance/MarkdownKit", .branch("master"))]
+			return [
+				.package(
+					url: "https://github.com/bmoliveira/MarkdownKit",
+					.upToNextMajor(from: "1.7.1")
+				)
+			]
 		case .mixpanel:
 			return [
 				.package(
@@ -86,6 +102,7 @@ public enum ExternalDependencies: CaseIterable {
 				)
 			]
 		case .shake: return [.package(url: "https://github.com/shakebugs/shake-ios", .exact("14.1.5"))]
+		case .reveal: return []
 		}
 	}
 
@@ -95,16 +112,15 @@ public enum ExternalDependencies: CaseIterable {
 		case .adyen:
 			return [
 				.package(product: "Adyen"), .package(product: "AdyenCard"),
-				.package(product: "AdyenDropIn"), .package(product: "AdyenComponents"),
-				.package(product: "AdyenActions"),
+				.package(product: "AdyenDropIn"),
 			]
-		case .firebase: return [.package(product: "FirebaseMessaging")]
+		case .firebase: return [.package(product: "FirebaseAnalytics"), .package(product: "FirebaseMessaging")]
 		case .kingfisher: return [.package(product: "Kingfisher")]
 		case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
 		case .flow: return [.package(product: "Flow")]
 		case .form: return [.package(product: "Form")]
-		case .presentation: return [.package(product: "Presentation")]
-		case .ease: return [.package(product: "Ease")]
+		case .presentation:
+			return [.package(product: "Presentation"), .package(product: "PresentationDebugSupport")]
 		case .dynamiccolor: return [.package(product: "DynamicColor")]
 		case .disk: return [.package(product: "Disk")]
 		case .snapkit: return [.package(product: "SnapKit")]
@@ -114,6 +130,20 @@ public enum ExternalDependencies: CaseIterable {
 		case .hero: return [.package(product: "Hero")]
 		case .snapshottesting: return [.package(product: "SnapshotTesting")]
 		case .shake: return [.package(product: "Shake")]
+		case .reveal:
+			let path = Path(
+				"\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Application Support/Reveal/RevealServer/RevealServer.xcframework"
+			)
+
+			guard FileManager.default.fileExists(atPath: path.pathString) else {
+				return []
+			}
+
+			return [
+				.xcFramework(
+					path: path
+				)
+			]
 		}
 	}
 }
@@ -158,11 +188,6 @@ extension Project {
 
 		let packages = externalDependencies.map { externalDependency in externalDependency.swiftPackages() }
 			.flatMap { $0 }
-		let isMacCompatible = !externalDependencies.contains { $0.isNonMacDependency }
-		let devices: DeploymentDevice = isMacCompatible ? [.iphone, .ipad, .mac] : [.iphone, .ipad]
-		let supportedPlatforms =
-			isMacCompatible ? "iphonesimulator iphoneos macosx" : "iphonesimulator iphoneos"
-		print(devices)
 
 		return Project(
 			name: name,
@@ -175,20 +200,13 @@ extension Project {
 					platform: .iOS,
 					product: .framework,
 					bundleId: "com.hedvig.\(name)",
-					deploymentTarget: .iOS(targetVersion: "12.0", devices: devices),
+					deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
 					infoPlist: .default,
 					sources: ["Sources/**/*.swift"],
 					resources: [],
 					actions: [],
 					dependencies: dependencies,
-					settings: Settings(
-						base: [
-							"SUPPORTED_PLATFORMS": SettingValue(
-								stringLiteral: supportedPlatforms
-							)
-						],
-						configurations: frameworkConfigurations
-					)
+					settings: Settings(base: [:], configurations: frameworkConfigurations)
 				)
 			],
 			schemes: [

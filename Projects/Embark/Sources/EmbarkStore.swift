@@ -50,12 +50,40 @@ class EmbarkStore {
 		expression.tokens.expression?.evaluate(store: self)
 	}
 
-	func getValue(key: String) -> String? {
-		if let computedExpression = computedValues[key] { return parseComputedExpression(computedExpression) }
+	private func arrayRegexFor(key: String) -> String {
+		return "\(key)\\[[0-9]+\\]$"
+	}
 
-		if let store = revisions.last { return store[key] }
+	func getValues(key: String, includeQueue: Bool = false) -> [String]? {
+		if let computedExpression = computedValues[key] {
+			return [parseComputedExpression(computedExpression)].compactMap { $0 }
+		}
+
+		if let store = revisions.last {
+			let storeWithQueue = includeQueue ? queue.merging(store, uniquingKeysWith: takeLeft) : store
+
+			let filteredStore = storeWithQueue.filter { (innerKey, value) in
+				innerKey.range(of: arrayRegexFor(key: key), options: .regularExpression) != nil
+			}
+
+			if !filteredStore.isEmpty {
+				return Array(filteredStore.values)
+			}
+
+			if let value = storeWithQueue[key] {
+				return [value]
+			}
+		}
 
 		return nil
+	}
+
+	func getValue(key: String, includeQueue: Bool = false) -> String? {
+		return getValues(key: key, includeQueue: includeQueue)?.first
+	}
+
+	func getValueWithNull(key: String) -> String {
+		getValue(key: key) ?? "null"
 	}
 
 	func getPrefillValue(key: String) -> String? { prefill[key] }
@@ -159,7 +187,7 @@ class EmbarkStore {
 		if let binaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectBinaryExpression {
 			switch binaryExpression.binaryType {
 			case .equals:
-				if getValue(key: binaryExpression.key) == binaryExpression.value {
+				if getValueWithNull(key: binaryExpression.key) == binaryExpression.value {
 					return binaryExpression.to
 				}
 			case .lessThan:
@@ -189,7 +217,7 @@ class EmbarkStore {
 				}
 
 			case .notEquals:
-				if getValue(key: binaryExpression.key) != binaryExpression.value {
+				if getValueWithNull(key: binaryExpression.key) != binaryExpression.value {
 					return binaryExpression.to
 				}
 			case .__unknown: break

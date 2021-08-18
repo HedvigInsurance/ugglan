@@ -1,0 +1,14 @@
+mutation CheckoutUpdate($quoteID: ID!, $email: String!, $ssn: String!) {
+    editQuote(
+        input: {
+            id: $quoteID
+            email: $email
+            ssn: $ssn
+        }
+    ) {
+        ... on CompleteQuote {
+            email
+            ssn
+        }
+    }
+}

@@ -75,26 +75,6 @@ extension Forever: Presentable {
 				tableKit.set(table)
 			}
 
-		if Localization.Locale.currentLocale.market == .no {
-			bag += tableKit.view.hasWindowSignal.filter(predicate: { $0 }).take(first: 1)
-				.onValue { _ in let defaultsKey = "hasShownInvitation"
-					let hasShownInvitation = UserDefaults.standard.bool(forKey: defaultsKey)
-
-					if !hasShownInvitation {
-						viewController.present(
-							InvitationScreen(
-								potentialDiscountAmountSignal: self.service.dataSignal
-									.map { $0?.potentialDiscountAmount }
-							),
-							style: .detented(.large)
-						)
-						.onResult { _ in UserDefaults.standard.set(true, forKey: defaultsKey)
-							UserDefaults.standard.synchronize()
-						}
-					}
-				}
-		}
-
 		let shareButton = ShareButton()
 
 		bag +=

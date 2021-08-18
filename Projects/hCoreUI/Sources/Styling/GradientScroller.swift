@@ -5,7 +5,7 @@ import hCore
 
 protocol GradientScroller where Self: UIScrollView {}
 
-let colorViewTag = 88_888
+let colorViewTag = 88888
 
 extension GradientScroller {
 	func makeGradientLayer(into bag: DisposeBag) -> CAGradientLayer {
@@ -70,34 +70,41 @@ extension GradientScroller {
 			gradientLayer.add(animationGroup, forKey: "gradientAnimation")
 		}
 
-		bag += combineLatest(signal(for: \.contentOffset).atOnce(), signal(for: \.bounds).atOnce())
-			.onValue { _, bounds in CATransaction.begin()
-				CATransaction.setDisableActions(true)
-				let navigationBarHeight =
-					self.viewController?.navigationController?.navigationBar.frame.height ?? 0
+		bag += combineLatest(
+			signal(for: \.contentOffset).atOnce(),
+			signal(for: \.bounds).atOnce()
+		)
+		.onValue { _, bounds in
+			CATransaction.begin()
+			CATransaction.setDisableActions(true)
+			let navigationBarHeight =
+				self.viewController?.navigationController?.navigationBar.frame.height ?? 0
 
-				gradientLayer.transform = CATransform3DMakeAffineTransform(
-					originalTransform.concatenating(
-						CGAffineTransform(translationX: 0, y: min(-navigationBarHeight, 0))
-					)
+			gradientLayer.transform = CATransform3DMakeAffineTransform(
+				originalTransform.concatenating(
+					CGAffineTransform(translationX: 0, y: min(-navigationBarHeight, 0))
 				)
-				gradientLayer.frame = bounds
+			)
+			gradientLayer.frame = bounds
 
-				CATransaction.commit()
-			}
+			CATransaction.commit()
+		}
 
 		return gradientLayer
 	}
 
 	func addGradient(into bag: DisposeBag) {
-		guard bag.isEmpty else { return }
+		guard bag.isEmpty, !UITraitCollection.isCatalyst else {
+			return
+		}
 
 		let gradientLayer = makeGradientLayer(into: bag)
 		let navigationBarColorView = ContextGradient.makeColorView(into: bag, for: .navigationBar)
 		let tabBarColorView = ContextGradient.makeColorView(into: bag, for: .tabBar)
 
 		bag +=
-			didMoveToWindowSignal.filter(predicate: {
+			didMoveToWindowSignal
+			.filter(predicate: {
 				!(self.layer.sublayers?.contains(where: { $0.name == "gradientLayer" }) ?? false)
 			})
 			.filter(predicate: {
@@ -120,9 +127,9 @@ extension GradientScroller {
 
 					if navigationController.navigationBar.viewWithTag(colorViewTag) == nil,
 						let barBackgroundView = navigationController.navigationBar.subviews
-							.first
+							.first,
+						let effectView = barBackgroundView.subviews.first
 					{
-						let effectView = barBackgroundView.subviews[1]
 						barBackgroundView.addSubview(navigationBarColorView)
 
 						navigationBarColorView.snp.makeConstraints { make in
@@ -132,7 +139,9 @@ extension GradientScroller {
 						navigationBarColorView.alpha = effectView.alpha
 
 						bag += effectView.signal(for: \.alpha).distinct()
-							.onValue { alpha in navigationBarColorView.alpha = alpha }
+							.onValue { alpha in
+								navigationBarColorView.alpha = alpha
+							}
 					}
 
 					if let tabBarController = navigationController.tabBarController,
@@ -147,7 +156,9 @@ extension GradientScroller {
 
 					self.layer.insertSublayer(gradientLayer, at: 0)
 
-					bag += { gradientLayer.removeFromSuperlayer() }
+					bag += {
+						gradientLayer.removeFromSuperlayer()
+					}
 				}
 			}
 

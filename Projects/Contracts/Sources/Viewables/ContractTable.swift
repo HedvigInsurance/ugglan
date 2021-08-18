@@ -11,6 +11,7 @@ struct ContractTable {
 	@Inject var client: ApolloClient
 	let presentingViewController: UIViewController
 	let filter: ContractFilter
+	let state: ContractsState
 }
 
 extension GraphQL.ContractsQuery.Data.Contract.CurrentAgreement {
@@ -40,11 +41,13 @@ extension ContractTable: Viewable {
 		let bag = DisposeBag()
 
 		let sectionStyle = SectionStyle(
+			insets: .zero,
 			rowInsets: UIEdgeInsets(top: 10, left: 15, bottom: 10, right: 15),
 			itemSpacing: 0,
 			minRowHeight: 10,
 			background: .init(all: UIColor.clear.asImage()),
 			selectedBackground: .init(all: UIColor.clear.asImage()),
+			shadow: .none,
 			header: .none,
 			footer: .none
 		)
@@ -101,7 +104,8 @@ extension ContractTable: Viewable {
 							ContractRow(
 								contract: contract,
 								displayName: contract.displayName,
-								type: contract.currentAgreement.type
+								type: contract.currentAgreement.type,
+								state: state
 							)
 						}
 					)
@@ -121,6 +125,16 @@ extension ContractTable: Viewable {
 		//		)
 		//
 		//		tableKit.view.refreshControl = refreshControl
+
+		bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
+			client.fetch(
+				query: GraphQL.ContractsQuery(
+					locale: Localization.Locale.currentLocale.asGraphQLLocale()
+				),
+				cachePolicy: .fetchIgnoringCacheData
+			)
+			.onValue { _ in }
+		}
 
 		return (tableKit.view, bag)
 	}

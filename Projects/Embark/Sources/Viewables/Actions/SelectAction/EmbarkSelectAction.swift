@@ -84,7 +84,9 @@ extension EmbarkSelectAction: Viewable {
 								callback(link)
 							}
 					}
-					if optionsSlice.count < 2 { stack.addArrangedSubview(UIView()) }
+					if optionsSlice.count < 2, options.count > 1 {
+						stack.addArrangedSubview(UIView())
+					}
 				}
 
 				return bag

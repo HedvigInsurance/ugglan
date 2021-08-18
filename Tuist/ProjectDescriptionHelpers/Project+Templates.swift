@@ -117,7 +117,7 @@ extension Project {
 				platform: .iOS,
 				product: .framework,
 				bundleId: "com.hedvig.\(name)",
-				deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+				deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
 				infoPlist: .default,
 				sources: sources,
 				resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
@@ -138,7 +138,7 @@ extension Project {
 				platform: .iOS,
 				product: .framework,
 				bundleId: "com.hedvig.\(name)Testing",
-				deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+				deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
 				infoPlist: .default,
 				sources: "Testing/**/*.swift",
 				actions: [],
@@ -208,9 +208,23 @@ extension Project {
 				platform: .iOS,
 				product: .app,
 				bundleId: "com.hedvig.example.\(name)Example",
-				deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+				deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad, .mac]),
 				infoPlist: .extendingDefault(with: [
-					"UIMainStoryboardFile": "", "UILaunchStoryboardName": "LaunchScreen",
+					"UIMainStoryboardFile": "",
+					"UILaunchStoryboardName": "LaunchScreen",
+					"UIApplicationSceneManifest": [
+						"UIApplicationSupportsMultipleScenes": true,
+						"UISceneConfigurations": [
+							"UIWindowSceneSessionRoleApplication": [
+								[
+									"UISceneConfigurationName":
+										"Default Configuration",
+									"UISceneDelegateClassName":
+										"\(name)Example.SceneDelegate",
+								]
+							]
+						],
+					],
 				]),
 				sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
 				resources: "Example/Resources/**",

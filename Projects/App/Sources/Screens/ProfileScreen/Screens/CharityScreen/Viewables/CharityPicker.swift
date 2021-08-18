@@ -19,11 +19,13 @@ extension CharityPicker: Viewable {
 		let table = Table<EmptySection, CharityOption>(rows: [])
 
 		let sectionStyle = SectionStyle(
+			insets: .zero,
 			rowInsets: UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0),
 			itemSpacing: 0,
 			minRowHeight: 10,
 			background: .none,
 			selectedBackground: .none,
+			shadow: .none,
 			header: .none,
 			footer: .none
 		)

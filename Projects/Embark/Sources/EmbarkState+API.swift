@@ -4,7 +4,29 @@ import Foundation
 import hGraphQL
 
 extension ResultMap {
-	func deepFind(_ path: String) -> String? {
+	private var arrayRegex: String {
+		"\\[[0-9]+\\]$"
+	}
+
+	private func getArrayValue(_ path: String) -> Any? {
+		if path.range(of: ".*\(arrayRegex)", options: .regularExpression) != nil,
+			let rangeOfIndex = path.range(of: arrayRegex, options: .regularExpression)
+		{
+			let index = String(path[rangeOfIndex].dropFirst().dropLast())
+
+			let pathWithoutIndex = String(path.replacingCharacters(in: rangeOfIndex, with: ""))
+
+			let resultMap = self[pathWithoutIndex] as? [Any]
+
+			if let intIndex = Int(index), resultMap?.indices.contains(intIndex) ?? false {
+				return resultMap?[intIndex]
+			}
+		}
+
+		return nil
+	}
+
+	func deepFind(_ path: String) -> Any? {
 		let splittedPath = path.split(separator: ".")
 
 		if splittedPath.count > 1 {
@@ -17,15 +39,47 @@ extension ResultMap {
 					in: path
 				)
 			{
+				let nextPath = String(path.replacingCharacters(in: range, with: "").dropFirst())
+
+				if let arrayValue = getArrayValue(String(firstPath)) {
+					return (arrayValue as? ResultMap)?.deepFind(nextPath)
+				}
+
 				let resultMap = self[String(firstPath)] as? ResultMap
 				return resultMap?
-					.deepFind(String(path.replacingCharacters(in: range, with: "").dropFirst()))
+					.deepFind(nextPath)
 			}
 
 			return nil
 		}
 
-		return self[path] as? String
+		return getArrayValue(path) ?? self[path] ?? nil
+	}
+
+	func getValues(at path: String) -> Either<[String], String>? {
+		guard let value = deepFind(path) else {
+			return nil
+		}
+
+		if let values = value as? [String] {
+			return .make(values)
+		} else if let values = value as? [Int] {
+			return .make(values.map { String($0) })
+		} else if let values = value as? [Float] {
+			return .make(values.map { String($0) })
+		} else if let values = value as? [Bool] {
+			return .make(values.map { String($0) })
+		} else if let value = value as? String {
+			return .make(value)
+		} else if let value = value as? Int {
+			return .make(String(value))
+		} else if let value = value as? Float {
+			return .make(String(value))
+		} else if let value = value as? Bool {
+			return .make(String(value))
+		}
+
+		return nil
 	}
 }
 
@@ -34,9 +88,9 @@ extension GraphQL.ApiSingleVariableFragment {
 		var map = GraphQLMap()
 
 		switch self.as {
-		case .int: map[key] = Int(store.getValue(key: from) ?? "")
-		case .string: map[key] = store.getValue(key: from)
-		case .boolean: map[key] = store.getValue(key: from) == "true"
+		case .int: map[key] = Int(store.getValue(key: from, includeQueue: true) ?? "")
+		case .string: map[key] = store.getValue(key: from, includeQueue: true)
+		case .boolean: map[key] = store.getValue(key: from, includeQueue: true) == "true"
 		case .__unknown: break
 		}
 
@@ -61,40 +115,52 @@ extension GraphQL.ApiGeneratedVariableFragment {
 }
 
 extension GraphQL.ApiMultiActionVariableFragment {
-	func graphQLMap(store: EmbarkStore) -> GraphQLMap {
-		var map = GraphQLMap()
+	func graphQLMapArray(store: EmbarkStore) -> [ResultMap] {
+		var items: [ResultMap] = []
 
-		variables.forEach { variable in
-			if let apiSingleVariableFragment = variable.fragments.apiSingleVariableFragment {
-				map = map.merging(
-					apiSingleVariableFragment.graphQLMap(store: store),
-					uniquingKeysWith: { lhs, _ in lhs }
-				)
-			} else if let apiGeneratedVariableFragment = variable.fragments.apiGeneratedVariableFragment {
-				map = map.merging(
-					apiGeneratedVariableFragment.graphQLMap(store: store),
-					uniquingKeysWith: { lhs, _ in lhs }
-				)
-			} else if let multiActionVariable = variable.asEmbarkApiGraphQlMultiActionVariable {
-				if let apiSingleVariableFragment = multiActionVariable.fragments
-					.apiSingleVariableFragment
-				{
-					map = map.merging(
-						apiSingleVariableFragment.graphQLMap(store: store),
+		func appendOrMerge(map: ResultMap, offset: Int) {
+			if items.indices.contains(offset) {
+				items[offset] = items[offset]
+					.merging(
+						map,
 						uniquingKeysWith: { lhs, _ in lhs }
 					)
-				} else if let apiGeneratedVariableFragment = multiActionVariable.fragments
-					.apiGeneratedVariableFragment
-				{
-					map = map.merging(
-						apiGeneratedVariableFragment.graphQLMap(store: store),
-						uniquingKeysWith: { lhs, _ in lhs }
-					)
-				}
+			} else {
+				items.insert(map, at: offset)
 			}
 		}
 
-		return map
+		let multiActionItems = store.getMultiActionItems(actionKey: key)
+		let groupedMultiActionItems = Dictionary(grouping: multiActionItems, by: { $0.index }).values
+
+		variables.forEach { variable in
+			if let apiSingleVariableFragment = variable.fragments.apiSingleVariableFragment {
+				groupedMultiActionItems.enumerated()
+					.forEach { offset, _ in
+						var nestedApiSingleVariableFragment = GraphQL.ApiSingleVariableFragment(
+							unsafeResultMap: apiSingleVariableFragment.resultMap
+						)
+						nestedApiSingleVariableFragment.from =
+							"\(key)[\(offset)]\(apiSingleVariableFragment.key)"
+						appendOrMerge(
+							map: nestedApiSingleVariableFragment.graphQLMap(store: store),
+							offset: offset
+						)
+					}
+			} else if let apiGeneratedVariableFragment = variable.fragments.apiGeneratedVariableFragment {
+				groupedMultiActionItems.enumerated()
+					.forEach { offset, _ in
+						appendOrMerge(
+							map: apiGeneratedVariableFragment.graphQLMap(store: store),
+							offset: offset
+						)
+					}
+			} else if let _ = variable.asEmbarkApiGraphQlMultiActionVariable {
+				fatalError("Unsupported for now")
+			}
+		}
+
+		return items
 	}
 }
 
@@ -113,9 +179,8 @@ extension GraphQL.ApiVariablesFragment {
 				uniquingKeysWith: { lhs, _ in lhs }
 			)
 		} else if let apiMultiActionVariableFragment = fragments.apiMultiActionVariableFragment {
-			map = map.merging(
-				apiMultiActionVariableFragment.graphQLMap(store: store),
-				uniquingKeysWith: { lhs, _ in lhs }
+			map[apiMultiActionVariableFragment.key] = apiMultiActionVariableFragment.graphQLMapArray(
+				store: store
 			)
 		}
 
@@ -155,15 +220,45 @@ extension GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
 
 extension ResultMap {
 	func insertInto(store: EmbarkStore, basedOn query: GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery) {
-		query.data.queryResults.forEach { queryResult in let value = deepFind(queryResult.key)
-			store.setValue(key: queryResult.as, value: value)
+		query.data.queryResults.forEach { queryResult in
+			let values = getValues(at: queryResult.key)
+
+			switch values {
+			case let .left(array):
+				array.enumerated()
+					.forEach { (offset, value) in
+						store.setValue(
+							key: "\(queryResult.as)[\(String(offset))]",
+							value: value
+						)
+					}
+			case let .right(value):
+				store.setValue(key: queryResult.as, value: value)
+			case .none:
+				break
+			}
 		}
 	}
 
 	func insertInto(store: EmbarkStore, basedOn mutation: GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation) {
 		mutation.data.mutationResults.compactMap { $0 }
-			.forEach { mutationResult in let value = deepFind(mutationResult.key)
-				store.setValue(key: mutationResult.as, value: value)
+			.forEach { mutationResult in
+				let values = getValues(at: mutationResult.key)
+
+				switch values {
+				case let .left(array):
+					array.enumerated()
+						.forEach { (offset, value) in
+							store.setValue(
+								key: "\(mutationResult.as)[\(String(offset))]",
+								value: value
+							)
+						}
+				case let .right(value):
+					store.setValue(key: mutationResult.as, value: value)
+				case .none:
+					break
+				}
 			}
 	}
 }
@@ -225,7 +320,6 @@ extension EmbarkState {
 								with: data,
 								options: []
 							) as? ResultMap {
-								print(result)
 								if let errors = result["errors"] as? [ResultMap] {
 									if let error = errors.first,
 										let message = error["message"]

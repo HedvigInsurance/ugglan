@@ -156,6 +156,56 @@ public struct Masking {
 		}
 	}
 
+	public var placeholderText: String? {
+		switch type {
+		case .none:
+			return nil
+		case .personalNumber:
+			return nil
+		case .norwegianPersonalNumber:
+			return L10n.SimpleSignLogin.TextField.helperText
+		case .danishPersonalNumber:
+			return L10n.SimpleSignLogin.TextField.helperTextDk
+		case .postalCode:
+			return nil
+		case .email:
+			return L10n.emailPlaceholder
+		case .birthDate:
+			return nil
+		case .birthDateReverse:
+			return nil
+		case .norwegianPostalCode:
+			return nil
+		case .digits:
+			return nil
+		}
+	}
+
+	public var helperText: String? {
+		switch type {
+		case .none:
+			return nil
+		case .personalNumber:
+			return nil
+		case .norwegianPersonalNumber:
+			return L10n.SimpleSignLogin.TextField.label
+		case .danishPersonalNumber:
+			return L10n.SimpleSignLogin.TextField.labelDk
+		case .postalCode:
+			return nil
+		case .email:
+			return L10n.emailRowTitle
+		case .birthDate:
+			return nil
+		case .birthDateReverse:
+			return nil
+		case .norwegianPostalCode:
+			return nil
+		case .digits:
+			return nil
+		}
+	}
+
 	public func maskValue(text: String, previousText: String) -> String {
 		func delimitedDigits(delimiterPositions: [Int], maxCount: Int, delimiter: Character) -> String {
 			if text.count < previousText.count {

@@ -24,7 +24,7 @@ extension MyPaymentRow: Viewable {
 
 		bag += monthlyCostSignal.atOnce().compactMap { $0 }
 			.map { monthlyCost in
-				"\(monthlyCost) \(L10n.paymentCurrencyOccurrence) · \(L10n.profileMyPaymentMethod)"
+				"\(monthlyCost) \(L10n.paymentCurrencyOccurrence)"
 			}
 			.bindTo(row.subtitle)
 

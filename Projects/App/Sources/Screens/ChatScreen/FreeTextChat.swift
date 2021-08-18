@@ -9,18 +9,12 @@ import hGraphQL
 struct FreeTextChat { @Inject var client: ApolloClient }
 
 extension FreeTextChat: Presentable {
-	func materialize() -> (UIViewController, Future<Void>) {
+	func materialize() -> (UIViewController, Disposable) {
 		let bag = DisposeBag()
 		let chat = Chat()
-		let (viewController, future) = chat.materialize()
+		let (viewController, signal) = chat.materialize()
 
-		let titleHedvigLogo = UIImageView()
-		titleHedvigLogo.image = Asset.wordmark.image
-		titleHedvigLogo.contentMode = .scaleAspectFit
-
-		viewController.navigationItem.titleView = titleHedvigLogo
-
-		titleHedvigLogo.snp.makeConstraints { make in make.width.equalTo(80) }
+		viewController.navigationItem.titleView = .titleWordmarkView
 
 		bag += client.perform(mutation: GraphQL.TriggerFreeTextChatMutation())
 			.onValue { _ in
@@ -29,15 +23,11 @@ extension FreeTextChat: Presentable {
 				}
 			}
 
+		bag += signal.nil()
+
 		return (
 			viewController,
-			Future { completion in bag += future.onResult { result in completion(result) }
-
-				return Disposer {
-					future.cancel()
-					bag.dispose()
-				}
-			}
+			bag
 		)
 	}
 }
