@@ -10,58 +10,58 @@ public typealias Tooltip = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Too
 struct EmbarkTooltips { let tooltips: [Tooltip] }
 
 extension EmbarkTooltips: Presentable {
-	public func materialize() -> (UIViewController, Future<Void>) {
-		let containerView = UIStackView()
+    public func materialize() -> (UIViewController, Future<Void>) {
+        let containerView = UIStackView()
 
-		containerView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 20)
-		containerView.isLayoutMarginsRelativeArrangement = true
-		containerView.axis = .vertical
-		containerView.spacing = 16
+        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 20, verticalInset: 20)
+        containerView.isLayoutMarginsRelativeArrangement = true
+        containerView.axis = .vertical
+        containerView.spacing = 16
 
-		let viewController = UIViewController()
-		viewController.view.backgroundColor = .brand(.secondaryBackground())
-		let bag = DisposeBag()
+        let viewController = UIViewController()
+        viewController.view.backgroundColor = .brand(.secondaryBackground())
+        let bag = DisposeBag()
 
-		viewController.view.addSubview(containerView)
-		containerView.snp.makeConstraints { make in make.leading.trailing.top.equalToSuperview()
-			make.bottom.lessThanOrEqualToSuperview().inset(viewController.view.safeAreaInsets.bottom)
-		}
+        viewController.view.addSubview(containerView)
+        containerView.snp.makeConstraints { make in make.leading.trailing.top.equalToSuperview()
+            make.bottom.lessThanOrEqualToSuperview().inset(viewController.view.safeAreaInsets.bottom)
+        }
 
-		viewController.title = L10n.OnboardingEmbarkFlow.informationModalTitle
+        viewController.title = L10n.OnboardingEmbarkFlow.informationModalTitle
 
-		bag += containerView.didLayoutSignal.onValue { _ in
-			viewController.preferredContentSize = containerView.systemLayoutSizeFitting(.zero)
-		}
+        bag += containerView.didLayoutSignal.onValue { _ in
+            viewController.preferredContentSize = containerView.systemLayoutSizeFitting(.zero)
+        }
 
-		return (
-			viewController,
-			Future { _ in tooltips.forEach { tooltip in bag += containerView.addArranged(tooltip) }
+        return (
+            viewController,
+            Future { _ in tooltips.forEach { tooltip in bag += containerView.addArranged(tooltip) }
 
-				return bag
-			}
-		)
-	}
+                return bag
+            }
+        )
+    }
 }
 
 extension Tooltip: Viewable {
-	public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-		let bag = DisposeBag()
+    public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+        let bag = DisposeBag()
 
-		let containerView = UIStackView()
-		containerView.isLayoutMarginsRelativeArrangement = true
-		containerView.axis = .vertical
-		containerView.spacing = 10
+        let containerView = UIStackView()
+        containerView.isLayoutMarginsRelativeArrangement = true
+        containerView.axis = .vertical
+        containerView.spacing = 10
 
-		let titleLabel = UILabel(value: title, style: .brand(.title2(color: .primary)))
-		containerView.addArrangedSubview(titleLabel)
+        let titleLabel = UILabel(value: title, style: .brand(.title2(color: .primary)))
+        containerView.addArrangedSubview(titleLabel)
 
-		let messageLabel = MultilineLabel(
-			value: description,
-			style: .brand(.body(color: .secondary(state: .dynamic)))
-		)
+        let messageLabel = MultilineLabel(
+            value: description,
+            style: .brand(.body(color: .secondary(state: .dynamic)))
+        )
 
-		bag += containerView.addArranged(messageLabel)
+        bag += containerView.addArranged(messageLabel)
 
-		return (containerView, bag)
-	}
+        return (containerView, bag)
+    }
 }

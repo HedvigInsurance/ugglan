@@ -6,22 +6,22 @@ import hCore
 import hGraphQL
 
 public struct UpcomingAddressChangeDetails {
-	let details: hGraphQL.GraphQL.DetailsTableFragment
+    let details: hGraphQL.GraphQL.DetailsTableFragment
 }
 
 extension UpcomingAddressChangeDetails: Presentable {
-	public func materialize() -> (UIViewController, Disposable) {
-		let viewController = UIViewController()
-		let bag = DisposeBag()
+    public func materialize() -> (UIViewController, Disposable) {
+        let viewController = UIViewController()
+        let bag = DisposeBag()
 
-		let form = FormView()
+        let form = FormView()
 
-		viewController.title = L10n.InsuranceDetails.updateDetailsSheetTitle
+        viewController.title = L10n.InsuranceDetails.updateDetailsSheetTitle
 
-		bag += viewController.install(form)
+        bag += viewController.install(form)
 
-		bag += form.append(details)
+        bag += form.append(details)
 
-		return (viewController, bag)
-	}
+        return (viewController, bag)
+    }
 }
