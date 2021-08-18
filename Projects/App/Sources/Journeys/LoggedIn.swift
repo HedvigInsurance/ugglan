@@ -20,7 +20,7 @@ extension AppJourney {
 			case .startMovingFlow:
 				AppJourney.movingFlow
 			case .openClaims:
-				AppJourney.claimsHandler
+				AppJourney.claimsJourney
 			case .openFreeTextChat:
 				AppJourney.freeTextChat
 			case .openConnectPayments:
