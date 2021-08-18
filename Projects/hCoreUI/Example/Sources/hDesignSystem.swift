@@ -1,10 +1,10 @@
 import Combine
 import Flow
 import Foundation
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import Presentation
 
 struct ButtonShowcase<Content: View>: View {
 	let title: String
@@ -122,7 +122,7 @@ struct hDesignSystem: View {
 }
 
 extension hDesignSystem {
-    static var journey: some JourneyPresentation {
-        HostingJourney(rootView: hDesignSystem()).configureTitle("hDesignSystem")
-    }
+	static var journey: some JourneyPresentation {
+		HostingJourney(rootView: hDesignSystem()).configureTitle("hDesignSystem")
+	}
 }

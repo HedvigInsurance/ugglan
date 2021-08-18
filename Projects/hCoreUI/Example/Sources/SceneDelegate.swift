@@ -23,7 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 			window.rootViewController = navigationController
 
-            bag += navigationController.present(hDesignSystem.journey)
+			bag += navigationController.present(hDesignSystem.journey)
 
 			window.makeKeyAndVisible()
 		}
