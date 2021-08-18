@@ -12,69 +12,69 @@ import hCore
 import hCoreUI
 
 struct CrossFrameworkCoordinator {
-	static func setup() {
-		EmbarkTrackingEvent.trackingHandler = { event in let properties = event.properties as? Properties
-			Mixpanel.mainInstance().track(event: event.title, properties: properties)
-		}
+    static func setup() {
+        EmbarkTrackingEvent.trackingHandler = { event in let properties = event.properties as? Properties
+            Mixpanel.mainInstance().track(event: event.title, properties: properties)
+        }
 
-		Button.trackingHandler = { button in
-			if let localizationKey = button.title.value.displayValue.derivedFromL10n?.key {
-				Mixpanel.mainInstance().track(event: localizationKey, properties: ["context": "Button"])
-			}
-		}
+        Button.trackingHandler = { button in
+            if let localizationKey = button.title.value.displayValue.derivedFromL10n?.key {
+                Mixpanel.mainInstance().track(event: localizationKey, properties: ["context": "Button"])
+            }
+        }
 
-		UIControl.trackingHandler = { control in
-			if let accessibilityLabel = control.accessibilityLabel {
-				if let localizationKey = accessibilityLabel.derivedFromL10n?.key {
-					Mixpanel.mainInstance()
-						.track(
-							event: "TAP_\(localizationKey)",
-							properties: ["context": "UIControl"]
-						)
-				}
-			} else if let accessibilityIdentifier = control.accessibilityIdentifier {
-				Mixpanel.mainInstance()
-					.track(
-						event: "TAP_\(accessibilityIdentifier)",
-						properties: ["context": "UIControl"]
-					)
-			}
-		}
-		ButtonRow.trackingHandler = { buttonRow in
-			if let localizationKey = buttonRow.text.value.derivedFromL10n?.key {
-				Mixpanel.mainInstance()
-					.track(event: "TAP_\(localizationKey)", properties: ["context": "ButtonRow"])
-			}
-		}
-		ChatButton.openChatHandler = { chatButton in
-			chatButton.presentingViewController.present(
-				FreeTextChat().withCloseButton,
-				style: .detented(.large)
-			)
-		}
+        UIControl.trackingHandler = { control in
+            if let accessibilityLabel = control.accessibilityLabel {
+                if let localizationKey = accessibilityLabel.derivedFromL10n?.key {
+                    Mixpanel.mainInstance()
+                        .track(
+                            event: "TAP_\(localizationKey)",
+                            properties: ["context": "UIControl"]
+                        )
+                }
+            } else if let accessibilityIdentifier = control.accessibilityIdentifier {
+                Mixpanel.mainInstance()
+                    .track(
+                        event: "TAP_\(accessibilityIdentifier)",
+                        properties: ["context": "UIControl"]
+                    )
+            }
+        }
+        ButtonRow.trackingHandler = { buttonRow in
+            if let localizationKey = buttonRow.text.value.derivedFromL10n?.key {
+                Mixpanel.mainInstance()
+                    .track(event: "TAP_\(localizationKey)", properties: ["context": "ButtonRow"])
+            }
+        }
+        ChatButton.openChatHandler = { chatButton in
+            chatButton.presentingViewController.present(
+                FreeTextChat().withCloseButton,
+                style: .detented(.large)
+            )
+        }
 
-		Home.openClaimsHandler = { viewController in
-			viewController.present(
-				AppJourney.claimsJourney
-			)
-			.onValue { _ in }
-		}
+        Home.openClaimsHandler = { viewController in
+            viewController.present(
+                AppJourney.claimsJourney
+            )
+            .onValue { _ in }
+        }
 
-		Home.openFreeTextChatHandler = { viewController in
-			viewController.present(FreeTextChat().withCloseButton, style: .detented(.large))
-		}
+        Home.openFreeTextChatHandler = { viewController in
+            viewController.present(FreeTextChat().withCloseButton, style: .detented(.large))
+        }
 
-		Home.openConnectPaymentHandler = { viewController in
-			viewController.present(
-				PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
-				style: .detented(.large)
-			)
-		}
+        Home.openConnectPaymentHandler = { viewController in
+            viewController.present(
+                PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
+                style: .detented(.large)
+            )
+        }
 
-		Contracts.openFreeTextChatHandler = { viewController in
-			viewController.present(FreeTextChat().withCloseButton, style: .detented(.large))
-		}
+        Contracts.openFreeTextChatHandler = { viewController in
+            viewController.present(FreeTextChat().withCloseButton, style: .detented(.large))
+        }
 
-		CrossFramework.onRequestLogout = { UIApplication.shared.appDelegate.logout() }
-	}
+        CrossFramework.onRequestLogout = { UIApplication.shared.appDelegate.logout() }
+    }
 }
