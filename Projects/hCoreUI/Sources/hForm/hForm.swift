@@ -100,17 +100,17 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
 		self.upperScrollView?.updateConstraintsIfNeeded()
 		self.upperScrollView?.layoutIfNeeded()
 
-        /// Override window userInterfacestyle if it doesn't match hForm's colorScheme
+		/// Override window userInterfacestyle if it doesn't match hForm's colorScheme
 		if #available(iOS 14.0, *) {
-            let style = self.upperScrollView?.window?.traitCollection.userInterfaceStyle
-            
-            if style == .dark && colorScheme == .light {
-                self.upperScrollView?.window?.overrideUserInterfaceStyle = .light
-            }
-            
-            if style == .light && colorScheme == .dark {
-                self.upperScrollView?.window?.overrideUserInterfaceStyle = .dark
-            }
+			let style = self.upperScrollView?.window?.traitCollection.userInterfaceStyle
+
+			if style == .dark && colorScheme == .light {
+				self.upperScrollView?.window?.overrideUserInterfaceStyle = .light
+			}
+
+			if style == .light && colorScheme == .dark {
+				self.upperScrollView?.window?.overrideUserInterfaceStyle = .dark
+			}
 		}
 	}
 
