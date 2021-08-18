@@ -11,7 +11,7 @@ if [ -z "$CI" ]; then
     build | grep 'TARGET_BUILD_DIR')
 else
     buildDir=$(xcodebuild \
-        -derivedDataPath ../../../DerivedData  \
+        -derivedDataPath ../../DerivedData  \
         -project Projects/Codegen/Codegen.xcodeproj \
         -scheme "Apollo Codegen" \
         build | grep 'TARGET_BUILD_DIR')
