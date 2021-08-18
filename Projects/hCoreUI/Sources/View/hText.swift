@@ -11,13 +11,15 @@ import SwiftUI
 
 @available(iOS 13.0, *)
 public struct hText: View {
-    var content: String
-    
-    public init(_ content: String) {
-        self.content = content
-    }
-    
-    public var body: some View {
-        Text(content).font(Fonts.font)
-    }
+	var content: String
+
+	public init(
+		_ content: String
+	) {
+		self.content = content
+	}
+
+	public var body: some View {
+		Text(content).font(Fonts.font)
+	}
 }
