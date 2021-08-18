@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: OneMachine
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v2
