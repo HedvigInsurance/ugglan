@@ -6,22 +6,22 @@ import hCore
 import hGraphQL
 
 #if canImport(Shake)
-	import Shake
+    import Shake
 #endif
 
 public struct AnalyticsCoordinator {
-	@Inject private var client: ApolloClient
+    @Inject private var client: ApolloClient
 
-	public init() {}
+    public init() {}
 
-	func setUserId() {
-		client.fetch(query: GraphQL.MemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
-			.compactMap { $0.member.id }
-			.onValue { id in
-				#if canImport(Shake)
-					Shake.setMetadata(key: "memberId", value: id)
-				#endif
-				Mixpanel.mainInstance().identify(distinctId: id)
-			}
-	}
+    func setUserId() {
+        client.fetch(query: GraphQL.MemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
+            .compactMap { $0.member.id }
+            .onValue { id in
+                #if canImport(Shake)
+                    Shake.setMetadata(key: "memberId", value: id)
+                #endif
+                Mixpanel.mainInstance().identify(distinctId: id)
+            }
+    }
 }

@@ -7,127 +7,127 @@ import hCore
 import hCoreUI
 
 public struct Forever {
-	let service: ForeverService
+    let service: ForeverService
 
-	public init(service: ForeverService) { self.service = service }
+    public init(service: ForeverService) { self.service = service }
 }
 
 extension Forever: Presentable {
-	public func materialize() -> (UIViewController, Disposable) {
-		let viewController = UIViewController()
-		viewController.title = L10n.referralsScreenTitle
-		viewController.extendedLayoutIncludesOpaqueBars = true
-		viewController.edgesForExtendedLayout = [.top, .left, .right]
-		let bag = DisposeBag()
+    public func materialize() -> (UIViewController, Disposable) {
+        let viewController = UIViewController()
+        viewController.title = L10n.referralsScreenTitle
+        viewController.extendedLayoutIncludesOpaqueBars = true
+        viewController.edgesForExtendedLayout = [.top, .left, .right]
+        let bag = DisposeBag()
 
-		let infoBarButton = UIBarButtonItem(
-			image: hCoreUIAssets.infoLarge.image,
-			style: .plain,
-			target: nil,
-			action: nil
-		)
+        let infoBarButton = UIBarButtonItem(
+            image: hCoreUIAssets.infoLarge.image,
+            style: .plain,
+            target: nil,
+            action: nil
+        )
 
-		bag += infoBarButton.onValue {
-			viewController.present(
-				InfoAndTerms(
-					potentialDiscountAmountSignal: self.service.dataSignal.map {
-						$0?.potentialDiscountAmount
-					}
-				),
-				style: .detented(.large)
-			)
-		}
+        bag += infoBarButton.onValue {
+            viewController.present(
+                InfoAndTerms(
+                    potentialDiscountAmountSignal: self.service.dataSignal.map {
+                        $0?.potentialDiscountAmount
+                    }
+                ),
+                style: .detented(.large)
+            )
+        }
 
-		viewController.navigationItem.rightBarButtonItem = infoBarButton
+        viewController.navigationItem.rightBarButtonItem = infoBarButton
 
-		let tableKit = TableKit<String, InvitationRow>(style: .brandInset, holdIn: bag)
-		bag += tableKit.delegate.heightForCell.set { index -> CGFloat in tableKit.table[index].cellHeight }
+        let tableKit = TableKit<String, InvitationRow>(style: .brandInset, holdIn: bag)
+        bag += tableKit.delegate.heightForCell.set { index -> CGFloat in tableKit.table[index].cellHeight }
 
-		bag += NotificationCenter.default.signal(forName: .costDidUpdate).onValue { _ in service.refetch() }
-		//
-		//		let refreshControl = UIRefreshControl()
-		//
-		//		bag += refreshControl.onValue {
-		//			refreshControl.endRefreshing()
-		//			self.service.refetch()
-		//		}
-		//
-		//		tableKit.view.refreshControl = refreshControl
+        bag += NotificationCenter.default.signal(forName: .costDidUpdate).onValue { _ in service.refetch() }
+        //
+        //		let refreshControl = UIRefreshControl()
+        //
+        //		bag += refreshControl.onValue {
+        //			refreshControl.endRefreshing()
+        //			self.service.refetch()
+        //		}
+        //
+        //		tableKit.view.refreshControl = refreshControl
 
-		bag += tableKit.view.addTableHeaderView(Header(service: service), animated: false)
+        bag += tableKit.view.addTableHeaderView(Header(service: service), animated: false)
 
-		let containerView = UIView()
-		viewController.view = containerView
+        let containerView = UIView()
+        viewController.view = containerView
 
-		containerView.addSubview(tableKit.view)
+        containerView.addSubview(tableKit.view)
 
-		tableKit.view.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
+        tableKit.view.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
 
-		bag += service.dataSignal.atOnce().compactMap { $0?.invitations }
-			.onValue { invitations in
-				var table = Table(sections: [
-					(
-						L10n.ReferralsActive.Invited.title,
-						invitations.map { InvitationRow(invitation: $0) }
-					)
-				])
-				table.removeEmptySections()
-				tableKit.set(table)
-			}
+        bag += service.dataSignal.atOnce().compactMap { $0?.invitations }
+            .onValue { invitations in
+                var table = Table(sections: [
+                    (
+                        L10n.ReferralsActive.Invited.title,
+                        invitations.map { InvitationRow(invitation: $0) }
+                    )
+                ])
+                table.removeEmptySections()
+                tableKit.set(table)
+            }
 
-		let shareButton = ShareButton()
+        let shareButton = ShareButton()
 
-		bag +=
-			containerView.add(shareButton) { buttonView in
-				buttonView.snp.makeConstraints { make in make.bottom.leading.trailing.equalToSuperview()
-				}
+        bag +=
+            containerView.add(shareButton) { buttonView in
+                buttonView.snp.makeConstraints { make in make.bottom.leading.trailing.equalToSuperview()
+                }
 
-				bag += buttonView.didLayoutSignal.onValue {
-					let bottomInset = buttonView.frame.height - buttonView.safeAreaInsets.bottom
-					tableKit.view.scrollIndicatorInsets = UIEdgeInsets(
-						top: 0,
-						left: 0,
-						bottom: bottomInset,
-						right: 0
-					)
-					tableKit.view.contentInset = UIEdgeInsets(
-						top: 0,
-						left: 0,
-						bottom: bottomInset,
-						right: 0
-					)
-				}
-			}
-			.withLatestFrom(service.dataSignal.atOnce().compactMap { $0?.discountCode })
-			.onValue { buttonView, discountCode in shareButton.loadableButton.startLoading()
-				viewController.presentConditionally(
-					PushNotificationReminder(),
-					style: .detented(.large)
-				)
-				.onResult { _ in
-					let encodedDiscountCode =
-						discountCode.addingPercentEncoding(
-							withAllowedCharacters: .urlQueryAllowed
-						) ?? ""
-					let activity = ActivityView(
-						activityItems: [
-							URL(string: L10n.referralsLink(encodedDiscountCode)) ?? ""
-						],
-						applicationActivities: nil,
-						sourceView: buttonView,
-						sourceRect: buttonView.bounds
-					)
-					viewController.present(activity)
-					shareButton.loadableButton.stopLoading()
-				}
-			}
+                bag += buttonView.didLayoutSignal.onValue {
+                    let bottomInset = buttonView.frame.height - buttonView.safeAreaInsets.bottom
+                    tableKit.view.scrollIndicatorInsets = UIEdgeInsets(
+                        top: 0,
+                        left: 0,
+                        bottom: bottomInset,
+                        right: 0
+                    )
+                    tableKit.view.contentInset = UIEdgeInsets(
+                        top: 0,
+                        left: 0,
+                        bottom: bottomInset,
+                        right: 0
+                    )
+                }
+            }
+            .withLatestFrom(service.dataSignal.atOnce().compactMap { $0?.discountCode })
+            .onValue { buttonView, discountCode in shareButton.loadableButton.startLoading()
+                viewController.presentConditionally(
+                    PushNotificationReminder(),
+                    style: .detented(.large)
+                )
+                .onResult { _ in
+                    let encodedDiscountCode =
+                        discountCode.addingPercentEncoding(
+                            withAllowedCharacters: .urlQueryAllowed
+                        ) ?? ""
+                    let activity = ActivityView(
+                        activityItems: [
+                            URL(string: L10n.referralsLink(encodedDiscountCode)) ?? ""
+                        ],
+                        applicationActivities: nil,
+                        sourceView: buttonView,
+                        sourceRect: buttonView.bounds
+                    )
+                    viewController.present(activity)
+                    shareButton.loadableButton.stopLoading()
+                }
+            }
 
-		return (viewController, bag)
-	}
+        return (viewController, bag)
+    }
 }
 
 extension Forever: Tabable {
-	public func tabBarItem() -> UITabBarItem {
-		UITabBarItem(title: L10n.tabReferralsTitle, image: Asset.tab.image, selectedImage: Asset.tab.image)
-	}
+    public func tabBarItem() -> UITabBarItem {
+        UITabBarItem(title: L10n.tabReferralsTitle, image: Asset.tab.image, selectedImage: Asset.tab.image)
+    }
 }
