@@ -32,7 +32,8 @@ public enum ExternalDependencies: CaseIterable {
 	public var isNonMacDependency: Bool { self == .shake }
 
 	public var isCoreDependency: Bool {
-		!isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency && !isNonMacDependency
+		!isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
+			&& !isNonMacDependency
 	}
 
 	public func swiftPackages() -> [Package] {
