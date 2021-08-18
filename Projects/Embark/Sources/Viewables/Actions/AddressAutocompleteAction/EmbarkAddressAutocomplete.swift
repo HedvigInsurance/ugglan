@@ -7,192 +7,192 @@ import hCore
 import hCoreUI
 
 enum AddressAutocompleteError: Error {
-	case cantFindAddress
+    case cantFindAddress
 }
 
 struct EmbarkAddressAutocomplete: AddressTransitionable {
-	var boxFrame: ReadWriteSignal<CGRect?> = ReadWriteSignal(CGRect.zero)
-	let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
-	let box = UIControl()
-	let state: EmbarkState
-	let data: EmbarkAddressAutocompleteData
-	let resultsSignal = ReadWriteSignal<[String]>([])
-	let searchSignal = ReadWriteSignal<String>("")
-	let masking = Masking(type: .none)
+    var boxFrame: ReadWriteSignal<CGRect?> = ReadWriteSignal(CGRect.zero)
+    let setIsFirstResponderSignal = ReadWriteSignal<Bool>(true)
+    let box = UIControl()
+    let state: EmbarkState
+    let data: EmbarkAddressAutocompleteData
+    let resultsSignal = ReadWriteSignal<[String]>([])
+    let searchSignal = ReadWriteSignal<String>("")
+    let masking = Masking(type: .none)
 
-	let addressState: AddressState
+    let addressState: AddressState
 }
 
 extension EmbarkAddressAutocomplete: Presentable {
-	func materialize() -> (UIViewController, Future<String?>) {
-		let viewController = UIViewController()
-		viewController.title = "Address"
-		let bag = DisposeBag()
+    func materialize() -> (UIViewController, Future<String?>) {
+        let viewController = UIViewController()
+        viewController.title = "Address"
+        let bag = DisposeBag()
 
-		let view = UIView()
-		view.backgroundColor = .brand(.primaryBackground())
-		viewController.view = view
+        let view = UIView()
+        view.backgroundColor = .brand(.primaryBackground())
+        viewController.view = view
 
-		let headerBackground = UIView()
-		headerBackground.backgroundColor = .brand(.secondaryBackground())
-		let headerView = UIStackView()
-		headerView.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 12, right: 20)
-		headerView.isLayoutMarginsRelativeArrangement = true
-		view.addSubview(headerBackground)
-		headerBackground.snp.makeConstraints { make in
-			make.top.left.right.equalToSuperview()
-		}
-		headerBackground.addSubview(headerView)
-		headerView.snp.makeConstraints { make in
-			make.top.bottom.left.right.equalToSuperview()
-		}
+        let headerBackground = UIView()
+        headerBackground.backgroundColor = .brand(.secondaryBackground())
+        let headerView = UIStackView()
+        headerView.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 12, right: 20)
+        headerView.isLayoutMarginsRelativeArrangement = true
+        view.addSubview(headerBackground)
+        headerBackground.snp.makeConstraints { make in
+            make.top.left.right.equalToSuperview()
+        }
+        headerBackground.addSubview(headerView)
+        headerView.snp.makeConstraints { make in
+            make.top.bottom.left.right.equalToSuperview()
+        }
 
-		let headerBorder = UIView()
-		headerBorder.backgroundColor = .brand(.primaryBorderColor)
-		headerBackground.addSubview(headerBorder)
-		headerBorder.snp.makeConstraints { make in
-			make.width.equalToSuperview()
-			make.bottom.equalToSuperview()
-			make.height.equalTo(CGFloat.hairlineWidth)
-		}
+        let headerBorder = UIView()
+        headerBorder.backgroundColor = .brand(.primaryBorderColor)
+        headerBackground.addSubview(headerBorder)
+        headerBorder.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+            make.bottom.equalToSuperview()
+            make.height.equalTo(CGFloat.hairlineWidth)
+        }
 
-		headerView.addArrangedSubview(box)
+        headerView.addArrangedSubview(box)
 
-		let addressInput = AddressInput(
-			placeholder: data.addressAutocompleteActionData.placeholder,
-			addressState: addressState
-		)
-		bag += box.add(addressInput) { addressInputView in
-			addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
-		}
+        let addressInput = AddressInput(
+            placeholder: data.addressAutocompleteActionData.placeholder,
+            addressState: addressState
+        )
+        bag += box.add(addressInput) { addressInputView in
+            addressInputView.snp.makeConstraints { make in make.top.bottom.right.left.equalToSuperview() }
+        }
 
-		bag += setIsFirstResponderSignal.bindTo(addressInput.setIsFirstResponderSignal)
+        bag += setIsFirstResponderSignal.bindTo(addressInput.setIsFirstResponderSignal)
 
-		let tableKit = TableKit<EmptySection, Either<AddressRow, AddressNotFoundRow>>(
-			style: .default,
-			holdIn: bag
-		)
+        let tableKit = TableKit<EmptySection, Either<AddressRow, AddressNotFoundRow>>(
+            style: .default,
+            holdIn: bag
+        )
 
-		bag += tableKit.delegate.heightForCell.set { index -> CGFloat in
-			switch tableKit.table[index] {
-			case .left(let addressRow):
-				return addressRow.cellHeight
-			case .right(let notFoundRow):
-				return notFoundRow.cellHeight
-			}
-		}
+        bag += tableKit.delegate.heightForCell.set { index -> CGFloat in
+            switch tableKit.table[index] {
+            case .left(let addressRow):
+                return addressRow.cellHeight
+            case .right(let notFoundRow):
+                return notFoundRow.cellHeight
+            }
+        }
 
-		view.addSubview(tableKit.view)
-		tableKit.view.backgroundColor = .brand(.primaryBackground())
-		tableKit.view.snp.makeConstraints { make in
-			make.top.equalTo(headerBackground.snp.bottom)
-			make.bottom.trailing.leading.equalToSuperview()
-		}
+        view.addSubview(tableKit.view)
+        tableKit.view.backgroundColor = .brand(.primaryBackground())
+        tableKit.view.snp.makeConstraints { make in
+            make.top.equalTo(headerBackground.snp.bottom)
+            make.bottom.trailing.leading.equalToSuperview()
+        }
 
-		bag += NotificationCenter.default
-			.signal(forName: UIResponder.keyboardWillChangeFrameNotification)
-			.compactMap { notification in notification.keyboardInfo }
-			.animated(
-				mapStyle: { (keyboardInfo) -> AnimationStyle in
-					AnimationStyle(
-						options: keyboardInfo.animationCurve,
-						duration: keyboardInfo.animationDuration,
-						delay: 0
-					)
-				},
-				animations: { keyboardInfo in
-					tableKit.view.scrollIndicatorInsets = UIEdgeInsets(
-						top: 0,
-						left: 0,
-						bottom: keyboardInfo.height - tableKit.view.safeAreaInsets.bottom,
-						right: 0
-					)
-					tableKit.view.contentInset = UIEdgeInsets(
-						top: 0,
-						left: 0,
-						bottom: keyboardInfo.height - 20 - tableKit.view.safeAreaInsets.bottom,
-						right: 0
-					)
-					tableKit.view.layoutIfNeeded()
-				}
-			)
+        bag += NotificationCenter.default
+            .signal(forName: UIResponder.keyboardWillChangeFrameNotification)
+            .compactMap { notification in notification.keyboardInfo }
+            .animated(
+                mapStyle: { (keyboardInfo) -> AnimationStyle in
+                    AnimationStyle(
+                        options: keyboardInfo.animationCurve,
+                        duration: keyboardInfo.animationDuration,
+                        delay: 0
+                    )
+                },
+                animations: { keyboardInfo in
+                    tableKit.view.scrollIndicatorInsets = UIEdgeInsets(
+                        top: 0,
+                        left: 0,
+                        bottom: keyboardInfo.height - tableKit.view.safeAreaInsets.bottom,
+                        right: 0
+                    )
+                    tableKit.view.contentInset = UIEdgeInsets(
+                        top: 0,
+                        left: 0,
+                        bottom: keyboardInfo.height - 20 - tableKit.view.safeAreaInsets.bottom,
+                        right: 0
+                    )
+                    tableKit.view.layoutIfNeeded()
+                }
+            )
 
-		bag +=
-			searchSignal.mapLatestToFuture { text in
-				addressState.getSuggestions(
-					searchTerm: text,
-					suggestion: addressState.pickedSuggestionSignal.value
-				)
-			}
-			.onValue { suggestions in
-				var rows: [Either<AddressRow, AddressNotFoundRow>] = suggestions.map {
-					.make(
-						AddressRow(
-							suggestion: $0,
-							addressLine: addressState.formatAddressLine(from: $0),
-							postalLine: addressState.formatPostalLine(from: $0)
-						)
-					)
-				}
-				rows.append(.make(AddressNotFoundRow()))
-				var table = Table(rows: rows)
-				table.removeEmptySections()
-				tableKit.set(table, animation: .fade)
-			}
+        bag +=
+            searchSignal.mapLatestToFuture { text in
+                addressState.getSuggestions(
+                    searchTerm: text,
+                    suggestion: addressState.pickedSuggestionSignal.value
+                )
+            }
+            .onValue { suggestions in
+                var rows: [Either<AddressRow, AddressNotFoundRow>] = suggestions.map {
+                    .make(
+                        AddressRow(
+                            suggestion: $0,
+                            addressLine: addressState.formatAddressLine(from: $0),
+                            postalLine: addressState.formatPostalLine(from: $0)
+                        )
+                    )
+                }
+                rows.append(.make(AddressNotFoundRow()))
+                var table = Table(rows: rows)
+                table.removeEmptySections()
+                tableKit.set(table, animation: .fade)
+            }
 
-		bag +=
-			combineLatest(addressState.textSignal.atOnce().plain(), view.didLayoutSignal)
-			.map { $0.0 }
-			.distinct(masking.equalUnmasked)
-			.filter { !$0.isEmpty }
-			.bindTo(searchSignal)
+        bag +=
+            combineLatest(addressState.textSignal.atOnce().plain(), view.didLayoutSignal)
+            .map { $0.0 }
+            .distinct(masking.equalUnmasked)
+            .filter { !$0.isEmpty }
+            .bindTo(searchSignal)
 
-		bag += addressState.pickedSuggestionSignal
-			.compactMap { $0 }
-			.map { addressState.formatAddressLine(from: $0) }
-			.onValue { addressLine in
-				if masking.equalUnmasked(lhs: addressLine, rhs: addressState.textSignal.value) {
-					searchSignal.value = addressLine
-				} else {
-					addressState.textSignal.value = addressLine
-				}
-			}
+        bag += addressState.pickedSuggestionSignal
+            .compactMap { $0 }
+            .map { addressState.formatAddressLine(from: $0) }
+            .onValue { addressLine in
+                if masking.equalUnmasked(lhs: addressLine, rhs: addressState.textSignal.value) {
+                    searchSignal.value = addressLine
+                } else {
+                    addressState.textSignal.value = addressLine
+                }
+            }
 
-		return (
-			viewController,
-			Future { completion in
-				bag += tableKit.delegate.didSelectRow.onValueDisposePrevious { row -> Disposable? in
-					let innerBag = DisposeBag()
-					switch row {
-					case .left(let addressRow):
-						// Did select suggestion
-						let suggestion = addressRow.suggestion
-						innerBag +=
-							addressState.confirm(
-								suggestion,
-								withPreviousSuggestion: addressState
-									.pickedSuggestionSignal.value
-							)
-							.valueSignal.compactMap { $0 }
-							.bindTo(addressState.confirmedSuggestionSignal)
-						addressState.pickedSuggestionSignal.value = suggestion
-					case .right(_):
-						// Did select cannot find address
-						completion(.failure(AddressAutocompleteError.cantFindAddress))
-					}
-					return innerBag
-				}
+        return (
+            viewController,
+            Future { completion in
+                bag += tableKit.delegate.didSelectRow.onValueDisposePrevious { row -> Disposable? in
+                    let innerBag = DisposeBag()
+                    switch row {
+                    case .left(let addressRow):
+                        // Did select suggestion
+                        let suggestion = addressRow.suggestion
+                        innerBag +=
+                            addressState.confirm(
+                                suggestion,
+                                withPreviousSuggestion: addressState
+                                    .pickedSuggestionSignal.value
+                            )
+                            .valueSignal.compactMap { $0 }
+                            .bindTo(addressState.confirmedSuggestionSignal)
+                        addressState.pickedSuggestionSignal.value = suggestion
+                    case .right(_):
+                        // Did select cannot find address
+                        completion(.failure(AddressAutocompleteError.cantFindAddress))
+                    }
+                    return innerBag
+                }
 
-				bag += addressState.confirmedSuggestionSignal.compactMap { $0 }
-					.onValue { address in
-						addressState.textSignal.value = addressState.formatAddressLine(
-							from: address
-						)
-						completion(.success(address.address))
-					}
+                bag += addressState.confirmedSuggestionSignal.compactMap { $0 }
+                    .onValue { address in
+                        addressState.textSignal.value = addressState.formatAddressLine(
+                            from: address
+                        )
+                        completion(.success(address.address))
+                    }
 
-				return bag
-			}
-		)
-	}
+                return bag
+            }
+        )
+    }
 }
