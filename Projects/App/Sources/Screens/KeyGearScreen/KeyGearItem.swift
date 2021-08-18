@@ -213,8 +213,9 @@ extension KeyGearItem: Presentable {
 		bag += claimsSection.append(claimsRow)
 			.onValue { _ in
 				viewController.present(
-                    AppJourney.claimsJourney
-                ).onValue { _ in }
+					AppJourney.claimsJourney
+				)
+				.onValue { _ in }
 			}
 
 		bag += innerForm.append(Spacing(height: 10))

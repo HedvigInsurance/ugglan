@@ -160,23 +160,23 @@ struct HonestyPledge: View {
 }
 
 extension HonestyPledge {
-    static func journey<Next: JourneyPresentation>(
-        @JourneyBuilder _ next: @escaping () -> Next
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            UgglanStore.self,
-            rootView: HonestyPledge(),
-            style: .detented(.scrollViewContentSize),
-            options: [
-                .defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
-                .allowSwipeDismissAlways,
-            ]
-        ) { action in
-            if case .didAcceptHonestyPledge = action {
-                next()
-            }
-        }
-        .configureTitle(L10n.honestyPledgeTitle)
-        .withDismissButton
-    }
+	static func journey<Next: JourneyPresentation>(
+		@JourneyBuilder _ next: @escaping () -> Next
+	) -> some JourneyPresentation {
+		HostingJourney(
+			UgglanStore.self,
+			rootView: HonestyPledge(),
+			style: .detented(.scrollViewContentSize),
+			options: [
+				.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
+				.allowSwipeDismissAlways,
+			]
+		) { action in
+			if case .didAcceptHonestyPledge = action {
+				next()
+			}
+		}
+		.configureTitle(L10n.honestyPledgeTitle)
+		.withDismissButton
+	}
 }

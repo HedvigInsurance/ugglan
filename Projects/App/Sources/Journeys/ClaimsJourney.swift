@@ -7,17 +7,17 @@ import hCoreUI
 
 extension AppJourney {
 	static var claimsJourney: some JourneyPresentation {
-        HonestyPledge.journey {
-            Journey(
-                ClaimsAskForPushnotifications(),
-                style: .detented(.large, modally: false)
-            ) { _ in
-                Journey(
-                    ClaimsChat()
-                )
-                .withJourneyDismissButton
-            }
-            .withJourneyDismissButton
-        }
+		HonestyPledge.journey {
+			Journey(
+				ClaimsAskForPushnotifications(),
+				style: .detented(.large, modally: false)
+			) { _ in
+				Journey(
+					ClaimsChat()
+				)
+				.withJourneyDismissButton
+			}
+			.withJourneyDismissButton
+		}
 	}
 }

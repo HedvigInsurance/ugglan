@@ -99,10 +99,10 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
 		self.upperScrollView?.contentSize = contentSize
 		self.upperScrollView?.updateConstraintsIfNeeded()
 		self.upperScrollView?.layoutIfNeeded()
-        
-        if #available(iOS 14.0, *) {
-            self.upperScrollView?.window?.overrideUserInterfaceStyle = .init(colorScheme)
-        }
+
+		if #available(iOS 14.0, *) {
+			self.upperScrollView?.window?.overrideUserInterfaceStyle = .init(colorScheme)
+		}
 	}
 
 	func makeUIView(context: Context) -> UIView {
@@ -117,8 +117,8 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
 			self.backgroundHostingController.view.snp.makeConstraints { make in
 				make.edges.equalTo(upperScrollView.frameLayoutGuide)
 			}
-            
-            upperScrollView.alwaysBounceVertical = true
+
+			upperScrollView.alwaysBounceVertical = true
 		}
 
 		self.upperScrollView?.addSubview(self.hostingController.view)

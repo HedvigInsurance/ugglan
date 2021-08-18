@@ -32,18 +32,18 @@ struct PickMarket: View {
 }
 
 extension PickMarket {
-    var journey: some JourneyPresentation {
-        HostingJourney(
-            MarketStore.self,
-            rootView: self,
-            style: .detented(.scrollViewContentSize),
-            options: [.defaults, .prefersLargeTitles(true)]
-        ) { action in
-            if case .selectMarket = action {
-                PopJourney()
-            }
-        }
-        .configureTitle(L10n.MarketLanguageScreen.marketLabel)
-        .withDismissButton
-    }
+	var journey: some JourneyPresentation {
+		HostingJourney(
+			MarketStore.self,
+			rootView: self,
+			style: .detented(.scrollViewContentSize),
+			options: [.defaults, .prefersLargeTitles(true)]
+		) { action in
+			if case .selectMarket = action {
+				PopJourney()
+			}
+		}
+		.configureTitle(L10n.MarketLanguageScreen.marketLabel)
+		.withDismissButton
+	}
 }

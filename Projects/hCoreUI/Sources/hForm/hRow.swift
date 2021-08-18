@@ -114,13 +114,15 @@ extension hRow {
 			content
 		}
 	}
-    
-    /// Adds a custom accessory
-    public func withCustomAccessory<AccessoryContent: View>(@ViewBuilder _ builder: () -> AccessoryContent) -> hRow<Content, AccessoryContent> {
-        hRow<Content, AccessoryContent>(builder()) {
-            content
-        }
-    }
+
+	/// Adds a custom accessory
+	public func withCustomAccessory<AccessoryContent: View>(
+		@ViewBuilder _ builder: () -> AccessoryContent
+	) -> hRow<Content, AccessoryContent> {
+		hRow<Content, AccessoryContent>(builder()) {
+			content
+		}
+	}
 
 	/// Adds an empty accessory
 	public var withEmptyAccessory: hRow<Content, EmptyAccessory> {
@@ -131,21 +133,21 @@ extension hRow {
 }
 
 extension hRow {
-    func wrapInButton(_ onTap: @escaping () -> Void) -> some View {
-        SwiftUI.Button(
-            action: onTap,
-            label: {
-                self.withChevronAccessory
-            }
-        )
-        .buttonStyle(RowButtonStyle())
-    }
+	func wrapInButton(_ onTap: @escaping () -> Void) -> some View {
+		SwiftUI.Button(
+			action: onTap,
+			label: {
+				self.withChevronAccessory
+			}
+		)
+		.buttonStyle(RowButtonStyle())
+	}
 
 	public func onTap(_ onTap: @escaping () -> Void) -> some View where Accessory == EmptyView {
-        self.withChevronAccessory.wrapInButton(onTap)
+		self.withChevronAccessory.wrapInButton(onTap)
 	}
-    
-    public func onTap(_ onTap: @escaping () -> Void) -> some View {
-        self.wrapInButton(onTap)
-    }
+
+	public func onTap(_ onTap: @escaping () -> Void) -> some View {
+		self.wrapInButton(onTap)
+	}
 }
