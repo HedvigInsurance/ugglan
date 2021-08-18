@@ -6,16 +6,16 @@ import UIKit
 protocol ReusableSizeable: Reusable { var size: CGSize { get } }
 
 extension ReusableSizeable where ReuseType: UIView {
-	var size: CGSize {
-		let (view, configure) = Self.makeAndConfigure()
+    var size: CGSize {
+        let (view, configure) = Self.makeAndConfigure()
 
-		let bag = DisposeBag()
-		bag += configure(self)
+        let bag = DisposeBag()
+        bag += configure(self)
 
-		let reusableSize = view.systemLayoutSizeFitting(.zero)
+        let reusableSize = view.systemLayoutSizeFitting(.zero)
 
-		bag.dispose()
+        bag.dispose()
 
-		return reusableSize
-	}
+        return reusableSize
+    }
 }

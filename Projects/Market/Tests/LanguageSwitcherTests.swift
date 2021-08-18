@@ -9,14 +9,14 @@ import hCore
 @testable import Market
 
 final class LanguageSwitcherTests: XCTestCase {
-	let bag = DisposeBag()
+    let bag = DisposeBag()
 
-	override func setUp() {
-		super.setUp()
-		setupScreenShotTests()
-		DefaultStyling.installCustom()
-	}
+    override func setUp() {
+        super.setUp()
+        setupScreenShotTests()
+        DefaultStyling.installCustom()
+    }
 
-	func testRendersCorrectOptions() {
-	}
+    func testRendersCorrectOptions() {
+    }
 }

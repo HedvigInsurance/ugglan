@@ -10,60 +10,60 @@ import hGraphQL
 struct ContractDocuments { let contract: GraphQL.ContractsQuery.Data.Contract }
 
 extension ContractDocuments: Presentable {
-	func materialize() -> (UIViewController, Disposable) {
-		let viewController = UIViewController()
-		viewController.title = L10n.insurancePageMyDocumentsTitle
-		let bag = DisposeBag()
+    func materialize() -> (UIViewController, Disposable) {
+        let viewController = UIViewController()
+        viewController.title = L10n.insurancePageMyDocumentsTitle
+        let bag = DisposeBag()
 
-		let form = FormView()
+        let form = FormView()
 
-		let section = form.appendSection()
+        let section = form.appendSection()
 
-		func showSections() {
-			if let url = URL(string: contract.currentAgreement.certificateUrl) {
-				let certificateRow = RowView(
-					title: L10n.myDocumentsInsuranceCertificate,
-					style: .brand(.body(color: .primary))
-				)
-				certificateRow.append(hCoreUIAssets.chevronRight.image)
+        func showSections() {
+            if let url = URL(string: contract.currentAgreement.certificateUrl) {
+                let certificateRow = RowView(
+                    title: L10n.myDocumentsInsuranceCertificate,
+                    style: .brand(.body(color: .primary))
+                )
+                certificateRow.append(hCoreUIAssets.chevronRight.image)
 
-				bag += section.append(certificateRow)
-					.onValue { _ in
-						viewController.present(
-							Document(url: url, title: L10n.myDocumentsInsuranceCertificate)
-								.withCloseButton,
-							style: .detented(.large)
-						)
-					}
-			}
+                bag += section.append(certificateRow)
+                    .onValue { _ in
+                        viewController.present(
+                            Document(url: url, title: L10n.myDocumentsInsuranceCertificate)
+                                .withCloseButton,
+                            style: .detented(.large)
+                        )
+                    }
+            }
 
-			if let url = URL(string: contract.termsAndConditions.url) {
-				let insuranceTermsRow = RowView(
-					title: L10n.myDocumentsInsuranceTerms,
-					style: .brand(.body(color: .primary))
-				)
-				insuranceTermsRow.append(hCoreUIAssets.chevronRight.image)
+            if let url = URL(string: contract.termsAndConditions.url) {
+                let insuranceTermsRow = RowView(
+                    title: L10n.myDocumentsInsuranceTerms,
+                    style: .brand(.body(color: .primary))
+                )
+                insuranceTermsRow.append(hCoreUIAssets.chevronRight.image)
 
-				bag += section.append(insuranceTermsRow)
-					.onValue { _ in
-						viewController.present(
-							Document(url: url, title: L10n.myDocumentsInsuranceTerms)
-								.withCloseButton,
-							style: .detented(.large)
-						)
-					}
-			}
-		}
+                bag += section.append(insuranceTermsRow)
+                    .onValue { _ in
+                        viewController.present(
+                            Document(url: url, title: L10n.myDocumentsInsuranceTerms)
+                                .withCloseButton,
+                            style: .detented(.large)
+                        )
+                    }
+            }
+        }
 
-		if contract.status.asPendingStatus == nil {
-			showSections()
-		} else {
-			let emptyRow = RowView(title: "")
-			section.append(emptyRow)
-		}
+        if contract.status.asPendingStatus == nil {
+            showSections()
+        } else {
+            let emptyRow = RowView(title: "")
+            section.append(emptyRow)
+        }
 
-		bag += viewController.install(form, options: [])
+        bag += viewController.install(form, options: [])
 
-		return (viewController, bag)
-	}
+        return (viewController, bag)
+    }
 }
