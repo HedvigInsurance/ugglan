@@ -8,6 +8,7 @@ import hCoreUI
 import hGraphQL
 
 public struct MarketRow {
+    @PresentableStore var store: MarketStore
 	@ReadWriteState var market: Market
 	var availableLocales: [GraphQL.Locale]
 
@@ -54,18 +55,16 @@ extension MarketRow: Viewable {
 		chevronImageView.image = hCoreUIAssets.chevronRight.image
 
 		row.append(chevronImageView)
+        
+        bag += store.stateSignal.map { $0.market }.onValue({ market in
+            $market.value = market
+        })
 
 		bag += events.onSelect.compactMap { row.viewController }
 			.onValue { viewController in
 				viewController.present(
-					PickMarket(currentMarket: market, availableLocales: availableLocales)
-						.wrappedInCloseButton(),
-					style: .detented(.scrollViewContentSize),
-					options: [.defaults, .prefersLargeTitles(true)]
-				)
-				.onValue { market in
-					$market.value = market
-				}
+                    PickMarket(currentMarket: market, availableLocales: availableLocales).journey
+                ).onValue { _ in }
 			}
 
 		return (row, bag)

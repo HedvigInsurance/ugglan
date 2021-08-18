@@ -1,6 +1,7 @@
 import Flow
 import Foundation
 import UIKit
+import SwiftUI
 
 public enum MaskType: String {
 	case none = "None"
@@ -263,4 +264,13 @@ public struct Masking {
 		case .none: return text
 		}
 	}
+}
+
+extension Masking: ViewModifier {
+    public func body(content: Content) -> some View {
+        content
+            .keyboardType(keyboardType)
+            .textContentType(textContentType)
+            .autocapitalization(autocapitalizationType)
+    }
 }

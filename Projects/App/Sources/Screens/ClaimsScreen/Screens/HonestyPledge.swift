@@ -138,24 +138,8 @@ struct SlideToConfirm: View {
 	}
 }
 
-struct HonestyPledge: PresentableView {
-	typealias Result = Signal<Void>
+struct HonestyPledge: View {
 	@PresentableStore var store: UgglanStore
-
-	var result: Signal<Void> {
-		Signal { callback in
-			let bag = DisposeBag()
-
-			bag += store.onAction(
-				.didAcceptHonestyPledge,
-				{
-					callback(())
-				}
-			)
-
-			return bag
-		}
-	}
 
 	var body: some View {
 		hForm {
@@ -172,6 +156,27 @@ struct HonestyPledge: PresentableView {
 			.padding(.leading, 15)
 			.padding(.trailing, 15)
 		}
-		.presentableTitle(L10n.honestyPledgeTitle)
 	}
+}
+
+extension HonestyPledge {
+    static func journey<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping () -> Next
+    ) -> some JourneyPresentation {
+        HostingJourney(
+            UgglanStore.self,
+            rootView: HonestyPledge(),
+            style: .detented(.scrollViewContentSize),
+            options: [
+                .defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
+                .allowSwipeDismissAlways,
+            ]
+        ) { action in
+            if case .didAcceptHonestyPledge = action {
+                next()
+            }
+        }
+        .configureTitle(L10n.honestyPledgeTitle)
+        .withDismissButton
+    }
 }

@@ -249,7 +249,7 @@ extension DefaultStyling {
 		)
 
 		UIImageView.appearance().tintColor = .brand(.primaryTintColor)
-
+        
 		current = .custom
 	}
 
