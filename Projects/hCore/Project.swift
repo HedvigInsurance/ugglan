@@ -12,7 +12,7 @@ let project = Project.framework(
                 ExternalDependency.flow,
                 ExternalDependency.form,
                 ExternalDependency.presentation,
-                ExternalDependency.snapkit
+                ExternalDependency.snapkit,
             ]
         default:
             return []
