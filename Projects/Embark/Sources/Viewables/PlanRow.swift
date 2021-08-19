@@ -87,7 +87,7 @@ extension PlanRow: Reusable {
                                 bottom: 0,
                                 right: 40
                             )
-                            
+
                             return stackView
                         }()
                     )
