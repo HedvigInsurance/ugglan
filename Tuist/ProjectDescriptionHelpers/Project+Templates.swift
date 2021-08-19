@@ -90,7 +90,7 @@ extension Project {
 
         if FileManager.default.fileExists(atPath: path.pathString) {
             targetDependencies.append(
-                .xcFramework(
+                .xcframework(
                     path: path
                 )
             )
@@ -115,7 +115,7 @@ extension Project {
                 platform: .iOS,
                 product: .framework,
                 bundleId: "com.hedvig.\(name)",
-                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad]),
                 infoPlist: .default,
                 sources: sources,
                 resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
@@ -133,7 +133,7 @@ extension Project {
                 platform: .iOS,
                 product: .framework,
                 bundleId: "com.hedvig.\(name)Testing",
-                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad]),
                 infoPlist: .default,
                 sources: "Testing/**/*.swift",
                 actions: [],
@@ -161,7 +161,7 @@ extension Project {
                 platform: .iOS,
                 product: .unitTests,
                 bundleId: "com.hedvig.\(name)Tests",
-                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad]),
                 infoPlist: .default,
                 sources: "Tests/**/*.swift",
                 actions: [],
@@ -189,7 +189,7 @@ extension Project {
                 platform: .iOS,
                 product: .app,
                 bundleId: "com.hedvig.example.\(name)Example",
-                deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
                 infoPlist: .extendingDefault(with: [
                     "UIMainStoryboardFile": "",
                     "UILaunchStoryboardName": "LaunchScreen",
