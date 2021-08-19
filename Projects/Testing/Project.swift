@@ -5,6 +5,17 @@ let project = Project.framework(
     name: "Testing",
     targets: Set([.framework]),
     projects: ["hCoreUI", "hCore"],
-    dependencies: ["CoreDependencies", "TestDependencies"],
+    externalDependenciesFor: { target in
+        switch target {
+        case .framework:
+            return [
+                ExternalDependency.snapshottesting,
+                ExternalDependency.flow,
+                ExternalDependency.form
+            ]
+        default:
+            return []
+        }
+    },
     sdks: ["XCTest.framework"]
 )

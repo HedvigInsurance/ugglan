@@ -1,5 +1,4 @@
 import Foundation
-import Runtime
 import SwiftUI
 
 private struct EnvironmentUserInterfaceLevel: EnvironmentKey {

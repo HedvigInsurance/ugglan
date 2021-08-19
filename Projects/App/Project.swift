@@ -63,12 +63,6 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Offer", path: .relativeToRoot("Projects/Offer")),
         .project(target: "Market", path: .relativeToRoot("Projects/Market")),
         .project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
-        .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
-        .project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
-        .project(
-            target: "ResourceBundledDependencies",
-            path: .relativeToRoot("Dependencies/ResourceBundledDependencies")
-        ),
         .project(target: "Embark", path: .relativeToRoot("Projects/Embark")),
     ],
     sdkFrameworks,
@@ -111,10 +105,6 @@ let project = Project(
             dependencies: [
                 [
                     .target(name: "Ugglan"),
-                    .project(
-                        target: "TestDependencies",
-                        path: .relativeToRoot("Dependencies/TestDependencies")
-                    ),
                     .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
                 ]
             ]
