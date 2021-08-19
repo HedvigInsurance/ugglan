@@ -1,6 +1,7 @@
 import Apollo
 import Flow
 import Foundation
+import Presentation
 import SnapKit
 import UIKit
 import hCore
@@ -9,8 +10,8 @@ import hGraphQL
 
 struct ConnectPaymentCard { @Inject var client: ApolloClient }
 
-extension ConnectPaymentCard: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
+extension ConnectPaymentCard: Presentable {
+    func materialize() -> (UIStackView, Disposable) {
         let bag = DisposeBag()
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -27,6 +28,8 @@ extension ConnectPaymentCard: Viewable {
             .onValueDisposePrevious { status -> Disposable? in let bag = DisposeBag()
 
                 if status == .needsSetup {
+                    let store: HomeStore = self.get()
+
                     bag += stackView.addArranged(Spacing(height: 56), onCreate: animateIn)
                     bag +=
                         stackView.addArranged(
@@ -51,7 +54,7 @@ extension ConnectPaymentCard: Viewable {
                         )
                         .compactMap { _ in stackView.viewController }
                         .onValue { viewController in
-                            Home.openConnectPaymentHandler(viewController)
+                            store.send(.connectPayments)
                         }
                 }
 

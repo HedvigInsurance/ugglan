@@ -52,25 +52,6 @@ struct CrossFrameworkCoordinator {
                 style: .detented(.large)
             )
         }
-
-        Home.openClaimsHandler = { viewController in
-            viewController.present(
-                AppJourney.claimsJourney
-            )
-            .onValue { _ in }
-        }
-
-        Home.openFreeTextChatHandler = { viewController in
-            viewController.present(FreeTextChat().withCloseButton, style: .detented(.large))
-        }
-
-        Home.openConnectPaymentHandler = { viewController in
-            viewController.present(
-                PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
-                style: .detented(.large)
-            )
-        }
-
         Contracts.openFreeTextChatHandler = { viewController in
             viewController.present(FreeTextChat().withCloseButton, style: .detented(.large))
         }

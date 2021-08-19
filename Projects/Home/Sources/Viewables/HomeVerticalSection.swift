@@ -33,8 +33,7 @@ extension HomeVerticalSection: Viewable {
             let row = RowView.titleAndIconRowView(title: child.title, icon: child.icon)
             bag += sectionView.append(row)
                 .onValue {
-                    guard let viewController = sectionView.viewController else { return }
-                    bag += child.handler(viewController)
+                    child.handler()
                 }
         }
 

@@ -10,8 +10,8 @@ import hGraphQL
 
 struct TerminatedSection { @Inject var client: ApolloClient }
 
-extension TerminatedSection: Viewable {
-    func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
+extension TerminatedSection: Presentable {
+    func materialize() -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView()
         section.dynamicStyle = .brandGrouped(separatorType: .none)
@@ -43,7 +43,11 @@ extension TerminatedSection: Viewable {
         )
         bag += section.append(button)
 
-        bag += button.onTapSignal.compactMap { section.viewController }.onValue(Home.openClaimsHandler)
+        let store: HomeStore = self.get()
+
+        bag += button.onTapSignal.onValue {
+            store.send(.openFreeTextChat)
+        }
 
         return (section, bag)
     }
