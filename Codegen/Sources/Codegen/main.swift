@@ -32,7 +32,8 @@ let sourceUrls = findAllGraphQLFolders()
 
 sourceUrls.forEach { sourceUrl in
 
-    let folderUrl = sourceUrl
+    let folderUrl =
+        sourceUrl
         .appendingPathComponent("../")
         .appendingPathComponent("Projects")
         .appendingPathComponent("Sources")
@@ -41,7 +42,8 @@ sourceUrls.forEach { sourceUrl in
 
     try? FileManager.default.apollo.createFolderIfNeeded(at: folderUrl)
 
-    let hGraphQLUrl = sourceRootURL.appendingPathComponent("Projects").appendingPathComponent("hGraphQL").appendingPathComponent("GraphQL")
+    let hGraphQLUrl = sourceRootURL.appendingPathComponent("Projects").appendingPathComponent("hGraphQL")
+        .appendingPathComponent("GraphQL")
     let hGraphQLSymlinkUrl = sourceUrl.appendingPathComponent("hGraphQL")
 
     let ishGraphQLFolder = folderUrl.absoluteString.contains("Projects/hGraphQL")
@@ -57,7 +59,7 @@ sourceUrls.forEach { sourceUrl in
     )
 
     let fromUrl =
-    ishGraphQLFolder ? sourceUrl.appendingPathComponent("../") : sourceUrl
+        ishGraphQLFolder ? sourceUrl.appendingPathComponent("../") : sourceUrl
 
     try! ApolloCodegen.run(from: fromUrl, with: cliFolderURL, options: codegenOptions)
 

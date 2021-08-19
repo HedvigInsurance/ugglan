@@ -83,15 +83,17 @@ extension Project {
         }
         targetDependencies.append(contentsOf: sdks.map { .sdk(name: $0) })
         targetDependencies.append(contentsOf: externalDependenciesFor(.framework).flatMap { $0.targetDependencies() })
-        
+
         let path = Path(
             "\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Application Support/Reveal/RevealServer/RevealServer.xcframework"
         )
 
         if FileManager.default.fileExists(atPath: path.pathString) {
-            targetDependencies.append(.xcFramework(
-                path: path
-            ))
+            targetDependencies.append(
+                .xcFramework(
+                    path: path
+                )
+            )
         }
 
         let hGraphQLName = "hGraphQL"
@@ -141,10 +143,10 @@ extension Project {
                         .project(
                             target: "TestingUtil",
                             path: .relativeToRoot("Projects/TestingUtil")
-                        )
+                        ),
                     ],
                     targetDependencies,
-                    externalDependenciesFor(.testing).flatMap { $0.targetDependencies() }
+                    externalDependenciesFor(.testing).flatMap { $0.targetDependencies() },
                 ]
                 .flatMap { $0 },
                 settings: Settings(base: [:], configurations: frameworkConfigurations)
@@ -169,10 +171,10 @@ extension Project {
                         .project(
                             target: "TestingUtil",
                             path: .relativeToRoot("Projects/TestingUtil")
-                        )
+                        ),
                     ],
                     testsDependencies,
-                    externalDependenciesFor(.tests).flatMap { $0.targetDependencies() }
+                    externalDependenciesFor(.tests).flatMap { $0.targetDependencies() },
                 ]
                 .flatMap { $0 },
                 settings: Settings(base: [:], configurations: testsConfigurations)
@@ -224,10 +226,10 @@ extension Project {
                         .project(
                             target: "TestingUtil",
                             path: .relativeToRoot("Projects/TestingUtil")
-                        )
+                        ),
                     ], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [],
                     targetDependencies,
-                    externalDependenciesFor(.example).flatMap { $0.targetDependencies() }
+                    externalDependenciesFor(.example).flatMap { $0.targetDependencies() },
                 ]
                 .flatMap { $0 },
                 settings: Settings(

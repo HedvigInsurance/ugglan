@@ -14,7 +14,7 @@ let project = Project.framework(
                 ExternalDependency.presentation,
                 ExternalDependency.dynamiccolor,
                 ExternalDependency.markdownkit,
-                ExternalDependency.disk
+                ExternalDependency.disk,
             ]
         default:
             return []

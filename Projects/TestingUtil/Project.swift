@@ -10,7 +10,7 @@ let project = Project.framework(
         case .framework:
             return [
                 ExternalDependency.apollo,
-                ExternalDependency.flow
+                ExternalDependency.flow,
             ]
         default:
             return []

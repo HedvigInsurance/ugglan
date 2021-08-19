@@ -11,7 +11,7 @@ let project = Project.framework(
             return [
                 ExternalDependency.apollo,
                 ExternalDependency.flow,
-                ExternalDependency.disk
+                ExternalDependency.disk,
             ]
         default:
             return []

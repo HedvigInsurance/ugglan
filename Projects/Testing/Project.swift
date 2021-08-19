@@ -11,7 +11,7 @@ let project = Project.framework(
             return [
                 ExternalDependency.snapshottesting,
                 ExternalDependency.flow,
-                ExternalDependency.form
+                ExternalDependency.form,
             ]
         default:
             return []

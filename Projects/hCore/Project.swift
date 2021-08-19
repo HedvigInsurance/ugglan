@@ -11,7 +11,7 @@ let project = Project.framework(
             return [
                 ExternalDependency.flow,
                 ExternalDependency.form,
-                ExternalDependency.presentation
+                ExternalDependency.presentation,
             ]
         default:
             return []

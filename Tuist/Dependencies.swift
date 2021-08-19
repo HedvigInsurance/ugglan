@@ -1,10 +1,3 @@
-//
-//  Dependencies.swift
-//  Dependencies
-//
-//  Created by Sam Pettersson on 2021-08-19.
-//
-
 import Foundation
 import ProjectDescription
 
@@ -47,7 +40,7 @@ let dependencies = Dependencies(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             requirement: .upToNextMajor(from: "1.8.2")
         ),
-        .remote(url: "https://github.com/shakebugs/shake-ios", requirement: .exact("14.1.5"))
+        .remote(url: "https://github.com/shakebugs/shake-ios", requirement: .exact("14.1.5")),
     ],
     platforms: [.iOS]
 )
