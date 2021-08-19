@@ -38,6 +38,7 @@ extension PlanRow: Reusable {
         horizontalContentContainer.axis = .horizontal
         horizontalContentContainer.spacing = 10
         horizontalContentContainer.alignment = .firstBaseline
+        horizontalContentContainer.distribution = .equalSpacing
 
         let verticalContentContainer = UIStackView()
         verticalContentContainer.isUserInteractionEnabled = false
@@ -48,11 +49,6 @@ extension PlanRow: Reusable {
 
         verticalContentContainer.addArrangedSubview(horizontalContentContainer)
 
-        let titleLabel = UILabel(value: "", style: .brand(.title2(color: .primary)))
-        titleLabel.setContentHuggingPriority(.required, for: .vertical)
-        titleLabel.setContentHuggingPriority(.required, for: .horizontal)
-        horizontalContentContainer.addArrangedSubview(titleLabel)
-
         contentView.addSubview(verticalContentContainer)
 
         verticalContentContainer.snp.makeConstraints { $0.top.bottom.trailing.leading.equalToSuperview() }
@@ -61,7 +57,16 @@ extension PlanRow: Reusable {
             view,
             { `self` in let bag = DisposeBag()
 
-                titleLabel.value = self.title
+                bag += horizontalContentContainer.addArranged(
+                    MultilineLabel(value: self.title, style: .brand(.title2(color: .primary)))
+                        .wrappedIn(
+                            {
+                                let stack = UIStackView()
+                                stack.axis = .vertical
+                                return stack
+                            }()
+                        )
+                )
 
                 bag += contentView.applyBorderColor { _ in .brand(.primaryBorderColor) }
 
@@ -82,6 +87,7 @@ extension PlanRow: Reusable {
                                 bottom: 0,
                                 right: 40
                             )
+
                             return stackView
                         }()
                     )
@@ -120,6 +126,9 @@ extension PlanRow: Reusable {
                             {
                                 let stack = UIStackView()
                                 stack.axis = .vertical
+                                stack.snp.makeConstraints { make in
+                                    make.width.greaterThanOrEqualTo(50)
+                                }
                                 return stack
                             }()
                         )

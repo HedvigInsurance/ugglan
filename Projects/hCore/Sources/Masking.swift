@@ -92,6 +92,12 @@ public struct Masking {
         unmask(text: text).replacingOccurrences(of: "\u{00a0}", with: " ")
     }
 
+    public func equalUnmasked(lhs: String, rhs: String) -> Bool {
+        let cleanedLhs = unmask(text: lhs).replacingOccurrences(of: "\u{00a0}", with: " ")
+        let cleanedRhs = unmask(text: rhs).replacingOccurrences(of: "\u{00a0}", with: " ")
+        return cleanedLhs == cleanedRhs
+    }
+
     public func calculateAge(from text: String) -> Int? {
         func calculate(_ format: String, value: String) -> Int? {
             if value.isEmpty { return nil }

@@ -305,6 +305,19 @@ query EmbarkStory($name: String!, $locale: String!) {
             ...EmbarkNumberActionFragment
           }
         }
+        ... on EmbarkAddressAutocompleteAction {
+            component
+            addressAutocompleteActionData: data {
+                placeholder
+                key
+                link {
+                    ...EmbarkLinkFragment
+                }
+                api {
+                    ...ApiFragment
+                }
+            }
+        }
         ... on EmbarkTextActionSet {
           textActionSetData: data {
             link {
