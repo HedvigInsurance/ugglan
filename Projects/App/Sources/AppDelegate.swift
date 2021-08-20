@@ -195,9 +195,7 @@ let log = Logger.self
                     environment: Environment.current.displayName
                 )
                 .set(serviceName: "Hedvig-iOS")
-                .set(endpoint: .eu)
-                .trackUIKitRUMViews()
-                .trackUIKitActions()
+                .set(endpoint: .eu1)
                 .trackURLSession(firstPartyHosts: [Environment.current.endpointURL.host ?? ""])
                 .enableLogging(true)
                 .enableTracing(true)
