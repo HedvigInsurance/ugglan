@@ -223,7 +223,7 @@ let log = Logger.builder
                 globalTags: [:]
             )
         )
-        
+
         NetworkInterceptorProvider.tracingInterceptor = TracingInterceptor()
 
         log.info("Starting app")
@@ -237,7 +237,7 @@ let log = Logger.builder
             Mixpanel.initialize(token: mixpanelToken)
             AnalyticsSender.sendEvent = { event, properties in
                 log.info("Sending analytics event: \(event)")
-                
+
                 Mixpanel.mainInstance()
                     .track(
                         event: event,
@@ -276,7 +276,7 @@ let log = Logger.builder
         CrossFrameworkCoordinator.setup()
 
         FirebaseApp.configure()
-        
+
         presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
             let presentationEvent = event()
             let message: String
