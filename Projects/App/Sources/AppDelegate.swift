@@ -223,7 +223,7 @@ let log = Logger.builder
                 globalTags: [:]
             )
         )
-
+        
         NetworkInterceptorProvider.tracingInterceptor = TracingInterceptor()
 
         log.info("Starting app")
@@ -236,6 +236,8 @@ let log = Logger.builder
         if let mixpanelToken = mixpanelToken {
             Mixpanel.initialize(token: mixpanelToken)
             AnalyticsSender.sendEvent = { event, properties in
+                log.info("Sending analytics event: \(event)")
+                
                 Mixpanel.mainInstance()
                     .track(
                         event: event,
@@ -274,7 +276,7 @@ let log = Logger.builder
         CrossFrameworkCoordinator.setup()
 
         FirebaseApp.configure()
-
+        
         presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
             let presentationEvent = event()
             let message: String
@@ -313,6 +315,7 @@ let log = Logger.builder
                         properties: ["presentableId": presentableId.value]
                     )
                 Global.rum.stopView(key: presentableId.value)
+                Global.rum.startView(key: context.value)
                 message = "\(context) did cancel presentation of: \(presentableId)"
                 log.info(message)
             case let .didDismiss(presentableId, context, result):
@@ -335,6 +338,7 @@ let log = Logger.builder
                     data = "\(error)"
                 }
                 Global.rum.stopView(key: presentableId.value)
+                Global.rum.startView(key: context.value)
                 log.info(message)
             #if DEBUG
                 case let .didDeallocate(presentableId, from: context):
@@ -440,8 +444,8 @@ let log = Logger.builder
 extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
         Self.initClient()
-            .onValue { store, client in Dependencies.shared.add(module: Module { store })
-
+            .onValue { store, client in
+                Dependencies.shared.add(module: Module { store })
                 Dependencies.shared.add(module: Module { client })
             }
             .toVoid()
