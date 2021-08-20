@@ -16,7 +16,9 @@ public class HeadersInterceptor: ApolloInterceptor {
         self.userAgent = userAgent
     }
 
-    public static var getTracing: () -> (headers: [String: String], onCompletion: () -> Void) = { (headers: [:], onCompletion: {}) }
+    public static var getTracing: () -> (headers: [String: String], onCompletion: () -> Void) = {
+        (headers: [:], onCompletion: {})
+    }
 
     public func interceptAsync<Operation: GraphQLOperation>(
         chain: RequestChain,
@@ -25,7 +27,7 @@ public class HeadersInterceptor: ApolloInterceptor {
         completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void
     ) {
         let tracing = Self.getTracing()
-        
+
         let httpAdditionalHeaders = [
             "Authorization": token, "Accept-Language": acceptLanguageHeader, "User-Agent": userAgent,
         ]
@@ -36,9 +38,13 @@ public class HeadersInterceptor: ApolloInterceptor {
 
         httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
 
-        chain.proceedAsync(request: request, response: response, completion: { result in
-            completion(result)
-            tracing.onCompletion()
-        })
+        chain.proceedAsync(
+            request: request,
+            response: response,
+            completion: { result in
+                completion(result)
+                tracing.onCompletion()
+            }
+        )
     }
 }
