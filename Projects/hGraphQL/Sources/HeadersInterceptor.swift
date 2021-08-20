@@ -1,7 +1,7 @@
 import Apollo
 import Foundation
 
-class HeadersInterceptor: ApolloInterceptor {
+public class HeadersInterceptor: ApolloInterceptor {
     let token: String
     let acceptLanguageHeader: String
     let userAgent: String
@@ -15,8 +15,10 @@ class HeadersInterceptor: ApolloInterceptor {
         self.acceptLanguageHeader = acceptLanguageHeader
         self.userAgent = userAgent
     }
+    
+    public static var getTracingHeaders: () -> [String: String] = { [:] }
 
-    func interceptAsync<Operation: GraphQLOperation>(
+    public func interceptAsync<Operation: GraphQLOperation>(
         chain: RequestChain,
         request: HTTPRequest<Operation>,
         response: HTTPResponse<Operation>?,
@@ -24,7 +26,10 @@ class HeadersInterceptor: ApolloInterceptor {
     ) {
         let httpAdditionalHeaders = [
             "Authorization": token, "Accept-Language": acceptLanguageHeader, "User-Agent": userAgent,
-        ]
+        ].merging(
+            Self.getTracingHeaders(),
+            uniquingKeysWith: { lhs, _ in lhs }
+        )
 
         httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
 

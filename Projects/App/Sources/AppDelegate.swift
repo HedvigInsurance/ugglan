@@ -199,13 +199,12 @@ let log = Logger.builder
                 )
                 .set(serviceName: "Hedvig-iOS")
                 .set(endpoint: .eu1)
-                .trackURLSession(firstPartyHosts: [Environment.current.endpointURL.host ?? ""])
                 .enableLogging(true)
                 .enableTracing(true)
                 .enableCrashReporting(using: DDCrashReportingPlugin())
                 .build()
         )
-
+        
         Global.rum = RUMMonitor.initialize()
         Global.sharedTracer = Tracer.initialize(
             configuration: .init(
@@ -215,6 +214,13 @@ let log = Logger.builder
                 globalTags: [:]
             )
         )
+        
+        HeadersInterceptor.getTracingHeaders = {
+            let headersWritter = HTTPHeadersWriter()
+            let span = Global.sharedTracer.startSpan(operationName: "network request")
+            Global.sharedTracer.inject(spanContext: span.context, writer: headersWritter)
+            return headersWritter.tracePropagationHTTPHeaders
+        }
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Shake.setup()
@@ -362,6 +368,8 @@ let log = Logger.builder
 
         // treat an empty token as a newly downloaded app and setLastNewsSeen
         if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
+        
+        setupDebugger()
 
         bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
             .atValue { _ in
