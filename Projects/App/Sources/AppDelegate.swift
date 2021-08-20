@@ -53,6 +53,7 @@ let log = Logger.builder
         globalPresentableStoreContainer = PresentableStoreContainer()
 
         setupDebugger()
+        setupPresentableStoreLogger()
 
         bag += ApolloClient.initAndRegisterClient()
             .onValue { _ in ChatState.shared = ChatState()
@@ -181,6 +182,12 @@ let log = Logger.builder
             #endif
         #endif
     }
+    
+    func setupPresentableStoreLogger() {
+        globalPresentableStoreContainer.logger = { message in
+            log.info(message)
+        }
+    }
 
     var mixpanelToken: String? { Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String }
 
@@ -188,6 +195,8 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        setupPresentableStoreLogger()
+        
         Datadog.initialize(
             appContext: .init(),
             trackingConsent: .granted,
