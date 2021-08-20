@@ -20,6 +20,7 @@ import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
+import Datadog
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -192,6 +193,32 @@ let log = Logger.self
             options.environment = Environment.current.displayName
             options.enableAutoSessionTracking = true
         }
+        
+        Datadog.initialize(
+            appContext: .init(),
+            trackingConsent: .granted,
+            configuration: Datadog.Configuration
+                .builderUsing(
+                    rumApplicationID: "416e8fc0-c96a-4485-8c74-84412960a479",
+                    clientToken: "pub4306832bdc5f2b8b980c492ec2c11ef3",
+                    environment: Environment.current.displayName
+                )
+                .set(serviceName: "Hedvig-iOS")
+                .set(endpoint: .eu)
+                .trackUIKitRUMViews()
+                .trackUIKitActions()
+                .trackURLSession(firstPartyHosts: [Environment.current.endpointURL.host ?? ""])
+                .enableLogging(true)
+                .build()
+        )
+        
+        Global.rum = RUMMonitor.initialize()
+        Global.sharedTracer = Tracer.initialize(configuration: .init(
+            serviceName: "Hedvig-iOS",
+            sendNetworkInfo: true,
+            bundleWithRUM: true,
+            globalTags: [:]
+        ))
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Shake.setup()
@@ -269,6 +296,8 @@ let log = Logger.self
                 SentrySDK.configureScope { scope in
                     scope.setExtra(value: presentableId.value, key: "presentableId")
                 }
+                
+                Global.rum.startView(key: presentableId.value)
 
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
             case let .didCancel(presentableId, context):
@@ -277,6 +306,7 @@ let log = Logger.self
                         event: "PRESENTABLE_DID_CANCEL",
                         properties: ["presentableId": presentableId.value]
                     )
+                Global.rum.stopView(key: presentableId.value)
                 message = "\(context) did cancel presentation of: \(presentableId)"
             case let .didDismiss(presentableId, context, result):
                 switch result {
@@ -297,6 +327,7 @@ let log = Logger.self
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(error)"
                 }
+                Global.rum.stopView(key: presentableId.value)
             #if DEBUG
                 case let .didDeallocate(presentableId, from: context):
                     message = "\(presentableId) was deallocated after presentation from \(context)"
@@ -338,8 +369,6 @@ let log = Logger.self
 
         // treat an empty token as a newly downloaded app and setLastNewsSeen
         if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
-
-        setupDebugger()
 
         bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
             .atValue { _ in

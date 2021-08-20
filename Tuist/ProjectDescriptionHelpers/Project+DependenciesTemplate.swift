@@ -20,6 +20,7 @@ public enum ExternalDependencies: CaseIterable {
     case snapshottesting
     case shake
     case reveal
+    case datadog
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -27,7 +28,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public var isResourceBundledDependency: Bool { self == .mixpanel || self == .adyen }
 
-    public var isAppDependency: Bool { self == .firebase || self == .sentry }
+    public var isAppDependency: Bool { self == .firebase || self == .sentry || self == .datadog }
 
     public var isCoreDependency: Bool {
         !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
@@ -103,6 +104,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .shake: return [.package(url: "https://github.com/shakebugs/shake-ios", .exact("14.1.5"))]
         case .reveal: return []
+        case .datadog: return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .upToNextMajor(from: "1.6.0"))]
         }
     }
 
@@ -144,6 +146,8 @@ public enum ExternalDependencies: CaseIterable {
                     path: path
                 )
             ]
+        case .datadog:
+            return [.package(product: "DatadogStatic")]
         }
     }
 }
