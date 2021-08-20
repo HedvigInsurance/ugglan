@@ -197,7 +197,7 @@ let log = Logger.builder
                     clientToken: "pub4306832bdc5f2b8b980c492ec2c11ef3",
                     environment: Environment.current.datadogName
                 )
-                .set(serviceName: "Hedvig-iOS")
+                .set(serviceName: "iOS")
                 .set(endpoint: .eu1)
                 .enableLogging(true)
                 .enableTracing(true)
@@ -208,7 +208,7 @@ let log = Logger.builder
         Global.rum = RUMMonitor.initialize()
         Global.sharedTracer = Tracer.initialize(
             configuration: .init(
-                serviceName: "Hedvig-iOS",
+                serviceName: "iOS",
                 sendNetworkInfo: true,
                 bundleWithRUM: true,
                 globalTags: [:]
