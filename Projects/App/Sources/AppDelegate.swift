@@ -204,7 +204,7 @@ let log = Logger.builder
                 .enableCrashReporting(using: DDCrashReportingPlugin())
                 .build()
         )
-        
+
         Global.rum = RUMMonitor.initialize()
         Global.sharedTracer = Tracer.initialize(
             configuration: .init(
@@ -214,7 +214,7 @@ let log = Logger.builder
                 globalTags: [:]
             )
         )
-        
+
         HeadersInterceptor.getTracingHeaders = {
             let headersWritter = HTTPHeadersWriter()
             let span = Global.sharedTracer.startSpan(operationName: "network request")
@@ -368,7 +368,7 @@ let log = Logger.builder
 
         // treat an empty token as a newly downloaded app and setLastNewsSeen
         if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
-        
+
         setupDebugger()
 
         bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()

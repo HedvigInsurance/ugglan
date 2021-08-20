@@ -15,7 +15,7 @@ public class HeadersInterceptor: ApolloInterceptor {
         self.acceptLanguageHeader = acceptLanguageHeader
         self.userAgent = userAgent
     }
-    
+
     public static var getTracingHeaders: () -> [String: String] = { [:] }
 
     public func interceptAsync<Operation: GraphQLOperation>(
@@ -26,7 +26,8 @@ public class HeadersInterceptor: ApolloInterceptor {
     ) {
         let httpAdditionalHeaders = [
             "Authorization": token, "Accept-Language": acceptLanguageHeader, "User-Agent": userAgent,
-        ].merging(
+        ]
+        .merging(
             Self.getTracingHeaders(),
             uniquingKeysWith: { lhs, _ in lhs }
         )
