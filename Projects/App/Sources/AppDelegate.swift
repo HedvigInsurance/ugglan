@@ -214,18 +214,8 @@ let log = Logger.builder
                 globalTags: [:]
             )
         )
-
-        HeadersInterceptor.getTracing = {
-            let headersWritter = HTTPHeadersWriter()
-            let span = Global.sharedTracer.startSpan(operationName: "network request")
-            Global.sharedTracer.inject(spanContext: span.context, writer: headersWritter)
-            return (
-                headers: headersWritter.tracePropagationHTTPHeaders,
-                onCompletion: {
-                    span.finish()
-                }
-            )
-        }
+        
+        NetworkInterceptorProvider.tracingInterceptor = TracingInterceptor()
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Shake.setup()
@@ -300,7 +290,6 @@ let log = Logger.builder
                         event: "PRESENTABLE_WILL_PRESENT",
                         properties: ["presentableId": presentableId.value]
                     )
-
                 Global.rum.startView(key: presentableId.value)
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
             case let .didCancel(presentableId, context):

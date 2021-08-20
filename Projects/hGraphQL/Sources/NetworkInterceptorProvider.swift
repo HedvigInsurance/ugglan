@@ -1,7 +1,7 @@
 import Apollo
 import Foundation
 
-class NetworkInterceptorProvider: LegacyInterceptorProvider {
+public class NetworkInterceptorProvider: LegacyInterceptorProvider {
     let token: String
     let acceptLanguageHeader: String
     let userAgent: String
@@ -17,8 +17,10 @@ class NetworkInterceptorProvider: LegacyInterceptorProvider {
         self.userAgent = userAgent
         super.init(store: store)
     }
+    
+    public static var tracingInterceptor: ApolloInterceptor? = nil
 
-    override func interceptors<Operation: GraphQLOperation>(for operation: Operation) -> [ApolloInterceptor] {
+    override public func interceptors<Operation: GraphQLOperation>(for operation: Operation) -> [ApolloInterceptor] {
         var interceptors = super.interceptors(for: operation)
         interceptors.insert(
             HeadersInterceptor(
@@ -28,6 +30,14 @@ class NetworkInterceptorProvider: LegacyInterceptorProvider {
             ),
             at: 0
         )
+        
+        if let tracingInterceptor = Self.tracingInterceptor {
+            interceptors.insert(
+                tracingInterceptor,
+                at: 0
+            )
+        }
+        
         return interceptors
     }
 }
