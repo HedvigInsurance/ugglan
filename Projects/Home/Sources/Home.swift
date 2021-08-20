@@ -45,6 +45,7 @@ extension Home: Presentable {
     public func materialize() -> (UIViewController, Signal<HomeResult>) {
         let store: HomeStore = self.get()
 
+        store.send(.setMemberContractState(state: .loading))
         store.send(.fetchMemberState)
 
         let viewController = UIViewController()
@@ -152,25 +153,23 @@ extension Home: Presentable {
 
         return (
             viewController,
-            Signal { callbacker in
-
+            Signal { callback in
                 bag += store.stateSignal.atOnce().map { $0.memberContractState }
+                    .distinct()
                     .onValueDisposePrevious { state in
-                        let innerBag = DisposeBag()
-                        innerBag += buildSections(state: state)
-                        return innerBag
+                        buildSections(state: state)
                     }
 
                 bag += store.actionSignal.onValue { action in
                     switch action {
                     case .openFreeTextChat:
-                        callbacker(.openFreeTextChat)
+                        callback(.openFreeTextChat)
                     case .openMovingFlow:
-                        callbacker(.startMovingFlow)
+                        callback(.startMovingFlow)
                     case .openClaims:
-                        callbacker(.openClaims)
+                        callback(.openClaims)
                     case .connectPayments:
-                        callbacker(.openConnectPayments)
+                        callback(.openConnectPayments)
                     default:
                         break
                     }
