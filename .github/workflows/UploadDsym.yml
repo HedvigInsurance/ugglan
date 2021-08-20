@@ -8,7 +8,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: brew install getsentry/tools/sentry-cli
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
