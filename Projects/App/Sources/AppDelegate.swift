@@ -28,7 +28,10 @@ import hGraphQL
     #endif
 #endif
 
-let log = Logger.self
+let log = Logger.builder
+    .sendNetworkInfo(true)
+    .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
+    .build()
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
@@ -215,6 +218,7 @@ let log = Logger.self
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Shake.setup()
+            Datadog.verbosityLevel = .debug
         }
 
         if let mixpanelToken = mixpanelToken {
