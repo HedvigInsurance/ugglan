@@ -17,7 +17,7 @@ public class NetworkInterceptorProvider: LegacyInterceptorProvider {
         self.userAgent = userAgent
         super.init(store: store)
     }
-    
+
     public static var tracingInterceptor: ApolloInterceptor? = nil
 
     override public func interceptors<Operation: GraphQLOperation>(for operation: Operation) -> [ApolloInterceptor] {
@@ -30,14 +30,14 @@ public class NetworkInterceptorProvider: LegacyInterceptorProvider {
             ),
             at: 0
         )
-        
+
         if let tracingInterceptor = Self.tracingInterceptor {
             interceptors.insert(
                 tracingInterceptor,
                 at: 0
             )
         }
-        
+
         return interceptors
     }
 }

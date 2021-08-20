@@ -214,7 +214,7 @@ let log = Logger.builder
                 globalTags: [:]
             )
         )
-        
+
         NetworkInterceptorProvider.tracingInterceptor = TracingInterceptor()
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {

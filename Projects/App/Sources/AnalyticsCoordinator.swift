@@ -19,9 +19,12 @@ public struct AnalyticsCoordinator {
             .onValue { id in
                 Shake.setMetadata(key: "memberId", value: id)
                 Mixpanel.mainInstance().identify(distinctId: id)
-                Datadog.setUserInfo(id: id, extraInfo: [
-                    "member_id": id
-                ])
+                Datadog.setUserInfo(
+                    id: id,
+                    extraInfo: [
+                        "member_id": id
+                    ]
+                )
             }
     }
 }
