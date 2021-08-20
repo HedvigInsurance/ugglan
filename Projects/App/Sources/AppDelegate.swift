@@ -215,11 +215,13 @@ let log = Logger.builder
             )
         )
 
-        HeadersInterceptor.getTracingHeaders = {
+        HeadersInterceptor.getTracing = {
             let headersWritter = HTTPHeadersWriter()
             let span = Global.sharedTracer.startSpan(operationName: "network request")
             Global.sharedTracer.inject(spanContext: span.context, writer: headersWritter)
-            return headersWritter.tracePropagationHTTPHeaders
+            return (headers: headersWritter.tracePropagationHTTPHeaders, onCompletion: {
+                span.finish()
+            })
         }
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
@@ -297,7 +299,6 @@ let log = Logger.builder
                     )
 
                 Global.rum.startView(key: presentableId.value)
-
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
             case let .didCancel(presentableId, context):
                 Mixpanel.mainInstance()
