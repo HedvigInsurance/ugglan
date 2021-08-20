@@ -1,18 +1,17 @@
 name: Upload DSYM
 
-on:
-  schedule:
-     - cron:  '0 8 * * *'
+on: [workflow_dispatch]
 
 jobs:
   upload-dsym:
-    runs-on: macos-latest
+    runs-on: MachineOne
 
     steps:
     - uses: actions/checkout@v2
     - run: brew install getsentry/tools/sentry-cli
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
-      uses: maierj/fastlane-action@v1.4.0
       env:
         FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
         FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
@@ -22,5 +21,4 @@ jobs:
         SENTRY_PROJECT_SLUG: ${{ secrets.SENTRY_PROJECT_SLUG }}
         SENTRY_ORG_SLUG: ${{ secrets.SENTRY_ORG_SLUG }}
         DOWNLOAD_DSYMS_MIN_VERSION: ${{ secrets.DOWNLOAD_DSYMS_MIN_VERSION }}
-      with:
-        lane: ios upload_dsyms
+      run: arch -arm64 bundle exec fastlane ios upload_dsyms
