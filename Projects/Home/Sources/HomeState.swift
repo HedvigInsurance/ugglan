@@ -44,7 +44,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         case .fetchMemberState:
             return
                 client
-                .fetch(query: GraphQL.HomeQuery())
+                .fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
                 .compactMap { $0.homeState }
                 .map { state in
                     .setMemberContractState(state: state)
