@@ -216,7 +216,7 @@ let log = Logger.builder
         )
 
         NetworkInterceptorProvider.tracingInterceptor = TracingInterceptor()
-        
+
         log.info("Starting app")
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
