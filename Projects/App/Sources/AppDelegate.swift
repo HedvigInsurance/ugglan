@@ -13,7 +13,6 @@ import Mixpanel
 import Offer
 import Payment
 import Presentation
-import Sentry
 import Shake
 import SwiftUI
 import UIKit
@@ -21,6 +20,7 @@ import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
+import DatadogCrashReporting
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -185,15 +185,6 @@ let log = Logger.self
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        SentrySDK.start { options in
-            options.dsn = "https://09505787f04f4c6ea7e560de075ba552@o123400.ingest.sentry.io/5208267"
-            #if DEBUG
-                options.debug = true
-            #endif
-            options.environment = Environment.current.displayName
-            options.enableAutoSessionTracking = true
-        }
-
         Datadog.initialize(
             appContext: .init(),
             trackingConsent: .granted,
@@ -209,6 +200,8 @@ let log = Logger.self
                 .trackUIKitActions()
                 .trackURLSession(firstPartyHosts: [Environment.current.endpointURL.host ?? ""])
                 .enableLogging(true)
+                .enableTracing(true)
+                .enableCrashReporting(using: DDCrashReportingPlugin())
                 .build()
         )
 
@@ -294,10 +287,6 @@ let log = Logger.self
                         event: "PRESENTABLE_WILL_PRESENT",
                         properties: ["presentableId": presentableId.value]
                     )
-
-                SentrySDK.configureScope { scope in
-                    scope.setExtra(value: presentableId.value, key: "presentableId")
-                }
 
                 Global.rum.startView(key: presentableId.value)
 

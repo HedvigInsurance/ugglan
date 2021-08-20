@@ -15,7 +15,6 @@ public enum ExternalDependencies: CaseIterable {
     case markdownkit
     case mixpanel
     case runtime
-    case sentry
     case hero
     case snapshottesting
     case shake
@@ -28,7 +27,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public var isResourceBundledDependency: Bool { self == .mixpanel || self == .adyen }
 
-    public var isAppDependency: Bool { self == .firebase || self == .sentry || self == .datadog }
+    public var isAppDependency: Bool { self == .firebase || self == .datadog }
 
     public var isCoreDependency: Bool {
         !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
@@ -88,13 +87,6 @@ public enum ExternalDependencies: CaseIterable {
                 )
             ]
         case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .exact("1.5.0"))]
-        case .sentry:
-            return [
-                .package(
-                    url: "https://github.com/getsentry/sentry-cocoa",
-                    .upToNextMajor(from: "6.0.12")
-                )
-            ]
         case .snapshottesting:
             return [
                 .package(
@@ -105,13 +97,12 @@ public enum ExternalDependencies: CaseIterable {
         case .shake: return [.package(url: "https://github.com/shakebugs/shake-ios", .exact("14.1.5"))]
         case .reveal: return []
         case .datadog:
-            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .upToNextMajor(from: "1.6.0"))]
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .upToNextMajor(from: "1.7.0-beta3"))]
         }
     }
 
     public func targetDependencies() -> [TargetDependency] {
         switch self {
-        case .sentry: return [.package(product: "Sentry")]
         case .adyen:
             return [
                 .package(product: "Adyen"), .package(product: "AdyenCard"),
@@ -148,7 +139,10 @@ public enum ExternalDependencies: CaseIterable {
                 )
             ]
         case .datadog:
-            return [.package(product: "DatadogStatic")]
+            return [
+                .package(product: "DatadogStatic"),
+                .package(product: "DatadogCrashReporting")
+            ]
         }
     }
 }
