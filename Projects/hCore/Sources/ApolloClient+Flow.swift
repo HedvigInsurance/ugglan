@@ -25,8 +25,6 @@ extension ApolloClient {
                         completion(.success(data))
                     } else if let errors = result.errors {
                         completion(.failure(GraphQLError(errors: errors)))
-                    } else {
-                        fatalError("Invalid GraphQL state")
                     }
                 case let .failure(error): completion(.failure(error))
                 }
@@ -62,8 +60,6 @@ extension ApolloClient {
                             completion(.success(data))
                         } else if let errors = result.errors {
                             completion(.failure(GraphQLError(errors: errors)))
-                        } else {
-                            fatalError("Invalid GraphQL state")
                         }
                     case let .failure(error): completion(.failure(error))
                     }
@@ -89,8 +85,6 @@ extension ApolloClient {
                         callbacker(data)
                     } else if let errors = result.errors {
                         onError(GraphQLError(errors: errors))
-                    } else {
-                        fatalError("Invalid GraphQL state")
                     }
                 case let .failure(error): onError(error)
                 }
@@ -116,8 +110,6 @@ extension ApolloClient {
                         completion(.success(data))
                     } else if let errors = result.errors {
                         completion(.failure(GraphQLError(errors: errors)))
-                    } else {
-                        fatalError("Invalid GraphQL state")
                     }
                 case let .failure(error): completion(.failure(error))
                 }
@@ -147,8 +139,6 @@ extension ApolloClient {
                             callbacker(data)
                         } else if let errors = result.errors {
                             onError(GraphQLError(errors: errors))
-                        } else {
-                            fatalError("Invalid GraphQL state")
                         }
                     case let .failure(error): onError(error)
                     }
