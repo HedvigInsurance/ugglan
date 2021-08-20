@@ -1,4 +1,5 @@
 import Apollo
+import Datadog
 import Firebase
 import Flow
 import Foundation
@@ -6,7 +7,6 @@ import Mixpanel
 import Shake
 import hCore
 import hGraphQL
-import Datadog
 
 public struct AnalyticsCoordinator {
     @Inject private var client: ApolloClient

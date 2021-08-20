@@ -104,7 +104,8 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .shake: return [.package(url: "https://github.com/shakebugs/shake-ios", .exact("14.1.5"))]
         case .reveal: return []
-        case .datadog: return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .upToNextMajor(from: "1.6.0"))]
+        case .datadog:
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .upToNextMajor(from: "1.6.0"))]
         }
     }
 

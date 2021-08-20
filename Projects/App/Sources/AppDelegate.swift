@@ -1,6 +1,7 @@
 import Adyen
 import Apollo
 import CoreDependencies
+import Datadog
 import Disk
 import Firebase
 import FirebaseMessaging
@@ -20,7 +21,6 @@ import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
-import Datadog
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -193,7 +193,7 @@ let log = Logger.self
             options.environment = Environment.current.displayName
             options.enableAutoSessionTracking = true
         }
-        
+
         Datadog.initialize(
             appContext: .init(),
             trackingConsent: .granted,
@@ -211,14 +211,16 @@ let log = Logger.self
                 .enableLogging(true)
                 .build()
         )
-        
+
         Global.rum = RUMMonitor.initialize()
-        Global.sharedTracer = Tracer.initialize(configuration: .init(
-            serviceName: "Hedvig-iOS",
-            sendNetworkInfo: true,
-            bundleWithRUM: true,
-            globalTags: [:]
-        ))
+        Global.sharedTracer = Tracer.initialize(
+            configuration: .init(
+                serviceName: "Hedvig-iOS",
+                sendNetworkInfo: true,
+                bundleWithRUM: true,
+                globalTags: [:]
+            )
+        )
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Shake.setup()
@@ -296,7 +298,7 @@ let log = Logger.self
                 SentrySDK.configureScope { scope in
                     scope.setExtra(value: presentableId.value, key: "presentableId")
                 }
-                
+
                 Global.rum.startView(key: presentableId.value)
 
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
