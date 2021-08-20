@@ -141,7 +141,7 @@ public enum ExternalDependencies: CaseIterable {
         case .datadog:
             return [
                 .package(product: "DatadogStatic"),
-                .package(product: "DatadogCrashReporting")
+                .package(product: "DatadogCrashReporting"),
             ]
         }
     }

@@ -2,6 +2,7 @@ import Adyen
 import Apollo
 import CoreDependencies
 import Datadog
+import DatadogCrashReporting
 import Disk
 import Firebase
 import FirebaseMessaging
@@ -20,7 +21,6 @@ import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
-import DatadogCrashReporting
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
