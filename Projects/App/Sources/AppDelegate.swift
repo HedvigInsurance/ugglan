@@ -182,7 +182,7 @@ let log = Logger.builder
             #endif
         #endif
     }
-    
+
     func setupPresentableStoreLogger() {
         globalPresentableStoreContainer.logger = { message in
             log.info(message)
@@ -196,7 +196,7 @@ let log = Logger.builder
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         setupPresentableStoreLogger()
-        
+
         Datadog.initialize(
             appContext: .init(),
             trackingConsent: .granted,
