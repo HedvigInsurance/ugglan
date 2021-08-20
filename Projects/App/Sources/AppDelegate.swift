@@ -195,7 +195,7 @@ let log = Logger.builder
                 .builderUsing(
                     rumApplicationID: "416e8fc0-c96a-4485-8c74-84412960a479",
                     clientToken: "pub4306832bdc5f2b8b980c492ec2c11ef3",
-                    environment: Environment.current.displayName
+                    environment: Environment.current.datadogName
                 )
                 .set(serviceName: "Hedvig-iOS")
                 .set(endpoint: .eu1)
