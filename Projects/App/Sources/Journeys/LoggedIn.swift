@@ -109,6 +109,11 @@ extension AppJourney {
                 }
             )
             .syncTabIndex()
+            .onAction(UgglanStore.self) { action in
+                if action == .openChat {
+                    AppJourney.freeTextChat
+                }
+            }
         }
         .onPresent {
             ApplicationState.preserveState(.loggedIn)

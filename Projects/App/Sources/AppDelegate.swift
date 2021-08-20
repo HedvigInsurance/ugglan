@@ -216,6 +216,8 @@ let log = Logger.builder
         )
 
         NetworkInterceptorProvider.tracingInterceptor = TracingInterceptor()
+        
+        log.info("Starting app")
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Shake.setup()
@@ -277,6 +279,7 @@ let log = Logger.builder
                         properties: ["presentableId": presentableId.value]
                     )
                 message = "\(context) will enqueue modal presentation of \(presentableId)"
+                log.info(message)
             case let .willDequeue(presentableId, context):
                 Mixpanel.mainInstance()
                     .track(
@@ -284,6 +287,7 @@ let log = Logger.builder
                         properties: ["presentableId": presentableId.value]
                     )
                 message = "\(context) will dequeue modal presentation of \(presentableId)"
+                log.info(message)
             case let .willPresent(presentableId, context, styleName):
                 Mixpanel.mainInstance()
                     .track(
@@ -292,6 +296,7 @@ let log = Logger.builder
                     )
                 Global.rum.startView(key: presentableId.value)
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
+                log.info(message)
             case let .didCancel(presentableId, context):
                 Mixpanel.mainInstance()
                     .track(
@@ -300,6 +305,7 @@ let log = Logger.builder
                     )
                 Global.rum.stopView(key: presentableId.value)
                 message = "\(context) did cancel presentation of: \(presentableId)"
+                log.info(message)
             case let .didDismiss(presentableId, context, result):
                 switch result {
                 case let .success(result):
@@ -320,12 +326,15 @@ let log = Logger.builder
                     data = "\(error)"
                 }
                 Global.rum.stopView(key: presentableId.value)
+                log.info(message)
             #if DEBUG
                 case let .didDeallocate(presentableId, from: context):
                     message = "\(presentableId) was deallocated after presentation from \(context)"
+                    log.info(message)
                 case let .didLeak(presentableId, from: context):
                     message =
                         "WARNING \(presentableId) was NOT deallocated after presentation from \(context)"
+                    log.info(message)
             #endif
             }
 
@@ -464,7 +473,11 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             if notificationType == "NEW_MESSAGE" {
-                #warning("handle this")
+                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                    .onValue { _ in
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        store.send(.openChat)
+                    }
             } else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                     .onValue { _ in
