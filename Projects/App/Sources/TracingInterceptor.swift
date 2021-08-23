@@ -10,8 +10,15 @@ public class TracingInterceptor: ApolloInterceptor {
         completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void
     ) {
         let resourceKey = "\(request.operation.operationType) \(request.operation.operationName)"
+        
+        if let request = try? request.toURLRequest() {
+            Global.rum.startResourceLoading(
+                resourceKey: resourceKey,
+                request: request
+            )
+        }
+                
         let headersWritter = HTTPHeadersWriter()
-        let startDate = Date()
         let span = Global.sharedTracer.startSpan(
             operationName: resourceKey
         )
@@ -24,22 +31,10 @@ public class TracingInterceptor: ApolloInterceptor {
             response: response,
             completion: { result in
                 completion(result)
-
-                let endDate = Date()
-
-                Global.rum.addResourceMetrics(
+                Global.rum.stopResourceLoading(
                     resourceKey: resourceKey,
-                    fetch: (
-                        start: startDate,
-                        end: endDate
-                    ),
-                    redirection: nil,
-                    dns: nil,
-                    connect: nil,
-                    ssl: nil,
-                    firstByte: nil,
-                    download: nil,
-                    responseSize: Int64(response?.rawData.count ?? 0)
+                    statusCode: 200,
+                    kind: .fetch
                 )
 
                 switch result {
