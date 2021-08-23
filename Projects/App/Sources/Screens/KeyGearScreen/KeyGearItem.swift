@@ -213,10 +213,9 @@ extension KeyGearItem: Presentable {
         bag += claimsSection.append(claimsRow)
             .onValue { _ in
                 viewController.present(
-                    HonestyPledge(),
-                    style: .detented(.preferredContentSize),
-                    options: [.defaults]
+                    AppJourney.claimsJourney
                 )
+                .onValue { _ in }
             }
 
         bag += innerForm.append(Spacing(height: 10))

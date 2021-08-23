@@ -59,17 +59,6 @@ class IgnoredSafeAreaHostingController<Content: SwiftUI.View>: UIHostingControll
     }
 }
 
-struct TransferEnvironment: ViewModifier {
-    var environment: EnvironmentValues
-
-    func body(content: Content) -> some View {
-        return Group {
-            content
-        }
-        .environment(\.self, environment)
-    }
-}
-
 struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresentable, Equatable {
     let hostingController: IgnoredSafeAreaHostingController<AnyView>
     let backgroundHostingController: IgnoredSafeAreaHostingController<AnyView>
@@ -110,6 +99,19 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
         self.upperScrollView?.contentSize = contentSize
         self.upperScrollView?.updateConstraintsIfNeeded()
         self.upperScrollView?.layoutIfNeeded()
+
+        /// Override window userInterfacestyle if it doesn't match hForm's colorScheme
+        if #available(iOS 14.0, *) {
+            let style = self.upperScrollView?.window?.traitCollection.userInterfaceStyle
+
+            if style == .dark && colorScheme == .light {
+                self.upperScrollView?.window?.overrideUserInterfaceStyle = .light
+            }
+
+            if style == .light && colorScheme == .dark {
+                self.upperScrollView?.window?.overrideUserInterfaceStyle = .dark
+            }
+        }
     }
 
     func makeUIView(context: Context) -> UIView {
@@ -124,6 +126,8 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
             self.backgroundHostingController.view.snp.makeConstraints { make in
                 make.edges.equalTo(upperScrollView.frameLayoutGuide)
             }
+
+            upperScrollView.alwaysBounceVertical = true
         }
 
         self.upperScrollView?.addSubview(self.hostingController.view)

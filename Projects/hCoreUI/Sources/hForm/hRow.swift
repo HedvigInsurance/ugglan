@@ -115,6 +115,15 @@ extension hRow {
         }
     }
 
+    /// Adds a custom accessory
+    public func withCustomAccessory<AccessoryContent: View>(
+        @ViewBuilder _ builder: () -> AccessoryContent
+    ) -> hRow<Content, AccessoryContent> {
+        hRow<Content, AccessoryContent>(builder()) {
+            content
+        }
+    }
+
     /// Adds an empty accessory
     public var withEmptyAccessory: hRow<Content, EmptyAccessory> {
         hRow<Content, EmptyAccessory>(EmptyAccessory()) {
@@ -124,23 +133,21 @@ extension hRow {
 }
 
 extension hRow {
-    // add chevron accessory when no accessory is defined
-    func withTapAccessory() -> some View where Accessory == EmptyView {
-        self.withChevronAccessory
-    }
-
-    /// assume consumer doesn't want an additional accessory when they've manually defined one
-    func withTapAccessory() -> some View {
-        self
-    }
-
-    public func onTap(_ onTap: @escaping () -> Void) -> some View {
+    func wrapInButton(_ onTap: @escaping () -> Void) -> some View {
         SwiftUI.Button(
             action: onTap,
             label: {
-                self.withTapAccessory()
+                self
             }
         )
         .buttonStyle(RowButtonStyle())
+    }
+
+    public func onTap(_ onTap: @escaping () -> Void) -> some View where Accessory == EmptyView {
+        self.withChevronAccessory.wrapInButton(onTap)
+    }
+
+    public func onTap(_ onTap: @escaping () -> Void) -> some View {
+        self.wrapInButton(onTap)
     }
 }

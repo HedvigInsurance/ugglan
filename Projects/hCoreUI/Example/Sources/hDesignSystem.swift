@@ -1,6 +1,7 @@
 import Combine
 import Flow
 import Foundation
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -98,7 +99,7 @@ struct FormShowcase: View {
     }
 }
 
-struct hDesignSystem: PresentableView {
+struct hDesignSystem: View {
     typealias Result = Disposable
 
     @State var darkMode: Bool = false
@@ -117,6 +118,11 @@ struct hDesignSystem: PresentableView {
             FormShowcase()
         }
         .environment(\.colorScheme, darkMode ? .dark : .light)
-        .presentableTitle("hDesignSystem")
+    }
+}
+
+extension hDesignSystem {
+    static var journey: some JourneyPresentation {
+        HostingJourney(rootView: hDesignSystem()).configureTitle("hDesignSystem")
     }
 }

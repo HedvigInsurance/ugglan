@@ -57,6 +57,7 @@ extension Notification {
 
 class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     var detents: [PresentationStyle.Detent]
+    var options: PresentationOptions
     var wantsGrabber: Bool
     var viewController: UIViewController
     let bag = DisposeBag()
@@ -89,7 +90,8 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                                 lastViewController.appliedDetents,
                                 on: presentationController,
                                 viewController: lastViewController,
-                                keyboardAnimation: event.animation
+                                keyboardAnimation: event.animation,
+                                unanimated: false
                             )
                         }
                     }
@@ -100,10 +102,12 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 
     init(
         detents: [PresentationStyle.Detent],
+        options: PresentationOptions,
         wantsGrabber: Bool,
         viewController: UIViewController
     ) {
         self.detents = detents
+        self.options = options
         self.wantsGrabber = wantsGrabber
         self.viewController = viewController
         super.init()
@@ -130,28 +134,57 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             presenting: presenting
         )
 
-        PresentationStyle.Detent.set(
-            [
-                .custom(
-                    "zero",
-                    { viewController, containerView in
-                        return -50
-                    }
-                )
-            ],
-            on: presentationController,
-            viewController: viewController
-        )
-        setGrabber(on: presentationController, to: wantsGrabber)
+        if options.contains(.unanimated) {
+            PresentationStyle.Detent.set(
+                [
+                    .custom(
+                        "zero",
+                        { viewController, containerView in
+                            return -50
+                        }
+                    )
+                ],
+                on: presentationController,
+                viewController: viewController,
+                unanimated: true
+            )
 
-        Signal(after: 0.05).future
-            .onValue { _ in
-                PresentationStyle.Detent.set(
-                    self.detents,
-                    on: presentationController,
-                    viewController: self.viewController
-                )
-            }
+            Signal(after: 0.001).future
+                .onValue { _ in
+                    PresentationStyle.Detent.set(
+                        self.detents,
+                        on: presentationController,
+                        viewController: self.viewController,
+                        unanimated: true
+                    )
+                }
+        } else {
+            PresentationStyle.Detent.set(
+                [
+                    .custom(
+                        "zero",
+                        { viewController, containerView in
+                            return -50
+                        }
+                    )
+                ],
+                on: presentationController,
+                viewController: viewController,
+                unanimated: false
+            )
+
+            Signal(after: 0.05).future
+                .onValue { _ in
+                    PresentationStyle.Detent.set(
+                        self.detents,
+                        on: presentationController,
+                        viewController: self.viewController,
+                        unanimated: false
+                    )
+                }
+        }
+
+        setGrabber(on: presentationController, to: wantsGrabber)
 
         return presentationController
     }
@@ -312,7 +345,8 @@ extension PresentationStyle {
             on presentationController: UIPresentationController,
             viewController: UIViewController,
             lastDetentIndex: Int? = nil,
-            keyboardAnimation: KeyboardAnimation? = nil
+            keyboardAnimation: KeyboardAnimation? = nil,
+            unanimated: Bool
         ) {
             guard !detents.isEmpty else { return }
 
@@ -337,6 +371,8 @@ extension PresentationStyle {
 
             if let keyboardAnimation = keyboardAnimation {
                 keyboardAnimation.animate { forceLayout() }
+            } else if unanimated {
+                forceLayout()
             } else {
                 UIView.animate(
                     withDuration: 0.5,
@@ -398,6 +434,7 @@ extension PresentationStyle {
 
                 let delegate = DetentedTransitioningDelegate(
                     detents: detents,
+                    options: options,
                     wantsGrabber: options.contains(.wantsGrabber),
                     viewController: viewController
                 )
@@ -431,7 +468,8 @@ extension PresentationStyle {
                     Self.Detent.set(
                         detents,
                         on: presentationController,
-                        viewController: viewController
+                        viewController: viewController,
+                        unanimated: options.contains(.unanimated)
                     )
                     setGrabber(
                         on: presentationController,
@@ -462,7 +500,8 @@ extension PresentationStyle {
                                     on: presentationController,
                                     viewController: previousViewController,
                                     lastDetentIndex: previousViewController
-                                        .lastDetentIndex
+                                        .lastDetentIndex,
+                                    unanimated: options.contains(.unanimated)
                                 )
                             }
 

@@ -7,14 +7,7 @@ import hCoreUI
 
 extension AppJourney {
     static var claimsJourney: some JourneyPresentation {
-        Journey(
-            HonestyPledge(),
-            style: .detented(.scrollViewContentSize),
-            options: [
-                .defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
-                .allowSwipeDismissAlways,
-            ]
-        ) { _ in
+        HonestyPledge.journey {
             Journey(
                 ClaimsAskForPushnotifications(),
                 style: .detented(.large, modally: false)
@@ -26,6 +19,5 @@ extension AppJourney {
             }
             .withJourneyDismissButton
         }
-        .withDismissButton
     }
 }

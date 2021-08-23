@@ -1,5 +1,6 @@
 import Flow
 import Foundation
+import SwiftUI
 import UIKit
 
 public enum MaskType: String {
@@ -268,5 +269,14 @@ public struct Masking {
             return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
         case .none: return text
         }
+    }
+}
+
+extension Masking: ViewModifier {
+    public func body(content: Content) -> some View {
+        content
+            .keyboardType(keyboardType)
+            .textContentType(textContentType)
+            .autocapitalization(autocapitalizationType)
     }
 }
