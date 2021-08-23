@@ -211,6 +211,7 @@ let log = Logger.builder
                 .enableLogging(true)
                 .enableTracing(true)
                 .enableCrashReporting(using: DDCrashReportingPlugin())
+                .enableRUM(true)
                 .build()
         )
 
