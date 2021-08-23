@@ -198,7 +198,7 @@ let log = Logger.builder
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
         }
-        
+
         setupPresentableStoreLogger()
 
         Datadog.initialize(

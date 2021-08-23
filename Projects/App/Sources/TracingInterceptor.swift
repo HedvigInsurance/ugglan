@@ -3,19 +3,33 @@ import Datadog
 import Foundation
 
 public class InterceptingURLSessionClient: URLSessionClient {
-    public override func sendRequest(_ request: URLRequest, rawTaskCompletionHandler: URLSessionClient.RawCompletion? = nil, completion: @escaping URLSessionClient.Completion) -> URLSessionTask {
+    public override func sendRequest(
+        _ request: URLRequest,
+        rawTaskCompletionHandler: URLSessionClient.RawCompletion? = nil,
+        completion: @escaping URLSessionClient.Completion
+    ) -> URLSessionTask {
         guard let instrumentedRequest = URLSessionInterceptor.shared?.modify(request: request) else {
-            return super.sendRequest(request, rawTaskCompletionHandler: rawTaskCompletionHandler, completion: completion)
+            return super
+                .sendRequest(request, rawTaskCompletionHandler: rawTaskCompletionHandler, completion: completion)
         }
-        
-        let task = super.sendRequest(instrumentedRequest, rawTaskCompletionHandler: rawTaskCompletionHandler, completion: completion)
+
+        let task = super
+            .sendRequest(
+                instrumentedRequest,
+                rawTaskCompletionHandler: rawTaskCompletionHandler,
+                completion: completion
+            )
         URLSessionInterceptor.shared?.taskCreated(task: task)
-        
+
         return task
     }
-    
-    override public func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics) {
-        
+
+    override public func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didFinishCollecting metrics: URLSessionTaskMetrics
+    ) {
+
         URLSessionInterceptor.shared?.taskMetricsCollected(task: task, metrics: metrics)
         super.urlSession(session, task: task, didFinishCollecting: metrics)
     }
