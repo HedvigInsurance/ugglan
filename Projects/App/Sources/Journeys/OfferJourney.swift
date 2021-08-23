@@ -24,8 +24,8 @@ extension AppJourney {
             switch offerResult {
             case .chat:
                 AppJourney
-                .freeTextChat()
-                .withDismissButton
+                    .freeTextChat()
+                    .withDismissButton
             case .signed:
                 AppJourney.postOnboarding
             case .close:

@@ -20,8 +20,8 @@ extension AppJourney {
                 style: .detented(.large, modally: false)
             ) { _ in
                 AppJourney
-                .claimsChat()
-                .withJourneyDismissButton
+                    .claimsChat()
+                    .withJourneyDismissButton
             }
             .withJourneyDismissButton
         }

@@ -58,8 +58,8 @@ enum ChatResult {
                     switch offerResult {
                     case .chat:
                         AppJourney
-                        .freeTextChat()
-                        .withDismissButton
+                            .freeTextChat()
+                            .withDismissButton
                     case .close:
                         DismissJourney()
                     case .signed:

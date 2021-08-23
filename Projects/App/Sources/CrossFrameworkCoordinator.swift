@@ -47,16 +47,19 @@ struct CrossFrameworkCoordinator {
             }
         }
         ChatButton.openChatHandler = { chatButton in
-            chatButton.presentingViewController.present(
-                AppJourney.freeTextChat().withDismissButton
-            ).onValue { _ in
-                
-            }
+            chatButton.presentingViewController
+                .present(
+                    AppJourney.freeTextChat().withDismissButton
+                )
+                .onValue { _ in
+
+                }
         }
         Contracts.openFreeTextChatHandler = { viewController in
-            viewController.present(AppJourney.freeTextChat().withDismissButton).onValue { _ in
-                
-            }
+            viewController.present(AppJourney.freeTextChat().withDismissButton)
+                .onValue { _ in
+
+                }
         }
 
         CrossFramework.onRequestLogout = { UIApplication.shared.appDelegate.logout() }

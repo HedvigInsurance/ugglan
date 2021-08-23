@@ -17,7 +17,7 @@ struct RUMUserActionsPredicate: UIKitRUMUserActionsPredicate {
         if let derivedFromL10N = targetView.accessibilityLabel?.derivedFromL10n {
             return .init(name: derivedFromL10N.key)
         }
-        
+
         return nil
     }
 }
