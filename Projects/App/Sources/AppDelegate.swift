@@ -216,6 +216,8 @@ let log = Logger.builder
                 .enableTracing(true)
                 .enableCrashReporting(using: DDCrashReportingPlugin())
                 .enableRUM(true)
+                .trackUIKitRUMActions(using: RUMUserActionsPredicate())
+                .trackUIKitRUMViews(using: RUMViewsPredicate())
                 .trackURLSession(firstPartyHosts: [
                     Environment.production.endpointURL.host ?? "",
                     Environment.staging.endpointURL.host ?? "",
@@ -312,7 +314,6 @@ let log = Logger.builder
                         event: "PRESENTABLE_WILL_PRESENT",
                         properties: ["presentableId": presentableId.value]
                     )
-                Global.rum.startView(key: presentableId.value)
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
                 log.info(message)
             case let .didCancel(presentableId, context):
@@ -321,8 +322,6 @@ let log = Logger.builder
                         event: "PRESENTABLE_DID_CANCEL",
                         properties: ["presentableId": presentableId.value]
                     )
-                Global.rum.stopView(key: presentableId.value)
-                Global.rum.startView(key: context.value)
                 message = "\(context) did cancel presentation of: \(presentableId)"
                 log.info(message)
             case let .didDismiss(presentableId, context, result):
@@ -344,8 +343,6 @@ let log = Logger.builder
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(error)"
                 }
-                Global.rum.stopView(key: presentableId.value)
-                Global.rum.startView(key: context.value)
                 log.info(message)
             #if DEBUG
                 case let .didDeallocate(presentableId, from: context):

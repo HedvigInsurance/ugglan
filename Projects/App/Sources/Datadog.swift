@@ -1,6 +1,26 @@
 import Apollo
 import Datadog
 import Foundation
+import UIKit
+
+struct RUMViewsPredicate: UIKitRUMViewsPredicate {
+    func rumView(for viewController: UIViewController) -> RUMView? {
+        let name = viewController.debugPresentationTitle ?? ""
+        var view = RUMView(name: name)
+        view.path = name
+        return view
+    }
+}
+
+struct RUMUserActionsPredicate: UIKitRUMUserActionsPredicate {
+    func rumAction(targetView: UIView) -> RUMAction? {
+        if let derivedFromL10N = targetView.accessibilityLabel?.derivedFromL10n {
+            return .init(name: derivedFromL10N.key)
+        }
+        
+        return nil
+    }
+}
 
 public class InterceptingURLSessionClient: URLSessionClient {
     public override func sendRequest(

@@ -22,7 +22,7 @@ extension AppJourney {
             case .mailingList:
                 ContinueJourney()
             case .chat:
-                Journey(FreeTextChat(), style: .detented(.large)).withDismissButton
+                AppJourney.freeTextChat()
             case .close:
                 DismissJourney()
             case let .offer(ids):
