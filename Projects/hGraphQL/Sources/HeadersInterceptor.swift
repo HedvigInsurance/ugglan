@@ -28,6 +28,10 @@ class HeadersInterceptor: ApolloInterceptor {
 
         httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
 
-        chain.proceedAsync(request: request, response: response, completion: completion)
+        chain.proceedAsync(
+            request: request,
+            response: response,
+            completion: completion
+        )
     }
 }

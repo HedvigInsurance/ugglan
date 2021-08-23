@@ -1,6 +1,8 @@
 import Adyen
 import Apollo
 import CoreDependencies
+import Datadog
+import DatadogCrashReporting
 import Disk
 import Firebase
 import FirebaseMessaging
@@ -12,7 +14,6 @@ import Mixpanel
 import Offer
 import Payment
 import Presentation
-import Sentry
 import Shake
 import SwiftUI
 import UIKit
@@ -27,7 +28,10 @@ import hGraphQL
     #endif
 #endif
 
-let log = Logger.self
+let log = Logger.builder
+    .sendNetworkInfo(true)
+    .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
+    .build()
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
@@ -49,6 +53,7 @@ let log = Logger.self
         globalPresentableStoreContainer = PresentableStoreContainer()
 
         setupDebugger()
+        setupPresentableStoreLogger()
 
         bag += ApolloClient.initAndRegisterClient()
             .onValue { _ in ChatState.shared = ChatState()
@@ -178,28 +183,70 @@ let log = Logger.self
         #endif
     }
 
+    func setupPresentableStoreLogger() {
+        globalPresentableStoreContainer.logger = { message in
+            log.info(message)
+        }
+    }
+
     var mixpanelToken: String? { Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String }
 
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        SentrySDK.start { options in
-            options.dsn = "https://09505787f04f4c6ea7e560de075ba552@o123400.ingest.sentry.io/5208267"
-            #if DEBUG
-                options.debug = true
-            #endif
-            options.environment = Environment.current.displayName
-            options.enableAutoSessionTracking = true
+        urlSessionClientProvider = {
+            return InterceptingURLSessionClient()
         }
+
+        setupPresentableStoreLogger()
+
+        Datadog.initialize(
+            appContext: .init(),
+            trackingConsent: .granted,
+            configuration: Datadog.Configuration
+                .builderUsing(
+                    rumApplicationID: "416e8fc0-c96a-4485-8c74-84412960a479",
+                    clientToken: "pub4306832bdc5f2b8b980c492ec2c11ef3",
+                    environment: Environment.current.datadogName
+                )
+                .set(serviceName: "ios")
+                .set(endpoint: .eu1)
+                .enableLogging(true)
+                .enableTracing(true)
+                .enableCrashReporting(using: DDCrashReportingPlugin())
+                .enableRUM(true)
+                .trackUIKitRUMActions(using: RUMUserActionsPredicate())
+                .trackUIKitRUMViews(using: RUMViewsPredicate())
+                .trackURLSession(firstPartyHosts: [
+                    Environment.production.endpointURL.host ?? "",
+                    Environment.staging.endpointURL.host ?? "",
+                ])
+                .build()
+        )
+
+        Global.rum = RUMMonitor.initialize()
+        Global.sharedTracer = Tracer.initialize(
+            configuration: .init(
+                serviceName: "ios",
+                sendNetworkInfo: true,
+                bundleWithRUM: true,
+                globalTags: [:]
+            )
+        )
+
+        log.info("Starting app")
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Shake.setup()
+            Datadog.verbosityLevel = .debug
         }
 
         if let mixpanelToken = mixpanelToken {
             Mixpanel.initialize(token: mixpanelToken)
             AnalyticsSender.sendEvent = { event, properties in
+                log.info("Sending analytics event: \(event)")
+
                 Mixpanel.mainInstance()
                     .track(
                         event: event,
@@ -252,6 +299,7 @@ let log = Logger.self
                         properties: ["presentableId": presentableId.value]
                     )
                 message = "\(context) will enqueue modal presentation of \(presentableId)"
+                log.info(message)
             case let .willDequeue(presentableId, context):
                 Mixpanel.mainInstance()
                     .track(
@@ -259,18 +307,15 @@ let log = Logger.self
                         properties: ["presentableId": presentableId.value]
                     )
                 message = "\(context) will dequeue modal presentation of \(presentableId)"
+                log.info(message)
             case let .willPresent(presentableId, context, styleName):
                 Mixpanel.mainInstance()
                     .track(
                         event: "PRESENTABLE_WILL_PRESENT",
                         properties: ["presentableId": presentableId.value]
                     )
-
-                SentrySDK.configureScope { scope in
-                    scope.setExtra(value: presentableId.value, key: "presentableId")
-                }
-
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
+                log.info(message)
             case let .didCancel(presentableId, context):
                 Mixpanel.mainInstance()
                     .track(
@@ -278,6 +323,7 @@ let log = Logger.self
                         properties: ["presentableId": presentableId.value]
                     )
                 message = "\(context) did cancel presentation of: \(presentableId)"
+                log.info(message)
             case let .didDismiss(presentableId, context, result):
                 switch result {
                 case let .success(result):
@@ -297,12 +343,15 @@ let log = Logger.self
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(error)"
                 }
+                log.info(message)
             #if DEBUG
                 case let .didDeallocate(presentableId, from: context):
                     message = "\(presentableId) was deallocated after presentation from \(context)"
+                    log.info(message)
                 case let .didLeak(presentableId, from: context):
                     message =
                         "WARNING \(presentableId) was NOT deallocated after presentation from \(context)"
+                    log.info(message)
             #endif
             }
 
@@ -399,8 +448,8 @@ let log = Logger.self
 extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
         Self.initClient()
-            .onValue { store, client in Dependencies.shared.add(module: Module { store })
-
+            .onValue { store, client in
+                Dependencies.shared.add(module: Module { store })
                 Dependencies.shared.add(module: Module { client })
             }
             .toVoid()
@@ -441,7 +490,11 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             if notificationType == "NEW_MESSAGE" {
-                #warning("handle this")
+                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                    .onValue { _ in
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        store.send(.openChat)
+                    }
             } else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                     .onValue { _ in

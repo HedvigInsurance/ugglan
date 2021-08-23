@@ -12,10 +12,9 @@ extension AppJourney {
                 ClaimsAskForPushnotifications(),
                 style: .detented(.large, modally: false)
             ) { _ in
-                Journey(
-                    ClaimsChat()
-                )
-                .withJourneyDismissButton
+                AppJourney
+                    .claimsChat()
+                    .withJourneyDismissButton
             }
             .withJourneyDismissButton
         }

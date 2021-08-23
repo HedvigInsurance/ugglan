@@ -22,7 +22,7 @@ extension AppJourney {
             case .openClaims:
                 AppJourney.claimsJourney
             case .openFreeTextChat:
-                AppJourney.freeTextChat
+                AppJourney.freeTextChat()
             case .openConnectPayments:
                 AppJourney.paymentSetup
             }
@@ -109,6 +109,11 @@ extension AppJourney {
                 }
             )
             .syncTabIndex()
+            .onAction(UgglanStore.self) { action in
+                if action == .openChat {
+                    AppJourney.freeTextChat()
+                }
+            }
         }
         .onPresent {
             ApplicationState.preserveState(.loggedIn)

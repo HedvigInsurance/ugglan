@@ -29,6 +29,7 @@ public enum UgglanAction: ActionProtocol {
     case exchangePaymentLink(link: String)
     case exchangeFailed
     case didAcceptHonestyPledge
+    case openChat
 
     #if compiler(<5.5)
         public func encode(to encoder: Encoder) throws {

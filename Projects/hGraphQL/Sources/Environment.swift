@@ -39,6 +39,14 @@ public enum Environment: Hashable {
         }
     }
 
+    public var datadogName: String {
+        switch self {
+        case .production: return "prod"
+        case .staging: return "dev"
+        case .custom: return "custom"
+        }
+    }
+
     public init?(
         rawValue: String
     ) {
