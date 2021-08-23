@@ -10,14 +10,14 @@ public class TracingInterceptor: ApolloInterceptor {
         completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void
     ) {
         let resourceKey = "\(request.operation.operationType) \(request.operation.operationName)"
-        
+
         if let request = try? request.toURLRequest() {
             Global.rum.startResourceLoading(
                 resourceKey: resourceKey,
                 request: request
             )
         }
-                
+
         let headersWritter = HTTPHeadersWriter()
         let span = Global.sharedTracer.startSpan(
             operationName: resourceKey
