@@ -143,9 +143,31 @@ jobs:
       with:
         name: OfferExample.ipa
         path: fastlane/build_output/OfferExample.ipa
+  build_hcoreui:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+    - name: Fastlane Action
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+        S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+        S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+      run: arch -arm64 bundle exec fastlane ios build path:Projects/hCoreUI/hCoreUI.xcodeproj scheme:hCoreUIExample
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: hCoreUIExample.ipa
+        path: fastlane/build_output/hCoreUIExample.ipa
   slack:
     runs-on: ubuntu-latest
-    needs: [build_ugglan, build_embark, build_hedvig, build_home, build_forever, build_offer]
+    needs: [build_ugglan, build_embark, build_hedvig, build_home, build_forever, build_offer, build_hcoreui]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
