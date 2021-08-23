@@ -36,10 +36,10 @@ extension InvitationScreen: Presentable {
 			],
 			showLogo: false
 		)
-        
-        #warning("CHECK THIS STRING")
+
+		#warning("CHECK THIS STRING")
 		bag += potentialDiscountAmountSignal.atOnce().compactMap { $0 }
-            .map { L10n.ReferralsIntroScreen.body }.bindTo(imageTextAction.$body)
+			.map { L10n.ReferralsIntroScreen.body }.bindTo(imageTextAction.$body)
 
 		return (
 			viewController,
