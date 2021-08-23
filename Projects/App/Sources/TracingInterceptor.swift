@@ -24,9 +24,9 @@ public class TracingInterceptor: ApolloInterceptor {
             response: response,
             completion: { result in
                 completion(result)
-                
+
                 let endDate = Date()
-                
+
                 Global.rum.addResourceMetrics(
                     resourceKey: resourceKey,
                     fetch: (
