@@ -2,50 +2,31 @@ import Apollo
 import Datadog
 import Foundation
 
-public class TracingInterceptor: ApolloInterceptor {
-    public func interceptAsync<Operation: GraphQLOperation>(
-        chain: RequestChain,
-        request: HTTPRequest<Operation>,
-        response: HTTPResponse<Operation>?,
-        completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void
-    ) {
-        let resourceKey = "\(request.operation.operationType) \(request.operation.operationName)"
-
-        if let request = try? request.toURLRequest() {
-            Global.rum.startResourceLoading(
-                resourceKey: resourceKey,
-                request: request
-            )
+public class InterceptingURLSessionClient: URLSessionClient {
+    public override func sendRequest(_ request: URLRequest, rawTaskCompletionHandler: URLSessionClient.RawCompletion? = nil, completion: @escaping URLSessionClient.Completion) -> URLSessionTask {
+        guard let instrumentedRequest = URLSessionInterceptor.shared?.modify(request: request) else {
+            return super.sendRequest(request, rawTaskCompletionHandler: rawTaskCompletionHandler, completion: completion)
         }
+        
+        let task = super.sendRequest(instrumentedRequest, rawTaskCompletionHandler: rawTaskCompletionHandler, completion: completion)
+        URLSessionInterceptor.shared?.taskCreated(task: task)
+        
+        return task
+    }
+    
+    override public func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics) {
+        
+        URLSessionInterceptor.shared?.taskMetricsCollected(task: task, metrics: metrics)
+        super.urlSession(session, task: task, didFinishCollecting: metrics)
+    }
 
-        let headersWritter = HTTPHeadersWriter()
-        let span = Global.sharedTracer.startSpan(
-            operationName: resourceKey
-        )
-        Global.sharedTracer.inject(spanContext: span.context, writer: headersWritter)
+    override public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        URLSessionInterceptor.shared?.taskCompleted(task: task, error: error)
+        super.urlSession(session, task: task, didCompleteWithError: error)
+    }
 
-        headersWritter.tracePropagationHTTPHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
-
-        chain.proceedAsync(
-            request: request,
-            response: response,
-            completion: { result in
-                completion(result)
-                Global.rum.stopResourceLoading(
-                    resourceKey: resourceKey,
-                    statusCode: 200,
-                    kind: .fetch
-                )
-
-                switch result {
-                case let .failure(error):
-                    span.setError(error)
-                default:
-                    break
-                }
-
-                span.finish()
-            }
-        )
+    override public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        URLSessionInterceptor.shared?.taskReceivedData(task: dataTask, data: data)
+        super.urlSession(session, dataTask: dataTask, didReceive: data)
     }
 }

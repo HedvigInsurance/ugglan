@@ -1,6 +1,11 @@
 import Apollo
 import Foundation
 
+/// use to override the URLSessionClient used by apollo
+public var urlSessionClientProvider: () -> URLSessionClient = {
+    URLSessionClient()
+}
+
 public class NetworkInterceptorProvider: LegacyInterceptorProvider {
     let token: String
     let acceptLanguageHeader: String
@@ -15,10 +20,8 @@ public class NetworkInterceptorProvider: LegacyInterceptorProvider {
         self.token = token
         self.acceptLanguageHeader = acceptLanguageHeader
         self.userAgent = userAgent
-        super.init(store: store)
+        super.init(client: urlSessionClientProvider(), store: store)
     }
-
-    public static var tracingInterceptor: ApolloInterceptor? = nil
 
     override public func interceptors<Operation: GraphQLOperation>(for operation: Operation) -> [ApolloInterceptor] {
         var interceptors = super.interceptors(for: operation)
@@ -30,13 +33,6 @@ public class NetworkInterceptorProvider: LegacyInterceptorProvider {
             ),
             at: 0
         )
-
-        if let tracingInterceptor = Self.tracingInterceptor {
-            interceptors.insert(
-                tracingInterceptor,
-                at: 0
-            )
-        }
 
         return interceptors
     }

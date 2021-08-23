@@ -195,6 +195,10 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        urlSessionClientProvider = {
+            return InterceptingURLSessionClient()
+        }
+        
         setupPresentableStoreLogger()
 
         Datadog.initialize(
@@ -212,6 +216,10 @@ let log = Logger.builder
                 .enableTracing(true)
                 .enableCrashReporting(using: DDCrashReportingPlugin())
                 .enableRUM(true)
+                .trackURLSession(firstPartyHosts: [
+                    Environment.production.endpointURL.host ?? "",
+                    Environment.staging.endpointURL.host ?? "",
+                ])
                 .build()
         )
 
@@ -224,8 +232,6 @@ let log = Logger.builder
                 globalTags: [:]
             )
         )
-
-        NetworkInterceptorProvider.tracingInterceptor = TracingInterceptor()
 
         log.info("Starting app")
 
