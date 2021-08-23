@@ -743,7 +743,8 @@ platform :ios do
                         devices: [device],
                         scheme: scheme,
                         derived_data_path: is_ci ? "../../../DerivedData" : nil,
-                        skip_package_dependencies_resolution: true
+                        skip_package_dependencies_resolution: true,
+                        number_of_retries: 3
                     )
                 end
             rescue => ex

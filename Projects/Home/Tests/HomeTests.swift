@@ -1,6 +1,7 @@
 import Apollo
 import Flow
 import Foundation
+import Presentation
 import SnapshotTesting
 import Testing
 import TestingUtil
@@ -26,7 +27,14 @@ class HomeTests: XCTestCase {
 
         let window = UIWindow()
 
-        bag += window.present(Home(sections: []))
+        bag += window.present(
+            Journey(
+                Home(),
+                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+            ) { result in
+                return DismissJourney()
+            }
+        )
 
         let waitForApollo = expectation(description: "wait for apollo")
 

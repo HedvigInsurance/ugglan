@@ -10,10 +10,13 @@ import hGraphQL
 
 struct ActiveSection { @Inject var client: ApolloClient }
 
-extension ActiveSection: Viewable {
-    func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
+extension ActiveSection: Presentable {
+    func materialize() -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView()
+
+        let store: HomeStore = self.get()
+
         section.dynamicStyle = .brandGrouped(separatorType: .none)
 
         var label = MultilineLabel(value: "", style: .brand(.largeTitle(color: .primary)))
@@ -32,7 +35,9 @@ extension ActiveSection: Viewable {
             )
         )
         bag += section.append(claimButton)
-        bag += claimButton.onTapSignal.compactMap { section.viewController }.onValue(Home.openClaimsHandler)
+        bag += claimButton.onTapSignal.onValue {
+            store.send(.openClaims)
+        }
 
         section.appendSpacing(.inbetween)
 
@@ -51,7 +56,8 @@ extension ActiveSection: Viewable {
                     buttonContinueTitle: L10n.ClaimsExplainer.buttonNext,
                     buttonDoneTitle: L10n.ClaimsExplainer.buttonStartClaim,
                     pages: []
-                ) { viewController in Home.openClaimsHandler(viewController)
+                ) { viewController in
+                    store.send(.openClaims)
                     return Future(.forever)
                 }
                 viewController.present(pager)
