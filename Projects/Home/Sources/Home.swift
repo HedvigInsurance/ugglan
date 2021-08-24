@@ -135,7 +135,7 @@ extension Home: Presentable {
                     )
                     innerBag += form.append(section)
                 }
-                
+
                 form.appendSpacing(.custom(30))
             case .future:
                 innerBag += titleRow.append(FutureSection())
