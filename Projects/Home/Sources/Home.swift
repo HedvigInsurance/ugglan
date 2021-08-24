@@ -117,22 +117,25 @@ extension Home: Presentable {
             case .active:
                 innerBag += titleRow.append(ActiveSection())
 
-                let section = HomeVerticalSection(
-                    section: .init(
-                        title: L10n.HomeTab.editingSectionTitle,
-                        style: .vertical,
-                        children: [
-                            .init(
-                                title: L10n.HomeTab.editingSectionChangeAddressLabel,
-                                icon: hCoreUIAssets.apartment.image,
-                                handler: {
-                                    store.send(.openMovingFlow)
-                                }
-                            )
-                        ]
+                if Localization.Locale.currentLocale.market == .se {
+                    let section = HomeVerticalSection(
+                        section: .init(
+                            title: L10n.HomeTab.editingSectionTitle,
+                            style: .vertical,
+                            children: [
+                                .init(
+                                    title: L10n.HomeTab.editingSectionChangeAddressLabel,
+                                    icon: hCoreUIAssets.apartment.image,
+                                    handler: {
+                                        store.send(.openMovingFlow)
+                                    }
+                                )
+                            ]
+                        )
                     )
-                )
-                innerBag += form.append(section)
+                    innerBag += form.append(section)
+                }
+                
                 form.appendSpacing(.custom(30))
             case .future:
                 innerBag += titleRow.append(FutureSection())
