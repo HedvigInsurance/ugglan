@@ -1,8 +1,6 @@
 name: Upload DSYM
 
-on:
-  schedule:
-     - cron:  '0 8 * * *'
+on: [workflow_dispatch]
 
 jobs:
   upload-dsym:
