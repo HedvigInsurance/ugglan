@@ -5,7 +5,7 @@ import UIKit
 
 struct RUMViewsPredicate: UIKitRUMViewsPredicate {
     func rumView(for viewController: UIViewController) -> RUMView? {
-        let name = viewController.debugPresentationTitle ?? ""
+        let name = viewController.debugPresentationTitle ?? "\(type(of: viewController))"
         var view = RUMView(name: name)
         view.path = name
         return view
