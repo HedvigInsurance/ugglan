@@ -8,16 +8,18 @@ struct RUMViewsPredicate: UIKitRUMViewsPredicate {
         UINavigationController.self,
         UITabBarController.self,
         UISplitViewController.self,
-        PlaceholderViewController.self
+        PlaceholderViewController.self,
     ]
-    
+
     func rumView(for viewController: UIViewController) -> RUMView? {
-        guard !filteredViewControllerClasses.contains(where: { viewControllerClass in
-            viewControllerClass == type(of: viewController)
-        }), let name = viewController.debugPresentationTitle else {
+        guard
+            !filteredViewControllerClasses.contains(where: { viewControllerClass in
+                viewControllerClass == type(of: viewController)
+            }), let name = viewController.debugPresentationTitle
+        else {
             return nil
         }
-  
+
         var view = RUMView(name: name)
         view.path = name
         return view
