@@ -125,7 +125,7 @@ extension Chat: Presentable {
         headerPushView.snp.makeConstraints { make in
             make.height.width.equalTo(0)
         }
-
+        
         let tableKit = TableKit<EmptySection, ChatListContent>(
             table: Table(),
             style: style,

@@ -4,8 +4,20 @@ import Foundation
 import UIKit
 
 struct RUMViewsPredicate: UIKitRUMViewsPredicate {
+    let filteredViewControllerClasses: [UIViewController.Type] = [
+        UINavigationController.self,
+        UITabBarController.self,
+        UISplitViewController.self,
+        PlaceholderViewController.self
+    ]
+    
     func rumView(for viewController: UIViewController) -> RUMView? {
-        let name = viewController.debugPresentationTitle ?? "\(type(of: viewController))"
+        guard !filteredViewControllerClasses.contains(where: { viewControllerClass in
+            viewControllerClass == type(of: viewController)
+        }), let name = viewController.debugPresentationTitle else {
+            return nil
+        }
+  
         var view = RUMView(name: name)
         view.path = name
         return view
