@@ -126,7 +126,9 @@ platform :ios do
 
     lane :upload_dsyms do
         download_dsyms
-        sentry_upload_dsym
+        lane_context[SharedValues::DSYM_PATHS].each do |file|
+            sh("DATADOG_SITE=datadoghq.eu datadog-ci dsyms upload #{file}")
+        end
         clean_build_artifacts
     end
 
