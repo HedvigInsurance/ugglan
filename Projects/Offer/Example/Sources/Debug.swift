@@ -32,6 +32,17 @@ struct Debug: View {
 
         store.send(.openOffer(fullscreen: presentFullScreen, prefersLargeTitles: prefersLargeTitles))
     }
+    
+    func openDataCollection<Mock: GraphQLMock>(locale: Localization.Locale, @GraphQLMockBuilder _ mocks: () -> Mock) {
+        Localization.Locale.currentLocale = locale
+
+        ApolloClient.createMock {
+            mocks()
+            sharedMocks
+        }
+        
+        store.send(.openDataCollection)
+    }
 
     var body: some View {
         let rows = [
@@ -269,10 +280,28 @@ struct Debug: View {
             }
             hSection {
                 hRow {
-                    hText("Data collection")
+                    hText("Data collection - Sweden")
                 }
                 .onTap {
-                    store.send(.openDataCollection)
+                    openDataCollection(locale: .en_SE) {
+                        SubscriptionMock(
+                            GraphQL.DataCollectionSubscription.self,
+                            timeline: { operation in
+                                TimelineEntry(
+                                    after: 2,
+                                    data: GraphQL.DataCollectionSubscription.Data(
+                                        dataCollectionStatusV2: .init(
+                                            extraInformation: .makeSwedishBankIdExtraInfo(
+                                                autoStartToken: nil,
+                                                swedishBankIdQrCode: nil
+                                            ),
+                                            status: .waitingForAuthentication
+                                        )
+                                    )
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }

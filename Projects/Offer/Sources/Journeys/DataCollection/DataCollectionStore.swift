@@ -15,16 +15,17 @@ public enum DataCollectionStatus: Codable {
     case failed
 }
 
-public struct AuthInformation: Codable, Equatable {
-    let swedishAutoStartToken: String?
-    let norwegianWords: String?
+public enum DataCollectionAuthMethod: Equatable, Codable {
+    case swedishBankIDEphemeral
+    case swedishBankIDAutoStartToken(token: String)
+    case norwegianBankIDWords(words: String)
 }
 
 public struct DataCollectionState: StateProtocol {
     var provider: String? = nil
     var id: UUID? = nil
     var status = DataCollectionStatus.none
-    var authInformation: AuthInformation? = nil
+    var authMethod: DataCollectionAuthMethod? = nil
     var market: Localization.Locale.Market
 
     public init() {
@@ -38,7 +39,7 @@ public enum DataCollectionAction: ActionProtocol {
     case confirmResult(result: DataCollectionConfirmationResult)
     case startAuthentication(personalNumber: String)
     case setStatus(status: DataCollectionStatus)
-    case setAuthInformation(authInformation: AuthInformation)
+    case setAuthMethod(method: DataCollectionAuthMethod)
 
     #if compiler(<5.5)
         public func encode(to encoder: Encoder) throws {
@@ -66,26 +67,30 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
             bag += self.client.subscribe(subscription: GraphQL.DataCollectionSubscription(reference: reference))
                 .onValue({ data in
                     if let extraInformation = data.dataCollectionStatusV2.extraInformation?.asSwedishBankIdExtraInfo {
-                        callback(
-                            .value(
-                                .setAuthInformation(
-                                    authInformation: .init(
-                                        swedishAutoStartToken: extraInformation.autoStartToken,
-                                        norwegianWords: nil
+                        if let token = extraInformation.autoStartToken {
+                            callback(
+                                .value(
+                                    .setAuthMethod(
+                                        method: .swedishBankIDAutoStartToken(token: token)
                                     )
                                 )
                             )
-                        )
+                        } else {
+                            callback(
+                                .value(
+                                    .setAuthMethod(
+                                        method: .swedishBankIDEphemeral
+                                    )
+                                )
+                            )
+                        }
                     } else if let extraInformation = data.dataCollectionStatusV2.extraInformation?
                         .asNorwegianBankIdExtraInfo
                     {
                         callback(
                             .value(
-                                .setAuthInformation(
-                                    authInformation: .init(
-                                        swedishAutoStartToken: nil,
-                                        norwegianWords: extraInformation.norwegianBankIdWords
-                                    )
+                                .setAuthMethod(
+                                    method: .norwegianBankIDWords(words: extraInformation.norwegianBankIdWords ?? "")
                                 )
                             )
                         )
