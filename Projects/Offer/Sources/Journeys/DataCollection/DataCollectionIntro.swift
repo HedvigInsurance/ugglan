@@ -33,7 +33,7 @@ public struct DataCollectionIntro: View {
         hForm {
             hSection {
                 VStack(alignment: .leading, spacing: 16) {
-                    L10n.InsurelyIntro.title("PROVIDER")
+                    L10n.InsurelyIntro.title(store.state.provider ?? "")
                         .hText(.title2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     L10n.InsurelyIntro.description
@@ -97,6 +97,6 @@ struct DataCollectionIntroPreview: PreviewProvider {
                 }
             )
             .preferredColorScheme(.dark)
-        }
+        }.mockProvider()
     }
 }

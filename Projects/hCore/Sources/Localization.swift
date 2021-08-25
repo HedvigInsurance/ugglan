@@ -11,7 +11,7 @@ public enum Localization {
         case da_DK
         case en_DK
 
-        public enum Market: String {
+        public enum Market: String, Codable {
             case no = "NO"
             case se = "SE"
             case dk = "DK"

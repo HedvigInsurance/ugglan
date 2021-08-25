@@ -9,6 +9,7 @@ public struct DataCollectionPersonalIdentity: View {
     public init() {}
 
     @State var inputtedPersonalNumber = ""
+    @PresentableStore var store: DataCollectionStore
 
     var masking: Masking {
         switch Localization.Locale.currentLocale.market {
@@ -34,7 +35,7 @@ public struct DataCollectionPersonalIdentity: View {
                 .padding(.top, 40)
                 VStack {
                     hButton.LargeButtonFilled {
-                        print(inputtedPersonalNumber)
+                        store.send(.startAuthentication(personalNumber: inputtedPersonalNumber))
                     } content: {
                         L10n.InsurelySsn.continueButtonText.hText()
                     }
@@ -47,13 +48,18 @@ public struct DataCollectionPersonalIdentity: View {
 }
 
 extension DataCollectionPersonalIdentity {
-    static func journey(modally: Bool = false) -> some JourneyPresentation {
+    static func journey<InnerJourney: JourneyPresentation>(
+        modally: Bool = false,
+        @JourneyBuilder _ next: @escaping () -> InnerJourney
+    ) -> some JourneyPresentation {
         HostingJourney(
             DataCollectionStore.self,
             rootView: DataCollectionPersonalIdentity(),
             style: .detented(.large, modally: modally)
-        ) { _ in
-            ContinueJourney()
+        ) { action in
+            if case .startAuthentication = action {
+                next()
+            }
         }
         .configureTitle(L10n.Insurely.title)
     }
@@ -64,13 +70,17 @@ struct DataCollectionPersonalIdentityPreview: PreviewProvider {
     static var previews: some View {
         Group {
             JourneyPreviewer(
-                DataCollectionPersonalIdentity.journey(modally: true)
+                DataCollectionPersonalIdentity.journey(modally: true) {
+                    ContinueJourney()
+                }
             )
             .preferredColorScheme(.light)
             JourneyPreviewer(
-                DataCollectionPersonalIdentity.journey(modally: true)
+                DataCollectionPersonalIdentity.journey(modally: true){
+                    ContinueJourney()
+                }
             )
             .preferredColorScheme(.dark)
-        }
+        }.mockProvider()
     }
 }

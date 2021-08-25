@@ -8,7 +8,15 @@ public enum DataCollection {
         DataCollectionIntro.journey { decision in
             switch decision {
             case .accept:
-                DataCollectionPersonalIdentity.journey()
+                DataCollectionPersonalIdentity.journey {
+                    DataCollectionAuthentication.journey { result in
+                        DataCollectionConfirmation.journey(
+                            wasConfirmed: result == .completed
+                        ) { result in
+                            ContinueJourney()
+                        }
+                    }
+                }
             case .decline:
                 PopJourney()
             }
