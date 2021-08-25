@@ -9,7 +9,7 @@ public enum DataCollectionConfirmationResult: Codable {
     case completed
     case failed
     case retry
-    
+
     #if compiler(<5.5)
         public func encode(to encoder: Encoder) throws {
             #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
@@ -27,26 +27,28 @@ public enum DataCollectionConfirmationResult: Codable {
 
 public struct DataCollectionConfirmation: View {
     var wasConfirmed: Bool
-    
-    public init(wasConfirmed: Bool) {
+
+    public init(
+        wasConfirmed: Bool
+    ) {
         self.wasConfirmed = wasConfirmed
     }
 
     @PresentableStore var store: DataCollectionStore
-    
+
     var title: String {
         if wasConfirmed {
             return L10n.InsurelyConfirmation.title
         }
-        
+
         return L10n.InsurelyFailure.title
     }
-    
+
     var description: String {
         if wasConfirmed {
             return L10n.InsurelyConfirmation.description
         }
-        
+
         return L10n.InsurelyFailure.description(store.state.provider ?? "")
     }
 
@@ -130,6 +132,7 @@ struct DataCollectionConfirmationPreview: PreviewProvider {
                 }
             )
             .preferredColorScheme(.dark)
-        }.mockProvider()
+        }
+        .mockProvider()
     }
 }

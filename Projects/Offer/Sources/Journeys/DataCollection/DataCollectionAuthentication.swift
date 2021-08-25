@@ -66,6 +66,7 @@ struct DataCollectionAuthenticationPreview: PreviewProvider {
                 }
             )
             .preferredColorScheme(.dark)
-        }.mockProvider()
+        }
+        .mockProvider()
     }
 }

@@ -76,11 +76,12 @@ struct DataCollectionPersonalIdentityPreview: PreviewProvider {
             )
             .preferredColorScheme(.light)
             JourneyPreviewer(
-                DataCollectionPersonalIdentity.journey(modally: true){
+                DataCollectionPersonalIdentity.journey(modally: true) {
                     ContinueJourney()
                 }
             )
             .preferredColorScheme(.dark)
-        }.mockProvider()
+        }
+        .mockProvider()
     }
 }

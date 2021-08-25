@@ -97,6 +97,7 @@ struct DataCollectionIntroPreview: PreviewProvider {
                 }
             )
             .preferredColorScheme(.dark)
-        }.mockProvider()
+        }
+        .mockProvider()
     }
 }
