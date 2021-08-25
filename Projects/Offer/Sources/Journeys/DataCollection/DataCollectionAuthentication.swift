@@ -12,19 +12,20 @@ public enum DataCollectionAuthenticationResult: Codable {
 
 struct SwedishBankID: View {
     var autoStartToken: String?
-    
+
     var body: some View {
-        hCoreUIAssets.bankIdLogo.view.resizable().frame(
-            width: 48,
-            height: 48,
-            alignment: .center
-        )
+        hCoreUIAssets.bankIdLogo.view.resizable()
+            .frame(
+                width: 48,
+                height: 48,
+                alignment: .center
+            )
     }
 }
 
 struct NorwegianBankIDWords: View {
     var words: String
-    
+
     var body: some View {
         VStack(spacing: 10) {
             hText("Enter these words", style: .title2)
@@ -37,7 +38,7 @@ public struct DataCollectionAuthentication: View {
     public init() {}
 
     @PresentableStore var store: DataCollectionStore
-    
+
     public var body: some View {
         hForm {
             hSection {
@@ -57,7 +58,8 @@ public struct DataCollectionAuthentication: View {
                     case .none:
                         ActivityIndicator(isAnimating: true)
                     }
-                }.transition(.scale)
+                }
+                .transition(.scale)
             }
             .sectionContainerStyle(.transparent)
         }

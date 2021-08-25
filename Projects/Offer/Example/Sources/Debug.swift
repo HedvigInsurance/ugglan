@@ -32,7 +32,7 @@ struct Debug: View {
 
         store.send(.openOffer(fullscreen: presentFullScreen, prefersLargeTitles: prefersLargeTitles))
     }
-    
+
     func openDataCollection<Mock: GraphQLMock>(locale: Localization.Locale, @GraphQLMockBuilder _ mocks: () -> Mock) {
         Localization.Locale.currentLocale = locale
 
@@ -40,7 +40,7 @@ struct Debug: View {
             mocks()
             sharedMocks
         }
-        
+
         store.send(.openDataCollection)
     }
 
