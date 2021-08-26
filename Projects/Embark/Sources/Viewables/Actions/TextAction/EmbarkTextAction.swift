@@ -6,11 +6,9 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-typealias EmbarkTextActionData = EmbarkPassage.Action.AsEmbarkTextAction
-
 struct EmbarkTextAction {
-	let state: EmbarkState
-	let data: EmbarkTextActionData
+    @PresentableStore var store: EmbarkStateStore
+    let data: hTextAction
 
 	var masking: Masking? {
 		if let mask = data.textActionData.mask, let maskType = MaskType(rawValue: mask) {
@@ -21,7 +19,7 @@ struct EmbarkTextAction {
 	}
 
 	var prefillValue: String {
-		guard let value = state.store.state.embarkValues.getPrefillValue(key: data.textActionData.key) else {
+        guard let value = store.state.currentStory.kvs.getPrefillValue(key: data) else {
 			return ""
 		}
 

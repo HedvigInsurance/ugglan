@@ -54,21 +54,21 @@ extension MultiActionTable: Presentable {
 			)
 		}
 
-		func addNumberAction(_ data: EmbarkNumberMultiActionData, index: Int) {
+		func addNumberAction(_ data: hNumberAction, index: Int) {
 			let numberAction = MultiActionNumberRow(data: data)
 
 			bag += section.append(numberAction) { _ in addDividerIfNeeded(index: index) }
 				.onValue { addValues(storeValues: $0) }
 		}
 
-		func addDropDownAction(_ data: EmbarkDropDownActionData, index: Int) {
+		func addDropDownAction(_ data: hDropDownAction, index: Int) {
 			let dropDownAction = MultiActionDropDownRow(data: data)
 
 			bag += section.append(dropDownAction) { _ in addDividerIfNeeded(index: index) }
 				.onValue { addValues(storeValues: $0) }
 		}
 
-		func addSwitchAction(_ data: EmbarkSwitchActionData, index: Int) {
+		func addSwitchAction(_ data: hSwitchAction, index: Int) {
 			let switchAction = MultiActionSwitchRow(data: data)
 
 			bag += section.append(switchAction) { _ in addDividerIfNeeded(index: index) }
@@ -79,9 +79,8 @@ extension MultiActionTable: Presentable {
 			.forEach { index, component in
 				switch component {
 				case let .number(data): addNumberAction(data, index: index)
-				case let .dropDown(data): addDropDownAction(data, index: index)
+				case let .dropDownAction(data): addDropDownAction(data, index: index)
 				case let .switch(data): addSwitchAction(data, index: index)
-				case .empty: break
 				}
 			}
 
@@ -148,19 +147,4 @@ internal struct MultiActionValue {
     var isValid = false
 }
 
-typealias EmbarkDropDownActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
-	.MultiActionDatum.Component.AsEmbarkDropdownAction.DropDownActionDatum
-
-typealias EmbarkSwitchActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
-	.MultiActionDatum.Component.AsEmbarkSwitchAction.SwitchActionDatum
-
-typealias EmbarkNumberMultiActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
-    .MultiActionDatum.Component.AsEmbarkMultiActionNumberAction.NumberActionDatum
-
 internal typealias MultiActionStoreSignal = Signal<[String: MultiActionValue]>
-
-internal enum MultiActionComponent { case number(EmbarkNumberMultiActionData)
-	case dropDown(EmbarkDropDownActionData)
-	case `switch`(EmbarkSwitchActionData)
-	case empty
-}

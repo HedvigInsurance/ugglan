@@ -264,7 +264,7 @@ extension ResultMap {
 }
 
 extension EmbarkState {
-	func handleApi(apiFragment: GraphQL.ApiFragment) -> Future<GraphQL.EmbarkLinkFragment?> {
+	func handleApi(apiFragment: GraphQL.ApiFragment) -> Future<hEmbarkLink?> {
 		handleApiRequest(apiFragment: apiFragment)
 			.mapResult { result in
 				switch result {
@@ -310,48 +310,48 @@ extension EmbarkState {
 
 			let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
 
-			return Future { completion in
-				urlSessionClient.sendRequest(urlRequest) { result in
-					switch result {
-					case .failure: break
-					case let .success((data, response)):
-						if response.statusCode == 200 {
-							if let result = try? JSONSerialization.jsonObject(
-								with: data,
-								options: []
-							) as? ResultMap {
-								if let errors = result["errors"] as? [ResultMap] {
-									if let error = errors.first,
-										let message = error["message"]
-											as? String
-									{
-										completion(
-											.failure(
-												ApiError.failed(
-													reason: message
-												)
-											)
-										)
-									} else {
-										completion(.failure(ApiError.unknown))
-									}
-								} else if let data = result["data"] as? ResultMap {
-									completion(.success(data))
-								} else {
-									completion(.failure(ApiError.unknown))
-								}
-							} else {
-								completion(.failure(ApiError.unknown))
-							}
-						} else {
-							if let reason = String(data: data, encoding: .utf8) {
-								completion(.failure(ApiError.failed(reason: reason)))
-							} else {
-								completion(.failure(ApiError.unknown))
-							}
-						}
-					}
-				}
+            return Future { completion in
+                urlSessionClient.sendRequest(urlRequest) { result in
+                    switch result {
+                    case .failure: break
+                    case let .success((data, response)):
+                        if response.statusCode == 200 {
+                            if let result = try? JSONSerialization.jsonObject(
+                                with: data,
+                                options: []
+                            ) as? ResultMap {
+                                if let errors = result["errors"] as? [ResultMap] {
+                                    if let error = errors.first,
+                                        let message = error["message"]
+                                            as? String
+                                    {
+                                        completion(
+                                            .failure(
+                                                ApiError.failed(
+                                                    reason: message
+                                                )
+                                            )
+                                        )
+                                    } else {
+                                        completion(.failure(ApiError.unknown))
+                                    }
+                                } else if let data = result["data"] as? ResultMap {
+                                    completion(.success(data))
+                                } else {
+                                    completion(.failure(ApiError.unknown))
+                                }
+                            } else {
+                                completion(.failure(ApiError.unknown))
+                            }
+                        } else {
+                            if let reason = String(data: data, encoding: .utf8) {
+                                completion(.failure(ApiError.failed(reason: reason)))
+                            } else {
+                                completion(.failure(ApiError.unknown))
+                            }
+                        }
+                    }
+                }
 
 				return NilDisposer()
 			}

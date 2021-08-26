@@ -4,13 +4,14 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
-struct MultiActionNumberRow { let data: EmbarkNumberMultiActionData }
+struct MultiActionNumberRow { let data: hNumberAction }
 
 extension MultiActionNumberRow: Viewable {
 	func materialize(events _: ViewableEvents) -> (UIView, MultiActionStoreSignal) {
 		let bag = DisposeBag()
-
+        
 		let containerView = UIView()
 		bag += containerView.traitCollectionSignal.onValue { trait in
 			switch trait.userInterfaceStyle {

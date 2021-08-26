@@ -31,6 +31,7 @@ public enum EmbarkActions: ActionProtocol {
 	case createRevision
 	case setComputeValues(values: [String: String])
 	case setValue(key: String?, value: String?)
+    case sendAPI(api: hAPI)
 
 	// Passage
 	case next(passage: String, pushHistoryEntry: Bool)
@@ -68,9 +69,105 @@ public final class EmbarkStateStore: StateStore<EmbarkNewState, EmbarkActions> {
 					.setStory(story: story)
 				}
 				.valueThenEndSignal
+        case .sendAPI(let api):
+            return handleAPIRequest(api: api).mapResult { result -> EmbarkActions in
+                switch result {
+                case .success:
+                    let next = api.data.next
+                    return .next(passage: next?.name ?? "", pushHistoryEntry: true)
+                case let .failure(error):
+                    if let error = api.data.errors.first(where: {
+                        guard let contains = $0.contains else {
+                            return true
+                        }
+                        
+                        return error.localizedDescription.contains(contains)
+                    }) {
+                        return .next(passage: error.next?.name ?? "", pushHistoryEntry: true)
+                    }
+                }
+            }
+            .valueThenEndSignal
 		default: return nil
 		}
-	}
+    }
+    
+    private func handleAPIRequest(api: hAPI) -> Future<ResultMap?> {
+        var urlRequest = URLRequest(url: Environment.current.endpointURL)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.httpBody = try? JSONSerialization.data(
+            withJSONObject: ["query": api.data.query, "variables": api.data.variables],
+            options: []
+        )
+        
+        
+        let configuration = URLSessionConfiguration.default
+        configuration.httpAdditionalHeaders =
+            ApolloClient.headers(token: ApolloClient.retreiveToken()?.token) as [AnyHashable: Any]
+
+        let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
+
+        return Future { completion in
+            urlSessionClient.sendRequest(urlRequest) { result in
+                switch result {
+                case .failure: break
+                case let .success((data, response)):
+                    if response.statusCode == 200 {
+                        if let result = try? JSONSerialization.jsonObject(
+                            with: data,
+                            options: []
+                        ) as? ResultMap {
+                            if let errors = result["errors"] as? [ResultMap] {
+                                if let error = errors.first,
+                                    let message = error["message"]
+                                        as? String
+                                {
+                                    completion(
+                                        .failure(
+                                            ApiError.failed(
+                                                reason: message
+                                            )
+                                        )
+                                    )
+                                } else {
+                                    completion(.failure(ApiError.unknown))
+                                }
+                            } else if let data = result["data"] as? ResultMap {
+                                completion(.success(data))
+                            } else {
+                                completion(.failure(ApiError.unknown))
+                            }
+                        } else {
+                            completion(.failure(ApiError.unknown))
+                        }
+                    } else {
+                        if let reason = String(data: data, encoding: .utf8) {
+                            completion(.failure(ApiError.failed(reason: reason)))
+                        } else {
+                            completion(.failure(ApiError.unknown))
+                        }
+                    }
+                }
+            }
+
+            return NilDisposer()
+        }
+    }
+    
+    enum ApiError: Error {
+        case noApi
+        case failed(reason: String)
+        case unknown
+
+        var localizedDescription: String {
+            switch self {
+            case .noApi: return "No API for this passage"
+            case let .failed(reason): return "Failed with \(reason)"
+            case .unknown: return "Unknown"
+            }
+        }
+    }
 
 	public override func reduce(_ state: EmbarkNewState, _ action: EmbarkActions) -> EmbarkNewState {
 		var newState = state
@@ -106,7 +203,9 @@ public final class EmbarkStateStore: StateStore<EmbarkNewState, EmbarkActions> {
 			newState.currentStory.story = story
 			newState.currentStory.passages = story.passages
 			newState.currentStory.currentPassage = story.initialPassage
-		}
+        case .sendAPI(api: let api):
+            break
+        }
 		return newState
 	}
 
@@ -267,49 +366,51 @@ class KeyValueStore: Codable {
 		}
 	}
 
-	func passes(expression: GraphQL.BasicExpressionFragment) -> Bool {
-		if let binaryExpression = expression.asEmbarkExpressionBinary {
-			switch binaryExpression.expressionBinaryType {
-			case .equals: return getValue(key: binaryExpression.key) == binaryExpression.value
-			case .lessThan:
-				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
-					return storeFloat < binaryExpression.value.floatValue
-				}
+	func passes(expression: hExpression) -> Bool {
+        switch (expression.typename, expression.type) {
+        case (.unary, .always):
+            return true
+        case (.binary, .equals):
+            return getValue(key: expression.key ?? "") == expression.value
+        case (.binary, .lessThan):
+            if let storeFloat = getValue(key: expression.key ?? "")?.floatValue {
+                return storeFloat < (expression.value ?? "").floatValue
+            }
 
-				return false
-			case .lessThanOrEquals:
-				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
-					return storeFloat <= binaryExpression.value.floatValue
-				}
-
-				return false
-			case .moreThan:
-				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
-					return storeFloat > binaryExpression.value.floatValue
-				}
-
-				return false
-			case .moreThanOrEquals:
-				if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
-					return storeFloat >= binaryExpression.value.floatValue
-				}
-
-				return false
-			case .notEquals: return getValue(key: binaryExpression.key) != binaryExpression.value
-			case .__unknown: return false
-			}
-		}
-
-		if let unaryExpression = expression.asEmbarkExpressionUnary {
-			switch unaryExpression.expressionUnaryType {
-			case .always: return true
-			case .never: return false
-			case .__unknown: return false
-			}
-		}
-
-		return false
-	}
+            return false
+        case (.binary, .lessThanOrEquals):
+            if let storeFloat = getValue(key: expression.key ?? "")?.floatValue {
+                return storeFloat <= (expression.value ?? "").floatValue
+            }
+        case (.binary, .moreThan):
+            if let storeFloat = getValue(key: expression.key ?? "")?.floatValue {
+                return storeFloat > (expression.value ?? "").floatValue
+            }
+        case (.binary, .moreThanOrEquals):
+            if let storeFloat = getValue(key: expression.key ?? "")?.floatValue {
+                return storeFloat >= (expression.value ?? "").floatValue
+            }
+        case (.binary, .notEquals):
+            return getValue(key: expression.key ?? "") != expression.value
+        case (.multiple, .and):
+            return
+                !(expression.subExpressions?
+                .compactMap { subExpression -> Bool in
+                    self.passes(expression: subExpression)
+                }
+                .contains(false) ?? false)
+        case (.multiple, .or):
+            return
+                !(expression.subExpressions?
+                .compactMap { subExpression -> Bool in
+                    self.passes(expression: subExpression)
+                }
+                .contains(true) ?? false)
+        default:
+            return false
+        }
+        return false
+    }
 
 	func passes(expression: SubExpression) -> Bool {
 		switch (expression.typename, expression.type) {
@@ -452,4 +553,10 @@ extension hEmbarkStory: Equatable {
 	public static func == (lhs: hEmbarkStory, rhs: hEmbarkStory) -> Bool {
 		return lhs.id == rhs.id
 	}
+}
+
+extension hAPI: Equatable {
+    public static func == (lhs: hAPI, rhs: hAPI) -> Bool {
+        return lhs.data.query == rhs.data.query
+    }
 }

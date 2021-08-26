@@ -37,7 +37,7 @@ extension Embark: Presentable {
 		let viewController = UIViewController()
 		viewController.navigationItem.largeTitleDisplayMode = .never
 		let bag = DisposeBag()
-
+    
 		state.store = self.get()
 
 		let edgePanGestureRecognizer = UIScreenEdgePanGestureRecognizer()

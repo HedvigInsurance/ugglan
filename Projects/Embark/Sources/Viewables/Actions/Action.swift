@@ -5,10 +5,10 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct Action { let state: EmbarkState }
+struct Action { @PresentableStore var store: EmbarkStateStore }
 
 struct ActionResponse {
-	let link: GraphQL.EmbarkLinkFragment
+	let link: hEmbarkLink
 	let data: ActionResponseData
 }
 
@@ -19,7 +19,7 @@ struct ActionResponseData {
 }
 
 extension Action: Viewable {
-	func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+	func materialize(events _: ViewableEvents) -> (UIView, Signal<hEmbarkLink>) {
 		let bag = DisposeBag()
 
 		let outerContainer = UIStackView()

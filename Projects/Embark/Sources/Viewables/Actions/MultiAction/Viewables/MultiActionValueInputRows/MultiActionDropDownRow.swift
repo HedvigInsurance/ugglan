@@ -4,9 +4,10 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct MultiActionDropDownRow {
-	let data: EmbarkDropDownActionData
+	let data: hDropDownAction
 	let isExpanded = ReadWriteSignal<Bool>(false)
 }
 

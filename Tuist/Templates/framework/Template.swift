@@ -184,6 +184,7 @@ let template = Template(
 			contents: xcassetsAppIconContents
 		),
 		.string(path: "\(nameAttribute)/GraphQL/ExampleQuery.graphql", contents: graphqlExampleQueryContents),
+        .string(path: "\(nameAttribute)/InternalGraphQL/ExampleQuery.graphql", contents: graphqlExampleQueryContents),
 		.string(path: "\(nameAttribute)/Sources/\(nameAttribute).swift", contents: exampleContents),
 		.string(path: "\(nameAttribute)/Tests/\(nameAttribute)Tests.swift", contents: testContents),
 		.string(path: "\(nameAttribute)/Testing/\(nameAttribute).swift", contents: testingContents),

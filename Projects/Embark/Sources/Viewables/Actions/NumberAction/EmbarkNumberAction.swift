@@ -7,27 +7,29 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-internal typealias EmbarkNumberActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
-	.AsEmbarkNumberAction.NumberActionDatum
+@propertyWrapper
+public struct PresentableStore<S: Store> {
+    public var wrappedValue: S { globalPresentableStoreContainer.get() }
+
+    public init() {}
+}
 
 struct EmbarkNumberAction {
 	internal init(
-		state: EmbarkState,
-		data: EmbarkNumberActionData,
+		data: hNumberAction,
 		style: FieldStyle = .embarkInputLarge
 	) {
-		self.state = state
 		self.data = data
 		self.style = style
 	}
-
-	let state: EmbarkState
-	let data: EmbarkNumberActionData
+    
+    @PresentableStore var store: EmbarkStateStore
+	let data: hNumberAction
 	let style: FieldStyle
 }
 
 extension EmbarkNumberAction: Viewable {
-	func materialize(events: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+	func materialize(events: ViewableEvents) -> (UIView, Signal<hEmbarkLink>) {
 		let bag = DisposeBag()
 
 		let view = UIStackView()
@@ -48,13 +50,13 @@ extension EmbarkNumberAction: Viewable {
 			Signal { callback in
 				func handleSubmit(textValue: String) {
 					let key = self.data.key
-					self.state.store.state.embarkValues.setValue(key: key, value: textValue)
-					if let passageName = self.state.passageNameSignal.value {
-						self.state.store.send(
+                    store.send(.setValue(key: key, value: textValue))
+                    if let passageName = self.store.state.currentStory.currentPassage {
+						self.store.send(
 							.setValue(key: "\(passageName)Result", value: textValue)
 						)
 					}
-					callback(self.data.link.fragments.embarkLinkFragment)
+                    callback(data.link!)
 				}
 
 				let masking = Masking(type: .digits)
@@ -68,7 +70,7 @@ extension EmbarkNumberAction: Viewable {
 				)
 				let (textInputView, textSignal) = textField.materialize(events: events)
 				textSignal.value = masking.maskValueFromStore(
-					text: state.store.state.embarkValues.getPrefillValue(key: data.key) ?? ""
+                    text: store.state.currentStory.kvs.getPrefillValue(key: data.key ?? "") ?? ""
 				)
 				boxStack.addArrangedSubview(textInputView)
 
@@ -94,7 +96,7 @@ extension EmbarkNumberAction: Viewable {
 				view.addArrangedSubview(box)
 
 				let button = Button(
-					title: self.data.link.fragments.embarkLinkFragment.label,
+                    title: self.data.link?.label ?? "",
 					type: .standard(
 						backgroundColor: .brand(.secondaryButtonBackgroundColor),
 						textColor: .brand(.secondaryButtonTextColor)

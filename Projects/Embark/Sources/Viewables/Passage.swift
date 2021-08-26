@@ -6,12 +6,12 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct Passage { let state: EmbarkState }
-
-typealias EmbarkPassage = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
+struct Passage {
+    @PresentableStore var store: EmbarkStateStore
+}
 
 extension Passage: Viewable {
-	func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+	func materialize(events _: ViewableEvents) -> (UIView, Signal<hEmbarkLink>) {
 		let view = UIStackView()
 		view.axis = .vertical
 		view.distribution = .equalSpacing
@@ -20,10 +20,10 @@ extension Passage: Viewable {
 		view.spacing = 15
 		let bag = DisposeBag()
 
-		let embarkMessages = EmbarkMessages(state: state)
+		let embarkMessages = EmbarkMessages()
 		bag += view.addArranged(embarkMessages)
 
-		let action = Action(state: state)
+		let action = Action()
 
 		bag += state.currentPassageSignal.onValue { passage in print("API", passage?.api ?? "none") }
 

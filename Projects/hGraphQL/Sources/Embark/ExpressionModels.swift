@@ -6,7 +6,7 @@ public enum ExpressionTypename: String, Codable {
 	case unary, binary, multiple
 }
 
-public struct Expression: Codable {
+public struct hExpression: Codable {
 	internal init(
 		type: ExpressionType,
 		typename: ExpressionTypename,
@@ -46,7 +46,7 @@ public struct SubExpression: Codable {
 	public var typename: ExpressionTypename
 	public var subExpressions: [SubExpression]? = nil
 
-	public init?(
+	internal init?(
 		subExpression: GraphQL.BasicExpressionFragment
 	) {
 		if let expression = subExpression.asEmbarkExpressionUnary {
@@ -66,7 +66,7 @@ public struct SubExpression: Codable {
 		}
 	}
 
-	public init?(
+    internal init?(
 		subExpression: GraphQL.ExpressionFragment
 	) {
 		if let expression = subExpression.asEmbarkExpressionUnary {
@@ -116,8 +116,8 @@ public enum ExpressionType: String, Codable {
 }
 
 public struct hEmbarkRedirect: Codable {
-	public let expression: Expression?
-	public init(
+	public let expression: hExpression?
+    internal init(
 		redirect: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Redirect
 	) {
 		if let unary = redirect.asEmbarkRedirectUnaryExpression, unary.unaryType == .always {

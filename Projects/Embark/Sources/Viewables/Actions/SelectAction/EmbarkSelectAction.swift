@@ -5,16 +5,14 @@ import UIKit
 import hCore
 import hGraphQL
 
-typealias EmbarkSelectActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction
-
 struct EmbarkSelectAction {
-	let state: EmbarkState
-	let data: EmbarkSelectActionData
+    @PresentableStore var store: EmbarkStateStore
+	let data: hSelectAction
 	@ReadWriteState private var isSelectOptionLoading = false
 }
 
 extension EmbarkSelectAction: Viewable {
-	func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+	func materialize(events _: ViewableEvents) -> (UIView, Signal<hEmbarkLink>) {
 		let view = UIStackView()
 		view.axis = .vertical
 		view.spacing = 10
@@ -23,7 +21,7 @@ extension EmbarkSelectAction: Viewable {
 
 		return (
 			view,
-			Signal { callback in let options = self.data.selectActionData.options
+			Signal { callback in let options = self.data.options
 				let numberOfStacks =
 					options.count % 2 == 0
 					? options.count / 2 : Int(floor(Double(options.count) / 2) + 1)
@@ -39,7 +37,6 @@ extension EmbarkSelectAction: Viewable {
 					)
 					bag += optionsSlice.map { option in
 						let selectActionOption = EmbarkSelectActionOption(
-							state: state,
 							data: option
 						)
 
@@ -48,17 +45,16 @@ extension EmbarkSelectAction: Viewable {
 							.atValue { _ in $isSelectOptionLoading.value = true }
 							.mapLatestToFuture {
 								result -> Future<
-									(GraphQL.EmbarkLinkFragment, ActionResponseData)
+									(hEmbarkLink, ActionResponseData)
 								> in
-								let defaultLink = option.link.fragments
-									.embarkLinkFragment
-
-								if let apiFragment = option.api?.fragments.apiFragment {
+								let defaultLink = option.link
+								if let api = option.api {
 									selectActionOption.$isLoading.value = true
-									return state.handleApi(apiFragment: apiFragment)
-										.map { link in
-											(link ?? defaultLink, result)
-										}
+                                    store.send(.sendAPI(api: api))
+									
+                                    store.stateSignal.providedSignal.onValue { state in
+                                        
+                                    }
 								}
 
 								return Future((defaultLink, result))
@@ -67,12 +63,7 @@ extension EmbarkSelectAction: Viewable {
 								result.keys.enumerated()
 									.forEach { offset, key in
 										let value = result.values[offset]
-										self.state.store.send(
-											.setValue(
-												key: key,
-												value: value
-											)
-										)
+                                        store.send(.setValue(key: key, value: value))
 									}
 
 								if let passageName = self.state.passageNameSignal.value

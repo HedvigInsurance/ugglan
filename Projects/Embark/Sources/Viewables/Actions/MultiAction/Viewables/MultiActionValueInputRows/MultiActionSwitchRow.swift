@@ -4,8 +4,9 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
-struct MultiActionSwitchRow { let data: EmbarkSwitchActionData }
+struct MultiActionSwitchRow { let data: hSwitchAction }
 
 extension MultiActionSwitchRow: Viewable {
 	func materialize(events _: ViewableEvents) -> (UIView, MultiActionStoreSignal) {
