@@ -21,9 +21,7 @@ class ReadSignalSubscription<S: Subscriber, Value>: Subscription where S.Input =
         }
     }
 
-    func request(_ demand: Subscribers.Demand) {
-        //TODO: - Optionaly Adjust The Demand
-    }
+    func request(_ demand: Subscribers.Demand) {}
 
     func cancel() {
         subscriber = nil
@@ -34,8 +32,6 @@ class ReadSignalSubscription<S: Subscriber, Value>: Subscription where S.Input =
 }
 
 public class ReadSignalPublisher<Value>: Publisher {
-    // Declaring that our publisher doesn't emit any values,
-    // and that it can never fail:
     public typealias Output = Value
     public typealias Failure = Never
 
@@ -46,10 +42,7 @@ public class ReadSignalPublisher<Value>: Publisher {
     ) {
         self.signal = signal
     }
-    // Combine will call this method on our publisher whenever
-    // a new object started observing it. Within this method,
-    // we'll need to create a subscription instance and
-    // attach it to the new subscriber:
+    
     public func receive<S: Subscriber>(
         subscriber: S
     ) where S.Input == Output, S.Failure == Failure {
@@ -149,6 +142,10 @@ extension Lens {
         PresentableStoreLens(S.self, getter: getter, setter: setter) { value, setter in
             body(value, setter)
         }
+    }
+    
+    public func setter(_ value: Value) -> S.Action? {
+        nil
     }
 }
 

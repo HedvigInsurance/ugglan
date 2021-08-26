@@ -38,7 +38,6 @@ struct Debug: View {
 
         ApolloClient.createMock {
             mocks()
-            sharedMocks
         }
 
         store.send(.openDataCollection)
@@ -334,7 +333,7 @@ extension Debug {
                     PopJourney()
                 }
             case .openDataCollection:
-                DataCollection.journey
+                DataCollection.journey(provider: "Hedvig")
             }
         }
         .configureTitle("Offer Example")

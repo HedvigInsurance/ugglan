@@ -183,8 +183,11 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
             newState.provider = provider
         case .startAuthentication:
             newState.id = UUID()
+            newState.authMethod = nil
         case let .setStatus(status):
             newState.status = status
+        case let .setAuthMethod(method):
+            newState.authMethod = method
         default:
             break
         }

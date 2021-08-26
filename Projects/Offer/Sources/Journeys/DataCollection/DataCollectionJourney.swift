@@ -4,7 +4,7 @@ import Presentation
 import hCore
 
 public enum DataCollection {
-    public static var journey: some JourneyPresentation {
+    public static func journey(provider: String) -> some JourneyPresentation {
         DataCollectionIntro.journey { decision in
             switch decision {
             case .accept:
@@ -20,6 +20,9 @@ public enum DataCollection {
             case .decline:
                 PopJourney()
             }
+        }.addConfiguration { presenter in
+            let store: DataCollectionStore = globalPresentableStoreContainer.get()
+            store.send(.setProvider(provider: provider))
         }
     }
 }

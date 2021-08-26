@@ -34,6 +34,23 @@ struct NorwegianBankIDWords: View {
     }
 }
 
+struct AuthMethodContainer: View {
+    var authMethod: DataCollectionAuthMethod?
+    
+    var body: some View {
+        switch authMethod {
+        case .swedishBankIDEphemeral:
+            SwedishBankID(autoStartToken: nil)
+        case let .swedishBankIDAutoStartToken(token):
+            SwedishBankID(autoStartToken: token)
+        case let .norwegianBankIDWords(words):
+            NorwegianBankIDWords(words: words)
+        case .none:
+            ActivityIndicator(isAnimating: true)
+        }
+    }
+}
+
 public struct DataCollectionAuthentication: View {
     public init() {}
 
@@ -45,21 +62,11 @@ public struct DataCollectionAuthentication: View {
                 PresentableStoreLens(
                     DataCollectionStore.self,
                     getter: { state in
-                        state.authMethod ?? nil
+                        state.authMethod
                     }
                 ) { authMethod in
-                    switch authMethod {
-                    case .swedishBankIDEphemeral:
-                        SwedishBankID(autoStartToken: nil)
-                    case let .swedishBankIDAutoStartToken(token):
-                        SwedishBankID(autoStartToken: token)
-                    case let .norwegianBankIDWords(words):
-                        NorwegianBankIDWords(words: words)
-                    case .none:
-                        ActivityIndicator(isAnimating: true)
-                    }
+                    AuthMethodContainer(authMethod: authMethod)
                 }
-                .transition(.scale)
             }
             .sectionContainerStyle(.transparent)
         }
