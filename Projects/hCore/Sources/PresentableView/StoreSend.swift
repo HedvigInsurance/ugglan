@@ -42,7 +42,7 @@ public class ReadSignalPublisher<Value>: Publisher {
     ) {
         self.signal = signal
     }
-    
+
     public func receive<S: Subscriber>(
         subscriber: S
     ) where S.Input == Output, S.Failure == Failure {
@@ -143,7 +143,7 @@ extension Lens {
             body(value, setter)
         }
     }
-    
+
     public func setter(_ value: Value) -> S.Action? {
         nil
     }

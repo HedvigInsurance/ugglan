@@ -36,7 +36,7 @@ struct NorwegianBankIDWords: View {
 
 struct AuthMethodContainer: View {
     var authMethod: DataCollectionAuthMethod?
-    
+
     var body: some View {
         switch authMethod {
         case .swedishBankIDEphemeral:

@@ -20,7 +20,8 @@ public enum DataCollection {
             case .decline:
                 PopJourney()
             }
-        }.addConfiguration { presenter in
+        }
+        .addConfiguration { presenter in
             let store: DataCollectionStore = globalPresentableStoreContainer.get()
             store.send(.setProvider(provider: provider))
         }
