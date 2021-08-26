@@ -7,7 +7,7 @@ import hCoreUI
 import hGraphQL
 
 struct Passage {
-    @PresentableStore var store: EmbarkStateStore
+	@PresentableStore var store: EmbarkStateStore
 }
 
 extension Passage: Viewable {

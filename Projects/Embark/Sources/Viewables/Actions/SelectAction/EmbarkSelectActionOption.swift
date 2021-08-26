@@ -7,7 +7,7 @@ import hCoreUI
 import hGraphQL
 
 struct EmbarkSelectActionOption {
-    @PresentableStore var store: EmbarkStateStore
+	@PresentableStore var store: EmbarkStateStore
 	let data: hSelectOption
 	@ReadWriteState var isLoading = false
 }
@@ -23,7 +23,7 @@ extension EmbarkSelectActionOption: Viewable {
 		if !data.keys.isEmpty
 			&& data.keys.enumerated()
 				.allSatisfy({ offset, key in
-                    store.state.currentStory.kvs.getPrefillValue(key: key) == data.values[offset]
+					store.state.currentStory.kvs.getPrefillValue(key: key) == data.values[offset]
 				})
 		{
 			control.layer.borderWidth = 2
@@ -76,7 +76,7 @@ extension EmbarkSelectActionOption: Viewable {
 			control,
 			Signal { callback in
 				let valueLabel = MultilineLabel(
-                    value: data.link.label,
+					value: data.link.label,
 					style: TextStyle.brand(.headline(color: .primary)).centerAligned
 				)
 
@@ -96,7 +96,7 @@ extension EmbarkSelectActionOption: Viewable {
 
 				bag += control.signal(for: .touchUpInside)
 					.onValue { _ in
-                        let textValue = self.data.link.label
+						let textValue = self.data.link.label
 						callback(
 							ActionResponseData(
 								keys: self.data.keys,

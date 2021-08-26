@@ -11,7 +11,7 @@ struct MultiActionNumberRow { let data: hNumberAction }
 extension MultiActionNumberRow: Viewable {
 	func materialize(events _: ViewableEvents) -> (UIView, MultiActionStoreSignal) {
 		let bag = DisposeBag()
-        
+
 		let containerView = UIView()
 		bag += containerView.traitCollectionSignal.onValue { trait in
 			switch trait.userInterfaceStyle {

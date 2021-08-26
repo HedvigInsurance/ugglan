@@ -66,7 +66,7 @@ public struct SubExpression: Codable {
 		}
 	}
 
-    internal init?(
+	internal init?(
 		subExpression: GraphQL.ExpressionFragment
 	) {
 		if let expression = subExpression.asEmbarkExpressionUnary {
@@ -117,7 +117,7 @@ public enum ExpressionType: String, Codable {
 
 public struct hEmbarkRedirect: Codable {
 	public let expression: hExpression?
-    internal init(
+	internal init(
 		redirect: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Redirect
 	) {
 		if let unary = redirect.asEmbarkRedirectUnaryExpression, unary.unaryType == .always {

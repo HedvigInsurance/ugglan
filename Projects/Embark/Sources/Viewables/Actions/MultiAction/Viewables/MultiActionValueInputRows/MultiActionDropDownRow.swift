@@ -52,7 +52,7 @@ extension MultiActionDropDownRow: Viewable {
 		let buttonTitle = UILabel()
 		buttonTitle.style = .brand(.body(color: .tertiary))
 		buttonTitle.setContentHuggingPriority(.required, for: .vertical)
-        buttonTitle.text = L10n.generalSelectButton
+		buttonTitle.text = L10n.generalSelectButton
 
 		let buttonIcon = UIImageView()
 		buttonIcon.image = hCoreUIAssets.chevronUp.image
@@ -91,7 +91,7 @@ extension MultiActionDropDownRow: Viewable {
 								buttonIcon.transform = transform
 							}
 					}
-                    .map { option in data.options.first(where: { $0.text == option }) }
+					.map { option in data.options.first(where: { $0.text == option }) }
 					.onValue { selectedOption in buttonTitle.style = .brand(.body(color: .primary))
 						guard let selectedOption = selectedOption else { return }
 						buttonTitle.value = selectedOption.text
@@ -99,11 +99,15 @@ extension MultiActionDropDownRow: Viewable {
 						let value = MultiActionValue(
 							inputValue: selectedOption.value,
 							displayValue: nil,
-                            isValid: true
+							isValid: true
 						)
-                        
-                        let labelValue = MultiActionValue(inputValue: selectedOption.text, displayValue: nil, isValid: true)
-                        
+
+						let labelValue = MultiActionValue(
+							inputValue: selectedOption.text,
+							displayValue: nil,
+							isValid: true
+						)
+
 						callback([data.key: value, "\(data.key).Label": labelValue])
 					}
 

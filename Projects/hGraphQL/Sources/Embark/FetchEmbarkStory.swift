@@ -55,7 +55,7 @@ public struct hEmbarkPassage: Codable {
 	public let name: String
 	public let redirects: [hEmbarkRedirect]
 	public let externalRedirect: hEmbarkExternalRedirect?
-    public let action: hEmbarkAction?
+	public let action: hEmbarkAction?
 	init(
 		passage: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
 	) {
@@ -66,7 +66,7 @@ public struct hEmbarkPassage: Codable {
 		} else {
 			externalRedirect = nil
 		}
-        action = hEmbarkAction(action: passage.action)
+		action = hEmbarkAction(action: passage.action)
 	}
 }
 

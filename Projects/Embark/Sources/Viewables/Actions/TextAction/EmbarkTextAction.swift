@@ -7,8 +7,8 @@ import hCoreUI
 import hGraphQL
 
 struct EmbarkTextAction {
-    @PresentableStore var store: EmbarkStateStore
-    let data: hTextAction
+	@PresentableStore var store: EmbarkStateStore
+	let data: hTextAction
 
 	var masking: Masking? {
 		if let mask = data.textActionData.mask, let maskType = MaskType(rawValue: mask) {
@@ -19,7 +19,7 @@ struct EmbarkTextAction {
 	}
 
 	var prefillValue: String {
-        guard let value = store.state.currentStory.kvs.getPrefillValue(key: data) else {
+		guard let value = store.state.currentStory.kvs.getPrefillValue(key: data) else {
 			return ""
 		}
 

@@ -6,7 +6,7 @@ import hCore
 import hGraphQL
 
 struct EmbarkSelectAction {
-    @PresentableStore var store: EmbarkStateStore
+	@PresentableStore var store: EmbarkStateStore
 	let data: hSelectAction
 	@ReadWriteState private var isSelectOptionLoading = false
 }
@@ -50,11 +50,12 @@ extension EmbarkSelectAction: Viewable {
 								let defaultLink = option.link
 								if let api = option.api {
 									selectActionOption.$isLoading.value = true
-                                    store.send(.sendAPI(api: api))
-									
-                                    store.stateSignal.providedSignal.onValue { state in
-                                        
-                                    }
+									store.send(.sendAPI(api: api))
+
+									store.stateSignal.providedSignal.onValue {
+										state in
+
+									}
 								}
 
 								return Future((defaultLink, result))
@@ -63,7 +64,12 @@ extension EmbarkSelectAction: Viewable {
 								result.keys.enumerated()
 									.forEach { offset, key in
 										let value = result.values[offset]
-                                        store.send(.setValue(key: key, value: value))
+										store.send(
+											.setValue(
+												key: key,
+												value: value
+											)
+										)
 									}
 
 								if let passageName = self.state.passageNameSignal.value

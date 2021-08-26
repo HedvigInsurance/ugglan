@@ -9,9 +9,9 @@ import hGraphQL
 
 @propertyWrapper
 public struct PresentableStore<S: Store> {
-    public var wrappedValue: S { globalPresentableStoreContainer.get() }
+	public var wrappedValue: S { globalPresentableStoreContainer.get() }
 
-    public init() {}
+	public init() {}
 }
 
 struct EmbarkNumberAction {
@@ -22,8 +22,8 @@ struct EmbarkNumberAction {
 		self.data = data
 		self.style = style
 	}
-    
-    @PresentableStore var store: EmbarkStateStore
+
+	@PresentableStore var store: EmbarkStateStore
 	let data: hNumberAction
 	let style: FieldStyle
 }
@@ -50,13 +50,13 @@ extension EmbarkNumberAction: Viewable {
 			Signal { callback in
 				func handleSubmit(textValue: String) {
 					let key = self.data.key
-                    store.send(.setValue(key: key, value: textValue))
-                    if let passageName = self.store.state.currentStory.currentPassage {
+					store.send(.setValue(key: key, value: textValue))
+					if let passageName = self.store.state.currentStory.currentPassage {
 						self.store.send(
 							.setValue(key: "\(passageName)Result", value: textValue)
 						)
 					}
-                    callback(data.link!)
+					callback(data.link!)
 				}
 
 				let masking = Masking(type: .digits)
@@ -70,7 +70,7 @@ extension EmbarkNumberAction: Viewable {
 				)
 				let (textInputView, textSignal) = textField.materialize(events: events)
 				textSignal.value = masking.maskValueFromStore(
-                    text: store.state.currentStory.kvs.getPrefillValue(key: data.key ?? "") ?? ""
+					text: store.state.currentStory.kvs.getPrefillValue(key: data.key ?? "") ?? ""
 				)
 				boxStack.addArrangedSubview(textInputView)
 
@@ -96,7 +96,7 @@ extension EmbarkNumberAction: Viewable {
 				view.addArrangedSubview(box)
 
 				let button = Button(
-                    title: self.data.link?.label ?? "",
+					title: self.data.link?.label ?? "",
 					type: .standard(
 						backgroundColor: .brand(.secondaryButtonBackgroundColor),
 						textColor: .brand(.secondaryButtonTextColor)
