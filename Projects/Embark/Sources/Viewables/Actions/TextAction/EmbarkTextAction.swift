@@ -19,7 +19,7 @@ struct EmbarkTextAction {
 	}
 
 	var prefillValue: String {
-        guard let value = store.state.currentStory.kvs.getPrefillValue(key: data.key) else {
+		guard let value = store.state.currentStory.kvs.getPrefillValue(key: data.key) else {
 			return ""
 		}
 

@@ -67,14 +67,16 @@ extension EmbarkSelectAction: Viewable {
 										)
 									}
 
-                                if let passageName = store.state.currentStory.currentPassage?.name
+								if let passageName = store.state.currentStory
+									.currentPassage?
+									.name
 								{
-                                    store.send(
-                                        .setValue(
-                                            key: "\(passageName)Result",
-                                            value: result.textValue
-                                        )
-                                    )
+									store.send(
+										.setValue(
+											key: "\(passageName)Result",
+											value: result.textValue
+										)
+									)
 								}
 
 								callback(link)
