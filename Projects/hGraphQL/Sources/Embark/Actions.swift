@@ -17,7 +17,7 @@ public struct hNumberAction: Codable {
 	public let maxValue: Int?
 	public let minValue: Int?
 	public let unit: String?
-	public let link: hEmbarkLink?
+    public let link: hEmbarkLink?
 
 	init(
 		data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberAction.NumberActionDatum
@@ -94,8 +94,8 @@ public enum MultiActionComponent: Codable {
 }
 
 public struct hMultiAction: Codable {
-	public var key: String?
-	public var components: [MultiActionComponent]
+	public let key: String?
+	public let components: [MultiActionComponent]
 	init(
 		data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction.MultiActionDatum
 	) {
@@ -155,11 +155,19 @@ public struct hDropDownAction: Codable {
 }
 
 public struct hTextAction: Codable {
-	var key: String?
+    public let key: String?
+    public let mask: String?
+    public let placeholder: String?
+    public let title: String?
+    public let api: hAPI?
 	init(
 		data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextAction.TextActionDatum
 	) {
-		key = data.key
+        key = data.key
+        mask = data.mask
+        placeholder = data.placeholder
+        api = .init(api: data.api)
+        title = nil
 	}
 
 	init?(
@@ -167,7 +175,11 @@ public struct hTextAction: Codable {
 			.TextAction.Datum?
 	) {
 		guard let data = data else { return nil }
-		key = data.key
+        key = data.key
+        mask = data.mask
+        placeholder = data.placeholder
+        title = data.title
+        api = nil
 	}
 }
 

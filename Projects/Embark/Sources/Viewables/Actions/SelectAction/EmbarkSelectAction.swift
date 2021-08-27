@@ -51,11 +51,6 @@ extension EmbarkSelectAction: Viewable {
 								if let api = option.api {
 									selectActionOption.$isLoading.value = true
 									store.send(.sendAPI(api: api))
-
-									store.stateSignal.providedSignal.onValue {
-										state in
-
-									}
 								}
 
 								return Future((defaultLink, result))
@@ -72,14 +67,14 @@ extension EmbarkSelectAction: Viewable {
 										)
 									}
 
-								if let passageName = self.state.passageNameSignal.value
+                                if let passageName = store.state.currentStory.currentPassage?.name
 								{
-									self.state.store.send(
-										.setValue(
-											key: "\(passageName)Result",
-											value: result.textValue
-										)
-									)
+                                    store.send(
+                                        .setValue(
+                                            key: "\(passageName)Result",
+                                            value: result.textValue
+                                        )
+                                    )
 								}
 
 								callback(link)

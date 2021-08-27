@@ -11,7 +11,7 @@ struct EmbarkTextAction {
 	let data: hTextAction
 
 	var masking: Masking? {
-		if let mask = data.textActionData.mask, let maskType = MaskType(rawValue: mask) {
+		if let mask = data.mask, let maskType = MaskType(rawValue: mask) {
 			return Masking(type: maskType)
 		}
 
@@ -19,7 +19,7 @@ struct EmbarkTextAction {
 	}
 
 	var prefillValue: String {
-		guard let value = store.state.currentStory.kvs.getPrefillValue(key: data) else {
+        guard let value = store.state.currentStory.kvs.getPrefillValue(key: data.key) else {
 			return ""
 		}
 
@@ -30,7 +30,7 @@ struct EmbarkTextAction {
 }
 
 extension EmbarkTextAction: Viewable {
-	func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+	func materialize(events _: ViewableEvents) -> (UIView, Signal<hEmbarkLink>) {
 		let view = UIStackView()
 		view.axis = .vertical
 		view.spacing = 10
@@ -56,7 +56,7 @@ extension EmbarkTextAction: Viewable {
 		view.addArrangedSubview(box)
 
 		let input = EmbarkInput(
-			placeholder: data.textActionData.placeholder,
+			placeholder: data.placeholder,
 			keyboardType: masking?.keyboardType,
 			textContentType: masking?.textContentType,
 			autocapitalisationType: masking?.autocapitalizationType ?? .none,

@@ -42,6 +42,36 @@ public struct hAPI: Codable {
 			return nil
 		}
 	}
+    
+    init?(
+        api: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextAction.TextActionDatum.Api?
+    ) {
+        guard let api = api else { return nil }
+
+        if let api = api.asEmbarkApiGraphQlQuery {
+            type = .graphQLQuery
+            let next = api.data.next.map { hEmbarkLink(name: $0.name, label: $0.label) }
+            data = .init(
+                next: next,
+                query: api.data.query,
+                variables: api.data.variables.compactMap { .init(variable: $0.fragments.apiVariablesFragment) },
+                results: api.data.queryResults.map { .init(result: $0) },
+                errors: api.data.queryErrors.map { .init(error: $0) }
+            )
+        } else if let api = api.asEmbarkApiGraphQlMutation {
+            type = .graphQLMutation
+            let next = api.data.next.map { hEmbarkLink(name: $0.name, label: $0.label) }
+            data = .init(
+                next: next,
+                query: api.data.mutation,
+                variables: api.data.variables.compactMap { .init(variable: $0.fragments.apiVariablesFragment) },
+                results: [],
+                errors: []
+            )
+        } else {
+            return nil
+        }
+    }
 
 	public struct APIData: Codable {
 		public let next: hEmbarkLink?
@@ -171,6 +201,14 @@ public struct hAPI: Codable {
 			self.key = result.key
 			self.as = result.as
 		}
+        
+        init(
+            result: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextAction
+                .TextActionDatum.Api.AsEmbarkApiGraphQlQuery.Datum.QueryResult
+        ) {
+            self.key = result.key
+            self.as = result.as
+        }
 	}
 
 	public struct QueryError: Codable {
@@ -183,5 +221,12 @@ public struct hAPI: Codable {
 			contains = error.contains
 			next = .init(name: error.next.name, label: error.next.label)
 		}
+        init(
+            error: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextAction
+                .TextActionDatum.Api.AsEmbarkApiGraphQlQuery.Datum.QueryError
+        ) {
+            contains = error.contains
+            next = .init(name: error.next.name, label: error.next.label)
+        }
 	}
 }
