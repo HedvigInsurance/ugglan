@@ -9,15 +9,12 @@ import hCoreUI
 
 struct ContractDetail {
     var contractRow: ContractRow
-    let state: ContractsState
 
     init(
-        contractRow: ContractRow,
-        state: ContractsState
+        contractRow: ContractRow
     ) {
         self.contractRow = contractRow
         self.contractRow.allowDetailNavigation = false
-        self.state = state
     }
 }
 
@@ -28,6 +25,8 @@ extension ContractDetail: Presentable {
 
         let scrollView = FormScrollView()
         let form = FormView()
+        
+        let store: ContractStore = get()
 
         form.appendSpacing(.inbetween)
 
@@ -36,7 +35,7 @@ extension ContractDetail: Presentable {
 
         form.append(contractRowView)
 
-        let contractInformation = ContractInformation(contract: contractRow.contract, state: state)
+        let contractInformation = ContractInformation(contract: contractRow.contract)
 
         let contractCoverage = ContractCoverage(
             perilFragments: contractRow.contract.perils.compactMap { $0.fragments.perilFragment },

@@ -36,7 +36,6 @@ public indirect enum ContractFilter {
 
 public struct Contracts {
     let filter: ContractFilter
-    let state = ContractsState()
 
     public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
     public init(filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none))) { self.filter = filter }
@@ -50,6 +49,9 @@ extension Contracts: Presentable {
     public func materialize() -> (UIViewController, Signal<ContractsResult>) {
         let viewController = UIViewController()
 
+        let store: ContractStore = get()
+        store.send(.fetchContractBundles)
+        
         if filter.displaysActiveContracts {
             viewController.title = L10n.InsurancesTab.title
             viewController.installChatButton()
@@ -58,14 +60,16 @@ extension Contracts: Presentable {
         let bag = DisposeBag()
 
         bag += viewController.install(
-            ContractTable(presentingViewController: viewController, filter: filter, state: state)
+            ContractTable(presentingViewController: viewController, filter: filter)
         )
 
         return (
             viewController,
             Signal { callback in
-                bag += state.goToMovingFlowSignal.onValue { _ in
-                    callback(.movingFlow)
+                bag += store.actionSignal.onValue {
+                    if $0 == .goToMovingFlow {
+                        callback(.movingFlow)
+                    }
                 }
 
                 return bag

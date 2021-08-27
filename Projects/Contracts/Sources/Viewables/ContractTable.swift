@@ -11,7 +11,7 @@ struct ContractTable {
     @Inject var client: ApolloClient
     let presentingViewController: UIViewController
     let filter: ContractFilter
-    let state: ContractsState
+    @PresentableStore var store: ContractStore
 }
 
 extension GraphQL.ContractsQuery.Data.Contract.CurrentAgreement {
@@ -77,63 +77,37 @@ extension ContractTable: Viewable {
         }
 
         func watchContracts() {
-            bag +=
-                client.watch(
-                    query: GraphQL.ContractsQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    ),
-                    cachePolicy: .fetchIgnoringCacheData
-                )
-                .compactMap { $0.contracts }
-                .onValue { contracts in
-                    var contractsToShow = contracts.filter {
-                        switch self.filter {
-                        case .active: return $0.status.asTerminatedStatus == nil
-                        case .terminated: return $0.status.asTerminatedStatus != nil
-                        case .none: return false
-                        }
+            bag += store.stateSignal.onValue { state in
+                var contractsToShow = state.contractBundles.compactMap { $0.contracts }.filter {
+                    switch self.filter {
+                    case .active: return $0.status.asTerminatedStatus == nil
+                    case .terminated: return $0.status.asTerminatedStatus != nil
+                    case .none: return false
                     }
-
-                    if contractsToShow.isEmpty, self.filter.emptyFilter.displaysTerminatedContracts {
-                        contractsToShow = contracts
-                    }
-
-                    let table = Table(
-                        rows: contractsToShow.map { contract -> ContractRow in
-                            ContractRow(
-                                contract: contract,
-                                displayName: contract.displayName,
-                                type: contract.currentAgreement.type,
-                                state: state
-                            )
-                        }
-                    )
-
-                    loadingIndicatorBag.dispose()
-
-                    tableKit.set(table)
                 }
+            
+                if contractsToShow.isEmpty, self.filter.emptyFilter.displaysTerminatedContracts {
+                    contractsToShow = contracts
+                }
+            }
         }
 
-        watchContracts()
-
         let refreshControl = UIRefreshControl()
-        bag += client.refetchOnRefresh(
-            query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
-            refreshControl: refreshControl
-        )
+        bag += refreshControl.onValue {
+            store.send(.fetchContractBundles)
+        }
 
         tableKit.view.refreshControl = refreshControl
 
-        bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
-            client.fetch(
-                query: GraphQL.ContractsQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                ),
-                cachePolicy: .fetchIgnoringCacheData
-            )
-            .onValue { _ in }
-        }
+//        bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
+//            client.fetch(
+//                query: GraphQL.ContractsQuery(
+//                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+//                ),
+//                cachePolicy: .fetchIgnoringCacheData
+//            )
+//            .onValue { _ in }
+//        }
 
         return (tableKit.view, bag)
     }

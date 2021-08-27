@@ -1,13 +1,43 @@
 query ActiveContractBundles {
-     activeContractBundles {
-        id
-        contracts {
-          id
-          inception
-          termination
+  activeContractBundles {
+    id
+    contracts {
+      id
+      displayName
+      switchedFromInsuranceProvider
+      upcomingRenewal {
+        renewalDate
+        draftCertificateUrl
       }
-        angelStories {
-          addressChange
+      perils(locale: $locale) {
+        ...PerilFragment
+      }
+      insurableLimits(locale: $locale) {
+        ...InsurableLimitFragment
+      }
+      termsAndConditions(locale: $locale) {
+        displayName
+        url
+      }
+      currentAgreementDetailsTable(locale: $locale) {
+        ...DetailsTableFragment
+      }
+      upcomingAgreementDetailsTable(locale: $locale) {
+        ...DetailsTableFragment
+      }
+      currentAgreement {
+        ... on AgreementCore {
+          certificateUrl
+          activeFrom
+          activeTo
+          premium {
+            ...MonetaryAmountFragment
+          }
         }
+      }
+    }
+    angelStories {
+        addressChange
+    }
   }
 }
