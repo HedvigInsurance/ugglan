@@ -39,8 +39,13 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
     ) -> FiniteSignal<ContractAction>? {
         switch action {
         case .fetchContractBundles:
-            return client.fetch(query: GraphQL.ActiveContractBundlesQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
-                                cachePolicy: .fetchIgnoringCacheData)
+            return
+                client.fetch(
+                    query: GraphQL.ActiveContractBundlesQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    ),
+                    cachePolicy: .fetchIgnoringCacheData
+                )
                 .map { data in
                     data.activeContractBundles.map { ActiveContractBundle(bundle: $0) }
                 }

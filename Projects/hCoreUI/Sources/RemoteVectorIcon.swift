@@ -21,8 +21,11 @@ public struct RemoteVectorIcon {
         finishedLoadingSignal = finishedLoadingCallback.providedSignal
         self.threaded = threaded ?? false
     }
-    
-    public init(_ icon: hIcon?, threaded: Bool? = false) {
+
+    public init(
+        _ icon: hIcon?,
+        threaded: Bool? = false
+    ) {
         iconSignal.value = icon
         finishedLoadingSignal = finishedLoadingCallback.providedSignal
         self.threaded = threaded ?? false

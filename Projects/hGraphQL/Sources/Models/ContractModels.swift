@@ -23,7 +23,7 @@ public struct ActiveContractBundle: Codable {
         public let insurableLimits: [InsurableLimits]
         public let termsAndConditions: TermsAndConditions
         public let currentAgreement: CurrentAgreement
-        
+
         init(
             contract: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract
         ) {
@@ -152,7 +152,7 @@ public struct ActiveContractBundle: Codable {
             status = .init(rawValue: currentAgreement.status.rawValue)
         }
     }
-    
+
     public enum ContractStatus: String, Codable {
         case active = "ACTIVE"
         case activeInFuture = "ACTIVE_IN_FUTURE"

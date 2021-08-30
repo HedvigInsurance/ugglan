@@ -39,11 +39,14 @@ extension ContractRow: Reusable {
         view.addArrangedSubview(contentView)
 
         contentView.snp.makeConstraints { make in make.height.greaterThanOrEqualTo(170) }
-        
+
         let shouldShowGradient = ReadWriteSignal<Bool>(false)
-        
+
         #warning("get type from be")
-        let gradientView = GradientView(gradientOption: .some(.init(preset: .insuranceOne)), shouldShowGradientSignal: shouldShowGradient)
+        let gradientView = GradientView(
+            gradientOption: .some(.init(preset: .insuranceOne)),
+            shouldShowGradientSignal: shouldShowGradient
+        )
 
         let touchFocusView = UIView()
         touchFocusView.isUserInteractionEnabled = false
@@ -129,7 +132,7 @@ extension ContractRow: Reusable {
                 }
 
                 bag += contentView.applyBorderColor { _ in .brand(.primaryBorderColor) }
-                
+
                 bag += contentView.add(gradientView) { view in
                     view.snp.makeConstraints { make in
                         make.top.bottom.trailing.leading.equalToSuperview()
