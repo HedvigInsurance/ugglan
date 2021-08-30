@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ContractDocuments { let contract: GraphQL.ContractsQuery.Data.Contract }
+struct ContractDocuments { let contract: ActiveContractBundle.Contract }
 
 extension ContractDocuments: Presentable {
     func materialize() -> (UIViewController, Disposable) {
@@ -55,7 +55,7 @@ extension ContractDocuments: Presentable {
             }
         }
 
-        if contract.status.asPendingStatus == nil {
+        if contract.currentAgreement.status == .activeInFuture {
             showSections()
         } else {
             let emptyRow = RowView(title: "")

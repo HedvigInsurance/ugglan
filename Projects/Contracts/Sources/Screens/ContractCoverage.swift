@@ -8,8 +8,8 @@ import hCoreUI
 import hGraphQL
 
 struct ContractCoverage {
-    let perilFragments: [GraphQL.PerilFragment]
-    let insurableLimitFragments: [GraphQL.InsurableLimitFragment]
+    let perils: [ActiveContractBundle.Perils]
+    let insurableLimits: [ActiveContractBundle.InsurableLimits]
 }
 
 extension ContractCoverage: Presentable {
@@ -23,7 +23,7 @@ extension ContractCoverage: Presentable {
         let insets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
 
         let perilCollection = PerilCollection(
-            perilFragmentsSignal: ReadWriteSignal(perilFragments).readOnly()
+            perilSignal: ReadWriteSignal(perils).readOnly()
         )
 
         bag += form.append(perilCollection.insetted(insets))
@@ -35,7 +35,7 @@ extension ContractCoverage: Presentable {
         bag += form.append(Spacing(height: 20))
 
         let insurableLimits = InsurableLimits(
-            insurableLimitFragmentsSignal: ReadWriteSignal(insurableLimitFragments).readOnly()
+            insurableLimitsSignal: ReadWriteSignal(insurableLimits).readOnly()
         )
 
         bag += form.append(insurableLimits)

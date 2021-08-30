@@ -1,4 +1,4 @@
-query ActiveContractBundles {
+query ActiveContractBundles($locale: Locale!) {
   activeContractBundles {
     id
     contracts {
@@ -30,6 +30,7 @@ query ActiveContractBundles {
           certificateUrl
           activeFrom
           activeTo
+          status
           premium {
             ...MonetaryAmountFragment
           }

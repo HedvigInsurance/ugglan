@@ -17,19 +17,8 @@ struct ContractRow: Hashable {
         hasher.combine(detailPills)
     }
 
-    let contract: GraphQL.ContractsQuery.Data.Contract
+    let contract: ActiveContractBundle.Contract
     let displayName: String
-    let type: ContractType
-
-    enum ContractType {
-        case swedishApartment
-        case swedishHouse
-        case norwegianTravel
-        case norwegianHome
-        case danishHome
-        case danishTravel
-        case danishAccident
-    }
 
     var allowDetailNavigation = true
 }
@@ -50,22 +39,11 @@ extension ContractRow: Reusable {
         view.addArrangedSubview(contentView)
 
         contentView.snp.makeConstraints { make in make.height.greaterThanOrEqualTo(170) }
-
-        let gradientView = UIView()
-        gradientView.isUserInteractionEnabled = false
-        gradientView.layer.cornerRadius = .defaultCornerRadius
-        gradientView.clipsToBounds = true
-        contentView.addSubview(gradientView)
-
-        gradientView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
-
-        let orbImageView = UIImageView()
-        orbImageView.tintColor = .clear
-        orbImageView.image = Asset.contractRowOrb.image
-
-        contentView.addSubview(orbImageView)
-
-        orbImageView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
+        
+        let shouldShowGradient = ReadWriteSignal<Bool>(false)
+        
+        #warning("get type from be")
+        let gradientView = GradientView(gradientOption: .some(.init(preset: .insuranceOne)), shouldShowGradientSignal: shouldShowGradient)
 
         let touchFocusView = UIView()
         touchFocusView.isUserInteractionEnabled = false
@@ -129,7 +107,7 @@ extension ContractRow: Reusable {
                 contentView.layer.zPosition = .greatestFiniteMagnitude
 
                 if !UITraitCollection.isCatalyst {
-                    contentView.hero.id = "contentView_\(self.contract.id)"
+                    contentView.hero.id = "contentView_\(self.contract.displayName)"
                     contentView.hero.modifiers = [
                         .spring(stiffness: 250, damping: 25),
                         .when(
@@ -151,26 +129,12 @@ extension ContractRow: Reusable {
                 }
 
                 bag += contentView.applyBorderColor { _ in .brand(.primaryBorderColor) }
-
-                orbImageView.tintColor = self.orbTintColor
-
-                bag += contentView.traitCollectionSignal.atOnce()
-                    .onValueDisposePrevious { _ -> Disposable? in let bag = DisposeBag()
-
-                        if let gradientLayer = self.gradientLayer {
-                            gradientView.layer.addSublayer(gradientLayer)
-
-                            bag += gradientView.didLayoutSignal.onValue {
-                                gradientLayer.bounds = gradientView.layer.bounds
-                                gradientLayer.frame = gradientView.layer.frame
-                                gradientLayer.position = gradientView.layer.position
-                            }
-
-                            bag += { gradientLayer.removeFromSuperlayer() }
-                        }
-
-                        return bag
+                
+                bag += contentView.add(gradientView) { view in
+                    view.snp.makeConstraints { make in
+                        make.top.bottom.trailing.leading.equalToSuperview()
                     }
+                }
 
                 displayNameLabel.value = self.displayName
 

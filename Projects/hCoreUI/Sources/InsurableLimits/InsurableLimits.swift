@@ -7,12 +7,12 @@ import hCore
 import hGraphQL
 
 public struct InsurableLimits {
-    let insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>
+    let insurableLimitsSignal: ReadSignal<[ActiveContractBundle.InsurableLimits]>
 
     public init(
-        insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>
+        insurableLimitsSignal: ReadSignal<[ActiveContractBundle.InsurableLimits]>
     ) {
-        self.insurableLimitFragmentsSignal = insurableLimitFragmentsSignal
+        self.insurableLimitsSignal = insurableLimitsSignal
     }
 }
 
@@ -26,7 +26,7 @@ extension InsurableLimits: Viewable {
         )
         section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
-        bag += insurableLimitFragmentsSignal.atOnce()
+        bag += insurableLimitsSignal.atOnce()
             .onValueDisposePrevious { insurableLimitFragments in
                 let innerBag = DisposeBag()
 

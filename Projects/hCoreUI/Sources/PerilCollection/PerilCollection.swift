@@ -7,12 +7,12 @@ import hCore
 import hGraphQL
 
 public struct PerilCollection {
-    let perilFragmentsSignal: ReadSignal<[GraphQL.PerilFragment]>
+    let perilSignal: ReadSignal<[ActiveContractBundle.Perils]>
 
     public init(
-        perilFragmentsSignal: ReadSignal<[GraphQL.PerilFragment]>
+        perilSignal: ReadSignal<[ActiveContractBundle.Perils]>
     ) {
-        self.perilFragmentsSignal = perilFragmentsSignal
+        self.perilSignal = perilSignal
     }
 }
 
@@ -33,7 +33,7 @@ extension PerilCollection: Viewable {
         stackView.spacing = 8
         let bag = DisposeBag()
 
-        bag += perilFragmentsSignal.atOnce()
+        bag += perilSignal.atOnce()
             .onValueDisposePrevious { perilFragments in
                 return perilFragments.chunked(into: 2)
                     .map { perils -> DisposeBag in
@@ -42,9 +42,9 @@ extension PerilCollection: Viewable {
                         let innerBag = DisposeBag()
 
                         innerBag += perils.enumerated()
-                            .map { (offset, perilFragment) in
+                            .map { (offset, peril) in
                                 let (row, disposable) = PerilRow(
-                                    fragment: perilFragment
+                                    peril: peril
                                 )
                                 .reuseTypeAndDisposable()
                                 rowContainer.addSubview(row)

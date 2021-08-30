@@ -25,7 +25,7 @@ extension ContractDetail: Presentable {
 
         let scrollView = FormScrollView()
         let form = FormView()
-        
+
         let store: ContractStore = get()
 
         form.appendSpacing(.inbetween)
@@ -38,10 +38,8 @@ extension ContractDetail: Presentable {
         let contractInformation = ContractInformation(contract: contractRow.contract)
 
         let contractCoverage = ContractCoverage(
-            perilFragments: contractRow.contract.perils.compactMap { $0.fragments.perilFragment },
-            insurableLimitFragments: contractRow.contract.insurableLimits.compactMap {
-                $0.fragments.insurableLimitFragment
-            }
+            perils: contractRow.contract.perils,
+            insurableLimits: contractRow.contract.insurableLimits
         )
 
         let contractDocuments = ContractDocuments(contract: contractRow.contract)

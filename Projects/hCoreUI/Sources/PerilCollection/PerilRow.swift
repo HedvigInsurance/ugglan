@@ -6,22 +6,16 @@ import UIKit
 import hCore
 import hGraphQL
 
-extension GraphQL.PerilFragment: Equatable {
-    public static func == (lhs: GraphQL.PerilFragment, rhs: GraphQL.PerilFragment) -> Bool {
-        lhs.title == rhs.title
-    }
-}
-
 struct PerilRow: Hashable, Equatable {
     static func == (lhs: PerilRow, rhs: PerilRow) -> Bool {
-        lhs.fragment == rhs.fragment
+        lhs.peril == rhs.peril
     }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(fragment.title)
+        hasher.combine(peril.title)
     }
 
-    let fragment: GraphQL.PerilFragment
+    let peril: ActiveContractBundle.Perils
 }
 
 extension PerilRow: Reusable {
@@ -69,7 +63,7 @@ extension PerilRow: Reusable {
                 }
 
                 let remoteVectorIcon = RemoteVectorIcon(
-                    self.fragment.icon.fragments.iconFragment,
+                    self.peril.icon,
                     threaded: true
                 )
                 bag += contentContainer.addArranged(remoteVectorIcon) { iconView in
@@ -79,7 +73,7 @@ extension PerilRow: Reusable {
                 }
 
                 let title = MultilineLabel(
-                    value: self.fragment.title,
+                    value: self.peril.title,
                     style: .brand(.headline(color: .primary))
                 )
                 bag += contentContainer.addArranged(title)
@@ -101,7 +95,7 @@ extension PerilRow: Reusable {
                     )
 
                 bag += view.trackedTouchUpInsideSignal.onValue { _ in
-                    let detail = PerilDetail(perilFragment: self.fragment, icon: remoteVectorIcon)
+                    let detail = PerilDetail(perilFragment: self.peril, icon: remoteVectorIcon)
                     view.viewController?
                         .present(
                             detail.withCloseButton,

@@ -50,8 +50,7 @@ extension Contracts: Presentable {
         let viewController = UIViewController()
 
         let store: ContractStore = get()
-        store.send(.fetchContractBundles)
-        
+
         if filter.displaysActiveContracts {
             viewController.title = L10n.InsurancesTab.title
             viewController.installChatButton()

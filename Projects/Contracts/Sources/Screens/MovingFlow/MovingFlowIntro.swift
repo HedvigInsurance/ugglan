@@ -120,7 +120,7 @@ extension MovingFlowIntro: Presentable {
 
         let activeContractBundles: Future<[GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle]> =
             client.fetch(
-                query: GraphQL.ActiveContractBundlesQuery(),
+                query: GraphQL.ActiveContractBundlesQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
                 cachePolicy: .fetchIgnoringCacheData
             )
             .map { data in
