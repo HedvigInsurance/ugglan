@@ -70,7 +70,9 @@ extension MovingFlowIntro: Presentable {
 
         let form = FormView()
         bag += viewController.install(form, scrollView: scrollView)
-
+        
+        let store: ContractStore = get()
+        
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
@@ -101,7 +103,10 @@ extension MovingFlowIntro: Presentable {
                 titleLabel.$value.value = L10n.MovingIntro.existingMoveTitle
                 descriptionLabel.$value.value = L10n.MovingIntro.existingMoveDescription
                 imageView.image = nil
-
+                
+                if let table = table {
+                    bag += form.append(table)
+                }
             case .normal:
                 titleLabel.$value.value = L10n.MovingIntro.title
                 descriptionLabel.$value.value = L10n.MovingIntro.description
@@ -109,46 +114,30 @@ extension MovingFlowIntro: Presentable {
             case .none:
                 break
             }
-
+            
             return innerBag
         }
-
-        let activeContractBundles: Future<[GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle]> =
-            client.fetch(
-                query: GraphQL.ActiveContractBundlesQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
-                cachePolicy: .fetchIgnoringCacheData
-            )
-            .map { data in
-                data.activeContractBundles
-            }
-
-        bag +=
-            client.fetch(
-                query: GraphQL.UpcomingAgreementQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                ),
-                cachePolicy: .fetchIgnoringCacheData
-            )
-            .onValue { data in
-                if let contract = data.contracts.first(where: {
-                    $0.status.asActiveStatus?.upcomingAgreementChange != nil
-                }) {
-                    $section.value = .existing(nil)
-                } else {
-                    bag += activeContractBundles.onValue { bundles in
-                        if let bundle = bundles.first(where: {
-                            $0.angelStories.addressChange != nil
-                        }) {
-                            $section.value = .normal(
-                                bundle.angelStories.addressChange?.displayValue ?? ""
-                            )
-                        } else {
-                            $section.value = .manual
-                        }
+        
+        bag += store.stateSignal.onValue { state in
+            if let co
+            
+            {
+                $section.value = .existing(.init(fragment: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment))
+            } else {
+                bag += state.activeContractBundles.onValue { bundles in
+                    if let bundle = bundles.first(where: {
+                        $0.movingFlowEmbarkId != nil
+                    }) {
+                        $section.value = .normal(
+                            bundle.movingFlowEmbarkId ?? ""
+                        )
+                    } else {
+                        $section.value = .manual
                     }
                 }
             }
-
+        }
+        
         return (
             viewController,
             FiniteSignal { callbacker in

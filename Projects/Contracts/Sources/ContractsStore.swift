@@ -9,15 +9,18 @@ public struct ContractState: StateProtocol {
 
     var contractBundles: [ActiveContractBundle] = []
     var contracts: [Contract] = []
+    var upcomingAgreements: [UpcomingAgreementContract] = []
 }
 
 public enum ContractAction: ActionProtocol {
     // Fetch contracts for terminated
     case fetchContractBundles
     case fetchContracts
+    case fetchUpcomingAgreement
 
     case setContractBundles(activeContractBundles: [ActiveContractBundle])
     case setContracts(contracts: [Contract])
+    case setUpcomingAgreementContracts(contracts: [UpcomingAgreementContract])
     case goToMovingFlow
     case goToFreeTextChat
 
@@ -83,6 +86,21 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             break
         case .goToFreeTextChat:
             break
+        case .fetchUpcomingAgreement:
+            return client.fetch(
+                query: GraphQL.UpcomingAgreementQuery(
+                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                ),
+                cachePolicy: .fetchIgnoringCacheData
+            ).compactMap {
+                $0.contracts
+            }.map {
+                $0.flatMap { UpcomingAgreementContract(contract: $0) }
+            }.map {
+                .setUpcomingAgreementContracts(contracts: $0)
+            }.valueThenEndSignal
+        case .setUpcomingAgreementContracts:
+            break
         }
         return nil
     }
@@ -102,6 +120,10 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             newState.contracts = contracts
         case .goToFreeTextChat:
             break
+        case .fetchUpcomingAgreement:
+            break
+        case .setUpcomingAgreementContracts(let contracts):
+            newState.upcomingAgreements = contracts
         }
 
         return newState

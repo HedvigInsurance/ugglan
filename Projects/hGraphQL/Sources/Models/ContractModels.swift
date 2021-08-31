@@ -137,7 +137,7 @@ public struct AngelStories: Codable {
 public struct DetailAgreementsTable: Codable {
     public let sections: [Section]
     public let title: String
-    init(
+    public init(
         fragment: GraphQL.DetailsTableFragment
     ) {
         sections = fragment.sections.map { .init(section: $0) }
@@ -269,5 +269,20 @@ extension Contract {
         //        }
 
         return nil
+    }
+}
+
+public struct UpcomingAgreementContract: Codable, Equatable {
+    public static func == (lhs: UpcomingAgreementContract, rhs: UpcomingAgreementContract) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public let detailsTable: DetailAgreementsTable
+    public let hasUpcomingAgreementChange: Bool
+    public let id: String
+    public init(contract: GraphQL.UpcomingAgreementQuery.Data.Contract) {
+        id = contract.id
+        detailsTable = .init(fragment: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment)
+        hasUpcomingAgreementChange = contract.status.asActiveStatus?.upcomingAgreementChange != nil
     }
 }
