@@ -11,14 +11,10 @@ struct ContractRow: Hashable {
     static func == (lhs: ContractRow, rhs: ContractRow) -> Bool { lhs.hashValue == rhs.hashValue }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(displayName)
-        hasher.combine(statusPills)
-        hasher.combine(isContractActivated)
-        hasher.combine(detailPills)
+        hasher.combine(contract.id)
     }
 
     let contract: ActiveContractBundle.Contract
-    let displayName: String
 
     var allowDetailNavigation = true
 }
@@ -40,7 +36,7 @@ extension ContractRow: Reusable {
 
         contentView.snp.makeConstraints { make in make.height.greaterThanOrEqualTo(170) }
 
-        let shouldShowGradient = ReadWriteSignal<Bool>(false)
+        let shouldShowGradient = ReadWriteSignal<Bool>(true)
 
         #warning("get type from be")
         let gradientView = GradientView(
@@ -137,9 +133,11 @@ extension ContractRow: Reusable {
                     view.snp.makeConstraints { make in
                         make.top.bottom.trailing.leading.equalToSuperview()
                     }
+                    
+                    contentView.sendSubviewToBack(view)
                 }
 
-                displayNameLabel.value = self.displayName
+                displayNameLabel.value = self.contract.displayName
 
                 if self.allowDetailNavigation {
                     bag += contentView.trackedTouchUpInsideSignal
@@ -186,7 +184,7 @@ extension ContractRow: Reusable {
 
                 bag += statusPillsContainer.addArranged(
                     PillCollection(
-                        pills: self.statusPills.map { pill in
+                        pills: self.contract.statusPills.map { pill in
                             Pill(
                                 style: .solid(color: .tint(.yellowOne)),
                                 title: pill.uppercased()
@@ -197,7 +195,7 @@ extension ContractRow: Reusable {
 
                 bag += detailPillsContainer.addArranged(
                     PillCollection(
-                        pills: self.detailPills.map { pill in
+                        pills: self.contract.detailPills.map { pill in
                             Pill(style: .effected, title: pill.uppercased())
                         }
                     )

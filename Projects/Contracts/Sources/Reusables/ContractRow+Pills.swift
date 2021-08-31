@@ -12,20 +12,4 @@ extension Date {
     }
 }
 
-extension ContractRow {
-    var isContractActivated: Bool {
-        contract.currentAgreement.status == .active
-    }
 
-    var statusPills: [String] {
-        return []
-    }
-
-    private var coversHowManyPill: String {
-        return ""
-    }
-
-    var detailPills: [String] {
-        return []
-    }
-}

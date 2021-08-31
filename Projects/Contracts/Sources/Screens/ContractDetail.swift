@@ -26,8 +26,6 @@ extension ContractDetail: Presentable {
         let scrollView = FormScrollView()
         let form = FormView()
 
-        let store: ContractStore = get()
-
         form.appendSpacing(.inbetween)
 
         let (contractRowView, configureContractRow) = ContractRow.makeAndConfigure()

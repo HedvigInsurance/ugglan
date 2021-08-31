@@ -105,8 +105,6 @@ extension MovingFlowIntro: Presentable {
                 descriptionLabel.$value.value = L10n.MovingIntro.existingMoveDescription
                 imageView.image = nil
 
-                let section = table.fragments.detailsTableFragment
-                bag += form.append(section)
             case .normal:
                 titleLabel.$value.value = L10n.MovingIntro.title
                 descriptionLabel.$value.value = L10n.MovingIntro.description

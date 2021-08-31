@@ -3,6 +3,8 @@ query ActiveContractBundles($locale: Locale!) {
     id
     contracts {
       id
+      statusPills(locale: $locale)
+      detailPills(locale: $locale)
       displayName
       switchedFromInsuranceProvider
       upcomingRenewal {

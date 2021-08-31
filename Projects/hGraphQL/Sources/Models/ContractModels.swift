@@ -14,6 +14,7 @@ public struct ActiveContractBundle: Codable {
     }
 
     public struct Contract: Codable {
+        public let id: String
         public let upcomingAgreementsTable: DetailAgreementsTable
         public let currentAgreementsTable: DetailAgreementsTable
         public let displayName: String
@@ -23,10 +24,13 @@ public struct ActiveContractBundle: Codable {
         public let insurableLimits: [InsurableLimits]
         public let termsAndConditions: TermsAndConditions
         public let currentAgreement: CurrentAgreement
-
+        public let statusPills: [String]
+        public let detailPills: [String]
+        
         init(
             contract: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract
         ) {
+            id = contract.id
             upcomingAgreementsTable = .init(
                 fragment: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment
             )
@@ -43,6 +47,8 @@ public struct ActiveContractBundle: Codable {
             currentAgreement = .init(currentAgreement: contract.currentAgreement)
             displayName = contract.displayName
             switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
+            statusPills = contract.statusPills
+            detailPills = contract.detailPills
         }
     }
 
@@ -187,5 +193,40 @@ public struct MonetaryAmount: Codable {
 extension ActiveContractBundle: Equatable {
     public static func == (lhs: ActiveContractBundle, rhs: ActiveContractBundle) -> Bool {
         return lhs.id == rhs.id
+    }
+}
+
+extension ActiveContractBundle.Contract {
+    public var upcomingAgreementDate: String? {
+        return nil
+//        let agreement = self
+//        let agreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
+//            .upcomingAgreementChangeFragment.newAgreement
+//        let dateString =
+//            agreement?.asSwedishApartmentAgreement?.activeFrom
+//            ?? agreement?.asSwedishHouseAgreement?.activeFrom
+//            ?? agreement?.asDanishHomeContentAgreement?.activeFrom
+//            ?? agreement?.asNorwegianHomeContentAgreement?.activeFrom
+//
+//        return dateString
+    }
+    
+    public var upcomingAgreementAddress: String? {
+//        let upcomingAgreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
+//            .upcomingAgreementChangeFragment.newAgreement
+//
+//        if let address = upcomingAgreement?.asSwedishHouseAgreement?.address.street {
+//            return address
+//        } else if let address = upcomingAgreement?.asSwedishApartmentAgreement?.address.street {
+//            return address
+//        } else if let address = upcomingAgreement?.asNorwegianHomeContentAgreement?.address.street {
+//            return address
+//        } else if let address = upcomingAgreement?.asDanishHomeContentAgreement?.address.street {
+//            return address
+//        } else {
+//            return nil
+//        }
+        
+        return nil
     }
 }

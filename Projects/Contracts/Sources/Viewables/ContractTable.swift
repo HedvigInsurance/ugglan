@@ -74,8 +74,7 @@ extension ContractTable: Viewable {
                 let table = Table(
                     rows: contractsToShow.map { contract -> ContractRow in
                         ContractRow(
-                            contract: contract,
-                            displayName: contract.displayName
+                            contract: contract
                         )
                     }
                 )
