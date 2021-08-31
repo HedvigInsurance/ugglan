@@ -62,7 +62,7 @@ extension hGraphQL.GraphQL.DetailsTableFragment: Viewable {
     }
 }
 
-extension ActiveContractBundle.DetailAgreementsTable: Viewable {
+extension DetailAgreementsTable: Viewable {
     public func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 

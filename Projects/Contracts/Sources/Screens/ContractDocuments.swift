@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ContractDocuments { let contract: ActiveContractBundle.Contract }
+struct ContractDocuments { let contract: Contract }
 
 extension ContractDocuments: Presentable {
     func materialize() -> (UIViewController, Disposable) {
@@ -21,7 +21,7 @@ extension ContractDocuments: Presentable {
         section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
         func showSections() {
-            if let url = URL(string: contract.currentAgreement.certificateUrl) {
+            if let certUrlString = contract.currentAgreement?.certificateUrl, let url = URL(string: certUrlString) {
                 let certificateRow = RowView(
                     title: L10n.myDocumentsInsuranceCertificate,
                     style: .brand(.body(color: .primary))

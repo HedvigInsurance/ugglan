@@ -7,10 +7,10 @@ import hCore
 import hGraphQL
 
 public struct PerilCollection {
-    let perilSignal: ReadSignal<[ActiveContractBundle.Perils]>
+    let perilSignal: ReadSignal<[Perils]>
 
     public init(
-        perilSignal: ReadSignal<[ActiveContractBundle.Perils]>
+        perilSignal: ReadSignal<[Perils]>
     ) {
         self.perilSignal = perilSignal
     }

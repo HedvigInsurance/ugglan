@@ -6,18 +6,18 @@ import UIKit
 import hCore
 import hGraphQL
 
-public struct InsurableLimits {
-    let insurableLimitsSignal: ReadSignal<[ActiveContractBundle.InsurableLimits]>
+public struct InsurableLimitsSection {
+    let insurableLimits: [InsurableLimits]
 
     public init(
-        insurableLimitsSignal: ReadSignal<[ActiveContractBundle.InsurableLimits]>
+        insurableLimits: [InsurableLimits]
     ) {
-        self.insurableLimitsSignal = insurableLimitsSignal
+        self.insurableLimits = insurableLimits
     }
 }
 
-extension InsurableLimits: Viewable {
-    public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+extension InsurableLimitsSection: Viewable {
+    public func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
         let section = SectionView(
@@ -25,33 +25,22 @@ extension InsurableLimits: Viewable {
             footerView: nil
         )
         section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
-
-        bag += insurableLimitsSignal.atOnce()
-            .onValueDisposePrevious { insurableLimitFragments in
-                let innerBag = DisposeBag()
-
-                innerBag += insurableLimitFragments.map { insurableLimitFragment in
-                    let row = RowView(title: insurableLimitFragment.label)
-                    row.axis = .vertical
-                    row.alignment = .leading
-                    row.spacing = 5
-                    section.append(row)
-
-                    row.append(
-                        UILabel(
-                            value: insurableLimitFragment.limit,
-                            style: .brand(.body(color: .secondary))
-                        )
-                    )
-
-                    return Disposer {
-                        section.remove(row)
-                    }
-                }
-
-                return innerBag
-            }
-
+    
+        insurableLimits.forEach { insurableLimit in
+            let row = RowView(title: insurableLimit.label)
+            row.axis = .vertical
+            row.alignment = .leading
+            row.spacing = 5
+            section.append(row)
+            
+            row.append(
+                UILabel(
+                    value: insurableLimit.limit,
+                    style: .brand(.body(color: .secondary))
+                )
+            )
+        }
+        
         return (section, bag)
     }
 }

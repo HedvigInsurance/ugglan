@@ -14,12 +14,9 @@ public struct MovingFlowIntro {
     public init() {}
 }
 
-typealias Contract = GraphQL.UpcomingAgreementQuery.Data.Contract
-internal typealias UpcomingAgreementDetailsTable = Contract.UpcomingAgreementDetailsTable
-
 enum MovingFlowIntroState {
     case manual
-    case existing(UpcomingAgreementDetailsTable)
+    case existing(DetailAgreementsTable?)
     case normal(String)
     case none
 
@@ -136,7 +133,7 @@ extension MovingFlowIntro: Presentable {
                 if let contract = data.contracts.first(where: {
                     $0.status.asActiveStatus?.upcomingAgreementChange != nil
                 }) {
-                    $section.value = .existing(contract.upcomingAgreementDetailsTable)
+                    $section.value = .existing(nil)
                 } else {
                     bag += activeContractBundles.onValue { bundles in
                         if let bundle = bundles.first(where: {

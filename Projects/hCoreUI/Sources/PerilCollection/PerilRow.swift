@@ -15,7 +15,7 @@ struct PerilRow: Hashable, Equatable {
         hasher.combine(peril.title)
     }
 
-    let peril: ActiveContractBundle.Perils
+    let peril: Perils
 }
 
 extension PerilRow: Reusable {

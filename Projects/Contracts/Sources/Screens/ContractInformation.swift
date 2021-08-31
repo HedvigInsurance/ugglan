@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct ContractInformation {
-    let contract: ActiveContractBundle.Contract
+    let contract: Contract
 }
 
 extension ContractInformation: Presentable {
@@ -63,10 +63,10 @@ extension ContractInformation: Presentable {
 
         form.appendSpacing(.custom(20))
 
-        let detailsTable = contract.currentAgreementsTable
-
-        bag += section.append(detailsTable)
-
+        if let detailsTable = contract.currentAgreementsTable {
+            bag += section.append(detailsTable)
+        }
+        
         form.appendSpacing(.custom(20))
 
         if Localization.Locale.currentLocale.market == .se {

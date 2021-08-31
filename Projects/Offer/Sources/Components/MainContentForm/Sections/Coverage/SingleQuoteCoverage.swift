@@ -29,15 +29,15 @@ extension SingleQuoteCoverage: Presentable {
         )
 
         section.appendSpacing(.inbetween)
-
+        
+        let insurableLimits = quote
+            .insurableLimits
+            .map { InsurableLimits(fragment: $0.fragments.insurableLimitFragment) }
+        
         bag += section.append(
-            InsurableLimits(
-                insurableLimitsSignal: .init(
-                    quote.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
-                )
-            )
+            InsurableLimitsSection(insurableLimits: insurableLimits)
         )
-
+    
         section.appendSpacing(.inbetween)
 
         bag += section.append(DocumentsSection(quote: quote))

@@ -21,6 +21,12 @@ query Contracts($locale: Locale!) {
         currentAgreement {
             ... on AgreementCore {
                 certificateUrl
+                activeFrom
+                activeTo
+                status
+                premium {
+                    ...MonetaryAmountFragment
+                }
             }
             ... on SwedishApartmentAgreement {
                 activeFrom

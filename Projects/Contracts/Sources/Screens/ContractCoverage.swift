@@ -8,8 +8,8 @@ import hCoreUI
 import hGraphQL
 
 struct ContractCoverage {
-    let perils: [ActiveContractBundle.Perils]
-    let insurableLimits: [ActiveContractBundle.InsurableLimits]
+    let perils: [Perils]
+    let insurableLimits: [InsurableLimits]
 }
 
 extension ContractCoverage: Presentable {
@@ -33,12 +33,8 @@ extension ContractCoverage: Presentable {
         bag += form.append(Divider(backgroundColor: .brand(.primaryBorderColor)))
 
         bag += form.append(Spacing(height: 20))
-
-        let insurableLimits = InsurableLimits(
-            insurableLimitsSignal: ReadWriteSignal(insurableLimits).readOnly()
-        )
-
-        bag += form.append(insurableLimits)
+        
+        bag += form.append(InsurableLimitsSection(insurableLimits: insurableLimits))
 
         form.appendSpacing(.custom(20))
 

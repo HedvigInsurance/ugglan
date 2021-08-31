@@ -6,7 +6,7 @@ import hCore
 import hGraphQL
 
 public struct UpcomingAddressChangeDetails {
-    let details: ActiveContractBundle.DetailAgreementsTable
+    let details: DetailAgreementsTable
 }
 
 extension UpcomingAddressChangeDetails: Presentable {

@@ -17,29 +17,27 @@ extension ContractTableFooter: Viewable {
     func materialize(events _: ViewableEvents) -> (FormView, Disposable) {
         let form = FormView()
         let bag = DisposeBag()
-        
+
         bag += form.append(UpsellingFooter())
-        
+
         bag +=
-            store.stateSignal
-            .atOnce()
-            .onValueDisposePrevious  { state in
+            store.stateSignal.atOnce().onValueDisposePrevious { state in
                 let innerBag = DisposeBag()
                 
-                let terminatedContracts = state.contractBundles.flatMap { $0.contracts }.filter {
-                    $0.currentAgreement.status == .terminated
-                }
-                
-                if !terminatedContracts.isEmpty {
-                    
-                    let terminatedContractsCount = terminatedContracts.count
-                    
+                let terminatedContractsCount = state.contracts.filter { $0.currentAgreement?.status == .terminated }
+                    .count
+                let activeContractsCount = state.contracts.filter { $0.currentAgreement?.status == .active }
+                    .count
+
+                if filter.displaysActiveContracts, terminatedContractsCount > 0,
+                    activeContractsCount > 0
+                {`
                     let section = form.appendSection(
                         header: L10n.InsurancesTab.moreTitle,
                         footer: nil,
                         style: .default
                     )
-                    
+
                     let terminatedRow = RowView(
                         title: L10n.InsurancesTab.terminatedInsurancesLabel,
                         subtitle: terminatedContractsCount == 1
@@ -49,7 +47,7 @@ extension ContractTableFooter: Viewable {
                             )
                     )
                     terminatedRow.append(hCoreUIAssets.chevronRight.image)
-                    
+
                     innerBag += section.append(terminatedRow).compactMap { form.viewController }
                         .onValue { viewController in
                             innerBag +=
@@ -61,17 +59,16 @@ extension ContractTableFooter: Viewable {
                                     ]
                                 )
                                 .onValue { _ in
-                                    
+
                                 }
                         }
-                    
+
                     innerBag += { section.removeFromSuperview() }
                 }
-                
+
                 return innerBag
             }
-       
-        
+
         return (form, bag)
     }
 }

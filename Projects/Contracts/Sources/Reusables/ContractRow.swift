@@ -14,7 +14,7 @@ struct ContractRow: Hashable {
         hasher.combine(contract.id)
     }
 
-    let contract: ActiveContractBundle.Contract
+    let contract: Contract
 
     var allowDetailNavigation = true
 }

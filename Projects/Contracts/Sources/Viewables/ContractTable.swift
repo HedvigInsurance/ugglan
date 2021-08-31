@@ -54,15 +54,17 @@ extension ContractTable: Viewable {
                 }
         }
 
-        bag += store.stateSignal.atOnce()
+        bag += store
+            .stateSignal
+            .atOnce()
             .onValue { state in
                 var contractsToShow = state
                     .contractBundles
                     .flatMap { $0.contracts }
                     .filter { contract in
                         switch self.filter {
-                        case .active: return contract.currentAgreement.status == .active
-                        case .terminated: return contract.currentAgreement.status == .terminated
+                        case .active: return contract.currentAgreement?.status == .active
+                        case .terminated: return contract.currentAgreement?.status == .terminated
                         case .none: return false
                         }
                     }
@@ -86,6 +88,7 @@ extension ContractTable: Viewable {
 
         bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
             store.send(.fetchContractBundles)
+            store.send(.fetchContracts)
         }
 
         return (tableKit.view, bag)

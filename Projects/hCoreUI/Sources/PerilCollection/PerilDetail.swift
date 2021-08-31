@@ -7,7 +7,7 @@ import hCore
 import hGraphQL
 
 struct PerilDetail {
-    let perilFragment: ActiveContractBundle.Perils
+    let perilFragment: Perils
     let icon: RemoteVectorIcon
 }
 

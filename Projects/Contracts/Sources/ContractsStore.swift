@@ -8,11 +8,16 @@ public struct ContractState: StateProtocol {
     public init() {}
 
     var contractBundles: [ActiveContractBundle] = []
+    var contracts: [Contract] = []
 }
 
 public enum ContractAction: ActionProtocol {
+    // Fetch contracts for terminated
     case fetchContractBundles
+    case fetchContracts
+    
     case setContractBundles(activeContractBundles: [ActiveContractBundle])
+    case setContracts(contracts: [Contract])
     case goToMovingFlow
 
     #if compiler(<5.5)
@@ -57,6 +62,21 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             break
         case .goToMovingFlow:
             break
+        case .fetchContracts:
+            return client.fetch (
+                query: GraphQL.ContractsQuery(
+                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                ),
+                cachePolicy: .fetchIgnoringCacheData
+            )
+            .compactMap { $0.contracts }
+            .map {
+                $0.flatMap { Contract(contract: $0) }
+            }.map {
+                .setContracts(contracts: $0)
+            }.valueThenEndSignal
+        case .setContracts:
+            break
         }
         return nil
     }
@@ -70,6 +90,10 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             newState.contractBundles = activeContractBundles
         case .goToMovingFlow:
             break
+        case .fetchContracts:
+            break
+        case .setContracts(let contracts):
+            newState.contracts = contracts
         }
 
         return newState
