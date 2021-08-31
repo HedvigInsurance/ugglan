@@ -105,7 +105,7 @@ public struct Contract: Codable {
         detailPills = contract.detailPills
         gradientOption = .init(rawValue: contract.gradientOption.rawValue)
     }
-    
+
     public enum GradientOption: String, Codable {
         case one = "GRADIENT_ONE"
         case two = "GRADIENT_TWO"

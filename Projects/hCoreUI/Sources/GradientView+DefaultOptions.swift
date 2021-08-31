@@ -14,7 +14,7 @@ extension GradientView {
             self.shouldShimmer = shouldShimmer
             self.shouldAnimate = shouldAnimate
         }
-        
+
         public init(
             gradientOption: Contract.GradientOption,
             shouldShimmer: Bool = true,

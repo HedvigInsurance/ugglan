@@ -20,7 +20,7 @@ public enum ContractAction: ActionProtocol {
     case setContracts(contracts: [Contract])
     case goToMovingFlow
     case goToFreeTextChat
-    
+
     #if compiler(<5.5)
         public func encode(to encoder: Encoder) throws {
             #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")

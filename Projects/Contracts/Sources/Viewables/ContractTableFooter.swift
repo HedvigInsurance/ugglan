@@ -21,9 +21,10 @@ extension ContractTableFooter: Viewable {
         bag += form.append(UpsellingFooter())
 
         bag +=
-            store.stateSignal.atOnce().onValueDisposePrevious { state in
+            store.stateSignal.atOnce()
+            .onValueDisposePrevious { state in
                 let innerBag = DisposeBag()
-                
+
                 let terminatedContractsCount = state.contracts.filter { $0.currentAgreement?.status == .terminated }
                     .count
                 let activeContractsCount = state.contracts.filter { $0.currentAgreement?.status == .active }

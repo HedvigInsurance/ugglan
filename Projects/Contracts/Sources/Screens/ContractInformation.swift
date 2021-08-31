@@ -68,7 +68,7 @@ extension ContractInformation: Presentable {
         }
 
         form.appendSpacing(.custom(20))
-        
+
         if contract.currentAgreement?.status != .terminated {
             if Localization.Locale.currentLocale.market == .se {
                 let changeAddressButton = ButtonRowViewWrapper(
@@ -106,7 +106,7 @@ extension ContractInformation: Presentable {
                 }
             }
         }
-       
+
         bag += viewController.install(form, options: [])
 
         return (viewController, bag)

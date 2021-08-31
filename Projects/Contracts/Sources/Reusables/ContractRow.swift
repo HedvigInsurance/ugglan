@@ -122,8 +122,10 @@ extension ContractRow: Reusable {
                 }
 
                 bag += contentView.applyBorderColor { _ in .brand(.primaryBorderColor) }
-                
-                if let gradientOption = self.contract.gradientOption, self.contract.currentAgreement?.status != .terminated {
+
+                if let gradientOption = self.contract.gradientOption,
+                    self.contract.currentAgreement?.status != .terminated
+                {
                     let gradientView = GradientView(
                         gradientOption: .some(.init(gradientOption: gradientOption)),
                         shouldShowGradientSignal: shouldShowGradient
@@ -137,7 +139,7 @@ extension ContractRow: Reusable {
                         contentView.sendSubviewToBack(view)
                     }
                 }
-                
+
                 displayNameLabel.value = self.contract.displayName
 
                 if self.allowDetailNavigation {

@@ -53,15 +53,17 @@ extension ContractTable: Viewable {
                     }
                 }
         }
-        
+
         func getContractsToShow(for state: ContractState) -> [Contract] {
             switch self.filter {
-            case .active: return state
-                .contractBundles
-                .flatMap { $0.contracts }
-            case .terminated: return state.contracts.filter { contract in
-                contract.currentAgreement?.status == .terminated
-            }
+            case .active:
+                return state
+                    .contractBundles
+                    .flatMap { $0.contracts }
+            case .terminated:
+                return state.contracts.filter { contract in
+                    contract.currentAgreement?.status == .terminated
+                }
             case .none: return []
             }
         }
@@ -71,7 +73,7 @@ extension ContractTable: Viewable {
             .atOnce()
             .onValue { state in
                 let contractsToShow = getContractsToShow(for: state)
-                
+
                 let table = Table(
                     rows: contractsToShow.map { contract -> ContractRow in
                         ContractRow(
