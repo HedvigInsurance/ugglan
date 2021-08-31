@@ -31,7 +31,7 @@ extension ContractTableFooter: Viewable {
 
                 if filter.displaysActiveContracts, terminatedContractsCount > 0,
                     activeContractsCount > 0
-                {`
+                {
                     let section = form.appendSection(
                         header: L10n.InsurancesTab.moreTitle,
                         footer: nil,

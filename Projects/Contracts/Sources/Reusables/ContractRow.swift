@@ -38,12 +38,6 @@ extension ContractRow: Reusable {
 
         let shouldShowGradient = ReadWriteSignal<Bool>(true)
 
-        #warning("get type from be")
-        let gradientView = GradientView(
-            gradientOption: .some(.init(preset: .insuranceOne)),
-            shouldShowGradientSignal: shouldShowGradient
-        )
-
         let touchFocusView = UIView()
         touchFocusView.isUserInteractionEnabled = false
         contentView.addSubview(touchFocusView)
@@ -128,15 +122,22 @@ extension ContractRow: Reusable {
                 }
 
                 bag += contentView.applyBorderColor { _ in .brand(.primaryBorderColor) }
+                
+                if let gradientOption = self.contract.gradientOption, self.contract.currentAgreement?.status != .terminated {
+                    let gradientView = GradientView(
+                        gradientOption: .some(.init(gradientOption: gradientOption)),
+                        shouldShowGradientSignal: shouldShowGradient
+                    )
 
-                bag += contentView.add(gradientView) { view in
-                    view.snp.makeConstraints { make in
-                        make.top.bottom.trailing.leading.equalToSuperview()
+                    bag += contentView.add(gradientView) { view in
+                        view.snp.makeConstraints { make in
+                            make.top.bottom.trailing.leading.equalToSuperview()
+                        }
+
+                        contentView.sendSubviewToBack(view)
                     }
-
-                    contentView.sendSubviewToBack(view)
                 }
-
+                
                 displayNameLabel.value = self.contract.displayName
 
                 if self.allowDetailNavigation {

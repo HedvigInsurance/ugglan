@@ -36,13 +36,12 @@ public indirect enum ContractFilter {
 
 public struct Contracts {
     let filter: ContractFilter
-
-    public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
     public init(filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none))) { self.filter = filter }
 }
 
 public enum ContractsResult {
     case movingFlow
+    case openFreeTextChat
 }
 
 extension Contracts: Presentable {

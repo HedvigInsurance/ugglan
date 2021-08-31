@@ -41,6 +41,8 @@ extension AppJourney {
             switch result {
             case .movingFlow:
                 AppJourney.movingFlow
+            case .openFreeTextChat:
+                AppJourney.freeTextChat()
             }
         }
         .configureTabBarItem

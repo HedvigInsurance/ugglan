@@ -19,7 +19,8 @@ public enum ContractAction: ActionProtocol {
     case setContractBundles(activeContractBundles: [ActiveContractBundle])
     case setContracts(contracts: [Contract])
     case goToMovingFlow
-
+    case goToFreeTextChat
+    
     #if compiler(<5.5)
         public func encode(to encoder: Encoder) throws {
             #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
@@ -80,6 +81,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .valueThenEndSignal
         case .setContracts:
             break
+        case .goToFreeTextChat:
+            break
         }
         return nil
     }
@@ -97,6 +100,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             break
         case .setContracts(let contracts):
             newState.contracts = contracts
+        case .goToFreeTextChat:
+            break
         }
 
         return newState

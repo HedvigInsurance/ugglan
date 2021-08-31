@@ -47,6 +47,7 @@ public struct Contract: Codable {
     public let id: String
     public let upcomingAgreementsTable: DetailAgreementsTable
     public let currentAgreementsTable: DetailAgreementsTable?
+    public let gradientOption: GradientOption?
     public let displayName: String
     public let switchedFromInsuranceProvider: String?
     public let upcomingRenewal: UpcomingRenewal?
@@ -79,6 +80,7 @@ public struct Contract: Codable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
+        gradientOption = .init(rawValue: contract.gradientOption.rawValue)
     }
 
     public init(
@@ -88,7 +90,7 @@ public struct Contract: Codable {
         upcomingAgreementsTable = .init(
             fragment: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment
         )
-        currentAgreementsTable = nil
+        currentAgreementsTable = .init(fragment: contract.currentAgreementDetailsTable.fragments.detailsTableFragment)
         upcomingRenewal = nil
         perils = contract.perils.map { .init(fragment: $0.fragments.perilFragment) }
         insurableLimits = contract.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
@@ -99,8 +101,15 @@ public struct Contract: Codable {
         currentAgreement = .init(currentAgreement: contract.currentAgreement)
         displayName = contract.displayName
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
-        statusPills = []
-        detailPills = []
+        statusPills = contract.statusPills
+        detailPills = contract.detailPills
+        gradientOption = .init(rawValue: contract.gradientOption.rawValue)
+    }
+    
+    public enum GradientOption: String, Codable {
+        case one = "GRADIENT_ONE"
+        case two = "GRADIENT_TWO"
+        case three = "GRADIENT_THREE"
     }
 }
 

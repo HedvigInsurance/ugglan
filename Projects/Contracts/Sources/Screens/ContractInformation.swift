@@ -68,43 +68,45 @@ extension ContractInformation: Presentable {
         }
 
         form.appendSpacing(.custom(20))
-
-        if Localization.Locale.currentLocale.market == .se {
-            let changeAddressButton = ButtonRowViewWrapper(
-                title: L10n.HomeTab.editingSectionChangeAddressLabel,
-                type: .standardOutline(
-                    borderColor: .brand(.primaryText()),
-                    textColor: .brand(.primaryText())
-                ),
-                isEnabled: true,
-                animate: false
-            )
-            bag += section.append(changeAddressButton)
-
-            bag += changeAddressButton.onTapSignal.onValue {
-                store.send(.goToMovingFlow)
-            }
-        } else {
-            let changeButton = ButtonSection(text: L10n.contractDetailHomeChangeInfo, style: .normal)
-            bag += form.append(changeButton)
-
-            bag += changeButton.onSelect.onValue {
-                let alert = Alert<Bool>(
-                    title: L10n.myHomeChangeAlertTitle,
-                    message: L10n.myHomeChangeAlertMessage,
-                    actions: [
-                        Alert.Action(title: L10n.myHomeChangeAlertActionCancel) { false },
-                        Alert.Action(title: L10n.myHomeChangeAlertActionConfirm) { true },
-                    ]
+        
+        if contract.currentAgreement?.status != .terminated {
+            if Localization.Locale.currentLocale.market == .se {
+                let changeAddressButton = ButtonRowViewWrapper(
+                    title: L10n.HomeTab.editingSectionChangeAddressLabel,
+                    type: .standardOutline(
+                        borderColor: .brand(.primaryText()),
+                        textColor: .brand(.primaryText())
+                    ),
+                    isEnabled: true,
+                    animate: false
                 )
+                bag += section.append(changeAddressButton)
 
-                viewController.present(alert)
-                    .onValue { shouldContinue in
-                        if shouldContinue { Contracts.openFreeTextChatHandler(viewController) }
-                    }
+                bag += changeAddressButton.onTapSignal.onValue {
+                    store.send(.goToMovingFlow)
+                }
+            } else {
+                let changeButton = ButtonSection(text: L10n.contractDetailHomeChangeInfo, style: .normal)
+                bag += form.append(changeButton)
+
+                bag += changeButton.onSelect.onValue {
+                    let alert = Alert<Bool>(
+                        title: L10n.myHomeChangeAlertTitle,
+                        message: L10n.myHomeChangeAlertMessage,
+                        actions: [
+                            Alert.Action(title: L10n.myHomeChangeAlertActionCancel) { false },
+                            Alert.Action(title: L10n.myHomeChangeAlertActionConfirm) { true },
+                        ]
+                    )
+
+                    viewController.present(alert)
+                        .onValue { shouldContinue in
+                            store.send(.goToFreeTextChat)
+                        }
+                }
             }
         }
-
+       
         bag += viewController.install(form, options: [])
 
         return (viewController, bag)
