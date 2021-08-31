@@ -87,18 +87,23 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         case .goToFreeTextChat:
             break
         case .fetchUpcomingAgreement:
-            return client.fetch(
-                query: GraphQL.UpcomingAgreementQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                ),
-                cachePolicy: .fetchIgnoringCacheData
-            ).compactMap {
-                $0.contracts
-            }.map {
-                $0.flatMap { UpcomingAgreementContract(contract: $0) }
-            }.map {
-                .setUpcomingAgreementContracts(contracts: $0)
-            }.valueThenEndSignal
+            return
+                client.fetch(
+                    query: GraphQL.UpcomingAgreementQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    ),
+                    cachePolicy: .fetchIgnoringCacheData
+                )
+                .compactMap {
+                    $0.contracts
+                }
+                .map {
+                    $0.flatMap { UpcomingAgreementContract(contract: $0) }
+                }
+                .map {
+                    .setUpcomingAgreementContracts(contracts: $0)
+                }
+                .valueThenEndSignal
         case .setUpcomingAgreementContracts:
             break
         }

@@ -276,11 +276,13 @@ public struct UpcomingAgreementContract: Codable, Equatable {
     public static func == (lhs: UpcomingAgreementContract, rhs: UpcomingAgreementContract) -> Bool {
         lhs.id == rhs.id
     }
-    
+
     public let detailsTable: DetailAgreementsTable
     public let hasUpcomingAgreementChange: Bool
     public let id: String
-    public init(contract: GraphQL.UpcomingAgreementQuery.Data.Contract) {
+    public init(
+        contract: GraphQL.UpcomingAgreementQuery.Data.Contract
+    ) {
         id = contract.id
         detailsTable = .init(fragment: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment)
         hasUpcomingAgreementChange = contract.status.asActiveStatus?.upcomingAgreementChange != nil
