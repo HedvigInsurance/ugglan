@@ -80,7 +80,7 @@ public struct Contract: Codable {
         statusPills = contract.statusPills
         detailPills = contract.detailPills
     }
-    
+
     public init(
         contract: GraphQL.ContractsQuery.Data.Contract
     ) {
@@ -209,7 +209,7 @@ public struct CurrentAgreement: Codable {
         premium = .init(fragment: currentAgreement.premium.fragments.monetaryAmountFragment)
         status = .init(rawValue: currentAgreement.status.rawValue)
     }
-    
+
     init(
         currentAgreement: GraphQL.ContractsQuery.Data.Contract.CurrentAgreement
     ) {

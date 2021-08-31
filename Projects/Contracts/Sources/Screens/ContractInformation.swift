@@ -66,7 +66,7 @@ extension ContractInformation: Presentable {
         if let detailsTable = contract.currentAgreementsTable {
             bag += section.append(detailsTable)
         }
-        
+
         form.appendSpacing(.custom(20))
 
         if Localization.Locale.currentLocale.market == .se {

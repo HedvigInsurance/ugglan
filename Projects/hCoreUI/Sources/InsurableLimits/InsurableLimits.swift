@@ -25,14 +25,14 @@ extension InsurableLimitsSection: Viewable {
             footerView: nil
         )
         section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
-    
+
         insurableLimits.forEach { insurableLimit in
             let row = RowView(title: insurableLimit.label)
             row.axis = .vertical
             row.alignment = .leading
             row.spacing = 5
             section.append(row)
-            
+
             row.append(
                 UILabel(
                     value: insurableLimit.limit,
@@ -40,7 +40,7 @@ extension InsurableLimitsSection: Viewable {
                 )
             )
         }
-        
+
         return (section, bag)
     }
 }

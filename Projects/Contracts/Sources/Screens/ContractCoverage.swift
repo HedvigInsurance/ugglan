@@ -33,7 +33,7 @@ extension ContractCoverage: Presentable {
         bag += form.append(Divider(backgroundColor: .brand(.primaryBorderColor)))
 
         bag += form.append(Spacing(height: 20))
-        
+
         bag += form.append(InsurableLimitsSection(insurableLimits: insurableLimits))
 
         form.appendSpacing(.custom(20))

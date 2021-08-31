@@ -15,7 +15,7 @@ public enum ContractAction: ActionProtocol {
     // Fetch contracts for terminated
     case fetchContractBundles
     case fetchContracts
-    
+
     case setContractBundles(activeContractBundles: [ActiveContractBundle])
     case setContracts(contracts: [Contract])
     case goToMovingFlow
@@ -63,18 +63,21 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         case .goToMovingFlow:
             break
         case .fetchContracts:
-            return client.fetch (
-                query: GraphQL.ContractsQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                ),
-                cachePolicy: .fetchIgnoringCacheData
-            )
-            .compactMap { $0.contracts }
-            .map {
-                $0.flatMap { Contract(contract: $0) }
-            }.map {
-                .setContracts(contracts: $0)
-            }.valueThenEndSignal
+            return
+                client.fetch(
+                    query: GraphQL.ContractsQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    ),
+                    cachePolicy: .fetchIgnoringCacheData
+                )
+                .compactMap { $0.contracts }
+                .map {
+                    $0.flatMap { Contract(contract: $0) }
+                }
+                .map {
+                    .setContracts(contracts: $0)
+                }
+                .valueThenEndSignal
         case .setContracts:
             break
         }
