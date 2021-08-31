@@ -8,7 +8,7 @@ public struct Pill: Hashable, ReusableSizeable {
     public init(
         style: Style,
         title: DisplayableString,
-        textStyle: TextStyle = .brand(.caption1(color: .secondary(state: .negative)))
+        textStyle: TextStyle = .brand(.caption1(color: .secondary(state: .dynamic)))
     ) {
         self.style = style
         self.title = title

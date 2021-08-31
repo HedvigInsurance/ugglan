@@ -10,38 +10,36 @@ import hGraphQL
 struct ContractTableFooter {
     @Inject var client: ApolloClient
     let filter: ContractFilter
+    @PresentableStore var store: ContractStore
 }
 
 extension ContractTableFooter: Viewable {
     func materialize(events _: ViewableEvents) -> (FormView, Disposable) {
         let form = FormView()
         let bag = DisposeBag()
-
+        
         bag += form.append(UpsellingFooter())
-
+        
         bag +=
-            client.watch(
-                query: GraphQL.ContractsQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                ),
-                cachePolicy: .fetchIgnoringCacheData
-            )
-            .compactMap { $0.contracts }.delay(by: 0.5)
-            .onValueDisposePrevious { contracts in let innerBag = DisposeBag()
-                let terminatedContractsCount = contracts.filter { $0.status.asTerminatedStatus != nil }
-                    .count
-                let activeContractsCount = contracts.filter { $0.status.asTerminatedStatus == nil }
-                    .count
-
-                if filter.displaysActiveContracts, terminatedContractsCount > 0,
-                    activeContractsCount > 0
-                {
+            store.stateSignal
+            .atOnce()
+            .onValueDisposePrevious  { state in
+                let innerBag = DisposeBag()
+                
+                let terminatedContracts = state.contractBundles.flatMap { $0.contracts }.filter {
+                    $0.currentAgreement.status == .terminated
+                }
+                
+                if !terminatedContracts.isEmpty {
+                    
+                    let terminatedContractsCount = terminatedContracts.count
+                    
                     let section = form.appendSection(
                         header: L10n.InsurancesTab.moreTitle,
                         footer: nil,
                         style: .default
                     )
-
+                    
                     let terminatedRow = RowView(
                         title: L10n.InsurancesTab.terminatedInsurancesLabel,
                         subtitle: terminatedContractsCount == 1
@@ -51,7 +49,7 @@ extension ContractTableFooter: Viewable {
                             )
                     )
                     terminatedRow.append(hCoreUIAssets.chevronRight.image)
-
+                    
                     innerBag += section.append(terminatedRow).compactMap { form.viewController }
                         .onValue { viewController in
                             innerBag +=
@@ -63,16 +61,17 @@ extension ContractTableFooter: Viewable {
                                     ]
                                 )
                                 .onValue { _ in
-
+                                    
                                 }
                         }
-
+                    
                     innerBag += { section.removeFromSuperview() }
                 }
-
+                
                 return innerBag
             }
-
+       
+        
         return (form, bag)
     }
 }
