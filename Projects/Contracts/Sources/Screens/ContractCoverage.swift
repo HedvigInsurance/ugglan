@@ -39,7 +39,7 @@ extension ContractCoverage: Presentable {
         )
 
         bag += form.append(insurableLimits)
-        
+
         form.appendSpacing(.custom(20))
 
         bag += viewController.install(form, options: [])

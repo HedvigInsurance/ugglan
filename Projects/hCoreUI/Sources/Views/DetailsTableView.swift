@@ -6,7 +6,7 @@ import hCore
 import hGraphQL
 
 #warning("remove duplication once offer is updated to new models")
-extension hGraphQL.GraphQL.DetailsTableFragment : Viewable {
+extension hGraphQL.GraphQL.DetailsTableFragment: Viewable {
     public func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
@@ -62,7 +62,7 @@ extension hGraphQL.GraphQL.DetailsTableFragment : Viewable {
     }
 }
 
-extension ActiveContractBundle.DetailAgreementsTable : Viewable {
+extension ActiveContractBundle.DetailAgreementsTable: Viewable {
     public func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 

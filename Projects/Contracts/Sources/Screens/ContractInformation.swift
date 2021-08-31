@@ -13,23 +13,23 @@ struct ContractInformation {
 
 extension ContractInformation: Presentable {
     func materialize() -> (UIViewController, Disposable) {
-        
+
         let viewController = UIViewController()
         viewController.title = L10n.contractDetailMainTitle
         let bag = DisposeBag()
-        
+
         let store: ContractStore = get()
-        
+
         let form = FormView()
         bag += form.append(Spacing(height: 20))
-        
+
         if !contract.upcomingAgreementsTable.sections.isEmpty {
             let upcomingAgreementSection = form.appendSection(
                 header: nil,
                 footer: nil,
                 style: .brandGroupedInset(separatorType: .none, appliesShadow: false)
             )
-            
+
             let card = Card(
                 titleIcon: hCoreUIAssets.apartment.image,
                 title: L10n.InsuranceDetails.updateDetailsSheetTitle,
@@ -41,11 +41,11 @@ extension ContractInformation: Presentable {
                     textColor: .brand(.primaryText())
                 )
             )
-            
+
             bag += upcomingAgreementSection.append(card)
                 .onValueDisposePrevious { _ in
                     let innerBag = DisposeBag()
-                    
+
                     let upcomingAddressChangeDetails = UpcomingAddressChangeDetails(
                         details: contract.upcomingAgreementsTable
                     )
@@ -53,22 +53,22 @@ extension ContractInformation: Presentable {
                         upcomingAddressChangeDetails.withCloseButton,
                         style: .detented(.scrollViewContentSize, .large)
                     )
-                    
+
                     return innerBag
                 }
         }
-        
+
         let section = form.appendSection()
         section.dynamicStyle = .brandGrouped(separatorType: .none)
-        
+
         form.appendSpacing(.custom(20))
-    
+
         let detailsTable = contract.currentAgreementsTable
-        
+
         bag += section.append(detailsTable)
-        
+
         form.appendSpacing(.custom(20))
-        
+
         if Localization.Locale.currentLocale.market == .se {
             let changeAddressButton = ButtonRowViewWrapper(
                 title: L10n.HomeTab.editingSectionChangeAddressLabel,
@@ -80,14 +80,14 @@ extension ContractInformation: Presentable {
                 animate: false
             )
             bag += section.append(changeAddressButton)
-            
+
             bag += changeAddressButton.onTapSignal.onValue {
                 store.send(.goToMovingFlow)
             }
         } else {
             let changeButton = ButtonSection(text: L10n.contractDetailHomeChangeInfo, style: .normal)
             bag += form.append(changeButton)
-            
+
             bag += changeButton.onSelect.onValue {
                 let alert = Alert<Bool>(
                     title: L10n.myHomeChangeAlertTitle,
@@ -97,16 +97,16 @@ extension ContractInformation: Presentable {
                         Alert.Action(title: L10n.myHomeChangeAlertActionConfirm) { true },
                     ]
                 )
-                
+
                 viewController.present(alert)
                     .onValue { shouldContinue in
                         if shouldContinue { Contracts.openFreeTextChatHandler(viewController) }
                     }
             }
         }
-        
+
         bag += viewController.install(form, options: [])
-        
+
         return (viewController, bag)
     }
 }

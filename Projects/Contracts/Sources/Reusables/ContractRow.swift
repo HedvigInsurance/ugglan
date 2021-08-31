@@ -133,7 +133,7 @@ extension ContractRow: Reusable {
                     view.snp.makeConstraints { make in
                         make.top.bottom.trailing.leading.equalToSuperview()
                     }
-                    
+
                     contentView.sendSubviewToBack(view)
                 }
 

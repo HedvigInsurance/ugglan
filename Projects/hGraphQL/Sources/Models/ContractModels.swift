@@ -26,7 +26,7 @@ public struct ActiveContractBundle: Codable {
         public let currentAgreement: CurrentAgreement
         public let statusPills: [String]
         public let detailPills: [String]
-        
+
         init(
             contract: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract
         ) {
@@ -199,34 +199,34 @@ extension ActiveContractBundle: Equatable {
 extension ActiveContractBundle.Contract {
     public var upcomingAgreementDate: String? {
         return nil
-//        let agreement = self
-//        let agreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
-//            .upcomingAgreementChangeFragment.newAgreement
-//        let dateString =
-//            agreement?.asSwedishApartmentAgreement?.activeFrom
-//            ?? agreement?.asSwedishHouseAgreement?.activeFrom
-//            ?? agreement?.asDanishHomeContentAgreement?.activeFrom
-//            ?? agreement?.asNorwegianHomeContentAgreement?.activeFrom
-//
-//        return dateString
+        //        let agreement = self
+        //        let agreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
+        //            .upcomingAgreementChangeFragment.newAgreement
+        //        let dateString =
+        //            agreement?.asSwedishApartmentAgreement?.activeFrom
+        //            ?? agreement?.asSwedishHouseAgreement?.activeFrom
+        //            ?? agreement?.asDanishHomeContentAgreement?.activeFrom
+        //            ?? agreement?.asNorwegianHomeContentAgreement?.activeFrom
+        //
+        //        return dateString
     }
-    
+
     public var upcomingAgreementAddress: String? {
-//        let upcomingAgreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
-//            .upcomingAgreementChangeFragment.newAgreement
-//
-//        if let address = upcomingAgreement?.asSwedishHouseAgreement?.address.street {
-//            return address
-//        } else if let address = upcomingAgreement?.asSwedishApartmentAgreement?.address.street {
-//            return address
-//        } else if let address = upcomingAgreement?.asNorwegianHomeContentAgreement?.address.street {
-//            return address
-//        } else if let address = upcomingAgreement?.asDanishHomeContentAgreement?.address.street {
-//            return address
-//        } else {
-//            return nil
-//        }
-        
+        //        let upcomingAgreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
+        //            .upcomingAgreementChangeFragment.newAgreement
+        //
+        //        if let address = upcomingAgreement?.asSwedishHouseAgreement?.address.street {
+        //            return address
+        //        } else if let address = upcomingAgreement?.asSwedishApartmentAgreement?.address.street {
+        //            return address
+        //        } else if let address = upcomingAgreement?.asNorwegianHomeContentAgreement?.address.street {
+        //            return address
+        //        } else if let address = upcomingAgreement?.asDanishHomeContentAgreement?.address.street {
+        //            return address
+        //        } else {
+        //            return nil
+        //        }
+
         return nil
     }
 }
