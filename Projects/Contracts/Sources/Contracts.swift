@@ -49,31 +49,29 @@ extension Contracts: Presentable {
         let viewController = UIViewController()
 
         let store: ContractStore = get()
-        
+
         let bag = DisposeBag()
 
         if filter.displaysActiveContracts {
             viewController.title = L10n.InsurancesTab.title
             viewController.installChatButton()
         }
-        
-        
 
         bag += viewController.install(
             ContractTable(presentingViewController: viewController, filter: filter)
         )
-        
+
         bag += viewController.view.hasWindowSignal.onValueDisposePrevious { hasWindow in
             let innerBag = DisposeBag()
-            
+
             if hasWindow {
                 let fetcher = ContractFetcher(store: store)
-                
+
                 innerBag += fetcher.fetch()
             } else {
                 innerBag.dispose()
             }
-           
+
             return innerBag
         }
 
@@ -108,22 +106,22 @@ public struct ContractFetcher {
         let bag = DisposeBag()
         let timer = timer()
         timer.fire()
-        
+
         bag += {
             timer.invalidate()
         }
-        
+
         return bag
     }
-    
+
     private func timer() -> Timer {
-        
+
         let timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { timer in
             store.send(.fetchContracts)
             store.send(.fetchContractBundles)
             store.send(.fetchUpcomingAgreement)
         }
-        
+
         return timer
     }
 }

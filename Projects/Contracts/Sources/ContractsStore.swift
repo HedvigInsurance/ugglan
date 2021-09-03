@@ -1,9 +1,9 @@
 import Apollo
 import Flow
+import Foundation
 import Presentation
 import hCore
 import hGraphQL
-import Foundation
 
 public struct ContractState: StateProtocol {
     public init() {}

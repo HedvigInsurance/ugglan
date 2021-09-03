@@ -19,7 +19,7 @@ enum MovingFlowIntroState {
     case existing(DetailAgreementsTable?)
     case normal(String)
     case none
-    
+
     var button: Button? {
         switch self {
         case .existing, .manual:
@@ -43,7 +43,7 @@ enum MovingFlowIntroState {
             return nil
         }
     }
-    
+
     var route: MovingFlowRoute? {
         switch self {
         case .manual, .existing:
@@ -65,35 +65,35 @@ extension MovingFlowIntro: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<MovingFlowRoute>) {
         let bag = DisposeBag()
         let viewController = UIViewController()
-        
+
         let scrollView = FormScrollView()
-        
+
         let form = FormView()
         bag += viewController.install(form, scrollView: scrollView)
-        
+
         let store: ContractStore = get()
-        
+
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
-        
+
         form.append(imageView)
-        
+
         let titleLabel = MultilineLabel(value: "", style: .brand(.title2(color: .primary)).aligned(to: .center))
         let descriptionLabel = MultilineLabel(
             value: "",
             style: .brand(.body(color: .secondary)).aligned(to: .center)
         )
-        
+
         form.appendSpacing(.top)
-        
+
         bag += form.append(titleLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
         form.appendSpacing(.inbetween)
         bag += form.append(descriptionLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
-        
+
         bag += $section.onValueDisposePrevious { state in
             let innerBag = DisposeBag()
-            
+
             switch state {
             case .manual:
                 titleLabel.$value.value = L10n.MovingIntro.manualHandlingButtonText
@@ -103,7 +103,7 @@ extension MovingFlowIntro: Presentable {
                 titleLabel.$value.value = L10n.MovingIntro.existingMoveTitle
                 descriptionLabel.$value.value = L10n.MovingIntro.existingMoveDescription
                 imageView.image = nil
-                
+
                 if let table = table {
                     bag += form.append(table)
                 }
@@ -114,45 +114,48 @@ extension MovingFlowIntro: Presentable {
             case .none:
                 break
             }
-            
+
             return innerBag
         }
-        
-        bag += store.stateSignal.atOnce().onValue { state in
-            if let upcomingAgreementContract = state.upcomingAgreements.first(where: { $0.hasUpcomingAgreementChange == true }) {
-                $section.value = .existing(upcomingAgreementContract.detailsTable)
-            } else {
-                if let bundle = state.contractBundles.first(where: { bundle in
-                    bundle.movingFlowEmbarkId != nil
+
+        bag += store.stateSignal.atOnce()
+            .onValue { state in
+                if let upcomingAgreementContract = state.upcomingAgreements.first(where: {
+                    $0.hasUpcomingAgreementChange == true
                 }) {
-                    $section.value = .normal(
-                        bundle.movingFlowEmbarkId ?? ""
-                    )
+                    $section.value = .existing(upcomingAgreementContract.detailsTable)
                 } else {
-                    $section.value = .manual
+                    if let bundle = state.contractBundles.first(where: { bundle in
+                        bundle.movingFlowEmbarkId != nil
+                    }) {
+                        $section.value = .normal(
+                            bundle.movingFlowEmbarkId ?? ""
+                        )
+                    } else {
+                        $section.value = .manual
+                    }
                 }
             }
-        }
-        
+
         return (
             viewController,
             FiniteSignal { callbacker in
                 bag += $section.atOnce()
                     .onValueDisposePrevious { state in
                         let innerBag = DisposeBag()
-                        
+
                         if let button = state.button {
                             let buttonContainer = UIStackView()
                             buttonContainer.isLayoutMarginsRelativeArrangement = true
                             scrollView.addSubview(buttonContainer)
-                            
+
                             buttonContainer.snp.makeConstraints { make in
                                 make.bottom.equalTo(
                                     scrollView.frameLayoutGuide.snp.bottom
                                 )
                                 make.trailing.leading.equalToSuperview()
                             }
-                            
+
                             innerBag += buttonContainer.didLayoutSignal.onValue { _ in
                                 buttonContainer.layoutMargins = UIEdgeInsets(
                                     top: 0,
@@ -161,7 +164,7 @@ extension MovingFlowIntro: Presentable {
                                         ? 15 : scrollView.safeAreaInsets.bottom,
                                     right: 15
                                 )
-                                
+
                                 let size = buttonContainer.systemLayoutSizeFitting(
                                     .zero
                                 )
@@ -178,24 +181,23 @@ extension MovingFlowIntro: Presentable {
                                     right: 0
                                 )
                             }
-                            
+
                             innerBag += buttonContainer.addArranged(button)
-                            
+
                             innerBag += {
                                 buttonContainer.removeFromSuperview()
                             }
-                            
+
                             innerBag += button.onTapSignal.onValue {
                                 callbacker(.value(state.route ?? .chat))
                             }
                         }
-                        
+
                         return innerBag
                     }
-                
+
                 return bag
             }
         )
     }
 }
-
