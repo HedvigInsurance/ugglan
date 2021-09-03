@@ -60,7 +60,7 @@ extension Contracts: Presentable {
         bag += viewController.install(
             ContractTable(presentingViewController: viewController, filter: filter)
         )
-        
+
         // Initial fetch
         store.send(.fetchContracts)
         store.send(.fetchContractBundles)
