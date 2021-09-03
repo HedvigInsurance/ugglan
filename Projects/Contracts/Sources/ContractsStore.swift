@@ -3,6 +3,7 @@ import Flow
 import Presentation
 import hCore
 import hGraphQL
+import Foundation
 
 public struct ContractState: StateProtocol {
     public init() {}
@@ -62,7 +63,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                     ContractAction.setContractBundles(activeContractBundles: activeContractBundles)
                 }
                 .valueThenEndSignal
-        case .setContractBundles(let activeContractBundles):
+        case .setContractBundles:
             break
         case .goToMovingFlow:
             break
