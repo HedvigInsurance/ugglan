@@ -9,14 +9,11 @@ import hGraphQL
 
 public struct MarketRow {
     @PresentableStore var store: MarketStore
-    @ReadWriteState var market: Market
     var availableLocales: [GraphQL.Locale]
 
     public init(
-        market: Market,
         availableLocales: [GraphQL.Locale]
     ) {
-        self.market = market
         self.availableLocales = availableLocales
     }
 }
@@ -26,13 +23,13 @@ extension MarketRow: Viewable {
         let bag = DisposeBag()
         let row = RowView(
             title: "",
-            subtitle: market.title,
+            subtitle: "",
             style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
                 style.title = .brand(.headline(color: .primary(state: .negative)))
                 style.subtitle = .brand(.subHeadline(color: .secondary(state: .negative)))
             }
         )
-        bag += $market.map { $0.title }.bindTo(row, \.subtitle)
+        bag += store.stateSignal.atOnce().map { $0.market.title }.bindTo(row, \.subtitle)
 
         bag += Localization.Locale.$currentLocale.atOnce().delay(by: 0)
             .transition(style: .crossDissolve(duration: 0.25), with: row) { _ in
@@ -40,11 +37,10 @@ extension MarketRow: Viewable {
             }
 
         let flagImageView = UIImageView()
-        flagImageView.image = market.icon
         flagImageView.contentMode = .scaleAspectFit
         row.prepend(flagImageView)
 
-        bag += $market.map { $0.icon }.bindTo(flagImageView, \.image)
+        bag += store.stateSignal.atOnce().map { $0.market.icon }.bindTo(flagImageView, \.image)
 
         flagImageView.snp.makeConstraints { make in make.width.equalTo(24) }
 
@@ -56,15 +52,10 @@ extension MarketRow: Viewable {
 
         row.append(chevronImageView)
 
-        bag += store.stateSignal.map { $0.market }
-            .onValue({ market in
-                $market.value = market
-            })
-
         bag += events.onSelect.compactMap { row.viewController }
             .onValue { viewController in
                 viewController.present(
-                    PickMarket(currentMarket: market, availableLocales: availableLocales).journey
+                    PickMarket(currentMarket: store.state.market, availableLocales: availableLocales).journey
                 )
                 .onValue { _ in }
             }

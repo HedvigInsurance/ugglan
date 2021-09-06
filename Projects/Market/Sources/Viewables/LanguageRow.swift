@@ -5,7 +5,9 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct LanguageRow { @ReadWriteState var currentMarket: Market }
+struct LanguageRow {
+    @PresentableStore var store: MarketStore
+}
 
 extension LanguageRow: Viewable {
     func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
@@ -42,11 +44,11 @@ extension LanguageRow: Viewable {
         chevronImageView.image = hCoreUIAssets.chevronRight.image
 
         row.append(chevronImageView)
-
+        
         bag += events.onSelect.compactMap { row.viewController }
             .onValue { viewController in
                 viewController.present(
-                    PickLanguage(currentMarket: currentMarket).wrappedInCloseButton(),
+                    PickLanguage(currentMarket: store.state.market).wrappedInCloseButton(),
                     style: .detented(.scrollViewContentSize)
                 )
                 .onValue { locale in Localization.Locale.currentLocale = locale }
