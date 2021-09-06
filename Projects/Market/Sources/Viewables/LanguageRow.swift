@@ -44,7 +44,7 @@ extension LanguageRow: Viewable {
         chevronImageView.image = hCoreUIAssets.chevronRight.image
 
         row.append(chevronImageView)
-        
+
         bag += events.onSelect.compactMap { row.viewController }
             .onValue { viewController in
                 viewController.present(

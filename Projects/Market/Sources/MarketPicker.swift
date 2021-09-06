@@ -102,7 +102,7 @@ extension MarketPicker: Presentable {
         }
 
         let store: MarketStore = get()
-        
+
         form.transform = CGAffineTransform(translationX: 0, y: 100)
         form.alpha = 0
 
@@ -179,7 +179,7 @@ extension MarketPicker: Presentable {
                             }
                         )
                 }
-                
+
                 bag += client.fetch(query: GraphQL.MarketQuery()).valueSignal
                     .atValue { data in
                         if let bestMatchedLocale = data.availableLocales.first(where: {
@@ -197,7 +197,8 @@ extension MarketPicker: Presentable {
                         }
 
                         renderMarketPicker(availableLocales: data.availableLocales)
-                    }.onError { _ in
+                    }
+                    .onError { _ in
                         store.send(.selectMarket(market: .sweden))
                         renderMarketPicker(availableLocales: [.svSe, .daDk, .nbNo])
                     }
