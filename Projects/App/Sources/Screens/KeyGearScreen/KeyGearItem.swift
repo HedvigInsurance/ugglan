@@ -220,42 +220,7 @@ extension KeyGearItem: Presentable {
 
         bag += innerForm.append(Spacing(height: 10))
 
-        let coveragesSection = innerForm.appendSection(header: L10n.keyGearItemViewCoverageTableTitle)
-
-        bag += dataSignal.map { $0.covered }
-            .onValueDisposePrevious { covered -> Disposable? in let bag = DisposeBag()
-
-                bag += covered.map { coveredItem in
-                    coveragesSection.append(
-                        KeyGearCoverage(
-                            type: .included,
-                            title: ""
-                        )
-                    )
-                }
-
-                return bag
-            }
-
         bag += innerForm.append(Spacing(height: 15))
-
-        let nonCoveragesSection = innerForm.appendSection(header: L10n.keyGearItemViewNonCoverageTableTitle)
-
-        bag += dataSignal.map { $0.exceptions }
-            .onValueDisposePrevious { exceptions -> Disposable? in let bag = DisposeBag()
-
-                bag += exceptions.map { exceptionItem in
-                    nonCoveragesSection.append(
-                        KeyGearCoverage(
-                            type: .excluded,
-                            title: ""
-                        )
-                    )
-                }
-
-                return bag
-            }
-
         bag += innerForm.append(Spacing(height: 30))
 
         let receiptFooter = UIStackView()
