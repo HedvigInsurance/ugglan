@@ -124,7 +124,7 @@ extension ContractRow: Reusable {
                 bag += contentView.applyBorderColor { _ in .brand(.primaryBorderColor) }
 
                 if let gradientOption = self.contract.gradientOption,
-                    self.contract.currentAgreement?.status != .terminated
+                    self.contract.currentAgreement.status != .terminated
                 {
                     let gradientView = GradientView(
                         gradientOption: .some(.init(gradientOption: gradientOption)),

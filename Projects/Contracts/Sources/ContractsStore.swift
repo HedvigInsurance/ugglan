@@ -50,43 +50,18 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         switch action {
         case .fetchContractBundles:
             return
-                client.fetch(
-                    query: GraphQL.ActiveContractBundlesQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    ),
-                    cachePolicy: .fetchIgnoringCacheData
-                )
-                .map { data in
-                    data.activeContractBundles.map { ActiveContractBundle(bundle: $0) }
-                }
+                client.fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                 .map { activeContractBundles in
                     ContractAction.setContractBundles(activeContractBundles: activeContractBundles)
                 }
                 .valueThenEndSignal
-        case .setContractBundles:
-            break
-        case .goToMovingFlow:
-            break
         case .fetchContracts:
             return
-                client.fetch(
-                    query: GraphQL.ContractsQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    ),
-                    cachePolicy: .fetchIgnoringCacheData
-                )
-                .compactMap { $0.contracts }
-                .map {
-                    $0.flatMap { Contract(contract: $0) }
-                }
+                client.fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                 .map {
                     .setContracts(contracts: $0)
                 }
                 .valueThenEndSignal
-        case .setContracts:
-            break
-        case .goToFreeTextChat:
-            break
         case .fetchUpcomingAgreement:
             return
                 client.fetch(
@@ -105,7 +80,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                     .setUpcomingAgreementContracts(contracts: $0)
                 }
                 .valueThenEndSignal
-        case .setUpcomingAgreementContracts:
+        default:
             break
         }
         return nil
@@ -114,22 +89,14 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
     public override func reduce(_ state: ContractState, _ action: ContractAction) -> ContractState {
         var newState = state
         switch action {
-        case .fetchContractBundles:
-            break
         case .setContractBundles(let activeContractBundles):
             newState.contractBundles = activeContractBundles
-        case .goToMovingFlow:
-            break
-        case .fetchContracts:
-            break
         case .setContracts(let contracts):
             newState.contracts = contracts
-        case .goToFreeTextChat:
-            break
-        case .fetchUpcomingAgreement:
-            break
         case .setUpcomingAgreementContracts(let contracts):
             newState.upcomingAgreements = contracts
+        default:
+            break
         }
 
         return newState

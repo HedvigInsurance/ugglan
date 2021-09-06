@@ -54,7 +54,7 @@ public struct Contract: Codable {
     public let perils: [Perils]
     public let insurableLimits: [InsurableLimits]
     public let termsAndConditions: TermsAndConditions
-    public let currentAgreement: CurrentAgreement?
+    public let currentAgreement: CurrentAgreement
     public let statusPills: [String]
     public let detailPills: [String]
 

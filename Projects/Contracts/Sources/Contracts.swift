@@ -84,8 +84,8 @@ extension Contracts: Presentable {
         return (
             viewController,
             Signal { callback in
-                bag += store.actionSignal.onValue {
-                    if $0 == .goToMovingFlow {
+                bag += store.actionSignal.onValue { action in
+                    if action == .goToMovingFlow {
                         callback(.movingFlow)
                     }
                 }

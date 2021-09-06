@@ -25,9 +25,9 @@ extension ContractTableFooter: Viewable {
             .onValueDisposePrevious { state in
                 let innerBag = DisposeBag()
 
-                let terminatedContractsCount = state.contracts.filter { $0.currentAgreement?.status == .terminated }
+                let terminatedContractsCount = state.contracts.filter { $0.currentAgreement.status == .terminated }
                     .count
-                let activeContractsCount = state.contracts.filter { $0.currentAgreement?.status == .active }
+                let activeContractsCount = state.contracts.filter { $0.currentAgreement.status == .active }
                     .count
 
                 if filter.displaysActiveContracts, terminatedContractsCount > 0,

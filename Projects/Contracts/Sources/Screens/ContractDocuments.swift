@@ -21,7 +21,7 @@ extension ContractDocuments: Presentable {
         section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
         func showSections() {
-            if let certUrlString = contract.currentAgreement?.certificateUrl, let url = URL(string: certUrlString) {
+            if let url = URL(string: contract.currentAgreement.certificateUrl) {
                 let certificateRow = RowView(
                     title: L10n.myDocumentsInsuranceCertificate,
                     style: .brand(.body(color: .primary))
