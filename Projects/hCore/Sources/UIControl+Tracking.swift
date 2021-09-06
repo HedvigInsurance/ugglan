@@ -10,11 +10,11 @@ extension UIControl {
                 if let accessibilityLabel = self.accessibilityLabel {
                     if let localizationKey = accessibilityLabel.derivedFromL10n?.key {
                         Analytics.track("TAP_\(localizationKey)", properties: ["context": "UIControl"])
-                        Analytics.track("BUTTON_CLICK", properties: ["localizationKey": localizationKey])
+                        Analytics.track(.buttonClick, properties: ["localizationKey": localizationKey])
                     }
                 } else if let accessibilityIdentifier = self.accessibilityIdentifier {
                     Analytics.track("TAP_\(accessibilityIdentifier)", properties: ["context": "UIControl"])
-                    Analytics.track("BUTTON_CLICK", properties: ["accessibilityIdentifier": accessibilityIdentifier])
+                    Analytics.track(.buttonClick, properties: ["accessibilityIdentifier": accessibilityIdentifier])
                 }
             }
     }

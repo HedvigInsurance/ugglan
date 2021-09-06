@@ -8,7 +8,7 @@ extension RowAndProvider {
             if let derivedFromL10N = self.row.accessibilityLabel?.derivedFromL10n {
                 Analytics.track("tap_\(derivedFromL10N.key)", properties: [:])
                 Analytics.track(
-                    "BUTTON_CLICK",
+                    .buttonClick,
                     properties: [
                         "localizationKey": derivedFromL10N.key
                     ]

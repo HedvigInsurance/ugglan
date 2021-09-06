@@ -58,7 +58,7 @@ extension ButtonRow: Viewable {
                 Analytics
                     .track("TAP_\(localizationKey)", properties: ["context": "ButtonRow"])
                 Analytics
-                    .track("BUTTON_CLICK", properties: ["localizationKey": localizationKey])
+                    .track(.buttonClick, properties: ["localizationKey": localizationKey])
             }
         }
 

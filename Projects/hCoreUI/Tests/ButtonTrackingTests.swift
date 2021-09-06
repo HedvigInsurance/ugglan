@@ -12,8 +12,8 @@ final class ButtonTrackingTests: XCTestCase {
         let buttonTrackingHandlerExpectation = expectation(description: "AnalyticsSender.sendEvent to be called")
 
         AnalyticsSender.sendEvent = { name, properties in
-            if name == "BUTTON_CLICK" {
-                XCTAssertEqual("ABOUT_LANGUAGE_ROW", properties["localizationKey"] as? String)
+            if name == AnalyticsCommonEventName.buttonClick.rawValue {
+                XCTAssertEqual(L10n.aboutLanguageRow.derivedFromL10n?.key, properties["localizationKey"] as? String)
                 buttonTrackingHandlerExpectation.fulfill()
             }
         }

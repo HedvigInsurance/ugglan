@@ -529,7 +529,7 @@ extension Button: Viewable {
             if let localizationKey = title.value.displayValue.derivedFromL10n?.key {
                 Analytics.track(localizationKey, properties: [:])
                 Analytics.track(
-                    "BUTTON_CLICK",
+                    .buttonClick,
                     properties: [
                         "localizationKey": localizationKey
                     ]
