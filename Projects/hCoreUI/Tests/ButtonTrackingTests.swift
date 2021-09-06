@@ -10,7 +10,7 @@ import hCore
 final class ButtonTrackingTests: XCTestCase {
     func test() {
         let buttonTrackingHandlerExpectation = expectation(description: "AnalyticsSender.sendEvent to be called")
-        
+
         AnalyticsSender.sendEvent = { name, properties in
             if name == "BUTTON_CLICK" {
                 XCTAssertEqual("ABOUT_LANGUAGE_ROW", properties["localizationKey"] as? String)
