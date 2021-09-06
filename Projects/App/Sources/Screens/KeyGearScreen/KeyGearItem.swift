@@ -229,7 +229,7 @@ extension KeyGearItem: Presentable {
                     coveragesSection.append(
                         KeyGearCoverage(
                             type: .included,
-                            title: coveredItem.title?.translations.first?.text ?? ""
+                            title: ""
                         )
                     )
                 }
@@ -248,7 +248,7 @@ extension KeyGearItem: Presentable {
                     nonCoveragesSection.append(
                         KeyGearCoverage(
                             type: .excluded,
-                            title: exceptionItem.title?.translations.first?.text ?? ""
+                            title: ""
                         )
                     )
                 }
