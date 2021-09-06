@@ -15,7 +15,7 @@ public struct Analytics {
     public static func track(_ name: String, properties: [String: AnalyticsProperty]) {
         AnalyticsSender.sendEvent(name, properties)
     }
-    
+
     /// Send a tracking event with a commonly defined name
     public static func track(_ name: AnalyticsCommonEventName, properties: [String: AnalyticsProperty]) {
         AnalyticsSender.sendEvent(name.rawValue, properties)
