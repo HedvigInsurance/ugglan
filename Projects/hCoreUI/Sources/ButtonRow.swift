@@ -5,8 +5,6 @@ import UIKit
 import hCore
 
 public struct ButtonRow {
-    public static var trackingHandler: (_ row: Self) -> Void = { _ in }
-
     public let text: ReadWriteSignal<String>
     public let style: ReadWriteSignal<TextStyle>
     public let isHiddenSignal = ReadWriteSignal<Bool>(false)
@@ -55,7 +53,14 @@ extension ButtonRow: Viewable {
 
         label.snp.makeConstraints { make in make.height.equalTo(20) }
 
-        bag += events.onSelect.onValue { Self.trackingHandler(self) }
+        bag += events.onSelect.onValue {
+            if let localizationKey = self.text.value.derivedFromL10n?.key {
+                Analytics
+                    .track("TAP_\(localizationKey)", properties: ["context": "ButtonRow"])
+                Analytics
+                    .track("BUTTON_CLICK", properties: ["localizationKey": localizationKey])
+            }
+        }
 
         row.append(label)
 
