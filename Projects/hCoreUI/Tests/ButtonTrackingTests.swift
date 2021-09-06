@@ -9,11 +9,16 @@ import hCore
 
 final class ButtonTrackingTests: XCTestCase {
     func test() {
-        let buttonTrackingHandlerExpectation = expectation(description: "Button.trackingHandler to be called")
+        let buttonTrackingHandlerExpectation = expectation(description: "AnalyticsSender.sendEvent to be called")
+        
+        AnalyticsSender.sendEvent = { name, properties in
+            if name == "BUTTON_CLICK" {
+                XCTAssertEqual("ABOUT_LANGUAGE_ROW", properties["localizationKey"] as? String)
+                buttonTrackingHandlerExpectation.fulfill()
+            }
+        }
 
-        Button.trackingHandler = { _ in buttonTrackingHandlerExpectation.fulfill() }
-
-        let button = Button(title: "mock", type: .standard(backgroundColor: .black, textColor: .black))
+        let button = Button(title: L10n.aboutLanguageRow, type: .standard(backgroundColor: .black, textColor: .black))
 
         let (buttonView, buttonBag) = button.materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
 

@@ -531,7 +531,7 @@ extension Button: Viewable {
                 Analytics.track(
                     "BUTTON_CLICK",
                     properties: [
-                        "name": localizationKey
+                        "localizationKey": localizationKey
                     ]
                 )
             }
