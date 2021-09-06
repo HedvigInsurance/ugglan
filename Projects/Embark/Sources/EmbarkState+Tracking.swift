@@ -17,9 +17,11 @@ extension EmbarkPassage.Track {
             )
         }
 
-        return filteredProperties.mapValues { any in
-            any as? AnalyticsProperty
-        }.compactMapValues { $0 }
+        return
+            filteredProperties.mapValues { any in
+                any as? AnalyticsProperty
+            }
+            .compactMapValues { $0 }
     }
 }
 

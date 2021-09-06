@@ -89,9 +89,12 @@ public class EmbarkState {
             }
 
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
-                Analytics.track("External Redirect", properties: [
-                    "location": externalRedirect.rawValue
-                ])
+                Analytics.track(
+                    "External Redirect",
+                    properties: [
+                        "location": externalRedirect.rawValue
+                    ]
+                )
                 switch externalRedirect {
                 case .mailingList: externalRedirectSignal.value = .mailingList
                 case .offer:

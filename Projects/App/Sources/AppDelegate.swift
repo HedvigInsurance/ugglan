@@ -127,11 +127,14 @@ let log = Logger.builder
         if dynamicLinkUrl.pathComponents.contains("direct-debit") {
             guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
             guard let rootViewController = window.rootViewController else { return false }
-            
+
             Analytics.track("DEEP_LINK_DIRECT_DEBIT", properties: [:])
-            Analytics.track("DEEP_LINK", properties: [
-                "type": "DIRECT_DEBIT"
-            ])
+            Analytics.track(
+                "DEEP_LINK",
+                properties: [
+                    "type": "DIRECT_DEBIT"
+                ]
+            )
 
             bag += rootViewController.present(
                 PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
@@ -147,11 +150,14 @@ let log = Logger.builder
                     let store: UgglanStore = globalPresentableStoreContainer.get()
                     store.send(.makeForeverTabActive)
                 }
-            
+
             Analytics.track("DEEP_LINK_FOREVER", properties: [:])
-            Analytics.track("DEEP_LINK", properties: [
-                "type": "FOREVER"
-            ])
+            Analytics.track(
+                "DEEP_LINK",
+                properties: [
+                    "type": "FOREVER"
+                ]
+            )
 
             return true
         }
@@ -299,41 +305,59 @@ let log = Logger.builder
 
             switch presentationEvent {
             case let .willEnqueue(presentableId, context):
-                Analytics.track("PRESENTABLE_WILL_ENQUEUE", properties: [
-                    "presentableId": presentableId.value
-                ])
+                Analytics.track(
+                    "PRESENTABLE_WILL_ENQUEUE",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
                 message = "\(context) will enqueue modal presentation of \(presentableId)"
                 log.info(message)
             case let .willDequeue(presentableId, context):
-                Analytics.track("PRESENTABLE_WILL_DEQUEUE", properties: [
-                    "presentableId": presentableId.value
-                ])
+                Analytics.track(
+                    "PRESENTABLE_WILL_DEQUEUE",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
                 message = "\(context) will dequeue modal presentation of \(presentableId)"
                 log.info(message)
             case let .willPresent(presentableId, context, styleName):
-                Analytics.track("PRESENTABLE_WILL_PRESENT", properties: [
-                    "presentableId": presentableId.value
-                ])
+                Analytics.track(
+                    "PRESENTABLE_WILL_PRESENT",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
                 log.info(message)
             case let .didCancel(presentableId, context):
-                Analytics.track("PRESENTABLE_DID_CANCEL", properties: [
-                    "presentableId": presentableId.value
-                ])
+                Analytics.track(
+                    "PRESENTABLE_DID_CANCEL",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
                 message = "\(context) did cancel presentation of: \(presentableId)"
                 log.info(message)
             case let .didDismiss(presentableId, context, result):
                 switch result {
                 case let .success(result):
-                    Analytics.track("PRESENTABLE_DID_DISMISS_SUCCESS", properties: [
-                        "presentableId": presentableId.value
-                    ])
+                    Analytics.track(
+                        "PRESENTABLE_DID_DISMISS_SUCCESS",
+                        properties: [
+                            "presentableId": presentableId.value
+                        ]
+                    )
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(result)"
                 case let .failure(error):
-                    Analytics.track("PRESENTABLE_DID_DISMISS_FAILURE", properties: [
-                        "presentableId": presentableId.value
-                    ])
+                    Analytics.track(
+                        "PRESENTABLE_DID_DISMISS_FAILURE",
+                        properties: [
+                            "presentableId": presentableId.value
+                        ]
+                    )
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(error)"
                 }
@@ -355,17 +379,23 @@ let log = Logger.builder
         viewControllerWasPresented = { viewController in
             if let debugPresentationTitle = viewController.debugPresentationTitle {
                 Analytics.track("SCREEN_VIEW_\(debugPresentationTitle)", properties: [:])
-                Analytics.track("SCREEN_VIEW", properties: [
-                    "title": debugPresentationTitle
-                ])
+                Analytics.track(
+                    "SCREEN_VIEW",
+                    properties: [
+                        "title": debugPresentationTitle
+                    ]
+                )
             }
         }
         alertActionWasPressed = { _, title in
             if let localizationKey = title.derivedFromL10n?.key {
                 Analytics.track("ALERT_ACTION_TAP_\(localizationKey)", properties: [:])
-                Analytics.track("ALERT_ACTION_TAP", properties: [
-                    "action": localizationKey
-                ])
+                Analytics.track(
+                    "ALERT_ACTION_TAP",
+                    properties: [
+                        "action": localizationKey
+                    ]
+                )
             }
         }
         let launch = Launch()
