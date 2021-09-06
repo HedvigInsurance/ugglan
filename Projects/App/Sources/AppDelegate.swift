@@ -382,7 +382,7 @@ let log = Logger.builder
                 Analytics.track(
                     "SCREEN_VIEW",
                     properties: [
-                        "title": debugPresentationTitle
+                        "screenName": debugPresentationTitle
                     ]
                 )
             }
