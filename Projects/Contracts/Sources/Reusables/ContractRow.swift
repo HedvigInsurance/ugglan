@@ -11,7 +11,7 @@ struct ContractRow: Hashable {
     static func == (lhs: ContractRow, rhs: ContractRow) -> Bool { lhs.hashValue == rhs.hashValue }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(contract.id)
+        hasher.combine(contract)
     }
 
     let contract: Contract
@@ -100,7 +100,7 @@ extension ContractRow: Reusable {
                 contentView.layer.zPosition = .greatestFiniteMagnitude
 
                 if !UITraitCollection.isCatalyst {
-                    contentView.hero.id = "contentView_\(self.contract.displayName)"
+                    contentView.hero.id = "contentView_\(self.contract.id)"
                     contentView.hero.modifiers = [
                         .spring(stiffness: 250, damping: 25),
                         .when(

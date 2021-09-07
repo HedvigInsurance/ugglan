@@ -7,7 +7,7 @@ import hCore
 import hGraphQL
 
 public struct RemoteVectorIcon {
-    let iconSignal = ReadWriteSignal<hIcon?>(nil)
+    let iconSignal = ReadWriteSignal<IconEnvelope?>(nil)
     let finishedLoadingSignal: Signal<Void>
     let finishedLoadingCallback = Callbacker<Void>()
     let threaded: Bool
@@ -16,14 +16,14 @@ public struct RemoteVectorIcon {
         _ icon: GraphQL.IconFragment? = nil,
         threaded: Bool? = false
     ) {
-        let hIcon = hIcon(fragment: icon)
+        let hIcon = IconEnvelope(fragment: icon)
         iconSignal.value = hIcon
         finishedLoadingSignal = finishedLoadingCallback.providedSignal
         self.threaded = threaded ?? false
     }
 
     public init(
-        _ icon: hIcon?,
+        _ icon: IconEnvelope?,
         threaded: Bool? = false
     ) {
         iconSignal.value = icon

@@ -14,7 +14,7 @@ public struct ActiveContractBundle: Codable, Equatable {
     }
 }
 
-public struct hIcon: Codable, Equatable {
+public struct IconEnvelope: Codable, Equatable, Hashable {
     public let dark: String
     public let light: String
     public init?(
@@ -32,7 +32,7 @@ extension Contract: Equatable {
     }
 }
 
-public struct Contract: Codable {
+public struct Contract: Codable, Hashable {
     public init(
         id: String,
         upcomingAgreementsTable: DetailAgreementsTable,
@@ -132,7 +132,7 @@ public struct Contract: Codable {
     }
 }
 
-public struct UpcomingRenewal: Codable {
+public struct UpcomingRenewal: Codable, Hashable {
     public let renewalDate: String?
     public let draftCertificateUrl: String?
 
@@ -144,7 +144,7 @@ public struct UpcomingRenewal: Codable {
     }
 }
 
-public struct TermsAndConditions: Codable {
+public struct TermsAndConditions: Codable, Hashable {
     public init(
         displayName: String,
         url: String
@@ -161,7 +161,7 @@ public struct AngelStories: Codable {
     public let addressChange: String
 }
 
-public struct DetailAgreementsTable: Codable {
+public struct DetailAgreementsTable: Codable, Hashable {
     public init(
         sections: [DetailAgreementsTable.Section],
         title: String
@@ -179,7 +179,7 @@ public struct DetailAgreementsTable: Codable {
         title = fragment.title
     }
 
-    public struct Section: Codable {
+    public struct Section: Codable, Hashable {
         public init(
             title: String,
             rows: [DetailAgreementsTable.Row]
@@ -199,7 +199,7 @@ public struct DetailAgreementsTable: Codable {
         }
     }
 
-    public struct Row: Codable {
+    public struct Row: Codable, Hashable {
         public init(
             title: String,
             subtitle: String?,
@@ -223,10 +223,10 @@ public struct DetailAgreementsTable: Codable {
     }
 }
 
-public struct Perils: Codable, Equatable {
+public struct Perils: Codable, Equatable, Hashable {
     public let title: String
     public let description: String
-    public let icon: hIcon?
+    public let icon: IconEnvelope?
     public let covered: [String]
     public let exceptions: [String]
     public let info: String
@@ -242,7 +242,7 @@ public struct Perils: Codable, Equatable {
     }
 }
 
-public struct InsurableLimits: Codable {
+public struct InsurableLimits: Codable, Hashable {
     public let label: String
     public let limit: String
     public let description: String
@@ -256,7 +256,7 @@ public struct InsurableLimits: Codable {
     }
 }
 
-public struct CurrentAgreement: Codable {
+public struct CurrentAgreement: Codable, Hashable {
     public init(
         certificateUrl: String?,
         activeFrom: String?,
@@ -339,7 +339,7 @@ extension Contract {
     }
 }
 
-public struct UpcomingAgreementContract: Codable, Equatable {
+public struct UpcomingAgreementContract: Codable, Equatable, Hashable {
     public static func == (lhs: UpcomingAgreementContract, rhs: UpcomingAgreementContract) -> Bool {
         lhs.id == rhs.id
     }
