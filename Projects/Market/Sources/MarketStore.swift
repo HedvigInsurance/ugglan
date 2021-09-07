@@ -1,6 +1,7 @@
 import Flow
 import Foundation
 import Presentation
+import hCore
 
 public struct MarketState: StateProtocol {
     var market: Market = .sweden
@@ -32,8 +33,8 @@ public final class MarketStore: StateStore<MarketState, MarketAction> {
         _ action: MarketAction
     ) -> FiniteSignal<MarketAction>? {
         switch action {
-        default:
-            break
+        case let .selectMarket(market):
+            Localization.Locale.currentLocale = market.preferredLanguage
         }
 
         return nil
