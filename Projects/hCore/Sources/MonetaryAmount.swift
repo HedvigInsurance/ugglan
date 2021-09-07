@@ -6,7 +6,7 @@ extension MonetaryAmount {
     public var negative: Self {
         MonetaryAmount(amount: -value, currency: currency)
     }
-    
+
     /// amount parsed as a float
     public var value: Float {
         if let floatValue = Float(amount) {

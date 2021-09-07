@@ -364,7 +364,7 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
         self.amount = amount
         self.currency = currency
     }
-    
+
     public init(
         amount: Float,
         currency: String
@@ -372,14 +372,14 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
         self.amount = String(amount)
         self.currency = currency
     }
-    
+
     public init(
         fragment: GraphQL.MonetaryAmountFragment
     ) {
         amount = fragment.amount
         currency = fragment.currency
     }
-    
+
     public var amount: String
     public var currency: String
 }
