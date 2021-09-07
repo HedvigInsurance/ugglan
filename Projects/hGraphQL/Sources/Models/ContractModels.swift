@@ -26,25 +26,6 @@ public struct hIcon: Codable, Equatable {
     }
 }
 
-public struct MonetaryAmount: Codable {
-    public init(
-        amount: String,
-        currency: String
-    ) {
-        self.amount = amount
-        self.currency = currency
-    }
-
-    public let amount: String
-    public let currency: String
-    public init(
-        fragment: GraphQL.MonetaryAmountFragment
-    ) {
-        amount = fragment.amount
-        currency = fragment.currency
-    }
-}
-
 extension Contract: Equatable {
     public static func == (lhs: Contract, rhs: Contract) -> Bool {
         return lhs.id == rhs.id
@@ -373,4 +354,32 @@ public struct UpcomingAgreementContract: Codable, Equatable {
         detailsTable = .init(fragment: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment)
         hasUpcomingAgreementChange = contract.status.asActiveStatus?.upcomingAgreementChange != nil
     }
+}
+
+public struct MonetaryAmount: Equatable, Hashable, Codable {
+    public init(
+        amount: String,
+        currency: String
+    ) {
+        self.amount = amount
+        self.currency = currency
+    }
+    
+    public init(
+        amount: Float,
+        currency: String
+    ) {
+        self.amount = String(amount)
+        self.currency = currency
+    }
+    
+    public init(
+        fragment: GraphQL.MonetaryAmountFragment
+    ) {
+        amount = fragment.amount
+        currency = fragment.currency
+    }
+    
+    public var amount: String
+    public var currency: String
 }

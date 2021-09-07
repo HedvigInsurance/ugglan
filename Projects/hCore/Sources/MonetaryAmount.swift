@@ -1,25 +1,12 @@
 import Foundation
 import hGraphQL
 
-public struct MonetaryAmount: Equatable, Hashable, Codable {
-    public init(
-        amount: String,
-        currency: String
-    ) {
-        self.amount = amount
-        self.currency = currency
+extension MonetaryAmount {
+    /// returns a MonetaryAmount where amount is converted to a negative amount
+    public var negative: Self {
+        MonetaryAmount(amount: -value, currency: currency)
     }
-
-    public init(
-        amount: Float,
-        currency: String
-    ) {
-        self.amount = String(amount)
-        self.currency = currency
-    }
-
-    public var amount: String
-    public var currency: String
+    
     /// amount parsed as a float
     public var value: Float {
         if let floatValue = Float(amount) {
@@ -31,13 +18,6 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
 
     public static func sek(_ value: Float) -> Self {
         self.init(amount: String(value), currency: "SEK")
-    }
-}
-
-extension MonetaryAmount {
-    /// returns a MonetaryAmount where amount is converted to a negative amount
-    public var negative: Self {
-        MonetaryAmount(amount: -value, currency: currency)
     }
 }
 
