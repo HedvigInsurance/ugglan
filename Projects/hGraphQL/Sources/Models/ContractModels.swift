@@ -27,6 +27,11 @@ public struct hIcon: Codable, Equatable {
 }
 
 public struct MonetaryAmount: Codable {
+    public init(amount: String, currency: String) {
+        self.amount = amount
+        self.currency = currency
+    }
+    
     public let amount: String
     public let currency: String
     public init(
@@ -44,6 +49,22 @@ extension Contract: Equatable {
 }
 
 public struct Contract: Codable {
+    public init(id: String, upcomingAgreementsTable: DetailAgreementsTable, currentAgreementsTable: DetailAgreementsTable?, gradientOption: Contract.GradientOption?, displayName: String, switchedFromInsuranceProvider: String?, upcomingRenewal: UpcomingRenewal?, perils: [Perils], insurableLimits: [InsurableLimits], termsAndConditions: TermsAndConditions, currentAgreement: CurrentAgreement, statusPills: [String], detailPills: [String]) {
+        self.id = id
+        self.upcomingAgreementsTable = upcomingAgreementsTable
+        self.currentAgreementsTable = currentAgreementsTable
+        self.gradientOption = gradientOption
+        self.displayName = displayName
+        self.switchedFromInsuranceProvider = switchedFromInsuranceProvider
+        self.upcomingRenewal = upcomingRenewal
+        self.perils = perils
+        self.insurableLimits = insurableLimits
+        self.termsAndConditions = termsAndConditions
+        self.currentAgreement = currentAgreement
+        self.statusPills = statusPills
+        self.detailPills = detailPills
+    }
+    
     public let id: String
     public let upcomingAgreementsTable: DetailAgreementsTable
     public let currentAgreementsTable: DetailAgreementsTable?
@@ -126,6 +147,11 @@ public struct UpcomingRenewal: Codable {
 }
 
 public struct TermsAndConditions: Codable {
+    public init(displayName: String, url: String) {
+        self.displayName = displayName
+        self.url = url
+    }
+    
     public let displayName: String
     public let url: String
 }
@@ -135,6 +161,11 @@ public struct AngelStories: Codable {
 }
 
 public struct DetailAgreementsTable: Codable {
+    public init(sections: [DetailAgreementsTable.Section], title: String) {
+        self.sections = sections
+        self.title = title
+    }
+    
     public let sections: [Section]
     public let title: String
     public init(
@@ -145,6 +176,11 @@ public struct DetailAgreementsTable: Codable {
     }
 
     public struct Section: Codable {
+        public init(title: String, rows: [DetailAgreementsTable.Row]) {
+            self.title = title
+            self.rows = rows
+        }
+        
         public let title: String
         public let rows: [Row]
 
@@ -157,6 +193,12 @@ public struct DetailAgreementsTable: Codable {
     }
 
     public struct Row: Codable {
+        public init(title: String, subtitle: String?, value: String) {
+            self.title = title
+            self.subtitle = subtitle
+            self.value = value
+        }
+        
         public let title: String
         public let subtitle: String?
         public let value: String
@@ -204,6 +246,14 @@ public struct InsurableLimits: Codable {
 }
 
 public struct CurrentAgreement: Codable {
+    public init(certificateUrl: String?, activeFrom: String?, activeTo: String?, premium: MonetaryAmount, status: ContractStatus?) {
+        self.certificateUrl = certificateUrl
+        self.activeFrom = activeFrom
+        self.activeTo = activeTo
+        self.premium = premium
+        self.status = status
+    }
+    
     public let certificateUrl: String?
     public let activeFrom: String?
     public let activeTo: String?
