@@ -86,22 +86,22 @@ final class ContractRowTests: XCTestCase {
     }
 }
 
-
 extension Contract {
     public static func mock(displayName: String, status: ContractStatus) -> Contract {
-        .init(id: "mock_norwegian_123",
-              upcomingAgreementsTable: .mock(),
-              currentAgreementsTable: .mock(),
-              gradientOption: .one,
-              displayName: displayName,
-              switchedFromInsuranceProvider: nil,
-              upcomingRenewal: nil,
-              perils: [],
-              insurableLimits: [],
-              termsAndConditions: .mock(),
-              currentAgreement: .mock(status: status),
-              statusPills: [],
-              detailPills: []
+        .init(
+            id: "mock_norwegian_123",
+            upcomingAgreementsTable: .mock(),
+            currentAgreementsTable: .mock(),
+            gradientOption: .one,
+            displayName: displayName,
+            switchedFromInsuranceProvider: nil,
+            upcomingRenewal: nil,
+            perils: [],
+            insurableLimits: [],
+            termsAndConditions: .mock(),
+            currentAgreement: .mock(status: status),
+            statusPills: [],
+            detailPills: []
         )
     }
 }
@@ -120,6 +120,12 @@ extension TermsAndConditions {
 
 extension CurrentAgreement {
     public static func mock(status: ContractStatus) -> CurrentAgreement {
-        .init(certificateUrl: "https://www.mock.com/terms.pdf", activeFrom: nil, activeTo: nil, premium: .init(amount: "100", currency: "SEK"), status: status)
+        .init(
+            certificateUrl: "https://www.mock.com/terms.pdf",
+            activeFrom: nil,
+            activeTo: nil,
+            premium: .init(amount: "100", currency: "SEK"),
+            status: status
+        )
     }
 }
