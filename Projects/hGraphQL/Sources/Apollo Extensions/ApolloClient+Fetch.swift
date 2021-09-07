@@ -33,7 +33,7 @@ extension ApolloClient {
             return Disposer { cancellable.cancel() }
         }
     }
-    
+
     public func refetchOnRefresh<Query: GraphQLQuery>(
         query: Query,
         refreshControl: UIRefreshControl,
