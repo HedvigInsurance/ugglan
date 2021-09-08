@@ -6,6 +6,7 @@ import Runtime
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 typealias AnyCodable = (Any & Codable)
 

@@ -10,45 +10,125 @@ struct LargeButtonModifier: ViewModifier {
     }
 }
 
-struct LargeButtonFilledStyle: SwiftUI.ButtonStyle {
-    struct Background: View {
-        @Environment(\.isEnabled) var isEnabled
-        var configuration: Configuration
+struct SmallButtonModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .frame(minHeight: 35)
+    }
+}
 
-        var body: some View {
-            if isEnabled {
-                hColorScheme(
-                    light: hLabelColor.primary,
-                    dark: hTintColor.lavenderOne
-                )
-            } else {
-                hColorScheme(
-                    light: hGrayscaleColor.three,
-                    dark: hGrayscaleColor.four
-                )
-            }
+enum ButtonSize {
+    case small
+    case large
+}
+
+extension View {
+    @ViewBuilder func buttonSizeModifier(_ size: ButtonSize) -> some View {
+        switch size {
+        case .small:
+            self.modifier(SmallButtonModifier()).environment(\.defaultHTextStyle, .subheadline)
+        case .large:
+            self.modifier(LargeButtonModifier()).environment(\.defaultHTextStyle, .body)
         }
     }
+}
+
+struct ButtonFilledStandardBackground: View {
+    @Environment(\.isEnabled) var isEnabled
+    var configuration: SwiftUI.ButtonStyle.Configuration
+
+    var body: some View {
+        if isEnabled {
+            hColorScheme(
+                light: hLabelColor.primary,
+                dark: hTintColor.lavenderOne
+            )
+        } else {
+            hColorScheme(
+                light: hGrayscaleColor.three,
+                dark: hGrayscaleColor.four
+            )
+        }
+    }
+}
+
+struct ButtonFilledContrastedBackground: View {
+    @Environment(\.isEnabled) var isEnabled
+    var configuration: SwiftUI.ButtonStyle.Configuration
+
+    var body: some View {
+        if isEnabled {
+            hLabelColor.primary.colorScheme(.dark)
+        } else {
+            hColorScheme(
+                light: hGrayscaleColor.three,
+                dark: hGrayscaleColor.four
+            )
+        }
+    }
+}
+
+public enum hButtonFilledStyle {
+    case standard
+    case contrasted
+}
+
+private struct EnvironmentHButtonFilledStyleStyle: EnvironmentKey {
+    static let defaultValue = hButtonFilledStyle.standard
+}
+
+extension EnvironmentValues {
+    var hButtonFilledStyle: hButtonFilledStyle {
+        get { self[EnvironmentHButtonFilledStyleStyle.self] }
+        set { self[EnvironmentHButtonFilledStyleStyle.self] = newValue }
+    }
+}
+
+extension View {
+    /// set filled button style
+    public func hButtonFilledStyle(_ style: hButtonFilledStyle) -> some View {
+        self.environment(\.hButtonFilledStyle, style)
+    }
+}
+
+struct ButtonFilledStyle: SwiftUI.ButtonStyle {
+    var size: ButtonSize
+    @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
 
     struct Label: View {
         @Environment(\.isEnabled) var isEnabled
+        @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
         var configuration: Configuration
 
         var body: some View {
-            if !isEnabled {
-                configuration.label
-                    .environment(\.defaultHTextStyle, .body)
-                    .foregroundColor(
-                        hColorScheme(
-                            light: hLabelColor.primary.inverted,
-                            dark: hLabelColor.quarternary
+            
+            switch hButtonFilledStyle {
+            case .standard:
+                if !isEnabled {
+                    configuration.label
+                        .foregroundColor(
+                            hColorScheme(
+                                light: hLabelColor.primary.inverted,
+                                dark: hLabelColor.quarternary
+                            )
                         )
-                    )
-            } else {
-                configuration.label
-                    .environment(\.defaultHTextStyle, .body)
-                    .foregroundColor(hLabelColor.primary.inverted)
+                } else {
+                    configuration.label
+                        .foregroundColor(hLabelColor.primary.inverted)
+                }
+            case .contrasted:
+                if !isEnabled {
+                    configuration.label
+                        .foregroundColor(
+                            hLabelColor.primary.colorFor(.light, .base)
+                        )
+                } else {
+                    configuration.label
+                        .foregroundColor(hLabelColor.primary.colorFor(.light, .base))
+                }
             }
+            
+            
         }
     }
 
@@ -58,13 +138,24 @@ struct LargeButtonFilledStyle: SwiftUI.ButtonStyle {
             dark: hOverlayColor.pressedLavender
         )
     }
+    
+    @ViewBuilder func background(configuration: Configuration) -> some View {
+        switch hButtonFilledStyle {
+        case .standard:
+            ButtonFilledStandardBackground(configuration: configuration)
+        case .contrasted:
+            ButtonFilledContrastedBackground(configuration: configuration)
+        }
+    }
 
     func makeBody(configuration: Configuration) -> some View {
         VStack {
             Label(configuration: configuration)
+                .padding(.leading, 16)
+                .padding(.trailing, 16)
         }
-        .modifier(LargeButtonModifier())
-        .background(Background(configuration: configuration))
+        .buttonSizeModifier(size)
+        .background(background(configuration: configuration))
         .overlay(configuration.isPressed ? pressedColor : nil)
         .cornerRadius(.defaultCornerRadius)
     }
@@ -166,10 +257,32 @@ public enum hButton {
         }
 
         public var body: some View {
+            SwiftUI.Button(action: {
+                action()
+            }) {
+                content()
+            }
+            .buttonStyle(ButtonFilledStyle(size: .large))
+        }
+    }
+    
+    public struct SmallButtonFilled<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
             SwiftUI.Button(action: action) {
                 content()
             }
-            .buttonStyle(LargeButtonFilledStyle())
+            .buttonStyle(ButtonFilledStyle(size: .small))
         }
     }
 

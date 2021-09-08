@@ -4,6 +4,7 @@ public struct ActiveContractBundle: Codable, Equatable {
     public let contracts: [Contract]
     public let id: String
     public let movingFlowEmbarkId: String?
+    public let crossSells: [CrossSell]
 
     public init(
         bundle: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle
@@ -11,6 +12,7 @@ public struct ActiveContractBundle: Codable, Equatable {
         contracts = bundle.contracts.map { .init(contract: $0) }
         movingFlowEmbarkId = bundle.angelStories.addressChange
         id = bundle.id
+        crossSells = bundle.potentialCrossSells.compactMap { CrossSell($0) }
     }
 }
 

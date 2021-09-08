@@ -41,7 +41,24 @@ query ActiveContractBundles($locale: Locale!) {
       }
     }
     angelStories {
-        addressChange
+      addressChange
+    }
+    potentialCrossSells {
+      title
+      description
+      imageUrl
+      blurHash
+      callToAction
+      action {
+        ... on CrossSellChat {
+          _
+        }
+        ... on CrossSellEmbark {
+          embarkStory(locale: $locale) {
+            id
+          }
+        }
+      }
     }
   }
 }
