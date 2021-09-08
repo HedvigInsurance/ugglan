@@ -2,57 +2,61 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import Presentation
-import SwiftUI
 
 class HostingView<Content: View>: UIView {
     let rootViewHostingController: UIHostingController<Content>
-    
-    public required init(rootView: Content) {
-       self.rootViewHostingController = .init(rootView: rootView)
-       
-       super.init(frame: .zero)
-       
-       rootViewHostingController.view.backgroundColor = .clear
-       
-       addSubview(rootViewHostingController.view)
-           
+
+    public required init(
+        rootView: Content
+    ) {
+        self.rootViewHostingController = .init(rootView: rootView)
+
+        super.init(frame: .zero)
+
+        rootViewHostingController.view.backgroundColor = .clear
+
+        addSubview(rootViewHostingController.view)
+
         rootViewHostingController.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
-    
-    required init?(coder: NSCoder) {
+
+    required init?(
+        coder: NSCoder
+    ) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override open func systemLayoutSizeFitting(
-            _ targetSize: CGSize,
-            withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority,
-            verticalFittingPriority: UILayoutPriority
-        ) -> CGSize {
-            rootViewHostingController.view.systemLayoutSizeFitting(
-                targetSize,
-                withHorizontalFittingPriority: horizontalFittingPriority,
-                verticalFittingPriority: verticalFittingPriority
-            )
-        }
-    
+        _ targetSize: CGSize,
+        withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority,
+        verticalFittingPriority: UILayoutPriority
+    ) -> CGSize {
+        rootViewHostingController.view.systemLayoutSizeFitting(
+            targetSize,
+            withHorizontalFittingPriority: horizontalFittingPriority,
+            verticalFittingPriority: verticalFittingPriority
+        )
+    }
+
     override open func sizeThatFits(_ size: CGSize) -> CGSize {
-            systemLayoutSizeFitting(size)
-        }
-    
+        systemLayoutSizeFitting(size)
+    }
+
     override open func sizeToFit() {
-            if let superview = superview {
-                frame.size = rootViewHostingController.sizeThatFits(in: superview.frame.size)
-            } else {
-                frame.size = rootViewHostingController.sizeThatFits(in: .zero)
-            }
+        if let superview = superview {
+            frame.size = rootViewHostingController.sizeThatFits(in: superview.frame.size)
+        } else {
+            frame.size = rootViewHostingController.sizeThatFits(in: .zero)
         }
+    }
 }
 
 struct CrossSellingStack: View {
@@ -71,11 +75,12 @@ struct CrossSellingStack: View {
                     CrossSellingItem(crossSell: crossSell)
                 }
             }
-        }.padding(15)
+        }
+        .padding(15)
     }
 }
 
-struct CrossSellingFooter {  }
+struct CrossSellingFooter {}
 
 extension CrossSellingFooter: Presentable {
     func materialize() -> (UIView, Disposable) {

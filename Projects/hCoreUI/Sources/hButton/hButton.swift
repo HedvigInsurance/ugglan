@@ -101,7 +101,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            
+
             switch hButtonFilledStyle {
             case .standard:
                 if !isEnabled {
@@ -127,8 +127,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                         .foregroundColor(hLabelColor.primary.colorFor(.light, .base))
                 }
             }
-            
-            
+
         }
     }
 
@@ -138,7 +137,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             dark: hOverlayColor.pressedLavender
         )
     }
-    
+
     @ViewBuilder func background(configuration: Configuration) -> some View {
         switch hButtonFilledStyle {
         case .standard:
@@ -265,7 +264,7 @@ public enum hButton {
             .buttonStyle(ButtonFilledStyle(size: .large))
         }
     }
-    
+
     public struct SmallButtonFilled<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
