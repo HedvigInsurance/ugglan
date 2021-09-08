@@ -24,7 +24,7 @@ struct CrossSellingItem: View {
                 } content: {
                     hText(crossSell.buttonText)
                 }
-                .hButtonFilledStyle(.contrasted)
+                .hButtonFilledStyle(.overImage)
             }
         }
         .padding(16)

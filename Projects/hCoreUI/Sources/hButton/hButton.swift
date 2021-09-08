@@ -52,7 +52,7 @@ struct ButtonFilledStandardBackground: View {
     }
 }
 
-struct ButtonFilledContrastedBackground: View {
+struct ButtonFilledOverImageBackground: View {
     @Environment(\.isEnabled) var isEnabled
     var configuration: SwiftUI.ButtonStyle.Configuration
 
@@ -70,7 +70,7 @@ struct ButtonFilledContrastedBackground: View {
 
 public enum hButtonFilledStyle {
     case standard
-    case contrasted
+    case overImage
 }
 
 private struct EnvironmentHButtonFilledStyleStyle: EnvironmentKey {
@@ -116,7 +116,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                     configuration.label
                         .foregroundColor(hLabelColor.primary.inverted)
                 }
-            case .contrasted:
+            case .overImage:
                 if !isEnabled {
                     configuration.label
                         .foregroundColor(
@@ -142,8 +142,8 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         switch hButtonFilledStyle {
         case .standard:
             ButtonFilledStandardBackground(configuration: configuration)
-        case .contrasted:
-            ButtonFilledContrastedBackground(configuration: configuration)
+        case .overImage:
+            ButtonFilledOverImageBackground(configuration: configuration)
         }
     }
 
