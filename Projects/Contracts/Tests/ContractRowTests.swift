@@ -2,6 +2,7 @@ import Flow
 import Foundation
 import SnapshotTesting
 import TestingUtil
+import Testing
 import XCTest
 import hCoreUI
 import hGraphQL
