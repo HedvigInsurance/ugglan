@@ -246,14 +246,15 @@ extension Embark: Presentable {
                     bag += state.canGoBackSignal.atOnce().map(createBackMenu)
                         .bindTo(backButton, \.menu)
                 }
-                
-                bag += state.canGoBackSignal.atOnce().onValue { canGoBack in
-                    if !canGoBack && viewController.navigationController?.viewControllers.count == 1 {
-                        viewController.navigationItem.leftBarButtonItem = nil
-                    } else {
-                        viewController.navigationItem.leftBarButtonItem = backButton
+
+                bag += state.canGoBackSignal.atOnce()
+                    .onValue { canGoBack in
+                        if !canGoBack && viewController.navigationController?.viewControllers.count == 1 {
+                            viewController.navigationItem.leftBarButtonItem = nil
+                        } else {
+                            viewController.navigationItem.leftBarButtonItem = backButton
+                        }
                     }
-                }
 
                 func presentRestartAlert(_ viewController: UIViewController) {
                     let alert = Alert(
