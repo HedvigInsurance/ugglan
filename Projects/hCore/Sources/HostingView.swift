@@ -1,14 +1,6 @@
-//
-//  HostingView.swift
-//  HostingView
-//
-//  Created by Sam Pettersson on 2021-09-09.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
-import UIKit
 import SwiftUI
+import UIKit
 
 public class HostingView<Content: View>: UIView {
     let rootViewHostingController: UIHostingController<Content>
