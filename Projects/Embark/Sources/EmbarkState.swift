@@ -158,7 +158,7 @@ public class EmbarkState {
                 if self.totalStepsSignal.value == nil { self.totalStepsSignal.value = passagesLeft }
 
                 guard let totalSteps = self.totalStepsSignal.value else { return 0 }
-                
+
                 if totalSteps == 0 {
                     return 0
                 }
