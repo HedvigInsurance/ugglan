@@ -154,7 +154,9 @@ extension Embark: Presentable {
 
         bag += state.progressSignal.animated(
             style: .lightBounce(),
-            animations: { progress in progressView.setProgress(progress, animated: false)
+            animations: { progress in
+                progressView.animationSafeIsHidden = progress == 0
+                progressView.setProgress(progress, animated: false)
                 progressView.setNeedsLayout()
                 progressView.layoutIfNeeded()
             }
