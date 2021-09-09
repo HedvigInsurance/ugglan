@@ -5,7 +5,33 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+extension View {
+    func backgroundImageWithBlurHashFallback(
+        imageURL: URL,
+        blurHash: String,
+        hasLoaded: Binding<Bool>
+    ) -> some View {
+        self.background(
+            KFImage(imageURL, isLoaded: hasLoaded)
+                .resizable()
+                .opacity(hasLoaded.wrappedValue ? 1 : 0)
+                .animation(.easeOut)
+                .aspectRatio(contentMode: .fill)
+        )
+        .background(
+            Image(
+                uiImage: UIImage(
+                    blurHash: blurHash,
+                    size: .init(width: 32, height: 32)
+                ) ?? UIImage()
+            )
+            .resizable()
+        )
+    }
+}
+
 struct CrossSellingItem: View {
+    @PresentableStore var store: ContractStore
     @State var imageHasLoaded: Bool = false
     let crossSell: hGraphQL.CrossSell
 
@@ -20,7 +46,11 @@ struct CrossSellingItem: View {
                 .colorScheme(.dark)
                 Spacer()
                 hButton.SmallButtonFilled {
-                    print("Cross sell button tapped")
+                    if let name = crossSell.embarkStoryName {
+                        store.send(.openEmbark(name: name))
+                    } else {
+                        store.send(.goToFreeTextChat)
+                    }
                 } content: {
                     hText(crossSell.buttonText)
                 }
@@ -33,21 +63,10 @@ struct CrossSellingItem: View {
             minHeight: 200,
             alignment: .bottom
         )
-        .background(
-            KFImage(crossSell.imageURL, isLoaded: $imageHasLoaded)
-                .resizable()
-                .opacity(imageHasLoaded ? 1 : 0)
-                .animation(.easeOut)
-                .aspectRatio(contentMode: .fill)
-        )
-        .background(
-            Image(
-                uiImage: UIImage(
-                    blurHash: crossSell.blurHash,
-                    size: .init(width: 32, height: 32)
-                ) ?? UIImage()
-            )
-            .resizable()
+        .backgroundImageWithBlurHashFallback(
+            imageURL: crossSell.imageURL,
+            blurHash: crossSell.blurHash,
+            hasLoaded: $imageHasLoaded
         )
         .cornerRadius(.defaultCornerRadius)
         .shadow(color: .black.opacity(0.05), radius: 24, x: 0, y: 4)
@@ -55,7 +74,6 @@ struct CrossSellingItem: View {
 }
 
 struct CrossSellingItemPreviews: PreviewProvider {
-
     static var itemWithImage = CrossSellingItem(
         crossSell: .init(
             title: "Accident Insurance",
@@ -66,7 +84,7 @@ struct CrossSellingItemPreviews: PreviewProvider {
             )!,
             blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
             buttonText: "Calculate price",
-            embarkStoryId: nil
+            embarkStoryName: nil
         )
     )
 
@@ -77,7 +95,7 @@ struct CrossSellingItemPreviews: PreviewProvider {
             imageURL: URL(string: "https://hedvig.com/")!,
             blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
             buttonText: "Calculate price",
-            embarkStoryId: nil
+            embarkStoryName: nil
         )
     )
 

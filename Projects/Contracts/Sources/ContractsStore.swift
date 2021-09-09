@@ -24,6 +24,7 @@ public enum ContractAction: ActionProtocol {
     case setUpcomingAgreementContracts(contracts: [UpcomingAgreementContract])
     case goToMovingFlow
     case goToFreeTextChat
+    case openEmbark(name: String)
 
     #if compiler(<5.5)
         public func encode(to encoder: Encoder) throws {

@@ -55,7 +55,7 @@ query ActiveContractBundles($locale: Locale!) {
         }
         ... on CrossSellEmbark {
           embarkStory(locale: $locale) {
-            id
+            name
           }
         }
       }

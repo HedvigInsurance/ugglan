@@ -9,6 +9,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import Embark
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
@@ -43,6 +44,23 @@ extension AppJourney {
                 AppJourney.movingFlow
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
+            case let .openEmbark(name):
+                AppJourney.embark(
+                    Embark(name: name),
+                    storeOffer: false,
+                    style: .detented(.large)
+                ) { offerResult in
+                    switch offerResult {
+                    case .chat:
+                        AppJourney.freeTextChat().withDismissButton
+                    case .close:
+                        DismissJourney()
+                    case .menu:
+                        ContinueJourney()
+                    case .signed:
+                        DismissJourney()
+                    }
+                }
             }
         }
         .configureTabBarItem

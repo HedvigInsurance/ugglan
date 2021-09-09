@@ -6,7 +6,7 @@ public struct CrossSell: Codable, Equatable {
     public var imageURL: URL
     public var blurHash: String
     public var buttonText: String
-    public var embarkStoryId: String?
+    public var embarkStoryName: String?
 
     public init(
         title: String,
@@ -14,14 +14,14 @@ public struct CrossSell: Codable, Equatable {
         imageURL: URL,
         blurHash: String,
         buttonText: String,
-        embarkStoryId: String? = nil
+        embarkStoryName: String? = nil
     ) {
         self.title = title
         self.description = description
         self.imageURL = imageURL
         self.blurHash = blurHash
         self.buttonText = buttonText
-        self.embarkStoryId = embarkStoryId
+        self.embarkStoryName = embarkStoryName
     }
 
     init?(
@@ -36,7 +36,7 @@ public struct CrossSell: Codable, Equatable {
 
         imageURL = parsedImageURL
         buttonText = data.callToAction
-        embarkStoryId = data.action.asCrossSellEmbark?.embarkStory.id
+        embarkStoryName = data.action.asCrossSellEmbark?.embarkStory.name
         blurHash = data.blurHash
     }
 }
