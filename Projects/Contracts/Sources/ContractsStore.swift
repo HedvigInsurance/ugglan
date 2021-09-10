@@ -11,12 +11,7 @@ public struct ContractState: StateProtocol {
     var contractBundles: [ActiveContractBundle] = []
     var contracts: [Contract] = []
     var upcomingAgreements: [UpcomingAgreementContract] = []
-    var focusedCrossSell: FocusedCrossSell?
-}
-
-public struct FocusedCrossSell: Codable, Equatable {
-    var startDate: String? = nil
-    var crossSell: CrossSell
+    var focusedCrossSell: CrossSell?
 }
 
 extension ContractState {
@@ -36,7 +31,7 @@ public enum ContractAction: ActionProtocol {
     case setUpcomingAgreementContracts(contracts: [UpcomingAgreementContract])
     case goToMovingFlow
     case goToFreeTextChat
-    case setFocusedCrossSell(focusedCrossSell: FocusedCrossSell?)
+    case setFocusedCrossSell(focusedCrossSell: CrossSell?)
     case openEmbark(name: String)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned

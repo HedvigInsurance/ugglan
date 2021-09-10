@@ -23,7 +23,7 @@ public struct CrossSellingSigned: View {
                     Image(uiImage: hCoreUIAssets.circularCheckmark.image)
                         .resizable()
                         .frame(width: 30, height: 30)
-                    hText(store.state.focusedCrossSell?.crossSell.title ?? "", style: .title1)
+                    hText(store.state.focusedCrossSell?.title ?? "", style: .title1)
                         .frame(maxWidth: .infinity)
                     hText(displayDate, style: .body)
                         .foregroundColor(hLabelColor.secondary)
