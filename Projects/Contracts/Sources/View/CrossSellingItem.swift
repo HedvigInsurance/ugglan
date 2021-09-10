@@ -14,8 +14,6 @@ extension View {
         self.background(
             KFImage(imageURL, isLoaded: hasLoaded)
                 .resizable()
-                .opacity(hasLoaded.wrappedValue ? 1 : 0)
-                .animation(.easeOut)
                 .aspectRatio(contentMode: .fill)
         )
         .background(
