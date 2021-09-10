@@ -12,12 +12,12 @@ public struct CrossSell: Codable, Equatable, Hashable {
             UserDefaults.standard.set(hasBeenSeen, forKey: Self.hasBeenSeenKey(title: title))
         }
     }
-    
+
     fileprivate static func hasBeenSeenKey(title: String) -> String {
         "CrossSell-hasBeenSeen-\(title)+12"
     }
-    
-    public static func ==(lhs: CrossSell, rhs: CrossSell) -> Bool {
+
+    public static func == (lhs: CrossSell, rhs: CrossSell) -> Bool {
         return lhs.hashValue == rhs.hashValue
     }
 

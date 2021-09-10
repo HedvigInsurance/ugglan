@@ -123,13 +123,13 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         case let .hasSeenCrossSells(value):
             newState.contractBundles = newState.contractBundles.map { bundle in
                 var newBundle = bundle
-                
+
                 newBundle.crossSells = newBundle.crossSells.map { crossSell in
                     var newCrossSell = crossSell
                     newCrossSell.hasBeenSeen = value
                     return newCrossSell
                 }
-                
+
                 return newBundle
             }
         case let .setFocusedCrossSell(focusedCrossSell):

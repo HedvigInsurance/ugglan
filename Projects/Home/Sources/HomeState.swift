@@ -37,7 +37,10 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
 
-    public override func effects(_ getState: @escaping () -> HomeState, _ action: HomeAction) -> FiniteSignal<HomeAction>? {
+    public override func effects(
+        _ getState: @escaping () -> HomeState,
+        _ action: HomeAction
+    ) -> FiniteSignal<HomeAction>? {
         switch action {
         case .openFreeTextChat:
             return nil

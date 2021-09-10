@@ -1,21 +1,21 @@
-//
-//  CrossSellingSigned.swift
-//  CrossSellingSigned
-//
-//  Created by Sam Pettersson on 2021-09-10.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
+import Presentation
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
-import Presentation
 
 public struct CrossSellingSigned: View {
     @PresentableStore var store: ContractStore
     var startDate: Date?
     
+    var displayDate: String {
+        guard let startDate = startDate else {
+            return ""
+        }
+
+        return startDate.localDateString ?? ""
+    }
+
     public var body: some View {
         hForm {
             hSection {
@@ -25,7 +25,7 @@ public struct CrossSellingSigned: View {
                         .frame(width: 30, height: 30)
                     hText(store.state.focusedCrossSell?.crossSell.title ?? "", style: .title1)
                         .frame(maxWidth: .infinity)
-                    hText(startDate?.localDateStringWithToday ?? "", style: .body)
+                    hText(displayDate, style: .body)
                         .foregroundColor(hLabelColor.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
