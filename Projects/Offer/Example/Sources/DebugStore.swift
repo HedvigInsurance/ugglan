@@ -27,7 +27,7 @@ public enum DebugAction: ActionProtocol {
 
 public final class DebugStore: StateStore<DebugState, DebugAction> {
     public override func effects(
-        _ getState: () -> DebugState,
+        _ getState: @escaping () -> DebugState,
         _ action: DebugAction
     ) -> FiniteSignal<DebugAction>? {
         return nil
