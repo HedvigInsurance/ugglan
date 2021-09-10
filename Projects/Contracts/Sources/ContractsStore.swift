@@ -32,7 +32,7 @@ public enum ContractAction: ActionProtocol {
     case goToMovingFlow
     case goToFreeTextChat
     case setFocusedCrossSell(focusedCrossSell: CrossSell?)
-    case openEmbark(name: String)
+    case openCrossSellingEmbark(name: String)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
 

@@ -43,7 +43,7 @@ public struct Contracts {
 public enum ContractsResult {
     case movingFlow
     case openFreeTextChat
-    case openEmbark(name: String)
+    case openCrossSellingEmbark(name: String)
 }
 
 extension Contracts: Presentable {
@@ -89,8 +89,8 @@ extension Contracts: Presentable {
                 bag += store.actionSignal.onValue { action in
                     if action == .goToMovingFlow {
                         callback(.movingFlow)
-                    } else if case let .openEmbark(name) = action {
-                        callback(.openEmbark(name: name))
+                    } else if case let .openCrossSellingEmbark(name) = action {
+                        callback(.openCrossSellingEmbark(name: name))
                     }
                 }
 

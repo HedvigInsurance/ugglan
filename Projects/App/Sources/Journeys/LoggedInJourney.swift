@@ -44,7 +44,7 @@ extension AppJourney {
                 AppJourney.movingFlow
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
-            case let .openEmbark(name):
+            case let .openCrossSellingEmbark(name):
                 AppJourney.crossSellingJourney(name: name)
             }
         }

@@ -46,7 +46,7 @@ struct CrossSellingItem: View {
                 hButton.SmallButtonFilled {
                     if let name = crossSell.embarkStoryName {
                         store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
-                        store.send(.openEmbark(name: name))
+                        store.send(.openCrossSellingEmbark(name: name))
                     } else {
                         store.send(.goToFreeTextChat)
                     }
