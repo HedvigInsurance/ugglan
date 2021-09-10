@@ -35,7 +35,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
     @Inject var store: ApolloStore
 
     public override func effects(
-        _ getState: () -> DataCollectionState,
+        _ getState: @escaping () -> DataCollectionState,
         _ action: DataCollectionAction
     ) -> FiniteSignal<DataCollectionAction>? {
         return nil

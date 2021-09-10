@@ -11,6 +11,18 @@ public struct ContractState: StateProtocol {
     var contractBundles: [ActiveContractBundle] = []
     var contracts: [Contract] = []
     var upcomingAgreements: [UpcomingAgreementContract] = []
+    var focusedCrossSell: FocusedCrossSell?
+}
+
+public struct FocusedCrossSell: Codable, Equatable {
+    var startDate: String? = nil
+    var crossSell: CrossSell
+}
+
+extension ContractState {
+    public var hasUnseenCrossSell: Bool {
+        contractBundles.contains(where: { bundle in bundle.crossSells.contains(where: { !$0.hasBeenSeen }) })
+    }
 }
 
 public enum ContractAction: ActionProtocol {
@@ -24,7 +36,10 @@ public enum ContractAction: ActionProtocol {
     case setUpcomingAgreementContracts(contracts: [UpcomingAgreementContract])
     case goToMovingFlow
     case goToFreeTextChat
+    case setFocusedCrossSell(focusedCrossSell: FocusedCrossSell?)
     case openEmbark(name: String)
+    case hasSeenCrossSells(value: Bool)
+    case closeCrossSellingSigned
 
     #if compiler(<5.5)
         public func encode(to encoder: Encoder) throws {
@@ -45,24 +60,30 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
     @Inject var client: ApolloClient
 
     public override func effects(
-        _ getState: () -> ContractState,
+        _ getState: @escaping () -> ContractState,
         _ action: ContractAction
     ) -> FiniteSignal<ContractAction>? {
         switch action {
         case .fetchContractBundles:
             return
                 client.fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                .valueThenEndSignal
+                .filter { activeContractBundles in
+                    activeContractBundles != getState().contractBundles
+                }
                 .map { activeContractBundles in
                     ContractAction.setContractBundles(activeContractBundles: activeContractBundles)
                 }
-                .valueThenEndSignal
         case .fetchContracts:
             return
                 client.fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                .valueThenEndSignal
+                .filter { contracts in
+                    contracts != getState().contracts
+                }
                 .map {
                     .setContracts(contracts: $0)
                 }
-                .valueThenEndSignal
         case .fetchUpcomingAgreement:
             return
                 client.fetch(
@@ -71,16 +92,19 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                     ),
                     cachePolicy: .fetchIgnoringCacheData
                 )
+                .valueThenEndSignal
                 .compactMap {
                     $0.contracts
                 }
                 .map {
                     $0.flatMap { UpcomingAgreementContract(contract: $0) }
                 }
+                .filter { upcomingAgreementContract in
+                    upcomingAgreementContract != getState().upcomingAgreements
+                }
                 .map {
                     .setUpcomingAgreementContracts(contracts: $0)
                 }
-                .valueThenEndSignal
         default:
             break
         }
@@ -96,6 +120,20 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             newState.contracts = contracts
         case .setUpcomingAgreementContracts(let contracts):
             newState.upcomingAgreements = contracts
+        case let .hasSeenCrossSells(value):
+            newState.contractBundles = newState.contractBundles.map { bundle in
+                var newBundle = bundle
+                
+                newBundle.crossSells = newBundle.crossSells.map { crossSell in
+                    var newCrossSell = crossSell
+                    newCrossSell.hasBeenSeen = value
+                    return newCrossSell
+                }
+                
+                return newBundle
+            }
+        case let .setFocusedCrossSell(focusedCrossSell):
+            newState.focusedCrossSell = focusedCrossSell
         default:
             break
         }

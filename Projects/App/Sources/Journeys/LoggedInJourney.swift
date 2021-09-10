@@ -45,25 +45,10 @@ extension AppJourney {
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
             case let .openEmbark(name):
-                AppJourney.embark(
-                    Embark(name: name),
-                    storeOffer: false,
-                    style: .detented(.large)
-                ) { offerResult in
-                    switch offerResult {
-                    case .chat:
-                        AppJourney.freeTextChat().withDismissButton
-                    case .close:
-                        DismissJourney()
-                    case .menu:
-                        ContinueJourney()
-                    case .signed:
-                        DismissJourney()
-                    }
-                }
+                AppJourney.crossSellingJourney(name: name)
             }
         }
-        .configureTabBarItem
+        .configureContractsTabBarItem
         .onTabSelected {
             ContextGradient.currentOption = .none
         }

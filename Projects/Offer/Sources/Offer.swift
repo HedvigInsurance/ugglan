@@ -33,7 +33,7 @@ public struct Offer {
 }
 
 public enum OfferResult {
-    case signed
+    case signed(ids: [String], startDates: [String: Date?])
     case close
     case chat
     case menu(_ action: MenuChildAction)
@@ -169,7 +169,7 @@ extension Offer: Presentable {
                 }
 
                 bag += store.onAction(.sign(event: .done)) {
-                    callback(.value(.signed))
+                    callback(.value(.signed(ids: store.state.ids, startDates: store.state.startDates)))
                 }
 
                 if let menu = menu {

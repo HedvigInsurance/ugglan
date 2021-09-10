@@ -1,12 +1,25 @@
 import Foundation
 
-public struct CrossSell: Codable, Equatable {
+public struct CrossSell: Codable, Equatable, Hashable {
     public var title: String
     public var description: String
     public var imageURL: URL
     public var blurHash: String
     public var buttonText: String
     public var embarkStoryName: String?
+    public var hasBeenSeen: Bool {
+        didSet {
+            UserDefaults.standard.set(hasBeenSeen, forKey: Self.hasBeenSeenKey(title: title))
+        }
+    }
+    
+    fileprivate static func hasBeenSeenKey(title: String) -> String {
+        "CrossSell-hasBeenSeen-\(title)+12"
+    }
+    
+    public static func ==(lhs: CrossSell, rhs: CrossSell) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
 
     public init(
         title: String,
@@ -14,7 +27,8 @@ public struct CrossSell: Codable, Equatable {
         imageURL: URL,
         blurHash: String,
         buttonText: String,
-        embarkStoryName: String? = nil
+        embarkStoryName: String? = nil,
+        hasBeenSeen: Bool = false
     ) {
         self.title = title
         self.description = description
@@ -22,6 +36,7 @@ public struct CrossSell: Codable, Equatable {
         self.blurHash = blurHash
         self.buttonText = buttonText
         self.embarkStoryName = embarkStoryName
+        self.hasBeenSeen = hasBeenSeen
     }
 
     init?(
@@ -38,5 +53,6 @@ public struct CrossSell: Codable, Equatable {
         buttonText = data.callToAction
         embarkStoryName = data.action.asCrossSellEmbark?.embarkStory.name
         blurHash = data.blurHash
+        hasBeenSeen = UserDefaults.standard.bool(forKey: Self.hasBeenSeenKey(title: title))
     }
 }

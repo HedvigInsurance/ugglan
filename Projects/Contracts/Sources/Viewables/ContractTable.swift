@@ -83,8 +83,7 @@ extension ContractTable: Viewable {
                 )
 
                 loadingIndicatorBag.dispose()
-
-                tableKit.set(table)
+                tableKit.set(table, animation: .fade)
             }
 
         bag += tableKit.view.didMoveToWindowSignal.onValue { _ in

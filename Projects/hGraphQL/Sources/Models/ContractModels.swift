@@ -1,10 +1,10 @@
 import Foundation
 
 public struct ActiveContractBundle: Codable, Equatable {
-    public let contracts: [Contract]
-    public let id: String
-    public let movingFlowEmbarkId: String?
-    public let crossSells: [CrossSell]
+    public var contracts: [Contract]
+    public var id: String
+    public var movingFlowEmbarkId: String?
+    public var crossSells: [CrossSell]
 
     public init(
         bundle: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle

@@ -8,6 +8,7 @@ import hGraphQL
 public struct OfferState: StateProtocol {
     var hasSignedQuotes = false
     var ids: [String] = []
+    var startDates: [String: Date?] = [:]
     var swedishBankIDAutoStartToken: String? = nil
     var swedishBankIDStatusCode: String? = nil
 
@@ -20,6 +21,7 @@ public enum OfferAction: ActionProtocol {
     case setSwedishBankID(statusCode: String)
     case startSign
     case set(ids: [String])
+    case setStartDate(id: String, startDate: Date?)
     case openChat
     case query
 
@@ -71,7 +73,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
     }
 
     public override func effects(
-        _ getState: () -> OfferState,
+        _ getState: @escaping () -> OfferState,
         _ action: OfferAction
     ) -> FiniteSignal<OfferAction>? {
         switch action {
@@ -110,6 +112,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             }
         case let .startSwedishBankIDSign(autoStartToken):
             newState.swedishBankIDAutoStartToken = autoStartToken
+        case let .setStartDate(id, startDate):
+            newState.startDates[id] = startDate
         default:
             break
         }

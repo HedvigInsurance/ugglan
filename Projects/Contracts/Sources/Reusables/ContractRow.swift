@@ -11,7 +11,7 @@ struct ContractRow: Hashable {
     static func == (lhs: ContractRow, rhs: ContractRow) -> Bool { lhs.hashValue == rhs.hashValue }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(contract)
+        hasher.combine(contract.id)
     }
 
     let contract: Contract

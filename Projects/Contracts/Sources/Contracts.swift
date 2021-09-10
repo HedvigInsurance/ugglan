@@ -3,6 +3,7 @@ import Foundation
 import Presentation
 import UIKit
 import hCore
+import hCoreUI
 
 public indirect enum ContractFilter {
     var displaysActiveContracts: Bool {
@@ -124,7 +125,6 @@ public struct ContractFetcher {
     }
 
     private func timer() -> Timer {
-
         let timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { timer in
             store.send(.fetchContracts)
             store.send(.fetchContractBundles)

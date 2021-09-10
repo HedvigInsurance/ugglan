@@ -59,15 +59,27 @@ class IgnoredSafeAreaHostingController<Content: SwiftUI.View>: UIHostingControll
     }
 }
 
+private struct EnvironmentHFormBottomAttachedView: EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hFormBottomAttachedView: AnyView? {
+        get { self[EnvironmentHFormBottomAttachedView.self] }
+        set { self[EnvironmentHFormBottomAttachedView.self] = newValue }
+    }
+}
+
 struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresentable, Equatable {
     let hostingController: IgnoredSafeAreaHostingController<AnyView>
     let backgroundHostingController: IgnoredSafeAreaHostingController<AnyView>
     var content: () -> Content
     var backgroundContent: () -> BackgroundContent
     @SwiftUI.Environment(\.presentableViewUpperScrollView) var upperScrollView
+    @SwiftUI.Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @SwiftUI.Environment(\.userInterfaceLevel) var userInterfaceLevel
     @SwiftUI.Environment(\.colorScheme) var colorScheme
-
+    
     init(
         @ViewBuilder backgroundContent: @escaping () -> BackgroundContent,
         @ViewBuilder content: @escaping () -> Content
@@ -78,12 +90,16 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
         self.backgroundContent = backgroundContent
         self.content = content
     }
-
-    func makeCoordinator() {
-        return ()
+    
+    class Coordinator {
+        var bottomAttachedHostingView: HostingView<AnyView>? = nil
     }
 
-    func setSize() {
+    func makeCoordinator() -> Coordinator {
+        return Coordinator()
+    }
+
+    func setSize(context: Context) {
         self.hostingController.view.setNeedsLayout()
         self.hostingController.view.layoutIfNeeded()
 
@@ -99,6 +115,17 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
         self.upperScrollView?.contentSize = contentSize
         self.upperScrollView?.updateConstraintsIfNeeded()
         self.upperScrollView?.layoutIfNeeded()
+        
+        if let upperScrollView = self.upperScrollView, let bottomAttachedHostingView = context.coordinator.bottomAttachedHostingView {
+            let size = bottomAttachedHostingView.systemLayoutSizeFitting(.zero)
+            upperScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
+            upperScrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
+            
+            bottomAttachedHostingView.snp.remakeConstraints { make in
+                make.leading.trailing.equalTo(upperScrollView.frameLayoutGuide)
+                make.bottom.equalTo(upperScrollView.frameLayoutGuide).inset(upperScrollView.adjustedContentInset.bottom - size.height)
+            }
+        }
 
         /// Override window userInterfacestyle if it doesn't match hForm's colorScheme
         if #available(iOS 14.0, *) {
@@ -119,7 +146,7 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
             fatalError("Must be used with an upper PresentableView")
         }
 
-        setSize()
+        setSize(context: context)
         self.upperScrollView?.addSubview(self.backgroundHostingController.view)
 
         if let upperScrollView = self.upperScrollView {
@@ -132,6 +159,12 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
 
         self.upperScrollView?.addSubview(self.hostingController.view)
         self.hostingController.view.backgroundColor = .clear
+        
+        if let bottomAttachedView = bottomAttachedView {
+            let hostingView = HostingView(rootView: AnyView(bottomAttachedView.modifier(TransferEnvironment(environment: context.environment))))
+            context.coordinator.bottomAttachedHostingView = hostingView
+            self.upperScrollView?.addSubview(hostingView)
+        }
 
         return UIView()
     }
@@ -153,7 +186,7 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
         )
         self.hostingController.view.setNeedsLayout()
         self.hostingController.view.layoutIfNeeded()
-        setSize()
+        setSize(context: context)
     }
 
     static func == (lhs: Self, rhs: Self) -> Bool {
@@ -166,6 +199,12 @@ struct WidthConstrainer: ViewModifier {
 
     func body(content: Content) -> some View {
         content.frame(maxWidth: upperScrollView?.frame.width ?? 0)
+    }
+}
+
+extension View {
+    public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hFormBottomAttachedView, AnyView(content()))
     }
 }
 

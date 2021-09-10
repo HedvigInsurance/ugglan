@@ -12,9 +12,12 @@ import hGraphQL
 struct CrossSellingStack: View {
     var body: some View {
         VStack(spacing: 12) {
-            hText(L10n.InsuranceTab.CrossSells.title, style: .title3)
-                .foregroundColor(hLabelColor.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(alignment: .center, spacing: 8) {
+                CrossSellingUnseenCircle()
+                hText(L10n.InsuranceTab.CrossSells.title, style: .title3)
+                    .foregroundColor(hLabelColor.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             PresentableStoreLens(
                 ContractStore.self,
                 getter: {
