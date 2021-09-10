@@ -7,7 +7,7 @@ import hCoreUI
 public struct CrossSellingSigned: View {
     @PresentableStore var store: ContractStore
     var startDate: Date?
-    
+
     var displayDate: String {
         guard let startDate = startDate else {
             return ""
