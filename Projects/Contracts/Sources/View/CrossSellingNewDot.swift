@@ -13,11 +13,11 @@ struct CrossSellingUnseenCircle: View {
             setter: { value in
                 .hasSeenCrossSells(value: value)
             }
-        ) { hasUnseenCrossSell, setHasUnseenCrossSell in
+        ) { hasUnseenCrossSell, setHasSeenCrossSells in
             if hasUnseenCrossSell {
                 Circle().fill(hTintColor.red).frame(width: 8, height: 8)
                     .onDisappear {
-                        setHasUnseenCrossSell(false)
+                        setHasSeenCrossSells(true)
                     }
                     .transition(.scale)
             }

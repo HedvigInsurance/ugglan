@@ -57,9 +57,14 @@ extension ContractTable: Viewable {
         func getContractsToShow(for state: ContractState) -> [Contract] {
             switch self.filter {
             case .active:
-                return state
-                    .contractBundles
-                    .flatMap { $0.contracts }
+                return [
+                    state
+                        .contractBundles
+                        .flatMap { $0.contracts },
+                    state.contracts.filter { contract in
+                        contract.currentAgreement.status == .activeInFuture
+                    }
+                ].flatMap { $0 }
             case .terminated:
                 return state.contracts.filter { contract in
                     contract.currentAgreement.status == .terminated
