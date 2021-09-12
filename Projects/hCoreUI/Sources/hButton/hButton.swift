@@ -242,6 +242,30 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
     }
 }
 
+struct _hButton<Content: View>: View {
+    var content: () -> Content
+    var action: () -> Void
+    @State var hasBeenTapped = false
+    
+    public init(
+        action: @escaping () -> Void,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.action = action
+        self.content = content
+    }
+    
+    var body: some View {
+        SwiftUI.Button(action: {
+            
+            hasBeenTapped = true
+            action()
+        }) {
+            content().environment(\.hButtonWasTapped, hasBeenTapped)
+        }
+    }
+}
+
 public enum hButton {
     public struct LargeButtonFilled<Content: View>: View {
         var content: () -> Content
@@ -256,7 +280,7 @@ public enum hButton {
         }
 
         public var body: some View {
-            SwiftUI.Button(action: {
+            _hButton(action: {
                 action()
             }) {
                 content()
@@ -278,7 +302,7 @@ public enum hButton {
         }
 
         public var body: some View {
-            SwiftUI.Button(action: action) {
+            _hButton(action: action) {
                 content()
             }
             .buttonStyle(ButtonFilledStyle(size: .small))
@@ -298,7 +322,7 @@ public enum hButton {
         }
 
         public var body: some View {
-            SwiftUI.Button(action: action) {
+            _hButton(action: action) {
                 content()
             }
             .buttonStyle(LargeButtonOutlinedStyle())
@@ -318,7 +342,7 @@ public enum hButton {
         }
 
         public var body: some View {
-            SwiftUI.Button(action: action) {
+            _hButton(action: action) {
                 content()
             }
             .buttonStyle(LargeButtonTextStyle())

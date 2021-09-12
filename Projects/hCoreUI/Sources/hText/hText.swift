@@ -1,6 +1,8 @@
 import Foundation
 import SwiftUI
 import UIKit
+import hCore
+import Combine
 
 private struct EnvironmentDefaultHTextStyle: EnvironmentKey {
     static let defaultValue: UIFont.TextStyle? = nil
@@ -10,6 +12,17 @@ extension EnvironmentValues {
     public var defaultHTextStyle: UIFont.TextStyle? {
         get { self[EnvironmentDefaultHTextStyle.self] }
         set { self[EnvironmentDefaultHTextStyle.self] = newValue }
+    }
+}
+
+private struct EnvironmentHButtonWasTapped: EnvironmentKey {
+    static let defaultValue: Date? = nil
+}
+
+extension EnvironmentValues {
+    var hButtonWasTapped: Date? {
+        get { self[EnvironmentHButtonWasTapped.self] }
+        set { self[EnvironmentHButtonWasTapped.self] = newValue }
     }
 }
 
@@ -69,6 +82,7 @@ public struct hText: View {
     public var text: String
     public var style: UIFont.TextStyle?
     @Environment(\.defaultHTextStyle) var defaultStyle
+    @Environment(\.hButtonWasTapped) var hButtonWasTapped
 
     public init(
         _ text: String,
@@ -86,6 +100,10 @@ public struct hText: View {
     }
 
     public var body: some View {
-        Text(text).modifier(hFontModifier(style: style ?? defaultStyle ?? .body))
+        Text(text).modifier(hFontModifier(style: style ?? defaultStyle ?? .body)).onReceive(Just(hButtonWasTapped != nil)) { _ in
+            if let derivedFromL10n = text.derivedFromL10n {
+                Analytics.track(.buttonClick, properties: ["localizationKey", derivedFromL10n])
+            }
+        }
     }
 }
