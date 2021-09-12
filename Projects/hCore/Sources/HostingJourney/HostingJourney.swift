@@ -84,7 +84,7 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
                         break
                     }
                 }
-            
+
             presenter.viewController.debugPresentationTitle = "\(type(of: rootView))"
         }
 

@@ -1,27 +1,20 @@
-//
-//  Debug.swift
-//  Debug
-//
-//  Created by Sam Pettersson on 2021-09-10.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
+import Contracts
 import Foundation
+import Presentation
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
-import Presentation
-import Contracts
 
 struct Debug: View {
     @PresentableStore var store: DebugStore
-    
+
     var body: some View {
         hForm {
             hSection {
                 hRow {
                     hText("Open CrossSellingSigned")
-                }.onTap {
+                }
+                .onTap {
                     store.send(.openCrossSellingSigned)
                 }
             }
@@ -40,9 +33,10 @@ extension Debug {
                 HostingJourney(
                     rootView: CrossSellingSigned(
                         startDate: Date()
-                    ).mockState(ContractStore.self) { state in
+                    )
+                    .mockState(ContractStore.self) { state in
                         var newState = state
-                        
+
                         newState.focusedCrossSell = .init(
                             title: "Accident insurance",
                             description: "",
@@ -50,7 +44,7 @@ extension Debug {
                             blurHash: "",
                             buttonText: ""
                         )
-                        
+
                         return newState
                     },
                     style: .detented(.large)

@@ -1,10 +1,10 @@
+import Apollo
 import Combine
 import Flow
 import Foundation
 import Presentation
 import SwiftUI
 import UIKit
-import Apollo
 
 public struct PreviewJourney<InnerJourney: JourneyPresentation>: JourneyPresentation {
     public var onDismiss: (Error?) -> Void
@@ -40,7 +40,7 @@ public struct JourneyPreviewer<Journey: JourneyPresentation>: UIViewControllerRe
         _ journey: Journey
     ) {
         self.journey = journey
-        
+
         let store = ApolloStore()
         let client = ApolloClient(url: URL(string: "https://graphql.dev.hedvigit.com/graphql")!)
 
@@ -86,9 +86,9 @@ public struct JourneyPreviewer<Journey: JourneyPresentation>: UIViewControllerRe
 }
 
 extension View {
-     public func mockState<S: Store>(_ type: S.Type, getState: (_ state: S.State) -> S.State) -> Self {
-         let store: S = globalPresentableStoreContainer.get()
-         store.setState(getState(store.stateSignal.value))
-         return self
-     }
- }
+    public func mockState<S: Store>(_ type: S.Type, getState: (_ state: S.State) -> S.State) -> Self {
+        let store: S = globalPresentableStoreContainer.get()
+        store.setState(getState(store.stateSignal.value))
+        return self
+    }
+}

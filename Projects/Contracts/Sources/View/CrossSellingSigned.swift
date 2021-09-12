@@ -7,8 +7,10 @@ import hCoreUI
 public struct CrossSellingSigned: View {
     @PresentableStore var store: ContractStore
     var startDate: Date?
-    
-    public init(startDate: Date? = nil) {
+
+    public init(
+        startDate: Date? = nil
+    ) {
         self.startDate = startDate
     }
 
@@ -16,14 +18,14 @@ public struct CrossSellingSigned: View {
         guard let startDate = startDate, let localDateString = startDate.localDateString else {
             return ""
         }
-                
+
         if Calendar.current.isDateInToday(startDate) {
             return L10n.PurchaseConfirmationNew.InsuranceToday.AppState.description
         } else {
             return L10n.PurchaseConfirmationNew.InsuranceActiveInFuture.AppState.description(localDateString)
         }
     }
-    
+
     var displayTitle: String {
         let crossSellTitle = store.state.focusedCrossSell?.title.lowercased() ?? ""
         return L10n.PurchaseConfirmationNew.InsuranceToday.AppState.title(crossSellTitle)
@@ -41,7 +43,8 @@ public struct CrossSellingSigned: View {
                     hText(displayDate, style: .body)
                         .foregroundColor(hLabelColor.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                }.padding(.top, 25)
+                }
+                .padding(.top, 25)
             }
         }
         .hFormAttachToBottom {
@@ -66,9 +69,10 @@ struct CrossSellingSignedPreviews: PreviewProvider {
             CrossSellingSigned.journey(
                 startDate: Date()
             )
-        ).mockState(ContractStore.self) { state in
+        )
+        .mockState(ContractStore.self) { state in
             var newState = state
-            
+
             newState.focusedCrossSell = .init(
                 title: "Accident insurance",
                 description: "",
@@ -76,7 +80,7 @@ struct CrossSellingSignedPreviews: PreviewProvider {
                 blurHash: "",
                 buttonText: ""
             )
-            
+
             return newState
         }
     }
@@ -91,12 +95,14 @@ extension CrossSellingSigned {
             if action == .closeCrossSellingSigned {
                 DismissJourney()
             }
-        }.onPresent {
+        }
+        .onPresent {
             let store: ContractStore = globalPresentableStoreContainer.get()
             store.send(.fetchContracts)
             store.send(.fetchContractBundles)
             store.send(.fetchUpcomingAgreement)
-        }.addConfiguration { presenter in
+        }
+        .addConfiguration { presenter in
             presenter.viewController.navigationItem.hidesBackButton = true
         }
     }

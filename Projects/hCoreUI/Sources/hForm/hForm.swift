@@ -123,7 +123,6 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
             bottomAttachedHostingView.setNeedsLayout()
             bottomAttachedHostingView.layoutIfNeeded()
 
-            
             let size = bottomAttachedHostingView.systemLayoutSizeFitting(upperScrollView.frame.size)
             upperScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
             upperScrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
@@ -173,7 +172,7 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
             context.coordinator.bottomAttachedHostingView = hostingView
             self.upperScrollView?.addSubview(hostingView)
         }
-        
+
         setSize(context: context)
 
         return UIView()
