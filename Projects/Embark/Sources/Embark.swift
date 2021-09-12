@@ -251,7 +251,7 @@ extension Embark: Presentable {
 
                 bag += state.canGoBackSignal.atOnce()
                     .onValue { canGoBack in
-                        if !canGoBack && viewController.navigationController?.viewControllers.count == 1 {
+                        if !canGoBack {
                             viewController.navigationItem.leftBarButtonItem = nil
                         } else {
                             viewController.navigationItem.leftBarButtonItem = backButton
