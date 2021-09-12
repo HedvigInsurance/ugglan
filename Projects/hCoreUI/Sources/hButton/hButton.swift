@@ -245,7 +245,7 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
 struct _hButton<Content: View>: View {
     var content: () -> Content
     var action: () -> Void
-    @State var hasBeenTapped = false
+    @State var wasTappedDate: Date? = nil
 
     public init(
         action: @escaping () -> Void,
@@ -257,11 +257,10 @@ struct _hButton<Content: View>: View {
 
     var body: some View {
         SwiftUI.Button(action: {
-
-            hasBeenTapped = true
+            wasTappedDate = Date()
             action()
         }) {
-            content().environment(\.hButtonWasTapped, hasBeenTapped)
+            content().environment(\.hButtonWasTappedDate, wasTappedDate)
         }
     }
 }

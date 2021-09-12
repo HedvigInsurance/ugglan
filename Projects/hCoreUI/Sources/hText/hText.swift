@@ -15,14 +15,14 @@ extension EnvironmentValues {
     }
 }
 
-private struct EnvironmentHButtonWasTapped: EnvironmentKey {
+private struct EnvironmentHButtonWasTappedDate: EnvironmentKey {
     static let defaultValue: Date? = nil
 }
 
 extension EnvironmentValues {
-    var hButtonWasTapped: Date? {
-        get { self[EnvironmentHButtonWasTapped.self] }
-        set { self[EnvironmentHButtonWasTapped.self] = newValue }
+    var hButtonWasTappedDate: Date? {
+        get { self[EnvironmentHButtonWasTappedDate.self] }
+        set { self[EnvironmentHButtonWasTappedDate.self] = newValue }
     }
 }
 
@@ -82,7 +82,7 @@ public struct hText: View {
     public var text: String
     public var style: UIFont.TextStyle?
     @Environment(\.defaultHTextStyle) var defaultStyle
-    @Environment(\.hButtonWasTapped) var hButtonWasTapped
+    @Environment(\.hButtonWasTappedDate) var hButtonWasTappedDate
 
     public init(
         _ text: String,
@@ -101,9 +101,11 @@ public struct hText: View {
 
     public var body: some View {
         Text(text).modifier(hFontModifier(style: style ?? defaultStyle ?? .body))
-            .onReceive(Just(hButtonWasTapped != nil)) { _ in
+            .onReceive(Just(hButtonWasTappedDate != nil)) { _ in
                 if let derivedFromL10n = text.derivedFromL10n {
-                    Analytics.track(.buttonClick, properties: ["localizationKey", derivedFromL10n])
+                    Analytics.track(.buttonClick, properties: ["localizationKey": derivedFromL10n.key])
+                } else {
+                    Analytics.track(.buttonClick, properties: ["content": text])
                 }
             }
     }
