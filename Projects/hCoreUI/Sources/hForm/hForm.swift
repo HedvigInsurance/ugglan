@@ -119,14 +119,18 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
         if let upperScrollView = self.upperScrollView,
             let bottomAttachedHostingView = context.coordinator.bottomAttachedHostingView
         {
-            let size = bottomAttachedHostingView.systemLayoutSizeFitting(.zero)
+            bottomAttachedHostingView.frame.size = contentSize
+            bottomAttachedHostingView.setNeedsLayout()
+            bottomAttachedHostingView.layoutIfNeeded()
+
+            
+            let size = bottomAttachedHostingView.systemLayoutSizeFitting(upperScrollView.frame.size)
             upperScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
             upperScrollView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
 
             bottomAttachedHostingView.snp.remakeConstraints { make in
                 make.leading.trailing.equalTo(upperScrollView.frameLayoutGuide)
                 make.bottom.equalTo(upperScrollView.frameLayoutGuide)
-                    .inset(upperScrollView.adjustedContentInset.bottom - size.height)
             }
         }
 
@@ -149,7 +153,6 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
             fatalError("Must be used with an upper PresentableView")
         }
 
-        setSize(context: context)
         self.upperScrollView?.addSubview(self.backgroundHostingController.view)
 
         if let upperScrollView = self.upperScrollView {
@@ -170,6 +173,8 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
             context.coordinator.bottomAttachedHostingView = hostingView
             self.upperScrollView?.addSubview(hostingView)
         }
+        
+        setSize(context: context)
 
         return UIView()
     }

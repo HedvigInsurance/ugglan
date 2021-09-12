@@ -8,10 +8,10 @@ import hGraphQL
 public struct ContractState: StateProtocol {
     public init() {}
 
-    var contractBundles: [ActiveContractBundle] = []
-    var contracts: [Contract] = []
-    var upcomingAgreements: [UpcomingAgreementContract] = []
-    var focusedCrossSell: CrossSell?
+    public var contractBundles: [ActiveContractBundle] = []
+    public var contracts: [Contract] = []
+    public var upcomingAgreements: [UpcomingAgreementContract] = []
+    public var focusedCrossSell: CrossSell?
 }
 
 extension ContractState {

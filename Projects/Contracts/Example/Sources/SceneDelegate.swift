@@ -2,7 +2,6 @@ import Flow
 import Foundation
 import UIKit
 
-@available(iOS 13, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     let bag = DisposeBag()
     var window: UIWindow?
@@ -19,6 +18,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             navigationController.navigationBar.prefersLargeTitles = true
 
             window.rootViewController = navigationController
+
+            bag += navigationController.present(
+                Debug.journey
+            )
 
             window.makeKeyAndVisible()
         }
