@@ -1,8 +1,8 @@
+import Combine
 import Foundation
 import SwiftUI
 import UIKit
 import hCore
-import Combine
 
 private struct EnvironmentDefaultHTextStyle: EnvironmentKey {
     static let defaultValue: UIFont.TextStyle? = nil
@@ -100,10 +100,11 @@ public struct hText: View {
     }
 
     public var body: some View {
-        Text(text).modifier(hFontModifier(style: style ?? defaultStyle ?? .body)).onReceive(Just(hButtonWasTapped != nil)) { _ in
-            if let derivedFromL10n = text.derivedFromL10n {
-                Analytics.track(.buttonClick, properties: ["localizationKey", derivedFromL10n])
+        Text(text).modifier(hFontModifier(style: style ?? defaultStyle ?? .body))
+            .onReceive(Just(hButtonWasTapped != nil)) { _ in
+                if let derivedFromL10n = text.derivedFromL10n {
+                    Analytics.track(.buttonClick, properties: ["localizationKey", derivedFromL10n])
+                }
             }
-        }
     }
 }

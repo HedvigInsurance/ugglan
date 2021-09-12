@@ -246,7 +246,7 @@ struct _hButton<Content: View>: View {
     var content: () -> Content
     var action: () -> Void
     @State var hasBeenTapped = false
-    
+
     public init(
         action: @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content
@@ -254,10 +254,10 @@ struct _hButton<Content: View>: View {
         self.action = action
         self.content = content
     }
-    
+
     var body: some View {
         SwiftUI.Button(action: {
-            
+
             hasBeenTapped = true
             action()
         }) {
