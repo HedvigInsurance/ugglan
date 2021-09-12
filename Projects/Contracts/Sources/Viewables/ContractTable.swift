@@ -63,8 +63,9 @@ extension ContractTable: Viewable {
                         .flatMap { $0.contracts },
                     state.contracts.filter { contract in
                         contract.currentAgreement.status == .activeInFuture
-                    }
-                ].flatMap { $0 }
+                    },
+                ]
+                .flatMap { $0 }
             case .terminated:
                 return state.contracts.filter { contract in
                     contract.currentAgreement.status == .terminated
