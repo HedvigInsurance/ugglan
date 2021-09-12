@@ -90,6 +90,7 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
 
         self.presentable = AnyPresentable(materialize: {
             let controller = ViewHostingController(rootView: rootView)
+            controller.debugPresentationTitle = "\(RootView.self)"
             return (
                 controller,
                 Signal<S.Action> { callback in
@@ -124,6 +125,7 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
         }
         self.presentable = AnyPresentable(materialize: {
             let controller = ViewHostingController(rootView: rootView)
+            controller.debugPresentationTitle = "\(RootView.self)"
             return (
                 controller,
                 NilDisposer()

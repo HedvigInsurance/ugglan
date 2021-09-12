@@ -61,7 +61,7 @@ public class EmbarkState {
         bag += currentPassageSignal.readOnly().compactMap { $0?.tracks }
             .onValue(on: .background) { tracks in
                 tracks.forEach { track in
-                    track.trackingEvent(storeValues: self.store.getAllValues()).send()
+                    track.send(storeValues: self.store.getAllValues())
                 }
             }
     }
@@ -89,11 +89,12 @@ public class EmbarkState {
             }
 
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
-                EmbarkTrackingEvent(
-                    title: "External Redirect",
-                    properties: ["location": externalRedirect.rawValue]
+                Analytics.track(
+                    "External Redirect",
+                    properties: [
+                        "location": externalRedirect.rawValue
+                    ]
                 )
-                .send()
                 switch externalRedirect {
                 case .mailingList: externalRedirectSignal.value = .mailingList
                 case .offer:
@@ -107,7 +108,7 @@ public class EmbarkState {
                 case .__unknown: fatalError("Can't external redirect to location")
                 }
             } else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {
-                EmbarkTrackingEvent(title: "Offer Redirect", properties: [:]).send()
+                Analytics.track("Offer Redirect", properties: [:])
                 externalRedirectSignal.value = .offer(
                     ids: offerRedirectKeys.flatMap { key in
                         store.getValues(key: key) ?? []
