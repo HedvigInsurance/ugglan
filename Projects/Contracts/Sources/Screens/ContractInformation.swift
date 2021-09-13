@@ -13,7 +13,6 @@ struct ContractInformation {
 
 extension ContractInformation: Presentable {
     func materialize() -> (UIViewController, Disposable) {
-
         let viewController = UIViewController()
         viewController.title = L10n.contractDetailMainTitle
         let bag = DisposeBag()
@@ -21,7 +20,6 @@ extension ContractInformation: Presentable {
         let store: ContractStore = get()
 
         let form = FormView()
-        bag += form.append(Spacing(height: 20))
 
         if !contract.upcomingAgreementsTable.sections.isEmpty {
             let upcomingAgreementSection = form.appendSection(
@@ -29,11 +27,11 @@ extension ContractInformation: Presentable {
                 footer: nil,
                 style: .brandGroupedInset(separatorType: .none, appliesShadow: false)
             )
-
+            
             let card = Card(
                 titleIcon: hCoreUIAssets.apartment.image,
                 title: L10n.InsuranceDetails.updateDetailsSheetTitle,
-                body: L10n.InsuranceDetails.addressUpdateBody("date", "address"),
+                body: L10n.InsuranceDetails.addressUpdateBody(contract.upcomingAgreementDate ?? "", contract.upcomingAgreementAddress ?? ""),
                 buttonText: L10n.InsuranceDetails.addressUpdateButton,
                 backgroundColor: .tint(.lavenderTwo),
                 buttonType: .outline(
@@ -60,8 +58,6 @@ extension ContractInformation: Presentable {
 
         let section = form.appendSection()
         section.dynamicStyle = .brandGrouped(separatorType: .none)
-
-        form.appendSpacing(.custom(20))
 
         if let detailsTable = contract.currentAgreementsTable {
             bag += section.append(detailsTable)

@@ -65,16 +65,24 @@ extension hGraphQL.GraphQL.DetailsTableFragment: Viewable {
 extension DetailAgreementsTable: Viewable {
     public func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
+        
+        let sectionView: SectionView
+                
+        if !title.isEmpty {
+            let headerContainer = UIStackView()
 
-        let headerContainer = UIStackView()
-        headerContainer.addArrangedSubview(
-            UILabel(
-                value: title,
-                style: .brand(.title2(color: .primary))
+            headerContainer.addArrangedSubview(
+                UILabel(
+                    value: title,
+                    style: .brand(.title2(color: .primary))
+                )
             )
-        )
-
-        let sectionView = SectionView(headerView: headerContainer, footerView: nil)
+            
+            sectionView = SectionView(headerView: headerContainer, footerView: nil)
+        } else {
+            sectionView = SectionView(headerView: nil, footerView: nil)
+        }
+        
         sectionView.dynamicStyle = .brandGrouped(separatorType: .none)
         bag += {
             sectionView.removeFromSuperview()
