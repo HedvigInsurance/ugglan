@@ -43,15 +43,15 @@ public struct CrossSell: Codable, Equatable, Hashable {
     init?(
         _ data: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell
     ) {
-        title = data.title
-        description = data.description
+        title = "Accident insurance" // data.title
+        description = "From 75 SEK / month" // data.description
 
         guard let parsedImageURL = URL(string: data.imageUrl) else {
             return nil
         }
 
         imageURL = parsedImageURL
-        buttonText = data.callToAction
+        buttonText = "Calculate price" // data.callToAction
         embarkStoryName = data.action.asCrossSellEmbark?.embarkStory.name
         blurHash = data.blurHash
         hasBeenSeen = UserDefaults.standard.bool(forKey: Self.hasBeenSeenKey(title: title))

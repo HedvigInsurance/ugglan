@@ -12,6 +12,9 @@ struct ContractRow: Hashable {
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(contract.id)
+        hasher.combine(contract.detailPills)
+        hasher.combine(contract.displayName)
+        hasher.combine(contract.detailPills)
     }
 
     let contract: Contract
