@@ -1,11 +1,3 @@
-//
-//  hColorBuilder.swift
-//  hColorBuilder
-//
-//  Created by Sam Pettersson on 2021-09-13.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import SwiftUI
 
@@ -14,9 +6,9 @@ public struct EitherHColor<Left: hColor, Right: hColor>: hColor {
         case left(value: Left)
         case right(value: Right)
     }
-    
+
     var storage: Storage
-    
+
     public var inverted: some hColor {
         switch storage {
         case let .left(value):
@@ -25,7 +17,7 @@ public struct EitherHColor<Left: hColor, Right: hColor>: hColor {
             return EitherHColor<Left.Inverted, Right.Inverted>(right: value.inverted)
         }
     }
-    
+
     public func opacity(_ opacity: Double) -> some hColor {
         switch storage {
         case let .left(value):
@@ -34,7 +26,7 @@ public struct EitherHColor<Left: hColor, Right: hColor>: hColor {
             return EitherHColor<Left.OpacityModified, Right.OpacityModified>(right: value.opacity(opacity))
         }
     }
-    
+
     public func colorFor(_ scheme: ColorScheme, _ level: UIUserInterfaceLevel) -> hColorBase {
         switch storage {
         case let .left(value):
@@ -43,15 +35,19 @@ public struct EitherHColor<Left: hColor, Right: hColor>: hColor {
             return value.colorFor(scheme, level)
         }
     }
-    
-    init(left: Left) {
+
+    init(
+        left: Left
+    ) {
         self.storage = .left(value: left)
     }
-    
-    init(right: Right) {
+
+    init(
+        right: Right
+    ) {
         self.storage = .right(value: right)
     }
-    
+
     public var body: some View {
         switch storage {
         case let .left(value):
@@ -71,7 +67,7 @@ public struct hColorBuilder {
     public static func buildEither<Left: hColor, Right: hColor>(first color: Left) -> EitherHColor<Left, Right> {
         EitherHColor(left: color)
     }
-    
+
     public static func buildEither<Left: hColor, Right: hColor>(second color: Right) -> EitherHColor<Left, Right> {
         EitherHColor(right: color)
     }

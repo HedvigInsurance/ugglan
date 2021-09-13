@@ -4,7 +4,7 @@ import UIKit
 
 public class HostingView<Content: View>: UIView {
     let rootViewHostingController: UIHostingController<Content>
-    
+
     public var swiftUIRootView: Content {
         get {
             self.rootViewHostingController.rootView
