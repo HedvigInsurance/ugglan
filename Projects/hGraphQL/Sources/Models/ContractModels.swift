@@ -272,7 +272,7 @@ public struct CurrentAgreement: Codable, Hashable {
     public let activeTo: String?
     public let premium: MonetaryAmount
     public let status: ContractStatus?
-    
+
     init(
         currentAgreement: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract.CurrentAgreement
     ) {
