@@ -28,13 +28,7 @@ public struct IconEnvelope: Codable, Equatable, Hashable {
     }
 }
 
-extension Contract: Equatable {
-    public static func == (lhs: Contract, rhs: Contract) -> Bool {
-        return lhs.id == rhs.id
-    }
-}
-
-public struct Contract: Codable, Hashable {
+public struct Contract: Codable, Hashable, Equatable {
     public init(
         id: String,
         upcomingAgreementsTable: DetailAgreementsTable,
