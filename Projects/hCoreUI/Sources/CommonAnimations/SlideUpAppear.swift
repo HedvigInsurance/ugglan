@@ -20,10 +20,10 @@ struct SlideUpAppearAnimationModifier: ViewModifier {
             .background(
                 GeometryReader { geo in
                     Color.clear.onReceive(Just(geo.size.height)) { height in
-                            if height != self.height {
-                                self.height = height
-                            }
+                        if height != self.height {
+                            self.height = height
                         }
+                    }
                 }
             )
             .onReceive(
