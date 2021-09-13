@@ -4,6 +4,15 @@ import UIKit
 
 public class HostingView<Content: View>: UIView {
     let rootViewHostingController: UIHostingController<Content>
+    
+    public var swiftUIRootView: Content {
+        get {
+            self.rootViewHostingController.rootView
+        }
+        set {
+            self.rootViewHostingController.rootView = newValue
+        }
+    }
 
     public required init(
         rootView: Content

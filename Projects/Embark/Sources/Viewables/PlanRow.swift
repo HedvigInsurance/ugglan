@@ -4,6 +4,7 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import SwiftUI
 
 struct PlanRow: Equatable, Hashable {
     static func == (lhs: PlanRow, rhs: PlanRow) -> Bool { lhs.hashValue == rhs.hashValue }
@@ -21,6 +22,95 @@ struct PlanRow: Equatable, Hashable {
     let isSelected: ReadWriteSignal<Bool>
 }
 
+struct BulletView: UIViewRepresentable {
+    var isSelected: Bool
+    
+    class Coordinator {
+        let bag = DisposeBag()
+        let isSelectedSignal: ReadWriteSignal<Bool>
+        let bullet: Bullet
+        
+        init(isSelectedSignal: ReadWriteSignal<Bool>) {
+            self.isSelectedSignal = isSelectedSignal
+            self.bullet = Bullet(isSelectedSignal: isSelectedSignal)
+        }
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(isSelectedSignal: .init(false))
+    }
+    
+    func makeUIView(context: Context) -> some UIView {
+        let (view, disposable) = context.coordinator.bullet.materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
+        context.coordinator.isSelectedSignal.value = isSelected
+        context.coordinator.bag += disposable
+        return view
+    }
+    
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        context.coordinator.isSelectedSignal.value = isSelected
+    }
+}
+
+
+struct PlanRowContent: View {
+    let selected: Bool
+    let row: PlanRow
+    
+    @ViewBuilder var discountBackground: some View {
+        if !selected {
+            hGrayscaleColor.one
+        } else {
+            hBackgroundColor.primary.colorScheme(.dark)
+        }
+    }
+    
+    @hColorBuilder var discountForegroundColor: some hColor {
+        if !selected {
+            hLabelColor.primary
+        } else {
+            hLabelColor.primary.inverted
+        }
+    }
+    
+    var paddingTop: CGFloat {
+        if row.discount != nil {
+            return 16
+        }
+        
+        return 24
+    }
+    
+    var body: some View {
+        VStack {
+            if let discount = row.discount {
+                VStack {
+                    discount.hText(.caption1)
+                }
+                .padding([.leading, .trailing], 16)
+                .padding([.top, .bottom], 6)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(discountBackground)
+                .foregroundColor(discountForegroundColor)
+            }
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .center) {
+                    row.title.hText(.title2)
+                        .foregroundColor(hLabelColor.primary)
+                    Spacer()
+                    BulletView(isSelected: selected).frame(width: 24, height: 24)
+                }
+                row.message.hText(.body)
+                    .foregroundColor(hLabelColor.secondary)
+                    .padding(.trailing, 24)
+            }
+            .padding([.leading, .trailing], 16)
+            .padding(.top, paddingTop)
+            .padding(.bottom, 24)
+        }
+    }
+}
+
 extension PlanRow: Reusable {
     static func makeAndConfigure() -> (make: UIView, configure: (PlanRow) -> Disposable) {
         let view = UIStackView()
@@ -33,67 +123,27 @@ extension PlanRow: Reusable {
         contentView.layer.borderWidth = .hairlineWidth
 
         view.addArrangedSubview(contentView)
-
-        let horizontalContentContainer = UIStackView()
-        horizontalContentContainer.axis = .horizontal
-        horizontalContentContainer.spacing = 10
-        horizontalContentContainer.alignment = .firstBaseline
-        horizontalContentContainer.distribution = .equalSpacing
-
-        let verticalContentContainer = UIStackView()
-        verticalContentContainer.isUserInteractionEnabled = false
-        verticalContentContainer.axis = .vertical
-        verticalContentContainer.distribution = .fill
-        verticalContentContainer.edgeInsets = UIEdgeInsets(top: 24, left: 16, bottom: 24, right: 16)
-        verticalContentContainer.spacing = 5
-
-        verticalContentContainer.addArrangedSubview(horizontalContentContainer)
-
-        contentView.addSubview(verticalContentContainer)
-
-        verticalContentContainer.snp.makeConstraints { $0.top.bottom.trailing.leading.equalToSuperview() }
+        
+        let hostingView = HostingView(rootView: AnyView(EmptyView()))
+        hostingView.isUserInteractionEnabled = false
+        contentView.addSubview(hostingView)
+        
+        hostingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         return (
             view,
-            { `self` in let bag = DisposeBag()
-
-                bag += horizontalContentContainer.addArranged(
-                    MultilineLabel(value: self.title, style: .brand(.title2(color: .primary)))
-                        .wrappedIn(
-                            {
-                                let stack = UIStackView()
-                                stack.axis = .vertical
-                                return stack
-                            }()
-                        )
-                )
-
+            { `self` in
+                let bag = DisposeBag()
+                
                 bag += contentView.applyBorderColor { _ in .brand(.primaryBorderColor) }
 
                 bag += contentView.signal(for: .touchUpInside).map { true }.bindTo(self.isSelected)
-
-                let descriptionLabel = MultilineLabel(
-                    value: self.message,
-                    style: .brand(.body(color: .secondary))
-                )
-
-                bag += verticalContentContainer.addArranged(
-                    descriptionLabel.wrappedIn(
-                        {
-                            let stackView = UIStackView()
-                            stackView.edgeInsets = UIEdgeInsets(
-                                top: 0,
-                                left: 0,
-                                bottom: 0,
-                                right: 40
-                            )
-
-                            return stackView
-                        }()
-                    )
-                )
-
-                let bullet = Bullet(isSelectedSignal: self.isSelected)
+                
+                bag += self.isSelected.atOnce().onValue({ selected in
+                    hostingView.swiftUIRootView = AnyView(PlanRowContent(selected: self.isSelected.value, row: self))
+                })
 
                 let gradientView = GradientView(
                     gradientOption: .init(preset: self.gradientType),
@@ -105,48 +155,6 @@ extension PlanRow: Reusable {
                         make.top.bottom.trailing.leading.equalToSuperview()
                     }
                 }
-
-                if let discount = self.discount {
-                    let tintColor = UIColor.brand(.primaryBackground(true))
-                    bag += horizontalContentContainer.addArranged(
-                        PillCollection(pills: [
-                            Pill(
-                                style: .solid(color: tintColor),
-                                title: discount,
-                                textStyle: .brand(
-                                    .caption1(
-                                        color: .primary(
-                                            state: .matching(tintColor)
-                                        )
-                                    )
-                                )
-                            )
-                        ])
-                        .wrappedIn(
-                            {
-                                let stack = UIStackView()
-                                stack.axis = .vertical
-                                stack.snp.makeConstraints { make in
-                                    make.width.greaterThanOrEqualTo(50)
-                                }
-                                return stack
-                            }()
-                        )
-                    )
-                }
-
-                horizontalContentContainer.addArrangedSubview(UIView())
-
-                bag += horizontalContentContainer.addArranged(
-                    bullet.wrappedIn(
-                        {
-                            let stackView = UIStackView()
-                            stackView.axis = .vertical
-                            stackView.setContentHuggingPriority(.required, for: .horizontal)
-                            return stackView
-                        }()
-                    )
-                )
 
                 return bag
             }
