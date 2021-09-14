@@ -7,13 +7,23 @@ import hCore
 import hGraphQL
 
 public struct RemoteVectorIcon {
-    let iconSignal = ReadWriteSignal<GraphQL.IconFragment?>(nil)
+    let iconSignal = ReadWriteSignal<IconEnvelope?>(nil)
     let finishedLoadingSignal: Signal<Void>
     let finishedLoadingCallback = Callbacker<Void>()
     let threaded: Bool
 
     public init(
         _ icon: GraphQL.IconFragment? = nil,
+        threaded: Bool? = false
+    ) {
+        let hIcon = IconEnvelope(fragment: icon)
+        iconSignal.value = hIcon
+        finishedLoadingSignal = finishedLoadingCallback.providedSignal
+        self.threaded = threaded ?? false
+    }
+
+    public init(
+        _ icon: IconEnvelope?,
         threaded: Bool? = false
     ) {
         iconSignal.value = icon
@@ -82,12 +92,12 @@ extension RemoteVectorIcon: Viewable {
             .onValue { pdfDocument in renderPdfDocument(pdfDocument: pdfDocument) }
 
         bag += combineLatest(iconSignal.atOnce(), imageView.traitCollectionSignal.atOnce())
-            .compactMap { iconFragment, traitCollection -> String? in
+            .compactMap { icon, traitCollection -> String? in
                 if traitCollection.userInterfaceStyle == .dark {
-                    return iconFragment?.variants.dark.pdfUrl
+                    return icon?.dark
                 }
 
-                return iconFragment?.variants.light.pdfUrl
+                return icon?.light
             }
             .map(on: .background) { pdfUrlString -> CFData? in
                 guard

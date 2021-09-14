@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ContractDocuments { let contract: GraphQL.ContractsQuery.Data.Contract }
+struct ContractDocuments { let contract: Contract }
 
 extension ContractDocuments: Presentable {
     func materialize() -> (UIViewController, Disposable) {
@@ -18,6 +18,7 @@ extension ContractDocuments: Presentable {
         let form = FormView()
 
         let section = form.appendSection()
+        section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
         func showSections() {
             if let url = URL(string: contract.currentAgreement.certificateUrl) {
@@ -55,13 +56,7 @@ extension ContractDocuments: Presentable {
             }
         }
 
-        if contract.status.asPendingStatus == nil {
-            showSections()
-        } else {
-            let emptyRow = RowView(title: "")
-            section.append(emptyRow)
-        }
-
+        showSections()
         bag += viewController.install(form, options: [])
 
         return (viewController, bag)

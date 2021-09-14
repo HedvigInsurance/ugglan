@@ -1,6 +1,7 @@
 import Flow
 import Foundation
 import hCore
+import hGraphQL
 
 public struct ForeverInvitation: Hashable, Codable {
     let name: String

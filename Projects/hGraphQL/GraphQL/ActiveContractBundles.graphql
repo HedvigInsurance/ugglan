@@ -1,0 +1,47 @@
+query ActiveContractBundles($locale: Locale!) {
+  activeContractBundles {
+    id
+    contracts {
+      id
+      statusPills(locale: $locale)
+      detailPills(locale: $locale)
+      displayName
+      gradientOption
+      switchedFromInsuranceProvider
+      upcomingRenewal {
+        renewalDate
+        draftCertificateUrl
+      }
+      perils(locale: $locale) {
+        ...PerilFragment
+      }
+      insurableLimits(locale: $locale) {
+        ...InsurableLimitFragment
+      }
+      termsAndConditions(locale: $locale) {
+        displayName
+        url
+      }
+      currentAgreementDetailsTable(locale: $locale) {
+        ...DetailsTableFragment
+      }
+      upcomingAgreementDetailsTable(locale: $locale) {
+        ...DetailsTableFragment
+      }
+      currentAgreement {
+        ... on AgreementCore {
+          certificateUrl
+          activeFrom
+          activeTo
+          status
+          premium {
+            ...MonetaryAmountFragment
+          }
+        }
+      }
+    }
+    angelStories {
+        addressChange
+    }
+  }
+}

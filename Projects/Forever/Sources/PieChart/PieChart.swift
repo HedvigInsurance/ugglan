@@ -3,6 +3,7 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct PieChartState {
     public let percentagePerSlice: CGFloat

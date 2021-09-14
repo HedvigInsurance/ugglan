@@ -14,6 +14,7 @@ extension UpsellingFooter {
         let title: String
         let description: String
         let buttonText: String
+        @PresentableStore var store: ContractStore
 
         func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
             let outerView = UIStackView()
@@ -56,7 +57,7 @@ extension UpsellingFooter {
             )
 
             bag += button.onTapSignal.compactMap { stackView.viewController }
-                .onValue { viewController in Contracts.openFreeTextChatHandler(viewController) }
+                .onValue { viewController in store.send(.goToFreeTextChat) }
 
             bag += stackView.addArranged(button.wrappedIn(UIStackView())) { view in view.axis = .vertical
                 view.alignment = .center

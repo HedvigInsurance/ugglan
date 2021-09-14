@@ -11,29 +11,7 @@ struct ContractTable {
     @Inject var client: ApolloClient
     let presentingViewController: UIViewController
     let filter: ContractFilter
-    let state: ContractsState
-}
-
-extension GraphQL.ContractsQuery.Data.Contract.CurrentAgreement {
-    var type: ContractRow.ContractType {
-        if let _ = asNorwegianHomeContentAgreement {
-            return .norwegianHome
-        } else if let _ = asNorwegianTravelAgreement {
-            return .norwegianTravel
-        } else if let _ = asSwedishApartmentAgreement {
-            return .swedishApartment
-        } else if let _ = asSwedishHouseAgreement {
-            return .swedishHouse
-        } else if let _ = asDanishHomeContentAgreement {
-            return .danishHome
-        } else if let _ = asDanishTravelAgreement {
-            return .danishTravel
-        } else if let _ = asDanishAccidentAgreement {
-            return .danishAccident
-        }
-
-        fatalError("Unrecognised agreement provided")
-    }
+    @PresentableStore var store: ContractStore
 }
 
 extension ContractTable: Viewable {
@@ -76,63 +54,42 @@ extension ContractTable: Viewable {
                 }
         }
 
-        func watchContracts() {
-            bag +=
-                client.watch(
-                    query: GraphQL.ContractsQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    ),
-                    cachePolicy: .fetchIgnoringCacheData
-                )
-                .compactMap { $0.contracts }
-                .onValue { contracts in
-                    var contractsToShow = contracts.filter {
-                        switch self.filter {
-                        case .active: return $0.status.asTerminatedStatus == nil
-                        case .terminated: return $0.status.asTerminatedStatus != nil
-                        case .none: return false
-                        }
-                    }
-
-                    if contractsToShow.isEmpty, self.filter.emptyFilter.displaysTerminatedContracts {
-                        contractsToShow = contracts
-                    }
-
-                    let table = Table(
-                        rows: contractsToShow.map { contract -> ContractRow in
-                            ContractRow(
-                                contract: contract,
-                                displayName: contract.displayName,
-                                type: contract.currentAgreement.type,
-                                state: state
-                            )
-                        }
-                    )
-
-                    loadingIndicatorBag.dispose()
-
-                    tableKit.set(table)
+        func getContractsToShow(for state: ContractState) -> [Contract] {
+            switch self.filter {
+            case .active:
+                return state
+                    .contractBundles
+                    .flatMap { $0.contracts }
+            case .terminated:
+                return state.contracts.filter { contract in
+                    contract.currentAgreement.status == .terminated
                 }
+            case .none: return []
+            }
         }
 
-        watchContracts()
+        bag += store
+            .stateSignal
+            .atOnce()
+            .onValue { state in
+                let contractsToShow = getContractsToShow(for: state)
 
-        let refreshControl = UIRefreshControl()
-        bag += client.refetchOnRefresh(
-            query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
-            refreshControl: refreshControl
-        )
+                let table = Table(
+                    rows: contractsToShow.map { contract -> ContractRow in
+                        ContractRow(
+                            contract: contract
+                        )
+                    }
+                )
 
-        tableKit.view.refreshControl = refreshControl
+                loadingIndicatorBag.dispose()
+
+                tableKit.set(table)
+            }
 
         bag += tableKit.view.didMoveToWindowSignal.onValue { _ in
-            client.fetch(
-                query: GraphQL.ContractsQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                ),
-                cachePolicy: .fetchIgnoringCacheData
-            )
-            .onValue { _ in }
+            store.send(.fetchContractBundles)
+            store.send(.fetchContracts)
         }
 
         return (tableKit.view, bag)

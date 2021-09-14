@@ -10,6 +10,7 @@ import hGraphQL
 struct ContractTableFooter {
     @Inject var client: ApolloClient
     let filter: ContractFilter
+    @PresentableStore var store: ContractStore
 }
 
 extension ContractTableFooter: Viewable {
@@ -20,17 +21,13 @@ extension ContractTableFooter: Viewable {
         bag += form.append(UpsellingFooter())
 
         bag +=
-            client.watch(
-                query: GraphQL.ContractsQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                ),
-                cachePolicy: .fetchIgnoringCacheData
-            )
-            .compactMap { $0.contracts }.delay(by: 0.5)
-            .onValueDisposePrevious { contracts in let innerBag = DisposeBag()
-                let terminatedContractsCount = contracts.filter { $0.status.asTerminatedStatus != nil }
+            store.stateSignal.atOnce()
+            .onValueDisposePrevious { state in
+                let innerBag = DisposeBag()
+
+                let terminatedContractsCount = state.contracts.filter { $0.currentAgreement.status == .terminated }
                     .count
-                let activeContractsCount = contracts.filter { $0.status.asTerminatedStatus == nil }
+                let activeContractsCount = state.contracts.filter { $0.currentAgreement.status == .active }
                     .count
 
                 if filter.displaysActiveContracts, terminatedContractsCount > 0,

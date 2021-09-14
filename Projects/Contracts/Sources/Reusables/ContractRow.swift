@@ -11,26 +11,10 @@ struct ContractRow: Hashable {
     static func == (lhs: ContractRow, rhs: ContractRow) -> Bool { lhs.hashValue == rhs.hashValue }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(displayName)
-        hasher.combine(statusPills)
-        hasher.combine(isContractActivated)
-        hasher.combine(detailPills)
+        hasher.combine(contract)
     }
 
-    let contract: GraphQL.ContractsQuery.Data.Contract
-    let displayName: String
-    let type: ContractType
-    let state: ContractsState
-
-    enum ContractType {
-        case swedishApartment
-        case swedishHouse
-        case norwegianTravel
-        case norwegianHome
-        case danishHome
-        case danishTravel
-        case danishAccident
-    }
+    let contract: Contract
 
     var allowDetailNavigation = true
 }
@@ -52,21 +36,7 @@ extension ContractRow: Reusable {
 
         contentView.snp.makeConstraints { make in make.height.greaterThanOrEqualTo(170) }
 
-        let gradientView = UIView()
-        gradientView.isUserInteractionEnabled = false
-        gradientView.layer.cornerRadius = .defaultCornerRadius
-        gradientView.clipsToBounds = true
-        contentView.addSubview(gradientView)
-
-        gradientView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
-
-        let orbImageView = UIImageView()
-        orbImageView.tintColor = .clear
-        orbImageView.image = Asset.contractRowOrb.image
-
-        contentView.addSubview(orbImageView)
-
-        orbImageView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
+        let shouldShowGradient = ReadWriteSignal<Bool>(true)
 
         let touchFocusView = UIView()
         touchFocusView.isUserInteractionEnabled = false
@@ -153,27 +123,24 @@ extension ContractRow: Reusable {
 
                 bag += contentView.applyBorderColor { _ in .brand(.primaryBorderColor) }
 
-                orbImageView.tintColor = self.orbTintColor
+                if let gradientOption = self.contract.gradientOption,
+                    self.contract.currentAgreement.status != .terminated
+                {
+                    let gradientView = GradientView(
+                        gradientOption: .some(.init(gradientOption: gradientOption)),
+                        shouldShowGradientSignal: shouldShowGradient
+                    )
 
-                bag += contentView.traitCollectionSignal.atOnce()
-                    .onValueDisposePrevious { _ -> Disposable? in let bag = DisposeBag()
-
-                        if let gradientLayer = self.gradientLayer {
-                            gradientView.layer.addSublayer(gradientLayer)
-
-                            bag += gradientView.didLayoutSignal.onValue {
-                                gradientLayer.bounds = gradientView.layer.bounds
-                                gradientLayer.frame = gradientView.layer.frame
-                                gradientLayer.position = gradientView.layer.position
-                            }
-
-                            bag += { gradientLayer.removeFromSuperlayer() }
+                    bag += contentView.add(gradientView) { view in
+                        view.snp.makeConstraints { make in
+                            make.top.bottom.trailing.leading.equalToSuperview()
                         }
 
-                        return bag
+                        contentView.sendSubviewToBack(view)
                     }
+                }
 
-                displayNameLabel.value = self.displayName
+                displayNameLabel.value = self.contract.displayName
 
                 if self.allowDetailNavigation {
                     bag += contentView.trackedTouchUpInsideSignal
@@ -193,7 +160,7 @@ extension ContractRow: Reusable {
                             }
 
                             viewController.present(
-                                ContractDetail(contractRow: self, state: self.state),
+                                ContractDetail(contractRow: self),
                                 options: [.largeTitleDisplayMode(.never), .autoPop]
                             )
                             .onResult { _ in
@@ -220,7 +187,7 @@ extension ContractRow: Reusable {
 
                 bag += statusPillsContainer.addArranged(
                     PillCollection(
-                        pills: self.statusPills.map { pill in
+                        pills: self.contract.statusPills.map { pill in
                             Pill(
                                 style: .solid(color: .tint(.yellowOne)),
                                 title: pill.uppercased()
@@ -231,7 +198,7 @@ extension ContractRow: Reusable {
 
                 bag += detailPillsContainer.addArranged(
                     PillCollection(
-                        pills: self.detailPills.map { pill in
+                        pills: self.contract.detailPills.map { pill in
                             Pill(style: .effected, title: pill.uppercased())
                         }
                     )

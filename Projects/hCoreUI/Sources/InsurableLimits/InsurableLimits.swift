@@ -6,18 +6,18 @@ import UIKit
 import hCore
 import hGraphQL
 
-public struct InsurableLimits {
-    let insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>
+public struct InsurableLimitsSection {
+    let insurableLimits: [InsurableLimits]
 
     public init(
-        insurableLimitFragmentsSignal: ReadSignal<[GraphQL.InsurableLimitFragment]>
+        insurableLimits: [InsurableLimits]
     ) {
-        self.insurableLimitFragmentsSignal = insurableLimitFragmentsSignal
+        self.insurableLimits = insurableLimits
     }
 }
 
-extension InsurableLimits: Viewable {
-    public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
+extension InsurableLimitsSection: Viewable {
+    public func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
         let section = SectionView(
@@ -26,31 +26,20 @@ extension InsurableLimits: Viewable {
         )
         section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
-        bag += insurableLimitFragmentsSignal.atOnce()
-            .onValueDisposePrevious { insurableLimitFragments in
-                let innerBag = DisposeBag()
+        insurableLimits.forEach { insurableLimit in
+            let row = RowView(title: insurableLimit.label)
+            row.axis = .vertical
+            row.alignment = .leading
+            row.spacing = 5
+            section.append(row)
 
-                innerBag += insurableLimitFragments.map { insurableLimitFragment in
-                    let row = RowView(title: insurableLimitFragment.label)
-                    row.axis = .vertical
-                    row.alignment = .leading
-                    row.spacing = 5
-                    section.append(row)
-
-                    row.append(
-                        UILabel(
-                            value: insurableLimitFragment.limit,
-                            style: .brand(.body(color: .secondary))
-                        )
-                    )
-
-                    return Disposer {
-                        section.remove(row)
-                    }
-                }
-
-                return innerBag
-            }
+            row.append(
+                UILabel(
+                    value: insurableLimit.limit,
+                    style: .brand(.body(color: .secondary))
+                )
+            )
+        }
 
         return (section, bag)
     }
