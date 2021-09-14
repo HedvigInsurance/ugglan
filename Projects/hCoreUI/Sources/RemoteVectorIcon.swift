@@ -106,13 +106,13 @@ extension RemoteVectorIcon: Viewable {
                     ), url.host != nil {
                         return url
                     }
-                    
+
                     return URL(
                         string:
                             "\(Environment.current.assetsEndpointURL.absoluteString)\(pdfUrlString)"
                     )
                 }
-                
+
                 guard let url = pdfURL else { return nil }
 
                 if let data = try? Disk.retrieve(url.absoluteString, from: .caches, as: Data.self) {
