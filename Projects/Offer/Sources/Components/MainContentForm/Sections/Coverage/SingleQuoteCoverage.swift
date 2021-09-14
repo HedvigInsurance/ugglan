@@ -23,7 +23,7 @@ extension SingleQuoteCoverage: Presentable {
 
         bag += section.append(
             PerilCollection(
-                perilSignal: .init(quote.perils.map { .init(fragment: $0.fragments.perilFragment) })
+                perilSignal: .init(quote.contractPerils.map { .init(fragment: $0.fragments.perilFragment) })
             )
             .insetted(UIEdgeInsets(top: 15, left: 15, bottom: 0, right: 15))
         )

@@ -100,12 +100,20 @@ extension RemoteVectorIcon: Viewable {
                 return icon?.light
             }
             .map(on: .background) { pdfUrlString -> CFData? in
-                guard
-                    let url = URL(
+                var pdfURL: URL? {
+                    if let url = URL(
+                        string: pdfUrlString
+                    ), url.host != nil {
+                        return url
+                    }
+                    
+                    return URL(
                         string:
                             "\(Environment.current.assetsEndpointURL.absoluteString)\(pdfUrlString)"
                     )
-                else { return nil }
+                }
+                
+                guard let url = pdfURL else { return nil }
 
                 if let data = try? Disk.retrieve(url.absoluteString, from: .caches, as: Data.self) {
                     DispatchQueue.main.async { imageView.alpha = 1 }
