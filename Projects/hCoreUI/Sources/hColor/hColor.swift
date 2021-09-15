@@ -66,7 +66,7 @@ public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: h
     private var light: LightInnerHColor
     private var dark: DarkInnerHColor
 
-    init(
+    public init(
         light: Color,
         dark: Color
     ) where LightInnerHColor == hColorBase, DarkInnerHColor == hColorBase {
@@ -74,7 +74,7 @@ public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: h
         self.dark = hColorBase(dark)
     }
 
-    init(
+    public init(
         light: LightInnerHColor,
         dark: DarkInnerHColor
     ) {
@@ -82,7 +82,7 @@ public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: h
         self.dark = dark
     }
 
-    init(
+    public init(
         _ always: Color
     ) where LightInnerHColor == hColorBase, DarkInnerHColor == hColorBase {
         self.light = hColorBase(always)
