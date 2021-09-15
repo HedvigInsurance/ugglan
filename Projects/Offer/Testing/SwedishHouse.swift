@@ -39,7 +39,7 @@ extension GraphQL.QuoteBundleQuery.Data {
                                 ),
                             ]
                         ),
-                        perils: generatePerils(),
+                        contractPerils: generatePerils(),
                         insurableLimits: generateInsurableLimits(),
                         insuranceTerms: [
                             .init(

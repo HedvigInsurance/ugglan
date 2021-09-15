@@ -19,7 +19,7 @@ extension GraphQL.QuoteBundleQuery.Data {
                             title: "Home insurance rental",
                             rows: generateHomeRows()
                         ),
-                        perils: generatePerils(),
+                        contractPerils: generatePerils(),
                         insurableLimits: generateInsurableLimits(),
                         insuranceTerms: [
                             .init(

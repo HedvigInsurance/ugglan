@@ -54,7 +54,7 @@ extension GraphQL.QuoteBundleQuery.Data {
                             title: "Indbo",
                             rows: generateDanishHomeRows()
                         ),
-                        perils: generatePerils(),
+                        contractPerils: generatePerils(),
                         insurableLimits: generateInsurableLimits(),
                         insuranceTerms: [
                             .init(
@@ -84,7 +84,7 @@ extension GraphQL.QuoteBundleQuery.Data {
                             title: "Ulykke",
                             rows: generateDanishAccidentRows()
                         ),
-                        perils: generatePerils(),
+                        contractPerils: generatePerils(),
                         insurableLimits: generateInsurableLimits(),
                         insuranceTerms: [
                             .init(
@@ -104,7 +104,7 @@ extension GraphQL.QuoteBundleQuery.Data {
                             title: "Rejse",
                             rows: generateDanishTravelRows()
                         ),
-                        perils: generatePerils(),
+                        contractPerils: generatePerils(),
                         insurableLimits: generateInsurableLimits(),
                         insuranceTerms: [
                             .init(
