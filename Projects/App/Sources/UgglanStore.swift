@@ -50,7 +50,7 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
     @Inject var client: ApolloClient
 
     public override func effects(
-        _ getState: () -> UgglanState,
+        _ getState: @escaping () -> UgglanState,
         _ action: UgglanAction
     ) -> FiniteSignal<UgglanAction>? {
         switch action {

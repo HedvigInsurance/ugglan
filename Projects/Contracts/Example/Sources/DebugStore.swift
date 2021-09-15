@@ -7,8 +7,7 @@ public struct DebugState: StateProtocol {
 }
 
 public enum DebugAction: ActionProtocol {
-    case openOffer(fullscreen: Bool, prefersLargeTitles: Bool)
-    case openDataCollection
+    case openCrossSellingSigned
 
     #if compiler(<5.5)
         public func encode(to encoder: Encoder) throws {

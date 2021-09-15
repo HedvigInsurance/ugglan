@@ -1,3 +1,4 @@
+import Apollo
 import Combine
 import Flow
 import Foundation
@@ -39,6 +40,21 @@ public struct JourneyPreviewer<Journey: JourneyPresentation>: UIViewControllerRe
         _ journey: Journey
     ) {
         self.journey = journey
+
+        let store = ApolloStore()
+        let client = ApolloClient(url: URL(string: "https://graphql.dev.hedvigit.com/graphql")!)
+
+        Dependencies.shared.add(
+            module: Module { () -> ApolloClient in
+                client
+            }
+        )
+
+        Dependencies.shared.add(
+            module: Module { () -> ApolloStore in
+                store
+            }
+        )
     }
 
     public func makeUIViewController(context: Context) -> some UIViewController {
@@ -67,4 +83,12 @@ public struct JourneyPreviewer<Journey: JourneyPresentation>: UIViewControllerRe
     }
 
     public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+}
+
+extension View {
+    public func mockState<S: Store>(_ type: S.Type, getState: (_ state: S.State) -> S.State) -> Self {
+        let store: S = globalPresentableStoreContainer.get()
+        store.setState(getState(store.stateSignal.value))
+        return self
+    }
 }

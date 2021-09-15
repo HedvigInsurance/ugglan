@@ -3,6 +3,7 @@ import Foundation
 import Presentation
 import UIKit
 import hCore
+import hCoreUI
 
 public indirect enum ContractFilter {
     var displaysActiveContracts: Bool {
@@ -42,6 +43,7 @@ public struct Contracts {
 public enum ContractsResult {
     case movingFlow
     case openFreeTextChat
+    case openCrossSellingEmbark(name: String)
 }
 
 extension Contracts: Presentable {
@@ -87,6 +89,8 @@ extension Contracts: Presentable {
                 bag += store.actionSignal.onValue { action in
                     if action == .goToMovingFlow {
                         callback(.movingFlow)
+                    } else if case let .openCrossSellingEmbark(name) = action {
+                        callback(.openCrossSellingEmbark(name: name))
                     }
                 }
 
@@ -121,7 +125,6 @@ public struct ContractFetcher {
     }
 
     private func timer() -> Timer {
-
         let timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { timer in
             store.send(.fetchContracts)
             store.send(.fetchContractBundles)

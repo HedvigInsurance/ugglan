@@ -1,9 +1,10 @@
 import Foundation
 
 public struct ActiveContractBundle: Codable, Equatable {
-    public let contracts: [Contract]
-    public let id: String
-    public let movingFlowEmbarkId: String?
+    public var contracts: [Contract]
+    public var id: String
+    public var movingFlowEmbarkId: String?
+    public var crossSells: [CrossSell]
 
     public init(
         bundle: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle
@@ -11,6 +12,7 @@ public struct ActiveContractBundle: Codable, Equatable {
         contracts = bundle.contracts.map { .init(contract: $0) }
         movingFlowEmbarkId = bundle.angelStories.addressChange
         id = bundle.id
+        crossSells = bundle.potentialCrossSells.compactMap { CrossSell($0) }
     }
 }
 
@@ -26,13 +28,7 @@ public struct IconEnvelope: Codable, Equatable, Hashable {
     }
 }
 
-extension Contract: Equatable {
-    public static func == (lhs: Contract, rhs: Contract) -> Bool {
-        return lhs.id == rhs.id
-    }
-}
-
-public struct Contract: Codable, Hashable {
+public struct Contract: Codable, Hashable, Equatable {
     public init(
         id: String,
         upcomingAgreementsTable: DetailAgreementsTable,
@@ -276,6 +272,7 @@ public struct CurrentAgreement: Codable, Hashable {
     public let activeTo: String?
     public let premium: MonetaryAmount
     public let status: ContractStatus?
+
     init(
         currentAgreement: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract.CurrentAgreement
     ) {

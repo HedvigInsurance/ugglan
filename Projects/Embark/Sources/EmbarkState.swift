@@ -160,11 +160,14 @@ public class EmbarkState {
 
                 guard let totalSteps = self.totalStepsSignal.value else { return 0 }
 
+                if totalSteps == 0 {
+                    return 0
+                }
+
                 return (Float(totalSteps - passagesLeft) / Float(totalSteps))
             }
             .latestTwo()
             .delay { lhs, rhs -> TimeInterval? in if lhs > rhs { return 0 }
-
                 return 0.25
             }
             .map { _, rhs in rhs }.readable(initial: 0)

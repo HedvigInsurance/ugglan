@@ -29,7 +29,7 @@ public enum MarketAction: ActionProtocol {
 
 public final class MarketStore: StateStore<MarketState, MarketAction> {
     public override func effects(
-        _ getState: () -> MarketState,
+        _ getState: @escaping () -> MarketState,
         _ action: MarketAction
     ) -> FiniteSignal<MarketAction>? {
         switch action {

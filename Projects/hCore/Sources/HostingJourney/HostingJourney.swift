@@ -84,6 +84,8 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
                         break
                     }
                 }
+
+            presenter.viewController.debugPresentationTitle = "\(type(of: rootView))"
         }
 
         self.presentable = AnyPresentable(materialize: {
@@ -118,7 +120,9 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
     ) where Result == Disposable {
         self.style = style
         self.options = options
-        self.configure = { _ in }
+        self.configure = { presenter in
+            presenter.viewController.debugPresentationTitle = "\(type(of: rootView))"
+        }
         self.presentable = AnyPresentable(materialize: {
             let controller = ViewHostingController(rootView: rootView)
             controller.debugPresentationTitle = "\(RootView.self)"

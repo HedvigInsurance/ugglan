@@ -18,7 +18,7 @@ extension ContractTableFooter: Viewable {
         let form = FormView()
         let bag = DisposeBag()
 
-        bag += form.append(UpsellingFooter())
+        bag += form.append(CrossSellingFooter())
 
         bag +=
             store.stateSignal.atOnce()

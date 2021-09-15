@@ -1,4 +1,5 @@
 import Contracts
+import Embark
 import Flow
 import Forever
 import Form
@@ -43,9 +44,11 @@ extension AppJourney {
                 AppJourney.movingFlow
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
+            case let .openCrossSellingEmbark(name):
+                AppJourney.crossSellingJourney(name: name)
             }
         }
-        .configureTabBarItem
+        .configureContractsTabBarItem
         .onTabSelected {
             ContextGradient.currentOption = .none
         }

@@ -5,6 +5,7 @@ import hCore
 import hGraphQL
 
 class OldOfferState {
+    @PresentableStore var offerStore: OfferStore
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
     let ids: [String]
@@ -146,6 +147,7 @@ class OldOfferState {
                     }
 
                     self.updateCacheStartDate(quoteId: quoteId, date: nil)
+                    self.offerStore.send(.setStartDate(id: quoteId, startDate: date))
 
                     return Future(nil)
                 }
