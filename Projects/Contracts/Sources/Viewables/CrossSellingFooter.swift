@@ -11,19 +11,21 @@ import hGraphQL
 
 struct CrossSellingStack: View {
     var body: some View {
-        VStack(spacing: 12) {
-            HStack(alignment: .center, spacing: 8) {
-                CrossSellingUnseenCircle()
-                hText(L10n.InsuranceTab.CrossSells.title, style: .title3)
-                    .foregroundColor(hLabelColor.primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: {
+                $0.contractBundles.flatMap { $0.crossSells }
             }
-            PresentableStoreLens(
-                ContractStore.self,
-                getter: {
-                    $0.contractBundles.flatMap { $0.crossSells }
+        ) { crossSells in
+            VStack(spacing: 12) {
+                if !crossSells.isEmpty {
+                    HStack(alignment: .center, spacing: 8) {
+                        CrossSellingUnseenCircle()
+                        hText(L10n.InsuranceTab.CrossSells.title, style: .title3)
+                            .foregroundColor(hLabelColor.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
-            ) { crossSells in
                 ForEach(crossSells, id: \.title) { crossSell in
                     CrossSellingItem(crossSell: crossSell)
                 }

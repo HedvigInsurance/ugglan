@@ -6,16 +6,16 @@ import hCoreUI
 
 public struct CrossSellingSigned: View {
     @PresentableStore var store: ContractStore
-    var startDate: Date?
+    var startDate: Date
 
     public init(
         startDate: Date? = nil
     ) {
-        self.startDate = startDate
+        self.startDate = startDate ?? Date()
     }
 
     var displayDate: String {
-        guard let startDate = startDate, let localDateString = startDate.localDateString else {
+        guard let localDateString = startDate.localDateString else {
             return ""
         }
 

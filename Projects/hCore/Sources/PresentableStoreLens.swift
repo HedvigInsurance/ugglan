@@ -59,25 +59,25 @@ extension CoreSignal where Kind == Read {
 
 final class StoreObserver<S: Store, E: Equatable>: DynamicProperty, ObservableObject {
     typealias ObjectWillChangePublisher = AnyPublisher<S.State, Never>
-    typealias Equater = (_ state: S.State) -> E
+    typealias ObservedPart = (_ state: S.State) -> E
 
-    var equater: Equater
+    var observedPart: ObservedPart
     var store: S
 
     public var objectWillChange: AnyPublisher<S.State, Never> {
         return store.stateSignal
             .distinct({ lhs, rhs in
-                self.equater(lhs) == self.equater(rhs)
+                self.observedPart(lhs) == self.observedPart(rhs)
             })
             .publisher.eraseToAnyPublisher()
     }
 
     init(
-        equater: @escaping Equater
+        observedPart: @escaping ObservedPart
     ) {
         let store: S = globalPresentableStoreContainer.get()
         self.store = store
-        self.equater = equater
+        self.observedPart = observedPart
     }
 }
 
@@ -101,7 +101,7 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         self.getter = getter
         self.setter = setter
         self.content = content
-        self.storeObserver = StoreObserver(equater: getter)
+        self.storeObserver = StoreObserver(observedPart: getter)
     }
 
     public init(
@@ -112,7 +112,9 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         self.getter = getter
         self.setter = { _ in nil }
         self.content = { value, _ in content(value) }
-        self.storeObserver = StoreObserver(equater: getter)
+        self.storeObserver = StoreObserver(observedPart: { state in
+            getter(state)
+        })
     }
 
     public var body: some View {
@@ -124,27 +126,5 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
                 }
             }
         )
-    }
-}
-
-public protocol Lens: View {
-    associatedtype S: Store
-    associatedtype Value: Equatable
-    associatedtype LensBody: View
-
-    func getter(_ state: S.State) -> Value
-    func setter(_ value: Value) -> S.Action?
-    func body(_ value: Value, _ setter: (_ value: Value) -> Void) -> LensBody
-}
-
-extension Lens {
-    public var body: some View {
-        PresentableStoreLens(S.self, getter: getter, setter: setter) { value, setter in
-            body(value, setter)
-        }
-    }
-
-    public func setter(_ value: Value) -> S.Action? {
-        nil
     }
 }

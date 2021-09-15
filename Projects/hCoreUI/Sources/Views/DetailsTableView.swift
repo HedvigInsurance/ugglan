@@ -66,15 +66,23 @@ extension DetailAgreementsTable: Viewable {
     public func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
-        let headerContainer = UIStackView()
-        headerContainer.addArrangedSubview(
-            UILabel(
-                value: title,
-                style: .brand(.title2(color: .primary))
-            )
-        )
+        let sectionView: SectionView
 
-        let sectionView = SectionView(headerView: headerContainer, footerView: nil)
+        if !title.isEmpty {
+            let headerContainer = UIStackView()
+
+            headerContainer.addArrangedSubview(
+                UILabel(
+                    value: title,
+                    style: .brand(.title2(color: .primary))
+                )
+            )
+
+            sectionView = SectionView(headerView: headerContainer, footerView: nil)
+        } else {
+            sectionView = SectionView(headerView: nil, footerView: nil)
+        }
+
         sectionView.dynamicStyle = .brandGrouped(separatorType: .none)
         bag += {
             sectionView.removeFromSuperview()
