@@ -101,7 +101,11 @@ public struct hText: View {
 
     public var body: some View {
         Text(text).modifier(hFontModifier(style: style ?? defaultStyle ?? .body))
-            .onReceive(Just(hButtonWasTappedDate != nil)) { _ in
+            .onReceive(Just(hButtonWasTappedDate)) { dateTapped in
+                guard dateTapped != nil else {
+                    return
+                }
+                
                 if let derivedFromL10n = text.derivedFromL10n {
                     Analytics.track(.buttonClick, properties: ["localizationKey": derivedFromL10n.key])
                 } else {
