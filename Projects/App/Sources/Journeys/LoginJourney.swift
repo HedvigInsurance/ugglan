@@ -22,6 +22,7 @@ extension AppJourney {
                     }
                 }
                 .withJourneyDismissButton
+                .mapJourneyDismissToCancel
             case .loggedIn:
                 AppJourney.loggedIn
             }

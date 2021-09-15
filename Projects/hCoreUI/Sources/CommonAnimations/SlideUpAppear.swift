@@ -19,7 +19,7 @@ struct SlideUpAppearAnimationModifier: ViewModifier {
         content
             .background(
                 GeometryReader { geo in
-                    Rectangle().fill(.clear)
+                    Rectangle().fill(Color.clear)
                         .onReceive(Just(geo.size.height)) { height in
                             if height != self.height {
                                 self.height = height
@@ -31,7 +31,7 @@ struct SlideUpAppearAnimationModifier: ViewModifier {
                 Just(height),
                 perform: { height in
                     if height != 0 {
-                        withAnimation(.spring().delay(delay)) {
+                        withAnimation(.spring().delay(Double(delay))) {
                             animateAppearPerformed = true
                         }
                     }
