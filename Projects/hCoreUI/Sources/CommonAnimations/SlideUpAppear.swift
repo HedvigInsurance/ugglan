@@ -3,7 +3,7 @@ import Foundation
 import SwiftUI
 
 struct SlideUpAppearAnimationModifier: ViewModifier {
-    var delay: CGFloat
+    var delay: Double
     @State var animateAppearPerformed = false
     @State var height: CGFloat = 0
 
@@ -19,7 +19,7 @@ struct SlideUpAppearAnimationModifier: ViewModifier {
         content
             .background(
                 GeometryReader { geo in
-                    Rectangle().fill(Color.clear)
+                    Color.clear
                         .onReceive(Just(geo.size.height)) { height in
                             if height != self.height {
                                 self.height = height
@@ -31,7 +31,7 @@ struct SlideUpAppearAnimationModifier: ViewModifier {
                 Just(height),
                 perform: { height in
                     if height != 0 {
-                        withAnimation(.spring().delay(Double(delay))) {
+                        withAnimation(.spring().delay(delay)) {
                             animateAppearPerformed = true
                         }
                     }
@@ -43,7 +43,7 @@ struct SlideUpAppearAnimationModifier: ViewModifier {
 }
 
 extension View {
-    public func slideUpAppearAnimation(delay: CGFloat = 0.2) -> some View {
+    public func slideUpAppearAnimation(delay: Double = 0.2) -> some View {
         self.modifier(SlideUpAppearAnimationModifier(delay: delay))
     }
 }

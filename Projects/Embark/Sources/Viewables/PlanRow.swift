@@ -22,57 +22,26 @@ struct PlanRow: Equatable, Hashable {
     let isSelected: ReadWriteSignal<Bool>
 }
 
-struct BulletView: UIViewRepresentable {
-    var isSelected: Bool
-
-    class Coordinator {
-        let bag = DisposeBag()
-        let isSelectedSignal: ReadWriteSignal<Bool>
-        let bullet: Bullet
-
-        init(
-            isSelectedSignal: ReadWriteSignal<Bool>
-        ) {
-            self.isSelectedSignal = isSelectedSignal
-            self.bullet = Bullet(isSelectedSignal: isSelectedSignal)
-        }
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(isSelectedSignal: .init(false))
-    }
-
-    func makeUIView(context: Context) -> some UIView {
-        let (view, disposable) = context.coordinator.bullet.materialize(
-            events: ViewableEvents(wasAddedCallbacker: .init())
-        )
-        context.coordinator.isSelectedSignal.value = isSelected
-        context.coordinator.bag += disposable
-        return view
-    }
-
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-        context.coordinator.isSelectedSignal.value = isSelected
-    }
-}
-
 struct PlanRowContent: View {
     let selected: Bool
     let row: PlanRow
 
     @ViewBuilder var discountBackground: some View {
         if !selected {
-            hGrayscaleColor.one
+            hColorScheme(
+                light: hGrayscaleColor.five,
+                dark: hGrayscaleColor.one
+            )
         } else {
-            hBackgroundColor.primary.colorScheme(.dark)
+            hBackgroundColor.primary
         }
     }
 
     @hColorBuilder var discountForegroundColor: some hColor {
         if !selected {
-            hLabelColor.primary
-        } else {
             hLabelColor.primary.inverted
+        } else {
+            hLabelColor.primary
         }
     }
 
@@ -95,6 +64,7 @@ struct PlanRowContent: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(discountBackground)
                 .foregroundColor(discountForegroundColor)
+                .invertColorScheme
             }
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .center) {
