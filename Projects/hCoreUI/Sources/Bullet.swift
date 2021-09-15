@@ -1,7 +1,7 @@
 import Flow
+import SwiftUI
 import UIKit
 import hCore
-import SwiftUI
 
 public struct Bullet {
     @ReadWriteState public var isSelected = false
@@ -56,8 +56,10 @@ extension Bullet: Viewable {
 
 public struct BulletView: UIViewRepresentable {
     public var isSelected: Bool
-    
-    public init(isSelected: Bool) {
+
+    public init(
+        isSelected: Bool
+    ) {
         self.isSelected = isSelected
     }
 
