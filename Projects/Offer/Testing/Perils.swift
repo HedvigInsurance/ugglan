@@ -2,7 +2,7 @@ import Apollo
 import Foundation
 import hGraphQL
 
-func generatePerils() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.Peril] {
+func generatePerils() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.ContractPeril] {
     return .init(
         repeating: .init(
             title: "Delays",
