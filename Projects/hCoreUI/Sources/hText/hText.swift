@@ -105,7 +105,7 @@ public struct hText: View {
                 guard dateTapped != nil else {
                     return
                 }
-                
+
                 if let derivedFromL10n = text.derivedFromL10n {
                     Analytics.track(.buttonClick, properties: ["localizationKey": derivedFromL10n.key])
                 } else {
