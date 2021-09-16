@@ -44,11 +44,15 @@ query ActiveContractBundles($locale: Locale!) {
       addressChange
     }
     potentialCrossSells {
+      contractType
       title
       description
       imageUrl
       blurHash
       callToAction
+      info(locale: $locale) {
+        displayName
+      }
       action {
         ... on CrossSellChat {
           _
