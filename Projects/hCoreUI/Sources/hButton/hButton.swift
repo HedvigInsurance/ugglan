@@ -94,7 +94,7 @@ extension View {
 struct ButtonFilledBackground: View {
     @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
     var configuration: SwiftUI.ButtonStyle.Configuration
-    
+
     var body: some View {
         switch hButtonFilledStyle {
         case .standard:
