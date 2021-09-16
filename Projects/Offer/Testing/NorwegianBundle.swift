@@ -118,6 +118,9 @@ extension GraphQL.QuoteBundleQuery.Data {
                 ]),
                 appConfiguration: .init(
                     showCampaignManagement: true,
+                    ignoreCampaigns: false,
+                    approveButtonTerminology: .confirmPurchase,
+                    startDateTerminology: .startDate,
                     title: .logo,
                     gradientOption: .gradientThree
                 )

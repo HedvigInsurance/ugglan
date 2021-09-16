@@ -46,6 +46,9 @@ extension GraphQL.QuoteBundleQuery.Data {
                 ]),
                 appConfiguration: .init(
                     showCampaignManagement: false,
+                    ignoreCampaigns: false,
+                    approveButtonTerminology: .approveChanges,
+                    startDateTerminology: .accessDate,
                     title: .updateSummary,
                     gradientOption: .gradientOne
                 )
