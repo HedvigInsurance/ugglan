@@ -81,7 +81,7 @@ extension StartDateSection: Presentable {
                 let innerBag = DisposeBag()
 
                 let displayableStartDate = quoteBundle.displayableStartDate
-                
+
                 let row = RowView(
                     title: quoteBundle.startDateTerminology
                 )

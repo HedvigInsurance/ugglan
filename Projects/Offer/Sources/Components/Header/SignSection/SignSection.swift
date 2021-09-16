@@ -91,7 +91,7 @@ extension SignSection: Presentable {
                         textColor: .brand(.secondaryButtonTextColor)
                     )
                 )
-                
+
                 let loadableSignButton = LoadableButton(button: signButton)
 
                 innerBag += loadableSignButton.onTapSignal

@@ -85,7 +85,7 @@ extension PriceRow: Presentable {
         bag += state.dataSignal.map { $0.quoteBundle }
             .onValue { quoteBundle in
                 let bundleCost = quoteBundle.bundleCost
-                
+
                 if quoteBundle.appConfiguration.ignoreCampaigns {
                     grossPriceLabel.isHidden = true
                     grossPriceLabel.value = ""
@@ -103,7 +103,7 @@ extension PriceRow: Presentable {
                         bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
                         .formattedAmountWithoutSymbol
                 }
-                
+
                 perMonthLabel.value =
                     "\(bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount.currencySymbol)\(L10n.perMonth)"
             }
