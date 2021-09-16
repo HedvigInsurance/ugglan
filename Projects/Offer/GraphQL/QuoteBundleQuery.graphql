@@ -68,6 +68,9 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
     }
     appConfiguration {
       showCampaignManagement
+      ignoreCampaigns
+      approveButtonTerminology
+      startDateTerminology
       title
       gradientOption
     }

@@ -46,6 +46,20 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
     }
 }
 
+extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
+    var startDateTerminology: String {
+        switch appConfiguration.startDateTerminology {
+        case .startDate:
+            return self.canHaveIndependentStartDates
+                ? L10n.offerStartDatePlural : L10n.offerStartDate
+        case .accessDate:
+            return L10n.offerAccessDate
+        case .__unknown(_):
+            return ""
+        }
+    }
+}
+
 extension StartDateSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let section = SectionView()
@@ -67,10 +81,9 @@ extension StartDateSection: Presentable {
                 let innerBag = DisposeBag()
 
                 let displayableStartDate = quoteBundle.displayableStartDate
-
+                
                 let row = RowView(
-                    title: quoteBundle.canHaveIndependentStartDates
-                        ? L10n.offerStartDatePlural : L10n.offerStartDate
+                    title: quoteBundle.startDateTerminology
                 )
                 row.titleLabel?.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
                 let iconImageView = UIImageView()
