@@ -6,12 +6,6 @@ import Payment
 import Presentation
 import hCore
 
-#if PRESENTATION_DEBUGGER
-    #if compiler(>=5.5)
-        import PresentationDebugSupport
-    #endif
-#endif
-
 extension AppDelegate {
     func handleDeepLink(_ dynamicLinkUrl: URL) -> Bool {
         guard let path = dynamicLinkUrl.pathComponents.compactMap({ DeepLink(rawValue: $0) }).first else {

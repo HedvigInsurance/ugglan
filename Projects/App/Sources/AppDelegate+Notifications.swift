@@ -9,12 +9,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-#if PRESENTATION_DEBUGGER
-    #if compiler(>=5.5)
-        import PresentationDebugSupport
-    #endif
-#endif
-
 extension AppDelegate: MessagingDelegate {
     func registerFCMToken(_ token: String) {
         bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 })
