@@ -31,6 +31,10 @@ extension AppJourney {
         .configureTabBarItem
         .onTabSelected {
             ContextGradient.currentOption = .home
+        }.makeTabSelected(UgglanStore.self) { action in
+            if case.makeTabActive(let deepLink) = action {
+                return deepLink == .home
+            } else { return false }
         }
     }
 
@@ -51,6 +55,10 @@ extension AppJourney {
         .configureContractsTabBarItem
         .onTabSelected {
             ContextGradient.currentOption = .none
+        }.makeTabSelected(UgglanStore.self) { action in
+            if case.makeTabActive(let deepLink) = action {
+                return deepLink == .insurances
+            } else { return false }
         }
     }
 
@@ -75,7 +83,9 @@ extension AppJourney {
             ContextGradient.currentOption = .forever
         }
         .makeTabSelected(UgglanStore.self) { action in
-            action == .makeForeverTabActive
+            if case.makeTabActive(let deepLink) = action {
+                return deepLink == .forever
+            } else { return false }
         }
     }
 
@@ -87,6 +97,10 @@ extension AppJourney {
         .configureTabBarItem
         .onTabSelected {
             ContextGradient.currentOption = .profile
+        }.makeTabSelected(UgglanStore.self) { action in
+            if case.makeTabActive(let deepLink) = action {
+                return deepLink == .profile
+            } else { return false }
         }
     }
 
