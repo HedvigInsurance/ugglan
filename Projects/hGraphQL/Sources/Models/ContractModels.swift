@@ -225,7 +225,7 @@ public struct Perils: Codable, Equatable, Hashable {
     public let icon: IconEnvelope?
     public let covered: [String]
     public let exceptions: [String]
-    public let info: String
+    
     public init(
         fragment: GraphQL.PerilFragment
     ) {
@@ -234,7 +234,6 @@ public struct Perils: Codable, Equatable, Hashable {
         icon = .init(fragment: fragment.icon.fragments.iconFragment)
         covered = fragment.covered
         exceptions = fragment.exceptions
-        info = fragment.info
     }
 }
 
