@@ -1,13 +1,13 @@
-import hCore
-import Payment
-import Presentation
-import Foundation
-import Flow
+import Apollo
 import CoreDependencies
 import FirebaseMessaging
+import Flow
+import Foundation
+import Payment
+import Presentation
+import hCore
 import hCoreUI
 import hGraphQL
-import Apollo
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -88,16 +88,16 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     }
             } else if notificationType == "OPEN_INSURANCE_TAB" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                .onValue { _ in
-                    let store: UgglanStore = globalPresentableStoreContainer.get()
-                    store.send(.makeTabActive(deeplink: .insurances))
-                }
+                    .onValue { _ in
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        store.send(.makeTabActive(deeplink: .insurances))
+                    }
             }
         }
 
         completionHandler()
     }
-    
+
     func userNotificationCenter(
         _: UNUserNotificationCenter,
         willPresent notification: UNNotification,
