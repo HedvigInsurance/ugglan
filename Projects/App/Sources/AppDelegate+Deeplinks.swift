@@ -15,7 +15,7 @@ extension AppDelegate {
         guard let rootViewController = window.rootViewController else { return false }
 
         Analytics.track(path.trackingName, properties: [:])
-        Analytics.track(path.deprecatedTrackingName, properties: ["type":path.rawValue])
+        Analytics.track(path.deprecatedTrackingName, properties: ["type": path.rawValue])
 
         if path == .directDebit {
             bag += rootViewController.present(
