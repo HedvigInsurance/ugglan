@@ -82,17 +82,28 @@ extension PriceRow: Presentable {
         )
         view.addArrangedSubview(perMonthLabel)
 
-        bag += state.dataSignal.map { $0.quoteBundle.bundleCost }
-            .onValue { bundleCost in
-                grossPriceLabel.isHidden =
-                    bundleCost.monthlyDiscount.fragments.monetaryAmountFragment.monetaryAmount
-                    .floatAmount == 0
-                netPriceLabel.value =
-                    bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount
-                    .formattedAmountWithoutSymbol
-                grossPriceLabel.value =
-                    bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
-                    .formattedAmountWithoutSymbol
+        bag += state.dataSignal.map { $0.quoteBundle }
+            .onValue { quoteBundle in
+                let bundleCost = quoteBundle.bundleCost
+
+                if quoteBundle.appConfiguration.ignoreCampaigns {
+                    grossPriceLabel.isHidden = true
+                    grossPriceLabel.value = ""
+                    netPriceLabel.value =
+                        bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
+                        .formattedAmountWithoutSymbol
+                } else {
+                    grossPriceLabel.isHidden =
+                        bundleCost.monthlyDiscount.fragments.monetaryAmountFragment.monetaryAmount
+                        .floatAmount == 0
+                    netPriceLabel.value =
+                        bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount
+                        .formattedAmountWithoutSymbol
+                    grossPriceLabel.value =
+                        bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
+                        .formattedAmountWithoutSymbol
+                }
+
                 perMonthLabel.value =
                     "\(bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount.currencySymbol)\(L10n.perMonth)"
             }

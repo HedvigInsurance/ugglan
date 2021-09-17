@@ -5,9 +5,23 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct SignSection {
     @Inject var state: OldOfferState
+}
+
+extension GraphQL.QuoteBundleAppConfigurationApproveButtonTerminology {
+    var displayValue: String {
+        switch self {
+        case .approveChanges:
+            return L10n.offerApproveChanges
+        case .confirmPurchase:
+            return L10n.offerConfirmPurchase
+        case .__unknown:
+            return ""
+        }
+    }
 }
 
 extension SignSection: Presentable {
@@ -71,7 +85,7 @@ extension SignSection: Presentable {
                 innerBag += row.append(signButton)
             case .approveOnly:
                 let signButton = Button(
-                    title: L10n.offerApproveChanges,
+                    title: data.quoteBundle.appConfiguration.approveButtonTerminology.displayValue,
                     type: .standard(
                         backgroundColor: .brand(.secondaryButtonBackgroundColor),
                         textColor: .brand(.secondaryButtonTextColor)

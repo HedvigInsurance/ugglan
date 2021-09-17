@@ -15,7 +15,16 @@ struct StartDate {
 extension StartDate: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
-        viewController.title = L10n.offerSetStartDate
+
+        switch quoteBundle.appConfiguration.startDateTerminology {
+        case .accessDate:
+            viewController.title = L10n.offerSetAccessDate
+        case .startDate:
+            viewController.title = L10n.offerSetStartDate
+        case .__unknown:
+            break
+        }
+
         viewController.preferredPresentationStyle = .detented(.large)
         let bag = DisposeBag()
 
