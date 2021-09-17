@@ -15,6 +15,7 @@ extension AppDelegate {
         guard let rootViewController = window.rootViewController else { return false }
 
         Analytics.track(path.trackingName, properties: [:])
+        Analytics.track(path.deprecatedTrackingName, properties: ["type":path.rawValue])
 
         if path == .directDebit {
             bag += rootViewController.present(
@@ -44,22 +45,12 @@ public enum DeepLink: String, Codable {
 
 extension DeepLink {
     var trackingName: String {
-        switch self {
-
-        case .forever:
-            return "DEEP_LINK_FOREVER"
-        case .directDebit:
-            return "DEEP_LINK_FOREVER"
-        case .profile:
-            return "DEEP_LINK_FOREVER"
-        case .insurances:
-            return "DEEP_LINK_FOREVER"
-        case .home:
-            return "DEEP_LINK_FOREVER"
-        }
+        "DEEP_LINK_\(self.rawValue.uppercased())"
     }
 }
 
 extension DeepLink {
-
+    var deprecatedTrackingName: String {
+        return "DEEP_LINK"
+    }
 }
