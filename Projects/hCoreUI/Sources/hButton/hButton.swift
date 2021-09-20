@@ -91,9 +91,22 @@ extension View {
     }
 }
 
+struct ButtonFilledBackground: View {
+    @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
+    var configuration: SwiftUI.ButtonStyle.Configuration
+
+    var body: some View {
+        switch hButtonFilledStyle {
+        case .standard:
+            ButtonFilledStandardBackground(configuration: configuration)
+        case .overImage:
+            ButtonFilledOverImageBackground(configuration: configuration)
+        }
+    }
+}
+
 struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     var size: ButtonSize
-    @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
 
     struct Label: View {
         @Environment(\.isEnabled) var isEnabled
@@ -138,15 +151,6 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         )
     }
 
-    @ViewBuilder func background(configuration: Configuration) -> some View {
-        switch hButtonFilledStyle {
-        case .standard:
-            ButtonFilledStandardBackground(configuration: configuration)
-        case .overImage:
-            ButtonFilledOverImageBackground(configuration: configuration)
-        }
-    }
-
     func makeBody(configuration: Configuration) -> some View {
         VStack {
             Label(configuration: configuration)
@@ -154,7 +158,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                 .padding(.trailing, 16)
         }
         .buttonSizeModifier(size)
-        .background(background(configuration: configuration))
+        .background(ButtonFilledBackground(configuration: configuration))
         .overlay(configuration.isPressed ? pressedColor : nil)
         .cornerRadius(.defaultCornerRadius)
     }

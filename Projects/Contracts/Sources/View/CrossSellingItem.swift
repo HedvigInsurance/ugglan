@@ -53,8 +53,8 @@ struct CrossSellingItem: View {
                 } content: {
                     hText(crossSell.buttonText)
                 }
-                .hButtonFilledStyle(.overImage)
             }
+            .hButtonFilledStyle(.overImage)
         }
         .padding(16)
         .frame(
@@ -83,7 +83,8 @@ struct CrossSellingItemPreviews: PreviewProvider {
             )!,
             blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
             buttonText: "Calculate price",
-            embarkStoryName: nil
+            embarkStoryName: nil,
+            typeOfContract: "SE_ACCIDENT"
         )
     )
 
@@ -94,7 +95,8 @@ struct CrossSellingItemPreviews: PreviewProvider {
             imageURL: URL(string: "https://hedvig.com/")!,
             blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
             buttonText: "Calculate price",
-            embarkStoryName: nil
+            embarkStoryName: nil,
+            typeOfContract: "SE_ACCIDENT"
         )
     )
 

@@ -78,7 +78,8 @@ struct CrossSellingSignedPreviews: PreviewProvider {
                 description: "",
                 imageURL: URL(string: "https://giraffe.hedvig.com")!,
                 blurHash: "",
-                buttonText: ""
+                buttonText: "",
+                typeOfContract: "SE_ACCIDENT"
             )
 
             return newState
