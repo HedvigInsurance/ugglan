@@ -22,8 +22,7 @@ func generatePerils() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.Contra
                 "Delayed luggage on the return journey",
                 "Delay, cancellation or overbooking covered by EU Directive 261/2004 for which the airlines themselves are responsible",
                 "Financial loss or damage directly/indirectly caused by strikes, labour conflicts, lockouts or bankruptcy",
-            ],
-            info: ""
+            ]
         ),
         count: 15
     )
