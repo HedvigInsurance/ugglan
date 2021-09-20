@@ -14,20 +14,6 @@ public struct DataCollectionState: StateProtocol {
 public enum DataCollectionAction: ActionProtocol {
     case setProvider(provider: String)
     case didIntroDecide(decision: DataCollectionIntroDecision)
-
-    #if compiler(<5.5)
-        public func encode(to encoder: Encoder) throws {
-            #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-            fatalError()
-        }
-
-        public init(
-            from decoder: Decoder
-        ) throws {
-            #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-            fatalError()
-        }
-    #endif
 }
 
 public final class DataCollectionStore: StateStore<DataCollectionState, DataCollectionAction> {
