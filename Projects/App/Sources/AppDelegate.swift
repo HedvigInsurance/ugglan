@@ -123,48 +123,6 @@ let log = Logger.builder
         }
     }
 
-    func handleDeepLink(_ dynamicLinkUrl: URL) -> Bool {
-        if dynamicLinkUrl.pathComponents.contains("direct-debit") {
-            guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-            guard let rootViewController = window.rootViewController else { return false }
-
-            Analytics.track("DEEP_LINK_DIRECT_DEBIT", properties: [:])
-            Analytics.track(
-                "DEEP_LINK",
-                properties: [
-                    "type": "DIRECT_DEBIT"
-                ]
-            )
-
-            bag += rootViewController.present(
-                PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
-                style: .modal,
-                options: [.defaults]
-            )
-
-            return true
-        } else if dynamicLinkUrl.pathComponents.contains("forever") {
-            guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-            bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                .onValue { _ in
-                    let store: UgglanStore = globalPresentableStoreContainer.get()
-                    store.send(.makeForeverTabActive)
-                }
-
-            Analytics.track("DEEP_LINK_FOREVER", properties: [:])
-            Analytics.track(
-                "DEEP_LINK",
-                properties: [
-                    "type": "FOREVER"
-                ]
-            )
-
-            return true
-        }
-
-        return false
-    }
-
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
         let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
 
@@ -459,20 +417,6 @@ let log = Logger.builder
 
         return true
     }
-
-    func userNotificationCenter(
-        _: UNUserNotificationCenter,
-        willPresent notification: UNNotification,
-        withCompletionHandler _: @escaping (UNNotificationPresentationOptions) -> Void
-    ) {
-        let toast = Toast(
-            symbol: .none,
-            body: notification.request.content.title,
-            subtitle: notification.request.content.body
-        )
-
-        if ChatState.shared.allowNewMessageToast { Toasts.shared.displayToast(toast: toast) }
-    }
 }
 
 extension ApolloClient {
@@ -483,83 +427,5 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { client })
             }
             .toVoid()
-    }
-}
-
-extension AppDelegate: MessagingDelegate {
-    func registerFCMToken(_ token: String) {
-        bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 })
-            .onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
-                client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token))
-                    .onValue { data in
-                        if data.registerPushToken != nil {
-                            log.info("Did register push token for user")
-                        } else {
-                            log.info("Failed to register push token for user")
-                        }
-                    }
-            }
-    }
-
-    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        if let fcmToken = fcmToken {
-            ApplicationState.setFirebaseMessagingToken(fcmToken)
-            registerFCMToken(fcmToken)
-        }
-    }
-}
-
-extension AppDelegate: UNUserNotificationCenterDelegate {
-    func userNotificationCenter(
-        _: UNUserNotificationCenter,
-        didReceive response: UNNotificationResponse,
-        withCompletionHandler completionHandler: @escaping () -> Void
-    ) {
-        let userInfo = response.notification.request.content.userInfo
-        guard let notificationType = userInfo["TYPE"] as? String else { return }
-
-        if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-            if notificationType == "NEW_MESSAGE" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                        store.send(.openChat)
-                    }
-            } else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                        store.send(.makeForeverTabActive)
-                    }
-            } else if notificationType == "CONNECT_DIRECT_DEBIT" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        self.window.rootViewController?
-                            .present(
-                                PaymentSetup(
-                                    setupType: .initial,
-                                    urlScheme: Bundle.main.urlScheme ?? ""
-                                ),
-                                style: .modal,
-                                options: [.defaults]
-                            )
-                    }
-            } else if notificationType == "PAYMENT_FAILED" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        self.window.rootViewController?
-                            .present(
-                                PaymentSetup(
-                                    setupType: .replacement,
-                                    urlScheme: Bundle.main.urlScheme ?? ""
-                                ),
-                                style: .modal,
-                                options: [.defaults]
-                            )
-                    }
-            }
-        }
-
-        completionHandler()
     }
 }

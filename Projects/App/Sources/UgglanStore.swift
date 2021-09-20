@@ -22,7 +22,7 @@ public struct UgglanState: StateProtocol {
 
 public enum UgglanAction: ActionProtocol {
     case setSelectedTabIndex(index: Int)
-    case makeForeverTabActive
+    case makeTabActive(deeplink: DeepLink)
     case fetchFeatures
     case setFeatures(features: [UgglanState.Feature]?)
     case showLoggedIn
