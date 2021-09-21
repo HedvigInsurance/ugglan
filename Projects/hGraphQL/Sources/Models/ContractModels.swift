@@ -95,7 +95,12 @@ public struct Contract: Codable, Hashable, Equatable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
-        gradientOption = .init(rawValue: contract.gradientOption.rawValue)
+        
+        if let contractGradientOption = contract.gradientOption {
+            gradientOption = .init(rawValue: contractGradientOption.rawValue)
+        } else {
+            gradientOption = nil
+        }
     }
 
     public init(
@@ -118,7 +123,12 @@ public struct Contract: Codable, Hashable, Equatable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
-        gradientOption = .init(rawValue: contract.gradientOption.rawValue)
+        
+        if let contractGradientOption = contract.gradientOption {
+            gradientOption = .init(rawValue: contractGradientOption.rawValue)
+        } else {
+            gradientOption = nil
+        }
     }
 
     public enum GradientOption: String, Codable {
