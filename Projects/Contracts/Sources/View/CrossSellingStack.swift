@@ -1,13 +1,15 @@
-import Apollo
-import Flow
-import Form
+//
+//  CrossSellingStack.swift
+//  CrossSellingStack
+//
+//  Created by Sam Pettersson on 2021-09-22.
+//  Copyright © 2021 Hedvig AB. All rights reserved.
+//
+
 import Foundation
-import Presentation
 import SwiftUI
-import UIKit
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct CrossSellingStack: View {
     var body: some View {
@@ -32,14 +34,5 @@ struct CrossSellingStack: View {
             }
         }
         .padding(15)
-    }
-}
-
-struct CrossSellingFooter {}
-
-extension CrossSellingFooter: Presentable {
-    func materialize() -> (UIView, Disposable) {
-        let view = HostingView(rootView: CrossSellingStack())
-        return (view, NilDisposer())
     }
 }

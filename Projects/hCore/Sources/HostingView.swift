@@ -35,6 +35,18 @@ public class HostingView<Content: View>: UIView {
     ) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    public override func systemLayoutSizeFitting(_ targetSize: CGSize) -> CGSize {
+        rootViewHostingController.view.sizeThatFits(targetSize)
+    }
+    
+    public override var intrinsicContentSize: CGSize {
+        if let superview = superview {
+            return rootViewHostingController.view.sizeThatFits(superview.frame.size)
+        } else {
+            return rootViewHostingController.view.sizeThatFits(.zero)
+        }
+    }
 
     override open func systemLayoutSizeFitting(
         _ targetSize: CGSize,

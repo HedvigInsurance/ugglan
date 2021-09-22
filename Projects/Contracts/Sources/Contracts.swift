@@ -4,6 +4,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import SwiftUI
 
 public indirect enum ContractFilter {
     var displaysActiveContracts: Bool {
@@ -36,8 +37,15 @@ public indirect enum ContractFilter {
 }
 
 public struct Contracts {
+    @PresentableStore var store: ContractStore
+    let pollTimer = Timer.publish(every: 6, on: .main, in: .common).autoconnect()
     let filter: ContractFilter
-    public init(filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none))) { self.filter = filter }
+    
+    public init(
+        filter: ContractFilter
+    ) {
+        self.filter = filter
+    }
 }
 
 public enum ContractsResult {
@@ -46,91 +54,53 @@ public enum ContractsResult {
     case openCrossSellingEmbark(name: String)
 }
 
-extension Contracts: Presentable {
-    public func materialize() -> (UIViewController, Signal<ContractsResult>) {
-        let viewController = UIViewController()
-
-        let store: ContractStore = get()
-
-        let bag = DisposeBag()
-
-        if filter.displaysActiveContracts {
-            viewController.title = L10n.InsurancesTab.title
-            viewController.installChatButton()
-        }
-
-        bag += viewController.install(
-            ContractTable(presentingViewController: viewController, filter: filter)
-        )
-
-        // Initial fetch
+extension Contracts: View {
+    func fetch() {
         store.send(.fetchContracts)
         store.send(.fetchContractBundles)
         store.send(.fetchUpcomingAgreement)
-
-        // Poll when has window
-        bag += viewController.view.hasWindowSignal.onValueDisposePrevious { hasWindow in
-            let innerBag = DisposeBag()
-
-            if hasWindow {
-                let fetcher = ContractFetcher(store: store)
-
-                innerBag += fetcher.fetch()
-            } else {
-                innerBag.dispose()
-            }
-
-            return innerBag
+    }
+    
+    public var body: some View {
+        hForm {
+            ContractTable(filter: filter)
+        }.onReceive(pollTimer) { _ in
+            fetch()
+        }.onAppear {
+            fetch()
         }
-
-        return (
-            viewController,
-            Signal { callback in
-                bag += store.actionSignal.onValue { action in
-                    if action == .goToMovingFlow {
-                        callback(.movingFlow)
-                    } else if case let .openCrossSellingEmbark(name) = action {
-                        callback(.openCrossSellingEmbark(name: name))
-                    }
-                }
-
-                return bag
-            }
-        )
     }
 }
 
-extension Contracts: Tabable {
-    public func tabBarItem() -> UITabBarItem {
-        UITabBarItem(
-            title: L10n.InsurancesTab.title,
-            image: Asset.tab.image,
-            selectedImage: Asset.tabActive.image
-        )
-    }
-}
-
-public struct ContractFetcher {
-    let store: ContractStore
-    public func fetch() -> Disposable {
-        let bag = DisposeBag()
-        let timer = timer()
-        timer.fire()
-
-        bag += {
-            timer.invalidate()
+extension Contracts {
+    public static func journey(filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none))) -> some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: Contracts(filter: filter),
+            options: [
+                .defaults,
+                .prefersLargeTitles(true),
+                .largeTitleDisplayMode(filter.displaysActiveContracts ? .always : .never)
+            ]
+        ) { action in
+            if case let .openDetail(contract) = action {
+                Journey(
+                    ContractDetail(
+                        contractRow: ContractRow(contract: contract)
+                    ),
+                    options: [.largeTitleDisplayMode(.never)]
+                )
+            } else if case .openTerminatedContracts = action {
+                Self.journey(filter: .terminated(ifEmpty: .none))
+            }
         }
-
-        return bag
-    }
-
-    private func timer() -> Timer {
-        let timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { timer in
-            store.send(.fetchContracts)
-            store.send(.fetchContractBundles)
-            store.send(.fetchUpcomingAgreement)
-        }
-
-        return timer
+        .addConfiguration({ presenter in
+            if let navigationController = presenter.viewController as? UINavigationController {
+                navigationController.isHeroEnabled = true
+                navigationController.hero.navigationAnimationType = .fade
+            }
+        })
+        .configureTitle(filter.displaysActiveContracts ? L10n.InsurancesTab.title : "")
+        .configureContractsTabBarItem
     }
 }

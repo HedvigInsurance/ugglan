@@ -6,6 +6,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import SwiftUI
 
 struct ContractDetail {
     var contractRow: ContractRow
@@ -28,10 +29,12 @@ extension ContractDetail: Presentable {
 
         form.appendSpacing(.inbetween)
 
-        let (contractRowView, configureContractRow) = ContractRow.makeAndConfigure()
-        bag += configureContractRow(contractRow)
-
-        form.append(contractRowView)
+        let contractRowHost = HostingView(
+            rootView: VStack {
+                contractRow
+            }.padding(16)
+        )
+        form.append(contractRowHost)
 
         let contractInformation = ContractInformation(contract: contractRow.contract)
 

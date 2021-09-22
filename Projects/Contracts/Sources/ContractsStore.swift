@@ -35,6 +35,8 @@ public enum ContractAction: ActionProtocol {
     case openCrossSellingEmbark(name: String)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
+    case openDetail(contract: Contract)
+    case openTerminatedContracts
 
     #if compiler(<5.5)
         public func encode(to encoder: Encoder) throws {
