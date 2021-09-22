@@ -1,10 +1,10 @@
 import Flow
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
-import SwiftUI
 
 public indirect enum ContractFilter {
     var displaysActiveContracts: Bool {
@@ -40,7 +40,7 @@ public struct Contracts {
     @PresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 6, on: .main, in: .common).autoconnect()
     let filter: ContractFilter
-    
+
     public init(
         filter: ContractFilter
     ) {
@@ -60,27 +60,31 @@ extension Contracts: View {
         store.send(.fetchContractBundles)
         store.send(.fetchUpcomingAgreement)
     }
-    
+
     public var body: some View {
         hForm {
             ContractTable(filter: filter)
-        }.onReceive(pollTimer) { _ in
+        }
+        .onReceive(pollTimer) { _ in
             fetch()
-        }.onAppear {
+        }
+        .onAppear {
             fetch()
         }
     }
 }
 
 extension Contracts {
-    public static func journey(filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none))) -> some JourneyPresentation {
+    public static func journey(
+        filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none))
+    ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: Contracts(filter: filter),
             options: [
                 .defaults,
                 .prefersLargeTitles(true),
-                .largeTitleDisplayMode(filter.displaysActiveContracts ? .always : .never)
+                .largeTitleDisplayMode(filter.displaysActiveContracts ? .always : .never),
             ]
         ) { action in
             if case let .openDetail(contract) = action {

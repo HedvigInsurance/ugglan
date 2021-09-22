@@ -3,10 +3,10 @@ import Form
 import Foundation
 import Hero
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct ContractDetail {
     var contractRow: ContractRow
@@ -32,7 +32,8 @@ extension ContractDetail: Presentable {
         let contractRowHost = HostingView(
             rootView: VStack {
                 contractRow
-            }.padding(16)
+            }
+            .padding(16)
         )
         form.append(contractRowHost)
 

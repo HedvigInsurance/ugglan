@@ -1,13 +1,13 @@
+import Combine
 import Flow
 import Form
 import Foundation
 import Hero
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
-import Combine
 
 struct DetailPillBackgroundModifier: ViewModifier {
     func body(content: Content) -> some View {
@@ -21,7 +21,7 @@ struct DetailPillBackgroundModifier: ViewModifier {
 
 struct DetailPill: View {
     var text: String
-    
+
     var body: some View {
         VStack {
             hText(text.uppercased(), style: .caption2)
@@ -35,7 +35,7 @@ struct DetailPill: View {
 
 struct ContractRowChevron: View {
     @SwiftUI.Environment(\.isEnabled) var isEnabled
-    
+
     var body: some View {
         if isEnabled {
             Image(uiImage: hCoreUIAssets.chevronRight.image)
@@ -47,15 +47,15 @@ struct ContractRowChevron: View {
 
 struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let contract: Contract
-    
+
     @ViewBuilder func backgroundColor(configuration: Configuration) -> some View {
         if configuration.isPressed {
             hOverlayColor.pressed.opacity(0.3)
         }
-        
+
         Color.clear
     }
-    
+
     @ViewBuilder var gradientView: some View {
         if let gradientOption = contract.gradientOption {
             hGradientView(gradientOption: .init(gradientOption: gradientOption), shouldShowGradient: true)
@@ -63,7 +63,7 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             hGrayscaleColor.one
         }
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
         VStack {
             HStack {
@@ -102,10 +102,10 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
 struct ContractRow: View {
     @PresentableStore var store: ContractStore
     @State var frameWidth: CGFloat = 0
-    
+
     var contract: Contract
     var allowDetailNavigation = true
-    
+
     var body: some View {
         SwiftUI.Button {
             store.send(.openDetail(contract: contract))
@@ -114,28 +114,33 @@ struct ContractRow: View {
         }
         .disabled(!allowDetailNavigation)
         .buttonStyle(ContractRowButtonStyle(contract: contract))
-        .background(GeometryReader { geo in
-            Color.clear.onReceive(Just(geo.size.width)) { width in
-                self.frameWidth = width
+        .background(
+            GeometryReader { geo in
+                Color.clear.onReceive(Just(geo.size.width)) { width in
+                    self.frameWidth = width
+                }
             }
-        })
-        .enableHero("ContractRow_\(contract.id)", modifiers: [
-            .spring(stiffness: 250, damping: 25),
-            .when(
-                { context -> Bool in !context.isMatched },
-                [
-                    .init(applyFunction: { (state: inout HeroTargetState) in
-                        state.append(
-                            .translate(
-                                x: -frameWidth
-                                    * 1.3,
-                                y: 0,
-                                z: 0
+        )
+        .enableHero(
+            "ContractRow_\(contract.id)",
+            modifiers: [
+                .spring(stiffness: 250, damping: 25),
+                .when(
+                    { context -> Bool in !context.isMatched },
+                    [
+                        .init(applyFunction: { (state: inout HeroTargetState) in
+                            state.append(
+                                .translate(
+                                    x: -frameWidth
+                                        * 1.3,
+                                    y: 0,
+                                    z: 0
+                                )
                             )
-                        )
-                    })
-                ]
-            ),
-        ])
+                        })
+                    ]
+                ),
+            ]
+        )
     }
 }

@@ -1,7 +1,7 @@
 import Flow
+import SwiftUI
 import UIKit
 import hCore
-import SwiftUI
 
 public struct GradientView {
     public init(
@@ -257,7 +257,7 @@ public struct hGradientView: UIViewRepresentable {
             )
         )
     }
-    
+
     func update(context: Context) {
         context.coordinator.gradientView.$shouldShowGradient.value = self.shouldShowGradient
         context.coordinator.gradientView.$gradientOption.value = self.gradientOption

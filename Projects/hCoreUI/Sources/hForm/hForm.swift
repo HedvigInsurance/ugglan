@@ -108,11 +108,11 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
         let contentSize: CGSize = self.hostingController.view.systemLayoutSizeFitting(
             CGSize(width: width, height: .infinity)
         )
-        
+
         guard contentSize.height != .infinity else {
             return
         }
-        
+
         self.hostingController.view.frame.size = contentSize
         self.hostingController.view.setNeedsLayout()
         self.hostingController.view.layoutIfNeeded()

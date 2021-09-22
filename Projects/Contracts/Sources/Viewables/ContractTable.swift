@@ -2,16 +2,16 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 struct ContractTable {
     let filter: ContractFilter
     @PresentableStore var store: ContractStore
-    
+
     func getContractsToShow(for state: ContractState, filter: ContractFilter) -> [Contract] {
         switch filter {
         case .active:
@@ -42,10 +42,10 @@ extension ContractTable: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        
+
         if self.filter.displaysActiveContracts {
             CrossSellingStack()
-            
+
             PresentableStoreLens(
                 ContractStore.self,
                 getter: { state in
@@ -56,7 +56,8 @@ extension ContractTable: View {
                     hSection(header: hText(L10n.InsurancesTab.moreTitle)) {
                         hRow {
                             hText(L10n.InsurancesTab.terminatedInsurancesLabel)
-                        }.onTap {
+                        }
+                        .onTap {
                             store.send(.openTerminatedContracts)
                         }
                     }

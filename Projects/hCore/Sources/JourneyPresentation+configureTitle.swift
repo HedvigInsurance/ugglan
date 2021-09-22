@@ -11,7 +11,7 @@ extension JourneyPresentation {
                 presenter.viewController.title = title
                 return
             }
-            
+
             navigationController.viewControllers.first?.title = title
         }
     }

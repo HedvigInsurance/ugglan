@@ -95,7 +95,7 @@ public struct Contract: Codable, Hashable, Equatable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
-        
+
         if let contractGradientOption = contract.gradientOption {
             gradientOption = .init(rawValue: contractGradientOption.rawValue)
         } else {
@@ -123,7 +123,7 @@ public struct Contract: Codable, Hashable, Equatable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
-        
+
         if let contractGradientOption = contract.gradientOption {
             gradientOption = .init(rawValue: contractGradientOption.rawValue)
         } else {

@@ -1,11 +1,3 @@
-//
-//  SwiftUI+Hero.swift
-//  SwiftUI+Hero
-//
-//  Created by Sam Pettersson on 2021-09-22.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import Hero
 import SwiftUI
@@ -15,13 +7,13 @@ struct HeroViewContainer<Content: View>: View, UIViewRepresentable {
     let isHeroEnabled: Bool
     let modifiers: [HeroModifier]
     let content: Content
-    
+
     func makeUIView(context: Context) -> some UIView {
         let view = HostingView(rootView: content.modifier(TransferEnvironment(environment: context.environment)))
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }
-    
+
     func updateUIView(_ uiView: UIViewType, context: Context) {
         uiView.hero.isEnabled = true
         uiView.hero.id = isHeroEnabled ? id : nil

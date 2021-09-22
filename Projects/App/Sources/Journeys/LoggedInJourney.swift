@@ -43,16 +43,16 @@ extension AppJourney {
 
     fileprivate static var contractsTab: some JourneyPresentation {
         Contracts.journey()
-        .onTabSelected {
-            ContextGradient.currentOption = .none
-        }
-        .makeTabSelected(UgglanStore.self) { action in
-            if case .makeTabActive(let deepLink) = action {
-                return deepLink == .insurances
-            } else {
-                return false
+            .onTabSelected {
+                ContextGradient.currentOption = .none
             }
-        }
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .insurances
+                } else {
+                    return false
+                }
+            }
     }
 
     fileprivate static var keyGearTab: some JourneyPresentation {
