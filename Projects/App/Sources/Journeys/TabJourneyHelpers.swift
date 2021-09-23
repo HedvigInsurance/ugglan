@@ -87,11 +87,12 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
         _ viewController: UIViewController,
         options: PresentationOptions
     ) -> (result: Future<()>, dismisser: () -> Future<()>) {
-        
-        bag += hasWindowSignal.compactMap { $0 }.onValue { window in
-            window.rootViewController = viewController
-        }
-        
+
+        bag += hasWindowSignal.compactMap { $0 }
+            .onValue { window in
+                window.rootViewController = viewController
+            }
+
         return (
             result: Future { completion in
                 return NilDisposer()
@@ -108,7 +109,7 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+
         guard let window = view.window else { return }
 
         UIView.transition(
@@ -117,9 +118,9 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
             options: .transitionCrossDissolve,
             animations: {}
         )
-        
+
         hasWindowSignal.value = window
-        
+
         let tabBarController = UITabBarController()
         addChild(tabBarController)
         self.view.addSubview(tabBarController.view)
