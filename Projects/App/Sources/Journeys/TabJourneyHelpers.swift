@@ -81,20 +81,17 @@ struct Loader: Presentable {
 
 class PlaceholderViewController: UIViewController, PresentingViewController {
     let bag = DisposeBag()
+    let hasWindowSignal = ReadWriteSignal<UIWindow?>(nil)
 
     func present(
         _ viewController: UIViewController,
         options: PresentationOptions
     ) -> (result: Future<()>, dismisser: () -> Future<()>) {
-        let window = view.window!
-        UIView.transition(
-            with: window,
-            duration: 0.3,
-            options: .transitionCrossDissolve,
-            animations: {}
-        )
-        window.rootViewController = viewController
-
+        
+        bag += hasWindowSignal.compactMap { $0 }.onValue { window in
+            window.rootViewController = viewController
+        }
+        
         return (
             result: Future { completion in
                 return NilDisposer()
@@ -109,7 +106,20 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
         return self
     }
 
-    override func viewDidLoad() {
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        guard let window = view.window else { return }
+
+        UIView.transition(
+            with: window,
+            duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: {}
+        )
+        
+        hasWindowSignal.value = window
+        
         let tabBarController = UITabBarController()
         addChild(tabBarController)
         self.view.addSubview(tabBarController.view)
