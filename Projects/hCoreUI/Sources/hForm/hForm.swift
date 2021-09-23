@@ -108,11 +108,7 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
         let contentSize: CGSize = self.hostingController.view.systemLayoutSizeFitting(
             CGSize(width: width, height: .infinity)
         )
-
-        guard contentSize.height != .infinity else {
-            return
-        }
-
+        
         self.hostingController.view.frame.size = contentSize
         self.hostingController.view.setNeedsLayout()
         self.hostingController.view.layoutIfNeeded()
@@ -158,18 +154,23 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
         }
 
         self.upperScrollView?.addSubview(self.backgroundHostingController.view)
+        self.upperScrollView?.addSubview(self.hostingController.view)
+        
+        self.hostingController.view.backgroundColor = .clear
+        self.hostingController.view.translatesAutoresizingMaskIntoConstraints = false
 
         if let upperScrollView = self.upperScrollView {
             self.backgroundHostingController.view.snp.makeConstraints { make in
                 make.edges.equalTo(upperScrollView.frameLayoutGuide)
             }
+            
+            self.hostingController.view.snp.makeConstraints { make in
+                make.trailing.leading.equalTo(upperScrollView.frameLayoutGuide)
+            }
 
             upperScrollView.alwaysBounceVertical = true
         }
-
-        self.upperScrollView?.addSubview(self.hostingController.view)
-        self.hostingController.view.backgroundColor = .clear
-
+        
         if let bottomAttachedView = bottomAttachedView {
             let hostingView = HostingView(
                 rootView: AnyView(bottomAttachedView.modifier(TransferEnvironment(environment: context.environment)))
