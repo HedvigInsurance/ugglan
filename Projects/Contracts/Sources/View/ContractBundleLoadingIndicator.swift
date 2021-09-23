@@ -1,11 +1,3 @@
-//
-//  ContractBundleLoadingIndicator.swift
-//  ContractBundleLoadingIndicator
-//
-//  Created by Sam Pettersson on 2021-09-23.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import SwiftUI
 import hCore

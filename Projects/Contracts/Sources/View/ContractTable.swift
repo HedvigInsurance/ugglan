@@ -30,7 +30,7 @@ struct ContractTable {
 extension ContractTable: View {
     var body: some View {
         ContractBundleLoadingIndicator()
-        
+
         hSection {
             PresentableStoreLens(
                 ContractStore.self,
