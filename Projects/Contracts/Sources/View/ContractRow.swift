@@ -32,7 +32,7 @@ struct DetailPill: View {
         }
         .padding([.top, .bottom], 5)
         .padding([.leading, .trailing], 8)
-        .background(hGrayscaleColor.one.opacity(0.3))
+        .background(hBackgroundColor.primary.opacity(0.5))
         .cornerRadius(4)
     }
 }
