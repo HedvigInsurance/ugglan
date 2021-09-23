@@ -62,7 +62,7 @@ extension ContractTable: View {
                             Spacer()
                             hText(String(terminatedContracts.count), style: .body)
                                 .foregroundColor(hLabelColor.secondary)
-                                .padding(.trailing, 14)
+                                .padding(.trailing, 8)
                             StandaloneChevronAccessory()
                         })
                         .onTap {

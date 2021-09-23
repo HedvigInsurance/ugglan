@@ -155,7 +155,6 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                 }
                 .environment(\.defaultHTextStyle, .title3)
                 .foregroundColor(hLabelColor.primary)
-                .padding([.leading, .trailing], 15)
                 .padding(.bottom, 10)
             }
             hSectionContainer {
