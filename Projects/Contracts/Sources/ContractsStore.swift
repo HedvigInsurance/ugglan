@@ -8,6 +8,7 @@ import hGraphQL
 public struct ContractState: StateProtocol {
     public init() {}
 
+    public var hasLoadedContractBundlesOnce = false
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
     public var upcomingAgreements: [UpcomingAgreementContract] = []
@@ -112,6 +113,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         var newState = state
         switch action {
         case .setContractBundles(let activeContractBundles):
+            newState.hasLoadedContractBundlesOnce = true
             newState.contractBundles = activeContractBundles
         case .setContracts(let contracts):
             newState.contracts = contracts
