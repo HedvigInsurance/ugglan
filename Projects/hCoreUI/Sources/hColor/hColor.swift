@@ -403,3 +403,12 @@ public struct hTintColor {
         )
     }
 }
+
+public struct hSeparatorColor {
+    public static var separator: some hColor {
+        hColorScheme(
+            light: Color(hexString: "3C3C43").opacity(0.29),
+            dark: Color(hexString: "545458").opacity(0.65)
+        )
+    }
+}

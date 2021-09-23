@@ -111,6 +111,8 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         )
         .clipped()
         .cornerRadius(.defaultCornerRadius)
+        .overlay(RoundedRectangle(cornerRadius: .defaultCornerRadius).stroke(hSeparatorColor.separator, lineWidth: .hairlineWidth))
+        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }
 
