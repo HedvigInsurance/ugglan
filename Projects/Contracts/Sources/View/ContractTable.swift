@@ -58,6 +58,13 @@ extension ContractTable: View {
                         hRow {
                             hText(L10n.InsurancesTab.terminatedInsurancesLabel)
                         }
+                        .withCustomAccessory({
+                            Spacer()
+                            hText(String(terminatedContracts.count), style: .body)
+                                .foregroundColor(hLabelColor.secondary)
+                                .padding(.trailing, 14)
+                            StandaloneChevronAccessory()
+                        })
                         .onTap {
                             store.send(.openTerminatedContracts)
                         }
