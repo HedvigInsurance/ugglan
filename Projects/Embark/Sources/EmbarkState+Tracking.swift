@@ -16,16 +16,17 @@ extension EmbarkPassage.Track {
                 uniquingKeysWith: takeRight
             )
         }
-        
+
         filteredProperties = filteredProperties.merging(
             ["originatedFromEmbarkStory": storyName],
             uniquingKeysWith: takeRight
         )
 
-        return filteredProperties.mapValues { any in
-            any as? AnalyticsProperty
-        }
-        .compactMapValues { $0 }
+        return
+            filteredProperties.mapValues { any in
+                any as? AnalyticsProperty
+            }
+            .compactMapValues { $0 }
     }
 }
 
