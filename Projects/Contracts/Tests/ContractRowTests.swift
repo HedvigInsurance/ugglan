@@ -1,6 +1,7 @@
 import Flow
 import Foundation
 import SnapshotTesting
+import SwiftUI
 import Testing
 import TestingUtil
 import XCTest
@@ -8,7 +9,6 @@ import hCoreUI
 import hGraphQL
 
 @testable import Contracts
-import SwiftUI
 
 final class ContractRowTests: XCTestCase {
     let bag = DisposeBag()
