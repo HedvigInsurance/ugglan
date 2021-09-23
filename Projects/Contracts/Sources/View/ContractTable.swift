@@ -37,12 +37,8 @@ extension ContractTable: View {
                 }
             ) { contracts in
                 ForEach(contracts, id: \.id) { contract in
-                    if contract == contracts.last {
-                        ContractRow(contract: contract)
-                    } else {
-                        ContractRow(contract: contract)
-                            .padding(.bottom, 15)
-                    }
+                    ContractRow(contract: contract)
+                        .padding(.top, 15)
                 }
             }
         }

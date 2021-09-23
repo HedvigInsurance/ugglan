@@ -101,7 +101,6 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             }
         }
         .padding(16)
-        .frame(maxWidth: .infinity)
         .frame(minHeight: 200)
         .background(
             backgroundColor(configuration: configuration)
@@ -109,7 +108,6 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         .background(
             gradientView
         )
-        .clipped()
         .cornerRadius(.defaultCornerRadius)
         .overlay(
             RoundedRectangle(cornerRadius: .defaultCornerRadius)
