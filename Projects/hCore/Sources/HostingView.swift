@@ -42,6 +42,10 @@ public class HostingView<Content: View>: UIView {
 
     public override var intrinsicContentSize: CGSize {
         if let superview = superview {
+            if let scrollView = superview as? UIScrollView {
+                return rootViewHostingController.view.sizeThatFits(scrollView.contentSize)
+            }
+            
             return rootViewHostingController.view.sizeThatFits(superview.frame.size)
         } else {
             return rootViewHostingController.view.sizeThatFits(.zero)

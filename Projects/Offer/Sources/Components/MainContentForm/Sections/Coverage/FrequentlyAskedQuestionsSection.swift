@@ -50,6 +50,10 @@ extension FrequentlyAskedQuestionsSection: Presentable {
             }()
         )
         section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
+        
+        bag += state.dataSignal.onValue({ data in
+            section.isHidden = !data.quoteBundle.appConfiguration.showFaq
+        })
 
         bag += state.dataSignal.compactMap { $0.quoteBundle.frequentlyAskedQuestions }
             .onValueDisposePrevious { frequentlyAskedQuestions in

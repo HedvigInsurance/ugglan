@@ -10,7 +10,6 @@ struct HeroViewContainer<Content: View>: View, UIViewRepresentable {
 
     func makeUIView(context: Context) -> some UIView {
         let view = HostingView(rootView: content.modifier(TransferEnvironment(environment: context.environment)))
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }
 

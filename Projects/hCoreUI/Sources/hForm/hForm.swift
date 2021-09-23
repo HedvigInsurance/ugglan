@@ -71,7 +71,7 @@ extension EnvironmentValues {
 }
 
 struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresentable, Equatable {
-    let hostingController: IgnoredSafeAreaHostingController<AnyView>
+    let hostingView: HostingView<AnyView>
     let backgroundHostingController: IgnoredSafeAreaHostingController<AnyView>
     var content: () -> Content
     var backgroundContent: () -> BackgroundContent
@@ -84,7 +84,7 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
         @ViewBuilder backgroundContent: @escaping () -> BackgroundContent,
         @ViewBuilder content: @escaping () -> Content
     ) {
-        self.hostingController = IgnoredSafeAreaHostingController(rootView: AnyView(EmptyView())).apply()
+        self.hostingView = HostingView(rootView: AnyView(EmptyView()))
         self.backgroundHostingController = IgnoredSafeAreaHostingController(rootView: AnyView(EmptyView()))
             .apply()
         self.backgroundContent = backgroundContent
@@ -100,23 +100,20 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
     }
 
     func setSize(context: Context) {
-        self.hostingController.view.setNeedsLayout()
-        self.hostingController.view.layoutIfNeeded()
-
         let width: CGFloat = (self.upperScrollView?.frame.width ?? 0)
 
-        let contentSize: CGSize = self.hostingController.view.systemLayoutSizeFitting(
+        let contentSize: CGSize = hostingView.systemLayoutSizeFitting(
             CGSize(width: width, height: .infinity)
         )
 
-        self.hostingController.view.frame.size = contentSize
-        self.hostingController.view.setNeedsLayout()
-        self.hostingController.view.layoutIfNeeded()
-
         self.upperScrollView?.contentSize = contentSize
         self.upperScrollView?.updateConstraintsIfNeeded()
+        self.upperScrollView?.setNeedsLayout()
         self.upperScrollView?.layoutIfNeeded()
-
+        
+        self.hostingView.setNeedsLayout()
+        self.hostingView.layoutIfNeeded()
+                
         if let upperScrollView = self.upperScrollView,
             let bottomAttachedHostingView = context.coordinator.bottomAttachedHostingView
         {
@@ -154,18 +151,18 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
         }
 
         self.upperScrollView?.addSubview(self.backgroundHostingController.view)
-        self.upperScrollView?.addSubview(self.hostingController.view)
+        self.upperScrollView?.addSubview(self.hostingView)
 
-        self.hostingController.view.backgroundColor = .clear
-        self.hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        self.hostingView.translatesAutoresizingMaskIntoConstraints = false
 
         if let upperScrollView = self.upperScrollView {
             self.backgroundHostingController.view.snp.makeConstraints { make in
                 make.edges.equalTo(upperScrollView.frameLayoutGuide)
             }
-
-            self.hostingController.view.snp.makeConstraints { make in
+            
+            self.hostingView.snp.makeConstraints { make in
                 make.trailing.leading.equalTo(upperScrollView.frameLayoutGuide)
+                make.top.equalTo(upperScrollView.contentLayoutGuide)
             }
 
             upperScrollView.alwaysBounceVertical = true
@@ -179,8 +176,6 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
             self.upperScrollView?.addSubview(hostingView)
         }
 
-        setSize(context: context)
-
         return UIView()
     }
 
@@ -190,17 +185,11 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
                 .modifier(TransferEnvironment(environment: context.environment))
                 .environment(\.presentableViewUpperScrollView, upperScrollView)
         )
-        self.backgroundHostingController.view.setNeedsUpdateConstraints()
-        self.backgroundHostingController.view.setNeedsLayout()
-        self.backgroundHostingController.view.layoutIfNeeded()
-
-        self.hostingController.rootView = AnyView(
+        hostingView.swiftUIRootView = AnyView(
             content()
                 .modifier(TransferEnvironment(environment: context.environment))
                 .environment(\.presentableViewUpperScrollView, upperScrollView)
         )
-        self.hostingController.view.setNeedsLayout()
-        self.hostingController.view.layoutIfNeeded()
         setSize(context: context)
     }
 
