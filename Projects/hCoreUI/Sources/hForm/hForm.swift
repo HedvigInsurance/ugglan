@@ -110,10 +110,10 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
         self.upperScrollView?.updateConstraintsIfNeeded()
         self.upperScrollView?.setNeedsLayout()
         self.upperScrollView?.layoutIfNeeded()
-        
+
         self.hostingView.setNeedsLayout()
         self.hostingView.layoutIfNeeded()
-                
+
         if let upperScrollView = self.upperScrollView,
             let bottomAttachedHostingView = context.coordinator.bottomAttachedHostingView
         {
@@ -159,7 +159,7 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
             self.backgroundHostingController.view.snp.makeConstraints { make in
                 make.edges.equalTo(upperScrollView.frameLayoutGuide)
             }
-            
+
             self.hostingView.snp.makeConstraints { make in
                 make.trailing.leading.equalTo(upperScrollView.frameLayoutGuide)
                 make.top.equalTo(upperScrollView.contentLayoutGuide)
