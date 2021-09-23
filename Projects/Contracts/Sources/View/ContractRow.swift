@@ -87,10 +87,11 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             HStack {
                 ForEach(contract.detailPills, id: \.self) { pill in
                     if contract.gradientOption == nil {
-                        DetailPill(text: pill).overlay(
-                            RoundedRectangle(cornerRadius: 4)
-                                .stroke(hLabelColor.primary, lineWidth: 1)
-                        )
+                        DetailPill(text: pill)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(hLabelColor.primary, lineWidth: 1)
+                            )
                     } else {
                         DetailPill(text: pill)
                     }

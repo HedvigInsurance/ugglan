@@ -115,7 +115,7 @@ extension Contracts {
                 navigationController.isHeroEnabled = true
                 navigationController.hero.navigationAnimationType = .fade
             }
-            
+
             if filter.displaysActiveContracts {
                 presenter.matter.installChatButton()
             }

@@ -44,13 +44,13 @@ extension AppJourney {
     fileprivate static var contractsTab: some JourneyPresentation {
         Contracts.journey { result in
             switch result {
-             case .movingFlow:
-                 AppJourney.movingFlow
-             case .openFreeTextChat:
-                 AppJourney.freeTextChat()
-             case let .openCrossSellingEmbark(name):
-                 AppJourney.crossSellingJourney(name: name)
-             }
+            case .movingFlow:
+                AppJourney.movingFlow
+            case .openFreeTextChat:
+                AppJourney.freeTextChat()
+            case let .openCrossSellingEmbark(name):
+                AppJourney.crossSellingJourney(name: name)
+            }
         }
         .onTabSelected {
             ContextGradient.currentOption = .none

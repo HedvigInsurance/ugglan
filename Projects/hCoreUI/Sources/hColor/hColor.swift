@@ -140,7 +140,10 @@ struct hColorViewModifier<Color: hColor>: ViewModifier {
             case .foregroundColor:
                 content.foregroundColor(color?.colorFor(colorScheme, userInterfaceLevel).color)
             case let .border(width):
-                content.border(color?.colorFor(colorScheme, userInterfaceLevel).color ?? SwiftUI.Color.clear, width: width)
+                content.border(
+                    color?.colorFor(colorScheme, userInterfaceLevel).color ?? SwiftUI.Color.clear,
+                    width: width
+                )
             }
         }
     }
@@ -150,7 +153,7 @@ extension View {
     public func foregroundColor<Color: hColor>(_ color: Color?) -> some View {
         self.modifier(hColorViewModifier(color: color, colorType: .foregroundColor))
     }
-    
+
     public func border<Color: hColor>(_ color: Color?, width: CGFloat = 0) -> some View {
         self.modifier(hColorViewModifier(color: color, colorType: .border(width: width)))
     }
@@ -378,7 +381,7 @@ public struct hTintColor {
             dark: Color(hexString: "BE9BF3")
         )
     }
-    
+
     public static var yellowOne: some hColor {
         hColorScheme(
             light: Color(hexString: "F2C852"),
@@ -392,7 +395,7 @@ public struct hTintColor {
             dark: Color(hexString: "E3B945")
         )
     }
-    
+
     public static var red: some hColor {
         hColorScheme(
             light: Color(hexString: "DD2727"),
