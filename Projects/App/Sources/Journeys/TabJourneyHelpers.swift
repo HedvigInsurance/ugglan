@@ -106,11 +106,10 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
     override func targetViewController(forAction action: Selector, sender: Any?) -> UIViewController? {
         return self
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
+
         let tabBarController = UITabBarController()
         addChild(tabBarController)
         self.view.addSubview(tabBarController.view)
