@@ -75,7 +75,7 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     StatusPill(text: pill)
                 }
                 Spacer()
-                Image(uiImage: hCoreUIAssets.symbol.image)
+                Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
                     .resizable()
                     .frame(width: 24, height: 24)
             }
