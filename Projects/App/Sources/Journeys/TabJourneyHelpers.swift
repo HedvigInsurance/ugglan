@@ -106,6 +106,17 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
     override func targetViewController(forAction action: Selector, sender: Any?) -> UIViewController? {
         return self
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        
+        let tabBarController = UITabBarController()
+        addChild(tabBarController)
+        self.view.addSubview(tabBarController.view)
+
+        tabBarController.viewControllers = [Loader(tabBarController: tabBarController).materialize(into: bag)]
+    }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -120,12 +131,6 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
         )
 
         hasWindowSignal.value = window
-
-        let tabBarController = UITabBarController()
-        addChild(tabBarController)
-        self.view.addSubview(tabBarController.view)
-
-        tabBarController.viewControllers = [Loader(tabBarController: tabBarController).materialize(into: bag)]
     }
 }
 
