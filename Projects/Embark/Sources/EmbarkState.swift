@@ -61,7 +61,10 @@ public class EmbarkState {
         bag += currentPassageSignal.readOnly().compactMap { $0?.tracks }
             .onValue(on: .background) { tracks in
                 tracks.forEach { track in
-                    track.send(storeValues: self.store.getAllValues())
+                    track.send(
+                        storyName: self.storySignal.value?.name ?? "",
+                        storeValues: self.store.getAllValues()
+                    )
                 }
             }
     }

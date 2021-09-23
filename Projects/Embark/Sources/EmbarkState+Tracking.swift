@@ -3,11 +3,11 @@ import hCore
 import hGraphQL
 
 extension EmbarkPassage.Track {
-    func send(storeValues: [String: Any]) {
-        Analytics.track(eventName, properties: trackingProperties(storeValues: storeValues))
+    func send(storyName: String, storeValues: [String: Any]) {
+        Analytics.track(eventName, properties: trackingProperties(storyName: storyName, storeValues: storeValues))
     }
 
-    private func trackingProperties(storeValues: [String: Any]) -> [String: AnalyticsProperty] {
+    private func trackingProperties(storyName: String, storeValues: [String: Any]) -> [String: AnalyticsProperty] {
         var filteredProperties = storeValues.filter { key, _ in eventKeys.contains(key) }
 
         if let customData = customData {
@@ -16,12 +16,16 @@ extension EmbarkPassage.Track {
                 uniquingKeysWith: takeRight
             )
         }
+        
+        filteredProperties = filteredProperties.merging(
+            ["originatedFromEmbarkStory": storyName],
+            uniquingKeysWith: takeRight
+        )
 
-        return
-            filteredProperties.mapValues { any in
-                any as? AnalyticsProperty
-            }
-            .compactMapValues { $0 }
+        return filteredProperties.mapValues { any in
+            any as? AnalyticsProperty
+        }
+        .compactMapValues { $0 }
     }
 }
 
