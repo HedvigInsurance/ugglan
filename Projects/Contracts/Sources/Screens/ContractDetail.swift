@@ -40,7 +40,7 @@ extension ContractDetail: Presentable {
         let contractInformation = ContractInformation(contract: contractRow.contract)
 
         let contractCoverage = ContractCoverage(
-            perils: contractRow.contract.perils,
+            perils: contractRow.contract.contractPerils,
             insurableLimits: contractRow.contract.insurableLimits
         )
 
