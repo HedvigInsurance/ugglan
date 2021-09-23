@@ -9,13 +9,17 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct DetailPillBackgroundModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(iOS 15.0, *) {
-            content.background(.thinMaterial)
-        } else {
-            content.background(hOverlayColor.pressed)
+struct StatusPill: View {
+    var text: String
+
+    var body: some View {
+        VStack {
+            hText(text.uppercased(), style: .caption2)
         }
+        .padding([.top, .bottom], 5)
+        .padding([.leading, .trailing], 8)
+        .background(hTintColor.yellowOne)
+        .cornerRadius(4)
     }
 }
 
@@ -28,7 +32,7 @@ struct DetailPill: View {
         }
         .padding([.top, .bottom], 5)
         .padding([.leading, .trailing], 8)
-        .modifier(DetailPillBackgroundModifier())
+        .background(hGrayscaleColor.one.opacity(0.3))
         .cornerRadius(4)
     }
 }
@@ -67,6 +71,9 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack {
             HStack {
+                ForEach(contract.statusPills, id: \.self) { pill in
+                    StatusPill(text: pill)
+                }
                 Spacer()
                 Image(uiImage: hCoreUIAssets.symbol.image)
                     .resizable()
@@ -79,7 +86,14 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             }
             HStack {
                 ForEach(contract.detailPills, id: \.self) { pill in
-                    DetailPill(text: pill)
+                    if contract.gradientOption == nil {
+                        DetailPill(text: pill).overlay(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(hLabelColor.primary, lineWidth: 1)
+                        )
+                    } else {
+                        DetailPill(text: pill)
+                    }
                 }
                 Spacer()
                 ContractRowChevron()

@@ -42,17 +42,26 @@ extension AppJourney {
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
-        Contracts.journey()
-            .onTabSelected {
-                ContextGradient.currentOption = .none
+        Contracts.journey { result in
+            switch result {
+             case .movingFlow:
+                 AppJourney.movingFlow
+             case .openFreeTextChat:
+                 AppJourney.freeTextChat()
+             case let .openCrossSellingEmbark(name):
+                 AppJourney.crossSellingJourney(name: name)
+             }
+        }
+        .onTabSelected {
+            ContextGradient.currentOption = .none
+        }
+        .makeTabSelected(UgglanStore.self) { action in
+            if case .makeTabActive(let deepLink) = action {
+                return deepLink == .insurances
+            } else {
+                return false
             }
-            .makeTabSelected(UgglanStore.self) { action in
-                if case .makeTabActive(let deepLink) = action {
-                    return deepLink == .insurances
-                } else {
-                    return false
-                }
-            }
+        }
     }
 
     fileprivate static var keyGearTab: some JourneyPresentation {

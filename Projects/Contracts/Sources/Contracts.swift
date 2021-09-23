@@ -48,12 +48,6 @@ public struct Contracts {
     }
 }
 
-public enum ContractsResult {
-    case movingFlow
-    case openFreeTextChat
-    case openCrossSellingEmbark(name: String)
-}
-
 extension Contracts: View {
     func fetch() {
         store.send(.fetchContracts)
@@ -74,9 +68,17 @@ extension Contracts: View {
     }
 }
 
+public enum ContractsResult {
+    case movingFlow
+    case openFreeTextChat
+    case openCrossSellingEmbark(name: String)
+}
+
 extension Contracts {
-    public static func journey(
-        filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none))
+    public static func journey<ResultJourney: JourneyPresentation>(
+        filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none)),
+        @JourneyBuilder resultJourney: @escaping (_ result: ContractsResult) -> ResultJourney,
+        openDetails: Bool = true
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
@@ -87,7 +89,7 @@ extension Contracts {
                 .largeTitleDisplayMode(filter.displaysActiveContracts ? .always : .never),
             ]
         ) { action in
-            if case let .openDetail(contract) = action {
+            if case let .openDetail(contract) = action, openDetails {
                 Journey(
                     ContractDetail(
                         contractRow: ContractRow(contract: contract)
@@ -95,13 +97,27 @@ extension Contracts {
                     options: [.largeTitleDisplayMode(.never)]
                 )
             } else if case .openTerminatedContracts = action {
-                Self.journey(filter: .terminated(ifEmpty: .none))
+                Self.journey(
+                    filter: .terminated(ifEmpty: .none),
+                    resultJourney: resultJourney,
+                    openDetails: false
+                )
+            } else if case let .openCrossSellingEmbark(name) = action {
+                resultJourney(.openCrossSellingEmbark(name: name))
+            } else if case .goToFreeTextChat = action {
+                resultJourney(.openFreeTextChat)
+            } else if case .goToMovingFlow = action {
+                resultJourney(.movingFlow)
             }
         }
         .addConfiguration({ presenter in
             if let navigationController = presenter.viewController as? UINavigationController {
                 navigationController.isHeroEnabled = true
                 navigationController.hero.navigationAnimationType = .fade
+            }
+            
+            if filter.displaysActiveContracts {
+                presenter.matter.installChatButton()
             }
         })
         .configureTitle(filter.displaysActiveContracts ? L10n.InsurancesTab.title : "")
