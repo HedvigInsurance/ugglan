@@ -1,45 +1,8 @@
 import Foundation
-import Kingfisher
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
-
-extension View {
-    func backgroundImageWithBlurHashFallback(
-        imageURL: URL,
-        blurHash: String
-    ) -> some View {
-        Group {
-            if #available(iOS 14, *) {
-                self.background(
-                    KFImage(imageURL)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                )
-                .background(
-                    Image(
-                        uiImage: UIImage(
-                            blurHash: blurHash,
-                            size: .init(width: 32, height: 32)
-                        ) ?? UIImage()
-                    )
-                    .resizable()
-                )
-            } else {
-                self.background(
-                    Image(
-                        uiImage: UIImage(
-                            blurHash: blurHash,
-                            size: .init(width: 32, height: 32)
-                        ) ?? UIImage()
-                    )
-                    .resizable()
-                )
-            }
-        }
-    }
-}
 
 struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
