@@ -100,24 +100,10 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
     }
 
     func setSize(context: Context) {
-        let width: CGFloat = (self.upperScrollView?.frame.width ?? 0)
-
-        let contentSize: CGSize = hostingView.systemLayoutSizeFitting(
-            CGSize(width: width, height: .infinity)
-        )
-
-        self.upperScrollView?.contentSize = contentSize
-        self.upperScrollView?.updateConstraintsIfNeeded()
-        self.upperScrollView?.setNeedsLayout()
-        self.upperScrollView?.layoutIfNeeded()
-
-        self.hostingView.setNeedsLayout()
-        self.hostingView.layoutIfNeeded()
-
         if let upperScrollView = self.upperScrollView,
             let bottomAttachedHostingView = context.coordinator.bottomAttachedHostingView
         {
-            bottomAttachedHostingView.frame.size = contentSize
+            bottomAttachedHostingView.frame.size = upperScrollView.contentSize
             bottomAttachedHostingView.setNeedsLayout()
             bottomAttachedHostingView.layoutIfNeeded()
 
@@ -162,7 +148,7 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
 
             self.hostingView.snp.makeConstraints { make in
                 make.trailing.leading.equalTo(upperScrollView.frameLayoutGuide)
-                make.top.equalTo(upperScrollView.contentLayoutGuide)
+                make.top.bottom.equalTo(upperScrollView.contentLayoutGuide)
             }
 
             upperScrollView.alwaysBounceVertical = true
@@ -191,10 +177,9 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
                 .environment(\.presentableViewUpperScrollView, upperScrollView)
                 .background(
                     GeometryReader { geo in
-                        Color.clear.onReceive(Just(geo.size.height)) { height in
-                            if height != upperScrollView?.contentSize.height {
-                                setSize(context: context)
-                            }
+                        Color.clear.onReceive(Just(geo.size)) { size in
+                            self.upperScrollView?.contentSize = size
+                            self.upperScrollView?.layoutIfNeeded()
                         }
                     }
                 )
