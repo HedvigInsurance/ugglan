@@ -38,6 +38,9 @@ query ActiveContractBundles($locale: Locale!) {
             ...MonetaryAmountFragment
           }
         }
+        ... on SwedishAccidentAgreement {
+            status
+        }
       }
     }
     angelStories {

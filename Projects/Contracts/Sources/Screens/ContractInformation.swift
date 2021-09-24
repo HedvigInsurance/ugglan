@@ -70,19 +70,21 @@ extension ContractInformation: Presentable {
 
         if contract.currentAgreement.status != .terminated {
             if Localization.Locale.currentLocale.market == .se {
-                let changeAddressButton = ButtonRowViewWrapper(
-                    title: L10n.HomeTab.editingSectionChangeAddressLabel,
-                    type: .standardOutline(
-                        borderColor: .brand(.primaryText()),
-                        textColor: .brand(.primaryText())
-                    ),
-                    isEnabled: true,
-                    animate: false
-                )
-                bag += section.append(changeAddressButton)
+                if contract.showsMovingFlowButton {
+                    let changeAddressButton = ButtonRowViewWrapper(
+                        title: L10n.HomeTab.editingSectionChangeAddressLabel,
+                        type: .standardOutline(
+                            borderColor: .brand(.primaryText()),
+                            textColor: .brand(.primaryText())
+                        ),
+                        isEnabled: true,
+                        animate: false
+                    )
+                    bag += section.append(changeAddressButton)
 
-                bag += changeAddressButton.onTapSignal.onValue {
-                    store.send(.goToMovingFlow)
+                    bag += changeAddressButton.onTapSignal.onValue {
+                        store.send(.goToMovingFlow)
+                    }
                 }
             } else {
                 let changeButton = ButtonSection(text: L10n.contractDetailHomeChangeInfo, style: .normal)

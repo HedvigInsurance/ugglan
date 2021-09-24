@@ -42,7 +42,8 @@ public struct Contract: Codable, Hashable, Equatable {
         termsAndConditions: TermsAndConditions,
         currentAgreement: CurrentAgreement,
         statusPills: [String],
-        detailPills: [String]
+        detailPills: [String],
+        showsMovingFlowButton: Bool = false
     ) {
         self.id = id
         self.upcomingAgreementsTable = upcomingAgreementsTable
@@ -57,6 +58,7 @@ public struct Contract: Codable, Hashable, Equatable {
         self.currentAgreement = currentAgreement
         self.statusPills = statusPills
         self.detailPills = detailPills
+        self.showsMovingFlowButton = showsMovingFlowButton
     }
 
     public let id: String
@@ -72,6 +74,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let currentAgreement: CurrentAgreement
     public let statusPills: [String]
     public let detailPills: [String]
+    public let showsMovingFlowButton: Bool
 
     init(
         contract: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract
@@ -101,6 +104,8 @@ public struct Contract: Codable, Hashable, Equatable {
         } else {
             gradientOption = nil
         }
+        
+        showsMovingFlowButton = contract.currentAgreement.asSwedishAccidentAgreement == nil
     }
 
     public init(
@@ -129,6 +134,8 @@ public struct Contract: Codable, Hashable, Equatable {
         } else {
             gradientOption = nil
         }
+        
+        showsMovingFlowButton = false
     }
 
     public enum GradientOption: String, Codable {
