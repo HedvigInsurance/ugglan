@@ -16,7 +16,8 @@ extension View {
                     KFImage(imageURL)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                ).background(
+                )
+                .background(
                     Image(
                         uiImage: UIImage(
                             blurHash: blurHash,
