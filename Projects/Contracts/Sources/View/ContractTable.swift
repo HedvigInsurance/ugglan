@@ -40,6 +40,7 @@ extension ContractTable: View {
             ) { contracts in
                 ForEach(contracts, id: \.id) { contract in
                     ContractRow(contract: contract)
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 15)
                 }
             }
