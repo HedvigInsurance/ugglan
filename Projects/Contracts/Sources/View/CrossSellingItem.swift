@@ -62,6 +62,15 @@ struct CrossSellingItem: View {
             minHeight: 200,
             alignment: .bottom
         )
+        .background(
+            LinearGradient(
+                gradient: Gradient(
+                    colors: [.clear, .black.opacity(0.5)]
+                ),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
         .backgroundImageWithBlurHashFallback(
             imageURL: crossSell.imageURL,
             blurHash: crossSell.blurHash,

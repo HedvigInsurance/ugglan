@@ -8,6 +8,7 @@ import hGraphQL
 public struct ContractState: StateProtocol {
     public init() {}
 
+    public var hasLoadedContractBundlesOnce = false
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
     public var upcomingAgreements: [UpcomingAgreementContract] = []
@@ -35,6 +36,8 @@ public enum ContractAction: ActionProtocol {
     case openCrossSellingEmbark(name: String)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
+    case openDetail(contract: Contract)
+    case openTerminatedContracts
 
     #if compiler(<5.5)
         public func encode(to encoder: Encoder) throws {
@@ -110,6 +113,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         var newState = state
         switch action {
         case .setContractBundles(let activeContractBundles):
+            newState.hasLoadedContractBundlesOnce = true
             newState.contractBundles = activeContractBundles
         case .setContracts(let contracts):
             newState.contracts = contracts

@@ -4,12 +4,16 @@ import UIKit
 import hCore
 import hCoreUI
 
-extension JourneyPresentation where P == Contracts {
-    public var configureContractsTabBarItem: some JourneyPresentation {
+extension JourneyPresentation {
+    var configureContractsTabBarItem: some JourneyPresentation {
         self.addConfiguration { presenter in
             let store: ContractStore = globalPresentableStoreContainer.get()
 
-            let tabBarItem = self.presentable.tabBarItem()
+            let tabBarItem = UITabBarItem(
+                title: L10n.InsurancesTab.title,
+                image: Asset.tab.image,
+                selectedImage: Asset.tabActive.image
+            )
 
             presenter.bag += store.stateSignal.atOnce()
                 .onValue { state in

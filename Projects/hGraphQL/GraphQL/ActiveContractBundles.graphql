@@ -12,7 +12,7 @@ query ActiveContractBundles($locale: Locale!) {
         renewalDate
         draftCertificateUrl
       }
-      perils(locale: $locale) {
+      contractPerils(locale: $locale) {
         ...PerilFragment
       }
       insurableLimits(locale: $locale) {
@@ -37,6 +37,9 @@ query ActiveContractBundles($locale: Locale!) {
           premium {
             ...MonetaryAmountFragment
           }
+        }
+        ... on SwedishAccidentAgreement {
+            status
         }
       }
     }

@@ -68,6 +68,7 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
     }
     appConfiguration {
       showCampaignManagement
+      showFAQ
       ignoreCampaigns
       approveButtonTerminology
       startDateTerminology

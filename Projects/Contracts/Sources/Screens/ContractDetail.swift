@@ -3,6 +3,7 @@ import Form
 import Foundation
 import Hero
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
@@ -28,15 +29,18 @@ extension ContractDetail: Presentable {
 
         form.appendSpacing(.inbetween)
 
-        let (contractRowView, configureContractRow) = ContractRow.makeAndConfigure()
-        bag += configureContractRow(contractRow)
-
-        form.append(contractRowView)
+        let contractRowHost = HostingView(
+            rootView: VStack {
+                contractRow
+            }
+            .padding(16)
+        )
+        form.append(contractRowHost)
 
         let contractInformation = ContractInformation(contract: contractRow.contract)
 
         let contractCoverage = ContractCoverage(
-            perils: contractRow.contract.perils,
+            perils: contractRow.contract.contractPerils,
             insurableLimits: contractRow.contract.insurableLimits
         )
 

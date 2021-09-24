@@ -1,6 +1,7 @@
 import Flow
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
@@ -36,8 +37,35 @@ public indirect enum ContractFilter {
 }
 
 public struct Contracts {
+    @PresentableStore var store: ContractStore
+    let pollTimer = Timer.publish(every: 6, on: .main, in: .common).autoconnect()
     let filter: ContractFilter
-    public init(filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none))) { self.filter = filter }
+
+    public init(
+        filter: ContractFilter
+    ) {
+        self.filter = filter
+    }
+}
+
+extension Contracts: View {
+    func fetch() {
+        store.send(.fetchContracts)
+        store.send(.fetchContractBundles)
+        store.send(.fetchUpcomingAgreement)
+    }
+
+    public var body: some View {
+        hForm {
+            ContractTable(filter: filter)
+        }
+        .onReceive(pollTimer) { _ in
+            fetch()
+        }
+        .onAppear {
+            fetch()
+        }
+    }
 }
 
 public enum ContractsResult {
@@ -46,91 +74,53 @@ public enum ContractsResult {
     case openCrossSellingEmbark(name: String)
 }
 
-extension Contracts: Presentable {
-    public func materialize() -> (UIViewController, Signal<ContractsResult>) {
-        let viewController = UIViewController()
-
-        let store: ContractStore = get()
-
-        let bag = DisposeBag()
-
-        if filter.displaysActiveContracts {
-            viewController.title = L10n.InsurancesTab.title
-            viewController.installChatButton()
+extension Contracts {
+    public static func journey<ResultJourney: JourneyPresentation>(
+        filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none)),
+        @JourneyBuilder resultJourney: @escaping (_ result: ContractsResult) -> ResultJourney,
+        openDetails: Bool = true
+    ) -> some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: Contracts(filter: filter),
+            options: [
+                .defaults,
+                .prefersLargeTitles(true),
+                .largeTitleDisplayMode(filter.displaysActiveContracts ? .always : .never),
+            ]
+        ) { action in
+            if case let .openDetail(contract) = action, openDetails {
+                Journey(
+                    ContractDetail(
+                        contractRow: ContractRow(contract: contract)
+                    ),
+                    options: [.largeTitleDisplayMode(.never)]
+                )
+            } else if case .openTerminatedContracts = action {
+                Self.journey(
+                    filter: .terminated(ifEmpty: .none),
+                    resultJourney: resultJourney,
+                    openDetails: false
+                )
+            } else if case let .openCrossSellingEmbark(name) = action {
+                resultJourney(.openCrossSellingEmbark(name: name))
+            } else if case .goToFreeTextChat = action {
+                resultJourney(.openFreeTextChat)
+            } else if case .goToMovingFlow = action {
+                resultJourney(.movingFlow)
+            }
         }
-
-        bag += viewController.install(
-            ContractTable(presentingViewController: viewController, filter: filter)
-        )
-
-        // Initial fetch
-        store.send(.fetchContracts)
-        store.send(.fetchContractBundles)
-        store.send(.fetchUpcomingAgreement)
-
-        // Poll when has window
-        bag += viewController.view.hasWindowSignal.onValueDisposePrevious { hasWindow in
-            let innerBag = DisposeBag()
-
-            if hasWindow {
-                let fetcher = ContractFetcher(store: store)
-
-                innerBag += fetcher.fetch()
-            } else {
-                innerBag.dispose()
+        .addConfiguration({ presenter in
+            if let navigationController = presenter.viewController as? UINavigationController {
+                navigationController.isHeroEnabled = true
+                navigationController.hero.navigationAnimationType = .fade
             }
 
-            return innerBag
-        }
-
-        return (
-            viewController,
-            Signal { callback in
-                bag += store.actionSignal.onValue { action in
-                    if action == .goToMovingFlow {
-                        callback(.movingFlow)
-                    } else if case let .openCrossSellingEmbark(name) = action {
-                        callback(.openCrossSellingEmbark(name: name))
-                    }
-                }
-
-                return bag
+            if filter.displaysActiveContracts {
+                presenter.matter.installChatButton()
             }
-        )
-    }
-}
-
-extension Contracts: Tabable {
-    public func tabBarItem() -> UITabBarItem {
-        UITabBarItem(
-            title: L10n.InsurancesTab.title,
-            image: Asset.tab.image,
-            selectedImage: Asset.tabActive.image
-        )
-    }
-}
-
-public struct ContractFetcher {
-    let store: ContractStore
-    public func fetch() -> Disposable {
-        let bag = DisposeBag()
-        let timer = timer()
-        timer.fire()
-
-        bag += {
-            timer.invalidate()
-        }
-
-        return bag
-    }
-
-    private func timer() -> Timer {
-        let timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { timer in
-            store.send(.fetchContracts)
-            store.send(.fetchContractBundles)
-            store.send(.fetchUpcomingAgreement)
-        }
-
-        return timer
+        })
+        .configureTitle(filter.displaysActiveContracts ? L10n.InsurancesTab.title : "")
+        .configureContractsTabBarItem
     }
 }
