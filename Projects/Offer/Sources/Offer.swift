@@ -63,7 +63,6 @@ extension Offer: Presentable {
 
         let bag = DisposeBag()
         bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }
-            .wait(until: state.isLoadingSignal.map { !$0 })
             .distinct()
             .delay(by: 0.1)
             .onValue { title in

@@ -24,10 +24,16 @@ class OldOfferState {
     }
 
     @ReadWriteState var hasSignedQuotes = false
+    
+    lazy var _isLoadingSignal: ReadSignal<Bool> = {
+        return client.fetch(
+            query: query,
+            cachePolicy: .fetchIgnoringCacheData
+        ).valueSignal.plain().map { _ in false }.readable(initial: true)
+    }()
 
     lazy var isLoadingSignal: ReadSignal<Bool> = {
-        return client.fetch(query: query).valueSignal.plain().map { _ in false }.delay(by: 0.5)
-            .readable(initial: true)
+        return _isLoadingSignal.delay(by: 0.5)
     }()
 
     var query: GraphQL.QuoteBundleQuery {
@@ -35,7 +41,7 @@ class OldOfferState {
     }
 
     var dataSignal: CoreSignal<Plain, GraphQL.QuoteBundleQuery.Data> {
-        client.watch(query: query).wait(until: isLoadingSignal.atOnce().map { !$0 })
+        client.watch(query: query).wait(until: _isLoadingSignal.atOnce().map { !$0 })
     }
 
     var quotesSignal: CoreSignal<Plain, [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote]> {
