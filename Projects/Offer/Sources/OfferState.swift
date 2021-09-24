@@ -177,6 +177,7 @@ class OldOfferState {
                     quoteId: quoteId,
                     date: data.editQuote.asCompleteQuote?.startDate
                 )
+                self.offerStore.send(.setStartDate(id: quoteId, startDate: date))
 
                 return Future(date)
             }
