@@ -150,7 +150,7 @@ struct HonestyPledge: View {
                 }
                 .padding(.bottom, 20)
                 SlideToConfirm()
-                .frame(maxHeight: 50)
+                    .frame(maxHeight: 50)
             }
             .padding(.bottom, 20)
             .padding(.leading, 15)
