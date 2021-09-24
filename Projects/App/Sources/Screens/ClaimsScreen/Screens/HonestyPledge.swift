@@ -146,11 +146,11 @@ struct HonestyPledge: View {
             VStack {
                 HStack {
                     L10n.honestyPledgeDescription.hText(.body)
-                        .fixedSize(horizontal: false, vertical: true)
                         .foregroundColor(hLabelColor.secondary)
                 }
                 .padding(.bottom, 20)
                 SlideToConfirm()
+                .frame(maxHeight: 50)
             }
             .padding(.bottom, 20)
             .padding(.leading, 15)
