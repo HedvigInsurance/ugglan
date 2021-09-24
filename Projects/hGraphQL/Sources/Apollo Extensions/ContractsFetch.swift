@@ -12,7 +12,7 @@ extension ApolloClient {
                 cachePolicy: .fetchIgnoringCacheData,
                 queue: .global(qos: .background)
             )
-            .map { data in
+            .map(on: .background) { data in
                 data.activeContractBundles.map { ActiveContractBundle(bundle: $0) }
             }
             .map(on: .main) { $0 }
@@ -27,8 +27,8 @@ extension ApolloClient {
                 cachePolicy: .fetchIgnoringCacheData,
                 queue: .global(qos: .background)
             )
-            .map { $0.contracts }
-            .map { $0.compactMap { Contract(contract: $0) } }
+            .map(on: .background) { $0.contracts }
+            .map(on: .background) { $0.compactMap { Contract(contract: $0) } }
             .map(on: .main) { $0 }
     }
 
@@ -41,8 +41,8 @@ extension ApolloClient {
                 cachePolicy: .fetchIgnoringCacheData,
                 queue: .global(qos: .background)
             )
-            .map { $0.contracts }
-            .map { $0.map { UpcomingAgreementContract(contract: $0) } }
+            .map(on: .background) { $0.contracts }
+            .map(on: .background) { $0.map { UpcomingAgreementContract(contract: $0) } }
             .map(on: .main) { $0 }
     }
 }
