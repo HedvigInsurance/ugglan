@@ -24,12 +24,14 @@ class OldOfferState {
     }
 
     @ReadWriteState var hasSignedQuotes = false
-    
+
     lazy var _isLoadingSignal: ReadSignal<Bool> = {
-        return client.fetch(
-            query: query,
-            cachePolicy: .fetchIgnoringCacheData
-        ).valueSignal.plain().map { _ in false }.readable(initial: true)
+        return
+            client.fetch(
+                query: query,
+                cachePolicy: .fetchIgnoringCacheData
+            )
+            .valueSignal.plain().map { _ in false }.readable(initial: true)
     }()
 
     lazy var isLoadingSignal: ReadSignal<Bool> = {
