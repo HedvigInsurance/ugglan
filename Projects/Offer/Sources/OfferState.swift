@@ -35,7 +35,7 @@ class OldOfferState {
     }
 
     var dataSignal: CoreSignal<Plain, GraphQL.QuoteBundleQuery.Data> {
-        client.watch(query: query)
+        client.watch(query: query).wait(until: isLoadingSignal.atOnce().map { !$0 })
     }
 
     var quotesSignal: CoreSignal<Plain, [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote]> {
