@@ -8,7 +8,7 @@ query Contracts($locale: Locale!) {
       renewalDate
       draftCertificateUrl
     }
-    perils(locale: $locale) {
+    contractPerils(locale: $locale) {
       ...PerilFragment
     }
     statusPills(locale: $locale)

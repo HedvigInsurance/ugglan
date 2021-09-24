@@ -1,13 +1,7 @@
-import Apollo
-import Flow
-import Form
 import Foundation
-import Presentation
 import SwiftUI
-import UIKit
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct CrossSellingStack: View {
     var body: some View {
@@ -32,14 +26,5 @@ struct CrossSellingStack: View {
             }
         }
         .padding(15)
-    }
-}
-
-struct CrossSellingFooter {}
-
-extension CrossSellingFooter: Presentable {
-    func materialize() -> (UIView, Disposable) {
-        let view = HostingView(rootView: CrossSellingStack())
-        return (view, NilDisposer())
     }
 }

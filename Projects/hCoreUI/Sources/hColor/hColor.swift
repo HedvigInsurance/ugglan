@@ -129,6 +129,7 @@ struct hColorViewModifier<Color: hColor>: ViewModifier {
     enum ColorType {
         case tintColor
         case foregroundColor
+        case border(width: CGFloat)
     }
 
     func body(content: Content) -> some View {
@@ -138,6 +139,11 @@ struct hColorViewModifier<Color: hColor>: ViewModifier {
                 content.accentColor(color?.colorFor(colorScheme, userInterfaceLevel).color)
             case .foregroundColor:
                 content.foregroundColor(color?.colorFor(colorScheme, userInterfaceLevel).color)
+            case let .border(width):
+                content.border(
+                    color?.colorFor(colorScheme, userInterfaceLevel).color ?? SwiftUI.Color.clear,
+                    width: width
+                )
             }
         }
     }
@@ -146,6 +152,10 @@ struct hColorViewModifier<Color: hColor>: ViewModifier {
 extension View {
     public func foregroundColor<Color: hColor>(_ color: Color?) -> some View {
         self.modifier(hColorViewModifier(color: color, colorType: .foregroundColor))
+    }
+
+    public func border<Color: hColor>(_ color: Color?, width: CGFloat = 0) -> some View {
+        self.modifier(hColorViewModifier(color: color, colorType: .border(width: width)))
     }
 }
 
@@ -372,10 +382,33 @@ public struct hTintColor {
         )
     }
 
+    public static var yellowOne: some hColor {
+        hColorScheme(
+            light: Color(hexString: "F2C852"),
+            dark: Color(hexString: "CCA42E")
+        )
+    }
+
+    public static var yellowTwo: some hColor {
+        hColorScheme(
+            light: Color(hexString: "FAE098"),
+            dark: Color(hexString: "E3B945")
+        )
+    }
+
     public static var red: some hColor {
         hColorScheme(
             light: Color(hexString: "DD2727"),
             dark: Color(hexString: "E24646")
+        )
+    }
+}
+
+public struct hSeparatorColor {
+    public static var separator: some hColor {
+        hColorScheme(
+            light: Color(hexString: "3C3C43").opacity(0.29),
+            dark: Color(hexString: "545458").opacity(0.65)
         )
     }
 }

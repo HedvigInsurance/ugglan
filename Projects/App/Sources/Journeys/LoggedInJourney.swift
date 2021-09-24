@@ -42,10 +42,7 @@ extension AppJourney {
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
-        Journey(
-            Contracts(),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        ) { result in
+        Contracts.journey { result in
             switch result {
             case .movingFlow:
                 AppJourney.movingFlow
@@ -55,7 +52,6 @@ extension AppJourney {
                 AppJourney.crossSellingJourney(name: name)
             }
         }
-        .configureContractsTabBarItem
         .onTabSelected {
             ContextGradient.currentOption = .none
         }

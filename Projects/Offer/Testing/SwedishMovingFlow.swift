@@ -46,6 +46,7 @@ extension GraphQL.QuoteBundleQuery.Data {
                 ]),
                 appConfiguration: .init(
                     showCampaignManagement: false,
+                    showFaq: false,
                     ignoreCampaigns: false,
                     approveButtonTerminology: .approveChanges,
                     startDateTerminology: .accessDate,
