@@ -16,6 +16,10 @@ extension DefaultStyling {
 
         return UIColor.white
     })
+    
+    public static let navigationBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
+        return .brand(.primaryBackground())
+    })
 
     @available(iOS 13, *)
     public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
@@ -60,7 +64,7 @@ extension DefaultStyling {
         func standardAppearance(for traitCollection: UITraitCollection) -> UINavigationBarAppearance {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithDefaultBackground()
-            appearance.backgroundColor = tabBarBackgroundColor
+            appearance.backgroundColor = navigationBarBackgroundColor
             appearance.shadowImage = shadowImage(for: traitCollection)
 
             applyCommonNavigationBarStyling(appearance)
@@ -71,7 +75,7 @@ extension DefaultStyling {
         func compactAppearance(for traitCollection: UITraitCollection) -> UINavigationBarAppearance {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithDefaultBackground()
-            appearance.backgroundColor = tabBarBackgroundColor
+            appearance.backgroundColor = navigationBarBackgroundColor
             appearance.shadowImage = shadowImage(for: traitCollection)
 
             applyCommonNavigationBarStyling(appearance)
