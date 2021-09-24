@@ -20,7 +20,7 @@ public struct CrossSellingSigned: View {
         }
 
         let crossSellTitle = store.state.focusedCrossSell?.title.lowercased() ?? ""
-        
+
         if Calendar.current.isDateInToday(startDate) {
             return L10n.PurchaseConfirmationNew.InsuranceToday.AppState.description(crossSellTitle)
         } else {
