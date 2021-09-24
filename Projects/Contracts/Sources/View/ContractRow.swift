@@ -66,7 +66,10 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         if let gradientOption = contract.gradientOption {
             hGradientView(gradientOption: .init(gradientOption: gradientOption), shouldShowGradient: true)
         } else {
-            hGrayscaleColor.one
+            hColorScheme(
+                light: hGrayscaleColor.one,
+                dark: hGrayscaleColor.five
+            )
         }
     }
 
