@@ -86,15 +86,16 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
         _ viewController: UIViewController,
         options: PresentationOptions
     ) -> (result: Future<()>, dismisser: () -> Future<()>) {
-        bag += view.windowSignal.atOnce().compactMap { $0 }.onValue { window in
-             UIView.transition(
-                 with: window,
-                 duration: 0.3,
-                 options: .transitionCrossDissolve,
-                 animations: {}
-             )
-             window.rootViewController = viewController
-        }
+        bag += view.windowSignal.atOnce().compactMap { $0 }
+            .onValue { window in
+                UIView.transition(
+                    with: window,
+                    duration: 0.3,
+                    options: .transitionCrossDissolve,
+                    animations: {}
+                )
+                window.rootViewController = viewController
+            }
 
         bag += hasWindowSignal.compactMap { $0 }
             .onValue { window in
