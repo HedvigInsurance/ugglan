@@ -189,6 +189,13 @@ struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresen
             content()
                 .modifier(TransferEnvironment(environment: context.environment))
                 .environment(\.presentableViewUpperScrollView, upperScrollView)
+                .background(GeometryReader { geo in
+                    Color.clear.onReceive(Just(geo.size.height)) { height in
+                        if height != upperScrollView?.contentSize.height {
+                            setSize(context: context)
+                        }
+                    }
+                })
         )
         setSize(context: context)
     }
