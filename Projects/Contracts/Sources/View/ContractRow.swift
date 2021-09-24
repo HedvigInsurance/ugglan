@@ -53,11 +53,13 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let contract: Contract
 
     @ViewBuilder func backgroundColor(configuration: Configuration) -> some View {
-        if configuration.isPressed {
-            hOverlayColor.pressed.opacity(0.3)
-        }
+        ZStack {
+            if configuration.isPressed {
+                hOverlayColor.pressed.opacity(0.3)
+            }
 
-        Color.clear
+            Color.clear
+        }
     }
 
     @ViewBuilder var gradientView: some View {
