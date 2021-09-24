@@ -1,18 +1,10 @@
-//
-//  ImageWithBlurHash.swift
-//  ImageWithBlurHash
-//
-//  Created by Sam Pettersson on 2021-09-24.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import Kingfisher
 import SwiftUI
 
 class ImageLoaderService: ObservableObject {
     @Published var image: UIImage = UIImage()
-    
+
     func loadImage(url: URL) {
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data else { return }
@@ -27,7 +19,7 @@ class ImageLoaderService: ObservableObject {
 struct RemoteImage: View {
     var url: URL
     @ObservedObject var imageLoader = ImageLoaderService()
-    
+
     var body: some View {
         Image(uiImage: imageLoader.image)
             .resizable()
@@ -65,14 +57,14 @@ extension View {
                             .aspectRatio(contentMode: .fill)
                     )
                     .background(
-                    Image(
-                        uiImage: UIImage(
-                            blurHash: blurHash,
-                            size: .init(width: 32, height: 32)
-                        ) ?? UIImage()
+                        Image(
+                            uiImage: UIImage(
+                                blurHash: blurHash,
+                                size: .init(width: 32, height: 32)
+                            ) ?? UIImage()
+                        )
+                        .resizable()
                     )
-                    .resizable()
-                )
             }
         }
     }
