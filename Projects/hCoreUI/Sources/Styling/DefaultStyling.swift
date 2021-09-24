@@ -16,7 +16,7 @@ extension DefaultStyling {
 
         return UIColor.white
     })
-    
+
     public static let navigationBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
         return .brand(.primaryBackground())
     })
