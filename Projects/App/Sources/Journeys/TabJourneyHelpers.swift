@@ -96,7 +96,7 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
                 )
                 window.rootViewController = viewController
             }
-        
+
         return (
             result: Future { completion in
                 return NilDisposer()
