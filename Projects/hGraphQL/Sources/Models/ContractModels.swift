@@ -104,7 +104,7 @@ public struct Contract: Codable, Hashable, Equatable {
         } else {
             gradientOption = nil
         }
-        
+
         showsMovingFlowButton = contract.currentAgreement.asSwedishAccidentAgreement == nil
     }
 
@@ -134,7 +134,7 @@ public struct Contract: Codable, Hashable, Equatable {
         } else {
             gradientOption = nil
         }
-        
+
         showsMovingFlowButton = false
     }
 
