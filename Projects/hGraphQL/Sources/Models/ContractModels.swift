@@ -104,8 +104,11 @@ public struct Contract: Codable, Hashable, Equatable {
         } else {
             gradientOption = nil
         }
+<<<<<<< HEAD
 
         showsMovingFlowButton = contract.currentAgreement.asSwedishAccidentAgreement == nil
+=======
+>>>>>>> main
     }
 
     public init(
@@ -134,8 +137,11 @@ public struct Contract: Codable, Hashable, Equatable {
         } else {
             gradientOption = nil
         }
+<<<<<<< HEAD
 
         showsMovingFlowButton = false
+=======
+>>>>>>> main
     }
 
     public enum GradientOption: String, Codable {
