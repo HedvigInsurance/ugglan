@@ -86,14 +86,16 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
         _ viewController: UIViewController,
         options: PresentationOptions
     ) -> (result: Future<()>, dismisser: () -> Future<()>) {
-        let window = view.window!
-        UIView.transition(
-            with: window,
-            duration: 0.3,
-            options: .transitionCrossDissolve,
-            animations: {}
-        )
-        window.rootViewController = viewController
+        bag += view.windowSignal.atOnce().compactMap { $0 }
+            .onValue { window in
+                UIView.transition(
+                    with: window,
+                    duration: 0.3,
+                    options: .transitionCrossDissolve,
+                    animations: {}
+                )
+                window.rootViewController = viewController
+            }
 
         return (
             result: Future { completion in
@@ -110,6 +112,8 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
     }
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+
         let tabBarController = UITabBarController()
         addChild(tabBarController)
         self.view.addSubview(tabBarController.view)
