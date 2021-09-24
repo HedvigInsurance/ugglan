@@ -9,11 +9,13 @@ extension ApolloClient {
                 query: GraphQL.ActiveContractBundlesQuery(
                     locale: locale
                 ),
-                cachePolicy: .fetchIgnoringCacheData
+                cachePolicy: .fetchIgnoringCacheData,
+                queue: .global(qos: .background)
             )
             .map { data in
                 data.activeContractBundles.map { ActiveContractBundle(bundle: $0) }
             }
+            .map(on: .main) { $0 }
     }
 
     public func fetchContracts(locale: GraphQL.Locale) -> Future<[Contract]> {
@@ -22,10 +24,12 @@ extension ApolloClient {
                 query: GraphQL.ContractsQuery(
                     locale: locale
                 ),
-                cachePolicy: .fetchIgnoringCacheData
+                cachePolicy: .fetchIgnoringCacheData,
+                queue: .global(qos: .background)
             )
             .map { $0.contracts }
             .map { $0.compactMap { Contract(contract: $0) } }
+            .map(on: .main) { $0 }
     }
 
     public func fetchUpcomingContracts(locale: GraphQL.Locale) -> Future<[UpcomingAgreementContract]> {
@@ -34,9 +38,11 @@ extension ApolloClient {
                 query: GraphQL.UpcomingAgreementQuery(
                     locale: locale
                 ),
-                cachePolicy: .fetchIgnoringCacheData
+                cachePolicy: .fetchIgnoringCacheData,
+                queue: .global(qos: .background)
             )
             .map { $0.contracts }
             .map { $0.map { UpcomingAgreementContract(contract: $0) } }
+            .map(on: .main) { $0 }
     }
 }
