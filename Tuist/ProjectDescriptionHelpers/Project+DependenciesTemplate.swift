@@ -69,7 +69,7 @@ public enum ExternalDependencies: CaseIterable {
         case .disk:
             return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.4"))]
         case .kingfisher:
-            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "6.0.1"))]
+            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.0.0"))]
         case .snapkit:
             return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.0.1"))]
         case .markdownkit:
