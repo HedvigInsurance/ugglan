@@ -19,16 +19,20 @@ public struct CrossSellingSigned: View {
             return ""
         }
 
+        let crossSellTitle = store.state.focusedCrossSell?.title.lowercased() ?? ""
+        
         if Calendar.current.isDateInToday(startDate) {
-            return L10n.PurchaseConfirmationNew.InsuranceToday.AppState.description
+            return L10n.PurchaseConfirmationNew.InsuranceToday.AppState.description(crossSellTitle)
         } else {
-            return L10n.PurchaseConfirmationNew.InsuranceActiveInFuture.AppState.description(localDateString)
+            return L10n.PurchaseConfirmationNew.InsuranceActiveInFuture.AppState.description(
+                crossSellTitle,
+                localDateString
+            )
         }
     }
 
     var displayTitle: String {
-        let crossSellTitle = store.state.focusedCrossSell?.title.lowercased() ?? ""
-        return L10n.PurchaseConfirmationNew.InsuranceToday.AppState.title(crossSellTitle)
+        return L10n.PurchaseConfirmationNew.InsuranceToday.AppState.title
     }
 
     public var body: some View {
