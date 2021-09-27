@@ -16,10 +16,9 @@ public struct HedvigAdyenAPIContext {
     public var clientKey: String {
         switch hGraphQL.Environment.current {
         case .production:
-            #warning("todo")
-            return "test_5SSROLYNXRANLC7ARSV3IPKGBE6TN5CH"
-        case .staging: return "test_5SSROLYNXRANLC7ARSV3IPKGBE6TN5CH"
-        case .custom: return "test_5SSROLYNXRANLC7ARSV3IPKGBE6TN5CH"
+            return "live_QQ6EHZ54DZBBTDBYLI4HWOAHM4MQFFI7"
+        case .staging: return "test_XDVQHYGO5VAVTF46OIDAQILZOQQGGTAT"
+        case .custom: return "test_XDVQHYGO5VAVTF46OIDAQILZOQQGGTAT"
         }
     }
 
