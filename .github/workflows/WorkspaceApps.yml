@@ -29,8 +29,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
-        with:
-          path: Projects/hCore/Resources
+      with:
+        path: Projects/hCore/Resources
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -56,8 +56,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
-        with:
-          path: Projects/hCore/Resources
+      with:
+        path: Projects/hCore/Resources
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -83,8 +83,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
-        with:
-          path: Projects/hCore/Resources
+      with:
+        path: Projects/hCore/Resources
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -110,8 +110,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
-        with:
-          path: Projects/hCore/Resources
+      with:
+        path: Projects/hCore/Resources
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -137,8 +137,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
-        with:
-          path: Projects/hCore/Resources
+      with:
+        path: Projects/hCore/Resources
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -164,8 +164,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
-        with:
-          path: Projects/hCore/Resources
+      with:
+        path: Projects/hCore/Resources
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -191,8 +191,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
-        with:
-          path: Projects/hCore/Resources
+      with:
+        path: Projects/hCore/Resources
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
