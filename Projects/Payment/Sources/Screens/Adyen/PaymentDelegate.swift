@@ -97,7 +97,9 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         case let .threeDS2Challenge(challengeAction):
             threeDS2Component.delegate = delegate
             threeDS2Component.handle(challengeAction)
-        case .threeDS2(_): #warning("should we handle this")
+        case let .threeDS2(action):
+            threeDS2Component.delegate = delegate
+            threeDS2Component.handle(action)
         case .voucher(_): break
         case .qrCode(_): break
         }
