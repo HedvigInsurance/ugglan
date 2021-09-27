@@ -12,7 +12,7 @@ public struct HedvigAdyenAPIContext {
         case .custom: return Environment.test
         }
     }
-    
+
     public var clientKey: String {
         switch hGraphQL.Environment.current {
         case .production:
@@ -22,7 +22,7 @@ public struct HedvigAdyenAPIContext {
         case .custom: return "test_5SSROLYNXRANLC7ARSV3IPKGBE6TN5CH"
         }
     }
-    
+
     public var apiContext: APIContext { return .init(environment: environment, clientKey: clientKey) }
     public init() {}
 }
