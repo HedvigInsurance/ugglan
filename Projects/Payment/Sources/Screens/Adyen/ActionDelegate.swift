@@ -32,10 +32,6 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
 
         client.perform(mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(req: detailsJson))
             .onValue { data in
-                //					if let component = component as? DismissableComponent {
-                //						component.dismiss(true, completion: nil)
-                //					}
-
                 if data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished
                     != nil
                 {
@@ -57,10 +53,6 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
     }
 
     func didFail(with error: Error, from component: ActionComponent) {
-        //			if let component = component as? DismissableComponent {
-        //				component.dismiss(true, completion: nil)
-        //			}
-
         if let error = error as? Adyen.ComponentError, error == .cancelled {
             // no op
         } else {
