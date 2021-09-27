@@ -1,5 +1,8 @@
 import Adyen
+import Adyen3DS2
+import AdyenActions
 import AdyenCard
+import AdyenComponents
 import Flow
 import Foundation
 import UIKit
@@ -31,9 +34,9 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
 
     func stopLoading(withSuccess success: Bool, in component: PaymentComponent) {
         if let component = component as? ApplePayComponent {
-            component.stopLoading(withSuccess: success)
+            component.stopLoadingIfNeeded()
         } else if let component = component as? PresentableComponent {
-            component.stopLoading(withSuccess: success)
+            component.stopLoadingIfNeeded()
         }
     }
 
@@ -53,13 +56,12 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
     }
 
     lazy var threeDS2Component: ThreeDS2Component = {
-        let threeDS2Component = ThreeDS2Component()
-        threeDS2Component.environment = AdyenPaymentBuilder.environment
+        let threeDS2Component = ThreeDS2Component(apiContext: HedvigAdyenAPIContext().apiContext)
         bag.hold(threeDS2Component)
         return threeDS2Component
     }()
 
-    func handleAction(_ action: Adyen.Action, from component: PaymentComponent) {
+    func handleAction(_ action: AdyenActions.Action, from component: PaymentComponent) {
         let delegate = ActionDelegate { result in
             switch result {
             case let .success(response):
@@ -79,15 +81,13 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
 
         switch action {
         case let .redirect(redirectAction):
-            let redirectComponent = RedirectComponent()
+            let redirectComponent = RedirectComponent(apiContext: HedvigAdyenAPIContext().apiContext)
             redirectComponent.delegate = delegate
-            redirectComponent.environment = AdyenPaymentBuilder.environment
             redirectComponent.handle(redirectAction)
             bag.hold(redirectComponent)
         case let .await(awaitAction):
-            let awaitComponent = AwaitComponent(style: nil)
+            let awaitComponent = AwaitComponent(apiContext: HedvigAdyenAPIContext().apiContext, style: nil)
             awaitComponent.delegate = delegate
-            awaitComponent.environment = AdyenPaymentBuilder.environment
             awaitComponent.handle(awaitAction)
             bag.hold(awaitComponent)
         case .sdk: fatalError("Not implemented")
@@ -97,6 +97,9 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         case let .threeDS2Challenge(challengeAction):
             threeDS2Component.delegate = delegate
             threeDS2Component.handle(challengeAction)
+        case .threeDS2(_): #warning("should we handle this")
+        case .voucher(_): break
+        case .qrCode(_): break
         }
     }
 
