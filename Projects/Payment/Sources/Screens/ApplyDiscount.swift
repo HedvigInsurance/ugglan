@@ -101,7 +101,7 @@ extension ApplyDiscount: Presentable {
 
                             loadableSubmitButton.isLoadingSignal.value = false
                         }
-                        
+
                         self.client
                             .perform(
                                 mutation: GraphQL.RedeemCodeMutation(code: discountCode)
@@ -115,7 +115,7 @@ extension ApplyDiscount: Presentable {
                                     showError()
                                     return
                                 }
-                                
+
                                 loadableSubmitButton.isLoadingSignal.value = false
                                 self.didRedeemValidCodeCallbacker.callAll(
                                     with: successfulRedeemResult
