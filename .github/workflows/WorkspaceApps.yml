@@ -11,10 +11,26 @@ on:
     branches: ['*']
 
 jobs:
+  download_translations:
+    runs-on: self-hosted
+    
+    steps:
+    - name: Download translations
+      run: sh scripts/translations.sh
+    - name: Upload translations
+      uses: actions/upload-artifact@v2
+      with:
+        name: translations
+        path: Projects/hCore/Resources
   build_ugglan:
     runs-on: self-hosted
+    needs: [download_translations]
+
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -35,8 +51,13 @@ jobs:
         path: fastlane/build_output/Ugglan.ipa
   build_embark:
     runs-on: self-hosted
+    needs: [download_translations]
+
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -57,8 +78,13 @@ jobs:
         path: fastlane/build_output/EmbarkExample.ipa
   build_hedvig:
     runs-on: self-hosted
+    needs: [download_translations]
+
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -79,8 +105,13 @@ jobs:
         path: fastlane/build_output/Hedvig.ipa
   build_home:
     runs-on: self-hosted
+    needs: [download_translations]
+
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -101,8 +132,13 @@ jobs:
         path: fastlane/build_output/HomeExample.ipa
   build_forever:
     runs-on: self-hosted
+    needs: [download_translations]
+
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -123,8 +159,13 @@ jobs:
         path: fastlane/build_output/ForeverExample.ipa
   build_offer:
     runs-on: self-hosted
+    needs: [download_translations]
+
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -145,8 +186,13 @@ jobs:
         path: fastlane/build_output/OfferExample.ipa
   build_hcoreui:
     runs-on: self-hosted
+    needs: [download_translations]
+
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action

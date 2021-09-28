@@ -1,36 +1,11 @@
 import Foundation
-import Kingfisher
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
-extension View {
-    func backgroundImageWithBlurHashFallback(
-        imageURL: URL,
-        blurHash: String,
-        hasLoaded: Binding<Bool>
-    ) -> some View {
-        self.background(
-            KFImage(imageURL, isLoaded: hasLoaded)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-        )
-        .background(
-            Image(
-                uiImage: UIImage(
-                    blurHash: blurHash,
-                    size: .init(width: 32, height: 32)
-                ) ?? UIImage()
-            )
-            .resizable()
-        )
-    }
-}
-
 struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
-    @State var imageHasLoaded: Bool = false
     let crossSell: hGraphQL.CrossSell
 
     var body: some View {
@@ -73,8 +48,7 @@ struct CrossSellingItem: View {
         )
         .backgroundImageWithBlurHashFallback(
             imageURL: crossSell.imageURL,
-            blurHash: crossSell.blurHash,
-            hasLoaded: $imageHasLoaded
+            blurHash: crossSell.blurHash
         )
         .cornerRadius(.defaultCornerRadius)
         .shadow(color: .black.opacity(0.05), radius: 24, x: 0, y: 4)

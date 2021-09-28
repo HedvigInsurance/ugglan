@@ -11,11 +11,26 @@ on:
     branches: ['*']
 
 jobs:
+  download_translations:
+    runs-on: self-hosted
+    
+    steps:
+    - name: Download translations
+      run: sh scripts/translations.sh
+    - name: Upload translations
+      uses: actions/upload-artifact@v2
+      with:
+        name: translations
+        path: Projects/hCore/Resources
   test_ugglan:
     runs-on: self-hosted
+    needs: [download_translations]
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -35,9 +50,13 @@ jobs:
         path: fastlane/test_output/Ugglan.xcresult
   test_hCore:
     runs-on: self-hosted
+    needs: [download_translations]
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -57,9 +76,13 @@ jobs:
         path: fastlane/test_output/hCore.xcresult
   test_hCoreUI:
     runs-on: self-hosted
+    needs: [download_translations]
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -79,9 +102,13 @@ jobs:
         path: fastlane/test_output/hCoreUI.xcresult
   test_forever:
     runs-on: self-hosted
+    needs: [download_translations]
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -101,9 +128,13 @@ jobs:
         path: fastlane/test_output/Forever.xcresult
   test_contracts:
     runs-on: self-hosted
+    needs: [download_translations]
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -123,9 +154,13 @@ jobs:
         path: fastlane/test_output/Contracts.xcresult
   test_home:
     runs-on: self-hosted
+    needs: [download_translations]
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: translations
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action

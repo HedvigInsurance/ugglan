@@ -1,4 +1,5 @@
 import Adyen
+import AdyenActions
 import Apollo
 import Flow
 import Foundation
@@ -53,7 +54,7 @@ struct AdyenPayOut: Presentable {
                         guard let jsonData = data.action.data(using: .utf8) else { return }
                         guard
                             let action = try? JSONDecoder()
-                                .decode(Adyen.Action.self, from: jsonData)
+                                .decode(AdyenActions.Action.self, from: jsonData)
                         else { return }
 
                         onResult(.success(.make(action)))
