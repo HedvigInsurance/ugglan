@@ -85,29 +85,37 @@ extension ApplyDiscount: Presentable {
                     }
                     .withLatestFrom(textField.value.plain())
                     .onValue { _, discountCode in
+                        func showError() {
+                            let alert = Alert(
+                                title: L10n.discountCodeMissing,
+                                message: L10n.discountCodeMissingBody,
+                                actions: [
+                                    Alert.Action(
+                                        title: L10n
+                                            .discountCodeMissingButton
+                                    ) {}
+                                ]
+                            )
+
+                            viewController.present(alert)
+
+                            loadableSubmitButton.isLoadingSignal.value = false
+                        }
+                        
                         self.client
                             .perform(
                                 mutation: GraphQL.RedeemCodeMutation(code: discountCode)
                             )
                             .delay(by: 0.5)
                             .onError { _ in
-                                let alert = Alert(
-                                    title: L10n.discountCodeMissing,
-                                    message: L10n.discountCodeMissingBody,
-                                    actions: [
-                                        Alert.Action(
-                                            title: L10n
-                                                .discountCodeMissingButton
-                                        ) {}
-                                    ]
-                                )
-
-                                viewController.present(alert)
-
-                                loadableSubmitButton.isLoadingSignal.value = false
+                                showError()
                             }
-                            .compactMap { $0.redeemCodeV2.asSuccessfulRedeemResult }
-                            .onValue { successfulRedeemResult in
+                            .onValue { data in
+                                guard let successfulRedeemResult = data.redeemCodeV2.asSuccessfulRedeemResult else {
+                                    showError()
+                                    return
+                                }
+                                
                                 loadableSubmitButton.isLoadingSignal.value = false
                                 self.didRedeemValidCodeCallbacker.callAll(
                                     with: successfulRedeemResult
