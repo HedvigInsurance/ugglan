@@ -32,7 +32,7 @@ extension Header: Presentable {
             shouldShowGradientSignal: .init(true)
         )
 
-        bag += state.dataSignal.map { $0.quoteBundle.appConfiguration.gradientOption }
+        bag += state.dataSignal.compactMap { $0?.quoteBundle.appConfiguration.gradientOption }
             .onValue { gradientOption in
                 switch gradientOption {
                 case .gradientOne:

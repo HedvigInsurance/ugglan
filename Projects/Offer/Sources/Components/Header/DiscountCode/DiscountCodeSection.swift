@@ -19,7 +19,7 @@ extension DiscountCodeSection: Presentable {
         )
         let bag = DisposeBag()
 
-        bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.showCampaignManagement }
+        bag += state.dataSignal.compactMap { $0?.quoteBundle.appConfiguration.showCampaignManagement }
             .onValue { showCampaignManagement in
                 section.isHidden = !showCampaignManagement
             }
@@ -49,7 +49,7 @@ extension DiscountCodeSection: Presentable {
         removeRow.alpha = 0
 
         bag += state.dataSignal.animated(style: SpringAnimationStyle.lightBounce()) { data in
-            if data.redeemedCampaigns.isEmpty {
+            if let campaigns = data?.redeemedCampaigns, campaigns.isEmpty {
                 removeRow.alpha = 0
                 row.alpha = 1
                 removeRow.isHidden = true
@@ -63,7 +63,7 @@ extension DiscountCodeSection: Presentable {
         }
 
         let discountsPresent = ReadWriteSignal<Bool>(false)
-        bag += state.dataSignal.map { $0.redeemedCampaigns.count != 0 }.bindTo(discountsPresent)
+        bag += state.dataSignal.map { $0?.redeemedCampaigns.count != 0 }.bindTo(discountsPresent)
 
         bag += removeButton.onTapSignal.onValue { _ in
             loadableButton.isLoadingSignal.value = true

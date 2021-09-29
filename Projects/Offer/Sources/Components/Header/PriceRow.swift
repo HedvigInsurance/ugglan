@@ -82,30 +82,30 @@ extension PriceRow: Presentable {
         )
         view.addArrangedSubview(perMonthLabel)
 
-        bag += state.dataSignal.map { $0.quoteBundle }
+        bag += state.dataSignal.map { $0?.quoteBundle }
             .onValue { quoteBundle in
-                let bundleCost = quoteBundle.bundleCost
+                guard let quoteBundle = quoteBundle else { return }
 
                 if quoteBundle.appConfiguration.ignoreCampaigns {
                     grossPriceLabel.isHidden = true
                     grossPriceLabel.value = ""
                     netPriceLabel.value =
-                        bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
+                    quoteBundle.bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
                         .formattedAmountWithoutSymbol
                 } else {
                     grossPriceLabel.isHidden =
-                        bundleCost.monthlyDiscount.fragments.monetaryAmountFragment.monetaryAmount
+                    quoteBundle.bundleCost.monthlyDiscount.fragments.monetaryAmountFragment.monetaryAmount
                         .floatAmount == 0
                     netPriceLabel.value =
-                        bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount
+                    quoteBundle.bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount
                         .formattedAmountWithoutSymbol
                     grossPriceLabel.value =
-                        bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
+                    quoteBundle.bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
                         .formattedAmountWithoutSymbol
                 }
 
                 perMonthLabel.value =
-                    "\(bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount.currencySymbol)\(L10n.perMonth)"
+                "\(quoteBundle.bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount.currencySymbol)\(L10n.perMonth)"
             }
 
         row.append(view)

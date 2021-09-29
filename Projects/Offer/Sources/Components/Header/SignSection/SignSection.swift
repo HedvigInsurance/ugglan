@@ -34,8 +34,9 @@ extension SignSection: Presentable {
 
         bag += state.dataSignal.onValueDisposePrevious { data in
             let innerBag = DisposeBag()
-
-            switch data.signMethodForQuotes {
+            guard let signMethodForQuotes = data?.signMethodForQuotes else { return innerBag }
+            
+            switch signMethodForQuotes {
             case .swedishBankId:
                 let signButton = Button(
                     title: L10n.offerSignButton,
@@ -85,7 +86,7 @@ extension SignSection: Presentable {
                 innerBag += row.append(signButton)
             case .approveOnly:
                 let signButton = Button(
-                    title: data.quoteBundle.appConfiguration.approveButtonTerminology.displayValue,
+                    title: data?.quoteBundle.appConfiguration.approveButtonTerminology.displayValue ?? "",
                     type: .standard(
                         backgroundColor: .brand(.secondaryButtonBackgroundColor),
                         textColor: .brand(.secondaryButtonTextColor)

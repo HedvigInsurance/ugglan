@@ -31,7 +31,7 @@ extension CoverageSection: Presentable {
 
         bag += state
             .dataSignal
-            .compactMap { $0.quoteBundle }
+            .compactMap { $0?.quoteBundle }
             .onValueDisposePrevious { quoteBundle in
                 let innerBag = DisposeBag()
 
