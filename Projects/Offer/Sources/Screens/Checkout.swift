@@ -39,8 +39,8 @@ extension Checkout: Presentable {
         let viewController = AccessoryViewController(accessoryView: checkoutButton)
         viewController.title = L10n.checkoutTitle
         let bag = DisposeBag()
-        
-        let store: OfferStore =  self.get()
+
+        let store: OfferStore = self.get()
 
         let form = FormView()
         bag += viewController.install(form)

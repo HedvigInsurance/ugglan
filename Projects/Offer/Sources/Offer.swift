@@ -39,13 +39,13 @@ public enum OfferResult {
 extension Offer: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<OfferResult>) {
         let viewController = UIViewController()
-        
+
         let store: OfferStore = self.get()
 
         if options.contains(.shouldPreserveState) {
             ApplicationState.preserveState(.offer)
         }
-        
+
         if #available(iOS 13.0, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithTransparentBackground()
@@ -53,7 +53,7 @@ extension Offer: Presentable {
             viewController.navigationItem.standardAppearance = appearance
             viewController.navigationItem.compactAppearance = appearance
         }
-        
+
         let bag = DisposeBag()
         bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.appConfiguration.title }
             .distinct()
@@ -153,7 +153,7 @@ extension Offer: Presentable {
         return (
             viewController,
             FiniteSignal { callback in
-                
+
                 store.send(.query(ids: self.offerIDContainer.ids))
 
                 bag += store.onAction(.openChat) {

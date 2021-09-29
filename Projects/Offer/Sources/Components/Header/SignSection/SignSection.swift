@@ -35,7 +35,7 @@ extension SignSection: Presentable {
         bag += state.dataSignal.onValueDisposePrevious { data in
             let innerBag = DisposeBag()
             guard let signMethodForQuotes = data?.signMethodForQuotes else { return innerBag }
-            
+
             switch signMethodForQuotes {
             case .swedishBankId:
                 let signButton = Button(

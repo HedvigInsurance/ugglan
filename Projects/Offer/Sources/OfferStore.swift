@@ -2,9 +2,9 @@ import Apollo
 import Flow
 import Foundation
 import Presentation
+import StoreKit
 import hCore
 import hGraphQL
-import StoreKit
 
 public struct OfferState: StateProtocol {
     var hasSignedQuotes = false
@@ -19,7 +19,7 @@ public struct OfferState: StateProtocol {
 }
 
 public enum OfferAction: ActionProtocol {
-    
+
     case sign(event: SignEvent)
     case startSwedishBankIDSign(autoStartToken: String)
     case setSwedishBankID(statusCode: String)
@@ -27,14 +27,14 @@ public enum OfferAction: ActionProtocol {
     case openChat
     case query(ids: [String])
     case setOfferBundle(bundle: OfferBundle)
-    
+
     /// Start date events
     case setStartDate(id: String, startDate: Date?)
     case updateStartDate(id: String, startDate: Date)
     case removeStartDate(id: String)
-    
+
     case failed(event: OfferStoreError)
-    
+
     public enum SignEvent: Codable {
         case swedishBankId
         case simpleSign
@@ -72,11 +72,14 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             return signQuotesEffect()
         case .query(let ids):
             let query = self.query(for: ids)
-            return client.fetch(query: query).compactMap { data in
-                return OfferBundle(data: data)
-            }.map {
-                return .setOfferBundle(bundle: $0)
-            }.valueThenEndSignal
+            return client.fetch(query: query)
+                .compactMap { data in
+                    return OfferBundle(data: data)
+                }
+                .map {
+                    return .setOfferBundle(bundle: $0)
+                }
+                .valueThenEndSignal
         case let .removeStartDate(id):
             return self.client
                 .perform(
@@ -88,7 +91,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     } else {
                         return .failed(error: .updateStartDate)
                     }
-                }.valueThenEndSignal
+                }
+                .valueThenEndSignal
         case let .updateStartDate(id, startDate):
             return self.updateStartDate(quoteId: id, date: startDate)
         default:
@@ -117,7 +121,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.swedishBankIDAutoStartToken = autoStartToken
         case let .setStartDate(id, startDate):
             newState.startDates[id] = startDate
-        case let.setOfferBundle(bundle):
+        case let .setOfferBundle(bundle):
             newState.offerData = bundle
         default:
             break
@@ -129,7 +133,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
 // Old offer state refactored
 extension OfferStore {
-    
+
     public enum OfferStoreError: Error, Codable {
         case checkoutUpdate
         case updateStartDate
@@ -137,15 +141,15 @@ extension OfferStore {
     }
 
     typealias Campaign = GraphQL.QuoteBundleQuery.Data.RedeemedCampaign
-    
+
     private func updateCacheRedeemedCampaigns(
         campaigns: [Campaign]
     ) {
-//        self.store.update(query: self.query) { (storeData: inout GraphQL.QuoteBundleQuery.Data) in
-//            storeData.redeemedCampaigns = campaigns
-//        }
-//
-//        self.refetch()
+        //        self.store.update(query: self.query) { (storeData: inout GraphQL.QuoteBundleQuery.Data) in
+        //            storeData.redeemedCampaigns = campaigns
+        //        }
+        //
+        //        self.refetch()
     }
 
     func updateRedeemedCampaigns(discountCode: String) -> Future<Void> {
@@ -182,7 +186,7 @@ extension OfferStore {
                 return Future()
             }
     }
-    
+
     func checkoutUpdate(quoteId: String, email: String, ssn: String) -> Future<Void> {
         return self.client
             .perform(
@@ -199,10 +203,11 @@ extension OfferStore {
                     .fetch(
                         query: self.query(for: [quoteId]),
                         cachePolicy: .fetchIgnoringCacheData
-                    ).toVoid()
+                    )
+                    .toVoid()
             }
     }
-    
+
     func updateStartDate(quoteId: String, date: Date) -> FiniteSignal<OfferAction>? {
         return self.client
             .perform(
@@ -215,11 +220,12 @@ extension OfferStore {
                 guard let date = data.editQuote.asCompleteQuote?.startDate?.localDateToDate else {
                     return .failed(event: .updateStartDate)
                 }
-                
+
                 return .setStartDate(id: quoteId, startDate: date)
-            }.valueThenEndSignal
+            }
+            .valueThenEndSignal
     }
-    
+
     func signQuotesEffect() -> FiniteSignal<Action> {
         let subscription = client.subscribe(subscription: GraphQL.SignStatusSubscription())
         let bag = DisposeBag()

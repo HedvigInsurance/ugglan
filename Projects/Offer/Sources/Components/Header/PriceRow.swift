@@ -90,22 +90,22 @@ extension PriceRow: Presentable {
                     grossPriceLabel.isHidden = true
                     grossPriceLabel.value = ""
                     netPriceLabel.value =
-                    quoteBundle.bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
+                        quoteBundle.bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
                         .formattedAmountWithoutSymbol
                 } else {
                     grossPriceLabel.isHidden =
-                    quoteBundle.bundleCost.monthlyDiscount.fragments.monetaryAmountFragment.monetaryAmount
+                        quoteBundle.bundleCost.monthlyDiscount.fragments.monetaryAmountFragment.monetaryAmount
                         .floatAmount == 0
                     netPriceLabel.value =
-                    quoteBundle.bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount
+                        quoteBundle.bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount
                         .formattedAmountWithoutSymbol
                     grossPriceLabel.value =
-                    quoteBundle.bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
+                        quoteBundle.bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
                         .formattedAmountWithoutSymbol
                 }
 
                 perMonthLabel.value =
-                "\(quoteBundle.bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount.currencySymbol)\(L10n.perMonth)"
+                    "\(quoteBundle.bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount.currencySymbol)\(L10n.perMonth)"
             }
 
         row.append(view)

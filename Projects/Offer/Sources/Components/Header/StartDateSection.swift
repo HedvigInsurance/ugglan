@@ -79,7 +79,7 @@ extension StartDateSection: Presentable {
         bag += state.dataSignal.map { $0?.quoteBundle }
             .onValueDisposePrevious { quoteBundle in
                 let innerBag = DisposeBag()
-                
+
                 guard let quoteBundle = quoteBundle else { return innerBag }
 
                 let displayableStartDate = quoteBundle.displayableStartDate
