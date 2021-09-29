@@ -13,16 +13,17 @@ struct CrossSellingStack: View {
         ) { crossSells in
             if !crossSells.isEmpty {
                 hSection(
-                    header:  HStack(alignment: .center, spacing: 8) {
+                    header: HStack(alignment: .center, spacing: 8) {
                         CrossSellingUnseenCircle()
                         hText(L10n.InsuranceTab.CrossSells.title, style: .title3)
                             .foregroundColor(hLabelColor.primary)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                    }) {
-                        ForEach(crossSells, id: \.title) { crossSell in
-                            CrossSellingItem(crossSell: crossSell)
-                        }
                     }
+                ) {
+                    ForEach(crossSells, id: \.title) { crossSell in
+                        CrossSellingItem(crossSell: crossSell)
+                    }
+                }
             }
         }
     }
