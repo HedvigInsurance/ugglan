@@ -46,7 +46,7 @@ public class HostingView<Content: View>: UIView {
                 return rootViewHostingController.view.sizeThatFits(scrollView.contentSize)
             }
 
-            return rootViewHostingController.view.sizeThatFits(superview.frame.size)
+            return rootViewHostingController.view.sizeThatFits(.zero)
         } else {
             return rootViewHostingController.view.sizeThatFits(.zero)
         }
