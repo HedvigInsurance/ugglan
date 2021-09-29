@@ -35,10 +35,6 @@ platform :ios do
     end
 
     lane :provision do
-      register_devices(
-        devices_file: "./devices.txt"
-      )
-
       match(
         type: "appstore",
         app_identifier: "com.hedvig.app",
