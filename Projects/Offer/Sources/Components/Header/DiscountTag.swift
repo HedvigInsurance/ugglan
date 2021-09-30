@@ -45,9 +45,7 @@ extension DiscountTag: Presentable {
 
         bag += store.stateSignal.compactMap { $0.offerData }
             .animated(style: SpringAnimationStyle.lightBounce()) { data in
-                guard let campaign = data.redeemedCampaigns.first,
-                    let campaignManagement =
-                        data.quoteBundle.appConfiguration, campaignManagement.showCampaignManagement
+                guard let campaign = data.redeemedCampaigns.first, data.quoteBundle.appConfiguration.showCampaignManagement
                 else {
                     view.animationSafeIsHidden = true
                     return

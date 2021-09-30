@@ -69,11 +69,11 @@ extension DiscountCodeSection: Presentable {
         bag += removeButton.onTapSignal.onValue { _ in
             store.send(.removeRedeemedCampaigns)
             loadableButton.isLoadingSignal.value = true
-            bag += store.stateSignal.compactMap { $0.redeemedCamapign == nil }
-                .onValue { _ in
+            bag += store.onAction(.setRedeemedCampaigns(discountCode: nil), {
                     loadableButton.isLoadingSignal.value = false
-                }
+            })
 
+            
             bag += store.onAction(
                 .failed(event: .updateRedeemedCampaigns),
                 {

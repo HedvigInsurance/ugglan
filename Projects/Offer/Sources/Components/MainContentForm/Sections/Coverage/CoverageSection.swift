@@ -7,17 +7,19 @@ import hCore
 import hCoreUI
 
 struct CoverageSection {
-    @Inject var state: OldOfferState
 }
 
 extension CoverageSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let section = SectionView(headerView: nil, footerView: nil)
         section.dynamicStyle = .brandGrouped(separatorType: .none)
+        
+        let store: OfferStore = self.get()
 
         let bag = DisposeBag()
 
-        bag += state.quotesSignal.onValueDisposePrevious { quotes in
+        bag += store.stateSignal
+            .compactMap { $0.offerData?.quoteBundle.quotes }.onValueDisposePrevious { quotes in
             let innerBag = DisposeBag()
 
             if quotes.count > 1 {
@@ -29,19 +31,12 @@ extension CoverageSection: Presentable {
             return innerBag
         }
 
-        bag += state
-            .dataSignal
-            .compactMap { $0?.quoteBundle }
+        bag += store.stateSignal
+            .compactMap { $0.offerData?.quoteBundle }
             .onValueDisposePrevious { quoteBundle in
                 let innerBag = DisposeBag()
 
-                let hasConcurrentInception =
-                    quoteBundle.inception.asConcurrentInception?.currentInsurer != nil
-                let hasIndependentInceptions =
-                    quoteBundle.inception.asIndependentInceptions?.inceptions
-                    .compactMap { $0.currentInsurer }.count ?? 0 > 0
-
-                if hasConcurrentInception || hasIndependentInceptions {
+                if quoteBundle.inception != nil {
                     innerBag += section.append(
                         CurrentInsurerSection(quoteBundle: quoteBundle),
                         options: [.autoRemove]

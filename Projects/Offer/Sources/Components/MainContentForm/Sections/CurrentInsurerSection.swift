@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct CurrentInsurerSection {
-    let quoteBundle: GraphQL.QuoteBundleQuery.Data.QuoteBundle
+    let quoteBundle: QuoteBundle
 
     func makeSwitcherCard() -> Card {
         Card(
@@ -42,86 +42,87 @@ extension CurrentInsurerSection: Presentable {
         cardContainer.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
         sectionContainer.addArrangedSubview(cardContainer)
 
-        let inception = quoteBundle.inception
-        if let concurrentInception = inception.asConcurrentInception {
-            let section = SectionView(
-                headerView: UILabel(
-                    value: L10n.Offer.switcherTitle(quoteBundle.quotes.count),
-                    style: .default
-                ),
-                footerView: nil
-            )
-            section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
-            sectionContainer.addArrangedSubview(section)
-
-            let row = RowView(title: L10n.InsuranceProvider.currentInsurer)
-            section.append(row)
-
-            let currentInsurerName = concurrentInception.currentInsurer?.displayName ?? ""
-            let switchable = concurrentInception.currentInsurer?.switchable ?? false
-
-            row.append(
-                UILabel(
-                    value: currentInsurerName,
-                    style: .brand(.body(color: .secondary))
+        if let inception = quoteBundle.inception?.inception {
+            switch inception {
+            case .concurrent(let concurrentInception):
+                let section = SectionView(
+                    headerView: UILabel(
+                        value: L10n.Offer.switcherTitle(quoteBundle.quotes.count),
+                        style: .default
+                    ),
+                    footerView: nil
                 )
-            )
+                section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
+                sectionContainer.addArrangedSubview(section)
 
-            if switchable {
-                bag += cardContainer.addArranged(
-                    makeSwitcherCard()
-                )
-            } else {
-                bag += cardContainer.addArranged(
-                    makeManualCard()
-                )
-            }
-        } else if let independentInceptions = inception.asIndependentInceptions {
-            let inceptions = independentInceptions.inceptions
-            let headerText = L10n.Offer.switcherTitle(quoteBundle.quotes.count)
+                let row = RowView(title: L10n.InsuranceProvider.currentInsurer)
+                section.append(row)
 
-            let section = SectionView(
-                headerView: UILabel(value: headerText, style: .default),
-                footerView: nil
-            )
-            section.dynamicStyle = .brandGrouped(separatorType: .none)
-            sectionContainer.addArrangedSubview(section)
+                let currentInsurerName = concurrentInception.currentInsurer.displayName ?? ""
+                let switchable = concurrentInception.currentInsurer.switchable ?? false
 
-            inceptions.enumerated()
-                .forEach { offset, inception in
-                    let currentInsurer = inception.currentInsurer
-                    let correspondingQuoteID = inception.correspondingQuote.asCompleteQuote?.id
-                    let switchable = inception.currentInsurer?.switchable ?? false
-
-                    let insuranceType = quoteBundle.quoteFor(id: correspondingQuoteID)?.displayName
-
-                    let inceptionSection = SectionView(
-                        headerView: UILabel(
-                            value: insuranceType ?? "",
-                            style: .default
-                        ),
-                        footerView: {
-                            let stackView = UIStackView()
-
-                            if switchable {
-                                bag += stackView.addArranged(
-                                    makeSwitcherCard()
-                                )
-                            } else {
-                                bag += stackView.addArranged(
-                                    makeManualCard()
-                                )
-                            }
-
-                            return stackView
-                        }()
+                row.append(
+                    UILabel(
+                        value: currentInsurerName,
+                        style: .brand(.body(color: .secondary))
                     )
-                    inceptionSection.dynamicStyle = .brandGroupedInset(separatorType: .standard)
-                    section.append(inceptionSection)
+                )
 
-                    let row = RowView(title: currentInsurer?.displayName ?? "")
-                    inceptionSection.append(row)
+                if switchable {
+                    bag += cardContainer.addArranged(
+                        makeSwitcherCard()
+                    )
+                } else {
+                    bag += cardContainer.addArranged(
+                        makeManualCard()
+                    )
                 }
+            case .independent(let inceptions):
+                let headerText = L10n.Offer.switcherTitle(quoteBundle.quotes.count)
+
+                let section = SectionView(
+                    headerView: UILabel(value: headerText, style: .default),
+                    footerView: nil
+                )
+                section.dynamicStyle = .brandGrouped(separatorType: .none)
+                sectionContainer.addArrangedSubview(section)
+
+                inceptions.enumerated()
+                    .forEach { offset, inception in
+                        let currentInsurer = inception.currentInsurer
+                        let correspondingQuoteID = inception.correspondingQuote.id
+                        let switchable = inception.currentInsurer.switchable ?? false
+
+                        let insuranceType = quoteBundle.quoteFor(id: correspondingQuoteID)?.displayName
+
+                        let inceptionSection = SectionView(
+                            headerView: UILabel(
+                                value: insuranceType ?? "",
+                                style: .default
+                            ),
+                            footerView: {
+                                let stackView = UIStackView()
+
+                                if switchable {
+                                    bag += stackView.addArranged(
+                                        makeSwitcherCard()
+                                    )
+                                } else {
+                                    bag += stackView.addArranged(
+                                        makeManualCard()
+                                    )
+                                }
+
+                                return stackView
+                            }()
+                        )
+                        inceptionSection.dynamicStyle = .brandGroupedInset(separatorType: .standard)
+                        section.append(inceptionSection)
+
+                        let row = RowView(title: currentInsurer.displayName ?? "")
+                        inceptionSection.append(row)
+                    }
+            }
         }
 
         return (sectionContainer, bag)

@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct SingleQuoteCoverage {
-    let quote: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote
+    let quote: QuoteBundle.Quote
 }
 
 extension SingleQuoteCoverage: Presentable {
@@ -23,7 +23,7 @@ extension SingleQuoteCoverage: Presentable {
 
         bag += section.append(
             PerilCollection(
-                perilSignal: .init(quote.contractPerils.map { .init(fragment: $0.fragments.perilFragment) })
+                perilSignal: .init(quote.perils)
             )
             .insetted(UIEdgeInsets(top: 15, left: 15, bottom: 0, right: 15))
         )
@@ -32,7 +32,6 @@ extension SingleQuoteCoverage: Presentable {
 
         let insurableLimits = quote
             .insurableLimits
-            .map { InsurableLimits(fragment: $0.fragments.insurableLimitFragment) }
 
         bag += section.append(
             InsurableLimitsSection(insurableLimits: insurableLimits)

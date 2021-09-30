@@ -123,8 +123,10 @@ extension Header: Presentable {
         }
         loadingIndicator.tintColor = .brand(.primaryText())
         scrollView.addSubview(loadingIndicator)
+        
+        let isLoadingSignal = store.stateSignal.map { $0.offerData == nil }
 
-        bag += state.isLoadingSignal
+        bag += isLoadingSignal
             .animated(style: .easeOut(duration: 0.25)) { isLoading in
                 if isLoading {
                     loadingIndicator.alpha = 1
@@ -152,7 +154,7 @@ extension Header: Presentable {
                 make.height.equalTo(scrollView.frameLayoutGuide.snp.height)
             }
 
-            innerBag += state.isLoadingSignal.animated(
+            innerBag += isLoadingSignal.animated(
                 style: SpringAnimationStyle.lightBounce(duration: 0.8)
             ) { isLoading in
                 scrollView.isScrollEnabled = !isLoading
@@ -177,7 +179,7 @@ extension Header: Presentable {
         bag += formContainer.addArrangedSubview(HeaderForm()) { form, _ in
             form.alpha = 0
 
-            bag += state.isLoadingSignal.animated(style: .easeOut(duration: 0.25)) { isLoading in
+            bag += isLoadingSignal.animated(style: .easeOut(duration: 0.25)) { isLoading in
                 form.alpha = isLoading ? 0 : 1
             }
 

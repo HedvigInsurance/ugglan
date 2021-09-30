@@ -79,40 +79,41 @@ extension RedeemDiscount: Presentable {
                     }
                     .withLatestFrom(textField.value.plain())
                     .onValue { _, discountCode in
-                        state.updateRedeemedCampaigns(discountCode: discountCode).toVoid()
-                            .onValue { _ in
-                                loadableSubmitButton.isLoadingSignal.value = false
-                                Toasts.shared.displayToast(
-                                    toast: Toast(
-                                        symbol: .icon(
-                                            hCoreUIAssets.circularCheckmark
-                                                .image
-                                        ),
-                                        body: L10n.Offer.discountAddedToastbar
-                                    )
-                                )
-                                completion(.success)
-                            }
-                            .onError { error in
-                                viewController.present(
-                                    Alert<Void>(
-                                        title: L10n.Offer
-                                            .discountErrorAlertTitle,
-                                        message: L10n.Offer
-                                            .discountErrorAlertBody,
-                                        actions: [
-                                            .init(
-                                                title: L10n.alertOk,
-                                                action: { () }
-                                            )
-                                        ]
-                                    )
-                                )
-                                .onValue { _ in
-                                    loadableSubmitButton.isLoadingSignal.value =
-                                        false
-                                }
-                            }
+                        store.send(.updateRedeemedCampaigns(discountCode: discountCode))
+//
+//                            .onValue { _ in
+//                                loadableSubmitButton.isLoadingSignal.value = false
+//                                Toasts.shared.displayToast(
+//                                    toast: Toast(
+//                                        symbol: .icon(
+//                                            hCoreUIAssets.circularCheckmark
+//                                                .image
+//                                        ),
+//                                        body: L10n.Offer.discountAddedToastbar
+//                                    )
+//                                )
+//                                completion(.success)
+//                            }
+//                            .onError { error in
+//                                viewController.present(
+//                                    Alert<Void>(
+//                                        title: L10n.Offer
+//                                            .discountErrorAlertTitle,
+//                                        message: L10n.Offer
+//                                            .discountErrorAlertBody,
+//                                        actions: [
+//                                            .init(
+//                                                title: L10n.alertOk,
+//                                                action: { () }
+//                                            )
+//                                        ]
+//                                    )
+//                                )
+//                                .onValue { _ in
+//                                    loadableSubmitButton.isLoadingSignal.value =
+//                                        false
+//                                }
+//                            }
                     }
                 return bag
             }

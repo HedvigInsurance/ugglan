@@ -7,19 +7,26 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct StartDateSection { @Inject var state: OldOfferState }
+struct StartDateSection {}
 
-extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
+extension QuoteBundle {
     var canHaveIndependentStartDates: Bool {
-        self.quotes.count > 1 && self.inception.asIndependentInceptions != nil
+        switch inception?.inception {
+        case .independent:
+            return quotes.count > 1
+        default:
+            return false
+        }
     }
 
     var switcher: Bool {
-        self.inception.asConcurrentInception?.currentInsurer != nil
-            || self.inception.asIndependentInceptions?.inceptions
-                .contains(where: { inception in
-                    inception.currentInsurer != nil
-                }) == true
+//        self.inception.asConcurrentInception?.currentInsurer != nil
+//            || self.inception.asIndependentInceptions?.inceptions
+//                .contains(where: { inception in
+//                    inception.currentInsurer != nil
+//                }) == true
+        
+        return true
     }
 
     var fallbackDisplayValue: String {
@@ -31,22 +38,23 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
     }
 
     var displayableStartDate: String {
-        if let concurrentInception = self.inception.asConcurrentInception {
+        guard let inception = self.inception?.inception else { return "" }
+        
+        switch inception {
+        case .concurrent(let concurrentInception):
             return concurrentInception.startDate?.localDateToDate?.localDateStringWithToday ?? ""
+        case .independent(let independentInceptions):
+            let startDates = independentInceptions.map { $0.startDate }
+            let allStartDatesEqual = startDates.dropFirst().allSatisfy({ $0 == startDates.first })
+            let dateDisplayValue =
+                startDates.first??.localDateToDate?.localDateStringWithToday ?? fallbackDisplayValue
+            
+            return allStartDatesEqual ? dateDisplayValue : L10n.offerStartDateMultiple
         }
-
-        guard let independentInceptions = self.inception.asIndependentInceptions?.inceptions else { return "" }
-
-        let startDates = independentInceptions.map { $0.startDate }
-        let allStartDatesEqual = startDates.dropFirst().allSatisfy({ $0 == startDates.first })
-        let dateDisplayValue =
-            startDates.first??.localDateToDate?.localDateStringWithToday ?? fallbackDisplayValue
-
-        return allStartDatesEqual ? dateDisplayValue : L10n.offerStartDateMultiple
     }
 }
 
-extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
+extension QuoteBundle {
     var startDateTerminology: String {
         switch appConfiguration.startDateTerminology {
         case .startDate:
@@ -54,7 +62,7 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
                 ? L10n.offerStartDatePlural : L10n.offerStartDate
         case .accessDate:
             return L10n.offerAccessDate
-        case .__unknown(_):
+        case .unknown:
             return ""
         }
     }
@@ -63,6 +71,9 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
 extension StartDateSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let section = SectionView()
+        
+        let store: OfferStore = self.get()
+        
         section.dynamicStyle = .brandGroupedInset(
             separatorType: .none,
             border: .init(
@@ -76,11 +87,11 @@ extension StartDateSection: Presentable {
 
         let bag = DisposeBag()
 
-        bag += state.dataSignal.map { $0?.quoteBundle }
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle }
             .onValueDisposePrevious { quoteBundle in
                 let innerBag = DisposeBag()
 
-                guard let quoteBundle = quoteBundle else { return innerBag }
+                let quoteBundle = quoteBundle
 
                 let displayableStartDate = quoteBundle.displayableStartDate
 

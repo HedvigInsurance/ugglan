@@ -51,9 +51,9 @@ extension FrequentlyAskedQuestionsSection: Presentable {
         )
         section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
-        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.appConfiguration.showFaq }
+        bag += store.stateSignal.map { $0.offerData?.quoteBundle.appConfiguration.showFaq ?? false }
             .onValue { shouldShowFaq in
-                section.isHidden = !(data?.quoteBundle.appConfiguration.showFaq ?? false)
+                section.isHidden = !shouldShowFaq
             }
 
         bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.frequentlyAskedQuestions }

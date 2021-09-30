@@ -7,18 +7,16 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct SignSection {
-    @Inject var state: OldOfferState
-}
+struct SignSection {}
 
-extension GraphQL.QuoteBundleAppConfigurationApproveButtonTerminology {
+extension QuoteBundle.AppConfiguration.ApproveButtonTerminology {
     var displayValue: String {
         switch self {
         case .approveChanges:
             return L10n.offerApproveChanges
         case .confirmPurchase:
             return L10n.offerConfirmPurchase
-        case .__unknown:
+        default:
             return ""
         }
     }
@@ -28,13 +26,15 @@ extension SignSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let section = SectionView()
         let bag = DisposeBag()
-
+        
+        let store: OfferStore = self.get()
+        
         let row = RowView()
         section.append(row)
 
-        bag += state.dataSignal.onValueDisposePrevious { data in
+        bag += store.stateSignal.compactMap { $0.offerData }.onValueDisposePrevious { data in
             let innerBag = DisposeBag()
-            guard let signMethodForQuotes = data?.signMethodForQuotes else { return innerBag }
+            let signMethodForQuotes = data.signMethodForQuotes
 
             switch signMethodForQuotes {
             case .swedishBankId:
@@ -86,7 +86,7 @@ extension SignSection: Presentable {
                 innerBag += row.append(signButton)
             case .approveOnly:
                 let signButton = Button(
-                    title: data?.quoteBundle.appConfiguration.approveButtonTerminology.displayValue ?? "",
+                    title: data.quoteBundle.appConfiguration.approveButtonTerminology.displayValue,
                     type: .standard(
                         backgroundColor: .brand(.secondaryButtonBackgroundColor),
                         textColor: .brand(.secondaryButtonTextColor)
@@ -111,7 +111,7 @@ extension SignSection: Presentable {
                     }
 
                 innerBag += row.append(loadableSignButton)
-            case .__unknown(_):
+            case .unknown:
                 break
             }
 

@@ -14,7 +14,7 @@ public struct OfferState: StateProtocol {
     var swedishBankIDStatusCode: String? = nil
     var offerData: OfferBundle? = nil
     var hasCheckedOutId: String? = nil
-    var redeemedCamapign: String? = nil
+    var redeemedCamapigns: [RedeemedCampaign] = []
 
     public init() {}
 }
@@ -37,6 +37,7 @@ public enum OfferAction: ActionProtocol {
     /// Campaign events
     case removeRedeemedCampaigns
     case setRedeemedCampaigns(discountCode: String?)
+    case updateRedeemedCampaigns(discountCode: String)
 
     case failed(event: OfferStoreError)
 
@@ -64,6 +65,10 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             locale: Localization.Locale.currentLocale.asGraphQLLocale()
         )
     }
+    
+    internal var isLoadingSignal: CoreSignal<Read, Bool> {
+        stateSignal.map { $0.offerData == nil }
+    }
 
     public override func effects(
         _ getState: @escaping () -> OfferState,
@@ -81,7 +86,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             }
         case .startSign:
             return signQuotesEffect()
-        case .query(let ids):
+        case let .query( ids):
             let query = self.query(for: ids)
             return client.fetch(query: query)
                 .compactMap { data in
@@ -108,6 +113,10 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             return self.updateStartDate(quoteId: id, date: startDate)
         case .removeRedeemedCampaigns:
             return removeRedeemedCampaigns()
+        case let .updateRedeemedCampaigns(discountCode):
+            updateRedeemedCampaigns(discountCode: discountCode).onValue { updatedCampaigns in
+                
+            }
         default:
             return nil
         }
@@ -159,7 +168,7 @@ extension OfferStore {
         //        self.refetch()
     }
 
-    private func updateRedeemedCampaigns(discountCode: String) -> Future<Void> {
+    private func updateRedeemedCampaigns(discountCode: String) -> Future<[RedeemedCampaign]> {
         return self.client
             .perform(
                 mutation: GraphQL.RedeemDiscountCodeMutation(
@@ -173,16 +182,10 @@ extension OfferStore {
                 }
 
                 let mappedCampaigns = campaigns.map { campaign in
-                    Campaign.init(
-                        displayValue: campaign.displayValue
-                    )
+                    RedeemedCampaign(displayValue: campaign.displayValue)
                 }
 
-                self.updateCacheRedeemedCampaigns(
-                    campaigns: mappedCampaigns
-                )
-
-                return Future()
+                return Future(mappedCampaigns)
             }
     }
 
