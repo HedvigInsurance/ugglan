@@ -14,7 +14,7 @@ extension DiscountTag: Presentable {
         view.animationSafeIsHidden = true
         view.backgroundColor = .tint(.lavenderOne)
         let bag = DisposeBag()
-        
+
         let store: OfferStore = self.get()
 
         let horizontalCenteringStackView = UIStackView()

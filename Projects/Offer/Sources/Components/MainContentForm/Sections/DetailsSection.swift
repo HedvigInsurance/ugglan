@@ -12,7 +12,7 @@ extension DetailsSection: Presentable {
     func materialize() -> (UIView, Disposable) {
         let section = SectionView(headerView: nil, footerView: nil)
         let store: OfferStore = self.get()
-        
+
         section.dynamicStyle = .brandGrouped(separatorType: .none)
             .restyled({ (style: inout SectionStyle) in
                 style.insets = style.insets + UIEdgeInsets(top: 0, left: 0, bottom: 5, right: 0)

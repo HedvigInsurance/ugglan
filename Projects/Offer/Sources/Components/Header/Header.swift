@@ -16,9 +16,9 @@ struct Header {
 extension Header: Presentable {
     func materialize() -> (UIStackView, Disposable) {
         let view = UIStackView()
-        
+
         let store: OfferStore = self.get()
-        
+
         view.allowTouchesOfViewsOutsideBounds = true
         view.axis = .vertical
         let bag = DisposeBag()

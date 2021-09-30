@@ -33,7 +33,7 @@ public enum OfferAction: ActionProtocol {
     case setStartDate(id: String, startDate: Date?)
     case updateStartDate(id: String, startDate: Date)
     case removeStartDate(id: String)
-    
+
     /// Campaign events
     case removeRedeemedCampaigns
     case setRedeemedCampaigns(discountCode: String?)
@@ -46,7 +46,7 @@ public enum OfferAction: ActionProtocol {
         case done
         case failed
     }
-    
+
     public enum OfferStoreError: Error, Codable {
         case checkoutUpdate
         case updateStartDate
@@ -190,9 +190,11 @@ extension OfferStore {
         return self.client.perform(mutation: GraphQL.RemoveDiscountMutation())
             .map { data in
                 .setRedeemedCampaigns(discountCode: nil)
-            }.onError { _ in
+            }
+            .onError { _ in
                 OfferAction.failed(event: OfferAction.OfferStoreError.updateRedeemedCampaigns)
-            }.valueThenEndSignal
+            }
+            .valueThenEndSignal
     }
 
     func checkoutUpdate(quoteId: String, email: String, ssn: String) -> Future<Void> {

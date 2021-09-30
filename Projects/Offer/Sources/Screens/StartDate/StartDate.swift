@@ -14,7 +14,7 @@ struct StartDate {
 extension StartDate: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
-        
+
         let store: OfferStore = self.get()
 
         switch quoteBundle.appConfiguration.startDateTerminology {

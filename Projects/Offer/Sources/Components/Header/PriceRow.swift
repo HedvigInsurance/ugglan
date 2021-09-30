@@ -37,9 +37,9 @@ extension PriceRow: Presentable {
     func materialize() -> (RowView, Disposable) {
         let row = RowView()
         let bag = DisposeBag()
-        
+
         let store: OfferStore = self.get()
-        
+
         let view = UIStackView()
         view.axis = .vertical
         view.spacing = 5

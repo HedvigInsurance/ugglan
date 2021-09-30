@@ -14,7 +14,7 @@ extension RedeemDiscount: Presentable {
     public func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         viewController.title = L10n.referralAddcouponHeadline
-        
+
         let store: OfferStore = self.get()
 
         let bag = DisposeBag()
