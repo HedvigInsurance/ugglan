@@ -105,7 +105,7 @@ extension MovingFlowIntro: Presentable {
                 imageView.image = nil
 
                 if let table = table {
-                    bag += form.append(table)
+                    innerBag += form.append(table)
                 }
             case .normal:
                 titleLabel.$value.value = L10n.MovingIntro.title
