@@ -37,7 +37,6 @@ extension String {
     }
 }
 
-
 public struct Contract: Codable, Hashable, Equatable {
     public init(
         id: String,
@@ -119,7 +118,8 @@ public struct Contract: Codable, Hashable, Equatable {
         }
 
         showsMovingFlowButton = contract.supportsAddressChange
-        upcomingAgreementDate = contract.status.asActiveStatus?.upcomingAgreementChange?.newAgreement.activeFrom?.localDateToDate
+        upcomingAgreementDate =
+            contract.status.asActiveStatus?.upcomingAgreementChange?.newAgreement.activeFrom?.localDateToDate
     }
 
     public init(
