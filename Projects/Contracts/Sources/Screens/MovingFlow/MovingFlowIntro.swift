@@ -120,10 +120,10 @@ extension MovingFlowIntro: Presentable {
 
         bag += store.stateSignal.atOnce()
             .onValue { state in
-                if let upcomingAgreementContract = state.upcomingAgreements.first(where: {
-                    $0.hasUpcomingAgreementChange == true
-                }) {
-                    $section.value = .existing(upcomingAgreementContract.detailsTable)
+                if let upcomingAgreementTable = state.contractBundles.flatMap({ $0.contracts }).first(where: {
+                    !$0.upcomingAgreementsTable.sections.isEmpty
+                })?.upcomingAgreementsTable {
+                    $section.value = .existing(upcomingAgreementTable)
                 } else {
                     if let bundle = state.contractBundles.first(where: { bundle in
                         bundle.movingFlowEmbarkId != nil

@@ -105,7 +105,6 @@ extension CrossSellingSigned {
             let store: ContractStore = globalPresentableStoreContainer.get()
             store.send(.fetchContracts)
             store.send(.fetchContractBundles)
-            store.send(.fetchUpcomingAgreement)
         }
         .addConfiguration { presenter in
             presenter.viewController.navigationItem.hidesBackButton = true

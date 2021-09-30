@@ -26,7 +26,6 @@ query Contracts($locale: Locale!) {
       displayName
       url
     }
-    ...UpcomingAgreementFragment
     currentAgreement {
       ... on AgreementCore {
         certificateUrl
@@ -36,83 +35,6 @@ query Contracts($locale: Locale!) {
         premium {
           ...MonetaryAmountFragment
         }
-      }
-      ... on SwedishApartmentAgreement {
-        activeFrom
-        activeTo
-        certificateUrl
-        numberCoInsured
-        address {
-          street
-          postalCode
-          city
-        }
-        squareMeters
-        type
-        premium {
-          ...MonetaryAmountFragment
-        }
-      }
-      ... on SwedishHouseAgreement {
-        activeFrom
-        activeTo
-        certificateUrl
-        numberCoInsured
-        address {
-          street
-          postalCode
-          city
-        }
-        squareMeters
-        yearOfConstruction
-        ancillaryArea
-        isSubleted
-        numberOfBathrooms
-        extraBuildings {
-          ...ExtraBuildingFragment
-        }
-      }
-      ... on NorwegianHomeContentAgreement {
-        activeFrom
-        activeTo
-        certificateUrl
-        numberCoInsured
-        address {
-          street
-          postalCode
-          city
-        }
-        squareMeters
-      }
-      ... on NorwegianTravelAgreement {
-        activeFrom
-        activeTo
-        certificateUrl
-        numberCoInsured
-      }
-      ... on DanishHomeContentAgreement {
-        activeFrom
-        activeTo
-        certificateUrl
-        numberCoInsured
-        address {
-          street
-          postalCode
-          city
-        }
-        squareMeters
-      }
-      ... on DanishTravelAgreement {
-        activeFrom
-        activeTo
-        certificateUrl
-        numberCoInsured
-      }
-      ... on DanishAccidentAgreement {
-        activeFrom
-        activeTo
-        certificateUrl
-        numberCoInsured
       }
     }
   }

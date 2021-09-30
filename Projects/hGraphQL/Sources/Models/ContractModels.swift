@@ -28,6 +28,16 @@ public struct IconEnvelope: Codable, Equatable, Hashable {
     }
 }
 
+extension String {
+    // converts a YYYY-MM-DD date-string to a Date
+    var localDateToDate: Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.date(from: self)
+    }
+}
+
+
 public struct Contract: Codable, Hashable, Equatable {
     public init(
         id: String,
@@ -43,7 +53,8 @@ public struct Contract: Codable, Hashable, Equatable {
         currentAgreement: CurrentAgreement,
         statusPills: [String],
         detailPills: [String],
-        showsMovingFlowButton: Bool = false
+        showsMovingFlowButton: Bool = false,
+        upcomingAgreementDate: Date? = nil
     ) {
         self.id = id
         self.upcomingAgreementsTable = upcomingAgreementsTable
@@ -59,6 +70,7 @@ public struct Contract: Codable, Hashable, Equatable {
         self.statusPills = statusPills
         self.detailPills = detailPills
         self.showsMovingFlowButton = showsMovingFlowButton
+        self.upcomingAgreementDate = nil
     }
 
     public let id: String
@@ -75,6 +87,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let statusPills: [String]
     public let detailPills: [String]
     public let showsMovingFlowButton: Bool
+    public let upcomingAgreementDate: Date?
 
     init(
         contract: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract
@@ -105,7 +118,8 @@ public struct Contract: Codable, Hashable, Equatable {
             gradientOption = nil
         }
 
-        showsMovingFlowButton = contract.currentAgreement.asSwedishAccidentAgreement == nil
+        showsMovingFlowButton = contract.supportsAddressChange
+        upcomingAgreementDate = contract.status.asActiveStatus?.upcomingAgreementChange?.newAgreement.activeFrom?.localDateToDate
     }
 
     public init(
@@ -136,6 +150,7 @@ public struct Contract: Codable, Hashable, Equatable {
         }
 
         showsMovingFlowButton = false
+        upcomingAgreementDate = nil
     }
 
     public enum GradientOption: String, Codable {
@@ -315,58 +330,6 @@ public enum ContractStatus: String, Codable {
     case activeInFuture = "ACTIVE_IN_FUTURE"
     case terminated = "TERMINATED"
     case pending = "PENDING"
-}
-
-extension Contract {
-    public var upcomingAgreementDate: String? {
-        return nil
-        //        let agreement = self
-        //        let agreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
-        //            .upcomingAgreementChangeFragment.newAgreement
-        //        let dateString =
-        //            agreement?.asSwedishApartmentAgreement?.activeFrom
-        //            ?? agreement?.asSwedishHouseAgreement?.activeFrom
-        //            ?? agreement?.asDanishHomeContentAgreement?.activeFrom
-        //            ?? agreement?.asNorwegianHomeContentAgreement?.activeFrom
-        //
-        //        return dateString
-    }
-
-    public var upcomingAgreementAddress: String? {
-        //        let upcomingAgreement = self.status.asActiveStatus?.upcomingAgreementChange?.fragments
-        //            .upcomingAgreementChangeFragment.newAgreement
-        //
-        //        if let address = upcomingAgreement?.asSwedishHouseAgreement?.address.street {
-        //            return address
-        //        } else if let address = upcomingAgreement?.asSwedishApartmentAgreement?.address.street {
-        //            return address
-        //        } else if let address = upcomingAgreement?.asNorwegianHomeContentAgreement?.address.street {
-        //            return address
-        //        } else if let address = upcomingAgreement?.asDanishHomeContentAgreement?.address.street {
-        //            return address
-        //        } else {
-        //            return nil
-        //        }
-
-        return nil
-    }
-}
-
-public struct UpcomingAgreementContract: Codable, Equatable, Hashable {
-    public static func == (lhs: UpcomingAgreementContract, rhs: UpcomingAgreementContract) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    public let detailsTable: DetailAgreementsTable
-    public let hasUpcomingAgreementChange: Bool
-    public let id: String
-    public init(
-        contract: GraphQL.UpcomingAgreementQuery.Data.Contract
-    ) {
-        id = contract.id
-        detailsTable = .init(fragment: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment)
-        hasUpcomingAgreementChange = contract.status.asActiveStatus?.upcomingAgreementChange != nil
-    }
 }
 
 public struct MonetaryAmount: Equatable, Hashable, Codable {

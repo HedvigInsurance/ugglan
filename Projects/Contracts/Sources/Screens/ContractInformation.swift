@@ -32,8 +32,8 @@ extension ContractInformation: Presentable {
                 titleIcon: hCoreUIAssets.apartment.image,
                 title: L10n.InsuranceDetails.updateDetailsSheetTitle,
                 body: L10n.InsuranceDetails.addressUpdateBody(
-                    contract.upcomingAgreementDate ?? "",
-                    contract.upcomingAgreementAddress ?? ""
+                    contract.upcomingAgreementDate?.localDateString ?? "",
+                    ""
                 ),
                 buttonText: L10n.InsuranceDetails.addressUpdateButton,
                 backgroundColor: .tint(.lavenderTwo),
