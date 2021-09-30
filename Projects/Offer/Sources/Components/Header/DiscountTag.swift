@@ -6,9 +6,7 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct DiscountTag {
-    @Inject var state: OldOfferState
-}
+struct DiscountTag {}
 
 extension DiscountTag: Presentable {
     func materialize() -> (UIView, Disposable) {
@@ -16,6 +14,8 @@ extension DiscountTag: Presentable {
         view.animationSafeIsHidden = true
         view.backgroundColor = .tint(.lavenderOne)
         let bag = DisposeBag()
+        
+        let store: OfferStore = self.get()
 
         let horizontalCenteringStackView = UIStackView()
         horizontalCenteringStackView.edgeInsets = UIEdgeInsets(inset: 10)
@@ -43,11 +43,11 @@ extension DiscountTag: Presentable {
         )
         contentStackView.addArrangedSubview(titleLabel)
 
-        bag += state.dataSignal
+        bag += store.stateSignal.compactMap { $0.offerData }
             .animated(style: SpringAnimationStyle.lightBounce()) { data in
-                guard let campaign = data?.redeemedCampaigns.first,
+                guard let campaign = data.redeemedCampaigns.first,
                     let campaignManagement =
-                        data?.quoteBundle.appConfiguration, campaignManagement.showCampaignManagement
+                        data.quoteBundle.appConfiguration, campaignManagement.showCampaignManagement
                 else {
                     view.animationSafeIsHidden = true
                     return

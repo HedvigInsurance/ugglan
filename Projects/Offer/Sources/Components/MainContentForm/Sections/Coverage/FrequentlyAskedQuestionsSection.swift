@@ -56,7 +56,7 @@ extension FrequentlyAskedQuestionsSection: Presentable {
                 section.isHidden = !(data?.quoteBundle.appConfiguration.showFaq ?? false)
             }
 
-        bag += state.dataSignal.compactMap { $0?.quoteBundle.frequentlyAskedQuestions }
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.frequentlyAskedQuestions }
             .onValueDisposePrevious { frequentlyAskedQuestions in
                 let innerBag = DisposeBag()
 

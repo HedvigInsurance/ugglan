@@ -6,9 +6,7 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct DiscountCodeSection {
-    @Inject var state: OldOfferState
-}
+struct DiscountCodeSection {}
 
 extension DiscountCodeSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
@@ -18,15 +16,17 @@ extension DiscountCodeSection: Presentable {
             UIEdgeInsets(top: 0, left: 15, bottom: 20, right: 15)
         )
         let bag = DisposeBag()
-
-        bag += state.dataSignal.compactMap { $0?.quoteBundle.appConfiguration.showCampaignManagement }
-            .onValue { showCampaignManagement in
-                section.isHidden = !showCampaignManagement
-            }
-
+        
+        let store: OfferStore = self.get()
+        
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.appConfiguration.showCampaignManagement }
+        .onValue { showCampaignManagement in
+            section.isHidden = !showCampaignManagement
+        }
+        
         let row = RowView()
         section.append(row)
-
+        
         let button = Button(
             title: L10n.Offer.addDiscountButton,
             type: .iconTransparent(
@@ -34,9 +34,9 @@ extension DiscountCodeSection: Presentable {
                 icon: .left(image: hCoreUIAssets.circularPlus.image, width: 20)
             )
         )
-
+        
         bag += row.append(button.alignedTo(alignment: .center))
-
+        
         let removeRow = RowView()
         section.append(removeRow)
         let removeButton = Button(
@@ -47,9 +47,9 @@ extension DiscountCodeSection: Presentable {
         bag += removeRow.append(loadableButton.alignedTo(alignment: .center))
         removeRow.isHidden = true
         removeRow.alpha = 0
-
-        bag += state.dataSignal.animated(style: SpringAnimationStyle.lightBounce()) { data in
-            if let campaigns = data?.redeemedCampaigns, campaigns.isEmpty {
+        
+        bag += store.stateSignal.compactMap { $0.offerData }.animated(style: SpringAnimationStyle.lightBounce()) { data in
+            if data.redeemedCampaigns.isEmpty {
                 removeRow.alpha = 0
                 row.alpha = 1
                 removeRow.isHidden = true
@@ -61,35 +61,36 @@ extension DiscountCodeSection: Presentable {
                 removeRow.isHidden = false
             }
         }
-
+        
         let discountsPresent = ReadWriteSignal<Bool>(false)
-        bag += state.dataSignal.map { $0?.redeemedCampaigns.count != 0 }.bindTo(discountsPresent)
-
+        bag +=  store.stateSignal.map { $0.offerData?.redeemedCampaigns.count != 0 }.bindTo(discountsPresent)
+        
         bag += removeButton.onTapSignal.onValue { _ in
+            store.send(.removeRedeemedCampaigns)
             loadableButton.isLoadingSignal.value = true
-            state.removeRedeemedCampaigns()
-                .onValue { _ in
-                    loadableButton.isLoadingSignal.value = false
-                }
-                .onError { _ in
-                    loadableButton.isLoadingSignal.value = false
-                    section.viewController?
-                        .present(
-                            Alert<Void>(
-                                title: L10n.Offer.removeDiscountErrorAlertTitle,
-                                message:
-                                    L10n.Offer.removeDiscountErrorAlertBody,
-                                actions: [
-                                    .init(
-                                        title: L10n.alertOk,
-                                        action: { () }
-                                    )
-                                ]
-                            )
+            bag += store.stateSignal.compactMap { $0.redeemedCamapign == nil }.onValue { _ in
+                loadableButton.isLoadingSignal.value = false
+            }
+            
+            bag += store.onAction(.failed(event: .updateRedeemedCampaigns), {
+                loadableButton.isLoadingSignal.value = false
+                section.viewController?
+                    .present(
+                        Alert<Void>(
+                            title: L10n.Offer.removeDiscountErrorAlertTitle,
+                            message:
+                                L10n.Offer.removeDiscountErrorAlertBody,
+                            actions: [
+                                .init(
+                                    title: L10n.alertOk,
+                                    action: { () }
+                                )
+                            ]
                         )
-                }
+                    )
+            })
         }
-
+        
         bag += button.onTapSignal.onValue { _ in
             let redeemDiscount = RedeemDiscount()
             section.viewController?
@@ -102,7 +103,7 @@ extension DiscountCodeSection: Presentable {
                     ]
                 )
         }
-
+        
         return (section, bag)
     }
 }

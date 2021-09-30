@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct FrequentlyAskedQuestionDetail {
-    let frequentlyAskedQuestion: GraphQL.QuoteBundleQuery.Data.QuoteBundle.FrequentlyAskedQuestion
+    let frequentlyAskedQuestion: QuoteBundle.FrequentlyAskedQuestion
 }
 
 extension FrequentlyAskedQuestionDetail: Presentable {

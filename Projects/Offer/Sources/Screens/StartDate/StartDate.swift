@@ -8,13 +8,14 @@ import hCoreUI
 import hGraphQL
 
 struct StartDate {
-    let quoteBundle: GraphQL.QuoteBundleQuery.Data.QuoteBundle
-    @Inject var state: OldOfferState
+    let quoteBundle: QuoteBundle
 }
 
 extension StartDate: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
+        
+        let store: OfferStore = self.get()
 
         switch quoteBundle.appConfiguration.startDateTerminology {
         case .accessDate:

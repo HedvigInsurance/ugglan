@@ -7,8 +7,6 @@ import hCore
 import hCoreUI
 
 struct PriceRow {
-    @Inject var state: OldOfferState
-
     enum Placement {
         case header
         case checkout
@@ -39,7 +37,9 @@ extension PriceRow: Presentable {
     func materialize() -> (RowView, Disposable) {
         let row = RowView()
         let bag = DisposeBag()
-
+        
+        let store: OfferStore = self.get()
+        
         let view = UIStackView()
         view.axis = .vertical
         view.spacing = 5
@@ -82,7 +82,7 @@ extension PriceRow: Presentable {
         )
         view.addArrangedSubview(perMonthLabel)
 
-        bag += state.dataSignal.map { $0?.quoteBundle }
+        bag += store.stateSignal.map { $0.offerData?.quoteBundle }
             .onValue { quoteBundle in
                 guard let quoteBundle = quoteBundle else { return }
 
@@ -90,22 +90,22 @@ extension PriceRow: Presentable {
                     grossPriceLabel.isHidden = true
                     grossPriceLabel.value = ""
                     netPriceLabel.value =
-                        quoteBundle.bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
+                        quoteBundle.bundleCost.monthlyGross
                         .formattedAmountWithoutSymbol
                 } else {
                     grossPriceLabel.isHidden =
-                        quoteBundle.bundleCost.monthlyDiscount.fragments.monetaryAmountFragment.monetaryAmount
+                        quoteBundle.bundleCost.monthlyDiscount
                         .floatAmount == 0
                     netPriceLabel.value =
-                        quoteBundle.bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount
+                        quoteBundle.bundleCost.monthlyNet
                         .formattedAmountWithoutSymbol
                     grossPriceLabel.value =
-                        quoteBundle.bundleCost.monthlyGross.fragments.monetaryAmountFragment.monetaryAmount
+                        quoteBundle.bundleCost.monthlyGross
                         .formattedAmountWithoutSymbol
                 }
 
                 perMonthLabel.value =
-                    "\(quoteBundle.bundleCost.monthlyNet.fragments.monetaryAmountFragment.monetaryAmount.currencySymbol)\(L10n.perMonth)"
+                    "\(quoteBundle.bundleCost.monthlyNet.currencySymbol)\(L10n.perMonth)"
             }
 
         row.append(view)

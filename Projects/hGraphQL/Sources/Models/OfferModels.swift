@@ -10,13 +10,15 @@ public struct OfferBundle: Codable, Equatable {
 
     public let quoteBundle: QuoteBundle
     public let redeemedCampaigns: [RedeemedCampaign]
-    public let id = UUID()
+    public let id: UUID
 
     public init(
-        data: OfferData
+        data: OfferData,
+        id: UUID = UUID()
     ) {
         quoteBundle = .init(bundle: data.quoteBundle)
         redeemedCampaigns = data.redeemedCampaigns.map { .init(campaign: $0) }
+        self.id = id
     }
 }
 
