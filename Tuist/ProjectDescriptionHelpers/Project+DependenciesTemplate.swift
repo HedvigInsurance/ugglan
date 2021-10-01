@@ -35,7 +35,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public func swiftPackages() -> [Package] {
         switch self {
-        case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .upToNextMajor(from: "4.1.0"))]
+        case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .exact("4.2.0"))]
         case .runtime:
             return [.package(url: "https://github.com/wickwirew/Runtime", .exact("2.2.2"))]
         case .firebase:

@@ -7,6 +7,9 @@ import hCoreUI
 import hGraphQL
 
 class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
+    func build(paymentMethod: MultibancoPaymentMethod) -> PaymentComponent? {
+        return nil
+    }
 
     var apiContext: APIContext { HedvigAdyenAPIContext().apiContext }
 
