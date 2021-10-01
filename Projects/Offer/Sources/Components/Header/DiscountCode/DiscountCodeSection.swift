@@ -48,7 +48,7 @@ extension DiscountCodeSection: Presentable {
         bag += removeRow.append(loadableButton.alignedTo(alignment: .center))
         removeRow.isHidden = true
         removeRow.alpha = 0
-        
+
         func updateVisibility(data: OfferBundle) {
             if data.redeemedCampaigns.isEmpty {
                 removeRow.alpha = 0
@@ -64,9 +64,9 @@ extension DiscountCodeSection: Presentable {
         }
 
         bag += store.stateSignal.compactMap { $0.offerData }
-        .captureFirstValue { data in
-            updateVisibility(data: data)
-        }
+            .captureFirstValue { data in
+                updateVisibility(data: data)
+            }
             .animated(style: SpringAnimationStyle.lightBounce()) { data in
                 updateVisibility(data: data)
             }
@@ -77,11 +77,13 @@ extension DiscountCodeSection: Presentable {
         bag += removeButton.onTapSignal.onValue { _ in
             store.send(.removeRedeemedCampaigns)
             loadableButton.isLoadingSignal.value = true
-            bag += store.onAction(.setRedeemedCampaigns(discountCode: nil), {
+            bag += store.onAction(
+                .setRedeemedCampaigns(discountCode: nil),
+                {
                     loadableButton.isLoadingSignal.value = false
-            })
+                }
+            )
 
-            
             bag += store.onAction(
                 .failed(event: .updateRedeemedCampaigns),
                 {
