@@ -11,7 +11,7 @@ struct StartDateSection {}
 
 extension QuoteBundle {
     var canHaveIndependentStartDates: Bool {
-        switch inception?.inception {
+        switch inception {
         case .independent:
             return quotes.count > 1
         default:
@@ -20,13 +20,16 @@ extension QuoteBundle {
     }
 
     var switcher: Bool {
-//        self.inception.asConcurrentInception?.currentInsurer != nil
-//            || self.inception.asIndependentInceptions?.inceptions
-//                .contains(where: { inception in
-//                    inception.currentInsurer != nil
-//                }) == true
-        
-        return true
+        switch inception {
+        case let .concurrent(inception):
+            return inception.currentInsurer != nil
+        case let .independent(independentInceptions):
+            return independentInceptions.contains { inception in
+                inception.currentInsurer != nil
+            } == true
+        case .unknown:
+            return false
+        }
     }
 
     var fallbackDisplayValue: String {
@@ -38,8 +41,6 @@ extension QuoteBundle {
     }
 
     var displayableStartDate: String {
-        guard let inception = self.inception?.inception else { return "" }
-        
         switch inception {
         case .concurrent(let concurrentInception):
             return concurrentInception.startDate?.localDateToDate?.localDateStringWithToday ?? ""
@@ -50,6 +51,8 @@ extension QuoteBundle {
                 startDates.first??.localDateToDate?.localDateStringWithToday ?? fallbackDisplayValue
             
             return allStartDatesEqual ? dateDisplayValue : L10n.offerStartDateMultiple
+        case .unknown:
+            return ""
         }
     }
 }

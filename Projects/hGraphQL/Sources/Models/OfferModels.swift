@@ -38,7 +38,7 @@ public struct QuoteBundle: Codable {
     public let bundleCost: BundleCost
     public let frequentlyAskedQuestions: [FrequentlyAskedQuestion]
     public let quotes: [Quote]
-    public let inception: Inception?
+    public let inception: Inception
 
     public init(
         bundle: OfferData.QuoteBundle
@@ -146,31 +146,28 @@ public struct QuoteBundle: Codable {
             insuranceTerms = quote.insuranceTerms.map { .init(displayName: $0.displayName, url: $0.url) }
         }
     }
-
-    public struct Inception: Codable {
-        public enum InceptionType: Codable, Equatable {
-            case concurrent(inception: ConcurrentInception)
-            case independent(inceptions: [IndependentInception])
-        }
+    
+    public enum Inception: Codable, Equatable {
+        case concurrent(inception: ConcurrentInception)
+        case independent(inceptions: [IndependentInception])
+        case unknown
         
-        public let inception: InceptionType?
-
-        public init?(
+        init(
             fragment: GraphQL.InceptionFragment
         ) {
             if let concurrent = fragment.asConcurrentInception {
-                inception = .concurrent(inception: .init(inception: concurrent))
+                self = .concurrent(inception: .init(inception: concurrent))
             } else if let independentInception = fragment.asIndependentInceptions {
-                inception = .independent(inceptions: independentInception.inceptions.map { .init(inception: $0) })
+                self = .independent(inceptions: independentInception.inceptions.map { .init(inception: $0) })
             } else {
-                return nil
+                self = .unknown
             }
         }
-
+        
         public struct ConcurrentInception: Codable, Equatable {
             public let startDate: String?
             public let correspondingQuotes: [CorrespondingQuote]
-            public let currentInsurer: CurrentInsurer
+            public let currentInsurer: CurrentInsurer?
 
             public init(
                 inception: GraphQL.InceptionFragment.AsConcurrentInception
@@ -184,25 +181,27 @@ public struct QuoteBundle: Codable {
         public struct CurrentInsurer: Codable, Equatable {
             public let displayName: String?
             public let switchable: Bool?
-            public init(
+            public init?(
                 insurer: GraphQL.InceptionFragment.AsConcurrentInception.CurrentInsurer?
             ) {
-                displayName = insurer?.displayName
-                switchable = insurer?.switchable
+                guard let insurer = insurer else { return nil }
+                displayName = insurer.displayName
+                switchable = insurer.switchable
             }
 
-            public init(
+            public init?(
                 insurer: GraphQL.InceptionFragment.AsIndependentInceptions.Inception.CurrentInsurer?
             ) {
-                displayName = insurer?.displayName
-                switchable = insurer?.switchable
+                guard let insurer = insurer else { return nil }
+                displayName = insurer.displayName
+                switchable = insurer.switchable
             }
         }
 
         public struct IndependentInception: Codable, Equatable {
             public let startDate: String?
             public let correspondingQuote: CorrespondingQuote
-            public let currentInsurer: CurrentInsurer
+            public let currentInsurer: CurrentInsurer?
 
             public init(
                 inception: GraphQL.InceptionFragment.AsIndependentInceptions.Inception
@@ -228,7 +227,6 @@ public struct QuoteBundle: Codable {
             }
         }
     }
-
 }
 
 public struct RedeemedCampaign: Codable, Equatable {
