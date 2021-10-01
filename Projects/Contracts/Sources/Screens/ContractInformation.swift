@@ -36,10 +36,12 @@ extension ContractInformation: Presentable {
                 ),
                 buttonText: L10n.InsuranceDetails.addressUpdateButton,
                 backgroundColor: .tint(.lavenderTwo),
-                buttonType: contract.upcomingAgreementsTable.sections.isEmpty ? .none : .outline(
-                    borderColor: .brand(.primaryText()),
-                    textColor: .brand(.primaryText())
-                )
+                buttonType: contract.upcomingAgreementsTable.sections.isEmpty
+                    ? .none
+                    : .outline(
+                        borderColor: .brand(.primaryText()),
+                        textColor: .brand(.primaryText())
+                    )
             )
 
             bag += upcomingAgreementSection.append(card)
