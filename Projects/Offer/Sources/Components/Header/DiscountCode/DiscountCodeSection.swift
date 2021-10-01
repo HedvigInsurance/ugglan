@@ -5,6 +5,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct DiscountCodeSection {}
 
@@ -47,20 +48,27 @@ extension DiscountCodeSection: Presentable {
         bag += removeRow.append(loadableButton.alignedTo(alignment: .center))
         removeRow.isHidden = true
         removeRow.alpha = 0
+        
+        func updateVisibility(data: OfferBundle) {
+            if data.redeemedCampaigns.isEmpty {
+                removeRow.alpha = 0
+                row.alpha = 1
+                removeRow.isHidden = true
+                row.isHidden = false
+            } else {
+                row.alpha = 0
+                removeRow.alpha = 1
+                row.isHidden = true
+                removeRow.isHidden = false
+            }
+        }
 
         bag += store.stateSignal.compactMap { $0.offerData }
+        .captureFirstValue { data in
+            updateVisibility(data: data)
+        }
             .animated(style: SpringAnimationStyle.lightBounce()) { data in
-                if data.redeemedCampaigns.isEmpty {
-                    removeRow.alpha = 0
-                    row.alpha = 1
-                    removeRow.isHidden = true
-                    row.isHidden = false
-                } else {
-                    row.alpha = 0
-                    removeRow.alpha = 1
-                    row.isHidden = true
-                    removeRow.isHidden = false
-                }
+                updateVisibility(data: data)
             }
 
         let discountsPresent = ReadWriteSignal<Bool>(false)
