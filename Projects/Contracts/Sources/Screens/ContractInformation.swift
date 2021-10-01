@@ -29,11 +29,10 @@ extension ContractInformation: Presentable {
             )
 
             let card = Card(
-                titleIcon: hCoreUIAssets.restart.image,
+                titleIcon: hCoreUIAssets.refresh.image,
                 title: L10n.InsuranceDetails.updateDetailsSheetTitle,
-                body: L10n.InsuranceDetails.addressUpdateBody(
-                    contract.upcomingAgreementDate?.localDateString ?? "",
-                    ""
+                body: L10n.InsuranceDetails.AdressUpdateBody.No.address(
+                    contract.upcomingAgreementDate?.localDateString ?? ""
                 ),
                 buttonText: L10n.InsuranceDetails.addressUpdateButton,
                 backgroundColor: .tint(.lavenderTwo),
