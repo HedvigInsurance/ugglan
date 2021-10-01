@@ -69,7 +69,7 @@ extension Card: Viewable {
 
                 bag += $titleIcon.bindTo(imageView, \.image)
 
-                imageView.snp.makeConstraints { make in make.height.width.equalTo(24) }
+                imageView.snp.makeConstraints { make in make.height.width.equalTo(20) }
 
                 return imageView
             }()

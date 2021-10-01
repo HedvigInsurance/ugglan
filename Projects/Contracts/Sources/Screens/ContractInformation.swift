@@ -36,7 +36,7 @@ extension ContractInformation: Presentable {
                 ),
                 buttonText: L10n.InsuranceDetails.addressUpdateButton,
                 backgroundColor: .tint(.lavenderTwo),
-                buttonType: .outline(
+                buttonType: contract.upcomingAgreementsTable.sections.isEmpty ? .none : .outline(
                     borderColor: .brand(.primaryText()),
                     textColor: .brand(.primaryText())
                 )
