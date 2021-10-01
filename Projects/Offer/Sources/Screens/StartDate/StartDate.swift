@@ -22,7 +22,7 @@ extension StartDate: Presentable {
             viewController.title = L10n.offerSetAccessDate
         case .startDate:
             viewController.title = L10n.offerSetStartDate
-        case .__unknown:
+        case .unknown:
             break
         }
 
@@ -35,48 +35,51 @@ extension StartDate: Presentable {
         bag += viewController.install(form, scrollView: scrollView)
 
         var selectedDatesMap: [String: Date?] = [:]
-
-        if let concurrentInception = quoteBundle.inception.asConcurrentInception {
-            bag +=
-                form.append(
-                    SingleStartDateSection(
-                        title: nil,
-                        switchingActivated: concurrentInception.currentInsurer?.switchable
-                            ?? false,
-                        isCollapsible: false,
-                        initialStartDate: concurrentInception.startDate?.localDateToDate
+        
+        if let inception = quoteBundle.inception?.inception {
+            switch inception {
+            case .concurrent(let concurrentInception):
+                bag +=
+                    form.append(
+                        SingleStartDateSection(
+                            title: nil,
+                            switchingActivated: concurrentInception.currentInsurer.switchable
+                                ?? false,
+                            isCollapsible: false,
+                            initialStartDate: concurrentInception.startDate?.localDateToDate
+                        )
                     )
-                )
-                .onValue { date in
-                    concurrentInception.correspondingQuotes.forEach { quote in
-                        guard let quoteId = quote.asCompleteQuote?.id else {
+                    .onValue { date in
+                        concurrentInception.correspondingQuotes.forEach { quote in
+                            guard let quoteId = quote.id else {
+                                return
+                            }
+                            selectedDatesMap[quoteId] = date
+                        }
+                    }
+            case .independent(let independentInceptions):
+                bag += independentInceptions.map { inception in
+                    form.append(
+                        SingleStartDateSection(
+                            title: quoteBundle.quoteFor(
+                                id: inception.correspondingQuote.id
+                            )?
+                            .displayName,
+                            switchingActivated: inception.currentInsurer.switchable ?? false,
+                            isCollapsible: independentInceptions.count > 1,
+                            initialStartDate: inception.startDate?.localDateToDate
+                        )
+                    )
+                    .onValue { date in
+                        guard let quoteId = inception.correspondingQuote.id else {
                             return
                         }
                         selectedDatesMap[quoteId] = date
                     }
                 }
-        } else if let independentInceptions = quoteBundle.inception.asIndependentInceptions {
-            bag += independentInceptions.inceptions.map { inception in
-                form.append(
-                    SingleStartDateSection(
-                        title: quoteBundle.quoteFor(
-                            id: inception.correspondingQuote.asCompleteQuote?.id
-                        )?
-                        .displayName,
-                        switchingActivated: inception.currentInsurer?.switchable ?? false,
-                        isCollapsible: independentInceptions.inceptions.count > 1,
-                        initialStartDate: inception.startDate?.localDateToDate
-                    )
-                )
-                .onValue { date in
-                    guard let quoteId = inception.correspondingQuote.asCompleteQuote?.id else {
-                        return
-                    }
-                    selectedDatesMap[quoteId] = date
-                }
             }
         }
-
+    
         let buttonContainer = UIStackView()
         buttonContainer.axis = .vertical
         buttonContainer.spacing = 15
@@ -120,17 +123,19 @@ extension StartDate: Presentable {
             Future { completion in
                 bag += loadableSaveButton.onTapSignal.onValue { _ in
                     loadableSaveButton.isLoadingSignal.value = true
-
-                    join(
-                        selectedDatesMap.map { quoteId, date in
-                            state.updateStartDate(quoteId: quoteId, date: date).toVoid()
-                        }
-                    )
+                    
+                    selectedDatesMap.forEach { quoteId, date in
+                        guard let date = date else { return }
+                        store.send(.updateStartDate(id: quoteId, startDate: date))
+                    }
+                    
+                    bag += store.stateSignal.compactMap { $0.startDates == selectedDatesMap }
                     .onValue { _ in
                         loadableSaveButton.isLoadingSignal.value = false
                         completion(.success)
                     }
-                    .onError { _ in
+                    
+                    bag += store.onAction(.failed(event: .updateStartDate), {
                         viewController.present(
                             Alert<Void>(
                                 title: L10n.offerSaveStartDateErrorAlertTitle,
@@ -139,11 +144,11 @@ extension StartDate: Presentable {
                             )
                         )
                         .onValue { _ in
+                            store.send(.refetch)
                             loadableSaveButton.isLoadingSignal.value = false
                         }
-                    }
+                    })
                 }
-
                 return bag
             }
         )
