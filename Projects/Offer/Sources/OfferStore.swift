@@ -28,6 +28,7 @@ public enum OfferAction: ActionProtocol {
     case openChat
     case query(ids: [String])
     case setOfferBundle(bundle: OfferBundle)
+    case refetch
 
     /// Start date events
     case setStartDate(id: String, startDate: Date?)
@@ -117,6 +118,16 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             updateRedeemedCampaigns(discountCode: discountCode).onValue { updatedCampaigns in
                 
             }
+        case .refetch:
+            let query = query(for: state.ids)
+            return client.fetch(query: query)
+                .compactMap { data in
+                    return OfferBundle(data: data)
+                }
+                .map {
+                    return .setOfferBundle(bundle: $0)
+                }
+                .valueThenEndSignal
         default:
             return nil
         }
@@ -157,16 +168,6 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 extension OfferStore {
 
     typealias Campaign = GraphQL.QuoteBundleQuery.Data.RedeemedCampaign
-
-    private func updateCacheRedeemedCampaigns(
-        campaigns: [Campaign]
-    ) {
-        //        self.store.update(query: self.query) { (storeData: inout GraphQL.QuoteBundleQuery.Data) in
-        //            storeData.redeemedCampaigns = campaigns
-        //        }
-        //
-        //        self.refetch()
-    }
 
     private func updateRedeemedCampaigns(discountCode: String) -> Future<[RedeemedCampaign]> {
         return self.client

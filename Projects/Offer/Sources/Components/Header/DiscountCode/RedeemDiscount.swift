@@ -69,7 +69,7 @@ extension RedeemDiscount: Presentable {
         }
 
         bag += viewController.install(form)
-
+        #warning("asdasd")
         return (
             viewController,
             Future { completion in
@@ -92,7 +92,7 @@ extension RedeemDiscount: Presentable {
                             )
                         )
                         
-                        store.onAction(.failed(event: .updateRedeemedCampaigns)) {
+                        bag += store.onAction(.failed(event: .updateRedeemedCampaigns)) {
                             viewController.present(
                                 Alert<Void>(
                                     title: L10n.Offer
@@ -105,7 +105,7 @@ extension RedeemDiscount: Presentable {
                                             action: { () }
                                         )
                                     ]
-                                ).onValue { _ in
+                                )).onValue { _ in
                                     loadableSubmitButton.isLoadingSignal.value =
                                     false
                                 }
