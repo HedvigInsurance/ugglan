@@ -8,7 +8,7 @@ public struct OfferBundle: Codable, Equatable {
         return lhs.id == rhs.id
     }
 
-    public let quoteBundle: QuoteBundle
+    public var quoteBundle: QuoteBundle
     public let redeemedCampaigns: [RedeemedCampaign]
     public let signMethodForQuotes: SignMethodForQuotes
     public let id: UUID
@@ -38,7 +38,7 @@ public struct QuoteBundle: Codable {
     public let bundleCost: BundleCost
     public let frequentlyAskedQuestions: [FrequentlyAskedQuestion]
     public let quotes: [Quote]
-    public let inception: Inception
+    public var inception: Inception
 
     public init(
         bundle: OfferData.QuoteBundle
@@ -165,7 +165,7 @@ public struct QuoteBundle: Codable {
         }
         
         public struct ConcurrentInception: Codable, Equatable {
-            public let startDate: String?
+            public var startDate: String?
             public let correspondingQuotes: [CorrespondingQuote]
             public let currentInsurer: CurrentInsurer?
 
@@ -199,7 +199,7 @@ public struct QuoteBundle: Codable {
         }
 
         public struct IndependentInception: Codable, Equatable {
-            public let startDate: String?
+            public var startDate: String?
             public let correspondingQuote: CorrespondingQuote
             public let currentInsurer: CurrentInsurer?
 

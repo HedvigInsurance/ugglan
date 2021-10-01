@@ -36,7 +36,6 @@ extension StartDate: Presentable {
         
         var selectedDatesMap: [String: Date?] = [:]
         
-        
         switch quoteBundle.inception {
         case .concurrent(let concurrentInception):
             bag +=
