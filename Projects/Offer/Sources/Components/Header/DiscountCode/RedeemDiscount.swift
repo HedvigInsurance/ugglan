@@ -69,7 +69,6 @@ extension RedeemDiscount: Presentable {
         }
 
         bag += viewController.install(form)
-        #warning("asdasd")
         return (
             viewController,
             Future { completion in
@@ -81,16 +80,20 @@ extension RedeemDiscount: Presentable {
                     .onValue { _, discountCode in
                         store.send(.updateRedeemedCampaigns(discountCode: discountCode))
                         
-                        loadableSubmitButton.isLoadingSignal.value = false
-                        Toasts.shared.displayToast(
-                            toast: Toast(
-                                symbol: .icon(
-                                    hCoreUIAssets.circularCheckmark
-                                        .image
-                                ),
-                                body: L10n.Offer.discountAddedToastbar
+                        bag += store.stateSignal.filter(predicate: { state in !(state.offerData?.redeemedCampaigns.isEmpty ?? true) }).onValue { _ in
+                            completion(.success)
+                            
+                            loadableSubmitButton.isLoadingSignal.value = false
+                            Toasts.shared.displayToast(
+                                toast: Toast(
+                                    symbol: .icon(
+                                        hCoreUIAssets.circularCheckmark
+                                            .image
+                                    ),
+                                    body: L10n.Offer.discountAddedToastbar
+                                )
                             )
-                        )
+                        }
                         
                         bag += store.onAction(.failed(event: .updateRedeemedCampaigns)) {
                             viewController.present(

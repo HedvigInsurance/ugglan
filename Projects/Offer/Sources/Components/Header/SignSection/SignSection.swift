@@ -31,11 +31,13 @@ extension SignSection: Presentable {
         
         let row = RowView()
         section.append(row)
-
-        bag += store.stateSignal.compactMap { $0.offerData }.onValueDisposePrevious { data in
+        
+        bag += store.stateSignal.compactMap { $0.offerData }
+            .map { ($0.signMethodForQuotes, $0.quoteBundle.appConfiguration.approveButtonTerminology) }
+            .distinct(==)
+            .onValueDisposePrevious { signMethodForQuotes, approveButtonTerminology in
             let innerBag = DisposeBag()
-            let signMethodForQuotes = data.signMethodForQuotes
-
+                
             switch signMethodForQuotes {
             case .swedishBankId:
                 let signButton = Button(
@@ -86,7 +88,7 @@ extension SignSection: Presentable {
                 innerBag += row.append(signButton)
             case .approveOnly:
                 let signButton = Button(
-                    title: data.quoteBundle.appConfiguration.approveButtonTerminology.displayValue,
+                    title: approveButtonTerminology.displayValue,
                     type: .standard(
                         backgroundColor: .brand(.secondaryButtonBackgroundColor),
                         textColor: .brand(.secondaryButtonTextColor)

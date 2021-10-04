@@ -74,18 +74,20 @@ extension DiscountCodeSection: Presentable {
         let discountsPresent = ReadWriteSignal<Bool>(false)
         bag += store.stateSignal.map { $0.offerData?.redeemedCampaigns.count != 0 }.bindTo(discountsPresent)
 
-        bag += removeButton.onTapSignal.onValue { _ in
+        bag += removeButton.onTapSignal.onValueDisposePrevious { _ in
+            let innerBag = DisposeBag()
+            
             store.send(.removeRedeemedCampaigns)
             loadableButton.isLoadingSignal.value = true
-            bag += store.onAction(
-                .setRedeemedCampaigns(discountCode: nil),
+            innerBag += store.onAction(
+                .removeRedeemedCampaigns,
                 {
                     loadableButton.isLoadingSignal.value = false
                 }
             )
 
-            bag += store.onAction(
-                .failed(event: .updateRedeemedCampaigns),
+            innerBag += store.onAction(
+                .failed(event: .removeCampaigns),
                 {
                     loadableButton.isLoadingSignal.value = false
                     section.viewController?
@@ -104,6 +106,8 @@ extension DiscountCodeSection: Presentable {
                         )
                 }
             )
+            
+            return innerBag
         }
 
         bag += button.onTapSignal.onValue { _ in

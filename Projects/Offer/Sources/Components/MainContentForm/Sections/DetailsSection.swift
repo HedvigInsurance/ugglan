@@ -19,7 +19,9 @@ extension DetailsSection: Presentable {
             })
         let bag = DisposeBag()
 
-        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.quotes }.debounce(0.3)
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.quotes }
+            .debounce(0.3)
+            .distinct()
             .onValueDisposePrevious { quotes in
                 let innerBag = DisposeBag()
                 innerBag += quotes.map { quote in

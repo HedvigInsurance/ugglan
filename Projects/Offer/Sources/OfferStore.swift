@@ -14,7 +14,6 @@ public struct OfferState: StateProtocol {
     var swedishBankIDStatusCode: String? = nil
     var offerData: OfferBundle? = nil
     var hasCheckedOutId: String? = nil
-    var redeemedCamapigns: [RedeemedCampaign] = []
 
     public init() {}
 }
@@ -37,8 +36,9 @@ public enum OfferAction: ActionProtocol {
 
     /// Campaign events
     case removeRedeemedCampaigns
-    case setRedeemedCampaigns(discountCode: String?)
     case updateRedeemedCampaigns(discountCode: String)
+    case didRedeemCampaigns
+    case didRemoveCampaigns
 
     case failed(event: OfferStoreError)
 
@@ -53,6 +53,7 @@ public enum OfferAction: ActionProtocol {
         case checkoutUpdate
         case updateStartDate
         case updateRedeemedCampaigns
+        case removeCampaigns
     }
 }
 
@@ -115,12 +116,10 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case .removeRedeemedCampaigns:
             return removeRedeemedCampaigns()
         case let .updateRedeemedCampaigns(discountCode):
-            updateRedeemedCampaigns(discountCode: discountCode).onValue { updatedCampaigns in
-                
-            }
+            return updateRedeemedCampaigns(discountCode: discountCode)
         case .refetch:
             let query = query(for: state.ids)
-            return client.fetch(query: query)
+            return client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData)
                 .compactMap { data in
                     return OfferBundle(data: data)
                 }
@@ -128,6 +127,11 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     return .setOfferBundle(bundle: $0)
                 }
                 .valueThenEndSignal
+        case .didRedeemCampaigns, .didRemoveCampaigns:
+            return FiniteSignal { callback in
+                callback(.value(.refetch))
+                return NilDisposer()
+            }
         default:
             return nil
         }
@@ -189,10 +193,9 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
 // Old offer state refactored
 extension OfferStore {
-
     typealias Campaign = GraphQL.QuoteBundleQuery.Data.RedeemedCampaign
 
-    private func updateRedeemedCampaigns(discountCode: String) -> Future<[RedeemedCampaign]> {
+    private func updateRedeemedCampaigns(discountCode: String) -> FiniteSignal<OfferAction>? {
         return self.client
             .perform(
                 mutation: GraphQL.RedeemDiscountCodeMutation(
@@ -200,26 +203,23 @@ extension OfferStore {
                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
                 )
             )
-            .flatMap { data in
-                guard let campaigns = data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns else {
-                    return Future(error: OfferAction.OfferStoreError.updateRedeemedCampaigns)
+            .map { data in
+                guard data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns != nil else {
+                    return .failed(event: .updateRedeemedCampaigns)
                 }
 
-                let mappedCampaigns = campaigns.map { campaign in
-                    RedeemedCampaign(displayValue: campaign.displayValue)
-                }
-
-                return Future(mappedCampaigns)
+                return .didRedeemCampaigns
             }
+            .valueThenEndSignal
     }
 
     private func removeRedeemedCampaigns() -> FiniteSignal<OfferAction>? {
         return self.client.perform(mutation: GraphQL.RemoveDiscountMutation())
             .map { data in
-                .setRedeemedCampaigns(discountCode: nil)
+                .didRemoveCampaigns
             }
-            .onError { _ in
-                OfferAction.failed(event: OfferAction.OfferStoreError.updateRedeemedCampaigns)
+            .mapError { _ in
+                .failed(event: .removeCampaigns)
             }
             .valueThenEndSignal
     }

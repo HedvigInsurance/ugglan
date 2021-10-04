@@ -4,10 +4,6 @@ import Foundation
 public typealias OfferData = GraphQL.QuoteBundleQuery.Data
 
 public struct OfferBundle: Codable, Equatable {
-    public static func == (lhs: OfferBundle, rhs: OfferBundle) -> Bool {
-        return lhs.id == rhs.id
-    }
-
     public var quoteBundle: QuoteBundle
     public let redeemedCampaigns: [RedeemedCampaign]
     public let signMethodForQuotes: SignMethodForQuotes
@@ -33,7 +29,7 @@ public struct OfferBundle: Codable, Equatable {
     }
 }
 
-public struct QuoteBundle: Codable {
+public struct QuoteBundle: Codable, Equatable {
     public let appConfiguration: AppConfiguration
     public let bundleCost: BundleCost
     public let frequentlyAskedQuestions: [FrequentlyAskedQuestion]
@@ -50,7 +46,7 @@ public struct QuoteBundle: Codable {
         inception = .init(fragment: bundle.inception.fragments.inceptionFragment)
     }
 
-    public struct AppConfiguration: Codable {
+    public struct AppConfiguration: Codable, Equatable {
         public let showCampaignManagement: Bool
         public let showFaq: Bool
         public let ignoreCampaigns: Bool
@@ -90,7 +86,7 @@ public struct QuoteBundle: Codable {
         }
     }
 
-    public struct BundleCost: Codable {
+    public struct BundleCost: Codable, Equatable {
         public let freeUntil: String?
         public let monthlyDiscount: MonetaryAmount
         public let monthlyGross: MonetaryAmount
@@ -106,7 +102,7 @@ public struct QuoteBundle: Codable {
         }
     }
 
-    public struct FrequentlyAskedQuestion: Codable {
+    public struct FrequentlyAskedQuestion: Codable, Equatable {
         public let body: String?
         public let headline: String?
         public let id: String
@@ -119,7 +115,7 @@ public struct QuoteBundle: Codable {
         }
     }
 
-    public struct Quote: Codable {
+    public struct Quote: Codable, Equatable {
         public let id: String
         public let firstName: String
         public let lastName: String
