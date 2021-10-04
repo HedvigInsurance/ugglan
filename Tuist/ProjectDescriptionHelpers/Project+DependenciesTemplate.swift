@@ -59,7 +59,7 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Presentation",
-                    .upToNextMajor(from: "2.0.14")
+                    .upToNextMajor(from: "2.0.15")
                 )
             ]
         case .dynamiccolor:
