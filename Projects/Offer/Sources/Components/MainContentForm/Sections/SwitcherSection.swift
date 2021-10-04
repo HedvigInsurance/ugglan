@@ -13,7 +13,7 @@ extension SwitcherSection: Presentable {
         let section = SectionView(headerView: nil, footerView: nil)
         section.dynamicStyle = .brandGrouped(separatorType: .none)
         section.appendSpacing(.inbetween)
-        
+
         let store: OfferStore = self.get()
 
         let bag = DisposeBag()
@@ -22,7 +22,7 @@ extension SwitcherSection: Presentable {
             .compactMap { $0.offerData?.quoteBundle }
             .onValueDisposePrevious { quoteBundle in
                 let innerBag = DisposeBag()
-                
+
                 section.isHidden = !quoteBundle.switcher
 
                 if quoteBundle.switcher {
