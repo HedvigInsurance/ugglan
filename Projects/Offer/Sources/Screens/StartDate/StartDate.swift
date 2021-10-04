@@ -8,20 +8,21 @@ import hCoreUI
 import hGraphQL
 
 struct StartDate {
-    let quoteBundle: GraphQL.QuoteBundleQuery.Data.QuoteBundle
-    @Inject var state: OldOfferState
+    let quoteBundle: QuoteBundle
 }
 
 extension StartDate: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
 
+        let store: OfferStore = self.get()
+
         switch quoteBundle.appConfiguration.startDateTerminology {
         case .accessDate:
             viewController.title = L10n.offerSetAccessDate
         case .startDate:
             viewController.title = L10n.offerSetStartDate
-        case .__unknown:
+        case .unknown:
             break
         }
 
@@ -35,7 +36,8 @@ extension StartDate: Presentable {
 
         var selectedDatesMap: [String: Date?] = [:]
 
-        if let concurrentInception = quoteBundle.inception.asConcurrentInception {
+        switch quoteBundle.inception {
+        case .concurrent(let concurrentInception):
             bag +=
                 form.append(
                     SingleStartDateSection(
@@ -48,32 +50,34 @@ extension StartDate: Presentable {
                 )
                 .onValue { date in
                     concurrentInception.correspondingQuotes.forEach { quote in
-                        guard let quoteId = quote.asCompleteQuote?.id else {
+                        guard let quoteId = quote.id else {
                             return
                         }
                         selectedDatesMap[quoteId] = date
                     }
                 }
-        } else if let independentInceptions = quoteBundle.inception.asIndependentInceptions {
-            bag += independentInceptions.inceptions.map { inception in
+        case .independent(let independentInceptions):
+            bag += independentInceptions.map { inception in
                 form.append(
                     SingleStartDateSection(
                         title: quoteBundle.quoteFor(
-                            id: inception.correspondingQuote.asCompleteQuote?.id
+                            id: inception.correspondingQuote.id
                         )?
                         .displayName,
                         switchingActivated: inception.currentInsurer?.switchable ?? false,
-                        isCollapsible: independentInceptions.inceptions.count > 1,
+                        isCollapsible: inception.currentInsurer?.switchable ?? false,
                         initialStartDate: inception.startDate?.localDateToDate
                     )
                 )
                 .onValue { date in
-                    guard let quoteId = inception.correspondingQuote.asCompleteQuote?.id else {
+                    guard let quoteId = inception.correspondingQuote.id else {
                         return
                     }
                     selectedDatesMap[quoteId] = date
                 }
             }
+        case .unknown:
+            break
         }
 
         let buttonContainer = UIStackView()
@@ -120,29 +124,33 @@ extension StartDate: Presentable {
                 bag += loadableSaveButton.onTapSignal.onValue { _ in
                     loadableSaveButton.isLoadingSignal.value = true
 
-                    join(
-                        selectedDatesMap.map { quoteId, date in
-                            state.updateStartDate(quoteId: quoteId, date: date).toVoid()
-                        }
-                    )
-                    .onValue { _ in
-                        loadableSaveButton.isLoadingSignal.value = false
-                        completion(.success)
+                    selectedDatesMap.forEach { quoteId, date in
+                        store.send(.updateStartDate(id: quoteId, startDate: date))
                     }
-                    .onError { _ in
-                        viewController.present(
-                            Alert<Void>(
-                                title: L10n.offerSaveStartDateErrorAlertTitle,
-                                message: L10n.offerSaveStartDateErrorAlertMessage,
-                                actions: [.init(title: L10n.alertOk, action: { () })]
-                            )
-                        )
+
+                    bag += store.stateSignal.compactMap { $0.startDates == selectedDatesMap }
                         .onValue { _ in
                             loadableSaveButton.isLoadingSignal.value = false
+                            completion(.success)
                         }
-                    }
-                }
 
+                    bag += store.onAction(
+                        .failed(event: .updateStartDate),
+                        {
+                            viewController.present(
+                                Alert<Void>(
+                                    title: L10n.offerSaveStartDateErrorAlertTitle,
+                                    message: L10n.offerSaveStartDateErrorAlertMessage,
+                                    actions: [.init(title: L10n.alertOk, action: { () })]
+                                )
+                            )
+                            .onValue { _ in
+                                store.send(.refetch)
+                                loadableSaveButton.isLoadingSignal.value = false
+                            }
+                        }
+                    )
+                }
                 return bag
             }
         )

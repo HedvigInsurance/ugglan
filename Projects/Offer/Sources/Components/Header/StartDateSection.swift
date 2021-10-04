@@ -7,19 +7,29 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct StartDateSection { @Inject var state: OldOfferState }
+struct StartDateSection {}
 
-extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
+extension QuoteBundle {
     var canHaveIndependentStartDates: Bool {
-        self.quotes.count > 1 && self.inception.asIndependentInceptions != nil
+        switch inception {
+        case .independent:
+            return quotes.count > 1
+        default:
+            return false
+        }
     }
 
     var switcher: Bool {
-        self.inception.asConcurrentInception?.currentInsurer != nil
-            || self.inception.asIndependentInceptions?.inceptions
-                .contains(where: { inception in
-                    inception.currentInsurer != nil
-                }) == true
+        switch inception {
+        case let .concurrent(inception):
+            return inception.currentInsurer != nil
+        case let .independent(independentInceptions):
+            return independentInceptions.contains { inception in
+                inception.currentInsurer != nil
+            } == true
+        case .unknown:
+            return false
+        }
     }
 
     var fallbackDisplayValue: String {
@@ -31,22 +41,23 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
     }
 
     var displayableStartDate: String {
-        if let concurrentInception = self.inception.asConcurrentInception {
+        switch inception {
+        case .concurrent(let concurrentInception):
             return concurrentInception.startDate?.localDateToDate?.localDateStringWithToday ?? ""
+        case .independent(let independentInceptions):
+            let startDates = independentInceptions.map { $0.startDate }
+            let allStartDatesEqual = startDates.dropFirst().allSatisfy({ $0 == startDates.first })
+            let dateDisplayValue =
+                startDates.first??.localDateToDate?.localDateStringWithToday ?? fallbackDisplayValue
+
+            return allStartDatesEqual ? dateDisplayValue : L10n.offerStartDateMultiple
+        case .unknown:
+            return ""
         }
-
-        guard let independentInceptions = self.inception.asIndependentInceptions?.inceptions else { return "" }
-
-        let startDates = independentInceptions.map { $0.startDate }
-        let allStartDatesEqual = startDates.dropFirst().allSatisfy({ $0 == startDates.first })
-        let dateDisplayValue =
-            startDates.first??.localDateToDate?.localDateStringWithToday ?? fallbackDisplayValue
-
-        return allStartDatesEqual ? dateDisplayValue : L10n.offerStartDateMultiple
     }
 }
 
-extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
+extension QuoteBundle {
     var startDateTerminology: String {
         switch appConfiguration.startDateTerminology {
         case .startDate:
@@ -54,7 +65,7 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
                 ? L10n.offerStartDatePlural : L10n.offerStartDate
         case .accessDate:
             return L10n.offerAccessDate
-        case .__unknown(_):
+        case .unknown:
             return ""
         }
     }
@@ -63,6 +74,9 @@ extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
 extension StartDateSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let section = SectionView()
+
+        let store: OfferStore = self.get()
+
         section.dynamicStyle = .brandGroupedInset(
             separatorType: .none,
             border: .init(
@@ -76,14 +90,16 @@ extension StartDateSection: Presentable {
 
         let bag = DisposeBag()
 
-        bag += state.dataSignal.map { $0.quoteBundle }
-            .onValueDisposePrevious { quoteBundle in
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle }
+            .map { ($0.displayableStartDate, $0.startDateTerminology) }
+            .distinct(==)
+            .onValueDisposePrevious { displayableStartDate, startDateTerminology in
                 let innerBag = DisposeBag()
 
-                let displayableStartDate = quoteBundle.displayableStartDate
+                let displayableStartDate = displayableStartDate
 
                 let row = RowView(
-                    title: quoteBundle.startDateTerminology
+                    title: startDateTerminology
                 )
                 row.titleLabel?.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
                 let iconImageView = UIImageView()
@@ -122,9 +138,11 @@ extension StartDateSection: Presentable {
                 row.append(hCoreUIAssets.chevronRight.image)
 
                 innerBag += section.append(row).compactMap { _ in row.viewController }
-                    .onValue { viewController in
+                    .withLatestFrom(store.stateSignal.atOnce().compactMap { $0.offerData?.quoteBundle })
+                    .onValue { viewController, quoteBundle in
                         viewController.present(
-                            StartDate(quoteBundle: quoteBundle).wrappedInCloseButton()
+                            StartDate(quoteBundle: quoteBundle).wrappedInCloseButton(),
+                            style: .detented(.large)
                         )
                     }
                 innerBag += { section.remove(row) }

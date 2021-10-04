@@ -6,26 +6,30 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct CoverageSection {}
+struct SwitcherSection {}
 
-extension CoverageSection: Presentable {
+extension SwitcherSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let section = SectionView(headerView: nil, footerView: nil)
         section.dynamicStyle = .brandGrouped(separatorType: .none)
+        section.appendSpacing(.inbetween)
 
         let store: OfferStore = self.get()
 
         let bag = DisposeBag()
 
         bag += store.stateSignal
-            .compactMap { $0.offerData?.quoteBundle.quotes }
-            .onValueDisposePrevious { quotes in
+            .compactMap { $0.offerData?.quoteBundle }
+            .onValueDisposePrevious { quoteBundle in
                 let innerBag = DisposeBag()
 
-                if quotes.count > 1 {
-                    innerBag += section.append(MultiQuoteCoverage(quotes: quotes))
-                } else if let quote = quotes.first {
-                    innerBag += section.append(SingleQuoteCoverage(quote: quote), options: [.autoRemove])
+                section.isHidden = !quoteBundle.switcher
+
+                if quoteBundle.switcher {
+                    innerBag += section.append(
+                        CurrentInsurerSection(quoteBundle: quoteBundle),
+                        options: [.autoRemove]
+                    )
                 }
 
                 return innerBag

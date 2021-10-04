@@ -5,10 +5,9 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
-struct DiscountCodeSection {
-    @Inject var state: OldOfferState
-}
+struct DiscountCodeSection {}
 
 extension DiscountCodeSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
@@ -19,7 +18,9 @@ extension DiscountCodeSection: Presentable {
         )
         let bag = DisposeBag()
 
-        bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.showCampaignManagement }
+        let store: OfferStore = self.get()
+
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.appConfiguration.showCampaignManagement }
             .onValue { showCampaignManagement in
                 section.isHidden = !showCampaignManagement
             }
@@ -48,7 +49,7 @@ extension DiscountCodeSection: Presentable {
         removeRow.isHidden = true
         removeRow.alpha = 0
 
-        bag += state.dataSignal.animated(style: SpringAnimationStyle.lightBounce()) { data in
+        func updateVisibility(data: OfferBundle) {
             if data.redeemedCampaigns.isEmpty {
                 removeRow.alpha = 0
                 row.alpha = 1
@@ -62,16 +63,32 @@ extension DiscountCodeSection: Presentable {
             }
         }
 
-        let discountsPresent = ReadWriteSignal<Bool>(false)
-        bag += state.dataSignal.map { $0.redeemedCampaigns.count != 0 }.bindTo(discountsPresent)
+        bag += store.stateSignal.compactMap { $0.offerData }
+            .captureFirstValue { data in
+                updateVisibility(data: data)
+            }
+            .animated(style: SpringAnimationStyle.lightBounce()) { data in
+                updateVisibility(data: data)
+            }
 
-        bag += removeButton.onTapSignal.onValue { _ in
+        let discountsPresent = ReadWriteSignal<Bool>(false)
+        bag += store.stateSignal.map { $0.offerData?.redeemedCampaigns.count != 0 }.bindTo(discountsPresent)
+
+        bag += removeButton.onTapSignal.onValueDisposePrevious { _ in
+            let innerBag = DisposeBag()
+
+            store.send(.removeRedeemedCampaigns)
             loadableButton.isLoadingSignal.value = true
-            state.removeRedeemedCampaigns()
-                .onValue { _ in
+            innerBag += store.onAction(
+                .removeRedeemedCampaigns,
+                {
                     loadableButton.isLoadingSignal.value = false
                 }
-                .onError { _ in
+            )
+
+            innerBag += store.onAction(
+                .failed(event: .removeCampaigns),
+                {
                     loadableButton.isLoadingSignal.value = false
                     section.viewController?
                         .present(
@@ -88,6 +105,9 @@ extension DiscountCodeSection: Presentable {
                             )
                         )
                 }
+            )
+
+            return innerBag
         }
 
         bag += button.onTapSignal.onValue { _ in

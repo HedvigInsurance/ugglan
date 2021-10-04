@@ -7,18 +7,16 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct SignSection {
-    @Inject var state: OldOfferState
-}
+struct SignSection {}
 
-extension GraphQL.QuoteBundleAppConfigurationApproveButtonTerminology {
+extension QuoteBundle.AppConfiguration.ApproveButtonTerminology {
     var displayValue: String {
         switch self {
         case .approveChanges:
             return L10n.offerApproveChanges
         case .confirmPurchase:
             return L10n.offerConfirmPurchase
-        case .__unknown:
+        default:
             return ""
         }
     }
@@ -29,93 +27,98 @@ extension SignSection: Presentable {
         let section = SectionView()
         let bag = DisposeBag()
 
+        let store: OfferStore = self.get()
+
         let row = RowView()
         section.append(row)
 
-        bag += state.dataSignal.onValueDisposePrevious { data in
-            let innerBag = DisposeBag()
+        bag += store.stateSignal.compactMap { $0.offerData }
+            .map { ($0.signMethodForQuotes, $0.quoteBundle.appConfiguration.approveButtonTerminology) }
+            .distinct(==)
+            .onValueDisposePrevious { signMethodForQuotes, approveButtonTerminology in
+                let innerBag = DisposeBag()
 
-            switch data.signMethodForQuotes {
-            case .swedishBankId:
-                let signButton = Button(
-                    title: L10n.offerSignButton,
-                    type: .standardIcon(
-                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                        textColor: .brand(.secondaryButtonTextColor),
-                        icon: .left(image: hCoreUIAssets.bankIdLogo.image, width: 20)
-                    )
-                )
-
-                innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
-                    .onValue { viewController in
-                        viewController.present(
-                            SwedishBankIdSign(),
-                            style: .detented(.preferredContentSize),
-                            options: [
-                                .defaults, .prefersLargeTitles(true),
-                                .largeTitleDisplayMode(.always),
-                            ]
+                switch signMethodForQuotes {
+                case .swedishBankId:
+                    let signButton = Button(
+                        title: L10n.offerSignButton,
+                        type: .standardIcon(
+                            backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                            textColor: .brand(.secondaryButtonTextColor),
+                            icon: .left(image: hCoreUIAssets.bankIdLogo.image, width: 20)
                         )
-                    }
-
-                innerBag += row.append(signButton)
-            case .norwegianBankId, .danishBankId:
-                break
-            case .simpleSign:
-                let signButton = Button(
-                    title: L10n.offerSignButton,
-                    type: .standard(
-                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                        textColor: .brand(.secondaryButtonTextColor)
                     )
-                )
 
-                innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
-                    .onValue { viewController in
-                        viewController.present(
-                            Checkout().wrappedInCloseButton(),
-                            style: .detented(.large),
-                            options: [
-                                .defaults, .prefersLargeTitles(true),
-                                .largeTitleDisplayMode(.always),
-                            ]
+                    innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
+                        .onValue { viewController in
+                            viewController.present(
+                                SwedishBankIdSign(),
+                                style: .detented(.preferredContentSize),
+                                options: [
+                                    .defaults, .prefersLargeTitles(true),
+                                    .largeTitleDisplayMode(.always),
+                                ]
+                            )
+                        }
+
+                    innerBag += row.append(signButton)
+                case .norwegianBankId, .danishBankId:
+                    break
+                case .simpleSign:
+                    let signButton = Button(
+                        title: L10n.offerSignButton,
+                        type: .standard(
+                            backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                            textColor: .brand(.secondaryButtonTextColor)
                         )
-                    }
-
-                innerBag += row.append(signButton)
-            case .approveOnly:
-                let signButton = Button(
-                    title: data.quoteBundle.appConfiguration.approveButtonTerminology.displayValue,
-                    type: .standard(
-                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                        textColor: .brand(.secondaryButtonTextColor)
                     )
-                )
 
-                let loadableSignButton = LoadableButton(button: signButton)
+                    innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
+                        .onValue { viewController in
+                            viewController.present(
+                                Checkout().wrappedInCloseButton(),
+                                style: .detented(.large),
+                                options: [
+                                    .defaults, .prefersLargeTitles(true),
+                                    .largeTitleDisplayMode(.always),
+                                ]
+                            )
+                        }
 
-                innerBag += loadableSignButton.onTapSignal
-                    .onValue { _ in
-                        loadableSignButton.isLoadingSignal.value = true
-
-                        let store: OfferStore = get()
-                        store.send(.startSign)
-
-                        bag += store.onAction(
-                            .sign(event: .failed),
-                            {
-                                loadableSignButton.isLoadingSignal.value = false
-                            }
+                    innerBag += row.append(signButton)
+                case .approveOnly:
+                    let signButton = Button(
+                        title: approveButtonTerminology.displayValue,
+                        type: .standard(
+                            backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                            textColor: .brand(.secondaryButtonTextColor)
                         )
-                    }
+                    )
 
-                innerBag += row.append(loadableSignButton)
-            case .__unknown(_):
-                break
+                    let loadableSignButton = LoadableButton(button: signButton)
+
+                    innerBag += loadableSignButton.onTapSignal
+                        .onValue { _ in
+                            loadableSignButton.isLoadingSignal.value = true
+
+                            let store: OfferStore = get()
+                            store.send(.startSign)
+
+                            bag += store.onAction(
+                                .sign(event: .failed),
+                                {
+                                    loadableSignButton.isLoadingSignal.value = false
+                                }
+                            )
+                        }
+
+                    innerBag += row.append(loadableSignButton)
+                case .unknown:
+                    break
+                }
+
+                return innerBag
             }
-
-            return innerBag
-        }
 
         return (section, bag)
     }

@@ -47,8 +47,7 @@ let log = Logger.builder
         ApolloClient.deleteToken()
 
         // remove all persisted state
-        UgglanStore.destroy()
-        OfferStore.destroy()
+        globalPresentableStoreContainer.deletePersistanceContainer()
 
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()

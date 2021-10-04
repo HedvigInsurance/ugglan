@@ -8,14 +8,14 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct RedeemDiscount {
-    @Inject var state: OldOfferState
-}
+struct RedeemDiscount {}
 
 extension RedeemDiscount: Presentable {
     public func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
         viewController.title = L10n.referralAddcouponHeadline
+
+        let store: OfferStore = self.get()
 
         let bag = DisposeBag()
 
@@ -69,7 +69,6 @@ extension RedeemDiscount: Presentable {
         }
 
         bag += viewController.install(form)
-
         return (
             viewController,
             Future { completion in
@@ -79,8 +78,13 @@ extension RedeemDiscount: Presentable {
                     }
                     .withLatestFrom(textField.value.plain())
                     .onValue { _, discountCode in
-                        state.updateRedeemedCampaigns(discountCode: discountCode).toVoid()
+                        store.send(.updateRedeemedCampaigns(discountCode: discountCode))
+
+                        bag += store.stateSignal
+                            .filter(predicate: { state in !(state.offerData?.redeemedCampaigns.isEmpty ?? true) })
                             .onValue { _ in
+                                completion(.success)
+
                                 loadableSubmitButton.isLoadingSignal.value = false
                                 Toasts.shared.displayToast(
                                     toast: Toast(
@@ -91,28 +95,28 @@ extension RedeemDiscount: Presentable {
                                         body: L10n.Offer.discountAddedToastbar
                                     )
                                 )
-                                completion(.success)
                             }
-                            .onError { error in
-                                viewController.present(
-                                    Alert<Void>(
-                                        title: L10n.Offer
-                                            .discountErrorAlertTitle,
-                                        message: L10n.Offer
-                                            .discountErrorAlertBody,
-                                        actions: [
-                                            .init(
-                                                title: L10n.alertOk,
-                                                action: { () }
-                                            )
-                                        ]
-                                    )
+
+                        bag += store.onAction(.failed(event: .updateRedeemedCampaigns)) {
+                            viewController.present(
+                                Alert<Void>(
+                                    title: L10n.Offer
+                                        .discountErrorAlertTitle,
+                                    message: L10n.Offer
+                                        .discountErrorAlertBody,
+                                    actions: [
+                                        .init(
+                                            title: L10n.alertOk,
+                                            action: { () }
+                                        )
+                                    ]
                                 )
-                                .onValue { _ in
-                                    loadableSubmitButton.isLoadingSignal.value =
-                                        false
-                                }
+                            )
+                            .onValue { _ in
+                                loadableSubmitButton.isLoadingSignal.value =
+                                    false
                             }
+                        }
                     }
                 return bag
             }

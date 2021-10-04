@@ -8,13 +8,15 @@ import hCoreUI
 
 struct MainContentForm {
     let scrollView: UIScrollView
-    @Inject var state: OldOfferState
 }
 
 extension MainContentForm: Presentable {
     func materialize() -> (UIStackView, Disposable) {
         let bag = DisposeBag()
         let container = PassThroughStackView()
+
+        let store: OfferStore = self.get()
+
         container.axis = .vertical
         container.alignment = .leading
         container.allowTouchesOfViewsOutsideBounds = true
@@ -39,6 +41,7 @@ extension MainContentForm: Presentable {
         form.appendSpacing(.inbetween)
 
         bag += form.append(CoverageSection())
+        bag += form.append(SwitcherSection())
 
         form.appendSpacing(.inbetween)
 
@@ -50,7 +53,7 @@ extension MainContentForm: Presentable {
             formContainer.didLayoutSignal,
             form.didLayoutSignal,
             scrollView.didScrollSignal,
-            state.quotesSignal.toVoid()
+            store.stateSignal.compactMap { $0.offerData }.toVoid()
         )
         .onValue {
             let bottomContentInset: CGFloat = scrollView.safeAreaInsets.bottom + 20
@@ -64,7 +67,7 @@ extension MainContentForm: Presentable {
                     )
                 }
 
-                guard !state.isLoadingSignal.value else {
+                guard !store.isLoadingSignal.value else {
                     return
                 }
 
