@@ -65,7 +65,7 @@ extension StartDate: Presentable {
                         )?
                         .displayName,
                         switchingActivated: inception.currentInsurer?.switchable ?? false,
-                        isCollapsible: independentInceptions.count > 1,
+                        isCollapsible: inception.currentInsurer?.switchable ?? false,
                         initialStartDate: inception.startDate?.localDateToDate
                     )
                 )
