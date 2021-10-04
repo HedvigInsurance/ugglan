@@ -21,7 +21,7 @@ extension ContractInformation: Presentable {
 
         let form = FormView()
 
-        if !contract.upcomingAgreementsTable.sections.isEmpty {
+        if contract.upcomingAgreementDate?.localDateString != nil {
             let upcomingAgreementSection = form.appendSection(
                 header: nil,
                 footer: nil,
@@ -29,18 +29,19 @@ extension ContractInformation: Presentable {
             )
 
             let card = Card(
-                titleIcon: hCoreUIAssets.apartment.image,
+                titleIcon: hCoreUIAssets.refresh.image,
                 title: L10n.InsuranceDetails.updateDetailsSheetTitle,
-                body: L10n.InsuranceDetails.addressUpdateBody(
-                    contract.upcomingAgreementDate ?? "",
-                    contract.upcomingAgreementAddress ?? ""
+                body: L10n.InsuranceDetails.AdressUpdateBody.No.address(
+                    contract.upcomingAgreementDate?.localDateString ?? ""
                 ),
                 buttonText: L10n.InsuranceDetails.addressUpdateButton,
                 backgroundColor: .tint(.lavenderTwo),
-                buttonType: .outline(
-                    borderColor: .brand(.primaryText()),
-                    textColor: .brand(.primaryText())
-                )
+                buttonType: contract.upcomingAgreementsTable.sections.isEmpty
+                    ? .none
+                    : .outline(
+                        borderColor: .brand(.primaryText()),
+                        textColor: .brand(.primaryText())
+                    )
             )
 
             bag += upcomingAgreementSection.append(card)

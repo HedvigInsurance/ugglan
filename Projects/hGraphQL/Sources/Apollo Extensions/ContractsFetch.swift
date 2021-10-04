@@ -31,18 +31,4 @@ extension ApolloClient {
             .map(on: .background) { $0.compactMap { Contract(contract: $0) } }
             .map(on: .main) { $0 }
     }
-
-    public func fetchUpcomingContracts(locale: GraphQL.Locale) -> Future<[UpcomingAgreementContract]> {
-        return
-            self.fetch(
-                query: GraphQL.UpcomingAgreementQuery(
-                    locale: locale
-                ),
-                cachePolicy: .fetchIgnoringCacheData,
-                queue: .global(qos: .background)
-            )
-            .map(on: .background) { $0.contracts }
-            .map(on: .background) { $0.map { UpcomingAgreementContract(contract: $0) } }
-            .map(on: .main) { $0 }
-    }
 }

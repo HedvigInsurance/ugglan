@@ -28,6 +28,18 @@ query ActiveContractBundles($locale: Locale!) {
       upcomingAgreementDetailsTable(locale: $locale) {
         ...DetailsTableFragment
       }
+      status {
+        ... on ActiveStatus {
+          upcomingAgreementChange {
+            newAgreement {
+              ... on AgreementCore {
+                activeFrom
+              }
+            }
+          }
+        }
+      }
+      supportsAddressChange
       currentAgreement {
         ... on AgreementCore {
           certificateUrl
@@ -37,9 +49,6 @@ query ActiveContractBundles($locale: Locale!) {
           premium {
             ...MonetaryAmountFragment
           }
-        }
-        ... on SwedishAccidentAgreement {
-            status
         }
       }
     }

@@ -11,7 +11,6 @@ public struct ContractState: StateProtocol {
     public var hasLoadedContractBundlesOnce = false
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
-    public var upcomingAgreements: [UpcomingAgreementContract] = []
     public var focusedCrossSell: CrossSell?
 }
 
@@ -25,11 +24,9 @@ public enum ContractAction: ActionProtocol {
     // Fetch contracts for terminated
     case fetchContractBundles
     case fetchContracts
-    case fetchUpcomingAgreement
 
     case setContractBundles(activeContractBundles: [ActiveContractBundle])
     case setContracts(contracts: [Contract])
-    case setUpcomingAgreementContracts(contracts: [UpcomingAgreementContract])
     case goToMovingFlow
     case goToFreeTextChat
     case setFocusedCrossSell(focusedCrossSell: CrossSell?)
@@ -68,27 +65,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .map {
                     .setContracts(contracts: $0)
                 }
-        case .fetchUpcomingAgreement:
-            return
-                client.fetch(
-                    query: GraphQL.UpcomingAgreementQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    ),
-                    cachePolicy: .fetchIgnoringCacheData
-                )
-                .valueThenEndSignal
-                .compactMap {
-                    $0.contracts
-                }
-                .map {
-                    $0.flatMap { UpcomingAgreementContract(contract: $0) }
-                }
-                .filter { upcomingAgreementContract in
-                    upcomingAgreementContract != getState().upcomingAgreements
-                }
-                .map {
-                    .setUpcomingAgreementContracts(contracts: $0)
-                }
         default:
             break
         }
@@ -103,8 +79,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             newState.contractBundles = activeContractBundles
         case .setContracts(let contracts):
             newState.contracts = contracts
-        case .setUpcomingAgreementContracts(let contracts):
-            newState.upcomingAgreements = contracts
         case let .hasSeenCrossSells(value):
             newState.contractBundles = newState.contractBundles.map { bundle in
                 var newBundle = bundle

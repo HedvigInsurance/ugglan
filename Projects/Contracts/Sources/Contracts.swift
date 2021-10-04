@@ -52,7 +52,6 @@ extension Contracts: View {
     func fetch() {
         store.send(.fetchContracts)
         store.send(.fetchContractBundles)
-        store.send(.fetchUpcomingAgreement)
     }
 
     public var body: some View {
