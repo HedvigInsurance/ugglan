@@ -123,10 +123,11 @@ extension Header: Presentable {
         }
         loadingIndicator.tintColor = .brand(.primaryText())
         scrollView.addSubview(loadingIndicator)
-        
+
         let isLoadingSignal = store.stateSignal.map { $0.isLoading }
 
-        bag += isLoadingSignal
+        bag +=
+            isLoadingSignal
             .animated(style: .easeOut(duration: 0.25)) { isLoading in
                 if isLoading {
                     loadingIndicator.alpha = 1
