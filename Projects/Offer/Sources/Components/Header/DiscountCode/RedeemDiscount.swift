@@ -79,22 +79,24 @@ extension RedeemDiscount: Presentable {
                     .withLatestFrom(textField.value.plain())
                     .onValue { _, discountCode in
                         store.send(.updateRedeemedCampaigns(discountCode: discountCode))
-                        
-                        bag += store.stateSignal.filter(predicate: { state in !(state.offerData?.redeemedCampaigns.isEmpty ?? true) }).onValue { _ in
-                            completion(.success)
-                            
-                            loadableSubmitButton.isLoadingSignal.value = false
-                            Toasts.shared.displayToast(
-                                toast: Toast(
-                                    symbol: .icon(
-                                        hCoreUIAssets.circularCheckmark
-                                            .image
-                                    ),
-                                    body: L10n.Offer.discountAddedToastbar
+
+                        bag += store.stateSignal
+                            .filter(predicate: { state in !(state.offerData?.redeemedCampaigns.isEmpty ?? true) })
+                            .onValue { _ in
+                                completion(.success)
+
+                                loadableSubmitButton.isLoadingSignal.value = false
+                                Toasts.shared.displayToast(
+                                    toast: Toast(
+                                        symbol: .icon(
+                                            hCoreUIAssets.circularCheckmark
+                                                .image
+                                        ),
+                                        body: L10n.Offer.discountAddedToastbar
+                                    )
                                 )
-                            )
-                        }
-                        
+                            }
+
                         bag += store.onAction(.failed(event: .updateRedeemedCampaigns)) {
                             viewController.present(
                                 Alert<Void>(
@@ -108,10 +110,12 @@ extension RedeemDiscount: Presentable {
                                             action: { () }
                                         )
                                     ]
-                                )).onValue { _ in
-                                    loadableSubmitButton.isLoadingSignal.value =
+                                )
+                            )
+                            .onValue { _ in
+                                loadableSubmitButton.isLoadingSignal.value =
                                     false
-                                }
+                            }
                         }
                     }
                 return bag

@@ -76,7 +76,7 @@ extension DiscountCodeSection: Presentable {
 
         bag += removeButton.onTapSignal.onValueDisposePrevious { _ in
             let innerBag = DisposeBag()
-            
+
             store.send(.removeRedeemedCampaigns)
             loadableButton.isLoadingSignal.value = true
             innerBag += store.onAction(
@@ -106,7 +106,7 @@ extension DiscountCodeSection: Presentable {
                         )
                 }
             )
-            
+
             return innerBag
         }
 

@@ -8,11 +8,11 @@ public struct OfferBundle: Codable, Equatable {
     public let redeemedCampaigns: [RedeemedCampaign]
     public let signMethodForQuotes: SignMethodForQuotes
     public let id: UUID
-    
+
     public enum SignMethodForQuotes: String, Codable {
         case swedishBankId = "SWEDISH_BANK_ID"
         case norwegianBankId = "NORWEGIAN_BANK_ID"
-        case danishBankId  = "DANISH_BANK_ID"
+        case danishBankId = "DANISH_BANK_ID"
         case simpleSign = "SIMPLE_SIGN"
         case approveOnly = "APPROVE_ONLY"
         case unknown
@@ -142,12 +142,12 @@ public struct QuoteBundle: Codable, Equatable {
             insuranceTerms = quote.insuranceTerms.map { .init(displayName: $0.displayName, url: $0.url) }
         }
     }
-    
+
     public enum Inception: Codable, Equatable {
         case concurrent(inception: ConcurrentInception)
         case independent(inceptions: [IndependentInception])
         case unknown
-        
+
         init(
             fragment: GraphQL.InceptionFragment
         ) {
@@ -159,7 +159,7 @@ public struct QuoteBundle: Codable, Equatable {
                 self = .unknown
             }
         }
-        
+
         public struct ConcurrentInception: Codable, Equatable {
             public var startDate: String?
             public let correspondingQuotes: [CorrespondingQuote]
@@ -210,7 +210,7 @@ public struct QuoteBundle: Codable, Equatable {
 
         public struct CorrespondingQuote: Codable, Equatable {
             public let id: String?
-            
+
             public init(
                 quote: GraphQL.InceptionFragment.AsConcurrentInception.CorrespondingQuote
             ) {
@@ -227,7 +227,9 @@ public struct QuoteBundle: Codable, Equatable {
 
 public struct RedeemedCampaign: Codable, Equatable {
     public let displayValue: String?
-    public init(displayValue: String?) {
+    public init(
+        displayValue: String?
+    ) {
         self.displayValue = displayValue
     }
 }

@@ -67,7 +67,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             locale: Localization.Locale.currentLocale.asGraphQLLocale()
         )
     }
-    
+
     internal var isLoadingSignal: CoreSignal<Read, Bool> {
         stateSignal.map { $0.offerData == nil }
     }
@@ -88,7 +88,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             }
         case .startSign:
             return signQuotesEffect()
-        case let .query( ids):
+        case let .query(ids):
             let query = self.query(for: ids)
             return client.fetch(query: query)
                 .compactMap { data in
@@ -161,7 +161,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             guard var newOfferData = newState.offerData else { return newState }
             switch newOfferData.quoteBundle.inception {
             case let .independent(independentInceptions):
-                let newInceptions = independentInceptions.map { inception -> QuoteBundle.Inception.IndependentInception in
+                let newInceptions = independentInceptions.map {
+                    inception -> QuoteBundle.Inception.IndependentInception in
                     if inception.correspondingQuote.id == id {
                         var copy = inception
                         copy.startDate = startDate?.localDateString
@@ -179,7 +180,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     newOfferData.quoteBundle.inception = .concurrent(inception: newInception)
                 }
             }
-            
+
             newState.offerData = newOfferData
         case let .setOfferBundle(bundle):
             newState.offerData = bundle
