@@ -31,7 +31,7 @@ public enum OfferAction: ActionProtocol {
 
     /// Start date events
     case setStartDate(id: String, startDate: Date?)
-    case updateStartDate(id: String, startDate: Date)
+    case updateStartDate(id: String, startDate: Date?)
     case removeStartDate(id: String)
 
     /// Campaign events
@@ -246,7 +246,18 @@ extension OfferStore {
             }
     }
 
-    private func updateStartDate(quoteId: String, date: Date) -> FiniteSignal<OfferAction>? {
+    private func updateStartDate(quoteId: String, date: Date?) -> FiniteSignal<OfferAction>? {
+        guard let date = date else {
+            return self.client.perform(mutation: GraphQL.RemoveStartDateMutation(id: quoteId)).map { data in
+                guard data.removeStartDate.asCompleteQuote?.startDate == nil else {
+                    return .failed(event: .updateStartDate)
+                }
+
+                return .setStartDate(id: quoteId, startDate: date)
+            }
+            .valueThenEndSignal
+        }
+        
         return self.client
             .perform(
                 mutation: GraphQL.ChangeStartDateMutation(

@@ -126,7 +126,6 @@ extension StartDate: Presentable {
                     loadableSaveButton.isLoadingSignal.value = true
                     
                     selectedDatesMap.forEach { quoteId, date in
-                        guard let date = date else { return }
                         store.send(.updateStartDate(id: quoteId, startDate: date))
                     }
                     
