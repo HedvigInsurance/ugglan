@@ -91,15 +91,15 @@ extension StartDateSection: Presentable {
         let bag = DisposeBag()
 
         bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle }
-            .onValueDisposePrevious { quoteBundle in
+        .map { ($0.displayableStartDate, $0.startDateTerminology)  }
+        .distinct(==)
+            .onValueDisposePrevious { displayableStartDate, startDateTerminology in
                 let innerBag = DisposeBag()
 
-                let quoteBundle = quoteBundle
-
-                let displayableStartDate = quoteBundle.displayableStartDate
+                let displayableStartDate = displayableStartDate
 
                 let row = RowView(
-                    title: quoteBundle.startDateTerminology
+                    title: startDateTerminology
                 )
                 row.titleLabel?.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
                 let iconImageView = UIImageView()
@@ -138,7 +138,8 @@ extension StartDateSection: Presentable {
                 row.append(hCoreUIAssets.chevronRight.image)
 
                 innerBag += section.append(row).compactMap { _ in row.viewController }
-                    .onValue { viewController in
+                .withLatestFrom(store.stateSignal.atOnce().compactMap { $0.offerData?.quoteBundle })
+                    .onValue { viewController, quoteBundle in
                         viewController.present(
                             StartDate(quoteBundle: quoteBundle).wrappedInCloseButton(),
                             style: .detented(.large)
