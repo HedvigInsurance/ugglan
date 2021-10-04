@@ -6,8 +6,7 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct CoverageSection {
-}
+struct CoverageSection {}
 
 extension CoverageSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
@@ -30,21 +29,6 @@ extension CoverageSection: Presentable {
 
             return innerBag
         }
-
-        bag += store.stateSignal
-            .compactMap { $0.offerData?.quoteBundle }
-            .onValueDisposePrevious { quoteBundle in
-                let innerBag = DisposeBag()
-
-                if quoteBundle.inception != nil {
-                    innerBag += section.append(
-                        CurrentInsurerSection(quoteBundle: quoteBundle),
-                        options: [.autoRemove]
-                    )
-                }
-
-                return innerBag
-            }
 
         return (section, bag)
     }

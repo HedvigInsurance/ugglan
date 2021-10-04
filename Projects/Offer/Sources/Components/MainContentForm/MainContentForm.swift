@@ -41,6 +41,7 @@ extension MainContentForm: Presentable {
         form.appendSpacing(.inbetween)
 
         bag += form.append(CoverageSection())
+        bag += form.append(SwitcherSection())
 
         form.appendSpacing(.inbetween)
 
