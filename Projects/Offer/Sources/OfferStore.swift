@@ -7,6 +7,7 @@ import hCore
 import hGraphQL
 
 public struct OfferState: StateProtocol {
+    var isLoading = true
     var hasSignedQuotes = false
     var ids: [String] = []
     var startDates: [String: Date?] = [:]
@@ -19,7 +20,7 @@ public struct OfferState: StateProtocol {
 }
 
 public enum OfferAction: ActionProtocol {
-
+    case setLoading(isLoading: Bool)
     case sign(event: SignEvent)
     case startSwedishBankIDSign(autoStartToken: String)
     case setSwedishBankID(statusCode: String)
@@ -132,6 +133,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 callback(.value(.refetch))
                 return NilDisposer()
             }
+        case .setOfferBundle:
+            return Signal(after: 0.5).map { .setLoading(isLoading: false) }
         default:
             return nil
         }
@@ -144,6 +147,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
         switch action {
         case let .query(ids):
+            newState.isLoading = true
+            newState.offerData = nil
             newState.ids = ids
         case let .sign(event):
             if event == .done {
@@ -184,6 +189,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.offerData = newOfferData
         case let .setOfferBundle(bundle):
             newState.offerData = bundle
+        case let .setLoading(isLoading):
+            newState.isLoading = isLoading
         default:
             break
         }

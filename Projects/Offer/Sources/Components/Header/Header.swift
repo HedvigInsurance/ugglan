@@ -124,7 +124,7 @@ extension Header: Presentable {
         loadingIndicator.tintColor = .brand(.primaryText())
         scrollView.addSubview(loadingIndicator)
         
-        let isLoadingSignal = store.stateSignal.map { $0.offerData == nil }
+        let isLoadingSignal = store.stateSignal.map { $0.isLoading }
 
         bag += isLoadingSignal
             .animated(style: .easeOut(duration: 0.25)) { isLoading in
