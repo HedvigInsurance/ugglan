@@ -7,10 +7,6 @@ import hCoreUI
 import hGraphQL
 
 class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
-    func build(paymentMethod: MultibancoPaymentMethod) -> PaymentComponent? {
-        return nil
-    }
-    
     var apiContext: APIContext { HedvigAdyenAPIContext().apiContext }
 
     var formComponentStyle: FormComponentStyle {
@@ -75,6 +71,8 @@ class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
     func build(paymentMethod _: IssuerListPaymentMethod) -> PaymentComponent? { nil }
 
     func build(paymentMethod _: SEPADirectDebitPaymentMethod) -> PaymentComponent? { nil }
+  
+    func build(paymentMethod: MultibancoPaymentMethod) -> PaymentComponent? { nil }
 
     func build(paymentMethod: ApplePayPaymentMethod) -> PaymentComponent? {
         do {
