@@ -170,7 +170,7 @@ let log = Logger.builder
             newArguments.append("-FIRDebugEnabled")
             ProcessInfo.processInfo.setValue(newArguments, forKey: "arguments")
         }
-        
+
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
         }
