@@ -345,7 +345,7 @@ let log = Logger.builder
             if let debugPresentationTitle = viewController.debugPresentationTitle {
                 Analytics.track("SCREEN_VIEW_\(debugPresentationTitle)", properties: [:])
                 Analytics.track(
-                    "SCREEN_VIEW",
+                    "SCREEN_VIEW_IOS",
                     properties: [
                         "screenName": debugPresentationTitle
                     ]
