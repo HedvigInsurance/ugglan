@@ -248,16 +248,17 @@ extension OfferStore {
 
     private func updateStartDate(quoteId: String, date: Date?) -> FiniteSignal<OfferAction>? {
         guard let date = date else {
-            return self.client.perform(mutation: GraphQL.RemoveStartDateMutation(id: quoteId)).map { data in
-                guard data.removeStartDate.asCompleteQuote?.startDate == nil else {
-                    return .failed(event: .updateStartDate)
-                }
+            return self.client.perform(mutation: GraphQL.RemoveStartDateMutation(id: quoteId))
+                .map { data in
+                    guard data.removeStartDate.asCompleteQuote?.startDate == nil else {
+                        return .failed(event: .updateStartDate)
+                    }
 
-                return .setStartDate(id: quoteId, startDate: date)
-            }
-            .valueThenEndSignal
+                    return .setStartDate(id: quoteId, startDate: date)
+                }
+                .valueThenEndSignal
         }
-        
+
         return self.client
             .perform(
                 mutation: GraphQL.ChangeStartDateMutation(
