@@ -89,7 +89,7 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
         }
 
         self.presentable = AnyPresentable(materialize: {
-            let controller = ViewHostingController(rootView: rootView)
+            let controller = UIHostingController(rootView: rootView)
             controller.debugPresentationTitle = "\(RootView.self)"
             return (
                 controller,
@@ -124,7 +124,7 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
             presenter.viewController.debugPresentationTitle = "\(type(of: rootView))"
         }
         self.presentable = AnyPresentable(materialize: {
-            let controller = ViewHostingController(rootView: rootView)
+            let controller = UIHostingController(rootView: rootView)
             controller.debugPresentationTitle = "\(RootView.self)"
             return (
                 controller,
