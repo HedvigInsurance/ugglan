@@ -5,16 +5,7 @@ import Presentation
 import UIKit
 import hCore
 import hGraphQL
-
-public struct PerilCollection {
-    let perilSignal: ReadSignal<[Perils]>
-
-    public init(
-        perilSignal: ReadSignal<[Perils]>
-    ) {
-        self.perilSignal = perilSignal
-    }
-}
+import SwiftUI
 
 extension Array {
     func chunked(into size: Int) -> [[Element]] {
@@ -25,57 +16,74 @@ extension Array {
     }
 }
 
-extension PerilCollection: Viewable {
-    public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-        let stackView = UIStackView()
-        stackView.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 5, right: 0)
-        stackView.axis = .vertical
-        stackView.spacing = 8
-        let bag = DisposeBag()
-
-        bag += perilSignal.atOnce()
-            .onValueDisposePrevious { perilFragments in
-                return perilFragments.chunked(into: 2)
-                    .map { perils -> DisposeBag in
-                        let rowContainer = UIView()
-
-                        let innerBag = DisposeBag()
-
-                        innerBag += perils.enumerated()
-                            .map { (offset, peril) in
-                                let (row, disposable) = PerilRow(
-                                    peril: peril
-                                )
-                                .reuseTypeAndDisposable()
-                                rowContainer.addSubview(row)
-
-                                row.snp.makeConstraints { make in
-                                    make.width.equalToSuperview().dividedBy(2)
-                                        .inset(2.5)
-
-                                    if offset == 0 {
-                                        make.leading.equalToSuperview()
-                                    } else {
-                                        make.trailing.equalToSuperview()
-                                    }
-
-                                    make.top.bottom.equalToSuperview()
-                                }
-
-                                return disposable
-                            }
-
-                        stackView.addArrangedSubview(rowContainer)
-
-                        innerBag += {
-                            rowContainer.removeFromSuperview()
-                        }
-
-                        return innerBag
-                    }
-                    .disposable
+struct PerilButtonStyle: SwiftUI.ButtonStyle {
+    var peril: Perils
+    
+    @hColorBuilder func background(configuration: Configuration) -> some hColor {
+        if configuration.isPressed {
+            hOverlayColor.pressed.opacity(0.5)
+        } else {
+            hBackgroundColor.tertiary
+        }
+    }
+    
+    func makeBody(configuration: Configuration) -> some View {
+        HStack {
+            HStack(spacing: 8) {
+                if let icon = peril.icon {
+                    RemoteVectorIconView(icon: icon, backgroundFetch: true)
+                        .frame(width: 24, height: 24)
+                }
+                VStack {
+                    hText(peril.title, style: .headline)
+                        .lineLimit(1)
+                }
             }
+            Spacer()
+        }
+        .padding([.top, .bottom], 18)
+        .padding([.trailing, .leading], 12)
+        .frame(maxWidth: .infinity)
+        .background(background(configuration: configuration))
+        .cornerRadius(.defaultCornerRadius)
+        .shadow(
+            color: .black.opacity(0.1),
+            radius: 2,
+            x: 0,
+            y: 1
+        )
+    }
+}
 
-        return (stackView, bag)
+extension Array where Element == Perils {
+    var id: String {
+        self.map { peril in peril.title }.joined(separator: "")
+    }
+}
+
+public struct PerilCollection: View {
+    public var perils: [Perils]
+    public var didTapPeril: (_ peril: Perils) -> Void
+    
+    public init(
+        perils: [Perils],
+        didTapPeril: @escaping (_ peril: Perils) -> Void
+    ) {
+        self.perils = perils
+        self.didTapPeril = didTapPeril
+    }
+    
+    public var body: some View {
+        ForEach(perils.chunked(into: 2), id: \.id) { chunk in
+            HStack {
+                ForEach(chunk, id: \.title) { peril in
+                    SwiftUI.Button {
+                        didTapPeril(peril)
+                    } label: {
+                        EmptyView()
+                    }.buttonStyle(PerilButtonStyle(peril: peril))
+                }
+            }.padding(.bottom, 8)
+        }
     }
 }
