@@ -79,10 +79,10 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         self.getter = getter
         self.setter = setter
         self.content = content
-        
+
         let store: S = globalPresentableStoreContainer.get()
         self.store = store
-        
+
         self._value = State(initialValue: getter(store.stateSignal.value))
     }
 
@@ -94,10 +94,10 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         self.getter = getter
         self.setter = { _ in nil }
         self.content = { value, _ in content(value) }
-        
+
         let store: S = globalPresentableStoreContainer.get()
         self.store = store
-                
+
         self._value = State(initialValue: getter(store.stateSignal.value))
     }
 
@@ -109,9 +109,14 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
                     store.send(action)
                 }
             }
-        ).onReceive(store.stateSignal.distinct({ lhs, rhs in
-            self.getter(lhs) == self.getter(rhs)
-        }).publisher) { _ in
+        )
+        .onReceive(
+            store.stateSignal
+                .distinct({ lhs, rhs in
+                    self.getter(lhs) == self.getter(rhs)
+                })
+                .publisher
+        ) { _ in
             if let animation = animation {
                 withAnimation(animation) {
                     self.value = getter(store.stateSignal.value)
