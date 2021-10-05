@@ -135,4 +135,3 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
         self.transform = { $0 }
     }
 }
-
