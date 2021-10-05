@@ -2,10 +2,10 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hGraphQL
-import SwiftUI
 
 extension Array {
     func chunked(into size: Int) -> [[Element]] {
@@ -18,7 +18,7 @@ extension Array {
 
 struct PerilButtonStyle: SwiftUI.ButtonStyle {
     var peril: Perils
-    
+
     @hColorBuilder func background(configuration: Configuration) -> some hColor {
         if configuration.isPressed {
             hOverlayColor.pressed.opacity(0.5)
@@ -26,7 +26,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
             hBackgroundColor.tertiary
         }
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
         HStack {
             HStack(spacing: 8) {
@@ -64,7 +64,7 @@ extension Array where Element == Perils {
 public struct PerilCollection: View {
     public var perils: [Perils]
     public var didTapPeril: (_ peril: Perils) -> Void
-    
+
     public init(
         perils: [Perils],
         didTapPeril: @escaping (_ peril: Perils) -> Void
@@ -72,7 +72,7 @@ public struct PerilCollection: View {
         self.perils = perils
         self.didTapPeril = didTapPeril
     }
-    
+
     public var body: some View {
         ForEach(perils.chunked(into: 2), id: \.id) { chunk in
             HStack {
@@ -81,9 +81,11 @@ public struct PerilCollection: View {
                         didTapPeril(peril)
                     } label: {
                         EmptyView()
-                    }.buttonStyle(PerilButtonStyle(peril: peril))
+                    }
+                    .buttonStyle(PerilButtonStyle(peril: peril))
                 }
-            }.padding(.bottom, 8)
+            }
+            .padding(.bottom, 8)
         }
     }
 }

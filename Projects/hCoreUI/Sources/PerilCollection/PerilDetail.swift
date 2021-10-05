@@ -8,8 +8,10 @@ import hGraphQL
 
 public struct PerilDetail {
     let peril: Perils
-    
-    public init(peril: Perils) {
+
+    public init(
+        peril: Perils
+    ) {
         self.peril = peril
     }
 }

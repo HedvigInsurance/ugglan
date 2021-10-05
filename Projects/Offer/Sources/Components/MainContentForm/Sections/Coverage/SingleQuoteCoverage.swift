@@ -2,11 +2,11 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 struct SingleQuoteCoverage {
     let quote: QuoteBundle.Quote
@@ -25,14 +25,15 @@ extension SingleQuoteCoverage: Presentable {
         let perilCollection = PerilCollection(
             perils: quote.perils,
             didTapPeril: { peril in
-                section.viewController?.present(
-                    PerilDetail(peril: peril).withCloseButton,
-                    style: .detented(.preferredContentSize, .large)
-                )
+                section.viewController?
+                    .present(
+                        PerilDetail(peril: peril).withCloseButton,
+                        style: .detented(.preferredContentSize, .large)
+                    )
             }
         )
         .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
-        
+
         section.append(
             HostingView(rootView: perilCollection)
         )

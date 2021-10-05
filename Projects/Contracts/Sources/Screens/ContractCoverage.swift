@@ -2,11 +2,11 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 struct ContractCoverage {
     let perils: [Perils]
@@ -26,12 +26,14 @@ extension ContractCoverage: Presentable {
         let perilCollection = PerilCollection(
             perils: perils,
             didTapPeril: { peril in
-                form.viewController?.present(
-                    PerilDetail(peril: peril).withCloseButton,
-                    style: .detented(.preferredContentSize, .large)
-                )
+                form.viewController?
+                    .present(
+                        PerilDetail(peril: peril).withCloseButton,
+                        style: .detented(.preferredContentSize, .large)
+                    )
             }
-        ).padding(insets)
+        )
+        .padding(insets)
 
         form.append(HostingView(rootView: perilCollection))
 
