@@ -234,18 +234,20 @@ extension UIViewController {
             guard let presentationController = navigationController?.presentationController,
                 let newValue = newValue, let index = appliedDetents.firstIndex(of: newValue)
             else { return }
-            
+
             func apply() {
                 setDetentIndex(on: presentationController, index: index)
             }
-            
-            if #available(iOS 15, *), let sheetPresentationController = presentationController as? UISheetPresentationController {
+
+            if #available(iOS 15, *),
+                let sheetPresentationController = presentationController as? UISheetPresentationController
+            {
                 sheetPresentationController.animateChanges {
                     apply()
                 }
             } else {
                 apply()
-                
+
                 UIView.animate(
                     withDuration: 0.5,
                     delay: 0,
@@ -359,7 +361,7 @@ extension PresentationStyle {
             unanimated: Bool
         ) {
             guard !detents.isEmpty else { return }
-            
+
             func apply() {
                 let key = ["_", "set", "Detents", ":"]
                 let selector = NSSelectorFromString(key.joined())
@@ -368,14 +370,14 @@ extension PresentationStyle {
                     selector,
                     with: NSArray(array: detents.map { $0.getDetent(viewController) })
                 )
-                
+
                 setWantsBottomAttachedInCompactHeight(on: presentationController, to: true)
 
                 if let lastDetentIndex = lastDetentIndex {
                     setDetentIndex(on: presentationController, index: lastDetentIndex)
                 }
             }
-            
+
             if #available(iOS 15.0, *) {
                 if let sheetPresentationController = presentationController as? UISheetPresentationController {
                     sheetPresentationController.animateChanges {
