@@ -21,10 +21,11 @@ struct CrossSellingStack: View {
                     }
                 ) {
                     ForEach(crossSells, id: \.title) { crossSell in
-                        CrossSellingItem(crossSell: crossSell)
+                        CrossSellingItem(crossSell: crossSell).transition(.slide)
                     }
-                }
+                }.transition(.slide)
             }
         }
+        .presentableStoreLensAnimation(.default)
     }
 }

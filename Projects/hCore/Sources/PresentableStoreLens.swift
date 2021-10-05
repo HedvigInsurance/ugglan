@@ -57,38 +57,16 @@ extension CoreSignal where Kind == Read {
     }
 }
 
-final class StoreObserver<S: Store, E: Equatable>: DynamicProperty, ObservableObject {
-    typealias ObjectWillChangePublisher = AnyPublisher<S.State, Never>
-    typealias ObservedPart = (_ state: S.State) -> E
-
-    var observedPart: ObservedPart
-    var store: S
-
-    public var objectWillChange: AnyPublisher<S.State, Never> {
-        return store.stateSignal
-            .distinct({ lhs, rhs in
-                self.observedPart(lhs) == self.observedPart(rhs)
-            })
-            .publisher.eraseToAnyPublisher()
-    }
-
-    init(
-        observedPart: @escaping ObservedPart
-    ) {
-        let store: S = globalPresentableStoreContainer.get()
-        self.store = store
-        self.observedPart = observedPart
-    }
-}
-
 public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: View {
     typealias Getter = (_ state: S.State) -> Value
     typealias Setter = (_ value: Value) -> S.Action?
 
+    @Environment(\.presentableStoreLensAnimation) var animation
+    @State var value: Value
     var getter: Getter
     var setter: Setter
 
-    @ObservedObject var storeObserver: StoreObserver<S, Value>
+    var store: S
 
     var content: (_ value: Value, _ setter: @escaping (_ newValue: Value) -> Void) -> Content
 
@@ -101,7 +79,11 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         self.getter = getter
         self.setter = setter
         self.content = content
-        self.storeObserver = StoreObserver(observedPart: getter)
+        
+        let store: S = globalPresentableStoreContainer.get()
+        self.store = store
+        
+        self._value = State(initialValue: getter(store.stateSignal.value))
     }
 
     public init(
@@ -112,19 +94,48 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         self.getter = getter
         self.setter = { _ in nil }
         self.content = { value, _ in content(value) }
-        self.storeObserver = StoreObserver(observedPart: { state in
-            getter(state)
-        })
+        
+        let store: S = globalPresentableStoreContainer.get()
+        self.store = store
+                
+        self._value = State(initialValue: getter(store.stateSignal.value))
     }
 
     public var body: some View {
         content(
-            getter(storeObserver.store.stateSignal.value),
+            value,
             { newValue in
                 if let action = setter(newValue) {
-                    storeObserver.store.send(action)
+                    store.send(action)
                 }
             }
-        )
+        ).onReceive(store.stateSignal.distinct({ lhs, rhs in
+            self.getter(lhs) == self.getter(rhs)
+        }).publisher) { _ in
+            if let animation = animation {
+                withAnimation(animation) {
+                    self.value = getter(store.stateSignal.value)
+                }
+            } else {
+                self.value = getter(store.stateSignal.value)
+            }
+        }
+    }
+}
+
+private struct EnvironmentPresentableStoreLensAnimation: EnvironmentKey {
+    static let defaultValue: Animation? = nil
+}
+
+extension EnvironmentValues {
+    public var presentableStoreLensAnimation: Animation? {
+        get { self[EnvironmentPresentableStoreLensAnimation.self] }
+        set { self[EnvironmentPresentableStoreLensAnimation.self] = newValue }
+    }
+}
+
+extension View {
+    public func presentableStoreLensAnimation(_ animation: Animation?) -> some View {
+        self.environment(\.presentableStoreLensAnimation, animation)
     }
 }
