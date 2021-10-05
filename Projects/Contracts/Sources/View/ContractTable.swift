@@ -46,7 +46,7 @@ extension ContractTable: View {
                 }
             }
         }
-        .presentableStoreLensAnimation(.default)
+        .presentableStoreLensAnimation(.spring())
         .sectionContainerStyle(.transparent)
 
         if self.filter.displaysActiveContracts {
