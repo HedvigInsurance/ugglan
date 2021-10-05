@@ -42,7 +42,7 @@ public struct hForm<Content: View>: View {
                 .frame(maxWidth: .infinity)
                 .tint(hTintColor.lavenderOne)
             }
-            bottomAttachedView
+            bottomAttachedView.frame(maxHeight: .infinity, alignment: .bottom)
         }
     }
 }
