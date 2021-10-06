@@ -71,7 +71,7 @@ class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
     func build(paymentMethod _: IssuerListPaymentMethod) -> PaymentComponent? { nil }
 
     func build(paymentMethod _: SEPADirectDebitPaymentMethod) -> PaymentComponent? { nil }
-  
+
     func build(paymentMethod: MultibancoPaymentMethod) -> PaymentComponent? { nil }
 
     func build(paymentMethod: ApplePayPaymentMethod) -> PaymentComponent? {
