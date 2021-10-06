@@ -7,12 +7,12 @@ import Presentation
 import hCore
 
 extension AppDelegate {
-    func handleDeepLink(_ dynamicLinkUrl: URL) -> Bool {
+    func handleDeepLink(_ dynamicLinkUrl: URL) {
         guard let path = dynamicLinkUrl.pathComponents.compactMap({ DeepLink(rawValue: $0) }).first else {
-            return false
+            return
         }
-        guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-        guard let rootViewController = window.rootViewController else { return false }
+        guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
+        guard let rootViewController = window.rootViewController else { return }
 
         Analytics.track(path.deprecatedTrackingName, properties: [:])
         Analytics.track(path.trackingName, properties: ["type": path.rawValue])
@@ -30,8 +30,6 @@ extension AppDelegate {
                     store.send(.makeTabActive(deeplink: path))
                 }
         }
-
-        return true
     }
 }
 
