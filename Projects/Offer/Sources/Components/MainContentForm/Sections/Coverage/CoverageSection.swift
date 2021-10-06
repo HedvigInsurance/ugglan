@@ -6,51 +6,31 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct CoverageSection {
-	@Inject var state: OldOfferState
-}
+struct CoverageSection {}
 
 extension CoverageSection: Presentable {
-	func materialize() -> (SectionView, Disposable) {
-		let section = SectionView(headerView: nil, footerView: nil)
-		section.dynamicStyle = .brandGrouped(separatorType: .none)
+    func materialize() -> (SectionView, Disposable) {
+        let section = SectionView(headerView: nil, footerView: nil)
+        section.dynamicStyle = .brandGrouped(separatorType: .none)
 
-		let bag = DisposeBag()
+        let store: OfferStore = self.get()
 
-		bag += state.quotesSignal.onValueDisposePrevious { quotes in
-			let innerBag = DisposeBag()
+        let bag = DisposeBag()
 
-			if quotes.count > 1 {
-				innerBag += section.append(MultiQuoteCoverage(quotes: quotes))
-			} else if let quote = quotes.first {
-				innerBag += section.append(SingleQuoteCoverage(quote: quote), options: [.autoRemove])
-			}
+        bag += store.stateSignal
+            .compactMap { $0.offerData?.quoteBundle.quotes }
+            .onValueDisposePrevious { quotes in
+                let innerBag = DisposeBag()
 
-			return innerBag
-		}
+                if quotes.count > 1 {
+                    innerBag += section.append(MultiQuoteCoverage(quotes: quotes))
+                } else if let quote = quotes.first {
+                    innerBag += section.append(SingleQuoteCoverage(quote: quote), options: [.autoRemove])
+                }
 
-		bag += state
-			.dataSignal
-			.compactMap { $0.quoteBundle }
-			.onValueDisposePrevious { quoteBundle in
-				let innerBag = DisposeBag()
+                return innerBag
+            }
 
-				let hasConcurrentInception =
-					quoteBundle.inception.asConcurrentInception?.currentInsurer != nil
-				let hasIndependentInceptions =
-					quoteBundle.inception.asIndependentInceptions?.inceptions
-					.compactMap { $0.currentInsurer }.count ?? 0 > 0
-
-				if hasConcurrentInception || hasIndependentInceptions {
-					innerBag += section.append(
-						CurrentInsurerSection(quoteBundle: quoteBundle),
-						options: [.autoRemove]
-					)
-				}
-
-				return innerBag
-			}
-
-		return (section, bag)
-	}
+        return (section, bag)
+    }
 }

@@ -6,35 +6,37 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct DetailsSection {
-	@Inject var state: OldOfferState
-}
+struct DetailsSection {}
 
 extension DetailsSection: Presentable {
-	func materialize() -> (UIView, Disposable) {
-		let section = SectionView(headerView: nil, footerView: nil)
-		section.dynamicStyle = .brandGrouped(separatorType: .none)
-			.restyled({ (style: inout SectionStyle) in
-				style.insets = style.insets + UIEdgeInsets(top: 0, left: 0, bottom: 5, right: 0)
-			})
-		let bag = DisposeBag()
+    func materialize() -> (UIView, Disposable) {
+        let section = SectionView(headerView: nil, footerView: nil)
+        let store: OfferStore = self.get()
 
-		bag += state.quotesSignal.debounce(0.3)
-			.onValueDisposePrevious { quotes in
-				let innerBag = DisposeBag()
-				innerBag += quotes.map { quote in
-					section.append(quote.detailsTable.fragments.detailsTableFragment)
-				}
-				return innerBag
-			}
+        section.dynamicStyle = .brandGrouped(separatorType: .none)
+            .restyled({ (style: inout SectionStyle) in
+                style.insets = style.insets + UIEdgeInsets(top: 0, left: 0, bottom: 5, right: 0)
+            })
+        let bag = DisposeBag()
 
-		let expandableView = ExpandableContent(
-			contentView: section,
-			isExpanded: .init(false),
-			collapsedMaxHeight: 400
-		)
-		.materialize(into: bag)
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.quotes }
+            .debounce(0.3)
+            .distinct()
+            .onValueDisposePrevious { quotes in
+                let innerBag = DisposeBag()
+                innerBag += quotes.map { quote in
+                    section.append(quote.detailsTable)
+                }
+                return innerBag
+            }
 
-		return (expandableView, bag)
-	}
+        let expandableView = ExpandableContent(
+            contentView: section,
+            isExpanded: .init(false),
+            collapsedMaxHeight: 400
+        )
+        .materialize(into: bag)
+
+        return (expandableView, bag)
+    }
 }

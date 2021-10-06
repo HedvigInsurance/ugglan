@@ -1,13 +1,15 @@
-import UIKit
 import Flow
 import Presentation
+import UIKit
 import hCore
 
 public struct PickerView {
-    public init(options: [String]) {
+    public init(
+        options: [String]
+    ) {
         self.options = options
     }
-    
+
     let options: [String]
     let didSelectSignal = ReadWriteSignal<String>("")
     let resignationSignal = ReadWriteSignal<Bool>(false)
@@ -49,4 +51,3 @@ extension PickerView: Viewable {
         return (pickerView, didSelectSignal.readOnly().hold(bag))
     }
 }
-

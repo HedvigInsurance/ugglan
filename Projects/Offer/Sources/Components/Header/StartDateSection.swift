@@ -7,118 +7,149 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct StartDateSection { @Inject var state: OldOfferState }
+struct StartDateSection {}
 
-extension GraphQL.QuoteBundleQuery.Data.QuoteBundle {
-	var canHaveIndependentStartDates: Bool {
-		self.quotes.count > 1 && self.inception.asIndependentInceptions != nil
-	}
+extension QuoteBundle {
+    var canHaveIndependentStartDates: Bool {
+        switch inception {
+        case .independent:
+            return quotes.count > 1
+        default:
+            return false
+        }
+    }
 
-	var switcher: Bool {
-		self.inception.asConcurrentInception?.currentInsurer != nil
-			|| self.inception.asIndependentInceptions?.inceptions
-				.contains(where: { inception in
-					inception.currentInsurer != nil
-				}) == true
-	}
+    var switcher: Bool {
+        switch inception {
+        case let .concurrent(inception):
+            return inception.currentInsurer != nil
+        case let .independent(independentInceptions):
+            return independentInceptions.contains { inception in
+                inception.currentInsurer != nil
+            } == true
+        case .unknown:
+            return false
+        }
+    }
 
-	var fallbackDisplayValue: String {
-		if switcher {
-			return L10n.startDateExpires
-		}
+    var fallbackDisplayValue: String {
+        if switcher {
+            return L10n.startDateExpires
+        }
 
-		return Date().localDateStringWithToday ?? ""
-	}
+        return Date().localDateStringWithToday ?? ""
+    }
 
-	var displayableStartDate: String {
-		if let concurrentInception = self.inception.asConcurrentInception {
-			return concurrentInception.startDate?.localDateToDate?.localDateStringWithToday ?? ""
-		}
+    var displayableStartDate: String {
+        switch inception {
+        case .concurrent(let concurrentInception):
+            return concurrentInception.startDate?.localDateToDate?.localDateStringWithToday ?? ""
+        case .independent(let independentInceptions):
+            let startDates = independentInceptions.map { $0.startDate }
+            let allStartDatesEqual = startDates.dropFirst().allSatisfy({ $0 == startDates.first })
+            let dateDisplayValue =
+                startDates.first??.localDateToDate?.localDateStringWithToday ?? fallbackDisplayValue
 
-		guard let independentInceptions = self.inception.asIndependentInceptions?.inceptions else { return "" }
+            return allStartDatesEqual ? dateDisplayValue : L10n.offerStartDateMultiple
+        case .unknown:
+            return ""
+        }
+    }
+}
 
-		let startDates = independentInceptions.map { $0.startDate }
-		let allStartDatesEqual = startDates.dropFirst().allSatisfy({ $0 == startDates.first })
-		let dateDisplayValue =
-			startDates.first??.localDateToDate?.localDateStringWithToday ?? fallbackDisplayValue
-
-		return allStartDatesEqual ? dateDisplayValue : L10n.offerStartDateMultiple
-	}
+extension QuoteBundle {
+    var startDateTerminology: String {
+        switch appConfiguration.startDateTerminology {
+        case .startDate:
+            return self.canHaveIndependentStartDates
+                ? L10n.offerStartDatePlural : L10n.offerStartDate
+        case .accessDate:
+            return L10n.offerAccessDate
+        case .unknown:
+            return ""
+        }
+    }
 }
 
 extension StartDateSection: Presentable {
-	func materialize() -> (SectionView, Disposable) {
-		let section = SectionView()
-		section.dynamicStyle = .brandGroupedInset(
-			separatorType: .none,
-			border: .init(
-				width: 1,
-				color: .brand(.primaryBorderColor),
-				cornerRadius: .defaultCornerRadius,
-				borderEdges: .all
-			),
-			appliesShadow: false
-		)
+    func materialize() -> (SectionView, Disposable) {
+        let section = SectionView()
 
-		let bag = DisposeBag()
+        let store: OfferStore = self.get()
 
-		bag += state.dataSignal.map { $0.quoteBundle }
-			.onValueDisposePrevious { quoteBundle in
-				let innerBag = DisposeBag()
+        section.dynamicStyle = .brandGroupedInset(
+            separatorType: .none,
+            border: .init(
+                width: 1,
+                color: .brand(.primaryBorderColor),
+                cornerRadius: .defaultCornerRadius,
+                borderEdges: .all
+            ),
+            appliesShadow: false
+        )
 
-				let displayableStartDate = quoteBundle.displayableStartDate
+        let bag = DisposeBag()
 
-				let row = RowView(
-					title: quoteBundle.canHaveIndependentStartDates
-						? L10n.offerStartDatePlural : L10n.offerStartDate
-				)
-				row.titleLabel?.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-				let iconImageView = UIImageView()
-				iconImageView.image = hCoreUIAssets.calendar.image
-				row.prepend(iconImageView)
-				row.setCustomSpacing(17, after: iconImageView)
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle }
+            .map { ($0.displayableStartDate, $0.startDateTerminology) }
+            .distinct(==)
+            .onValueDisposePrevious { displayableStartDate, startDateTerminology in
+                let innerBag = DisposeBag()
 
-				let dateStyledText = StyledText(
-					text: displayableStartDate,
-					style: .brand(.body(color: .secondary))
-				)
+                let displayableStartDate = displayableStartDate
 
-				let dateLabel = UILabel(
-					styledText: dateStyledText
-				)
-				dateLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-				row.append(dateLabel)
+                let row = RowView(
+                    title: startDateTerminology
+                )
+                row.titleLabel?.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+                let iconImageView = UIImageView()
+                iconImageView.image = hCoreUIAssets.calendar.image
+                row.prepend(iconImageView)
+                row.setCustomSpacing(17, after: iconImageView)
 
-				innerBag += dateLabel.didLayoutSignal.onValue {
-					let rect = NSAttributedString(styledText: dateStyledText)
-						.boundingRect(
-							with: CGSize(width: CGFloat(Int.max), height: CGFloat(Int.max)),
-							options: [.usesLineFragmentOrigin, .usesFontLeading],
-							context: nil
-						)
+                let dateStyledText = StyledText(
+                    text: displayableStartDate,
+                    style: .brand(.body(color: .secondary))
+                )
 
-					if rect.width > dateLabel.frame.width {
-						row.subtitle = displayableStartDate
-						dateLabel.isHidden = true
-					} else {
-						dateLabel.isHidden = false
-						row.subtitle = nil
-					}
-				}
+                let dateLabel = UILabel(
+                    styledText: dateStyledText
+                )
+                dateLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+                row.append(dateLabel)
 
-				row.append(hCoreUIAssets.chevronRight.image)
+                innerBag += dateLabel.didLayoutSignal.onValue {
+                    let rect = NSAttributedString(styledText: dateStyledText)
+                        .boundingRect(
+                            with: CGSize(width: CGFloat(Int.max), height: CGFloat(Int.max)),
+                            options: [.usesLineFragmentOrigin, .usesFontLeading],
+                            context: nil
+                        )
 
-				innerBag += section.append(row).compactMap { _ in row.viewController }
-					.onValue { viewController in
-						viewController.present(
-							StartDate(quoteBundle: quoteBundle).wrappedInCloseButton()
-						)
-					}
-				innerBag += { section.remove(row) }
+                    if rect.width > dateLabel.frame.width {
+                        row.subtitle = displayableStartDate
+                        dateLabel.isHidden = true
+                    } else {
+                        dateLabel.isHidden = false
+                        row.subtitle = nil
+                    }
+                }
 
-				return innerBag
-			}
+                row.append(hCoreUIAssets.chevronRight.image)
 
-		return (section, bag)
-	}
+                innerBag += section.append(row).compactMap { _ in row.viewController }
+                    .withLatestFrom(store.stateSignal.atOnce().compactMap { $0.offerData?.quoteBundle })
+                    .onValue { viewController, quoteBundle in
+                        viewController.present(
+                            StartDate(quoteBundle: quoteBundle).wrappedInCloseButton(),
+                            style: .detented(.large)
+                        )
+                    }
+                innerBag += { section.remove(row) }
+
+                return innerBag
+            }
+
+        return (section, bag)
+    }
 }

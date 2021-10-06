@@ -8,114 +8,118 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct RedeemDiscount {
-	@Inject var state: OldOfferState
-}
+struct RedeemDiscount {}
 
 extension RedeemDiscount: Presentable {
-	public func materialize() -> (UIViewController, Future<Void>) {
-		let viewController = UIViewController()
-		viewController.title = L10n.referralAddcouponHeadline
+    public func materialize() -> (UIViewController, Future<Void>) {
+        let viewController = UIViewController()
+        viewController.title = L10n.referralAddcouponHeadline
 
-		let bag = DisposeBag()
+        let store: OfferStore = self.get()
 
-		let form = FormView()
-		form.dynamicStyle = .brandInset
+        let bag = DisposeBag()
 
-		let textField = TextField(
-			value: "",
-			placeholder: L10n.referralAddcouponInputplaceholder,
-			style: .line,
-			clearButton: true
-		)
-		bag += form.append(
-			textField.wrappedIn(
-				{
-					let stackView = UIStackView()
-					stackView.isUserInteractionEnabled = true
-					stackView.isLayoutMarginsRelativeArrangement = true
-					stackView.layoutMargins = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
-					return stackView
-				}()
-			)
-		)
+        let form = FormView()
+        form.dynamicStyle = .brandInset
 
-		let terms = DiscountTerms()
-		bag += form.append(terms)
+        let textField = TextField(
+            value: "",
+            placeholder: L10n.referralAddcouponInputplaceholder,
+            style: .line,
+            clearButton: true
+        )
+        bag += form.append(
+            textField.wrappedIn(
+                {
+                    let stackView = UIStackView()
+                    stackView.isUserInteractionEnabled = true
+                    stackView.isLayoutMarginsRelativeArrangement = true
+                    stackView.layoutMargins = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
+                    return stackView
+                }()
+            )
+        )
 
-		form.appendSpacing(.custom(24))
+        let terms = DiscountTerms()
+        bag += form.append(terms)
 
-		let submitButton = Button(
-			title: L10n.generalSaveButton,
-			type: .standard(
-				backgroundColor: .brand(.secondaryButtonBackgroundColor),
-				textColor: .brand(.secondaryButtonTextColor)
-			)
-		)
+        form.appendSpacing(.custom(24))
 
-		let loadableSubmitButton = LoadableButton(button: submitButton)
-		bag += loadableSubmitButton.isLoadingSignal.map { !$0 }.bindTo(textField.enabledSignal)
-		bag += form.append(loadableSubmitButton)
+        let submitButton = Button(
+            title: L10n.generalSaveButton,
+            type: .standard(
+                backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonTextColor)
+            )
+        )
 
-		submitButton.isEnabled.value = false
-		bag += textField.value.map { $0 != "" }.bindTo(submitButton.isEnabled)
+        let loadableSubmitButton = LoadableButton(button: submitButton)
+        bag += loadableSubmitButton.isLoadingSignal.map { !$0 }.bindTo(textField.enabledSignal)
+        bag += form.append(loadableSubmitButton)
 
-		let shouldSubmitCallbacker = Callbacker<Void>()
-		bag += loadableSubmitButton.onTapSignal.onValue { _ in shouldSubmitCallbacker.callAll() }
+        submitButton.isEnabled.value = false
+        bag += textField.value.map { $0 != "" }.bindTo(submitButton.isEnabled)
 
-		bag += textField.shouldReturn.set { _, textField -> Bool in textField.resignFirstResponder()
-			shouldSubmitCallbacker.callAll()
-			return true
-		}
+        let shouldSubmitCallbacker = Callbacker<Void>()
+        bag += loadableSubmitButton.onTapSignal.onValue { _ in shouldSubmitCallbacker.callAll() }
 
-		bag += viewController.install(form)
+        bag += textField.shouldReturn.set { _, textField -> Bool in textField.resignFirstResponder()
+            shouldSubmitCallbacker.callAll()
+            return true
+        }
 
-		return (
-			viewController,
-			Future { completion in
-				bag +=
-					shouldSubmitCallbacker.atValue { _ in
-						loadableSubmitButton.isLoadingSignal.value = true
-					}
-					.withLatestFrom(textField.value.plain())
-					.onValue { _, discountCode in
-						state.updateRedeemedCampaigns(discountCode: discountCode).toVoid()
-							.onValue { _ in
-								loadableSubmitButton.isLoadingSignal.value = false
-								Toasts.shared.displayToast(
-									toast: Toast(
-										symbol: .icon(
-											hCoreUIAssets.circularCheckmark
-												.image
-										),
-										body: L10n.Offer.discountAddedToastbar
-									)
-								)
-								completion(.success)
-							}
-							.onError { error in
-								viewController.present(
-									Alert<Void>(
-										title: L10n.Offer
-											.discountErrorAlertTitle,
-										message: L10n.Offer
-											.discountErrorAlertBody,
-										actions: [
-											.init(
-												title: L10n.alertOk,
-												action: { () }
-											)
-										]
-									)
-								)
-								.onValue { _ in
-									loadableSubmitButton.isLoadingSignal.value =
-										false
-								}
-							}
-					}
-				return bag
-			}
-		)
-	}
+        bag += viewController.install(form)
+        return (
+            viewController,
+            Future { completion in
+                bag +=
+                    shouldSubmitCallbacker.atValue { _ in
+                        loadableSubmitButton.isLoadingSignal.value = true
+                    }
+                    .withLatestFrom(textField.value.plain())
+                    .onValue { _, discountCode in
+                        store.send(.updateRedeemedCampaigns(discountCode: discountCode))
+
+                        bag += store.stateSignal
+                            .filter(predicate: { state in !(state.offerData?.redeemedCampaigns.isEmpty ?? true) })
+                            .onValue { _ in
+                                completion(.success)
+
+                                loadableSubmitButton.isLoadingSignal.value = false
+                                Toasts.shared.displayToast(
+                                    toast: Toast(
+                                        symbol: .icon(
+                                            hCoreUIAssets.circularCheckmark
+                                                .image
+                                        ),
+                                        body: L10n.Offer.discountAddedToastbar
+                                    )
+                                )
+                            }
+
+                        bag += store.onAction(.failed(event: .updateRedeemedCampaigns)) {
+                            viewController.present(
+                                Alert<Void>(
+                                    title: L10n.Offer
+                                        .discountErrorAlertTitle,
+                                    message: L10n.Offer
+                                        .discountErrorAlertBody,
+                                    actions: [
+                                        .init(
+                                            title: L10n.alertOk,
+                                            action: { () }
+                                        )
+                                    ]
+                                )
+                            )
+                            .onValue { _ in
+                                loadableSubmitButton.isLoadingSignal.value =
+                                    false
+                            }
+                        }
+                    }
+                return bag
+            }
+        )
+    }
 }

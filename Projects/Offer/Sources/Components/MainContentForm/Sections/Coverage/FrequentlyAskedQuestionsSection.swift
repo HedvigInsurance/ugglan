@@ -7,92 +7,97 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct FrequentlyAskedQuestionsSection {
-	@Inject var state: OldOfferState
-}
+struct FrequentlyAskedQuestionsSection {}
 
 extension FrequentlyAskedQuestionsSection: Presentable {
-	func materialize() -> (SectionView, Disposable) {
-		let bag = DisposeBag()
+    func materialize() -> (SectionView, Disposable) {
+        let bag = DisposeBag()
 
-		let section = SectionView(
-			headerView: UILabel(value: L10n.Offer.faqTitle, style: .default),
-			footerView: {
-				let footerStackView = UIStackView()
-				footerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 15)
-				footerStackView.axis = .vertical
-				footerStackView.spacing = 16
+        let store: OfferStore = self.get()
 
-				let footerDescription = UILabel(
-					value: L10n.offerFooterSubtitle,
-					style: .brand(.subHeadline(color: .primary)).aligned(to: .center)
-				)
+        let section = SectionView(
+            headerView: UILabel(value: L10n.Offer.faqTitle, style: .default),
+            footerView: {
+                let footerStackView = UIStackView()
+                footerStackView.edgeInsets = UIEdgeInsets(horizontalInset: 20, verticalInset: 15)
+                footerStackView.axis = .vertical
+                footerStackView.spacing = 16
 
-				footerStackView.addArrangedSubview(footerDescription)
+                let footerDescription = UILabel(
+                    value: L10n.offerFooterSubtitle,
+                    style: .brand(.subHeadline(color: .primary)).aligned(to: .center)
+                )
 
-				let button = Button(
-					title: L10n.offerFooterButtonText,
-					type: .standardOutlineIcon(
-						borderColor: .brand(.primaryText()),
-						textColor: .brand(.primaryText()),
-						icon: .left(image: hCoreUIAssets.chat.image, width: 24)
-					)
-				)
+                footerStackView.addArrangedSubview(footerDescription)
 
-				bag += button.onTapSignal.onValue { _ in
-					let store: OfferStore = self.get()
-					store.send(.openChat)
-				}
+                let button = Button(
+                    title: L10n.offerFooterButtonText,
+                    type: .standardOutlineIcon(
+                        borderColor: .brand(.primaryText()),
+                        textColor: .brand(.primaryText()),
+                        icon: .left(image: hCoreUIAssets.chat.image, width: 24)
+                    )
+                )
 
-				bag += footerStackView.addArranged(button)
+                bag += button.onTapSignal.onValue { _ in
+                    let store: OfferStore = self.get()
+                    store.send(.openChat)
+                }
 
-				return footerStackView
-			}()
-		)
-		section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
+                bag += footerStackView.addArranged(button)
 
-		bag += state.dataSignal.compactMap { $0.quoteBundle.frequentlyAskedQuestions }
-			.onValueDisposePrevious { frequentlyAskedQuestions in
-				let innerBag = DisposeBag()
+                return footerStackView
+            }()
+        )
+        section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
-				innerBag += frequentlyAskedQuestions.map { frequentlyAskedQuestion in
-					let innerBag = DisposeBag()
+        bag += store.stateSignal.map { $0.offerData?.quoteBundle.appConfiguration.showFaq ?? false }
+            .onValue { shouldShowFaq in
+                section.isHidden = !shouldShowFaq
+            }
 
-					let titleLabel = MultilineLabel(
-						value: frequentlyAskedQuestion.headline ?? "",
-						style: .brand(.body(color: .primary))
-					)
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.frequentlyAskedQuestions }
+            .onValueDisposePrevious { frequentlyAskedQuestions in
+                let innerBag = DisposeBag()
 
-					let row = RowView()
-					innerBag += row.append(titleLabel)
+                innerBag += frequentlyAskedQuestions.map { frequentlyAskedQuestion in
+                    let innerBag = DisposeBag()
 
-					innerBag += section.append(row).compactMap { _ in row.viewController }
-						.onValue { viewController in
-							viewController.present(
-								FrequentlyAskedQuestionDetail(
-									frequentlyAskedQuestion: frequentlyAskedQuestion
-								)
-								.withCloseButton,
-								style: .detented(.preferredContentSize)
-							)
-						}
+                    let titleLabel = MultilineLabel(
+                        value: frequentlyAskedQuestion.headline ?? "",
+                        style: .brand(.body(color: .primary))
+                    )
 
-					innerBag += Disposer {
-						section.remove(row)
-					}
+                    let row = RowView()
+                    innerBag += row.append(titleLabel)
 
-					let imageView = UIImageView()
-					imageView.image = hCoreUIAssets.chevronRight.image
-					imageView.setContentHuggingPriority(.required, for: .horizontal)
+                    innerBag += section.append(row).compactMap { _ in row.viewController }
+                        .onValue { viewController in
+                            viewController.present(
+                                FrequentlyAskedQuestionDetail(
+                                    frequentlyAskedQuestion: frequentlyAskedQuestion
+                                )
+                                .withCloseButton,
+                                style: .detented(.preferredContentSize)
+                            )
+                        }
 
-					row.append(imageView)
+                    innerBag += Disposer {
+                        section.remove(row)
+                    }
 
-					return innerBag
-				}
+                    let imageView = UIImageView()
+                    imageView.image = hCoreUIAssets.chevronRight.image
+                    imageView.setContentHuggingPriority(.required, for: .horizontal)
 
-				return innerBag
-			}
+                    row.append(imageView)
 
-		return (section, bag)
-	}
+                    return innerBag
+                }
+
+                return innerBag
+            }
+
+        return (section, bag)
+    }
 }

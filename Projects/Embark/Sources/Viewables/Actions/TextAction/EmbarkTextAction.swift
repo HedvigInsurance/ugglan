@@ -142,21 +142,21 @@ extension EmbarkTextAction: Viewable {
 }
 
 extension Masking {
-	func maskValueFromStore(text: String) -> String {
-		switch type {
-		case .personalNumber, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits,
-			.norwegianPersonalNumber, .danishPersonalNumber, .none:
-			return maskValue(text: text, previousText: "")
-		case .birthDateReverse:
-			let reverseDateFormatter = DateFormatter()
-			reverseDateFormatter.dateFormat = "yyyy-MM-dd"
+    func maskValueFromStore(text: String) -> String {
+        switch type {
+        case .personalNumber, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits,
+            .norwegianPersonalNumber, .danishPersonalNumber, .none:
+            return maskValue(text: text, previousText: "")
+        case .birthDateReverse:
+            let reverseDateFormatter = DateFormatter()
+            reverseDateFormatter.dateFormat = "yyyy-MM-dd"
 
-			guard let date = reverseDateFormatter.date(from: text) else { return text }
+            guard let date = reverseDateFormatter.date(from: text) else { return text }
 
-			let birthDateFormatter = DateFormatter()
-			birthDateFormatter.dateFormat = "dd-MM-yyyy"
+            let birthDateFormatter = DateFormatter()
+            birthDateFormatter.dateFormat = "dd-MM-yyyy"
 
-			return maskValue(text: birthDateFormatter.string(from: date), previousText: "")
-		}
-	}
+            return maskValue(text: birthDateFormatter.string(from: date), previousText: "")
+        }
+    }
 }

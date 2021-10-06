@@ -6,42 +6,42 @@ import hCore
 struct RecordButton { let isRecordingSignal = ReadWriteSignal(false) }
 
 extension RecordButton: Viewable {
-	func materialize(events _: ViewableEvents) -> (UIControl, Disposable) {
-		let control = UIControl()
-		let bag = DisposeBag()
+    func materialize(events _: ViewableEvents) -> (UIControl, Disposable) {
+        let control = UIControl()
+        let bag = DisposeBag()
 
-		let size: CGFloat = 45
+        let size: CGFloat = 45
 
-		control.snp.makeConstraints { make in make.width.height.equalTo(size) }
-		control.layer.cornerRadius = size / 2
-		control.layer.borderWidth = 3
+        control.snp.makeConstraints { make in make.width.height.equalTo(size) }
+        control.layer.cornerRadius = size / 2
+        control.layer.borderWidth = 3
 
-		bag += control.applyBorderColor { _ -> UIColor in UIColor.brand(.primaryBorderColor) }
+        bag += control.applyBorderColor { _ -> UIColor in UIColor.brand(.primaryBorderColor) }
 
-		let recordIcon = UIView()
-		recordIcon.isUserInteractionEnabled = false
-		recordIcon.backgroundColor = .brand(.destructive)
-		control.addSubview(recordIcon)
+        let recordIcon = UIView()
+        recordIcon.isUserInteractionEnabled = false
+        recordIcon.backgroundColor = .brand(.destructive)
+        control.addSubview(recordIcon)
 
-		let touchUpInside = control.signal(for: .touchUpInside)
-		bag += touchUpInside.feedback(type: .impactLight)
+        let touchUpInside = control.signal(for: .touchUpInside)
+        bag += touchUpInside.feedback(type: .impactLight)
 
-		bag += touchUpInside.withLatestFrom(isRecordingSignal.atOnce().plain())
-			.map { _, isRecording in !isRecording }.bindTo(isRecordingSignal)
+        bag += touchUpInside.withLatestFrom(isRecordingSignal.atOnce().plain())
+            .map { _, isRecording in !isRecording }.bindTo(isRecordingSignal)
 
-		bag += combineLatest(recordIcon.didLayoutSignal.atOnce(), isRecordingSignal.atOnce().plain())
-			.animated(style: SpringAnimationStyle.lightBounce()) { _, isRecording in
-				recordIcon.layer.cornerRadius = isRecording ? 2.5 : recordIcon.frame.width / 2
+        bag += combineLatest(recordIcon.didLayoutSignal.atOnce(), isRecordingSignal.atOnce().plain())
+            .animated(style: SpringAnimationStyle.lightBounce()) { _, isRecording in
+                recordIcon.layer.cornerRadius = isRecording ? 2.5 : recordIcon.frame.width / 2
 
-				recordIcon.snp.remakeConstraints { make in
-					make.width.height.equalToSuperview().inset(isRecording ? 15 : 5)
-					make.center.equalToSuperview()
-				}
+                recordIcon.snp.remakeConstraints { make in
+                    make.width.height.equalToSuperview().inset(isRecording ? 15 : 5)
+                    make.center.equalToSuperview()
+                }
 
-				recordIcon.layoutIfNeeded()
-				control.layoutIfNeeded()
-			}
+                recordIcon.layoutIfNeeded()
+                control.layoutIfNeeded()
+            }
 
-		return (control, bag)
-	}
+        return (control, bag)
+    }
 }

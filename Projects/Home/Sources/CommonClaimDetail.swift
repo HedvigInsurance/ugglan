@@ -8,75 +8,75 @@ import hCoreUI
 import hGraphQL
 
 struct CommonClaimDetail {
-	let data: GraphQL.CommonClaimsQuery.Data.CommonClaim
-	let index: TableIndex
+    let data: GraphQL.CommonClaimsQuery.Data.CommonClaim
+    let index: TableIndex
 
-	var layoutTitle: String {
-		if let layoutTitle = data.layout.asEmergency?.title { return layoutTitle }
+    var layoutTitle: String {
+        if let layoutTitle = data.layout.asEmergency?.title { return layoutTitle }
 
-		return data.layout.asTitleAndBulletPoints?.title ?? ""
-	}
+        return data.layout.asTitleAndBulletPoints?.title ?? ""
+    }
 }
 
 extension CommonClaimDetail: Presentable {
-	func materialize() -> (UIViewController, Disposable) {
-		let viewController = UIViewController()
-		viewController.title = data.title
+    func materialize() -> (UIViewController, Disposable) {
+        let viewController = UIViewController()
+        viewController.title = data.title
 
-		let bag = DisposeBag()
+        let bag = DisposeBag()
 
-		let view = UIStackView()
-		view.axis = .vertical
-		view.layoutMargins = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
-		view.isLayoutMarginsRelativeArrangement = true
+        let view = UIStackView()
+        view.axis = .vertical
+        view.layoutMargins = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
+        view.isLayoutMarginsRelativeArrangement = true
 
-		let topCard = UIView()
-		view.addArrangedSubview(topCard)
+        let topCard = UIView()
+        view.addArrangedSubview(topCard)
 
-		let topCardContentView = UIStackView()
-		topCardContentView.axis = .vertical
-		topCardContentView.spacing = 15
-		topCardContentView.layoutMargins = UIEdgeInsets(inset: 15)
-		topCardContentView.isLayoutMarginsRelativeArrangement = true
-		topCard.addSubview(topCardContentView)
+        let topCardContentView = UIStackView()
+        topCardContentView.axis = .vertical
+        topCardContentView.spacing = 15
+        topCardContentView.layoutMargins = UIEdgeInsets(inset: 15)
+        topCardContentView.isLayoutMarginsRelativeArrangement = true
+        topCard.addSubview(topCardContentView)
 
-		topCardContentView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
+        topCardContentView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
 
-		let icon = RemoteVectorIcon(data.icon.fragments.iconFragment, threaded: true)
-		bag += topCardContentView.addArranged(
-			icon.alignedTo(
-				.leading,
-				configure: { iconView in
-					iconView.snp.makeConstraints { make in make.height.width.equalTo(30) }
-				}
-			)
-		)
+        let icon = RemoteVectorIcon(data.icon.fragments.iconFragment, threaded: true)
+        bag += topCardContentView.addArranged(
+            icon.alignedTo(
+                .leading,
+                configure: { iconView in
+                    iconView.snp.makeConstraints { make in make.height.width.equalTo(30) }
+                }
+            )
+        )
 
-		let layoutTitle = MultilineLabel(value: self.layoutTitle, style: .brand(.title2(color: .primary)))
-		bag += topCardContentView.addArranged(layoutTitle)
+        let layoutTitle = MultilineLabel(value: self.layoutTitle, style: .brand(.title2(color: .primary)))
+        bag += topCardContentView.addArranged(layoutTitle)
 
-		if let bulletPoints = data.layout.asTitleAndBulletPoints?.bulletPoints {
-			let claimButton = Button(
-				title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
-				type: .standard(
-					backgroundColor: .brand(.primaryButtonBackgroundColor),
-					textColor: .brand(.primaryButtonTextColor)
-				)
-			)
-			bag += topCardContentView.addArranged(claimButton)
+        if let bulletPoints = data.layout.asTitleAndBulletPoints?.bulletPoints {
+            let claimButton = Button(
+                title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
+                type: .standard(
+                    backgroundColor: .brand(.primaryButtonBackgroundColor),
+                    textColor: .brand(.primaryButtonTextColor)
+                )
+            )
+            bag += topCardContentView.addArranged(claimButton)
 
-			let store: HomeStore = self.get()
+            let store: HomeStore = self.get()
 
-			bag += claimButton.onTapSignal.onValue { store.send(.openFreeTextChat) }
+            bag += claimButton.onTapSignal.onValue { store.send(.openFreeTextChat) }
 
-			bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))
-		} else {
-			let emergencyActions = EmergencyActions(presentingViewController: viewController)
-			bag += view.addArranged(emergencyActions)
-		}
+            bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))
+        } else {
+            let emergencyActions = EmergencyActions(presentingViewController: viewController)
+            bag += view.addArranged(emergencyActions)
+        }
 
-		bag += viewController.install(view)
+        bag += viewController.install(view)
 
-		return (viewController, bag)
-	}
+        return (viewController, bag)
+    }
 }

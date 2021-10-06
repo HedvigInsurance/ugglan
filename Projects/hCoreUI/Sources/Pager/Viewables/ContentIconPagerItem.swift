@@ -7,114 +7,114 @@ import hCore
 import hGraphQL
 
 public struct ContentIconPagerItem {
-	let title: String?
-	let paragraph: String
-	let icon: GraphQL.IconFragment
+    let title: String?
+    let paragraph: String
+    let icon: GraphQL.IconFragment
 
-	public var pagerItem: PagerItem { PagerItem(id: .init(), content: AnyPresentable(self)) }
+    public var pagerItem: PagerItem { PagerItem(id: .init(), content: AnyPresentable(self)) }
 
-	public init(
-		title: String?,
-		paragraph: String,
-		icon: GraphQL.IconFragment
-	) {
-		self.title = title
-		self.paragraph = paragraph
-		self.icon = icon
-	}
+    public init(
+        title: String?,
+        paragraph: String,
+        icon: GraphQL.IconFragment
+    ) {
+        self.title = title
+        self.paragraph = paragraph
+        self.icon = icon
+    }
 }
 
 extension ContentIconPagerItem: Presentable {
-	public func materialize() -> (UIViewController, Disposable) {
-		let bag = DisposeBag()
+    public func materialize() -> (UIViewController, Disposable) {
+        let bag = DisposeBag()
 
-		let viewController = UIViewController()
+        let viewController = UIViewController()
 
-		let containerView = UIStackView()
-		containerView.alpha = 1
-		containerView.alignment = .center
-		containerView.axis = .horizontal
-		containerView.distribution = .fill
-		containerView.isLayoutMarginsRelativeArrangement = true
-		containerView.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        let containerView = UIStackView()
+        containerView.alpha = 1
+        containerView.alignment = .center
+        containerView.axis = .horizontal
+        containerView.distribution = .fill
+        containerView.isLayoutMarginsRelativeArrangement = true
+        containerView.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
-		let loadingIndicator = LoadingIndicator(showAfter: 0, color: .black)
-		let loadingIndicatorBag = DisposeBag()
-		loadingIndicatorBag += containerView.addArranged(loadingIndicator)
-		bag += loadingIndicatorBag
+        let loadingIndicator = LoadingIndicator(showAfter: 0, color: .black)
+        let loadingIndicatorBag = DisposeBag()
+        loadingIndicatorBag += containerView.addArranged(loadingIndicator)
+        bag += loadingIndicatorBag
 
-		let innerContainerView = UIStackView()
-		innerContainerView.alpha = 0
-		innerContainerView.alignment = .center
-		innerContainerView.axis = .vertical
-		innerContainerView.spacing = 8
-		innerContainerView.isLayoutMarginsRelativeArrangement = true
+        let innerContainerView = UIStackView()
+        innerContainerView.alpha = 0
+        innerContainerView.alignment = .center
+        innerContainerView.axis = .vertical
+        innerContainerView.spacing = 8
+        innerContainerView.isLayoutMarginsRelativeArrangement = true
 
-		let remoteVectorIcon = RemoteVectorIcon(icon, threaded: true)
-		containerView.addArrangedSubview(innerContainerView)
+        let remoteVectorIcon = RemoteVectorIcon(icon, threaded: true)
+        containerView.addArrangedSubview(innerContainerView)
 
-		innerContainerView.snp.makeConstraints { make in make.width.centerX.equalToSuperview() }
+        innerContainerView.snp.makeConstraints { make in make.width.centerX.equalToSuperview() }
 
-		bag += remoteVectorIcon.finishedLoadingSignal.onValue { _ in
-			bag += Signal(after: 0)
-				.animated(
-					style: AnimationStyle.easeOut(duration: 0.25),
-					animations: {
-						innerContainerView.alpha = 1
-						loadingIndicatorBag.dispose()
-					}
-				)
-		}
+        bag += remoteVectorIcon.finishedLoadingSignal.onValue { _ in
+            bag += Signal(after: 0)
+                .animated(
+                    style: AnimationStyle.easeOut(duration: 0.25),
+                    animations: {
+                        innerContainerView.alpha = 1
+                        loadingIndicatorBag.dispose()
+                    }
+                )
+        }
 
-		bag += innerContainerView.addArranged(remoteVectorIcon) { iconView in
-			iconView.snp.makeConstraints { make in make.width.equalToSuperview()
-				make.height.equalTo(180)
-			}
-		}
+        bag += innerContainerView.addArranged(remoteVectorIcon) { iconView in
+            iconView.snp.makeConstraints { make in make.width.equalToSuperview()
+                make.height.equalTo(180)
+            }
+        }
 
-		let spacing = Spacing(height: 30)
-		bag += innerContainerView.addArranged(spacing)
+        let spacing = Spacing(height: 30)
+        bag += innerContainerView.addArranged(spacing)
 
-		if let title = title {
-			let titleLabel = MultilineLabel(
-				styledText: StyledText(
-					text: title,
-					style: TextStyle.brand(.title1(color: .primary)).centerAligned
-				)
-			)
+        if let title = title {
+            let titleLabel = MultilineLabel(
+                styledText: StyledText(
+                    text: title,
+                    style: TextStyle.brand(.title1(color: .primary)).centerAligned
+                )
+            )
 
-			bag += innerContainerView.addArranged(titleLabel) { titleLabelView in
-				titleLabelView.snp.makeConstraints { make in make.width.equalToSuperview()
-					make.centerX.equalToSuperview()
-				}
-			}
-		}
+            bag += innerContainerView.addArranged(titleLabel) { titleLabelView in
+                titleLabelView.snp.makeConstraints { make in make.width.equalToSuperview()
+                    make.centerX.equalToSuperview()
+                }
+            }
+        }
 
-		let bodyLabel = MultilineLabel(
-			styledText: StyledText(
-				text: paragraph,
-				style:
-					TextStyle.brand(
-						title != nil ? .body(color: .secondary) : .title3(color: .primary)
-					)
-					.centerAligned
-			)
-		)
+        let bodyLabel = MultilineLabel(
+            styledText: StyledText(
+                text: paragraph,
+                style:
+                    TextStyle.brand(
+                        title != nil ? .body(color: .secondary) : .title3(color: .primary)
+                    )
+                    .centerAligned
+            )
+        )
 
-		bag += innerContainerView.addArranged(bodyLabel) { bodyLabelView in
-			bodyLabelView.snp.makeConstraints { make in make.width.equalToSuperview()
-				make.centerX.equalToSuperview()
-			}
-		}
+        bag += innerContainerView.addArranged(bodyLabel) { bodyLabelView in
+            bodyLabelView.snp.makeConstraints { make in make.width.equalToSuperview()
+                make.centerX.equalToSuperview()
+            }
+        }
 
-		viewController.view = containerView
+        viewController.view = containerView
 
-		bag += viewController.view.didLayoutSignal.onValue { _ in
-			containerView.snp.makeConstraints { make in make.height.centerX.centerY.equalToSuperview()
-				make.width.equalToSuperview().inset(20)
-			}
-		}
+        bag += viewController.view.didLayoutSignal.onValue { _ in
+            containerView.snp.makeConstraints { make in make.height.centerX.centerY.equalToSuperview()
+                make.width.equalToSuperview().inset(20)
+            }
+        }
 
-		return (viewController, bag)
-	}
+        return (viewController, bag)
+    }
 }

@@ -1,6 +1,9 @@
 import Adyen
+import AdyenActions
 import Apollo
 import CoreDependencies
+import Datadog
+import DatadogCrashReporting
 import Disk
 import Firebase
 import FirebaseMessaging
@@ -12,7 +15,6 @@ import Mixpanel
 import Offer
 import Payment
 import Presentation
-import Sentry
 import Shake
 import SwiftUI
 import UIKit
@@ -22,461 +24,414 @@ import hCoreUI
 import hGraphQL
 
 #if PRESENTATION_DEBUGGER
-	#if compiler(>=5.5)
-		import PresentationDebugSupport
-	#endif
+    #if compiler(>=5.5)
+        import PresentationDebugSupport
+    #endif
 #endif
 
-let log = Logger.self
+let log = Logger.builder
+    .sendNetworkInfo(true)
+    .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
+    .build()
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
-	let bag = DisposeBag()
-	let window: UIWindow = {
-		var window = UIWindow(frame: UIScreen.main.bounds)
-		window.rootViewController = UIViewController()
-		return window
-	}()
+    let bag = DisposeBag()
+    let window: UIWindow = {
+        var window = UIWindow(frame: UIScreen.main.bounds)
+        window.rootViewController = UIViewController()
+        return window
+    }()
 
-	func logout() {
-		ApolloClient.cache = InMemoryNormalizedCache()
-		ApolloClient.deleteToken()
+    func logout() {
+        ApolloClient.cache = InMemoryNormalizedCache()
+        ApolloClient.deleteToken()
 
-		// remove all persisted state
-		UgglanStore.destroy()
-		OfferStore.destroy()
+        // remove all persisted state
+        globalPresentableStoreContainer.deletePersistanceContainer()
 
-		// create new store container to remove all old store instances
-		globalPresentableStoreContainer = PresentableStoreContainer()
+        // create new store container to remove all old store instances
+        globalPresentableStoreContainer = PresentableStoreContainer()
 
-		setupDebugger()
+        setupDebugger()
+        setupPresentableStoreLogger()
 
-		bag += ApolloClient.initAndRegisterClient()
-			.onValue { _ in ChatState.shared = ChatState()
-				self.bag += self.window.present(AppJourney.main)
-			}
-	}
+        bag += ApolloClient.initAndRegisterClient()
+            .onValue { _ in ChatState.shared = ChatState()
+                self.bag += self.window.present(AppJourney.main)
+            }
+    }
 
-	func applicationWillTerminate(_: UIApplication) {
-		NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
-	}
+    func applicationWillTerminate(_: UIApplication) {
+        NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
+    }
 
-	func application(
-		_: UIApplication,
-		continue userActivity: NSUserActivity,
-		restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void
-	) -> Bool {
-		guard let url = userActivity.webpageURL else { return false }
-		guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else {
-			return false
-		}
-		guard let dynamicLink = queryItems.first(where: { $0.name == "link" }) else { return false }
-		guard let dynamicLinkUrl = URL(string: dynamicLink.value) else { return false }
+    func application(
+        _: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
+        guard let url = userActivity.webpageURL else { return false }
+        guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else {
+            return false
+        }
+        guard let dynamicLink = queryItems.first(where: { $0.name == "link" }) else { return false }
+        guard let dynamicLinkUrl = URL(string: dynamicLink.value) else { return false }
 
-		return handleDeepLink(dynamicLinkUrl)
-	}
+        return handleDeepLink(dynamicLinkUrl)
+    }
 
-	func setToken(_ token: String) {
-		ApolloClient.cache = InMemoryNormalizedCache()
-		ApolloClient.saveToken(token: token)
+    func setToken(_ token: String) {
+        ApolloClient.cache = InMemoryNormalizedCache()
+        ApolloClient.saveToken(token: token)
 
-		ApolloClient.initAndRegisterClient()
-			.always {
-				ChatState.shared = ChatState()
-				self.bag +=
-					self
-					.window.present(
-						AppJourney.loggedIn
-					)
-			}
-	}
+        ApolloClient.initAndRegisterClient()
+            .always {
+                ChatState.shared = ChatState()
+                self.bag +=
+                    self
+                    .window.present(
+                        AppJourney.loggedIn
+                    )
+            }
+    }
 
-	func registerForPushNotifications() -> Future<Void> {
-		Future { completion in
-			UNUserNotificationCenter.current()
-				.getNotificationSettings { settings in
-					guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-						return
-					}
-					if settings.authorizationStatus == .denied {
-						DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
-					}
-				}
+    func registerForPushNotifications() -> Future<Void> {
+        Future { completion in
+            UNUserNotificationCenter.current()
+                .getNotificationSettings { settings in
+                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                        return
+                    }
+                    if settings.authorizationStatus == .denied {
+                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                    }
+                }
 
-			let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-			UNUserNotificationCenter.current()
-				.requestAuthorization(
-					options: authOptions,
-					completionHandler: { _, _ in completion(.success)
+            let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+            UNUserNotificationCenter.current()
+                .requestAuthorization(
+                    options: authOptions,
+                    completionHandler: { _, _ in completion(.success)
 
-						DispatchQueue.main.async {
-							UIApplication.shared.registerForRemoteNotifications()
-						}
-					}
-				)
+                        DispatchQueue.main.async {
+                            UIApplication.shared.registerForRemoteNotifications()
+                        }
+                    }
+                )
 
-			return NilDisposer()
-		}
-	}
+            return NilDisposer()
+        }
+    }
 
-	func handleDeepLink(_ dynamicLinkUrl: URL) -> Bool {
-		if dynamicLinkUrl.pathComponents.contains("direct-debit") {
-			guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-			guard let rootViewController = window.rootViewController else { return false }
+    func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
+        let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
 
-			Mixpanel.mainInstance().track(event: "DEEP_LINK_DIRECT_DEBIT")
+        if adyenRedirect { return adyenRedirect }
 
-			bag += rootViewController.present(
-				PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
-				style: .modal,
-				options: [.defaults]
-			)
+        return false
+    }
 
-			return true
-		} else if dynamicLinkUrl.pathComponents.contains("forever") {
-			guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-			bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-				.onValue { _ in
-					let store: UgglanStore = globalPresentableStoreContainer.get()
-					store.send(.makeForeverTabActive)
-				}
+    func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    ) -> Bool {
+        application(
+            app,
+            open: url,
+            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+            annotation: ""
+        )
+    }
 
-			Mixpanel.mainInstance().track(event: "DEEP_LINK_FOREVER")
+    func setupDebugger() {
+        #if PRESENTATION_DEBUGGER
+            #if compiler(>=5.5)
+                globalPresentableStoreContainer.debugger = PresentableStoreDebugger()
+                globalPresentableStoreContainer.debugger?.startServer()
+            #endif
+        #endif
+    }
 
-			return true
-		}
+    func setupPresentableStoreLogger() {
+        globalPresentableStoreContainer.logger = { message in
+            log.info(message)
+        }
+    }
 
-		return false
-	}
+    var mixpanelToken: String? { Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String }
 
-	func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
-		let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
+    func application(
+        _: UIApplication,
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        if Environment.current == .staging {
+            var newArguments = ProcessInfo.processInfo.arguments
+            newArguments.append("-FIRDebugEnabled")
+            ProcessInfo.processInfo.setValue(newArguments, forKey: "arguments")
+        }
 
-		if adyenRedirect { return adyenRedirect }
+        urlSessionClientProvider = {
+            return InterceptingURLSessionClient()
+        }
 
-		return false
-	}
+        setupPresentableStoreLogger()
 
-	func application(
-		_ app: UIApplication,
-		open url: URL,
-		options: [UIApplication.OpenURLOptionsKey: Any] = [:]
-	) -> Bool {
-		application(
-			app,
-			open: url,
-			sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-			annotation: ""
-		)
-	}
+        Datadog.initialize(
+            appContext: .init(),
+            trackingConsent: .granted,
+            configuration: Datadog.Configuration
+                .builderUsing(
+                    rumApplicationID: "416e8fc0-c96a-4485-8c74-84412960a479",
+                    clientToken: "pub4306832bdc5f2b8b980c492ec2c11ef3",
+                    environment: Environment.current.datadogName
+                )
+                .set(serviceName: "ios")
+                .set(endpoint: .eu1)
+                .enableLogging(true)
+                .enableTracing(true)
+                .enableCrashReporting(using: DDCrashReportingPlugin())
+                .enableRUM(true)
+                .trackUIKitRUMActions(using: RUMUserActionsPredicate())
+                .trackUIKitRUMViews(using: RUMViewsPredicate())
+                .trackURLSession(firstPartyHosts: [
+                    Environment.production.endpointURL.host ?? "",
+                    Environment.staging.endpointURL.host ?? "",
+                ])
+                .build()
+        )
 
-	func setupDebugger() {
-		#if PRESENTATION_DEBUGGER
-			#if compiler(>=5.5)
-				globalPresentableStoreContainer.debugger = PresentableStoreDebugger()
-				globalPresentableStoreContainer.debugger?.startServer()
-			#endif
-		#endif
-	}
+        Global.rum = RUMMonitor.initialize()
+        Global.sharedTracer = Tracer.initialize(
+            configuration: .init(
+                serviceName: "ios",
+                sendNetworkInfo: true,
+                bundleWithRUM: true,
+                globalTags: [:]
+            )
+        )
 
-	var mixpanelToken: String? { Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String }
+        log.info("Starting app")
 
-	func application(
-		_: UIApplication,
-		didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
-	) -> Bool {
-		SentrySDK.start { options in
-			options.dsn = "https://09505787f04f4c6ea7e560de075ba552@o123400.ingest.sentry.io/5208267"
-			#if DEBUG
-				options.debug = true
-			#endif
-			options.environment = Environment.current.displayName
-			options.enableAutoSessionTracking = true
-		}
+        if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
+            Shake.setup()
+            Datadog.verbosityLevel = .debug
+        }
 
-		if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
-			Shake.setup()
-		}
+        if let mixpanelToken = mixpanelToken {
+            Mixpanel.initialize(token: mixpanelToken)
+            AnalyticsSender.sendEvent = { event, properties in
+                log.info("Sending analytics event: \(event) \(properties)")
 
-		if let mixpanelToken = mixpanelToken {
-			Mixpanel.initialize(token: mixpanelToken)
-			AnalyticsSender.sendEvent = { event, properties in
-				Mixpanel.mainInstance()
-					.track(
-						event: event,
-						properties: properties.mapValues({ property in
-							property.mixpanelType
-						})
-					)
-			}
-		}
+                Firebase.Analytics.logEvent(event, parameters: properties)
+                Mixpanel.mainInstance()
+                    .track(
+                        event: event,
+                        properties: properties.mapValues({ property in
+                            property.mixpanelType
+                        })
+                    )
+            }
+        }
 
-		Localization.Locale.currentLocale = ApplicationState.preferredLocale
+        Localization.Locale.currentLocale = ApplicationState.preferredLocale
 
-		bag += Localization.Locale.$currentLocale.distinct()
-			.onValue { locale in ApplicationState.setPreferredLocale(locale)
-				ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
+        bag += Localization.Locale.$currentLocale.distinct()
+            .onValue { locale in ApplicationState.setPreferredLocale(locale)
+                ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
 
-				ApolloClient.initAndRegisterClient()
-					.always {
-						ChatState.shared = ChatState()
-						let client: ApolloClient = Dependencies.shared.resolve()
-						self.bag +=
-							client.perform(
-								mutation: GraphQL.UpdateLanguageMutation(
-									language: locale.code,
-									pickedLocale: locale.asGraphQLLocale()
-								)
-							)
-							.onValue { _ in }
-					}
-			}
+                ApolloClient.initAndRegisterClient()
+                    .always {
+                        ChatState.shared = ChatState()
+                        let client: ApolloClient = Dependencies.shared.resolve()
+                        self.bag +=
+                            client.perform(
+                                mutation: GraphQL.UpdateLanguageMutation(
+                                    language: locale.code,
+                                    pickedLocale: locale.asGraphQLLocale()
+                                )
+                            )
+                            .onValue { _ in }
+                    }
+            }
 
-		ApolloClient.bundle = Bundle.main
-		ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
+        ApolloClient.bundle = Bundle.main
+        ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
 
-		AskForRating().registerSession()
-		CrossFrameworkCoordinator.setup()
+        AskForRating().registerSession()
+        CrossFrameworkCoordinator.setup()
 
-		FirebaseApp.configure()
+        FirebaseApp.configure()
 
-		presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
-			let presentationEvent = event()
-			let message: String
-			var data: String?
+        presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
+            let presentationEvent = event()
+            let message: String
+            var data: String?
 
-			switch presentationEvent {
-			case let .willEnqueue(presentableId, context):
-				Mixpanel.mainInstance()
-					.track(
-						event: "PRESENTABLE_WILL_ENQUEUE",
-						properties: ["presentableId": presentableId.value]
-					)
-				message = "\(context) will enqueue modal presentation of \(presentableId)"
-			case let .willDequeue(presentableId, context):
-				Mixpanel.mainInstance()
-					.track(
-						event: "PRESENTABLE_WILL_DEQUEUE",
-						properties: ["presentableId": presentableId.value]
-					)
-				message = "\(context) will dequeue modal presentation of \(presentableId)"
-			case let .willPresent(presentableId, context, styleName):
-				Mixpanel.mainInstance()
-					.track(
-						event: "PRESENTABLE_WILL_PRESENT",
-						properties: ["presentableId": presentableId.value]
-					)
+            switch presentationEvent {
+            case let .willEnqueue(presentableId, context):
+                Analytics.track(
+                    "PRESENTABLE_WILL_ENQUEUE",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
+                message = "\(context) will enqueue modal presentation of \(presentableId)"
+                log.info(message)
+            case let .willDequeue(presentableId, context):
+                Analytics.track(
+                    "PRESENTABLE_WILL_DEQUEUE",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
+                message = "\(context) will dequeue modal presentation of \(presentableId)"
+                log.info(message)
+            case let .willPresent(presentableId, context, styleName):
+                Analytics.track(
+                    "PRESENTABLE_WILL_PRESENT",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
+                message = "\(context) will '\(styleName)' present: \(presentableId)"
+                log.info(message)
+            case let .didCancel(presentableId, context):
+                Analytics.track(
+                    "PRESENTABLE_DID_CANCEL",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
+                message = "\(context) did cancel presentation of: \(presentableId)"
+                log.info(message)
+            case let .didDismiss(presentableId, context, result):
+                switch result {
+                case let .success(result):
+                    Analytics.track(
+                        "PRESENTABLE_DID_DISMISS_SUCCESS",
+                        properties: [
+                            "presentableId": presentableId.value
+                        ]
+                    )
+                    message = "\(context) did end presentation of: \(presentableId)"
+                    data = "\(result)"
+                case let .failure(error):
+                    Analytics.track(
+                        "PRESENTABLE_DID_DISMISS_FAILURE",
+                        properties: [
+                            "presentableId": presentableId.value
+                        ]
+                    )
+                    message = "\(context) did end presentation of: \(presentableId)"
+                    data = "\(error)"
+                }
+                log.info(message)
+            #if DEBUG
+                case let .didDeallocate(presentableId, from: context):
+                    message = "\(presentableId) was deallocated after presentation from \(context)"
+                    log.info(message)
+                case let .didLeak(presentableId, from: context):
+                    message =
+                        "WARNING \(presentableId) was NOT deallocated after presentation from \(context)"
+                    log.info(message)
+            #endif
+            }
 
-				SentrySDK.configureScope { scope in
-					scope.setExtra(value: presentableId.value, key: "presentableId")
-				}
+            presentableLogPresentation(message, data, file, function, line)
+        }
 
-				message = "\(context) will '\(styleName)' present: \(presentableId)"
-			case let .didCancel(presentableId, context):
-				Mixpanel.mainInstance()
-					.track(
-						event: "PRESENTABLE_DID_CANCEL",
-						properties: ["presentableId": presentableId.value]
-					)
-				message = "\(context) did cancel presentation of: \(presentableId)"
-			case let .didDismiss(presentableId, context, result):
-				switch result {
-				case let .success(result):
-					Mixpanel.mainInstance()
-						.track(
-							event: "PRESENTABLE_DID_DISMISS_SUCCESS",
-							properties: ["presentableId": presentableId.value]
-						)
-					message = "\(context) did end presentation of: \(presentableId)"
-					data = "\(result)"
-				case let .failure(error):
-					Mixpanel.mainInstance()
-						.track(
-							event: "PRESENTABLE_DID_DISMISS_FAILURE",
-							properties: ["presentableId": presentableId.value]
-						)
-					message = "\(context) did end presentation of: \(presentableId)"
-					data = "\(error)"
-				}
-			#if DEBUG
-				case let .didDeallocate(presentableId, from: context):
-					message = "\(presentableId) was deallocated after presentation from \(context)"
-				case let .didLeak(presentableId, from: context):
-					message =
-						"WARNING \(presentableId) was NOT deallocated after presentation from \(context)"
-			#endif
-			}
+        viewControllerWasPresented = { viewController in
+            if let debugPresentationTitle = viewController.debugPresentationTitle {
+                Analytics.track("SCREEN_VIEW_\(debugPresentationTitle)", properties: [:])
+                Analytics.track(
+                    "SCREEN_VIEW_IOS",
+                    properties: [
+                        "screenName": debugPresentationTitle
+                    ]
+                )
+            }
+        }
+        alertActionWasPressed = { _, title in
+            if let localizationKey = title.derivedFromL10n?.key {
+                Analytics.track("ALERT_ACTION_TAP_\(localizationKey)", properties: [:])
+                Analytics.track(
+                    "ALERT_ACTION_TAP",
+                    properties: [
+                        "action": localizationKey
+                    ]
+                )
+            }
+        }
+        let launch = Launch()
 
-			presentableLogPresentation(message, data, file, function, line)
-		}
+        let (launchView, launchFuture) = launch.materialize()
+        window.rootView.addSubview(launchView)
+        launchView.layer.zPosition = .greatestFiniteMagnitude - 2
 
-		viewControllerWasPresented = { viewController in
-			if let debugPresentationTitle = viewController.debugPresentationTitle {
-				Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")
-			}
-		}
-		alertActionWasPressed = { _, title in
-			if let localizationKey = title.derivedFromL10n?.key {
-				Mixpanel.mainInstance().track(event: "ALERT_ACTION_TAP_\(localizationKey)")
-			}
-		}
-		RowAndProviderTracking.handler = { event in Mixpanel.mainInstance().track(event: event) }
-		let launch = Launch()
+        window.rootViewController = UIViewController()
+        window.makeKeyAndVisible()
 
-		let (launchView, launchFuture) = launch.materialize()
-		window.rootView.addSubview(launchView)
-		launchView.layer.zPosition = .greatestFiniteMagnitude - 2
+        launchView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
-		window.rootViewController = UIViewController()
-		window.makeKeyAndVisible()
+        DefaultStyling.installCustom()
 
-		launchView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
+        Messaging.messaging().delegate = self
+        UNUserNotificationCenter.current().delegate = self
 
-		DefaultStyling.installCustom()
+        // treat an empty token as a newly downloaded app and setLastNewsSeen
+        if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
 
-		Messaging.messaging().delegate = self
-		UNUserNotificationCenter.current().delegate = self
+        setupDebugger()
 
-		// treat an empty token as a newly downloaded app and setLastNewsSeen
-		if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
+        bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
+            .atValue { _ in
+                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
-		setupDebugger()
+                AnalyticsCoordinator().setUserId()
 
-		bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-			.atValue { _ in
-				Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+                self.bag += self.window.present(AppJourney.main)
 
-				AnalyticsCoordinator().setUserId()
+                launch.completeAnimationCallbacker.callAll()
+            }
 
-				self.bag += self.window.present(AppJourney.main)
+        bag += launchFuture.onValue { _ in launchView.removeFromSuperview()
+            ApplicationContext.shared.hasFinishedBootstrapping = true
 
-				launch.completeAnimationCallbacker.callAll()
-			}
+            if Environment.hasOverridenDefault {
+                let toast = Toast(
+                    symbol: .icon(hCoreUIAssets.settingsIcon.image),
+                    body: "Targeting \(Environment.current.displayName) environment",
+                    textColor: .black,
+                    backgroundColor: .brand(.regularCaution)
+                )
 
-		bag += launchFuture.onValue { _ in launchView.removeFromSuperview()
-			ApplicationContext.shared.hasFinishedBootstrapping = true
+                if #available(iOS 13, *) {
+                    self.bag += toast.onTap.onValue {
+                        self.window.rootViewController?
+                            .present(
+                                UIHostingController(rootView: Debug()),
+                                style: .detented(.medium, .large),
+                                options: []
+                            )
+                    }
+                }
 
-			if Environment.hasOverridenDefault {
-				let toast = Toast(
-					symbol: .icon(hCoreUIAssets.settingsIcon.image),
-					body: "Targeting \(Environment.current.displayName) environment",
-					textColor: .black,
-					backgroundColor: .brand(.regularCaution)
-				)
+                Toasts.shared.displayToast(toast: toast)
+            }
+        }
 
-				if #available(iOS 13, *) {
-					self.bag += toast.onTap.onValue {
-						self.window.rootViewController?
-							.present(
-								UIHostingController(rootView: Debug()),
-								style: .detented(.medium, .large),
-								options: []
-							)
-					}
-				}
-
-				Toasts.shared.displayToast(toast: toast)
-			}
-		}
-
-		return true
-	}
-
-	func userNotificationCenter(
-		_: UNUserNotificationCenter,
-		willPresent notification: UNNotification,
-		withCompletionHandler _: @escaping (UNNotificationPresentationOptions) -> Void
-	) {
-		let toast = Toast(
-			symbol: .none,
-			body: notification.request.content.title,
-			subtitle: notification.request.content.body
-		)
-
-		if ChatState.shared.allowNewMessageToast { Toasts.shared.displayToast(toast: toast) }
-	}
+        return true
+    }
 }
 
 extension ApolloClient {
-	public static func initAndRegisterClient() -> Future<Void> {
-		Self.initClient()
-			.onValue { store, client in Dependencies.shared.add(module: Module { store })
-
-				Dependencies.shared.add(module: Module { client })
-			}
-			.toVoid()
-	}
-}
-
-extension AppDelegate: MessagingDelegate {
-	func registerFCMToken(_ token: String) {
-		bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 })
-			.onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
-				client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token))
-					.onValue { data in
-						if data.registerPushToken != nil {
-							log.info("Did register push token for user")
-						} else {
-							log.info("Failed to register push token for user")
-						}
-					}
-			}
-	}
-
-	func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-		if let fcmToken = fcmToken {
-			ApplicationState.setFirebaseMessagingToken(fcmToken)
-			registerFCMToken(fcmToken)
-		}
-	}
-}
-
-extension AppDelegate: UNUserNotificationCenterDelegate {
-	func userNotificationCenter(
-		_: UNUserNotificationCenter,
-		didReceive response: UNNotificationResponse,
-		withCompletionHandler completionHandler: @escaping () -> Void
-	) {
-		let userInfo = response.notification.request.content.userInfo
-		guard let notificationType = userInfo["TYPE"] as? String else { return }
-
-		if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-			if notificationType == "NEW_MESSAGE" {
-				#warning("handle this")
-			} else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
-				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-					.onValue { _ in
-						let store: UgglanStore = globalPresentableStoreContainer.get()
-						store.send(.makeForeverTabActive)
-					}
-			} else if notificationType == "CONNECT_DIRECT_DEBIT" {
-				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-					.onValue { _ in
-						self.window.rootViewController?
-							.present(
-								PaymentSetup(
-									setupType: .initial,
-									urlScheme: Bundle.main.urlScheme ?? ""
-								),
-								style: .modal,
-								options: [.defaults]
-							)
-					}
-			} else if notificationType == "PAYMENT_FAILED" {
-				bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-					.onValue { _ in
-						self.window.rootViewController?
-							.present(
-								PaymentSetup(
-									setupType: .replacement,
-									urlScheme: Bundle.main.urlScheme ?? ""
-								),
-								style: .modal,
-								options: [.defaults]
-							)
-					}
-			}
-		}
-
-		completionHandler()
-	}
+    public static func initAndRegisterClient() -> Future<Void> {
+        Self.initClient()
+            .onValue { store, client in
+                Dependencies.shared.add(module: Module { store })
+                Dependencies.shared.add(module: Module { client })
+            }
+            .toVoid()
+    }
 }

@@ -8,23 +8,28 @@ import hCore
 @testable import hCoreUI
 
 final class ButtonTrackingTests: XCTestCase {
-	func test() {
-		let buttonTrackingHandlerExpectation = expectation(description: "Button.trackingHandler to be called")
+    func test() {
+        let buttonTrackingHandlerExpectation = expectation(description: "AnalyticsSender.sendEvent to be called")
 
-		Button.trackingHandler = { _ in buttonTrackingHandlerExpectation.fulfill() }
+        AnalyticsSender.sendEvent = { name, properties in
+            if name == AnalyticsCommonEventName.buttonClick.rawValue {
+                XCTAssertEqual(L10n.aboutLanguageRow.derivedFromL10n?.key, properties["localizationKey"] as? String)
+                buttonTrackingHandlerExpectation.fulfill()
+            }
+        }
 
-		let button = Button(title: "mock", type: .standard(backgroundColor: .black, textColor: .black))
+        let button = Button(title: L10n.aboutLanguageRow, type: .standard(backgroundColor: .black, textColor: .black))
 
-		let (buttonView, buttonBag) = button.materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
+        let (buttonView, buttonBag) = button.materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
 
-		let bag = DisposeBag()
+        let bag = DisposeBag()
 
-		bag += buttonBag
+        bag += buttonBag
 
-		buttonView.sendActions(for: .touchUpInside)
+        buttonView.sendActions(for: .touchUpInside)
 
-		wait(for: [buttonTrackingHandlerExpectation], timeout: 2)
+        wait(for: [buttonTrackingHandlerExpectation], timeout: 2)
 
-		bag.dispose()
-	}
+        bag.dispose()
+    }
 }

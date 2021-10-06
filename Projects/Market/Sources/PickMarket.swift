@@ -2,52 +2,48 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
 
-struct PickMarket {
-	let currentMarket: Market
-	let availableLocales: [GraphQL.Locale]
+struct PickMarket: View {
+    let currentMarket: Market
+    let availableLocales: [GraphQL.Locale]
+    @PresentableStore var store: MarketStore
+
+    var body: some View {
+        hForm {
+            hSection(Market.allCases, id: \.title) { market in
+                hRow {
+                    Image(uiImage: market.icon)
+                    Spacer().frame(width: 16)
+                    market.title.hText()
+                }
+                .withSelectedAccessory(market == currentMarket)
+                .onTap {
+                    store.send(.selectMarket(market: market))
+                }
+            }
+            .dividerInsets(.leading, 50)
+        }
+    }
 }
 
-extension PickMarket: Presentable {
-	func materialize() -> (UIViewController, Future<Market>) {
-		let viewController = UIViewController()
-		viewController.title = L10n.MarketLanguageScreen.marketLabel
-		let bag = DisposeBag()
-
-		let form = FormView()
-		bag += viewController.install(form)
-
-		let section = form.appendSection()
-
-		return (
-			viewController,
-			Future { completion in
-				Market.allCases
-					.filter { market in
-						availableLocales.first { locale -> Bool in
-							locale.rawValue.lowercased().contains(market.id)
-						} != nil
-					}
-					.forEach { market in let row = RowView(title: market.title)
-
-						let iconImageView = UIImageView()
-						iconImageView.contentMode = .scaleAspectFit
-						iconImageView.image = market.icon
-						row.prepend(iconImageView)
-
-						row.setCustomSpacing(16, after: iconImageView)
-
-						if market == currentMarket { row.append(Asset.checkmark.image) }
-
-						bag += section.append(row).onValue { completion(.success(market)) }
-					}
-
-				return bag
-			}
-		)
-	}
+extension PickMarket {
+    var journey: some JourneyPresentation {
+        HostingJourney(
+            MarketStore.self,
+            rootView: self,
+            style: .detented(.scrollViewContentSize),
+            options: [.defaults, .prefersLargeTitles(true)]
+        ) { action in
+            if case .selectMarket = action {
+                PopJourney()
+            }
+        }
+        .configureTitle(L10n.MarketLanguageScreen.marketLabel)
+        .withDismissButton
+    }
 }

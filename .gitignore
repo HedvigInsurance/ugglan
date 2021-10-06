@@ -17,6 +17,7 @@ Localizable.stringsdict
 .package.resolved
 __MACOSX
 vendor/bundle
+AppleIncRootCertificate.cer
 
 ## Various settings
 *.pbxuser

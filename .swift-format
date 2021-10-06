@@ -2,7 +2,7 @@
     "version": 1,
     "lineLength": 120,
     "indentation": {
-        "tabs": 1
+        "spaces": 4
     },
     "maximumBlankLines": 1,
     "respectsExistingLineBreaks": true,

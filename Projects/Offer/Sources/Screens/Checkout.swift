@@ -7,213 +7,214 @@ import hCore
 import hCoreUI
 
 struct Checkout {
-	@Inject var state: OldOfferState
 }
 
 enum CheckoutError: Error {
-	case signingFailed
+    case signingFailed
 }
 
 extension Checkout: Presentable {
-	func handleError(
-		title: String,
-		message: String,
-		viewController: UIViewController,
-		completion: @escaping () -> Void
-	) {
-		let alert = Alert<Void>(
-			title: title,
-			message: message,
-			actions: [
-				Alert.Action(
-					title: L10n.alertOk,
-					action: completion
-				)
-			]
-		)
+    func handleError(
+        title: String,
+        message: String,
+        viewController: UIViewController,
+        completion: @escaping () -> Void
+    ) {
+        let alert = Alert<Void>(
+            title: title,
+            message: message,
+            actions: [
+                Alert.Action(
+                    title: L10n.alertOk,
+                    action: completion
+                )
+            ]
+        )
 
-		viewController.present(alert)
-	}
+        viewController.present(alert)
+    }
 
-	func materialize() -> (UIViewController, Future<Void>) {
-		let checkoutButton = CheckoutButton()
-		let viewController = AccessoryViewController(accessoryView: checkoutButton)
-		viewController.title = L10n.checkoutTitle
-		let bag = DisposeBag()
+    func materialize() -> (UIViewController, Future<Void>) {
+        let checkoutButton = CheckoutButton()
+        let viewController = AccessoryViewController(accessoryView: checkoutButton)
+        viewController.title = L10n.checkoutTitle
+        let bag = DisposeBag()
 
-		let form = FormView()
-		bag += viewController.install(form)
+        let store: OfferStore = self.get()
 
-		bag += state.dataSignal.compactMap { $0.quoteBundle }
-			.onFirstValue({ quoteBundle in
-				let header = UIStackView()
-				header.spacing = 16
-				header.axis = .vertical
+        let form = FormView()
+        bag += viewController.install(form)
 
-				let titleLabel = MultilineLabel(
-					value: quoteBundle.quotes.reduce(
-						"",
-						{ previousString, quote in
-							return previousString.isEmpty
-								? quote.displayName
-								: "\(previousString) + \n\(quote.displayName)"
-						}
-					),
-					style: TextStyle.brand(.title1(color: .secondary))
-						.restyled({ (style: inout TextStyle) in
-							style.lineHeight = quoteBundle.quotes.count > 1 ? 45 : 0
-						})
-				)
-				bag += header.addArranged(titleLabel)
+        bag += store.stateSignal.atOnce().compactMap { $0.offerData?.quoteBundle }
+            .onFirstValue({ quoteBundle in
+                let header = UIStackView()
+                header.spacing = 16
+                header.axis = .vertical
 
-				bag += header.addArrangedSubview(PriceRow(placement: .checkout))
+                let titleLabel = MultilineLabel(
+                    value: quoteBundle.quotes.reduce(
+                        "",
+                        { previousString, quote in
+                            return previousString.isEmpty
+                                ? quote.displayName
+                                : "\(previousString) + \n\(quote.displayName)"
+                        }
+                    ),
+                    style: TextStyle.brand(.title1(color: .secondary))
+                        .restyled({ (style: inout TextStyle) in
+                            style.lineHeight = quoteBundle.quotes.count > 1 ? 45 : 0
+                        })
+                )
+                bag += header.addArranged(titleLabel)
 
-				let section = SectionView(headerView: header, footerView: nil)
+                bag += header.addArrangedSubview(PriceRow(placement: .checkout))
 
-				form.append(section)
+                let section = SectionView(headerView: header, footerView: nil)
 
-				let emailMasking = Masking(type: .email)
+                form.append(section)
 
-				let emailRow = RowView(
-					title: emailMasking.helperText ?? "",
-					style: .brand(.title3(color: .primary))
-				)
-				emailRow.alignment = .leading
-				emailRow.axis = .vertical
-				emailRow.distribution = .fill
-				section.append(emailRow)
+                let emailMasking = Masking(type: .email)
 
-				let emailTextField = UITextField(
-					value: quoteBundle.quotes.first?.email ?? "",
-					placeholder: emailMasking.placeholderText ?? "",
-					style: .default
-				)
-				emailTextField.returnKeyType = .next
-				emailMasking.applySettings(emailTextField)
-				emailTextField.becomeFirstResponder()
-				emailRow.append(emailTextField)
+                let emailRow = RowView(
+                    title: emailMasking.helperText ?? "",
+                    style: .brand(.title3(color: .primary))
+                )
+                emailRow.alignment = .leading
+                emailRow.axis = .vertical
+                emailRow.distribution = .fill
+                section.append(emailRow)
 
-				bag += emailMasking.applyMasking(emailTextField)
+                let emailTextField = UITextField(
+                    value: quoteBundle.quotes.first?.email ?? "",
+                    placeholder: emailMasking.placeholderText ?? "",
+                    style: .default
+                )
+                emailTextField.returnKeyType = .next
+                emailMasking.applySettings(emailTextField)
+                emailTextField.becomeFirstResponder()
+                emailRow.append(emailTextField)
 
-				let ssnMasking = Localization.Locale.currentLocale.market.masking
+                bag += emailMasking.applyMasking(emailTextField)
 
-				let ssnRow = RowView(
-					title: ssnMasking.helperText ?? "",
-					style: .brand(.title3(color: .primary))
-				)
-				ssnRow.alignment = .leading
-				ssnRow.axis = .vertical
-				ssnRow.distribution = .fill
-				section.append(ssnRow)
+                let ssnMasking = Localization.Locale.currentLocale.market.masking
 
-				let ssnTextField = UITextField(
-					value: "",
-					placeholder: ssnMasking.placeholderText ?? "",
-					style: .default
-				)
-				ssnMasking.applySettings(ssnTextField)
-				ssnRow.append(ssnTextField)
+                let ssnRow = RowView(
+                    title: ssnMasking.helperText ?? "",
+                    style: .brand(.title3(color: .primary))
+                )
+                ssnRow.alignment = .leading
+                ssnRow.axis = .vertical
+                ssnRow.distribution = .fill
+                section.append(ssnRow)
 
-				bag += ssnMasking.applyMasking(ssnTextField)
+                let ssnTextField = UITextField(
+                    value: "",
+                    placeholder: ssnMasking.placeholderText ?? "",
+                    style: .default
+                )
+                ssnMasking.applySettings(ssnTextField)
+                ssnRow.append(ssnTextField)
 
-				let shouldHideEmailField = quoteBundle.quotes.allSatisfy { $0.email != nil }
-				emailRow.isHidden = shouldHideEmailField
+                bag += ssnMasking.applyMasking(ssnTextField)
 
-				bag += form.chainAllControlResponders()
+                let shouldHideEmailField = quoteBundle.quotes.allSatisfy { $0.email != nil }
+                emailRow.isHidden = shouldHideEmailField
 
-				let isValidSignal = combineLatest(
-					ssnMasking.isValidSignal(ssnTextField),
-					emailMasking.isValidSignal(emailTextField)
-				)
-				.map { ssnValid, emailValid in ssnValid && emailValid }
+                bag += form.chainAllControlResponders()
 
-				bag += isValidSignal.filter { valid in valid }
-					.onValue { _ in
-						checkoutButton.$isLoading.value = true
+                let isValidSignal = combineLatest(
+                    ssnMasking.isValidSignal(ssnTextField),
+                    emailMasking.isValidSignal(emailTextField)
+                )
+                .map { ssnValid, emailValid in ssnValid && emailValid }
 
-						join(
-							quoteBundle.quotes.map { quote in
-								state.checkoutUpdate(
-									quoteId: quote.id,
-									email: emailMasking.unmaskedValue(
-										text: emailTextField.value
-									),
-									ssn: ssnMasking.unmaskedValue(
-										text: ssnTextField.value
-									)
-								)
-							}
-						)
-						.onValue { _ in
-							checkoutButton.$isLoading.value = false
-							checkoutButton.$isEnabled.value = true
-						}
-						.onError { error in
-							handleError(
-								title: L10n.simpleSignFailedTitle,
-								message: L10n.simpleSignFailedMessage,
-								viewController: viewController
-							) {
-								checkoutButton.$isEnabled.value = false
-								checkoutButton.$isLoading.value = false
-							}
-						}
-					}
-			})
+                bag += isValidSignal.filter { valid in valid }
+                    .onValue { _ in
+                        checkoutButton.$isLoading.value = true
 
-		return (
-			viewController,
-			Future { completion in
+                        join(
+                            quoteBundle.quotes.map { quote in
+                                store.checkoutUpdate(
+                                    quoteId: quote.id,
+                                    email: emailMasking.unmaskedValue(
+                                        text: emailTextField.value
+                                    ),
+                                    ssn: ssnMasking.unmaskedValue(
+                                        text: ssnTextField.value
+                                    )
+                                )
+                            }
+                        )
+                        .onValue { _ in
+                            checkoutButton.$isLoading.value = false
+                            checkoutButton.$isEnabled.value = true
+                        }
+                        .onError { error in
+                            handleError(
+                                title: L10n.simpleSignFailedTitle,
+                                message: L10n.simpleSignFailedMessage,
+                                viewController: viewController
+                            ) {
+                                checkoutButton.$isEnabled.value = false
+                                checkoutButton.$isLoading.value = false
+                            }
+                        }
+                    }
+            })
 
-				func toggleAllowDismissal() {
-					if #available(iOS 13.0, *) {
-						viewController.isModalInPresentation = !viewController
-							.isModalInPresentation
-					}
-					viewController.navigationItem.rightBarButtonItem?.isEnabled =
-						!(viewController.navigationItem.rightBarButtonItem?.isEnabled ?? true)
-				}
+        return (
+            viewController,
+            Future { completion in
 
-				func handleError() {
-					self.handleError(
-						title: L10n.simpleSignFailedTitle,
-						message: L10n.simpleSignFailedMessage,
-						viewController: viewController
-					) {
-						toggleAllowDismissal()
-						checkoutButton.$isLoading.value = false
-					}
-				}
+                func toggleAllowDismissal() {
+                    if #available(iOS 13.0, *) {
+                        viewController.isModalInPresentation = !viewController
+                            .isModalInPresentation
+                    }
+                    viewController.navigationItem.rightBarButtonItem?.isEnabled =
+                        !(viewController.navigationItem.rightBarButtonItem?.isEnabled ?? true)
+                }
 
-				bag += checkoutButton.onTapSignal.onValue { _ in
-					checkoutButton.$isLoading.value = true
+                func handleError() {
+                    self.handleError(
+                        title: L10n.simpleSignFailedTitle,
+                        message: L10n.simpleSignFailedMessage,
+                        viewController: viewController
+                    ) {
+                        toggleAllowDismissal()
+                        checkoutButton.$isLoading.value = false
+                    }
+                }
 
-					toggleAllowDismissal()
+                bag += checkoutButton.onTapSignal.onValue { _ in
+                    checkoutButton.$isLoading.value = true
 
-					let store: OfferStore = get()
-					store.send(.startSign)
+                    toggleAllowDismissal()
 
-					bag += store.onAction(.sign(event: .failed)) {
-						handleError()
-					}
+                    let store: OfferStore = get()
+                    store.send(.startSign)
 
-					bag += store.onAction(.sign(event: .done)) {
-						completion(.success)
-					}
-				}
+                    bag += store.onAction(.sign(event: .failed)) {
+                        handleError()
+                    }
 
-				return bag
-			}
-		)
-	}
+                    bag += store.onAction(.sign(event: .done)) {
+                        completion(.success)
+                    }
+                }
+
+                return bag
+            }
+        )
+    }
 }
 
 extension Localization.Locale.Market {
-	fileprivate var masking: Masking {
-		switch self {
-		case .no: return .init(type: .norwegianPersonalNumber)
-		case .se: return .init(type: .personalNumber)
-		case .dk: return .init(type: .danishPersonalNumber)
-		}
-	}
+    fileprivate var masking: Masking {
+        switch self {
+        case .no: return .init(type: .norwegianPersonalNumber)
+        case .se: return .init(type: .personalNumber)
+        case .dk: return .init(type: .danishPersonalNumber)
+        }
+    }
 }
