@@ -36,7 +36,7 @@ public enum ContractAction: ActionProtocol {
     case closeCrossSellingSigned
     case openDetail(contract: Contract)
     case openTerminatedContracts
-    case didSignCrossSell(crossSell: CrossSell)
+    case didSignFocusedCrossSell
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {
@@ -67,6 +67,11 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .map {
                     .setContracts(contracts: $0)
                 }
+        case .didSignFocusedCrossSell:
+            return [
+                .fetchContracts,
+                .fetchContractBundles
+            ].emitEachThenEnd
         default:
             break
         }
@@ -95,8 +100,9 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             }
         case let .setFocusedCrossSell(focusedCrossSell):
             newState.focusedCrossSell = focusedCrossSell
-        case let .didSignCrossSell(crossSell):
-            newState.signedCrossSells = [newState.signedCrossSells, [crossSell]].flatMap { $0 }
+        case .didSignFocusedCrossSell:
+            newState.focusedCrossSell = nil
+            newState.signedCrossSells = [newState.signedCrossSells, [newState.focusedCrossSell].compactMap { $0 }].flatMap { $0 }
         default:
             break
         }
