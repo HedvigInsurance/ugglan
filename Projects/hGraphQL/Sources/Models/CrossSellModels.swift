@@ -7,7 +7,7 @@ public struct CrossSellInfo: Codable, Equatable {
     public var faqs: [FAQ]
     public var insurableLimits: [InsurableLimits]
     public var insuranceTerms: [InsuranceTerm]
-    
+
     init(
         headerImageURL: URL,
         _ data: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info
@@ -16,7 +16,9 @@ public struct CrossSellInfo: Codable, Equatable {
         self.headerImageURL = headerImageURL
         self.highlights = data.highlights.map { highlight in Highlight(highlight) }
         self.faqs = data.faq.map { faq in FAQ(faq) }
-        self.insurableLimits = data.insurableLimits.map { insurableLimit in InsurableLimits(fragment: insurableLimit.fragments.insurableLimitFragment) }
+        self.insurableLimits = data.insurableLimits.map { insurableLimit in
+            InsurableLimits(fragment: insurableLimit.fragments.insurableLimitFragment)
+        }
         self.insuranceTerms = data.insuranceTerms.compactMap { insuranceTerm in InsuranceTerm(insuranceTerm) }
     }
 }
@@ -85,7 +87,7 @@ public struct CrossSell: Codable, Equatable {
             forKey: Self.hasBeenSeenKey(typeOfContract: data.contractType.rawValue)
         )
         typeOfContract = data.contractType.rawValue
-        
+
         if let info = data.info {
             self.info = CrossSellInfo(headerImageURL: parsedImageURL, info)
         } else {
