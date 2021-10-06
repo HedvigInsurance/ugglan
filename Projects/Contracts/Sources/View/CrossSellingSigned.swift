@@ -57,10 +57,10 @@ public struct CrossSellingSigned: View {
                     if let crossSell = store.state.focusedCrossSell {
                         store.send(.didSignCrossSell(crossSell: crossSell))
                     }
-                    
+
                     store.send(.setFocusedCrossSell(focusedCrossSell: nil))
                     store.send(.closeCrossSellingSigned)
-                    
+
                     store.send(.fetchContracts)
                     store.send(.fetchContractBundles)
                 } content: {
