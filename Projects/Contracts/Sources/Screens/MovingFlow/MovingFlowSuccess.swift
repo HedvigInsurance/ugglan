@@ -10,8 +10,10 @@ import hGraphQL
 
 public struct MovingFlowSuccess {
     var startDate: Date?
-    
-    public init(startDate: Date?) {
+
+    public init(
+        startDate: Date?
+    ) {
         self.startDate = startDate
     }
 }
