@@ -8,7 +8,7 @@ struct CrossSellingCardLabel: View {
     @PresentableStore var store: ContractStore
     let crossSell: hGraphQL.CrossSell
     var didTapButton: () -> Void
-    
+
     var body: some View {
         VStack {
             HStack(alignment: .bottom) {
@@ -38,7 +38,7 @@ struct CrossSellingCardLabel: View {
 
 struct CrossSellingCardButtonStyle: SwiftUI.ButtonStyle {
     let crossSell: hGraphQL.CrossSell
-    
+
     @ViewBuilder func background(configuration: Configuration) -> some View {
         if configuration.isPressed {
             hOverlayColor.pressed.opacity(0.2)
@@ -46,7 +46,7 @@ struct CrossSellingCardButtonStyle: SwiftUI.ButtonStyle {
             Color.clear
         }
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration
             .label
@@ -72,7 +72,7 @@ struct CrossSellingCardButtonStyle: SwiftUI.ButtonStyle {
 struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
     let crossSell: hGraphQL.CrossSell
-    
+
     func didTapButton() {
         if let name = crossSell.embarkStoryName {
             store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
@@ -89,7 +89,8 @@ struct CrossSellingItem: View {
             CrossSellingCardLabel(crossSell: crossSell) {
                 didTapButton()
             }
-        }.buttonStyle(CrossSellingCardButtonStyle(crossSell: crossSell))
+        }
+        .buttonStyle(CrossSellingCardButtonStyle(crossSell: crossSell))
     }
 }
 
