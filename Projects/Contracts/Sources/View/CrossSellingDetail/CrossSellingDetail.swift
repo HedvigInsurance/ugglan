@@ -51,7 +51,8 @@ public struct CrossSellingDetail: View {
                     }
                 } content: {
                     hText("Calculate your price")
-                }.padding(16)
+                }
+                .padding(16)
             }
             .background(hBackgroundColor.secondary)
         }

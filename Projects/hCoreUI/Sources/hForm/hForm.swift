@@ -4,7 +4,6 @@ import Foundation
 import SwiftUI
 import UIKit
 import hCore
-import Combine
 
 private struct EnvironmentHFormBottomAttachedView: EnvironmentKey {
     static let defaultValue: AnyView? = nil
@@ -47,11 +46,13 @@ public struct hForm<Content: View>: View {
                     .frame(height: bottomAttachedViewHeight)
             }
             bottomAttachedView
-                .background(GeometryReader { geo in
-                    Color.clear.onReceive(Just(geo.size.height)) { height in
-                        self.bottomAttachedViewHeight = height
+                .background(
+                    GeometryReader { geo in
+                        Color.clear.onReceive(Just(geo.size.height)) { height in
+                            self.bottomAttachedViewHeight = height
+                        }
                     }
-                })
+                )
                 .frame(maxHeight: .infinity, alignment: .bottom)
         }
     }
