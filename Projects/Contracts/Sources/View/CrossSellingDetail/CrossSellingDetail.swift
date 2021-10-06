@@ -6,6 +6,7 @@ import hCoreUI
 import hGraphQL
 
 public struct CrossSellingDetail: View {
+    @PresentableStore var store: ContractStore
     var crossSell: CrossSell
 
     public init(
@@ -38,7 +39,21 @@ public struct CrossSellingDetail: View {
 
             if let info = crossSell.info {
                 CrossSellHightlights(info: info)
+                CrossSellAbout(info: info)
             }
+        }
+        .hFormAttachToBottom {
+            VStack {
+                hGrayscaleColor.one.frame(height: .hairlineWidth)
+                hButton.LargeButtonFilled {
+                    if let embarkStoryName = crossSell.embarkStoryName {
+                        store.send(.openCrossSellingEmbark(name: embarkStoryName))
+                    }
+                } content: {
+                    hText("Calculate your price")
+                }.padding(16)
+            }
+            .background(hBackgroundColor.secondary)
         }
         .edgesIgnoringSafeArea(.top)
     }
