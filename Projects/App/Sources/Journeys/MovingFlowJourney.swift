@@ -48,8 +48,8 @@ extension AppJourney {
                         DismissJourney()
                     case .menu:
                         ContinueJourney()
-                    case .signed:
-                        Journey(MovingFlowSuccess()) { _ in
+                    case let .signed(_, startDates):
+                        Journey(MovingFlowSuccess(startDate: startDates.first?.value)) { _ in
                             DismissJourney().withCompletedToast
                         }
                         .hidesBackButton.withJourneyDismissButton
