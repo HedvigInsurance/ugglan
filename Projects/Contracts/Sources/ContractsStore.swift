@@ -12,6 +12,7 @@ public struct ContractState: StateProtocol {
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
+    public var signedCrossSells: [CrossSell] = []
 }
 
 extension ContractState {
@@ -35,6 +36,7 @@ public enum ContractAction: ActionProtocol {
     case closeCrossSellingSigned
     case openDetail(contract: Contract)
     case openTerminatedContracts
+    case didSignCrossSell(crossSell: CrossSell)
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {
@@ -93,6 +95,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             }
         case let .setFocusedCrossSell(focusedCrossSell):
             newState.focusedCrossSell = focusedCrossSell
+        case let .didSignCrossSell(crossSell):
+            newState.signedCrossSells = [newState.signedCrossSells, [crossSell]].flatMap { $0 }
         default:
             break
         }

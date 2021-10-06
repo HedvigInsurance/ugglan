@@ -103,6 +103,11 @@ extension CrossSellingSigned {
         }
         .onPresent {
             let store: ContractStore = globalPresentableStoreContainer.get()
+            
+            if let crossSell = store.state.focusedCrossSell {
+                store.send(.didSignCrossSell(crossSell: crossSell))
+            }
+            
             store.send(.fetchContracts)
             store.send(.fetchContractBundles)
         }

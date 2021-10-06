@@ -7,8 +7,10 @@ struct CrossSellingStack: View {
     var body: some View {
         PresentableStoreLens(
             ContractStore.self,
-            getter: {
-                $0.contractBundles.flatMap { $0.crossSells }
+            getter: { state in
+                state.contractBundles.flatMap { $0.crossSells }.filter { crossSell in
+                    !state.signedCrossSells.contains(crossSell)
+                }
             }
         ) { crossSells in
             if !crossSells.isEmpty {
