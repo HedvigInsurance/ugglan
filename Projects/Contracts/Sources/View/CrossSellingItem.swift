@@ -67,7 +67,8 @@ struct CrossSellingItemPreviews: PreviewProvider {
             blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
             buttonText: "Calculate price",
             embarkStoryName: nil,
-            typeOfContract: "SE_ACCIDENT"
+            typeOfContract: "SE_ACCIDENT",
+            info: nil
         )
     )
 
@@ -79,7 +80,8 @@ struct CrossSellingItemPreviews: PreviewProvider {
             blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
             buttonText: "Calculate price",
             embarkStoryName: nil,
-            typeOfContract: "SE_ACCIDENT"
+            typeOfContract: "SE_ACCIDENT",
+            info: nil
         )
     )
 
