@@ -70,8 +70,9 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         case .didSignFocusedCrossSell:
             return [
                 .fetchContracts,
-                .fetchContractBundles
-            ].emitEachThenEnd
+                .fetchContractBundles,
+            ]
+            .emitEachThenEnd
         default:
             break
         }
@@ -102,7 +103,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             newState.focusedCrossSell = focusedCrossSell
         case .didSignFocusedCrossSell:
             newState.focusedCrossSell = nil
-            newState.signedCrossSells = [newState.signedCrossSells, [newState.focusedCrossSell].compactMap { $0 }].flatMap { $0 }
+            newState.signedCrossSells = [newState.signedCrossSells, [newState.focusedCrossSell].compactMap { $0 }]
+                .flatMap { $0 }
         default:
             break
         }
