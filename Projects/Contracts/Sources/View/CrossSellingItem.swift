@@ -10,20 +10,18 @@ struct CrossSellingCardLabel: View {
     var didTapButton: () -> Void
 
     var body: some View {
-        VStack {
-            HStack(alignment: .bottom) {
-                VStack(alignment: .leading, spacing: 4) {
-                    hText(crossSell.title, style: .headline)
-                    hText(crossSell.description, style: .footnote)
-                }
-                .foregroundColor(hLabelColor.primary)
-                .colorScheme(.dark)
-                Spacer()
-                hButton.SmallButtonFilled {
-                    didTapButton()
-                } content: {
-                    hText(crossSell.buttonText)
-                }
+        VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
+                hText(crossSell.title, style: .headline)
+                hText(crossSell.description, style: .footnote)
+            }
+            .foregroundColor(hLabelColor.primary)
+            .colorScheme(.dark)
+            Spacer()
+            hButton.SmallButtonFilled {
+                didTapButton()
+            } content: {
+                hText(crossSell.buttonText)
             }
             .hButtonFilledStyle(.overImage)
         }
@@ -54,7 +52,7 @@ struct CrossSellingCardButtonStyle: SwiftUI.ButtonStyle {
             .background(
                 LinearGradient(
                     gradient: Gradient(
-                        colors: [.clear, .black.opacity(0.5)]
+                        colors: [.black.opacity(0.5), .clear]
                     ),
                     startPoint: .top,
                     endPoint: .bottom
