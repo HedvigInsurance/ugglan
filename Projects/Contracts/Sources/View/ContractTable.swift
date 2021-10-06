@@ -73,9 +73,10 @@ extension ContractTable: View {
                         .onTap {
                             store.send(.openTerminatedContracts)
                         }
-                    }
+                    }.transition(.opacity)
                 }
             }
+            .presentableStoreLensAnimation(.spring())
         }
     }
 }

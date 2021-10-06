@@ -109,6 +109,10 @@ extension Contracts {
                 resultJourney(.movingFlow)
             }
         }
+        .onPresent({
+            let store: ContractStore = globalPresentableStoreContainer.get()
+            store.send(.resetSignedCrossSells)
+        })
         .addConfiguration({ presenter in
             if let navigationController = presenter.viewController as? UINavigationController {
                 navigationController.isHeroEnabled = true

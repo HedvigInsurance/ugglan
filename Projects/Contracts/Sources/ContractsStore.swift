@@ -37,6 +37,7 @@ public enum ContractAction: ActionProtocol {
     case openDetail(contract: Contract)
     case openTerminatedContracts
     case didSignFocusedCrossSell
+    case resetSignedCrossSells
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {
@@ -105,6 +106,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             newState.focusedCrossSell = nil
             newState.signedCrossSells = [newState.signedCrossSells, [newState.focusedCrossSell].compactMap { $0 }]
                 .flatMap { $0 }
+        case .resetSignedCrossSells:
+            newState.signedCrossSells = []
         default:
             break
         }
