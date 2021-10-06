@@ -97,7 +97,7 @@ extension Chat: Presentable {
 
         let viewController = AccessoryViewController(accessoryView: chatInput)
         viewController.navigationItem.largeTitleDisplayMode = .never
-
+        
         let sectionStyle = SectionStyle(
             insets: .zero,
             rowInsets: .zero,
@@ -233,6 +233,12 @@ extension Chat: Presentable {
         }
 
         bag += viewController.install(tableKit, options: [])
+        
+        bag += tableKit.view.didMoveToWindowSignal.onFirstValue { _ in
+            if let navigationController = viewController.navigationController {
+                navigationController.navigationBar.scrollEdgeAppearance = UINavigationBar().standardAppearance
+            }
+        }
 
         bag += DelayedDisposer(
             Disposer {
