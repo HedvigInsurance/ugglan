@@ -79,7 +79,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         case let .openCrossSellingDetail(crossSell):
             return [
                 .setFocusedCrossSell(focusedCrossSell: crossSell)
-            ].emitEachThenEnd
+            ]
+            .emitEachThenEnd
         default:
             break
         }

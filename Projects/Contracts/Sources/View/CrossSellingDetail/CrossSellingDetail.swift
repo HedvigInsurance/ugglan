@@ -1,25 +1,19 @@
-//
-//  CrossSellingInfo.swift
-//  CrossSellingInfo
-//
-//  Created by Sam Pettersson on 2021-10-06.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
-import SwiftUI
-import hCoreUI
-import hCore
-import hGraphQL
 import Presentation
+import SwiftUI
+import hCore
+import hCoreUI
+import hGraphQL
 
 public struct CrossSellingDetail: View {
     var crossSell: CrossSell
-    
-    public init(crossSell: CrossSell) {
+
+    public init(
+        crossSell: CrossSell
+    ) {
         self.crossSell = crossSell
     }
-    
+
     public var body: some View {
         hForm {
             VStack {
@@ -34,17 +28,19 @@ public struct CrossSellingDetail: View {
             .frame(height: 250)
             .backgroundImageWithBlurHashFallback(imageURL: crossSell.imageURL, blurHash: crossSell.blurHash)
             .clipped()
-            
+
             hSection {
                 VStack(alignment: .leading) {
                     hText(crossSell.title, style: .title1)
                 }
-            }.sectionContainerStyle(.transparent)
-            
+            }
+            .sectionContainerStyle(.transparent)
+
             if let info = crossSell.info {
                 CrossSellHightlights(info: info)
             }
-        }.edgesIgnoringSafeArea(.top)
+        }
+        .edgesIgnoringSafeArea(.top)
     }
 }
 
@@ -70,6 +66,7 @@ extension CrossSellingDetail {
             } else if case .openCrossSellingChat = action {
                 next(.chat)
             }
-        }.withDismissButton
+        }
+        .withDismissButton
     }
 }
