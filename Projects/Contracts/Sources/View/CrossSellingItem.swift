@@ -4,10 +4,11 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct CrossSellingItem: View {
+struct CrossSellingCardLabel: View {
     @PresentableStore var store: ContractStore
     let crossSell: hGraphQL.CrossSell
-
+    var didTapButton: () -> Void
+    
     var body: some View {
         VStack {
             HStack(alignment: .bottom) {
@@ -19,12 +20,7 @@ struct CrossSellingItem: View {
                 .colorScheme(.dark)
                 Spacer()
                 hButton.SmallButtonFilled {
-                    if let name = crossSell.embarkStoryName {
-                        store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
-                        store.send(.openCrossSellingEmbark(name: name))
-                    } else {
-                        store.send(.goToFreeTextChat)
-                    }
+                    didTapButton()
                 } content: {
                     hText(crossSell.buttonText)
                 }
@@ -37,21 +33,63 @@ struct CrossSellingItem: View {
             minHeight: 200,
             alignment: .bottom
         )
-        .background(
-            LinearGradient(
-                gradient: Gradient(
-                    colors: [.clear, .black.opacity(0.5)]
-                ),
-                startPoint: .top,
-                endPoint: .bottom
+    }
+}
+
+struct CrossSellingCardButtonStyle: SwiftUI.ButtonStyle {
+    let crossSell: hGraphQL.CrossSell
+    
+    @ViewBuilder func background(configuration: Configuration) -> some View {
+        if configuration.isPressed {
+            hOverlayColor.pressed.opacity(0.2)
+        } else {
+            Color.clear
+        }
+    }
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration
+            .label
+            .background(background(configuration: configuration))
+            .background(
+                LinearGradient(
+                    gradient: Gradient(
+                        colors: [.clear, .black.opacity(0.5)]
+                    ),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
             )
-        )
-        .backgroundImageWithBlurHashFallback(
-            imageURL: crossSell.imageURL,
-            blurHash: crossSell.blurHash
-        )
-        .cornerRadius(.defaultCornerRadius)
-        .shadow(color: .black.opacity(0.05), radius: 24, x: 0, y: 4)
+            .backgroundImageWithBlurHashFallback(
+                imageURL: crossSell.imageURL,
+                blurHash: crossSell.blurHash
+            )
+            .cornerRadius(.defaultCornerRadius)
+            .shadow(color: .black.opacity(0.05), radius: 24, x: 0, y: 4)
+    }
+}
+
+struct CrossSellingItem: View {
+    @PresentableStore var store: ContractStore
+    let crossSell: hGraphQL.CrossSell
+    
+    func didTapButton() {
+        if let name = crossSell.embarkStoryName {
+            store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
+            store.send(.openCrossSellingEmbark(name: name))
+        } else {
+            store.send(.goToFreeTextChat)
+        }
+    }
+
+    var body: some View {
+        SwiftUI.Button {
+            didTapButton()
+        } label: {
+            CrossSellingCardLabel(crossSell: crossSell) {
+                didTapButton()
+            }
+        }.buttonStyle(CrossSellingCardButtonStyle(crossSell: crossSell))
     }
 }
 
