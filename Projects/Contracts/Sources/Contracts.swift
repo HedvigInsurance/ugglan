@@ -38,7 +38,7 @@ public indirect enum ContractFilter {
 
 public struct Contracts {
     @PresentableStore var store: ContractStore
-    let pollTimer = Timer.publish(every: 6, on: .main, in: .common).autoconnect()
+    let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let filter: ContractFilter
 
     public init(
