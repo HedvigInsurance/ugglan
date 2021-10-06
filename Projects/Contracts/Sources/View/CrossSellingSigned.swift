@@ -54,8 +54,15 @@ public struct CrossSellingSigned: View {
         .hFormAttachToBottom {
             hSection {
                 hButton.LargeButtonFilled {
+                    if let crossSell = store.state.focusedCrossSell {
+                        store.send(.didSignCrossSell(crossSell: crossSell))
+                    }
+                    
                     store.send(.setFocusedCrossSell(focusedCrossSell: nil))
                     store.send(.closeCrossSellingSigned)
+                    
+                    store.send(.fetchContracts)
+                    store.send(.fetchContractBundles)
                 } content: {
                     hText(L10n.toolbarDoneButton)
                 }
@@ -100,16 +107,6 @@ extension CrossSellingSigned {
             if action == .closeCrossSellingSigned {
                 DismissJourney()
             }
-        }
-        .onPresent {
-            let store: ContractStore = globalPresentableStoreContainer.get()
-
-            if let crossSell = store.state.focusedCrossSell {
-                store.send(.didSignCrossSell(crossSell: crossSell))
-            }
-
-            store.send(.fetchContracts)
-            store.send(.fetchContractBundles)
         }
         .addConfiguration { presenter in
             presenter.viewController.navigationItem.hidesBackButton = true
