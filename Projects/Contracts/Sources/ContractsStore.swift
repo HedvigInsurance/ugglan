@@ -32,6 +32,8 @@ public enum ContractAction: ActionProtocol {
     case goToFreeTextChat
     case setFocusedCrossSell(focusedCrossSell: CrossSell?)
     case openCrossSellingEmbark(name: String)
+    case openCrossSellingChat
+    case openCrossSellingDetail(crossSell: CrossSell)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
     case openDetail(contract: Contract)
@@ -74,6 +76,10 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .fetchContractBundles,
             ]
             .emitEachThenEnd
+        case let .openCrossSellingDetail(crossSell):
+            return [
+                .setFocusedCrossSell(focusedCrossSell: crossSell)
+            ].emitEachThenEnd
         default:
             break
         }

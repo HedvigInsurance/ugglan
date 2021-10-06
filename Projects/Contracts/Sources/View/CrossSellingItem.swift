@@ -74,12 +74,7 @@ struct CrossSellingItem: View {
     let crossSell: hGraphQL.CrossSell
 
     func didTapCard() {
-        if let name = crossSell.embarkStoryName {
-            store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
-            store.send(.openCrossSellingEmbark(name: name))
-        } else {
-            store.send(.goToFreeTextChat)
-        }
+        store.send(.openCrossSellingDetail(crossSell: crossSell))
     }
 
     var body: some View {
