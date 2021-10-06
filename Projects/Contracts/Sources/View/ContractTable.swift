@@ -42,9 +42,11 @@ extension ContractTable: View {
                     ContractRow(contract: contract)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 15)
+                        .transition(.slide)
                 }
             }
         }
+        .presentableStoreLensAnimation(.spring())
         .sectionContainerStyle(.transparent)
 
         if self.filter.displaysActiveContracts {
