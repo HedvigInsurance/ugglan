@@ -22,7 +22,7 @@ public struct UgglanState: StateProtocol {
 
 public enum UgglanAction: ActionProtocol {
     case setSelectedTabIndex(index: Int)
-    case makeForeverTabActive
+    case makeTabActive(deeplink: DeepLink)
     case fetchFeatures
     case setFeatures(features: [UgglanState.Feature]?)
     case showLoggedIn
@@ -30,27 +30,13 @@ public enum UgglanAction: ActionProtocol {
     case exchangeFailed
     case didAcceptHonestyPledge
     case openChat
-
-    #if compiler(<5.5)
-        public func encode(to encoder: Encoder) throws {
-            #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-            fatalError()
-        }
-
-        public init(
-            from decoder: Decoder
-        ) throws {
-            #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-            fatalError()
-        }
-    #endif
 }
 
 public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
     @Inject var client: ApolloClient
 
     public override func effects(
-        _ getState: () -> UgglanState,
+        _ getState: @escaping () -> UgglanState,
         _ action: UgglanAction
     ) -> FiniteSignal<UgglanAction>? {
         switch action {

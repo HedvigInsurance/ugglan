@@ -31,7 +31,11 @@ struct PostOnboarding {
         bag += paymentButton.onTapSignal.onValue { _ in onAction(.payment) }
 
         let payment = ImageTextAction<TableAction>(
-            image: .init(image: Asset.paymentSetupIllustration.image),
+            image: .init(
+                image: Asset.paymentSetupIllustration.image,
+                size: CGSize(width: CGFloat.infinity, height: 200),
+                contentMode: .scaleAspectFit
+            ),
             title: L10n.PayInExplainer.headline,
             body: isSwitching ? L10n.onboardingConnectDdBodySwitchers : L10n.PayInExplainer.body,
             actions: [(.payment, paymentButton)],
@@ -56,7 +60,11 @@ struct PostOnboarding {
         bag += pushNotificationsSkipButton.onTapSignal.onValue { _ in onAction(.pushSkip) }
 
         let pushNotifications = ImageTextAction<TableAction>(
-            image: .init(image: Asset.activatePushNotificationsIllustration.image),
+            image: .init(
+                image: Asset.activatePushNotificationsIllustration.image,
+                size: CGSize(width: CGFloat.infinity, height: 200),
+                contentMode: .scaleAspectFit
+            ),
             title: L10n.onboardingActivateNotificationsHeadline,
             body: L10n.onboardingActivateNotificationsBody,
             actions: [(.push, pushNotificationsDoButton), (.pushSkip, pushNotificationsSkipButton)],

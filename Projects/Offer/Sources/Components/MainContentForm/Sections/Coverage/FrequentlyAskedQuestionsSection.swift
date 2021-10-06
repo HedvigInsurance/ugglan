@@ -7,13 +7,13 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct FrequentlyAskedQuestionsSection {
-    @Inject var state: OldOfferState
-}
+struct FrequentlyAskedQuestionsSection {}
 
 extension FrequentlyAskedQuestionsSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let bag = DisposeBag()
+
+        let store: OfferStore = self.get()
 
         let section = SectionView(
             headerView: UILabel(value: L10n.Offer.faqTitle, style: .default),
@@ -51,7 +51,12 @@ extension FrequentlyAskedQuestionsSection: Presentable {
         )
         section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
-        bag += state.dataSignal.compactMap { $0.quoteBundle.frequentlyAskedQuestions }
+        bag += store.stateSignal.map { $0.offerData?.quoteBundle.appConfiguration.showFaq ?? false }
+            .onValue { shouldShowFaq in
+                section.isHidden = !shouldShowFaq
+            }
+
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.frequentlyAskedQuestions }
             .onValueDisposePrevious { frequentlyAskedQuestions in
                 let innerBag = DisposeBag()
 

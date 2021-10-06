@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct MultiQuoteCoverage {
-    let quotes: [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote]
+    let quotes: [QuoteBundle.Quote]
 }
 
 extension MultiQuoteCoverage: Presentable {

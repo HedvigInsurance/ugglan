@@ -17,6 +17,10 @@ extension DefaultStyling {
         return UIColor.white
     })
 
+    public static let navigationBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
+        return .brand(.primaryBackground())
+    })
+
     @available(iOS 13, *)
     public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
         appearance.titleTextAttributes = [
@@ -49,89 +53,31 @@ extension DefaultStyling {
             return appearance
         }
 
-        func shadowImage(for traitCollection: UITraitCollection) -> UIImage? {
-            if traitCollection.userInterfaceLevel == .elevated {
-                return UIColor.clear.asImage()
-            }
-
-            return UIColor.brand(.primaryBorderColor).resolvedColor(with: traitCollection).asImage()
-        }
-
-        func standardAppearance(for traitCollection: UITraitCollection) -> UINavigationBarAppearance {
+        func standardAppearance() -> UINavigationBarAppearance {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithDefaultBackground()
-            appearance.backgroundColor = tabBarBackgroundColor
-            appearance.shadowImage = shadowImage(for: traitCollection)
+            appearance.backgroundColor = navigationBarBackgroundColor
+            appearance.shadowImage = UIColor.clear.asImage()
 
             applyCommonNavigationBarStyling(appearance)
 
             return appearance
         }
 
-        func compactAppearance(for traitCollection: UITraitCollection) -> UINavigationBarAppearance {
+        func compactAppearance() -> UINavigationBarAppearance {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithDefaultBackground()
-            appearance.backgroundColor = tabBarBackgroundColor
-            appearance.shadowImage = shadowImage(for: traitCollection)
+            appearance.backgroundColor = navigationBarBackgroundColor
+            appearance.shadowImage = UIColor.clear.asImage()
 
             applyCommonNavigationBarStyling(appearance)
 
             return appearance
         }
-
-        let lightAndBaseTrait = UITraitCollection(traitsFrom: [
-            UITraitCollection(userInterfaceStyle: .light),
-            UITraitCollection(userInterfaceLevel: .base),
-        ])
-        UINavigationBar.appearance(
-            for: lightAndBaseTrait
-        )
-        .standardAppearance = standardAppearance(for: lightAndBaseTrait)
-        UINavigationBar.appearance(
-            for: lightAndBaseTrait
-        )
-        .compactAppearance = compactAppearance(for: lightAndBaseTrait)
-
-        let darkAndBaseTrait = UITraitCollection(traitsFrom: [
-            UITraitCollection(userInterfaceStyle: .dark),
-            UITraitCollection(userInterfaceLevel: .base),
-        ])
-        UINavigationBar.appearance(
-            for: darkAndBaseTrait
-        )
-        .standardAppearance = standardAppearance(for: darkAndBaseTrait)
-        UINavigationBar.appearance(
-            for: darkAndBaseTrait
-        )
-        .compactAppearance = compactAppearance(for: darkAndBaseTrait)
-
-        let lightAndElevatedTrait = UITraitCollection(traitsFrom: [
-            UITraitCollection(userInterfaceStyle: .light),
-            UITraitCollection(userInterfaceLevel: .elevated),
-        ])
-        UINavigationBar.appearance(
-            for: lightAndElevatedTrait
-        )
-        .standardAppearance = standardAppearance(for: lightAndElevatedTrait)
-        UINavigationBar.appearance(
-            for: lightAndElevatedTrait
-        )
-        .compactAppearance = compactAppearance(for: lightAndElevatedTrait)
-
-        let darkAndElevatedTrait = UITraitCollection(traitsFrom: [
-            UITraitCollection(userInterfaceStyle: .dark),
-            UITraitCollection(userInterfaceLevel: .elevated),
-        ])
-        UINavigationBar.appearance(
-            for: darkAndElevatedTrait
-        )
-        .standardAppearance = standardAppearance(for: darkAndElevatedTrait)
-        UINavigationBar.appearance(
-            for: darkAndElevatedTrait
-        )
-        .compactAppearance = compactAppearance(for: darkAndElevatedTrait)
 
         UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance()
+        UINavigationBar.appearance().standardAppearance = standardAppearance()
+        UINavigationBar.appearance().compactAppearance = compactAppearance()
     }
 
     public static func installCustom() {

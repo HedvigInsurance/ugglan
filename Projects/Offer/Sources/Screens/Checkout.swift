@@ -7,7 +7,6 @@ import hCore
 import hCoreUI
 
 struct Checkout {
-    @Inject var state: OldOfferState
 }
 
 enum CheckoutError: Error {
@@ -41,10 +40,12 @@ extension Checkout: Presentable {
         viewController.title = L10n.checkoutTitle
         let bag = DisposeBag()
 
+        let store: OfferStore = self.get()
+
         let form = FormView()
         bag += viewController.install(form)
 
-        bag += state.dataSignal.compactMap { $0.quoteBundle }
+        bag += store.stateSignal.atOnce().compactMap { $0.offerData?.quoteBundle }
             .onFirstValue({ quoteBundle in
                 let header = UIStackView()
                 header.spacing = 16
@@ -133,7 +134,7 @@ extension Checkout: Presentable {
 
                         join(
                             quoteBundle.quotes.map { quote in
-                                state.checkoutUpdate(
+                                store.checkoutUpdate(
                                     quoteId: quote.id,
                                     email: emailMasking.unmaskedValue(
                                         text: emailTextField.value

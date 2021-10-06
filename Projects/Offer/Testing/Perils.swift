@@ -2,7 +2,7 @@ import Apollo
 import Foundation
 import hGraphQL
 
-func generatePerils() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.Peril] {
+func generatePerils() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.ContractPeril] {
     return .init(
         repeating: .init(
             title: "Delays",
@@ -22,8 +22,7 @@ func generatePerils() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote.Peril]
                 "Delayed luggage on the return journey",
                 "Delay, cancellation or overbooking covered by EU Directive 261/2004 for which the airlines themselves are responsible",
                 "Financial loss or damage directly/indirectly caused by strikes, labour conflicts, lockouts or bankruptcy",
-            ],
-            info: ""
+            ]
         ),
         count: 15
     )

@@ -1,0 +1,80 @@
+query ActiveContractBundles($locale: Locale!) {
+  activeContractBundles {
+    id
+    contracts {
+      id
+      statusPills(locale: $locale)
+      detailPills(locale: $locale)
+      displayName
+      gradientOption
+      switchedFromInsuranceProvider
+      upcomingRenewal {
+        renewalDate
+        draftCertificateUrl
+      }
+      contractPerils(locale: $locale) {
+        ...PerilFragment
+      }
+      insurableLimits(locale: $locale) {
+        ...InsurableLimitFragment
+      }
+      termsAndConditions(locale: $locale) {
+        displayName
+        url
+      }
+      currentAgreementDetailsTable(locale: $locale) {
+        ...DetailsTableFragment
+      }
+      upcomingAgreementDetailsTable(locale: $locale) {
+        ...DetailsTableFragment
+      }
+      status {
+        ... on ActiveStatus {
+          upcomingAgreementChange {
+            newAgreement {
+              ... on AgreementCore {
+                activeFrom
+              }
+            }
+          }
+        }
+      }
+      supportsAddressChange
+      currentAgreement {
+        ... on AgreementCore {
+          certificateUrl
+          activeFrom
+          activeTo
+          status
+          premium {
+            ...MonetaryAmountFragment
+          }
+        }
+      }
+    }
+    angelStories {
+      addressChange
+    }
+    potentialCrossSells {
+      contractType
+      title
+      description
+      imageUrl
+      blurHash
+      callToAction
+      info(locale: $locale) {
+        displayName
+      }
+      action {
+        ... on CrossSellChat {
+          _
+        }
+        ... on CrossSellEmbark {
+          embarkStory(locale: $locale) {
+            name
+          }
+        }
+      }
+    }
+  }
+}

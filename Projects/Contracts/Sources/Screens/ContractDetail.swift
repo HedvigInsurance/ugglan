@@ -3,21 +3,19 @@ import Form
 import Foundation
 import Hero
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 
 struct ContractDetail {
     var contractRow: ContractRow
-    let state: ContractsState
 
     init(
-        contractRow: ContractRow,
-        state: ContractsState
+        contractRow: ContractRow
     ) {
         self.contractRow = contractRow
         self.contractRow.allowDetailNavigation = false
-        self.state = state
     }
 }
 
@@ -31,18 +29,19 @@ extension ContractDetail: Presentable {
 
         form.appendSpacing(.inbetween)
 
-        let (contractRowView, configureContractRow) = ContractRow.makeAndConfigure()
-        bag += configureContractRow(contractRow)
+        let contractRowHost = HostingView(
+            rootView: VStack {
+                contractRow
+            }
+            .padding(16)
+        )
+        form.append(contractRowHost)
 
-        form.append(contractRowView)
-
-        let contractInformation = ContractInformation(contract: contractRow.contract, state: state)
+        let contractInformation = ContractInformation(contract: contractRow.contract)
 
         let contractCoverage = ContractCoverage(
-            perilFragments: contractRow.contract.perils.compactMap { $0.fragments.perilFragment },
-            insurableLimitFragments: contractRow.contract.insurableLimits.compactMap {
-                $0.fragments.insurableLimitFragment
-            }
+            perils: contractRow.contract.contractPerils,
+            insurableLimits: contractRow.contract.insurableLimits
         )
 
         let contractDocuments = ContractDocuments(contract: contractRow.contract)

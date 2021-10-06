@@ -7,7 +7,7 @@ import hCore
 import hGraphQL
 
 struct PerilDetail {
-    let perilFragment: GraphQL.PerilFragment
+    let perilFragment: Perils
     let icon: RemoteVectorIcon
 }
 
@@ -93,22 +93,6 @@ extension PerilDetail: Presentable {
 
                 exceptionsSection.append(row)
             }
-        }
-
-        if !perilFragment.info.isEmpty {
-            let infoSection = form.appendSection(
-                header: L10n.perilModalInfoTitle,
-                footer: nil,
-                style: .default
-            )
-
-            let infoRow = RowView()
-
-            bag += infoRow.append(
-                MultilineLabel(value: perilFragment.info, style: .brand(.headline(color: .secondary)))
-            )
-
-            infoSection.append(infoRow)
         }
 
         // only show swipe hint if detents are available on system which is iOS 13+

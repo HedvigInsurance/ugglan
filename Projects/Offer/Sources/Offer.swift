@@ -14,10 +14,8 @@ public enum OfferOption {
 }
 
 public struct Offer {
-    @Inject var client: ApolloClient
     let offerIDContainer: OfferIDContainer
     let menu: hCore.Menu?
-    let state: OldOfferState
     let options: Set<OfferOption>
 
     public init(
@@ -28,12 +26,11 @@ public struct Offer {
         self.offerIDContainer = offerIDContainer
         self.menu = menu
         self.options = options
-        self.state = OldOfferState(ids: offerIDContainer.ids)
     }
 }
 
 public enum OfferResult {
-    case signed
+    case signed(ids: [String], startDates: [String: Date?])
     case close
     case chat
     case menu(_ action: MenuChildAction)
@@ -43,15 +40,11 @@ extension Offer: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<OfferResult>) {
         let viewController = UIViewController()
 
+        let store: OfferStore = self.get()
+
         if options.contains(.shouldPreserveState) {
             ApplicationState.preserveState(.offer)
         }
-
-        Dependencies.shared.add(
-            module: Module {
-                return state
-            }
-        )
 
         if #available(iOS 13.0, *) {
             let appearance = UINavigationBarAppearance()
@@ -62,8 +55,7 @@ extension Offer: Presentable {
         }
 
         let bag = DisposeBag()
-        bag += state.dataSignal.compactMap { $0.quoteBundle.appConfiguration.title }
-            .wait(until: state.isLoadingSignal.map { !$0 })
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.appConfiguration.title }
             .distinct()
             .delay(by: 0.1)
             .onValue { title in
@@ -88,7 +80,7 @@ extension Offer: Presentable {
                     viewController.navigationItem.titleView = .titleWordmarkView
                 case .updateSummary:
                     viewController.title = L10n.offerUpdateSummaryTitle
-                case .__unknown(_):
+                case .unknown:
                     break
                 }
             }
@@ -161,15 +153,15 @@ extension Offer: Presentable {
         return (
             viewController,
             FiniteSignal { callback in
-                let store: OfferStore = self.get()
-                store.send(.set(ids: self.offerIDContainer.ids))
+
+                store.send(.query(ids: self.offerIDContainer.ids))
 
                 bag += store.onAction(.openChat) {
                     callback(.value(.chat))
                 }
 
                 bag += store.onAction(.sign(event: .done)) {
-                    callback(.value(.signed))
+                    callback(.value(.signed(ids: store.state.ids, startDates: store.state.startDates)))
                 }
 
                 if let menu = menu {

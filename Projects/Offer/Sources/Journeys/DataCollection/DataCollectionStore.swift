@@ -40,20 +40,6 @@ public enum DataCollectionAction: ActionProtocol {
     case startAuthentication(personalNumber: String)
     case setStatus(status: DataCollectionStatus)
     case setAuthMethod(method: DataCollectionAuthMethod)
-
-    #if compiler(<5.5)
-        public func encode(to encoder: Encoder) throws {
-            #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-            fatalError()
-        }
-
-        public init(
-            from decoder: Decoder
-        ) throws {
-            #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-            fatalError()
-        }
-    #endif
 }
 
 public final class DataCollectionStore: StateStore<DataCollectionState, DataCollectionAction> {
@@ -117,7 +103,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
     }
 
     public override func effects(
-        _ getState: () -> DataCollectionState,
+        _ getState: @escaping () -> DataCollectionState,
         _ action: DataCollectionAction
     ) -> FiniteSignal<DataCollectionAction>? {
         if case let .startAuthentication(personalNumber) = action,

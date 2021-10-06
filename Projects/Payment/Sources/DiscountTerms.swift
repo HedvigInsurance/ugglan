@@ -22,7 +22,6 @@ extension DiscountTerms: Viewable {
 
         containerStackView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
-        #warning("Check link - directs to hedvig.com's 404")
         let termsAndConditionsString = L10n.referralAddcouponTcLink
         let textStyle = TextStyle.brand(.footnote(color: .secondary)).centerAligned
 

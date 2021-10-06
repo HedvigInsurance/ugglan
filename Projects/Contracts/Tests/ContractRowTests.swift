@@ -1,11 +1,12 @@
-import ContractsTesting
 import Flow
 import Foundation
 import SnapshotTesting
+import SwiftUI
 import Testing
 import TestingUtil
 import XCTest
 import hCoreUI
+import hGraphQL
 
 @testable import Contracts
 
@@ -18,108 +19,68 @@ final class ContractRowTests: XCTestCase {
     }
 
     func assert(_ row: ContractRow) {
-        let view = row.reuseType(bag: bag)
-
-        view.snp.makeConstraints { make in make.width.equalTo(400) }
+        assertSnapshot(
+            matching: row,
+            as: .image(layout: .fixed(width: 375, height: 200)),
+            named: "\(row.contract.displayName)_\(row.contract.currentAgreement.status!)"
+        )
 
         assertSnapshot(
-            matching: view,
-            as: .image,
-            named: "\(row.displayName)_\(row.contract.status.__typename)"
-        )
-
-        view.overrideUserInterfaceStyle = .dark
-
-        assertSnapshot(
-            matching: view,
-            as: .image,
-            named: "\(row.displayName)_\(row.contract.status.__typename)_dark"
+            matching: row.colorScheme(.dark),
+            as: .image(layout: .fixed(width: 375, height: 200)),
+            named: "\(row.contract.displayName)_\(row.contract.currentAgreement.status!)_dark"
         )
     }
 
-    func testNorwegianHome() {
+    func testContractRow() {
         let activeContractRow = ContractRow(
-            contract: try! .init(
-                jsonObject: .makeNorwegianHomeContentContract(status: .makeActiveStatus())
-            ),
-            displayName: "NorwegianHome",
-            type: .norwegianHome,
-            state: .init()
-        )
-
-        assert(activeContractRow)
-
-        let activeInFutureContractRow = ContractRow(
-            contract: try! .init(
-                jsonObject: .makeNorwegianHomeContentContract(
-                    status: .makeActiveInFutureStatus(futureInception: "2020-02-10")
-                )
-            ),
-            displayName: "NorwegianHome",
-            type: .norwegianHome,
-            state: .init()
-        )
-
-        assert(activeInFutureContractRow)
-
-        let pendingContractRow = ContractRow(
-            contract: try! .init(
-                jsonObject: .makeNorwegianHomeContentContract(status: .makePendingStatus())
-            ),
-            displayName: "NorwegianHome",
-            type: .norwegianHome,
-            state: .init()
-        )
-
-        assert(pendingContractRow)
-
-        let activeInFutureAndTerminatedInFutureContractRow = ContractRow(
-            contract: try! .init(
-                jsonObject: .makeNorwegianHomeContentContract(
-                    status: .makeActiveInFutureAndTerminatedInFutureStatus(
-                        futureInception: "2020-02-10",
-                        futureTermination: "2020-02-12"
-                    )
-                )
-            ),
-            displayName: "NorwegianHome",
-            type: .norwegianHome,
-            state: .init()
-        )
-
-        assert(activeInFutureAndTerminatedInFutureContractRow)
-
-        let terminatedContractRow = ContractRow(
-            contract: try! .init(
-                jsonObject: .makeNorwegianHomeContentContract(status: .makeTerminatedStatus())
-            ),
-            displayName: "NorwegianHome",
-            type: .norwegianHome,
-            state: .init()
-        )
-
-        assert(terminatedContractRow)
-    }
-
-    func testNorwegianTravel() {
-        let activeContractRow = ContractRow(
-            contract: try! .init(jsonObject: .makeNorwegianTravelContract(status: .makeActiveStatus())),
-            displayName: "NorwegianTravel",
-            type: .norwegianTravel,
-            state: .init()
+            contract: .mock(displayName: "NorwegianHome", status: .active)
         )
 
         assert(activeContractRow)
     }
+}
 
-    func testSwedishHouse() {
-        let activeContractRow = ContractRow(
-            contract: try! .init(jsonObject: .makeSwedishHouseContract(status: .makeActiveStatus())),
-            displayName: "SwedishHouse",
-            type: .norwegianTravel,
-            state: .init()
+extension Contract {
+    public static func mock(displayName: String, status: ContractStatus) -> Contract {
+        .init(
+            id: "mock_norwegian_123",
+            upcomingAgreementsTable: .mock(),
+            currentAgreementsTable: .mock(),
+            gradientOption: .one,
+            displayName: displayName,
+            switchedFromInsuranceProvider: nil,
+            upcomingRenewal: nil,
+            contractPerils: [],
+            insurableLimits: [],
+            termsAndConditions: .mock(),
+            currentAgreement: .mock(status: status),
+            statusPills: ["TERMINATED"],
+            detailPills: ["ADDRESS", "COVERS YOU + 2"]
         )
+    }
+}
 
-        assert(activeContractRow)
+extension DetailAgreementsTable {
+    public static func mock() -> DetailAgreementsTable {
+        .init(sections: [.init(title: "", rows: [])], title: "Table")
+    }
+}
+
+extension TermsAndConditions {
+    public static func mock() -> TermsAndConditions {
+        .init(displayName: "mock", url: "https://www.mock.com/terms.pdf")
+    }
+}
+
+extension CurrentAgreement {
+    public static func mock(status: ContractStatus) -> CurrentAgreement {
+        .init(
+            certificateUrl: "https://www.mock.com/terms.pdf",
+            activeFrom: nil,
+            activeTo: nil,
+            premium: .init(amount: "100", currency: "SEK"),
+            status: status
+        )
     }
 }

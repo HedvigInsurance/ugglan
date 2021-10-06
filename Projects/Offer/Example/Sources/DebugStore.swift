@@ -9,25 +9,11 @@ public struct DebugState: StateProtocol {
 public enum DebugAction: ActionProtocol {
     case openOffer(fullscreen: Bool, prefersLargeTitles: Bool)
     case openDataCollection
-
-    #if compiler(<5.5)
-        public func encode(to encoder: Encoder) throws {
-            #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-            fatalError()
-        }
-
-        public init(
-            from decoder: Decoder
-        ) throws {
-            #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-            fatalError()
-        }
-    #endif
 }
 
 public final class DebugStore: StateStore<DebugState, DebugAction> {
     public override func effects(
-        _ getState: () -> DebugState,
+        _ getState: @escaping () -> DebugState,
         _ action: DebugAction
     ) -> FiniteSignal<DebugAction>? {
         return nil

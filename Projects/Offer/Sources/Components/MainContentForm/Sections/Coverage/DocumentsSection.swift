@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct DocumentsSection {
-    let quote: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote
+    let quote: QuoteBundle.Quote
 }
 
 extension DocumentsSection: Presentable {

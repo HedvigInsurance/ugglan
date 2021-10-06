@@ -89,7 +89,8 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
         }
 
         self.presentable = AnyPresentable(materialize: {
-            let controller = ViewHostingController(rootView: rootView)
+            let controller = UIHostingController(rootView: rootView)
+            controller.debugPresentationTitle = "\(RootView.self)"
             return (
                 controller,
                 Signal<S.Action> { callback in
@@ -119,9 +120,12 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
     ) where Result == Disposable {
         self.style = style
         self.options = options
-        self.configure = { _ in }
+        self.configure = { presenter in
+            presenter.viewController.debugPresentationTitle = "\(type(of: rootView))"
+        }
         self.presentable = AnyPresentable(materialize: {
-            let controller = ViewHostingController(rootView: rootView)
+            let controller = UIHostingController(rootView: rootView)
+            controller.debugPresentationTitle = "\(RootView.self)"
             return (
                 controller,
                 NilDisposer()
@@ -129,54 +133,5 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
         })
         onDismiss = { _ in }
         self.transform = { $0 }
-    }
-}
-
-private struct EnvironmentPresentableViewUpperScrollView: EnvironmentKey {
-    static let defaultValue: UIScrollView? = nil
-}
-
-extension EnvironmentValues {
-    public var presentableViewUpperScrollView: UIScrollView? {
-        get { self[EnvironmentPresentableViewUpperScrollView.self] }
-        set { self[EnvironmentPresentableViewUpperScrollView.self] = newValue }
-    }
-}
-
-public class ViewHostingController<RootView: View>: UIViewController {
-    let hostingController: UIHostingController<AnyView>
-    let scrollView = UIScrollView()
-
-    init(
-        rootView: RootView
-    ) {
-        self.hostingController = UIHostingController(
-            rootView: AnyView(
-                rootView
-                    .environment(\.presentableViewUpperScrollView, scrollView)
-            )
-        )
-
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(
-        coder: NSCoder
-    ) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        view.addSubview(scrollView)
-        scrollView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        scrollView.backgroundColor = .white
-        scrollView.isScrollEnabled = true
-
-        self.addChild(hostingController)
-        view.addSubview(hostingController.view)
-        hostingController.didMove(toParent: self)
     }
 }

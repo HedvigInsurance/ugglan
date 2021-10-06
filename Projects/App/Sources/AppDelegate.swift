@@ -1,4 +1,5 @@
 import Adyen
+import AdyenActions
 import Apollo
 import CoreDependencies
 import Datadog
@@ -46,8 +47,7 @@ let log = Logger.builder
         ApolloClient.deleteToken()
 
         // remove all persisted state
-        UgglanStore.destroy()
-        OfferStore.destroy()
+        globalPresentableStoreContainer.deletePersistanceContainer()
 
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()
@@ -123,36 +123,6 @@ let log = Logger.builder
         }
     }
 
-    func handleDeepLink(_ dynamicLinkUrl: URL) -> Bool {
-        if dynamicLinkUrl.pathComponents.contains("direct-debit") {
-            guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-            guard let rootViewController = window.rootViewController else { return false }
-
-            Mixpanel.mainInstance().track(event: "DEEP_LINK_DIRECT_DEBIT")
-
-            bag += rootViewController.present(
-                PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
-                style: .modal,
-                options: [.defaults]
-            )
-
-            return true
-        } else if dynamicLinkUrl.pathComponents.contains("forever") {
-            guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return false }
-            bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                .onValue { _ in
-                    let store: UgglanStore = globalPresentableStoreContainer.get()
-                    store.send(.makeForeverTabActive)
-                }
-
-            Mixpanel.mainInstance().track(event: "DEEP_LINK_FOREVER")
-
-            return true
-        }
-
-        return false
-    }
-
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
         let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
 
@@ -195,6 +165,12 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        if Environment.current == .staging {
+            var newArguments = ProcessInfo.processInfo.arguments
+            newArguments.append("-FIRDebugEnabled")
+            ProcessInfo.processInfo.setValue(newArguments, forKey: "arguments")
+        }
+
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
         }
@@ -245,8 +221,9 @@ let log = Logger.builder
         if let mixpanelToken = mixpanelToken {
             Mixpanel.initialize(token: mixpanelToken)
             AnalyticsSender.sendEvent = { event, properties in
-                log.info("Sending analytics event: \(event)")
+                log.info("Sending analytics event: \(event) \(properties)")
 
+                Firebase.Analytics.logEvent(event, parameters: properties)
                 Mixpanel.mainInstance()
                     .track(
                         event: event,
@@ -293,53 +270,59 @@ let log = Logger.builder
 
             switch presentationEvent {
             case let .willEnqueue(presentableId, context):
-                Mixpanel.mainInstance()
-                    .track(
-                        event: "PRESENTABLE_WILL_ENQUEUE",
-                        properties: ["presentableId": presentableId.value]
-                    )
+                Analytics.track(
+                    "PRESENTABLE_WILL_ENQUEUE",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
                 message = "\(context) will enqueue modal presentation of \(presentableId)"
                 log.info(message)
             case let .willDequeue(presentableId, context):
-                Mixpanel.mainInstance()
-                    .track(
-                        event: "PRESENTABLE_WILL_DEQUEUE",
-                        properties: ["presentableId": presentableId.value]
-                    )
+                Analytics.track(
+                    "PRESENTABLE_WILL_DEQUEUE",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
                 message = "\(context) will dequeue modal presentation of \(presentableId)"
                 log.info(message)
             case let .willPresent(presentableId, context, styleName):
-                Mixpanel.mainInstance()
-                    .track(
-                        event: "PRESENTABLE_WILL_PRESENT",
-                        properties: ["presentableId": presentableId.value]
-                    )
+                Analytics.track(
+                    "PRESENTABLE_WILL_PRESENT",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
                 log.info(message)
             case let .didCancel(presentableId, context):
-                Mixpanel.mainInstance()
-                    .track(
-                        event: "PRESENTABLE_DID_CANCEL",
-                        properties: ["presentableId": presentableId.value]
-                    )
+                Analytics.track(
+                    "PRESENTABLE_DID_CANCEL",
+                    properties: [
+                        "presentableId": presentableId.value
+                    ]
+                )
                 message = "\(context) did cancel presentation of: \(presentableId)"
                 log.info(message)
             case let .didDismiss(presentableId, context, result):
                 switch result {
                 case let .success(result):
-                    Mixpanel.mainInstance()
-                        .track(
-                            event: "PRESENTABLE_DID_DISMISS_SUCCESS",
-                            properties: ["presentableId": presentableId.value]
-                        )
+                    Analytics.track(
+                        "PRESENTABLE_DID_DISMISS_SUCCESS",
+                        properties: [
+                            "presentableId": presentableId.value
+                        ]
+                    )
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(result)"
                 case let .failure(error):
-                    Mixpanel.mainInstance()
-                        .track(
-                            event: "PRESENTABLE_DID_DISMISS_FAILURE",
-                            properties: ["presentableId": presentableId.value]
-                        )
+                    Analytics.track(
+                        "PRESENTABLE_DID_DISMISS_FAILURE",
+                        properties: [
+                            "presentableId": presentableId.value
+                        ]
+                    )
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(error)"
                 }
@@ -360,15 +343,26 @@ let log = Logger.builder
 
         viewControllerWasPresented = { viewController in
             if let debugPresentationTitle = viewController.debugPresentationTitle {
-                Mixpanel.mainInstance().track(event: "SCREEN_VIEW_\(debugPresentationTitle)")
+                Analytics.track("SCREEN_VIEW_\(debugPresentationTitle)", properties: [:])
+                Analytics.track(
+                    "SCREEN_VIEW_IOS",
+                    properties: [
+                        "screenName": debugPresentationTitle
+                    ]
+                )
             }
         }
         alertActionWasPressed = { _, title in
             if let localizationKey = title.derivedFromL10n?.key {
-                Mixpanel.mainInstance().track(event: "ALERT_ACTION_TAP_\(localizationKey)")
+                Analytics.track("ALERT_ACTION_TAP_\(localizationKey)", properties: [:])
+                Analytics.track(
+                    "ALERT_ACTION_TAP",
+                    properties: [
+                        "action": localizationKey
+                    ]
+                )
             }
         }
-        RowAndProviderTracking.handler = { event in Mixpanel.mainInstance().track(event: event) }
         let launch = Launch()
 
         let (launchView, launchFuture) = launch.materialize()
@@ -429,20 +423,6 @@ let log = Logger.builder
 
         return true
     }
-
-    func userNotificationCenter(
-        _: UNUserNotificationCenter,
-        willPresent notification: UNNotification,
-        withCompletionHandler _: @escaping (UNNotificationPresentationOptions) -> Void
-    ) {
-        let toast = Toast(
-            symbol: .none,
-            body: notification.request.content.title,
-            subtitle: notification.request.content.body
-        )
-
-        if ChatState.shared.allowNewMessageToast { Toasts.shared.displayToast(toast: toast) }
-    }
 }
 
 extension ApolloClient {
@@ -453,83 +433,5 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { client })
             }
             .toVoid()
-    }
-}
-
-extension AppDelegate: MessagingDelegate {
-    func registerFCMToken(_ token: String) {
-        bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 })
-            .onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
-                client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token))
-                    .onValue { data in
-                        if data.registerPushToken != nil {
-                            log.info("Did register push token for user")
-                        } else {
-                            log.info("Failed to register push token for user")
-                        }
-                    }
-            }
-    }
-
-    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        if let fcmToken = fcmToken {
-            ApplicationState.setFirebaseMessagingToken(fcmToken)
-            registerFCMToken(fcmToken)
-        }
-    }
-}
-
-extension AppDelegate: UNUserNotificationCenterDelegate {
-    func userNotificationCenter(
-        _: UNUserNotificationCenter,
-        didReceive response: UNNotificationResponse,
-        withCompletionHandler completionHandler: @escaping () -> Void
-    ) {
-        let userInfo = response.notification.request.content.userInfo
-        guard let notificationType = userInfo["TYPE"] as? String else { return }
-
-        if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-            if notificationType == "NEW_MESSAGE" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                        store.send(.openChat)
-                    }
-            } else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                        store.send(.makeForeverTabActive)
-                    }
-            } else if notificationType == "CONNECT_DIRECT_DEBIT" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        self.window.rootViewController?
-                            .present(
-                                PaymentSetup(
-                                    setupType: .initial,
-                                    urlScheme: Bundle.main.urlScheme ?? ""
-                                ),
-                                style: .modal,
-                                options: [.defaults]
-                            )
-                    }
-            } else if notificationType == "PAYMENT_FAILED" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        self.window.rootViewController?
-                            .present(
-                                PaymentSetup(
-                                    setupType: .replacement,
-                                    urlScheme: Bundle.main.urlScheme ?? ""
-                                ),
-                                style: .modal,
-                                options: [.defaults]
-                            )
-                    }
-            }
-        }
-
-        completionHandler()
     }
 }

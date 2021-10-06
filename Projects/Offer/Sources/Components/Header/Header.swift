@@ -7,7 +7,6 @@ import hCore
 import hCoreUI
 
 struct Header {
-    @Inject var state: OldOfferState
     let scrollView: UIScrollView
     static let trailingAlignmentBreakpoint: CGFloat = 800
     static let trailingAlignmentFormPercentageWidth: CGFloat = 0.40
@@ -17,6 +16,9 @@ struct Header {
 extension Header: Presentable {
     func materialize() -> (UIStackView, Disposable) {
         let view = UIStackView()
+
+        let store: OfferStore = self.get()
+
         view.allowTouchesOfViewsOutsideBounds = true
         view.axis = .vertical
         let bag = DisposeBag()
@@ -32,29 +34,29 @@ extension Header: Presentable {
             shouldShowGradientSignal: .init(true)
         )
 
-        bag += state.dataSignal.map { $0.quoteBundle.appConfiguration.gradientOption }
+        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.appConfiguration.gradientOption }
             .onValue { gradientOption in
                 switch gradientOption {
-                case .gradientOne:
+                case .one:
                     gradientView.gradientOption = .init(
                         preset: .insuranceOne,
                         shouldShimmer: false,
                         shouldAnimate: false
                     )
-                case .gradientTwo:
+                case .two:
                     gradientView.gradientOption =
                         .init(
                             preset: .insuranceTwo,
                             shouldShimmer: false,
                             shouldAnimate: false
                         )
-                case .gradientThree:
+                case .three:
                     gradientView.gradientOption = .init(
                         preset: .insuranceThree,
                         shouldShimmer: false,
                         shouldAnimate: false
                     )
-                case .__unknown(_):
+                default:
                     break
                 }
             }
@@ -122,7 +124,10 @@ extension Header: Presentable {
         loadingIndicator.tintColor = .brand(.primaryText())
         scrollView.addSubview(loadingIndicator)
 
-        bag += state.isLoadingSignal
+        let isLoadingSignal = store.stateSignal.map { $0.isLoading }
+
+        bag +=
+            isLoadingSignal
             .animated(style: .easeOut(duration: 0.25)) { isLoading in
                 if isLoading {
                     loadingIndicator.alpha = 1
@@ -150,7 +155,7 @@ extension Header: Presentable {
                 make.height.equalTo(scrollView.frameLayoutGuide.snp.height)
             }
 
-            innerBag += state.isLoadingSignal.animated(
+            innerBag += isLoadingSignal.animated(
                 style: SpringAnimationStyle.lightBounce(duration: 0.8)
             ) { isLoading in
                 scrollView.isScrollEnabled = !isLoading
@@ -175,7 +180,7 @@ extension Header: Presentable {
         bag += formContainer.addArrangedSubview(HeaderForm()) { form, _ in
             form.alpha = 0
 
-            bag += state.isLoadingSignal.animated(style: .easeOut(duration: 0.25)) { isLoading in
+            bag += isLoadingSignal.animated(style: .easeOut(duration: 0.25)) { isLoading in
                 form.alpha = isLoading ? 0 : 1
             }
 

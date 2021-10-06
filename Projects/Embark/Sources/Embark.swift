@@ -154,7 +154,9 @@ extension Embark: Presentable {
 
         bag += state.progressSignal.animated(
             style: .lightBounce(),
-            animations: { progress in progressView.setProgress(progress, animated: false)
+            animations: { progress in
+                progressView.animationSafeIsHidden = progress == 0
+                progressView.setProgress(progress, animated: false)
                 progressView.setNeedsLayout()
                 progressView.layoutIfNeeded()
             }
@@ -247,7 +249,14 @@ extension Embark: Presentable {
                         .bindTo(backButton, \.menu)
                 }
 
-                viewController.navigationItem.leftBarButtonItem = backButton
+                bag += state.canGoBackSignal.atOnce()
+                    .onValue { canGoBack in
+                        if !canGoBack {
+                            viewController.navigationItem.leftBarButtonItem = nil
+                        } else {
+                            viewController.navigationItem.leftBarButtonItem = backButton
+                        }
+                    }
 
                 func presentRestartAlert(_ viewController: UIViewController) {
                     let alert = Alert(

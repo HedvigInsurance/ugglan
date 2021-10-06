@@ -76,10 +76,20 @@ extension hRow where Accessory == EmptyView {
     }
 }
 
+public struct StandaloneChevronAccessory: View {
+    public init() {}
+
+    public var body: some View {
+        Image(uiImage: hCoreUIAssets.chevronRight.image)
+    }
+}
+
 public struct ChevronAccessory: View {
+    public init() {}
+
     public var body: some View {
         Spacer()
-        Image(uiImage: hCoreUIAssets.chevronRight.image)
+        StandaloneChevronAccessory()
     }
 }
 

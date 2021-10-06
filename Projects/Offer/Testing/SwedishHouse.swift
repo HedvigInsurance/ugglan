@@ -39,7 +39,7 @@ extension GraphQL.QuoteBundleQuery.Data {
                                 ),
                             ]
                         ),
-                        perils: generatePerils(),
+                        contractPerils: generatePerils(),
                         insurableLimits: generateInsurableLimits(),
                         insuranceTerms: [
                             .init(
@@ -61,6 +61,10 @@ extension GraphQL.QuoteBundleQuery.Data {
                 ]),
                 appConfiguration: .init(
                     showCampaignManagement: true,
+                    showFaq: true,
+                    ignoreCampaigns: false,
+                    approveButtonTerminology: .confirmPurchase,
+                    startDateTerminology: .startDate,
                     title: .logo,
                     gradientOption: .gradientTwo
                 )

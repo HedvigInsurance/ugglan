@@ -4,6 +4,7 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct Header { let service: ForeverService }
 

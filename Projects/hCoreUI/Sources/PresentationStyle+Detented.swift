@@ -235,20 +235,32 @@ extension UIViewController {
                 let newValue = newValue, let index = appliedDetents.firstIndex(of: newValue)
             else { return }
 
-            setDetentIndex(on: presentationController, index: index)
+            func apply() {
+                setDetentIndex(on: presentationController, index: index)
+            }
 
-            UIView.animate(
-                withDuration: 0.5,
-                delay: 0,
-                usingSpringWithDamping: 5,
-                initialSpringVelocity: 1,
-                options: .allowUserInteraction,
-                animations: {
-                    presentationController.presentedViewController.view.layoutIfNeeded()
-                    presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
-                },
-                completion: nil
-            )
+            if #available(iOS 15, *),
+                let sheetPresentationController = presentationController as? UISheetPresentationController
+            {
+                sheetPresentationController.animateChanges {
+                    apply()
+                }
+            } else {
+                apply()
+
+                UIView.animate(
+                    withDuration: 0.5,
+                    delay: 0,
+                    usingSpringWithDamping: 5,
+                    initialSpringVelocity: 1,
+                    options: .allowUserInteraction,
+                    animations: {
+                        presentationController.presentedViewController.view.layoutIfNeeded()
+                        presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
+                    },
+                    completion: nil
+                )
+            }
         }
     }
 
@@ -326,7 +338,7 @@ extension PresentationStyle {
 
                 let totalHeight: CGFloat =
                     scrollView.contentSize.height
-                    + scrollView.adjustedContentInset.top
+                    + viewController.view.safeAreaInsets.top
                     + keyboardHeight
                     + 10
 
@@ -350,39 +362,51 @@ extension PresentationStyle {
         ) {
             guard !detents.isEmpty else { return }
 
-            let key = ["_", "set", "Detents", ":"]
-            let selector = NSSelectorFromString(key.joined())
-            viewController.appliedDetents = detents
-            presentationController.perform(
-                selector,
-                with: NSArray(array: detents.map { $0.getDetent(viewController) })
-            )
-
-            if let lastDetentIndex = lastDetentIndex {
-                setDetentIndex(on: presentationController, index: lastDetentIndex)
-            }
-
-            func forceLayout() {
-                presentationController.presentedViewController.view.layoutIfNeeded()
-                presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
-            }
-
-            setWantsBottomAttachedInCompactHeight(on: presentationController, to: true)
-
-            if let keyboardAnimation = keyboardAnimation {
-                keyboardAnimation.animate { forceLayout() }
-            } else if unanimated {
-                forceLayout()
-            } else {
-                UIView.animate(
-                    withDuration: 0.5,
-                    delay: 0,
-                    usingSpringWithDamping: 5,
-                    initialSpringVelocity: 1,
-                    options: .allowUserInteraction,
-                    animations: { forceLayout() },
-                    completion: nil
+            func apply() {
+                let key = ["_", "set", "Detents", ":"]
+                let selector = NSSelectorFromString(key.joined())
+                viewController.appliedDetents = detents
+                presentationController.perform(
+                    selector,
+                    with: NSArray(array: detents.map { $0.getDetent(viewController) })
                 )
+
+                setWantsBottomAttachedInCompactHeight(on: presentationController, to: true)
+
+                if let lastDetentIndex = lastDetentIndex {
+                    setDetentIndex(on: presentationController, index: lastDetentIndex)
+                }
+            }
+
+            if #available(iOS 15.0, *) {
+                if let sheetPresentationController = presentationController as? UISheetPresentationController {
+                    sheetPresentationController.animateChanges {
+                        apply()
+                    }
+                }
+            } else {
+                func forceLayout() {
+                    presentationController.presentedViewController.view.layoutIfNeeded()
+                    presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
+                }
+
+                apply()
+
+                if let keyboardAnimation = keyboardAnimation {
+                    keyboardAnimation.animate { forceLayout() }
+                } else if unanimated {
+                    forceLayout()
+                } else {
+                    UIView.animate(
+                        withDuration: 0.5,
+                        delay: 0,
+                        usingSpringWithDamping: 5,
+                        initialSpringVelocity: 1,
+                        options: .allowUserInteraction,
+                        animations: { forceLayout() },
+                        completion: nil
+                    )
+                }
             }
         }
 

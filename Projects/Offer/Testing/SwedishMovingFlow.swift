@@ -19,7 +19,7 @@ extension GraphQL.QuoteBundleQuery.Data {
                             title: "Home insurance rental",
                             rows: generateHomeRows()
                         ),
-                        perils: generatePerils(),
+                        contractPerils: generatePerils(),
                         insurableLimits: generateInsurableLimits(),
                         insuranceTerms: [
                             .init(
@@ -46,6 +46,10 @@ extension GraphQL.QuoteBundleQuery.Data {
                 ]),
                 appConfiguration: .init(
                     showCampaignManagement: false,
+                    showFaq: false,
+                    ignoreCampaigns: false,
+                    approveButtonTerminology: .approveChanges,
+                    startDateTerminology: .accessDate,
                     title: .updateSummary,
                     gradientOption: .gradientOne
                 )
