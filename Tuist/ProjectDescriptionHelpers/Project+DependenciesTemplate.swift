@@ -108,11 +108,12 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "Adyen"), .package(product: "AdyenCard"),
                 .package(product: "AdyenDropIn"),
             ]
-        case .firebase: return [
-            .package(product: "FirebaseAnalytics"),
-            .package(product: "FirebaseMessaging"),
-            .package(product: "FirebaseDynamicLinks")
-        ]
+        case .firebase:
+            return [
+                .package(product: "FirebaseAnalytics"),
+                .package(product: "FirebaseMessaging"),
+                .package(product: "FirebaseDynamicLinks"),
+            ]
         case .kingfisher: return [.package(product: "Kingfisher")]
         case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
         case .flow: return [.package(product: "Flow")]

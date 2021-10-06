@@ -6,6 +6,7 @@ import Datadog
 import DatadogCrashReporting
 import Disk
 import Firebase
+import FirebaseDynamicLinks
 import FirebaseMessaging
 import Flow
 import Form
@@ -22,7 +23,6 @@ import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
-import FirebaseDynamicLinks
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -65,26 +65,26 @@ let log = Logger.builder
     func applicationWillTerminate(_: UIApplication) {
         NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
     }
-    
+
     func application(
         _: UIApplication,
         continue userActivity: NSUserActivity,
         restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-        
+
         return DynamicLinks.dynamicLinks()
-           .handleUniversalLink(url) { dynamicLink, error in
-               if let error = error {
-                   log.error("Dynamic Link Error", error: error, attributes: [:])
-               }
-               
-               guard let dynamicLinkURL = dynamicLink?.url else {
-                   return
-               }
-               
-               self.handleDeepLink(dynamicLinkURL)
-           }
+            .handleUniversalLink(url) { dynamicLink, error in
+                if let error = error {
+                    log.error("Dynamic Link Error", error: error, attributes: [:])
+                }
+
+                guard let dynamicLinkURL = dynamicLink?.url else {
+                    return
+                }
+
+                self.handleDeepLink(dynamicLinkURL)
+            }
     }
 
     func setToken(_ token: String) {
