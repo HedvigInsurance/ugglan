@@ -38,6 +38,7 @@ extension JourneyPresentation {
                 let presenterIndex = tabBarController.viewControllers?
                     .firstIndex(of: presenter.viewController)
             {
+                let store: UgglanStore = self.presentable.get()
                 store.send(.setSelectedTabIndex(index: presenterIndex))
             }
         }
