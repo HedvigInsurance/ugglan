@@ -38,7 +38,7 @@ extension JourneyPresentation {
                 let presenterIndex = tabBarController.viewControllers?
                     .firstIndex(of: presenter.viewController)
             {
-                tabBarController.selectedIndex = presenterIndex
+                store.send(.setSelectedTabIndex(index: presenterIndex))
             }
         }
     }
