@@ -44,7 +44,7 @@ extension EmbarkState {
             "passage_go_back",
             properties: [
                 "passageName": currentPassageSignal.value?.name ?? "",
-                "originatedFromEmbarkStory": storySignal.value?.name ?? ""
+                "originatedFromEmbarkStory": storySignal.value?.name ?? "",
             ]
         )
     }
