@@ -14,7 +14,9 @@ extension EmbarkPassage.Track {
             filteredProperties = filteredProperties.merging(
                 customData.toJSONDictionary() ?? [:],
                 uniquingKeysWith: takeRight
-            )
+            ).compactMapValues { value in
+                value as? String
+            }
         }
 
         filteredProperties = filteredProperties.merging(
