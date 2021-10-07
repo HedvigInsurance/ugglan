@@ -52,7 +52,8 @@ public struct CrossSellingDetail: View {
         }
         .hFormAttachToBottom {
             ContinueButton(crossSell: crossSell)
-        }.edgesIgnoringSafeArea(.top)
+        }
+        .edgesIgnoringSafeArea(.top)
     }
 }
 

@@ -12,13 +12,15 @@ struct CrossSellCoverage: View {
         hSection(header: hText("Learn more")) {
             hRow {
                 hText("Full Coverage")
-            }.onTap {
+            }
+            .onTap {
                 store.send(.openCrossSellingCoverageDetail)
             }
             hRow {
                 hText("Common questions")
-            }.onTap {
-                
+            }
+            .onTap {
+
             }
         }
     }

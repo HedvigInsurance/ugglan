@@ -27,7 +27,7 @@ extension JourneyPresentation {
             viewController.navigationItem.rightBarButtonItem = closeButtonItem
         }
     }
-    
+
     public var withScrollEdgeDismissButton: Self {
         addConfiguration { presenter in
             let viewController = presenter.viewController

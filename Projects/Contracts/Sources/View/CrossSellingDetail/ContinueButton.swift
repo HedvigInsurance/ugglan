@@ -1,21 +1,13 @@
-//
-//  ContinueButton.swift
-//  ContinueButton
-//
-//  Created by Sam Pettersson on 2021-10-07.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct ContinueButton: View {
     @PresentableStore var store: ContractStore
     var crossSell: CrossSell
-    
+
     var body: some View {
         VStack {
             hGrayscaleColor.one.frame(height: .hairlineWidth)
