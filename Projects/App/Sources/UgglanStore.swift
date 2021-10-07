@@ -76,6 +76,9 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
                             .token
                     else { return .exchangeFailed }
 
+                    globalPresentableStoreContainer.deletePersistanceContainer()
+                    globalPresentableStoreContainer = PresentableStoreContainer()
+
                     UIApplication.shared.appDelegate.setToken(token)
 
                     return .showLoggedIn
