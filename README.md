@@ -48,6 +48,8 @@ We use swift-format for formatting, it's ran on all staged files automatically i
    
 ## How to release
 
+Before release making sure you `Cancel` any pending releases on App Store Connect.
+
 1. Go to `Actions` -> `ProductionDeploy`
 
 2. Click `Run workflow`
