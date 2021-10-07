@@ -31,9 +31,16 @@ public struct CrossSellingDetail: View {
             .clipped()
 
             hSection {
-                VStack(alignment: .leading) {
-                    hText(crossSell.title, style: .title1)
+                VStack {
+                    hText(
+                        crossSell.title,
+                        style: .title1
+                    )
                 }
+                .frame(
+                    maxWidth: .infinity,
+                    alignment: .leading
+                )
             }
             .sectionContainerStyle(.transparent)
 
@@ -54,7 +61,7 @@ public struct CrossSellingDetail: View {
                 }
                 .padding(16)
             }
-            .background(hBackgroundColor.secondary)
+            .background(hBackgroundColor.secondary.edgesIgnoringSafeArea(.bottom))
         }
         .edgesIgnoringSafeArea(.top)
     }
