@@ -40,5 +40,12 @@ extension EmbarkState {
             "Passage go back - \(currentPassageSignal.value?.name ?? "")",
             properties: [:]
         )
+        Analytics.track(
+            "passage_go_back",
+            properties: [
+                "passageName": currentPassageSignal.value?.name ?? "",
+                "originatedFromEmbarkStory": storySignal.value?.name ?? ""
+            ]
+        )
     }
 }
