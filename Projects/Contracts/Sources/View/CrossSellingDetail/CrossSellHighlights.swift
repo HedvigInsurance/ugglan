@@ -25,9 +25,11 @@ struct CrossSellHightlights: View {
                         hText(
                             highlight.description,
                             style: .subheadline
-                        ).foregroundColor(hLabelColor.secondary)
+                        )
+                        .foregroundColor(hLabelColor.secondary)
                     }
-                }.frame(
+                }
+                .frame(
                     maxWidth: .infinity,
                     alignment: .leading
                 )
