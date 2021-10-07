@@ -9,7 +9,9 @@ struct CrossSellAbout: View {
 
     var body: some View {
         hSection(header: hText("About the insurance")) {
-            hText("About")
+            hText("About", style: .body)
+                .foregroundColor(hLabelColor.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .sectionContainerStyle(.transparent)
     }

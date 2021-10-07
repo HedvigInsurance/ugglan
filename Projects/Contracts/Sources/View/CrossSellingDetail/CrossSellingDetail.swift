@@ -47,23 +47,12 @@ public struct CrossSellingDetail: View {
             if let info = crossSell.info {
                 CrossSellHightlights(info: info)
                 CrossSellAbout(info: info)
+                CrossSellCoverage(info: info)
             }
         }
         .hFormAttachToBottom {
-            VStack {
-                hGrayscaleColor.one.frame(height: .hairlineWidth)
-                hButton.LargeButtonFilled {
-                    if let embarkStoryName = crossSell.embarkStoryName {
-                        store.send(.openCrossSellingEmbark(name: embarkStoryName))
-                    }
-                } content: {
-                    hText("Calculate your price")
-                }
-                .padding(16)
-            }
-            .background(hBackgroundColor.secondary.edgesIgnoringSafeArea(.bottom))
-        }
-        .edgesIgnoringSafeArea(.top)
+            ContinueButton(crossSell: crossSell)
+        }.edgesIgnoringSafeArea(.top)
     }
 }
 
@@ -88,8 +77,10 @@ extension CrossSellingDetail {
                 next(.embark(name: name))
             } else if case .openCrossSellingChat = action {
                 next(.chat)
+            } else if case .openCrossSellingCoverageDetail = action {
+                CrossSellingCoverageDetail(crossSell: self.crossSell).journey()
             }
         }
-        .withDismissButton
+        .withScrollEdgeDismissButton
     }
 }
