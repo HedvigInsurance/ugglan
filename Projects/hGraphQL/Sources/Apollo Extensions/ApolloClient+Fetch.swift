@@ -4,8 +4,6 @@ import Foundation
 import Presentation
 import UIKit
 
-struct GraphQLError: Error { var errors: [Error] }
-
 extension ApolloClient {
     public func fetch<Query: GraphQLQuery>(
         query: Query,

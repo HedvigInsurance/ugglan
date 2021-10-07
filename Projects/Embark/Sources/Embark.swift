@@ -71,7 +71,7 @@ extension Embark: Presentable {
 
 		viewController.navigationItem.titleView = .titleWordmarkView
 
-		let passage = Passage(state: state)
+		let passage = Passage()
 		bag +=
 			form.append(passage) { passageView in var keyboardHeight: CGFloat = 20
 				func updatePassageViewHeight() {

@@ -10,6 +10,8 @@ public enum FeatureTarget {
 }
 
 extension Project {
+    private static let graphQLFolders: [FileElement] = [.folderReference(path: "GraphQL"), .folderReference(path: "InternalGraphQL")]
+    
     public static func framework(
         name: String,
         targets: Set<FeatureTarget> = Set([.framework, .tests, .example, .testing]),
@@ -100,7 +102,7 @@ extension Project {
 
         if targets.contains(.framework) {
             let sources: SourceFilesList =
-                includesGraphQL ? ["Sources/**/*.swift", "GraphQL/**/*.swift"] : ["Sources/**/*.swift"]
+                includesGraphQL ? ["Sources/**/*.swift", "GraphQL/**/*.swift", "InternalGraphQL/**/*.swift"] : ["Sources/**/*.swift"]
 
             let frameworkTarget = Target(
                 name: name,
@@ -293,7 +295,7 @@ extension Project {
                     ) : nil,
             ]
             .compactMap { $0 },
-            additionalFiles: [includesGraphQL ? .folderReference(path: "GraphQL") : nil].compactMap { $0 }
+            additionalFiles: includesGraphQL ? graphQLFolders : []
         )
     }
 }
