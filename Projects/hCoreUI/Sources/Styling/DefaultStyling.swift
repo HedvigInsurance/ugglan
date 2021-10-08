@@ -40,7 +40,7 @@ extension DefaultStyling {
             .foregroundColor: UIColor.clear
         ]
     }
-    
+
     public static func scrollEdgeNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()

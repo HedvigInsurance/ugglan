@@ -40,7 +40,7 @@ public enum ContractAction: ActionProtocol {
     case setFocusedCrossSell(focusedCrossSell: CrossSell?)
     case openCrossSellingEmbark(name: String)
     case openCrossSellingChat
-    
+
     case crossSellingCoverageDetailNavigation(action: CrossSellingCoverageDetailNavigationAction)
     case openCrossSellingDetail(crossSell: CrossSell)
     case hasSeenCrossSells(value: Bool)

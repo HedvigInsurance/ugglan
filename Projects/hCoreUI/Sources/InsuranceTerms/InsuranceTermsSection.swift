@@ -18,7 +18,7 @@ public struct InsuranceTermsSection: View {
         self.terms = terms
         self.didTapInsuranceTerm = didTapInsuranceTerm
     }
-    
+
     public var body: some View {
         hSection(terms, id: \.displayName) { insuranceTerm in
             hRow {
@@ -33,7 +33,8 @@ public struct InsuranceTermsSection: View {
             .onTap {
                 didTapInsuranceTerm(insuranceTerm)
             }
-        }.withHeader {
+        }
+        .withHeader {
             hText("Important documents")
         }
     }

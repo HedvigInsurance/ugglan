@@ -1,11 +1,11 @@
+import Flow
 import Foundation
 import Presentation
+import SafariServices
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
-import SafariServices
-import Flow
 
 public struct CrossSellingCoverageDetail: View {
     @PresentableStore var store: ContractStore
@@ -40,10 +40,12 @@ public struct CrossSellingCoverageDetail: View {
                     store.send(.crossSellingCoverageDetailNavigation(action: .insurableLimit(insurableLimit: limit)))
                 }
             }
-            
+
             if let insuranceTerms = crossSell.info?.insuranceTerms {
                 InsuranceTermsSection(terms: insuranceTerms) { insuranceTerm in
-                    store.send(.crossSellingCoverageDetailNavigation(action: .insuranceTerm(insuranceTerm: insuranceTerm)))
+                    store.send(
+                        .crossSellingCoverageDetailNavigation(action: .insuranceTerm(insuranceTerm: insuranceTerm))
+                    )
                 }
             }
 
@@ -69,7 +71,8 @@ extension CrossSellingCoverageDetail {
                 Journey(
                     PerilDetail(peril: peril),
                     style: .detented(.preferredContentSize, .large)
-                ).withDismissButton
+                )
+                .withDismissButton
             } else if case let .crossSellingCoverageDetailNavigation(action: .insurableLimit(limit)) = action {
                 InsurableLimitDetail(limit: limit).journey.withDismissButton
             } else if case let .crossSellingCoverageDetailNavigation(action: .insuranceTerm(insuranceTerm)) = action {
