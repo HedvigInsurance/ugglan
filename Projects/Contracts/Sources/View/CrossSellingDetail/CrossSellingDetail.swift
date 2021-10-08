@@ -29,7 +29,7 @@ public struct CrossSellingDetail: View {
             .frame(height: 250)
             .backgroundImageWithBlurHashFallback(imageURL: crossSell.imageURL, blurHash: crossSell.blurHash)
             .clipped()
-
+            .padding(.top, -60)
             hSection {
                 VStack {
                     hText(
@@ -53,7 +53,6 @@ public struct CrossSellingDetail: View {
         .hFormAttachToBottom {
             ContinueButton(crossSell: crossSell)
         }
-        .edgesIgnoringSafeArea(.top)
     }
 }
 

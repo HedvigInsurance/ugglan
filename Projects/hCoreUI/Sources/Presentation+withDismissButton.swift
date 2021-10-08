@@ -44,14 +44,16 @@ extension JourneyPresentation {
                                 let endColor = UIColor(dynamic: { trait in
                                     trait.userInterfaceStyle == .dark ? .white : .black
                                 })
+                                
+                                let fraction = (offset.y + scrollView.adjustedContentInset.top) / 5
 
                                 viewController.navigationItem.rightBarButtonItem?.tintColor = .white.interpolateColorTo(
                                     end: endColor,
-                                    fraction: offset.y / 5
+                                    fraction: fraction
                                 )
                                 viewController.navigationItem.leftBarButtonItem?.tintColor = .white.interpolateColorTo(
                                     end: endColor,
-                                    fraction: offset.y / 5
+                                    fraction: fraction
                                 )
                             }
                     }
