@@ -6,13 +6,18 @@ import UIKit
 import hCore
 import hGraphQL
 
-struct PerilDetail {
-    let perilFragment: Perils
-    let icon: RemoteVectorIcon
+public struct PerilDetail {
+    let peril: Perils
+
+    public init(
+        peril: Perils
+    ) {
+        self.peril = peril
+    }
 }
 
 extension PerilDetail: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -26,33 +31,33 @@ extension PerilDetail: Presentable {
 
         form.append(stackView)
 
-        bag += stackView.addArranged(icon) { iconView in
+        bag += stackView.addArranged(RemoteVectorIcon(peril.icon)) { iconView in
             iconView.snp.makeConstraints { make in make.height.width.equalTo(80) }
         }
 
         bag += stackView.addArranged(Spacing(height: 20))
 
         stackView.addArrangedSubview(
-            UILabel(value: perilFragment.title, style: .brand(.title1(color: .primary)))
+            UILabel(value: peril.title, style: .brand(.title1(color: .primary)))
         )
 
         bag += stackView.addArranged(Spacing(height: 15))
 
         bag += stackView.addArranged(
             MultilineLabel(
-                value: perilFragment.description,
+                value: peril.description,
                 style: TextStyle.brand(.body(color: .secondary)).centerAligned
             )
         )
 
-        if !perilFragment.covered.isEmpty {
+        if !peril.covered.isEmpty {
             let coveredSection = form.appendSection(
                 header: L10n.perilModalCoverageTitle,
                 footer: nil,
                 style: .default
             )
 
-            perilFragment.covered.forEach { covered in let row = RowView()
+            peril.covered.forEach { covered in let row = RowView()
 
                 let checkmarkImageView = UIImageView()
                 checkmarkImageView.contentMode = .scaleAspectFit
@@ -70,14 +75,14 @@ extension PerilDetail: Presentable {
             }
         }
 
-        if !perilFragment.exceptions.isEmpty {
+        if !peril.exceptions.isEmpty {
             let exceptionsSection = form.appendSection(
                 header: L10n.perilModalExceptionsTitle,
                 footer: nil,
                 style: .default
             )
 
-            perilFragment.exceptions.forEach { exception in let row = RowView()
+            peril.exceptions.forEach { exception in let row = RowView()
 
                 let crossImageView = UIImageView()
                 crossImageView.contentMode = .scaleAspectFit

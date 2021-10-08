@@ -2,6 +2,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
@@ -20,13 +21,21 @@ extension ContractCoverage: Presentable {
 
         let form = FormView()
 
-        let insets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
+        let insets = EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
 
         let perilCollection = PerilCollection(
-            perilSignal: ReadWriteSignal(perils).readOnly()
+            perils: perils,
+            didTapPeril: { peril in
+                form.viewController?
+                    .present(
+                        PerilDetail(peril: peril).withCloseButton,
+                        style: .detented(.preferredContentSize, .large)
+                    )
+            }
         )
+        .padding(insets)
 
-        bag += form.append(perilCollection.insetted(insets))
+        form.append(HostingView(rootView: perilCollection))
 
         bag += form.append(Spacing(height: 20))
 

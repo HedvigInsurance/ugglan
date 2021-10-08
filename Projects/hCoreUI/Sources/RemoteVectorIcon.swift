@@ -2,6 +2,7 @@ import Apollo
 import Disk
 import Flow
 import Foundation
+import SwiftUI
 import UIKit
 import hCore
 import hGraphQL
@@ -137,6 +138,47 @@ extension RemoteVectorIcon: Viewable {
             .compactMap { $0 }.bindTo(pdfDocumentSignal)
 
         return (imageView, bag)
+    }
+}
+
+public struct RemoteVectorIconView: UIViewRepresentable {
+    var icon: IconEnvelope
+    let backgroundFetch: Bool
+
+    public init(
+        icon: IconEnvelope,
+        backgroundFetch: Bool
+    ) {
+        self.icon = icon
+        self.backgroundFetch = backgroundFetch
+    }
+
+    public class Coordinator {
+        let remoteVectorIcon: RemoteVectorIcon
+        let bag = DisposeBag()
+
+        init(
+            icon: IconEnvelope?,
+            threaded: Bool
+        ) {
+            remoteVectorIcon = RemoteVectorIcon(icon, threaded: threaded)
+        }
+    }
+
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(icon: icon, threaded: backgroundFetch)
+    }
+
+    public func makeUIView(context: Context) -> some UIView {
+        let (view, disposable) = context.coordinator.remoteVectorIcon.materialize(
+            events: .init(wasAddedCallbacker: .init())
+        )
+        context.coordinator.bag += disposable
+        return view
+    }
+
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
+        context.coordinator.remoteVectorIcon.iconSignal.value = icon
     }
 }
 

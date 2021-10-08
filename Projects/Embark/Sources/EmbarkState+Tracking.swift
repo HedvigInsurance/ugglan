@@ -11,10 +11,14 @@ extension EmbarkPassage.Track {
         var filteredProperties = storeValues.filter { key, _ in eventKeys.contains(key) }
 
         if let customData = customData {
-            filteredProperties = filteredProperties.merging(
-                customData.toJSONDictionary() ?? [:],
-                uniquingKeysWith: takeRight
-            )
+            filteredProperties =
+                filteredProperties.merging(
+                    customData.toJSONDictionary() ?? [:],
+                    uniquingKeysWith: takeRight
+                )
+                .compactMapValues { value in
+                    value as? String
+                }
         }
 
         filteredProperties = filteredProperties.merging(
@@ -35,6 +39,13 @@ extension EmbarkState {
         Analytics.track(
             "Passage go back - \(currentPassageSignal.value?.name ?? "")",
             properties: [:]
+        )
+        Analytics.track(
+            "passage_go_back",
+            properties: [
+                "passageName": currentPassageSignal.value?.name ?? "",
+                "originatedFromEmbarkStory": storySignal.value?.name ?? "",
+            ]
         )
     }
 }
