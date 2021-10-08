@@ -10,7 +10,7 @@ struct ContinueButton: View {
 
     var body: some View {
         VStack {
-            hGrayscaleColor.one.frame(height: .hairlineWidth)
+            hSeparatorColor.separator.frame(height: .hairlineWidth)
             hButton.LargeButtonFilled {
                 if let embarkStoryName = crossSell.embarkStoryName {
                     store.send(.openCrossSellingEmbark(name: embarkStoryName))
