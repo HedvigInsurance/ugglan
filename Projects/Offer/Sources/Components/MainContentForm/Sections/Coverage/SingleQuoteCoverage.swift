@@ -2,6 +2,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
@@ -21,11 +22,20 @@ extension SingleQuoteCoverage: Presentable {
 
         let bag = DisposeBag()
 
-        bag += section.append(
-            PerilCollection(
-                perilSignal: .init(quote.perils)
-            )
-            .insetted(UIEdgeInsets(top: 15, left: 15, bottom: 0, right: 15))
+        let perilCollection = PerilCollection(
+            perils: quote.perils,
+            didTapPeril: { peril in
+                section.viewController?
+                    .present(
+                        PerilDetail(peril: peril).withCloseButton,
+                        style: .detented(.preferredContentSize, .large)
+                    )
+            }
+        )
+        .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
+
+        section.append(
+            HostingView(rootView: perilCollection)
         )
 
         section.appendSpacing(.inbetween)
