@@ -1,0 +1,13 @@
+query AddressAutocomplete($input: String!, $type: AddressAutocompleteType!) {
+    autoCompleteAddress(input: $input, options: {type: $type}) {
+          __typename
+          id
+          address
+          streetName
+          streetNumber
+          floor
+          apartment
+          postalCode
+          city
+        }
+      }

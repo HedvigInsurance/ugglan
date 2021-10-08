@@ -8,44 +8,29 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-enum InsuranceWrapper {
-	case external(EmbarkPassage.Action.AsEmbarkExternalInsuranceProviderAction)
-	case previous(EmbarkPassage.Action.AsEmbarkPreviousInsuranceProviderAction)
-
-	var embarkLinkFragment: GraphQL.EmbarkLinkFragment {
-		switch self {
-		case let .external(data): return data.externalInsuranceProviderData.next.fragments.embarkLinkFragment
-		case let .previous(data): return data.previousInsuranceProviderData.next.fragments.embarkLinkFragment
-		}
-	}
-
-	var key: String {
-		switch self {
-		case .external: return "previousInsurer"
-		case let .previous(data): return data.previousInsuranceProviderData.storeKey
-		}
-	}
-
-	var isExternal: Bool { false }
-
-	var locale: Localization.Locale? {
-		switch self {
-		case .external: return nil
-		case let .previous(data):
-			switch data.previousInsuranceProviderData.providers {
-			case .norwegian: return .nb_NO
-			case .swedish: return .sv_SE
-			case .__unknown: return nil
-			case .none: return nil
-			}
-		}
-	}
+extension EmbarkInsuranceData {
+    var key: String {
+        switch self.providerType {
+        case .external: return "externalInsurer"
+        case .previous: return storeKey ?? "previousInsurer"
+        }
+    }
+    
+    var locale: Localization.Locale? {
+        switch providers {
+        case .norwegian: return .nb_NO
+        case .swedish: return .sv_SE
+        case .__unknown: return nil
+        case .none:
+            return nil
+        }
+    }
 }
 
 class InsuranceProviderPickerDataSource: NSObject, UIPickerViewDataSource {
-	public init(providers: [GraphQL.InsuranceProviderFragment]) { self.providers = providers }
+	public init(providers: [InsuranceProvider]) { self.providers = providers }
 
-	let providers: [GraphQL.InsuranceProviderFragment]
+	let providers: [InsuranceProvider]
 
 	func numberOfComponents(in _: UIPickerView) -> Int { 1 }
 
@@ -53,11 +38,11 @@ class InsuranceProviderPickerDataSource: NSObject, UIPickerViewDataSource {
 }
 
 class InsuranceProviderPickerDelegate: NSObject, UIPickerViewDelegate {
-	@ReadWriteState var selectedProvider: GraphQL.InsuranceProviderFragment?
+	@ReadWriteState var selectedProvider: InsuranceProvider?
 
-	public init(providers: [GraphQL.InsuranceProviderFragment]) { self.providers = providers }
+	public init(providers: [InsuranceProvider]) { self.providers = providers }
 
-	let providers: [GraphQL.InsuranceProviderFragment]
+	let providers: [InsuranceProvider]
 
 	func pickerView(_: UIPickerView, titleForRow row: Int, forComponent _: Int) -> String? { providers[row].name }
 
@@ -67,16 +52,16 @@ class InsuranceProviderPickerDelegate: NSObject, UIPickerViewDelegate {
 }
 
 struct InsuranceProviderAction {
-	let state: EmbarkState
-	let data: InsuranceWrapper
+	let data: EmbarkInsuranceData
 	@Inject var client: ApolloClient
-	@ReadWriteState private var selectedProvider: GraphQL.InsuranceProviderFragment?
+	@ReadWriteState private var selectedProvider: InsuranceProvider?
 }
 
-extension InsuranceProviderAction: Viewable {
-	func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+extension InsuranceProviderAction: Presentable {
+	func materialize() -> (UIView, Signal<hEmbarkLink>) {
 		let bag = DisposeBag()
-
+        let store: EmbarkStateStore = self.get()
+        
 		let outerContainer = UIStackView()
 		outerContainer.axis = .vertical
 		outerContainer.spacing = 16
@@ -110,45 +95,52 @@ extension InsuranceProviderAction: Viewable {
 		pickerView.backgroundColor = .brand(.secondaryBackground())
 		contentContainer.addArrangedSubview(pickerView)
 
-		if let locale = data.locale {
-			bag += client.fetch(query: GraphQL.InsuranceProvidersQuery(locale: locale.asGraphQLLocale()))
-				.valueSignal.compactMap { $0.insuranceProviders }
-				.onValue { providers in
-					let providers = [
-						providers.map { $0.fragments.insuranceProviderFragment },
-						[
-							.init(
-								name: L10n.externalInsuranceProviderOtherOption,
-								id: "other",
-								hasExternalCapabilities: false
-							)
-						],
-					]
-					.flatMap { $0 }
-
-					let dataSource = InsuranceProviderPickerDataSource(providers: providers)
-					bag.hold(dataSource)
-					pickerView.dataSource = dataSource
-
-					let delegate = InsuranceProviderPickerDelegate(providers: providers)
-					bag.hold(delegate)
-					pickerView.delegate = delegate
-					bag += delegate.$selectedProvider.atOnce().bindTo($selectedProvider)
-
-					func findSelectedProvider(provider: GraphQL.InsuranceProviderFragment) -> Bool {
-						provider.name
-							== self.state.store.state.embarkValues.getPrefillValue(
-								key: self.data.key
-							)
-					}
-
-					let selectedProviderIndex = providers.firstIndex(where: findSelectedProvider)
-					delegate.selectedProvider =
-						providers.first(where: findSelectedProvider) ?? providers.first
-
-					pickerView.reloadAllComponents()
-					pickerView.selectRow(selectedProviderIndex ?? 0, inComponent: 0, animated: true)
-				}
+        if let locale = data.locale {
+            store.send(.fetchInsuranceProviders(locale: locale.embark.rawValue))
+            
+            bag += store.onAction(.setInsuranceProviders(providers:), { providers in
+                
+            })
+                       
+//
+//			bag += client.fetch(query: GraphQL.InsuranceProvidersQuery(locale: locale.asGraphQLLocale()))
+//				.valueSignal.compactMap { $0.insuranceProviders }
+//				.onValue { providers in
+//					let providers = [
+//						providers.map { $0.fragments.insuranceProviderFragment },
+//						[
+//							.init(
+//								name: L10n.externalInsuranceProviderOtherOption,
+//								id: "other",
+//								hasExternalCapabilities: false
+//							)
+//						],
+//					]
+//					.flatMap { $0 }
+//
+//					let dataSource = InsuranceProviderPickerDataSource(providers: providers)
+//					bag.hold(dataSource)
+//					pickerView.dataSource = dataSource
+//
+//					let delegate = InsuranceProviderPickerDelegate(providers: providers)
+//					bag.hold(delegate)
+//					pickerView.delegate = delegate
+//					bag += delegate.$selectedProvider.atOnce().bindTo($selectedProvider)
+//
+//					func findSelectedProvider(provider: GraphQL.InsuranceProviderFragment) -> Bool {
+//						provider.name
+//							== self.state.store.state.embarkValues.getPrefillValue(
+//								key: self.data.key
+//							)
+//					}
+//
+//					let selectedProviderIndex = providers.firstIndex(where: findSelectedProvider)
+//					delegate.selectedProvider =
+//						providers.first(where: findSelectedProvider) ?? providers.first
+//
+//					pickerView.reloadAllComponents()
+//					pickerView.selectRow(selectedProviderIndex ?? 0, inComponent: 0, animated: true)
+//				}
 		}
 
 		return (

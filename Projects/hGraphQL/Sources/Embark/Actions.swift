@@ -8,6 +8,7 @@ public enum ActionTypeName: Codable {
 	case selectAction(hSelectAction)
 	case textActionSet([hTextAction])
 	case numberActionSet([hNumberAction])
+    case insuranceAction(EmbarkInsuranceData)
 }
 
 public struct hNumberAction: Codable {
@@ -202,16 +203,46 @@ public struct hEmbarkAction: Codable {
 			typename = .numberActionSet(numberActions.compactMap { action in .init(data: action.data) })
 		} else if let textActions = action?.asEmbarkTextActionSet?.textActionSetData?.textActions {
 			typename = .textActionSet(textActions.compactMap { action in .init(data: action.data) })
-		} else {
-			return nil
-		}
+        } else if let action = action?.asEmbarkExternalInsuranceProviderAction {
+            typename = .insuranceAction(.init(actionData: action.externalInsuranceProviderData))
+        } else if let action  = action?.asEmbarkPreviousInsuranceProviderAction {
+            typename = .insuranceAction(.init(actionData: action.previousInsuranceProviderData))
+        } else { return nil }
 	}
 }
+
+public struct EmbarkInsuranceData: Codable {
+    public let link: hEmbarkLink?
+    public let providerType: ProviderType
+    public let storeKey: String?
+    public let providers: GraphQL.EmbarkPreviousInsuranceProviderActionDataProviders?
+    
+    public enum ProviderType: Codable {
+        case external
+        case previous
+    }
+    
+    init(actionData: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkPreviousInsuranceProviderAction.PreviousInsuranceProviderDatum) {
+        link = .init(name: actionData.next.name, label: actionData.next.label)
+        providerType = .external
+        storeKey = actionData.storeKey
+        providers = actionData.providers
+    }
+    
+    init(actionData: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkExternalInsuranceProviderAction.ExternalInsuranceProviderDatum) {
+        link = .init(name: actionData.next.name, label: actionData.next.label)
+        providerType = .previous
+        storeKey = nil
+        providers = nil
+    }
+}
+
+extension GraphQL.EmbarkPreviousInsuranceProviderActionDataProviders: Codable {}
 
 extension ActionTypeName {
 	enum CodingKeys: CodingKey {
 		case multiAction, numberAction, textAction, datePickerAction, selectAction, textActionSet,
-			numberActionSet
+			numberActionSet, insuranceAction
 	}
 
 	public init(
@@ -249,7 +280,10 @@ extension ActionTypeName {
 		case .numberActionSet:
 			let data = try container.decode([hNumberAction].self, forKey: .numberActionSet)
 			self = .numberActionSet(data)
-		}
+        case .insuranceAction(let data):
+            let data = try container.decode(EmbarkInsuranceData.self, forKey: .insuranceAction)
+            self = .insuranceAction(data)
+        }
 	}
 
 	public func encode(to encoder: Encoder) throws {
@@ -270,7 +304,9 @@ extension ActionTypeName {
 			try container.encode(data, forKey: .textActionSet)
 		case .numberActionSet(let data):
 			try container.encode(data, forKey: .numberActionSet)
-		}
+        case .insuranceAction(let data):
+            try container.encode(data, forKey: .insuranceAction)
+        }
 	}
 }
 

@@ -15,6 +15,7 @@ public struct EmbarkStoryState: Codable {
 	var animationDirection: Bool = true
 	var story: hEmbarkStory?
 	var externalRedirect: ExternalRedirectLocation?
+    var insuranceProviders: [InsuranceProvider] = []
 }
 
 public struct EmbarkNewState: StateProtocol {
@@ -38,6 +39,10 @@ public enum EmbarkActions: ActionProtocol {
 	case goBack
 	case fetchStory(id: String)
 	case setStory(story: hEmbarkStory)
+    
+    // Actions
+    case fetchInsuranceProviders(locale: String)
+    case setInsuranceProviders(providers: [InsuranceProvider])
 
 	#if compiler(<5.5)
 		public func encode(to encoder: Encoder) throws {
@@ -55,122 +60,46 @@ public enum EmbarkActions: ActionProtocol {
 }
 
 public final class EmbarkStateStore: StateStore<EmbarkNewState, EmbarkActions> {
-	@Inject var client: ApolloClient
-	@Inject var store: ApolloStore
+    @Inject var client: ApolloClient
+    @Inject var store: ApolloStore
+    
+    public override func effects(_ getState: @escaping () -> EmbarkNewState, _ action: EmbarkActions) -> FiniteSignal<EmbarkActions>? {
+        switch action {
+        case .fetchStory(let id):
+            return client.fetchEmbarkStory(name: id, locale: Localization.Locale.currentLocale.code)
+                .map { story in
+                    .setStory(story: story)
+                }
+                .valueThenEndSignal
+        case .sendAPI(let api):
+            return handleAPIRequest(api: api)
+                .mapResult { result -> EmbarkActions in
+                    switch result {
+                    case .success:
+                        let next = api.data.next
+                        return .next(passage: next?.name ?? "", pushHistoryEntry: true)
+                    case let .failure(error):
+                        if let error = api.data.errors.first(where: {
+                            guard let contains = $0.contains else {
+                                return true
+                            }
 
-	public override func effects(
-		_ getState: () -> EmbarkNewState,
-		_ action: EmbarkActions
-	) -> FiniteSignal<EmbarkActions>? {
-		switch action {
-		case .fetchStory(let id):
-			return client.fetchEmbarkStory(name: id, locale: Localization.Locale.currentLocale.code)
-				.map { story in
-					.setStory(story: story)
-				}
-				.valueThenEndSignal
-		case .sendAPI(let api):
-			return handleAPIRequest(api: api)
-				.mapResult { result -> EmbarkActions in
-					switch result {
-					case .success:
-						let next = api.data.next
-						return .next(passage: next?.name ?? "", pushHistoryEntry: true)
-					case let .failure(error):
-						if let error = api.data.errors.first(where: {
-							guard let contains = $0.contains else {
-								return true
-							}
-
-							return error.localizedDescription.contains(contains)
-						}) {
-							return .next(
-								passage: error.next?.name ?? "",
-								pushHistoryEntry: true
-							)
-						}
-					}
-				}
-				.valueThenEndSignal
-		default: return nil
-		}
-	}
-
-	private func handleAPIRequest(api: hAPI) -> Future<ResultMap?> {
-		var urlRequest = URLRequest(url: Environment.current.endpointURL)
-		urlRequest.httpMethod = "POST"
-		urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-		urlRequest.httpBody = try? JSONSerialization.data(
-			withJSONObject: ["query": api.data.query, "variables": api.data.variables],
-			options: []
-		)
-
-		let configuration = URLSessionConfiguration.default
-		configuration.httpAdditionalHeaders =
-			ApolloClient.headers(token: ApolloClient.retreiveToken()?.token) as [AnyHashable: Any]
-
-		let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
-
-		return Future { completion in
-			urlSessionClient.sendRequest(urlRequest) { result in
-				switch result {
-				case .failure: break
-				case let .success((data, response)):
-					if response.statusCode == 200 {
-						if let result = try? JSONSerialization.jsonObject(
-							with: data,
-							options: []
-						) as? ResultMap {
-							if let errors = result["errors"] as? [ResultMap] {
-								if let error = errors.first,
-									let message = error["message"]
-										as? String
-								{
-									completion(
-										.failure(
-											ApiError.failed(
-												reason: message
-											)
-										)
-									)
-								} else {
-									completion(.failure(ApiError.unknown))
-								}
-							} else if let data = result["data"] as? ResultMap {
-								completion(.success(data))
-							} else {
-								completion(.failure(ApiError.unknown))
-							}
-						} else {
-							completion(.failure(ApiError.unknown))
-						}
-					} else {
-						if let reason = String(data: data, encoding: .utf8) {
-							completion(.failure(ApiError.failed(reason: reason)))
-						} else {
-							completion(.failure(ApiError.unknown))
-						}
-					}
-				}
-			}
-
-			return NilDisposer()
-		}
-	}
-
-	enum ApiError: Error {
-		case noApi
-		case failed(reason: String)
-		case unknown
-
-		var localizedDescription: String {
-			switch self {
-			case .noApi: return "No API for this passage"
-			case let .failed(reason): return "Failed with \(reason)"
-			case .unknown: return "Unknown"
-			}
-		}
-	}
+                            return error.localizedDescription.contains(contains)
+                        }) {
+                            return .next(
+                                passage: error.next?.name ?? "",
+                                pushHistoryEntry: true
+                            )
+                        }
+                    }
+                }.valueThenEndSignal
+        case let .fetchInsuranceProviders(locale):
+            return client.fetchInsuranceProviders(locale: locale).map { providers in
+                    .setInsuranceProviders(providers: providers)
+            }.valueThenEndSignal
+        default: return nil
+        }
+    }
 
 	public override func reduce(_ state: EmbarkNewState, _ action: EmbarkActions) -> EmbarkNewState {
 		var newState = state
@@ -206,9 +135,13 @@ public final class EmbarkStateStore: StateStore<EmbarkNewState, EmbarkActions> {
 			newState.currentStory.story = story
 			newState.currentStory.passages = story.passages
 			newState.currentStory.currentPassage = story.initialPassage
-		case .sendAPI(let api):
+		case .sendAPI:
 			break
-		}
+        case .fetchInsuranceProviders:
+            break
+        case let .setInsuranceProviders(providers):
+            newState.currentStory.insuranceProviders = providers
+        }
 		return newState
 	}
 
@@ -233,6 +166,84 @@ public final class EmbarkStateStore: StateStore<EmbarkNewState, EmbarkActions> {
 			}
 			.compactMap { $0 }.first
 	}
+}
+
+extension EmbarkStateStore {
+    private func handleAPIRequest(api: hAPI) -> Future<ResultMap?> {
+        var urlRequest = URLRequest(url: Environment.current.endpointURL)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.httpBody = try? JSONSerialization.data(
+            withJSONObject: ["query": api.data.query, "variables": api.data.variables],
+            options: []
+        )
+
+        let configuration = URLSessionConfiguration.default
+        configuration.httpAdditionalHeaders =
+            ApolloClient.headers(token: ApolloClient.retreiveToken()?.token) as [AnyHashable: Any]
+
+        let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
+
+        return Future { completion in
+            urlSessionClient.sendRequest(urlRequest) { result in
+                switch result {
+                case .failure: break
+                case let .success((data, response)):
+                    if response.statusCode == 200 {
+                        if let result = try? JSONSerialization.jsonObject(
+                            with: data,
+                            options: []
+                        ) as? ResultMap {
+                            if let errors = result["errors"] as? [ResultMap] {
+                                if let error = errors.first,
+                                    let message = error["message"]
+                                        as? String
+                                {
+                                    completion(
+                                        .failure(
+                                            ApiError.failed(
+                                                reason: message
+                                            )
+                                        )
+                                    )
+                                } else {
+                                    completion(.failure(ApiError.unknown))
+                                }
+                            } else if let data = result["data"] as? ResultMap {
+                                completion(.success(data))
+                            } else {
+                                completion(.failure(ApiError.unknown))
+                            }
+                        } else {
+                            completion(.failure(ApiError.unknown))
+                        }
+                    } else {
+                        if let reason = String(data: data, encoding: .utf8) {
+                            completion(.failure(ApiError.failed(reason: reason)))
+                        } else {
+                            completion(.failure(ApiError.unknown))
+                        }
+                    }
+                }
+            }
+
+            return NilDisposer()
+        }
+    }
+
+    enum ApiError: Error {
+        case noApi
+        case failed(reason: String)
+        case unknown
+
+        var localizedDescription: String {
+            switch self {
+            case .noApi: return "No API for this passage"
+            case let .failed(reason): return "Failed with \(reason)"
+            case .unknown: return "Unknown"
+            }
+        }
+    }
 }
 
 class KeyValueStore: Codable {
