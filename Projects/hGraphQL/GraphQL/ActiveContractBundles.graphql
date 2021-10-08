@@ -64,6 +64,7 @@ query ActiveContractBundles($locale: Locale!) {
       callToAction
       info(locale: $locale) {
         displayName
+        aboutSection
         contractPerils {
             ...PerilFragment
         }

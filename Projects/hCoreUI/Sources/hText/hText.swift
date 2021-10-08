@@ -15,6 +15,12 @@ extension EnvironmentValues {
     }
 }
 
+extension View {
+    public func hTextStyle(_ style: UIFont.TextStyle? = nil) -> some View {
+        self.environment(\.defaultHTextStyle, style)
+    }
+}
+
 private struct EnvironmentHButtonWasTappedDate: EnvironmentKey {
     static let defaultValue: Date? = nil
 }

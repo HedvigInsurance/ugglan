@@ -3,16 +3,19 @@ import Foundation
 public struct CrossSellInfo: Codable, Equatable {
     public var headerImageURL: URL
     public var title: String
+    public var about: String
     public var highlights: [Highlight]
     public var faqs: [FAQ]
     public var insurableLimits: [InsurableLimits]
     public var insuranceTerms: [InsuranceTerm]
+    public var perils: [Perils]
 
     init(
         headerImageURL: URL,
         _ data: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info
     ) {
         self.title = data.displayName
+        self.about = data.aboutSection
         self.headerImageURL = headerImageURL
         self.highlights = data.highlights.map { highlight in Highlight(highlight) }
         self.faqs = data.faq.map { faq in FAQ(faq) }
@@ -20,6 +23,7 @@ public struct CrossSellInfo: Codable, Equatable {
             InsurableLimits(fragment: insurableLimit.fragments.insurableLimitFragment)
         }
         self.insuranceTerms = data.insuranceTerms.compactMap { insuranceTerm in InsuranceTerm(insuranceTerm) }
+        self.perils = data.contractPerils.map { peril in Perils(fragment: peril.fragments.perilFragment) }
     }
 }
 

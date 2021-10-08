@@ -35,6 +35,8 @@ public enum ContractAction: ActionProtocol {
     case openCrossSellingChat
     case openCrossSellingDetail(crossSell: CrossSell)
     case openCrossSellingCoverageDetail
+    case openCrossSellingCoverageDetailPeril(peril: Perils)
+    case openCrossSellingCoverageDetailInsurableLimit(insurableLimit: InsurableLimits)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
     case openDetail(contract: Contract)
