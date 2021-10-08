@@ -1,11 +1,3 @@
-//
-//  UIColor+Interpolate.swift
-//  UIColor+Interpolate
-//
-//  Created by Sam Pettersson on 2021-10-08.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
@@ -18,13 +10,12 @@ struct ColorComponents {
 
 extension UIColor {
     func getComponents() -> ColorComponents {
-        if (cgColor.numberOfComponents == 2) {
-          let cc = cgColor.components!
-          return ColorComponents(r:cc[0], g:cc[0], b:cc[0], a:cc[1])
-        }
-        else {
-          let cc = cgColor.components!
-          return ColorComponents(r:cc[0], g:cc[1], b:cc[2], a:cc[3])
+        if cgColor.numberOfComponents == 2 {
+            let cc = cgColor.components!
+            return ColorComponents(r: cc[0], g: cc[0], b: cc[0], a: cc[1])
+        } else {
+            let cc = cgColor.components!
+            return ColorComponents(r: cc[0], g: cc[1], b: cc[2], a: cc[3])
         }
     }
 
