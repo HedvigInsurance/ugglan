@@ -23,7 +23,7 @@ extension AppJourney {
             }
         }
     }
-    
+
     static func crossSellingJourney(crossSell: CrossSell) -> some JourneyPresentation {
         CrossSellingDetail(crossSell: crossSell)
             .journey { result in

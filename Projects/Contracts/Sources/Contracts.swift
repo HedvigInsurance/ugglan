@@ -107,7 +107,7 @@ extension Contracts {
                 resultJourney(.openCrossSellingDetail(crossSell: crossSell))
             } else if case let .openCrossSellingEmbark(name) = action {
                 resultJourney(.openCrossSellingEmbark(name: name))
-            }  else if case .goToFreeTextChat = action {
+            } else if case .goToFreeTextChat = action {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
