@@ -22,21 +22,23 @@ public struct CrossSellingCoverageDetail: View {
                     PerilCollection(perils: perils) { peril in
                         store.send(.openCrossSellingCoverageDetailPeril(peril: peril))
                     }
-                }.sectionContainerStyle(.transparent)
+                }
+                .sectionContainerStyle(.transparent)
             }
-            
+
             if let insurableLimits = crossSell.info?.insurableLimits {
                 InsurableLimitsSectionView(
                     header: hText(
                         L10n.contractCoverageMoreInfo,
                         style: .headline
-                    ).foregroundColor(hLabelColor.secondary),
+                    )
+                    .foregroundColor(hLabelColor.secondary),
                     limits: insurableLimits
                 ) { limit in
                     store.send(.openCrossSellingCoverageDetailInsurableLimit(insurableLimit: limit))
                 }
             }
-            
+
         }
         .hFormAttachToBottom {
             ContinueButton(crossSell: crossSell)

@@ -2,16 +2,16 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hGraphQL
-import SwiftUI
 
 public struct InsurableLimitsSectionView<Header: View>: View {
     var header: Header?
     var limits: [InsurableLimits]
     var didTap: (_ limit: InsurableLimits) -> Void
-    
+
     public init(
         header: Header? = nil,
         limits: [InsurableLimits],
@@ -21,7 +21,7 @@ public struct InsurableLimitsSectionView<Header: View>: View {
         self.limits = limits
         self.didTap = didTap
     }
-    
+
     public var body: some View {
         hSection(limits, id: \.label) { limit in
             hRow {
@@ -30,13 +30,16 @@ public struct InsurableLimitsSectionView<Header: View>: View {
                     hText(limit.limit)
                         .foregroundColor(hLabelColor.secondary)
                 }
-            }.withCustomAccessory {
+            }
+            .withCustomAccessory {
                 Spacer()
                 Image(uiImage: hCoreUIAssets.infoLarge.image)
-            }.onTap {
+            }
+            .onTap {
                 didTap(limit)
             }
-        }.withHeader {
+        }
+        .withHeader {
             header
         }
     }
