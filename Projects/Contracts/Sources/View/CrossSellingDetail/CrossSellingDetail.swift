@@ -73,7 +73,7 @@ extension CrossSellingDetail {
             style: style,
             options: options
         ) { action in
-            if case let .openCrossSellingEmbark(name) = action {
+            if case let .crossSellingDetailEmbark(name) = action {
                 next(.embark(name: name))
             } else if case .openCrossSellingChat = action {
                 next(.chat)

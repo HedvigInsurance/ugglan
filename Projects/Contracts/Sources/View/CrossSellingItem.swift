@@ -71,16 +71,14 @@ struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
     let crossSell: hGraphQL.CrossSell
 
-    func didTapCard() {
-        store.send(.openCrossSellingDetail(crossSell: crossSell))
-    }
-
     var body: some View {
         SwiftUI.Button {
-            didTapCard()
+            store.send(.openCrossSellingDetail(crossSell: crossSell))
         } label: {
             CrossSellingCardLabel(crossSell: crossSell) {
-                didTapCard()
+                if let embarkStoryName = crossSell.embarkStoryName {
+                    store.send(.openCrossSellingEmbark(name: embarkStoryName))
+                }
             }
         }
         .buttonStyle(CrossSellingCardButtonStyle(crossSell: crossSell))

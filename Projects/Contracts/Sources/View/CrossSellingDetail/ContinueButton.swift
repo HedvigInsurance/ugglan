@@ -13,7 +13,7 @@ struct ContinueButton: View {
             hSeparatorColor.separator.frame(height: .hairlineWidth)
             hButton.LargeButtonFilled {
                 if let embarkStoryName = crossSell.embarkStoryName {
-                    store.send(.openCrossSellingEmbark(name: embarkStoryName))
+                    store.send(.crossSellingDetailEmbark(name: embarkStoryName))
                 }
             } content: {
                 hText("Calculate your price")
