@@ -23,21 +23,22 @@ public struct CrossSellingFAQList: View {
                 hSection(faqs, id: \.title) { faq in
                     hRow {
                         hText(faq.title)
-                    }.onTap {
+                    }
+                    .onTap {
                         store.send(.crossSellingFAQListNavigation(action: .detail(faq: faq)))
                     }
-                }.withHeader {
+                }
+                .withHeader {
                     hText("Common questions")
                 }
             }
-            
-            
+
             hSection {
                 VStack(spacing: 20) {
                     hText("Can’t find the answer you’re looking for?", style: .subheadline)
-                    
+
                     hButton.LargeButtonOutlined {
-                        
+
                     } content: {
                         ZStack {
                             VStack(alignment: .leading) {
@@ -50,7 +51,8 @@ public struct CrossSellingFAQList: View {
                         }
                     }
                 }
-            }.sectionContainerStyle(.transparent)
+            }
+            .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
             ContinueButton(crossSell: crossSell)
