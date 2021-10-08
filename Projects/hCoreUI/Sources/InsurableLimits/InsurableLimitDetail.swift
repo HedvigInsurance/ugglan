@@ -40,6 +40,5 @@ extension InsurableLimitDetail {
             ]
         )
         .configureTitle(L10n.contractCoverageMoreInfo)
-        .withDismissButton
     }
 }

@@ -38,7 +38,7 @@ public struct CrossSellingFAQList: View {
                     hText("Can’t find the answer you’re looking for?", style: .subheadline)
 
                     hButton.LargeButtonOutlined {
-
+                        store.send(.crossSellingFAQListNavigation(action: .chat))
                     } content: {
                         ZStack {
                             Image(uiImage: hCoreUIAssets.chat.image)
@@ -61,7 +61,8 @@ public struct CrossSellingFAQList: View {
 }
 
 extension CrossSellingFAQList {
-    public func journey(
+    public func journey<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping (_ result: CrossSellingDetailResult) -> Next,
         style: PresentationStyle = .default,
         options: PresentationOptions = [.defaults]
     ) -> some JourneyPresentation {
@@ -77,6 +78,8 @@ extension CrossSellingFAQList {
                     style: .detented(.scrollViewContentSize)
                 )
                 .withDismissButton
+            } else if case .crossSellingFAQListNavigation(action: .chat) = action {
+                next(.chat)
             }
         }
         .withJourneyDismissButton

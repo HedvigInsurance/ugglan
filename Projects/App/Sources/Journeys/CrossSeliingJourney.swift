@@ -26,7 +26,7 @@ extension AppJourney {
                         }
                     }
                 case .chat:
-                    ContinueJourney()
+                    AppJourney.freeTextChat().withDismissButton
                 }
             }
     }

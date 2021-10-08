@@ -81,7 +81,7 @@ extension CrossSellingDetail {
             } else if case .crossSellingCoverageDetailNavigation(action: .detail) = action {
                 CrossSellingCoverageDetail(crossSell: self.crossSell).journey()
             } else if case .crossSellingFAQListNavigation(action: .list) = action {
-                CrossSellingFAQList(crossSell: self.crossSell).journey()
+                CrossSellingFAQList(crossSell: self.crossSell).journey(next)
             }
         }
         .withDismissButton
