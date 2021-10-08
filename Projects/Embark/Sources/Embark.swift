@@ -174,7 +174,8 @@ extension Embark: Presentable {
                 query: GraphQL.EmbarkStoryQuery(
                     name: name,
                     locale: Localization.Locale.currentLocale.code
-                )
+                ),
+                cachePolicy: .fetchIgnoringCacheData
             )
             .valueSignal.compactMap { $0.embarkStory }
             .onValue { embarkStory in
