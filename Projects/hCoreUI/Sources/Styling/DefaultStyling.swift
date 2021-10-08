@@ -40,44 +40,43 @@ extension DefaultStyling {
             .foregroundColor: UIColor.clear
         ]
     }
+    
+    public static func scrollEdgeNavigationBarAppearance() -> UINavigationBarAppearance {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.shadowImage = UIColor.clear.asImage()
 
-    @available(iOS 13, *)
+        applyCommonNavigationBarStyling(appearance)
+
+        return appearance
+    }
+
+    public static func standardNavigationBarAppearance() -> UINavigationBarAppearance {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithDefaultBackground()
+        appearance.backgroundColor = navigationBarBackgroundColor
+        appearance.shadowImage = UIColor.clear.asImage()
+
+        applyCommonNavigationBarStyling(appearance)
+
+        return appearance
+    }
+
+    public static func compactNavigationBarAppearance() -> UINavigationBarAppearance {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithDefaultBackground()
+        appearance.backgroundColor = navigationBarBackgroundColor
+        appearance.shadowImage = UIColor.clear.asImage()
+
+        applyCommonNavigationBarStyling(appearance)
+
+        return appearance
+    }
+
     public static func setNavigationBarAppearance() {
-        func scrollEdgeAppearance() -> UINavigationBarAppearance {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithTransparentBackground()
-            appearance.shadowImage = UIColor.clear.asImage()
-
-            applyCommonNavigationBarStyling(appearance)
-
-            return appearance
-        }
-
-        func standardAppearance() -> UINavigationBarAppearance {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithDefaultBackground()
-            appearance.backgroundColor = navigationBarBackgroundColor
-            appearance.shadowImage = UIColor.clear.asImage()
-
-            applyCommonNavigationBarStyling(appearance)
-
-            return appearance
-        }
-
-        func compactAppearance() -> UINavigationBarAppearance {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithDefaultBackground()
-            appearance.backgroundColor = navigationBarBackgroundColor
-            appearance.shadowImage = UIColor.clear.asImage()
-
-            applyCommonNavigationBarStyling(appearance)
-
-            return appearance
-        }
-
-        UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance()
-        UINavigationBar.appearance().standardAppearance = standardAppearance()
-        UINavigationBar.appearance().compactAppearance = compactAppearance()
+        UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeNavigationBarAppearance()
+        UINavigationBar.appearance().standardAppearance = standardNavigationBarAppearance()
+        UINavigationBar.appearance().compactAppearance = compactNavigationBarAppearance()
     }
 
     public static func installCustom() {

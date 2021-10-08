@@ -21,6 +21,13 @@ extension ContractState {
     }
 }
 
+public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol {
+    case detail
+    case peril(peril: Perils)
+    case insurableLimit(insurableLimit: InsurableLimits)
+    case insuranceTerm(insuranceTerm: InsuranceTerm)
+}
+
 public enum ContractAction: ActionProtocol {
     // Fetch contracts for terminated
     case fetchContractBundles
@@ -33,10 +40,9 @@ public enum ContractAction: ActionProtocol {
     case setFocusedCrossSell(focusedCrossSell: CrossSell?)
     case openCrossSellingEmbark(name: String)
     case openCrossSellingChat
+    
+    case crossSellingCoverageDetailNavigation(action: CrossSellingCoverageDetailNavigationAction)
     case openCrossSellingDetail(crossSell: CrossSell)
-    case openCrossSellingCoverageDetail
-    case openCrossSellingCoverageDetailPeril(peril: Perils)
-    case openCrossSellingCoverageDetailInsurableLimit(insurableLimit: InsurableLimits)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
     case openDetail(contract: Contract)

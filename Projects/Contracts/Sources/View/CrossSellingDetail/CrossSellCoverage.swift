@@ -14,7 +14,7 @@ struct CrossSellCoverage: View {
                 hText("Full Coverage")
             }
             .onTap {
-                store.send(.openCrossSellingCoverageDetail)
+                store.send(.crossSellingCoverageDetailNavigation(action: .detail))
             }
             hRow {
                 hText("Common questions")

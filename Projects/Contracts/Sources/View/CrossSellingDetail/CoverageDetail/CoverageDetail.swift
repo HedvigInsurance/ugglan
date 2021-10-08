@@ -4,6 +4,8 @@ import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
+import SafariServices
+import Flow
 
 public struct CrossSellingCoverageDetail: View {
     @PresentableStore var store: ContractStore
@@ -20,7 +22,7 @@ public struct CrossSellingCoverageDetail: View {
             if let perils = crossSell.info?.perils {
                 hSection(header: hText("Coverage")) {
                     PerilCollection(perils: perils) { peril in
-                        store.send(.openCrossSellingCoverageDetailPeril(peril: peril))
+                        store.send(.crossSellingCoverageDetailNavigation(action: .peril(peril: peril)))
                     }
                 }
                 .sectionContainerStyle(.transparent)
@@ -35,7 +37,13 @@ public struct CrossSellingCoverageDetail: View {
                     .foregroundColor(hLabelColor.secondary),
                     limits: insurableLimits
                 ) { limit in
-                    store.send(.openCrossSellingCoverageDetailInsurableLimit(insurableLimit: limit))
+                    store.send(.crossSellingCoverageDetailNavigation(action: .insurableLimit(insurableLimit: limit)))
+                }
+            }
+            
+            if let insuranceTerms = crossSell.info?.insuranceTerms {
+                InsuranceTermsSection(terms: insuranceTerms) { insuranceTerm in
+                    store.send(.crossSellingCoverageDetailNavigation(action: .insuranceTerm(insuranceTerm: insuranceTerm)))
                 }
             }
 
@@ -57,13 +65,20 @@ extension CrossSellingCoverageDetail {
             style: style,
             options: options
         ) { action in
-            if case let .openCrossSellingCoverageDetailPeril(peril) = action {
+            if case let .crossSellingCoverageDetailNavigation(action: .peril(peril)) = action {
                 Journey(
                     PerilDetail(peril: peril),
                     style: .detented(.preferredContentSize, .large)
+                ).withDismissButton
+            } else if case let .crossSellingCoverageDetailNavigation(action: .insurableLimit(limit)) = action {
+                InsurableLimitDetail(limit: limit).journey.withDismissButton
+            } else if case let .crossSellingCoverageDetailNavigation(action: .insuranceTerm(insuranceTerm)) = action {
+                Journey(
+                    Document(url: insuranceTerm.url, title: insuranceTerm.displayName),
+                    style: .detented(.large)
                 )
-            } else if case let .openCrossSellingCoverageDetailInsurableLimit(limit) = action {
-                InsurableLimitDetail(limit: limit).journey
+                .setScrollEdgeNavigationBarAppearanceToStandard
+                .withDismissButton
             }
         }
         .withDismissButton
