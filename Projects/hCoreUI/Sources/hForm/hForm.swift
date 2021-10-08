@@ -44,7 +44,7 @@ public struct hForm<Content: View>: View {
                 .tint(hTintColor.lavenderOne)
                 Color.clear
                     .frame(height: bottomAttachedViewHeight)
-            }
+            }.modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeight))
             bottomAttachedView
                 .background(
                     GeometryReader { geo in
