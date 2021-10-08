@@ -82,6 +82,7 @@ extension CrossSellingDetail {
                 CrossSellingCoverageDetail(crossSell: self.crossSell).journey()
             }
         }
-        .withScrollEdgeDismissButton
+        .withDismissButton
+        .scrollEdgeBarButtonItemHandler
     }
 }
