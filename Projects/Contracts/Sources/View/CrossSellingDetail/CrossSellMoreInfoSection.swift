@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct CrossSellCoverage: View {
+struct CrossSellMoreInfoSection: View {
     @PresentableStore var store: ContractStore
     let info: CrossSellInfo
 
@@ -20,7 +20,7 @@ struct CrossSellCoverage: View {
                 hText("Common questions")
             }
             .onTap {
-
+                store.send(.crossSellingFAQListNavigation(action: .list))
             }
         }
     }

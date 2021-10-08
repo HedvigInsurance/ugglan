@@ -28,6 +28,12 @@ public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol {
     case insuranceTerm(insuranceTerm: InsuranceTerm)
 }
 
+public enum CrossSellingFAQListNavigationAction: ActionProtocol {
+    case list
+    case detail(faq: FAQ)
+    case chat
+}
+
 public enum ContractAction: ActionProtocol {
     // Fetch contracts for terminated
     case fetchContractBundles
@@ -42,6 +48,7 @@ public enum ContractAction: ActionProtocol {
     case openCrossSellingChat
 
     case crossSellingCoverageDetailNavigation(action: CrossSellingCoverageDetailNavigationAction)
+    case crossSellingFAQListNavigation(action: CrossSellingFAQListNavigationAction)
     case openCrossSellingDetail(crossSell: CrossSell)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned

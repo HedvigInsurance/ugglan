@@ -47,7 +47,7 @@ public struct CrossSellingDetail: View {
             if let info = crossSell.info {
                 CrossSellHightlights(info: info)
                 CrossSellAbout(info: info)
-                CrossSellCoverage(info: info)
+                CrossSellMoreInfoSection(info: info)
             }
         }
         .hFormAttachToBottom {
@@ -80,6 +80,8 @@ extension CrossSellingDetail {
                 next(.chat)
             } else if case .crossSellingCoverageDetailNavigation(action: .detail) = action {
                 CrossSellingCoverageDetail(crossSell: self.crossSell).journey()
+            } else if case .crossSellingFAQListNavigation(action: .list) = action {
+                CrossSellingFAQList(crossSell: self.crossSell).journey()
             }
         }
         .withDismissButton
