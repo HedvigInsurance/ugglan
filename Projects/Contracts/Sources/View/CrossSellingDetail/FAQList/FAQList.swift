@@ -41,12 +41,12 @@ public struct CrossSellingFAQList: View {
 
                     } content: {
                         ZStack {
-                            VStack(alignment: .leading) {
-                                Image(uiImage: hCoreUIAssets.chat.image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 24, height: 24)
-                            }
+                            Image(uiImage: hCoreUIAssets.chat.image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24, height: 24)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.leading, 16)
                             hText("Chat with us")
                         }
                     }
