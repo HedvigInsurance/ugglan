@@ -1,10 +1,10 @@
+import Combine
 import Foundation
 import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
-import Combine
 
 public struct CrossSellingDetail: View {
     @PresentableStore var store: ContractStore
@@ -22,7 +22,7 @@ public struct CrossSellingDetail: View {
                 imageURL: crossSell.imageURL,
                 blurHash: crossSell.blurHash
             )
-            
+
             hSection {
                 VStack {
                     hText(

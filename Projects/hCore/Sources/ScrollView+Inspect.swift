@@ -66,15 +66,17 @@ public struct ForceScrollViewIndicatorInset: ViewModifier {
 }
 
 public struct ContentOffsetModifier<Modifier: ViewModifier>: ViewModifier {
-    public init(modifier: @escaping (UIScrollView, CGPoint) -> Modifier) {
+    public init(
+        modifier: @escaping (UIScrollView, CGPoint) -> Modifier
+    ) {
         self.modifier = modifier
     }
-    
+
     @State var scrollView: UIScrollView?
     @State var contentOffset: CGPoint = .zero
-    
+
     var modifier: (_ scrollView: UIScrollView, _ contentOffset: CGPoint) -> Modifier
-    
+
     var contentOffsetPublisher: AnyPublisher<CGPoint, Never> {
         if let scrollView = scrollView {
             return scrollView.publisher(for: \.contentOffset).eraseToAnyPublisher()
@@ -82,11 +84,12 @@ public struct ContentOffsetModifier<Modifier: ViewModifier>: ViewModifier {
 
         return Just(CGPoint.zero).eraseToAnyPublisher()
     }
-    
+
     public func body(content: Content) -> some View {
         content.introspectScrollView { scrollView in
             self.scrollView = scrollView
-        }.modifier(modifier(scrollView ?? UIScrollView(), contentOffset))
+        }
+        .modifier(modifier(scrollView ?? UIScrollView(), contentOffset))
         .onReceive(contentOffsetPublisher) { contentOffset in
             self.contentOffset = contentOffset
         }
