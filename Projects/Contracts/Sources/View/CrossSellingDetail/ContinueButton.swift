@@ -11,6 +11,7 @@ struct ContinueButton: View {
     var body: some View {
         VStack {
             hSeparatorColor.separator.frame(height: .hairlineWidth)
+                .edgesIgnoringSafeArea(.horizontal)
             hButton.LargeButtonFilled {
                 if let embarkStoryName = crossSell.embarkStoryName {
                     store.send(.crossSellingDetailEmbark(name: embarkStoryName))
@@ -20,6 +21,6 @@ struct ContinueButton: View {
             }
             .padding(16)
         }
-        .background(hBackgroundColor.secondary.edgesIgnoringSafeArea(.bottom))
+        .background(hBackgroundColor.secondary.edgesIgnoringSafeArea([.bottom, .horizontal]))
     }
 }
