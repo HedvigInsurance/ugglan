@@ -31,7 +31,7 @@ struct ScrollViewIntrospector: UIViewRepresentable {
 }
 
 extension View {
-    func introspectScrollView(_ foundScrollView: @escaping (_ scrollView: UIScrollView) -> Void) -> some View {
+    public func introspectScrollView(_ foundScrollView: @escaping (_ scrollView: UIScrollView) -> Void) -> some View {
         self.background(ScrollViewIntrospector(foundScrollView: foundScrollView))
     }
 }
@@ -61,6 +61,34 @@ public struct ForceScrollViewIndicatorInset: ViewModifier {
         .onReceive(contentOffsetPublisher) { _ in
             scrollView?.verticalScrollIndicatorInsets.bottom =
                 insetBottom + (scrollView?.adjustedContentInset.bottom ?? 0)
+        }
+    }
+}
+
+public struct ContentOffsetModifier<Modifier: ViewModifier>: ViewModifier {
+    public init(modifier: @escaping (UIScrollView, CGPoint) -> Modifier) {
+        self.modifier = modifier
+    }
+    
+    @State var scrollView: UIScrollView?
+    @State var contentOffset: CGPoint = .zero
+    
+    var modifier: (_ scrollView: UIScrollView, _ contentOffset: CGPoint) -> Modifier
+    
+    var contentOffsetPublisher: AnyPublisher<CGPoint, Never> {
+        if let scrollView = scrollView {
+            return scrollView.publisher(for: \.contentOffset).eraseToAnyPublisher()
+        }
+
+        return Just(CGPoint.zero).eraseToAnyPublisher()
+    }
+    
+    public func body(content: Content) -> some View {
+        content.introspectScrollView { scrollView in
+            self.scrollView = scrollView
+        }.modifier(modifier(scrollView ?? UIScrollView(), contentOffset))
+        .onReceive(contentOffsetPublisher) { contentOffset in
+            self.contentOffset = contentOffset
         }
     }
 }

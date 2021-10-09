@@ -4,6 +4,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
+import Combine
 
 public struct CrossSellingDetail: View {
     @PresentableStore var store: ContractStore
@@ -17,19 +18,11 @@ public struct CrossSellingDetail: View {
 
     public var body: some View {
         hForm {
-            VStack {
-                LinearGradient(
-                    gradient: Gradient(
-                        colors: [.black.opacity(0.5), .clear]
-                    ),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            }
-            .frame(height: 250)
-            .backgroundImageWithBlurHashFallback(imageURL: crossSell.imageURL, blurHash: crossSell.blurHash)
-            .clipped()
-            .padding(.top, -60)
+            CrossSellingHeroImage(
+                imageURL: crossSell.imageURL,
+                blurHash: crossSell.blurHash
+            )
+            
             hSection {
                 VStack {
                     hText(
