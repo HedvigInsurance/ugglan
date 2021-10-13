@@ -21,7 +21,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     var audioPlayer: AVAudioPlayer?
     
-    let playerTimer = Timer.publish(every: 1/60, on: .main, in: .common)
+    let playerTimer = Timer.publish(every: 1/5, on: .main, in: .common)
         .autoconnect()
     
     let recording: Recording

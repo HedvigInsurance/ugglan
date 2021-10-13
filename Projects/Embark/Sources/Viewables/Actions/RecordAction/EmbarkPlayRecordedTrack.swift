@@ -24,6 +24,20 @@ struct RecordedTrack: View {
         }
     }
     
+    private var overlayView: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                Rectangle()
+                        .foregroundColor(hLabelColor.primary)
+                        .frame(width: geometry.size.width * audioPlayer.progress)
+                        .onReceive(audioPlayer.playerTimer) { input in
+                            guard audioPlayer.isPlaying else { return }
+                            audioPlayer.refreshPlayer()
+                        }
+            }
+        }
+    }
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
@@ -43,18 +57,7 @@ struct RecordedTrack: View {
                 ScrollView(.horizontal){
                      staples
                     .overlay(
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                Rectangle()
-                                        .foregroundColor(hLabelColor.primary)
-                                        .mask(staples)
-                                        .frame(width: geometry.size.width * audioPlayer.progress, alignment: .leading)
-                                        .onReceive(audioPlayer.playerTimer) { input in
-                                            guard audioPlayer.isPlaying else { return }
-                                            audioPlayer.refreshPlayer()
-                                        }
-                            }
-                        }
+                        overlayView.mask(staples)
                     )
                 }
             }
