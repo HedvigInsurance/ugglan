@@ -324,7 +324,7 @@ extension EmbarkState {
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-            let (files, variablesWithNullFiles) = variables.findFiles()
+            let (files, variablesWithNilFiles) = variables.findFiles()
 
             if files.isEmpty {
                 let JSONData = try! JSONSerialization.data(
@@ -334,7 +334,7 @@ extension EmbarkState {
                 urlRequest.httpBody = JSONData
             } else {
                 let JSONData = try! JSONSerialization.data(
-                    withJSONObject: ["query": query, "variables": variablesWithNullFiles],
+                    withJSONObject: ["query": query, "variables": variablesWithNilFiles],
                     options: []
                 )
 
