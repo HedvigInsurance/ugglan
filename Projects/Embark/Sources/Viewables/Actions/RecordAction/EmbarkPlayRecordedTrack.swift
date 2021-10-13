@@ -6,11 +6,22 @@ import AVFAudio
 import hCore
 
 struct RecordedTrack: View {
-    @State var audioPlayer: AudioPlayer
+    @ObservedObject var audioPlayer: AudioPlayer
     
     struct Bar: Identifiable {
         var id = UUID()
         var scale: CGFloat
+    }
+    
+    private var staples: some View {
+        HStack(alignment: .center, spacing: 2.5) {
+            ForEach(audioPlayer.recording.sample.map { Bar(scale: $0) }) { bar in
+                RoundedRectangle(cornerRadius: 1)
+                    .foregroundColor(hGrayscaleColor.one)
+                    .frame(width: 1.85, height: calculateHeightForBar(maxValue: audioPlayer.recording.max, scale: bar.scale))
+                    .animation(.easeInOut)
+            }
+        }
     }
     
     var body: some View {
@@ -27,15 +38,24 @@ struct RecordedTrack: View {
                     } else {
                         Image(uiImage: hCoreUIAssets.play.image).tint(hLabelColor.primary)
                     }
-                }.frame(width: 24, height: 24, alignment: .leading)
+                }
+                Spacer()
                 ScrollView(.horizontal){
-                    HStack(alignment: .center, spacing: 2.5) {
-                        ForEach(audioPlayer.recording.sample.map { Bar(scale: $0) }) { bar in
-                            RoundedRectangle(cornerRadius: 0.5)
-                                .frame(width: 1.85, height: calculateHeightForBar(maxValue: audioPlayer.recording.max, scale: bar.scale))
-                                .animation(.easeInOut)
+                     staples
+                    .overlay(
+                        GeometryReader { geometry in
+                            ZStack(alignment: .leading) {
+                                Rectangle()
+                                        .foregroundColor(hLabelColor.primary)
+                                        .mask(staples)
+                                        .frame(width: geometry.size.width * audioPlayer.progress, alignment: .leading)
+                                        .onReceive(audioPlayer.playerTimer) { input in
+                                            guard audioPlayer.isPlaying else { return }
+                                            audioPlayer.refreshPlayer()
+                                        }
+                            }
                         }
-                    }
+                    )
                 }
             }
             .padding(20)
