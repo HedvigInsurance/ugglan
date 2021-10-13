@@ -16,6 +16,7 @@ public struct Debug {
         case multiAction
         case numberAction
         case datePickerAction
+        case audioRecorderAction
 
         var json: JSONObject {
             EmbarkStory.makeFor(component: self).jsonObject
@@ -29,6 +30,8 @@ public struct Debug {
                 return "Number Action"
             case .datePickerAction:
                 return "Date Picker Action"
+            case .audioRecorderAction:
+                return "Audio Recorder Action"
             }
         }
     }
@@ -45,6 +48,8 @@ extension EmbarkStory {
             action = embarkNumberAction
         case .datePickerAction:
             action = datePickerAction
+        case .audioRecorderAction:
+            action = embarkAudioRecorderAction
         }
 
         let passage = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage(
@@ -140,6 +145,8 @@ extension EmbarkStory {
                 link: .init(name: "continue", label: "continue")
             )
         )
+    
+    fileprivate static let embarkAudioRecorderAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.makeEmbarkAudioRecorderAction(component: "audioRec", data: .init(storeKey: "audioRec"))
 }
 
 extension Debug: Presentable {

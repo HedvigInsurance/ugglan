@@ -192,6 +192,7 @@ extension Project {
                 deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad, .mac]),
                 infoPlist: .extendingDefault(with: [
                     "UIMainStoryboardFile": "",
+                    "NSMicrophoneUsageDescription": "Hedvig uses the microphone to let you record messages and videos.",
                     "UILaunchStoryboardName": "LaunchScreen",
                     "UIApplicationSceneManifest": [
                         "UIApplicationSupportsMultipleScenes": true,

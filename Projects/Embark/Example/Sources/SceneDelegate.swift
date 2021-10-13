@@ -4,6 +4,7 @@ import Form
 import Foundation
 import UIKit
 import hCore
+import EmbarkTesting
 
 @available(iOS 13, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -35,13 +36,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     DefaultStyling.installCustom()
 
                     self.bag += navigationController.present(
-                        StoryList(),
+                        Debug(),
                         options: [.defaults, .largeTitleDisplayMode(.never)]
                     )
                 }
         }
     }
-
+    
     func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
         return scene.userActivity
     }
