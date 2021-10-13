@@ -11,7 +11,7 @@ struct EmbarkRecordAction: View {
     var body: some View {
         VStack {
             if let recording = audioRecorder.recording {
-                RecordedTrack(audioPlayer: .init(recording: recording))
+                TrackPlayer(audioPlayer: .init(recording: recording))
                 hButton.LargeButtonFilled {
                     ///submit recording
                 } content: {

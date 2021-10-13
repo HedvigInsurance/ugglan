@@ -5,7 +5,7 @@ import Combine
 import AVFAudio
 import hCore
 
-struct RecordedTrack: View {
+struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
     
     struct Bar: Identifiable {
@@ -67,7 +67,7 @@ struct RecordedTrack: View {
     
     func calculateHeightForBar(maxValue: CGFloat, scale: CGFloat) -> CGFloat {
         let maxHeight = CGFloat(60)
-        let minHeight = CGFloat(10)
+        let minHeight = CGFloat(5)
         
         let height = scale/maxValue * maxHeight
         
