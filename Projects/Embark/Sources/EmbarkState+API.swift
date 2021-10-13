@@ -267,20 +267,22 @@ extension ResultMap {
 extension GraphQLMap {
     func findFiles() -> (files: [GraphQLFile], result: GraphQLMap) {
         var files: [GraphQLFile] = []
-        
+
         let mappedResult = map { item -> (key: String, value: JSONEncodable?) in
             if let stringValue = item.value as? String {
                 if stringValue.contains("file://") {
-                    files.append(try! .init(fieldName: item.key, originalName: "file", fileURL: URL(string: stringValue)!))
+                    files.append(
+                        try! .init(fieldName: item.key, originalName: "file", fileURL: URL(string: stringValue)!)
+                    )
                     return (item.key, nil)
                 }
             }
-            
+
             return item
         }
-        
+
         let result = Dictionary(uniqueKeysWithValues: mappedResult)
-        
+
         return (files: files, result: result)
     }
 }
@@ -321,9 +323,9 @@ extension EmbarkState {
             var urlRequest = URLRequest(url: Environment.current.endpointURL)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            
+
             let (files, variablesWithNullFiles) = variables.findFiles()
-            
+
             if files.isEmpty {
                 let JSONData = try! JSONSerialization.data(
                     withJSONObject: ["query": query, "variables": variables],
@@ -335,27 +337,34 @@ extension EmbarkState {
                     withJSONObject: ["query": query, "variables": variablesWithNullFiles],
                     options: []
                 )
-                
+
                 let formData = MultipartFormData()
                 try? formData.appendPart(string: String(data: JSONData, encoding: .utf8)!, name: "operations")
-                
+
                 var map: [String: [String]] = [:]
-                
-                files.enumerated().forEach { item in
-                    map[String(item.offset)] = ["variables.\(item.element.fieldName)"]
-                }
-                
+
+                files.enumerated()
+                    .forEach { item in
+                        map[String(item.offset)] = ["variables.\(item.element.fieldName)"]
+                    }
+
                 let JSONMapData = try! JSONSerialization.data(
                     withJSONObject: map,
                     options: []
                 )
-                
+
                 try? formData.appendPart(string: String(data: JSONMapData, encoding: .utf8)!, name: "map")
-                
-                files.enumerated().forEach { item in
-                    try? formData.appendPart(data: Data(contentsOf: item.element.fileURL!), name: String(item.offset), contentType: "application/octet-stream", filename: "file")
-                }
-                
+
+                files.enumerated()
+                    .forEach { item in
+                        try? formData.appendPart(
+                            data: Data(contentsOf: item.element.fileURL!),
+                            name: String(item.offset),
+                            contentType: "application/octet-stream",
+                            filename: "file"
+                        )
+                    }
+
                 urlRequest.httpBody = try! formData.encode()
             }
 
