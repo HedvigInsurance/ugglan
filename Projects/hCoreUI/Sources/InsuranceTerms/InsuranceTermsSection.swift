@@ -35,7 +35,7 @@ public struct InsuranceTermsSection: View {
             }
         }
         .withHeader {
-            hText("Important documents")
+            hText(L10n.offerDocumentsSectionTitle)
         }
     }
 }
