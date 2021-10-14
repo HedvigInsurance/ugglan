@@ -1,43 +1,46 @@
+import AVFAudio
+import Combine
 import Foundation
 import SwiftUI
-import hCoreUI
-import Combine
-import AVFAudio
 import hCore
+import hCoreUI
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
-    
+
     struct Bar: Identifiable {
         var id = UUID()
         var scale: CGFloat
     }
-    
+
     private var staples: some View {
         HStack(alignment: .center, spacing: 2.5) {
             ForEach(audioPlayer.recording.sample.map { Bar(scale: $0) }) { bar in
                 RoundedRectangle(cornerRadius: 1)
                     .foregroundColor(hGrayscaleColor.one)
-                    .frame(width: 1.85, height: calculateHeightForBar(maxValue: audioPlayer.recording.max, scale: bar.scale))
+                    .frame(
+                        width: 1.85,
+                        height: calculateHeightForBar(maxValue: audioPlayer.recording.max, scale: bar.scale)
+                    )
                     .animation(.easeInOut)
             }
         }
     }
-    
+
     private var overlayView: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 Rectangle()
-                        .foregroundColor(hLabelColor.primary)
-                        .frame(width: geometry.size.width * audioPlayer.progress)
-                        .onReceive(audioPlayer.playerTimer) { input in
-                            guard audioPlayer.isPlaying else { return }
-                            audioPlayer.refreshPlayer()
-                        }
+                    .foregroundColor(hLabelColor.primary)
+                    .frame(width: geometry.size.width * audioPlayer.progress)
+                    .onReceive(audioPlayer.playerTimer) { input in
+                        guard audioPlayer.isPlaying else { return }
+                        audioPlayer.refreshPlayer()
+                    }
             }
         }
     }
-    
+
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
@@ -54,23 +57,23 @@ struct TrackPlayer: View {
                     }
                 }
                 Spacer()
-                ScrollView(.horizontal){
-                     staples
-                    .overlay(
-                        overlayView.mask(staples)
-                    )
+                ScrollView(.horizontal) {
+                    staples
+                        .overlay(
+                            overlayView.mask(staples)
+                        )
                 }
             }
             .padding(20)
         }
     }
-    
+
     func calculateHeightForBar(maxValue: CGFloat, scale: CGFloat) -> CGFloat {
         let maxHeight = CGFloat(60)
         let minHeight = CGFloat(5)
-        
-        let height = scale/maxValue * maxHeight
-        
+
+        let height = scale / maxValue * maxHeight
+
         return max(height, minHeight)
     }
 }

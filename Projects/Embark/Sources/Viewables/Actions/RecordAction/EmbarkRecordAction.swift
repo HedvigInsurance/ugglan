@@ -1,13 +1,13 @@
+import AVFAudio
+import Combine
 import Foundation
 import SwiftUI
-import hCoreUI
-import Combine
-import AVFAudio
 import hCore
+import hCoreUI
 
 struct EmbarkRecordAction: View {
     @StateObject var audioRecorder = AudioRecorder()
-    
+
     var body: some View {
         VStack {
             if let recording = audioRecorder.recording {
@@ -26,13 +26,14 @@ struct EmbarkRecordAction: View {
             } else {
                 RecordButton()
             }
-        }.environmentObject(audioRecorder)
+        }
+        .environmentObject(audioRecorder)
     }
 }
 
 struct AudioPulseBackground: View {
     @EnvironmentObject var audioRecorder: AudioRecorder
-    
+
     var body: some View {
         Circle().fill(hGrayscaleColor.one)
             .onReceive(audioRecorder.recordingTimer) { input in
@@ -45,7 +46,7 @@ struct AudioPulseBackground: View {
 
 struct RecordButton: View {
     @EnvironmentObject var audioRecorder: AudioRecorder
-    
+
     @ViewBuilder var pulseBackground: some View {
         if audioRecorder.isRecording {
             AudioPulseBackground()
@@ -53,7 +54,7 @@ struct RecordButton: View {
             Color.clear
         }
     }
-    
+
     var body: some View {
         ZStack {
             pulseBackground
@@ -62,15 +63,16 @@ struct RecordButton: View {
                     audioRecorder.toggleRecording()
                 }
             } label: {
-                
-            }.buttonStyle(RecordButtonStyle())
+
+            }
+            .buttonStyle(RecordButtonStyle())
         }
     }
 }
 
 struct RecordButtonStyle: SwiftUI.ButtonStyle {
     @EnvironmentObject var audioRecorder: AudioRecorder
-    
+
     @hColorBuilder var innerCircleColor: some hColor {
         if audioRecorder.isRecording {
             hLabelColor.primary
@@ -78,12 +80,15 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
             hTintColor.red
         }
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
         VStack {
-            Rectangle().fill(innerCircleColor).frame(width: 36, height: 36).cornerRadius(audioRecorder.isRecording ? 1 : 18)
+            Rectangle().fill(innerCircleColor).frame(width: 36, height: 36)
+                .cornerRadius(audioRecorder.isRecording ? 1 : 18)
                 .padding(36)
-        }.background(Circle().fill(hBackgroundColor.secondary)).shadow(color: .black.opacity(0.1), radius: 24, x: 0, y: 4)
+        }
+        .background(Circle().fill(hBackgroundColor.secondary))
+        .shadow(color: .black.opacity(0.1), radius: 24, x: 0, y: 4)
     }
 }
 
