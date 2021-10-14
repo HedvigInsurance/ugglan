@@ -33,6 +33,7 @@ struct CrossSellHightlights: View {
                     maxWidth: .infinity,
                     alignment: .leading
                 )
+                .padding(.bottom, 10)
             }
         }
         .sectionContainerStyle(.transparent)
