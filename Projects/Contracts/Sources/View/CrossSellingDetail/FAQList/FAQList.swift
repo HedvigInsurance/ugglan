@@ -29,13 +29,13 @@ public struct CrossSellingFAQList: View {
                     }
                 }
                 .withHeader {
-                    hText("Common questions")
+                    hText(L10n.CrossSell.Info.commonQuestionsTitle)
                 }
             }
 
             hSection {
                 VStack(spacing: 20) {
-                    hText("Can’t find the answer you’re looking for?", style: .subheadline)
+                    hText(L10n.CrossSell.Info.faqChatHeadline, style: .subheadline)
 
                     hButton.LargeButtonOutlined {
                         store.send(.crossSellingFAQListNavigation(action: .chat))
@@ -47,7 +47,7 @@ public struct CrossSellingFAQList: View {
                                 .frame(width: 24, height: 24)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.leading, 16)
-                            hText("Chat with us")
+                            hText(L10n.CrossSell.Info.faqChatButton)
                         }
                     }
                 }
