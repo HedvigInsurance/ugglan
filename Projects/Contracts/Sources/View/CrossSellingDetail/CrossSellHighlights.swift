@@ -8,7 +8,7 @@ struct CrossSellHightlights: View {
     let info: CrossSellInfo
 
     var body: some View {
-        hSection(header: hText("Highlights")) {
+        hSection(header: hText(L10n.CrossSell.Info.highlightsTitle)) {
             ForEach(info.highlights, id: \.title) { highlight in
                 HStack(spacing: 18) {
                     Image(

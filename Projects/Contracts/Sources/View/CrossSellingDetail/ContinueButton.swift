@@ -17,7 +17,7 @@ struct ContinueButton: View {
                     store.send(.crossSellingDetailEmbark(name: embarkStoryName))
                 }
             } content: {
-                hText("Calculate your price")
+                hText(L10n.CrossSellingCardSeAccident.cta)
             }
             .padding(16)
         }

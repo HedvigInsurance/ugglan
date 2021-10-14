@@ -20,7 +20,7 @@ public struct CrossSellingCoverageDetail: View {
     public var body: some View {
         hForm {
             if let perils = crossSell.info?.perils {
-                hSection(header: hText("Coverage")) {
+                hSection(header: hText(L10n.CrossSell.Info.coverageTitle)) {
                     PerilCollection(perils: perils) { peril in
                         store.send(.crossSellingCoverageDetailNavigation(action: .peril(peril: peril)))
                     }

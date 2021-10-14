@@ -9,14 +9,14 @@ struct CrossSellMoreInfoSection: View {
     let info: CrossSellInfo
 
     var body: some View {
-        hSection(header: hText("Learn more")) {
+        hSection(header: hText(L10n.CrossSell.Info.learnMoreTitle)) {
             hRow {
                 HStack(spacing: 16) {
                     Image(uiImage: hCoreUIAssets.insurance.image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 24, height: 24)
-                    hText("Full Coverage")
+                    hText(L10n.CrossSell.Info.fullCoverageRow)
                 }
             }
             .onTap {
@@ -28,7 +28,7 @@ struct CrossSellMoreInfoSection: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 24, height: 24)
-                    hText("Common questions")
+                    hText(L10n.CrossSell.Info.commonQuestionsRow)
                 }
             }
             .onTap {
