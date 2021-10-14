@@ -1,10 +1,10 @@
 import Apollo
+import EmbarkTesting
 import Flow
 import Form
 import Foundation
 import UIKit
 import hCore
-import EmbarkTesting
 
 @available(iOS 13, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -42,7 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
         }
     }
-    
+
     func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
         return scene.userActivity
     }
