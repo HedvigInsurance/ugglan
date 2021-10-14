@@ -8,7 +8,7 @@ struct CrossSellAbout: View {
     let info: CrossSellInfo
 
     var body: some View {
-        hSection(header: hText("About the insurance")) {
+        hSection(header: hText(L10n.CrossSell.Info.aboutTitle)) {
             hText(info.about, style: .body)
                 .foregroundColor(hLabelColor.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
