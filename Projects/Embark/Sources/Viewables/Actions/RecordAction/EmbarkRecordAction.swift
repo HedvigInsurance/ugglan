@@ -4,8 +4,11 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
+
 
 struct EmbarkRecordAction: View {
+    let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.Datum
     @StateObject var audioRecorder = AudioRecorder()
 
     var body: some View {
@@ -33,9 +36,11 @@ struct EmbarkRecordAction: View {
 
 struct AudioPulseBackground: View {
     @EnvironmentObject var audioRecorder: AudioRecorder
-
+    
+    private let backgroundColorScheme: some hColor  = hColorScheme.init(light: hGrayscaleColor.one, dark: hGrayscaleColor.two)
+    
     var body: some View {
-        Circle().fill(hGrayscaleColor.one)
+        Circle().fill(backgroundColorScheme)
             .onReceive(audioRecorder.recordingTimer) { input in
                 audioRecorder.refresh()
             }
