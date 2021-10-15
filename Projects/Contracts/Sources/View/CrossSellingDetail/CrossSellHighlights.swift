@@ -8,9 +8,9 @@ struct CrossSellHightlights: View {
     let info: CrossSellInfo
 
     var body: some View {
-        hSection(header: hText(L10n.CrossSell.Info.highlightsTitle)) {
+        hSection {
             ForEach(info.highlights, id: \.title) { highlight in
-                HStack(spacing: 18) {
+                HStack(alignment: .top, spacing: 18) {
                     Image(
                         uiImage: hCoreUIAssets.checkmark.image
                     )
@@ -33,9 +33,10 @@ struct CrossSellHightlights: View {
                     maxWidth: .infinity,
                     alignment: .leading
                 )
-                .padding(.bottom, 10)
+                .padding(.bottom, 24)
             }
         }
+        .padding(.bottom, -24)
         .sectionContainerStyle(.transparent)
     }
 }
