@@ -91,11 +91,6 @@ public struct CrossSell: Codable, Equatable {
             forKey: Self.hasBeenSeenKey(typeOfContract: data.contractType.rawValue)
         )
         typeOfContract = data.contractType.rawValue
-
-        if let info = data.info {
-            self.info = CrossSellInfo(headerImageURL: parsedImageURL, info)
-        } else {
-            self.info = nil
-        }
+        info = CrossSellInfo(headerImageURL: parsedImageURL, data.info)
     }
 }
