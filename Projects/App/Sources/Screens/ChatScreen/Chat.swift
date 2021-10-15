@@ -234,12 +234,6 @@ extension Chat: Presentable {
 
         bag += viewController.install(tableKit, options: [])
 
-        bag += tableKit.view.didMoveToWindowSignal.onFirstValue { _ in
-            if let navigationController = viewController.navigationController {
-                navigationController.navigationBar.scrollEdgeAppearance = UINavigationBar().standardAppearance
-            }
-        }
-
         bag += DelayedDisposer(
             Disposer {
                 AskForRating().ask()

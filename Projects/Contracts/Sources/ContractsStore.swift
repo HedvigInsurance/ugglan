@@ -21,6 +21,19 @@ extension ContractState {
     }
 }
 
+public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol {
+    case detail
+    case peril(peril: Perils)
+    case insurableLimit(insurableLimit: InsurableLimits)
+    case insuranceTerm(insuranceTerm: InsuranceTerm)
+}
+
+public enum CrossSellingFAQListNavigationAction: ActionProtocol {
+    case list
+    case detail(faq: FAQ)
+    case chat
+}
+
 public enum ContractAction: ActionProtocol {
     // Fetch contracts for terminated
     case fetchContractBundles
@@ -32,6 +45,12 @@ public enum ContractAction: ActionProtocol {
     case goToFreeTextChat
     case setFocusedCrossSell(focusedCrossSell: CrossSell?)
     case openCrossSellingEmbark(name: String)
+    case openCrossSellingChat
+
+    case crossSellingDetailEmbark(name: String)
+    case crossSellingCoverageDetailNavigation(action: CrossSellingCoverageDetailNavigationAction)
+    case crossSellingFAQListNavigation(action: CrossSellingFAQListNavigationAction)
+    case openCrossSellingDetail(crossSell: CrossSell)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
     case openDetail(contract: Contract)
@@ -72,6 +91,11 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             return [
                 .fetchContracts,
                 .fetchContractBundles,
+            ]
+            .emitEachThenEnd
+        case let .openCrossSellingDetail(crossSell):
+            return [
+                .setFocusedCrossSell(focusedCrossSell: crossSell)
             ]
             .emitEachThenEnd
         default:

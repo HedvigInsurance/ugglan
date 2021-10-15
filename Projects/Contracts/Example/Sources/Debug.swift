@@ -43,7 +43,8 @@ extension Debug {
                             imageURL: .mock,
                             blurHash: "",
                             buttonText: "",
-                            typeOfContract: "SE_ACCIDENT"
+                            typeOfContract: "SE_ACCIDENT",
+                            info: nil
                         )
 
                         return newState

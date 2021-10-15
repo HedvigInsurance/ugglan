@@ -28,6 +28,43 @@ extension JourneyPresentation {
         }
     }
 
+    public var scrollEdgeBarButtonItemHandler: Self {
+        addConfiguration { presenter in
+            let viewController = presenter.viewController
+
+            if #available(iOS 15, *) {
+                presenter.bag += viewController.view.didLayoutSignal.onValueDisposePrevious { _ in
+                    let innerBag = DisposeBag()
+
+                    if let scrollView = viewController.view.allDescendants(ofType: UIScrollView.self)
+                        .first(where: { _ in true })
+                    {
+                        innerBag += scrollView.signal(for: \.contentOffset)
+                            .onValue { offset in
+                                let endColor = UIColor(dynamic: { trait in
+                                    trait.userInterfaceStyle == .dark ? .white : .black
+                                })
+
+                                let fraction = (offset.y + scrollView.adjustedContentInset.top) / 5
+
+                                viewController.navigationItem.rightBarButtonItem?.tintColor = .white.interpolateColorTo(
+                                    end: endColor,
+                                    fraction: fraction
+                                )
+                                viewController.navigationItem.leftBarButtonItem?.tintColor = .white.interpolateColorTo(
+                                    end: endColor,
+                                    fraction: fraction
+                                )
+                            }
+                    }
+
+                    return innerBag
+                }
+            }
+
+        }
+    }
+
     public var withJourneyDismissButton: Self {
         addConfiguration { presenter in
             let viewController = presenter.viewController
