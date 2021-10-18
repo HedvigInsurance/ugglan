@@ -84,6 +84,5 @@ extension CrossSellingCoverageDetail {
                 .withDismissButton
             }
         }
-        .withJourneyDismissButton
     }
 }

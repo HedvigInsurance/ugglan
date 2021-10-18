@@ -82,6 +82,5 @@ extension CrossSellingFAQList {
                 next(.chat)
             }
         }
-        .withJourneyDismissButton
     }
 }

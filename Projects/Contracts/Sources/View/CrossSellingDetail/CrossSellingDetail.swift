@@ -58,7 +58,7 @@ extension CrossSellingDetail {
     public func journey<Next: JourneyPresentation>(
         @JourneyBuilder _ next: @escaping (_ result: CrossSellingDetailResult) -> Next,
         style: PresentationStyle = .detented(.large),
-        options: PresentationOptions = [.defaults]
+        options: PresentationOptions = [.defaults, .allowSwipeDismissAlways]
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
