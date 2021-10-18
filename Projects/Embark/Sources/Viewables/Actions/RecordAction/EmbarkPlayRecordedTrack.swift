@@ -18,11 +18,11 @@ struct TrackPlayer: View {
                     audioPlayer.togglePlaying()
                 }) {
                     if audioPlayer.isPlaying {
-                        Image(uiImage: hCoreUIAssets.pause.image).tint(hLabelColor.primary)
+                        Image(uiImage: hCoreUIAssets.pause.image)
                     } else {
-                        Image(uiImage: hCoreUIAssets.play.image).tint(hLabelColor.primary)
+                        Image(uiImage: hCoreUIAssets.play.image)
                     }
-                }
+                }.tint(hLabelColor.primary)
                 Spacer()
                 ScrollView(.horizontal) {
                     let staples = Staples(audioPlayer: audioPlayer)

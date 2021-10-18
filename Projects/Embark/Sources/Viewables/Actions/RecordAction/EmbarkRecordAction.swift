@@ -7,7 +7,7 @@ import hCoreUI
 import hGraphQL
 
 struct EmbarkRecordAction: View {
-    let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.Datum
+    let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.AudioRecorderDatum
     @StateObject var audioRecorder = AudioRecorder()
 
     var body: some View {

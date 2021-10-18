@@ -233,7 +233,7 @@ extension Action: Viewable {
                                     )
                                 )
                                 .onValue(performCallback)
-                        } else if let recordAction = actionData?.asEmbarkAudioRecorderAction?.data {
+                        } else if let recordAction = actionData?.asEmbarkAudioRecorderAction?.audioRecorderData {
                             let audioRecorderView = HostingView(rootView: EmbarkRecordAction(data: recordAction))
                             view.addArrangedSubview(audioRecorderView)
                             innerBag += {
