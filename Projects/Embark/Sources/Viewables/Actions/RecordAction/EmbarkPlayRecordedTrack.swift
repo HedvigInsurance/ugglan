@@ -22,7 +22,8 @@ struct TrackPlayer: View {
                     } else {
                         Image(uiImage: hCoreUIAssets.play.image)
                     }
-                }.tint(hLabelColor.primary)
+                }
+                .tint(hLabelColor.primary)
                 Spacer()
                 ScrollView(.horizontal) {
                     let staples = Staples(audioPlayer: audioPlayer)
