@@ -286,6 +286,10 @@ query EmbarkStory($name: String!, $locale: String!) {
           component
           audioRecorderData: data {
             storeKey
+            label
+            next {
+                ...EmbarkLinkFragment
+            }
           }
         }
         ... on EmbarkActionCore {

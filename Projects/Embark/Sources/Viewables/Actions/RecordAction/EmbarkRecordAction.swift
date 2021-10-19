@@ -8,6 +8,7 @@ import hGraphQL
 
 struct EmbarkRecordAction: View {
     let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.AudioRecorderDatum
+    let onSubmit: (_ url: URL) -> Void
     @StateObject var audioRecorder = AudioRecorder()
 
     var body: some View {
@@ -15,7 +16,10 @@ struct EmbarkRecordAction: View {
             if let recording = audioRecorder.recording {
                 TrackPlayer(audioPlayer: .init(recording: recording))
                 hButton.LargeButtonFilled {
-                    ///submit recording
+                    guard let url = audioRecorder.recording?.url else {
+                        return
+                    }
+                    onSubmit(url)
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
