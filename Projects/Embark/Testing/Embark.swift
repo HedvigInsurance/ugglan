@@ -147,7 +147,7 @@ extension EmbarkStory {
         )
 
     fileprivate static let embarkAudioRecorderAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
-        .makeEmbarkAudioRecorderAction(component: "audioRec", data: .init(storeKey: "audioRec"))
+        .makeEmbarkAudioRecorderAction(component: "audioRec", audioRecorderData: .init(storeKey: "audioRec"))
 }
 
 extension Debug: Presentable {

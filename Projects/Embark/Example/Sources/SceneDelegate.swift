@@ -36,7 +36,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     DefaultStyling.installCustom()
 
                     self.bag += navigationController.present(
-                        Debug(),
+                        StoryList(),
                         options: [.defaults, .largeTitleDisplayMode(.never)]
                     )
                 }
