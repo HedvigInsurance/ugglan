@@ -72,16 +72,16 @@ struct RecordButton: View {
             } label: {
 
             }
-            .buttonStyle(RecordButtonStyle())
+            .buttonStyle(RecordButtonStyle(isRecording: audioRecorder.isRecording))
         }
     }
 }
 
 struct RecordButtonStyle: SwiftUI.ButtonStyle {
-    @EnvironmentObject var audioRecorder: AudioRecorder
+    var isRecording: Bool
 
     @hColorBuilder var innerCircleColor: some hColor {
-        if audioRecorder.isRecording {
+        if isRecording {
             hLabelColor.primary
         } else {
             hTintColor.red
@@ -91,7 +91,7 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack {
             Rectangle().fill(innerCircleColor).frame(width: 36, height: 36)
-                .cornerRadius(audioRecorder.isRecording ? 1 : 18)
+                .cornerRadius(isRecording ? 1 : 18)
                 .padding(36)
         }
         .background(Circle().fill(hBackgroundColor.secondary))
