@@ -102,14 +102,17 @@ extension Action: Viewable {
         )
 
         let hideAnimationSignal = actionDataSignal.withLatestFrom(state.passageNameSignal)
-            .animated(style: animationStyle) { _, _ in isHiddenSignal.value = true
+            .animated(style: animationStyle) { _, _ in
+                isHiddenSignal.value = true
                 view.firstPossibleResponder?.resignFirstResponder()
                 view.layoutIfNeeded()
             }
             .delay(by: 0)
 
         bag += hideAnimationSignal.delay(by: 0.25)
-            .animated(style: animationStyle) { _ in isHiddenSignal.value = false
+            .wait(until: state.isApiLoadingSignal.map { !$0 })
+            .animated(style: animationStyle) { _ in
+                isHiddenSignal.value = false
                 view.layoutIfNeeded()
             }
 
@@ -122,7 +125,8 @@ extension Action: Viewable {
 
                 bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal)
                     .wait(until: shouldUpdateUISignal)
-                    .onValueDisposePrevious { actionData, _ in let innerBag = DisposeBag()
+                    .onValueDisposePrevious { actionData, _ in
+                        let innerBag = DisposeBag()
 
                         let hasCallbackedSignal = ReadWriteSignal<Bool>(false)
 
@@ -234,7 +238,12 @@ extension Action: Viewable {
                                 )
                                 .onValue(performCallback)
                         } else if let recordAction = actionData?.asEmbarkAudioRecorderAction?.audioRecorderData {
-                            let audioRecorderView = HostingView(rootView: EmbarkRecordAction(data: recordAction))
+                            let audioRecorderView = HostingView(
+                                rootView: EmbarkRecordAction(data: recordAction) { url in
+                                    self.state.store.setValue(key: recordAction.storeKey, value: url.absoluteString)
+                                    performCallback(recordAction.next.fragments.embarkLinkFragment)
+                                }
+                            )
                             view.addArrangedSubview(audioRecorderView)
                             innerBag += {
                                 audioRecorderView.removeFromSuperview()

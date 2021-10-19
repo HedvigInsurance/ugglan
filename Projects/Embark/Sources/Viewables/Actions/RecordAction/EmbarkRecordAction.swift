@@ -8,6 +8,7 @@ import hGraphQL
 
 struct EmbarkRecordAction: View {
     let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.AudioRecorderDatum
+    let onSubmit: (_ url: URL) -> Void
     @StateObject var audioRecorder = AudioRecorder()
 
     var body: some View {
@@ -15,7 +16,10 @@ struct EmbarkRecordAction: View {
             if let recording = audioRecorder.recording {
                 TrackPlayer(audioPlayer: .init(recording: recording))
                 hButton.LargeButtonFilled {
-                    ///submit recording
+                    guard let url = audioRecorder.recording?.url else {
+                        return
+                    }
+                    onSubmit(url)
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
@@ -72,16 +76,16 @@ struct RecordButton: View {
             } label: {
 
             }
-            .buttonStyle(RecordButtonStyle())
+            .buttonStyle(RecordButtonStyle(isRecording: audioRecorder.isRecording))
         }
     }
 }
 
 struct RecordButtonStyle: SwiftUI.ButtonStyle {
-    @EnvironmentObject var audioRecorder: AudioRecorder
+    var isRecording: Bool
 
     @hColorBuilder var innerCircleColor: some hColor {
-        if audioRecorder.isRecording {
+        if isRecording {
             hLabelColor.primary
         } else {
             hTintColor.red
@@ -91,7 +95,7 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack {
             Rectangle().fill(innerCircleColor).frame(width: 36, height: 36)
-                .cornerRadius(audioRecorder.isRecording ? 1 : 18)
+                .cornerRadius(isRecording ? 1 : 18)
                 .padding(36)
         }
         .background(Circle().fill(hBackgroundColor.secondary))
