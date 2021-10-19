@@ -185,7 +185,7 @@ public class EmbarkState {
 
                 guard let totalSteps = self.totalStepsSignal.value else { return 0 }
 
-                if totalSteps == 0 {
+                if totalSteps == 0 || self.passageHistorySignal.value.isEmpty {
                     return 0
                 }
 
