@@ -237,7 +237,7 @@ extension EmbarkMessages: Viewable {
             }
         )
 
-        bag += self.state.isApiLoadingSignal.filter(predicate: { $0 })
+        bag += self.state.isApiLoadingSignal.distinct().filter(predicate: { $0 })
             .onValueDisposePrevious { isLoading in
                 let innerBag = DisposeBag()
 

@@ -87,7 +87,6 @@ public class EmbarkState {
             .onValue({ link in
                 guard let link = link else { return }
                 self.goTo(passageName: link.name, pushHistoryEntry: false)
-                self.isApiLoadingSignal.value = false
             })
     }
 
@@ -99,6 +98,7 @@ public class EmbarkState {
         history.removeLast()
         passageHistorySignal.value = history
         store.removeLastRevision()
+        self.isApiLoadingSignal.value = false
     }
 
     func goTo(passageName: String, pushHistoryEntry: Bool = true) {
@@ -140,6 +140,7 @@ public class EmbarkState {
                     }
                 )
             } else {
+                self.isApiLoadingSignal.value = false
                 currentPassageSignal.value = resultingPassage
             }
         }
