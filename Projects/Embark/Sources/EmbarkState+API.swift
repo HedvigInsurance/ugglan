@@ -339,7 +339,10 @@ extension EmbarkState {
                 )
 
                 let formData = MultipartFormData()
-                urlRequest.setValue("multipart/form-data; boundary=\(formData.boundary)", forHTTPHeaderField: "Content-Type")
+                urlRequest.setValue(
+                    "multipart/form-data; boundary=\(formData.boundary)",
+                    forHTTPHeaderField: "Content-Type"
+                )
 
                 try? formData.appendPart(string: String(data: JSONData, encoding: .utf8)!, name: "operations")
 
