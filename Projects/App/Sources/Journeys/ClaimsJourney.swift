@@ -1,15 +1,15 @@
+import Embark
 import Flow
 import Foundation
 import Presentation
 import UIKit
 import hCore
 import hCoreUI
-import Embark
 
 extension AppJourney {
     static func claimsJourney(name: String) -> some JourneyPresentation {
         HonestyPledge.journey {
-            
+
             AppJourney.embark(Embark(name: name), storeOffer: false) { result in
                 switch result {
                 case .chat:
