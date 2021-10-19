@@ -362,17 +362,18 @@ extension EmbarkState {
 
                 files.enumerated()
                     .forEach { item in
+                        let url = item.element.fileURL!
                         let file = try! GraphQLFile(
                             fieldName: "file",
                             originalName: String(item.offset),
-                            fileURL: item.element.fileURL!
+                            fileURL: url
                         )
 
                         formData.appendPart(
                             inputStream: try! file.generateInputStream(),
                             contentLength: file.contentLength,
                             name: String(item.offset),
-                            contentType: file.mimeType,
+                            contentType: url.mimeType,
                             filename: file.originalName
                         )
                     }
