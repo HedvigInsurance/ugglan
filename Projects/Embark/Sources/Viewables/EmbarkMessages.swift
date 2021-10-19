@@ -140,6 +140,7 @@ extension EmbarkMessages: Viewable {
         }
 
         let animatedResponseSignal: Signal = messagesDataSignal.withLatestFrom(previousResponseSignal)
+            .wait(until: self.state.isApiLoadingSignal.atOnce().map { !$0 })
             .animated(
                 style: .lightBounce(),
                 animations: { _, previousResponse in
