@@ -102,14 +102,16 @@ extension Action: Viewable {
         )
 
         let hideAnimationSignal = actionDataSignal.withLatestFrom(state.passageNameSignal)
-            .animated(style: animationStyle) { _, _ in isHiddenSignal.value = true
+            .animated(style: animationStyle) { _, _ in
+                isHiddenSignal.value = true
                 view.firstPossibleResponder?.resignFirstResponder()
                 view.layoutIfNeeded()
             }
             .delay(by: 0)
 
         bag += hideAnimationSignal.delay(by: 0.25)
-            .animated(style: animationStyle) { _ in isHiddenSignal.value = false
+            .animated(style: animationStyle) { _ in
+                isHiddenSignal.value = false
                 view.layoutIfNeeded()
             }
 
@@ -122,7 +124,9 @@ extension Action: Viewable {
 
                 bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal)
                     .wait(until: shouldUpdateUISignal)
-                    .onValueDisposePrevious { actionData, _ in let innerBag = DisposeBag()
+                    .wait(until: state.isApiLoadingSignal.map { !$0 })
+                    .onValueDisposePrevious { actionData, _ in
+                        let innerBag = DisposeBag()
 
                         let hasCallbackedSignal = ReadWriteSignal<Bool>(false)
 

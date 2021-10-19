@@ -93,7 +93,6 @@ extension GraphQL.ApiSingleVariableFragment {
         case .boolean: map[key] = store.getValue(key: from, includeQueue: true) == "true"
         case .file: map[key] = store.getValue(key: from, includeQueue: true)
         case .__unknown: break
-        case .file: break
         }
 
         return map
@@ -457,17 +456,5 @@ extension EmbarkState {
             case .unknown: return "Unknown"
             }
         }
-    }
-
-    var apiResponseSignal: ReadSignal<GraphQL.EmbarkLinkFragment?> {
-        currentPassageSignal.compactMap { $0 }
-            .mapLatestToFuture { passage -> Future<GraphQL.EmbarkLinkFragment?> in
-                guard let apiFragment = passage.api?.fragments.apiFragment else {
-                    return Future(error: ApiError.noApi)
-                }
-
-                return self.handleApi(apiFragment: apiFragment)
-            }
-            .providedSignal.plain().readable(initial: nil)
     }
 }
