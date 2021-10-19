@@ -447,8 +447,8 @@ extension EmbarkState {
                 mutationApi.data.mutation,
                 variables: mutationApi.data.graphQLVariables(store: store)
             )
-            .onValue { resultMap in guard let resultMap = resultMap else { return }
-
+            .onValue { resultMap in
+                guard let resultMap = resultMap else { return }
                 resultMap.insertInto(store: self.store, basedOn: mutationApi)
             }
         }

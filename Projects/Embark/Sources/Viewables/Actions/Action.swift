@@ -110,6 +110,7 @@ extension Action: Viewable {
             .delay(by: 0)
 
         bag += hideAnimationSignal.delay(by: 0.25)
+            .wait(until: state.isApiLoadingSignal.map { !$0 })
             .animated(style: animationStyle) { _ in
                 isHiddenSignal.value = false
                 view.layoutIfNeeded()
@@ -124,7 +125,6 @@ extension Action: Viewable {
 
                 bag += actionDataSignal.withLatestFrom(self.state.passageNameSignal)
                     .wait(until: shouldUpdateUISignal)
-                    .wait(until: state.isApiLoadingSignal.map { !$0 })
                     .onValueDisposePrevious { actionData, _ in
                         let innerBag = DisposeBag()
 
