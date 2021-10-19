@@ -102,13 +102,3 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
         .shadow(color: .black.opacity(0.1), radius: 24, x: 0, y: 4)
     }
 }
-
-extension TimeInterval {
-    var displayValue: String {
-        let seconds = self.truncatingRemainder(dividingBy: 60)
-        let minutes = (self / 60).truncatingRemainder(dividingBy: 60)
-        let secondsLabel = Int(seconds) > 9 ? String(Int(seconds)) : "0\(Int(seconds))"
-        let minutesLabel = Int(minutes) > 9 ? String(Int(minutes)) : "0\(Int(minutes))"
-        return "\(minutesLabel):\(secondsLabel)"
-    }
-}
