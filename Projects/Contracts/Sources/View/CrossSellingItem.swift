@@ -22,6 +22,7 @@ struct CrossSellingCardLabel: View {
                 didTapButton()
             } content: {
                 hText(crossSell.buttonText)
+                    .frame(maxWidth: .infinity)
             }
             .hButtonFilledStyle(.overImage)
         }

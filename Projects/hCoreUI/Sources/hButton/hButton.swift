@@ -14,7 +14,8 @@ struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .frame(minHeight: 35)
-            .frame(maxWidth: .infinity)
+            .padding(.leading)
+            .padding(.trailing)
     }
 }
 
@@ -165,7 +166,9 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     }
 }
 
-struct LargeButtonOutlinedStyle: SwiftUI.ButtonStyle {
+struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
+    var size: ButtonSize
+    
     struct Label: View {
         var configuration: Configuration
 
@@ -207,7 +210,7 @@ struct LargeButtonOutlinedStyle: SwiftUI.ButtonStyle {
         VStack {
             Label(configuration: configuration).contentShape(Rectangle())
         }
-        .modifier(LargeButtonModifier())
+        .buttonSizeModifier(size)
         .background(Color.clear)
         .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
         .clipShape(RoundedRectangle(cornerRadius: .defaultCornerRadius))
@@ -329,7 +332,27 @@ public enum hButton {
             _hButton(action: action) {
                 content()
             }
-            .buttonStyle(LargeButtonOutlinedStyle())
+            .buttonStyle(ButtonOutlinedStyle(size: .large))
+        }
+    }
+    
+    public struct SmallButtonOutlined<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: action) {
+                content()
+            }
+            .buttonStyle(ButtonOutlinedStyle(size: .small))
         }
     }
 

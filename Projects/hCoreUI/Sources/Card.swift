@@ -3,6 +3,159 @@ import Form
 import Foundation
 import UIKit
 import hCore
+import SwiftUI
+
+/*public struct CardView: UIViewRepresentable {
+    @Binding public var titleIcon: UIImage
+    @Binding public var title: DisplayableString
+    @Binding public var body: DisplayableString
+    public var backgroundColor: UIColor
+    @Binding public var buttonText: DisplayableString?
+    public var buttonType: ButtonType?
+
+    public init(
+        titleIcon: Binding<UIImage>,
+        title: Binding<DisplayableString>,
+        body: Binding<DisplayableString>,
+        backgroundColor: UIColor,
+        buttonText: Binding<DisplayableString?>?,
+        buttonType: ButtonType? = nil
+    ) {
+        _titleIcon = titleIcon
+        _title = title
+        _body = body
+        self.backgroundColor = backgroundColor
+        _buttonText = buttonText ?? Binding.constant(nil)
+        self.buttonType = buttonType
+    }
+
+    public class Coordinator {
+        let bag = DisposeBag()
+        let isSelectedSignal: ReadWriteSignal<Bool>
+        let bullet: Bullet
+
+        init(
+            isSelectedSignal: ReadWriteSignal<Bool>
+        ) {
+            self.isSelectedSignal = isSelectedSignal
+            self.bullet = Bullet(isSelectedSignal: isSelectedSignal)
+        }
+    }
+
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(isSelectedSignal: .init(false))
+    }
+
+    public func makeUIView(context: Context) -> some UIView {
+        let (view, disposable) = context.coordinator.bullet.materialize(
+            events: ViewableEvents(wasAddedCallbacker: .init())
+        )
+        context.coordinator.isSelectedSignal.value = isSelected
+        context.coordinator.bag += disposable
+        return view
+    }
+
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
+        context.coordinator.isSelectedSignal.value = isSelected
+    }
+}*/
+
+public struct hCard<Content: View>: View {
+    private var titleIcon: UIImage
+    private var title: String
+    private var bodyText: String
+    private let content: Content
+    
+    public init(
+        titleIcon: UIImage,
+        title: String,
+        bodyText: String,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.titleIcon = titleIcon
+        self.title = title
+        self.bodyText = bodyText
+        self.content = content()
+    }
+    
+    public var body: some View {
+        VStack {
+            HStack {
+                SwiftUI.Image(uiImage: titleIcon)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 20)
+                title.hText(.headline)
+            }
+            bodyText
+                .hText(.subheadline)
+                .foregroundColor(hLabelColor.secondary)
+                .padding(10)
+                .multilineTextAlignment(.center)
+                
+            content
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(hTintColor.lavenderTwo)
+        .border(hSeparatorColor.separator, width: .hairlineWidth)
+        .cornerRadius(.defaultCornerRadius)
+    }
+}
+
+extension hCard where Content == EmptyView {
+    init(
+        titleIcon: UIImage,
+        title: String,
+        bodyText: String
+    ) {
+        self.init(
+            titleIcon: titleIcon,
+            title: title,
+            bodyText: bodyText,
+            content: { EmptyView() }
+        )
+    }
+}
+
+struct CardPreview: PreviewProvider {
+    static var previews: some View {
+        Group {
+            hCard(
+                titleIcon: hCoreUIAssets.refresh.image,
+                title: "Title",
+                bodyText: "Subtitle"
+            )
+            hCard(
+                titleIcon: hCoreUIAssets.refresh.image,
+                title: "Title",
+                bodyText: "Subtitle"
+            ) {
+                hButton.SmallButtonOutlined {
+                    print("Hello")
+                } content: {
+                    "Button".hText()
+                }
+            }
+            .preferredColorScheme(.light)
+            hCard(
+                titleIcon: hCoreUIAssets.refresh.image,
+                title: "Title",
+                bodyText: "Subtitle"
+            ) {
+                hButton.SmallButtonOutlined {
+                    print("Hello")
+                } content: {
+                    "Button".hText()
+                }
+            }
+            .preferredColorScheme(.dark)
+        }
+        .previewLayout(PreviewLayout.sizeThatFits)
+        .padding()
+        .previewDisplayName("Default preview")
+    }
+}
 
 public struct Card {
     @ReadWriteState var titleIcon: UIImage
