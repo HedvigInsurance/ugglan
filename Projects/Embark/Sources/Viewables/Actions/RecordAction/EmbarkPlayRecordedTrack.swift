@@ -7,34 +7,33 @@ import hCoreUI
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
-
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(hBackgroundColor.secondary)
-                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-            HStack {
-                SwiftUI.Button(action: {
-                    audioPlayer.togglePlaying()
-                }) {
-                    if audioPlayer.isPlaying {
-                        Image(uiImage: hCoreUIAssets.pause.image)
-                    } else {
-                        Image(uiImage: hCoreUIAssets.play.image)
-                    }
-                }
-                .tint(hLabelColor.primary)
-                Spacer()
-                ScrollView(.horizontal) {
-                    let staples = Staples(audioPlayer: audioPlayer)
-                    staples
-                        .overlay(
-                            OverlayView(audioPlayer: audioPlayer).mask(staples)
-                        )
-                }
-            }
-            .padding(20)
+    
+    @ViewBuilder var image: some View {
+        if audioPlayer.isPlaying {
+            Image(uiImage: hCoreUIAssets.pause.image)
+        } else {
+            Image(uiImage: hCoreUIAssets.play.image)
         }
+    }
+    
+    var body: some View {
+        hRow {
+            image.tint(hLabelColor.primary)
+            Spacer()
+            let staples = Staples(audioPlayer: audioPlayer)
+            staples
+                .overlay(
+                    OverlayView(audioPlayer: audioPlayer).mask(staples)
+                )
+        }
+        .withEmptyAccessory
+        .onTap {
+            audioPlayer.togglePlaying()
+        }.background(
+            RoundedRectangle(cornerRadius: 8)
+                        .fill(hBackgroundColor.secondary)
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        )
     }
 }
 
@@ -49,7 +48,7 @@ struct Staples: View {
     }
 
     var body: some View {
-        HStack(alignment: .center, spacing: 2.5) {
+        HStack(alignment: .center) {
             ForEach(audioPlayer.recording.sample.map { Staple(scale: $0) }) { bar in
                 RoundedRectangle(cornerRadius: 1)
                     .fill(staplesDefaultColor)
