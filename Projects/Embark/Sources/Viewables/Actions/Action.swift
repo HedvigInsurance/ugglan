@@ -1,10 +1,10 @@
 import Flow
 import Foundation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 struct Action { let state: EmbarkState }
 
@@ -101,7 +101,7 @@ extension Action: Viewable {
             delay: 0,
             options: [.allowUserInteraction]
         )
-        
+
         let updateViewsCallbacker = Callbacker<Void>()
 
         let hideAnimationSignal = actionDataSignal.withLatestFrom(state.passageNameSignal)
@@ -246,8 +246,9 @@ extension Action: Viewable {
                         } else if let recordAction = actionData?.asEmbarkAudioRecorderAction?.audioRecorderData {
                             let audioRecorder = AudioRecorder()
                             innerBag.hold(audioRecorder)
-                            
-                            let recordActionView = EmbarkRecordAction(data: recordAction, audioRecorder: audioRecorder) { url in
+
+                            let recordActionView = EmbarkRecordAction(data: recordAction, audioRecorder: audioRecorder)
+                            { url in
                                 self.state.store.setValue(key: recordAction.storeKey, value: url.absoluteString)
                                 performCallback(recordAction.next.fragments.embarkLinkFragment)
                             }
@@ -259,13 +260,13 @@ extension Action: Viewable {
                             innerBag += {
                                 audioRecorderView.removeFromSuperview()
                             }
-                            
+
                             innerBag += updateViewsCallbacker.providedSignal.onValue { _ in
                                 audioRecorderView.frame = .zero
                                 audioRecorderView.setNeedsLayout()
                                 audioRecorderView.layoutIfNeeded()
                             }
-                            
+
                         }
 
                         return innerBag
