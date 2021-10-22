@@ -20,7 +20,7 @@ struct FrequentlyAskedQuestionDetail: View {
                         style: .title1
                     )
                     hText(
-                        frequentlyAskedQuestion.headline ?? "",
+                        frequentlyAskedQuestion.body ?? "",
                         style: .body
                     )
                     .foregroundColor(hLabelColor.secondary)
