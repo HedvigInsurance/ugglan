@@ -76,7 +76,8 @@ extension FrequentlyAskedQuestionsSection: Presentable {
                             innerBag += viewController.present(
                                 FrequentlyAskedQuestionDetail(
                                     frequentlyAskedQuestion: frequentlyAskedQuestion
-                                ).journey
+                                )
+                                .journey
                             )
                         }
 
