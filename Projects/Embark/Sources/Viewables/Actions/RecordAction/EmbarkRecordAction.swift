@@ -10,27 +10,30 @@ struct EmbarkRecordAction: View {
     let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.AudioRecorderDatum
     @ObservedObject var audioRecorder: AudioRecorder
     let onSubmit: (_ url: URL) -> Void
-
+    
     var body: some View {
-        VStack {
+        ZStack(alignment: .bottom) {
             if let recording = audioRecorder.recording {
-                TrackPlayer(audioPlayer: .init(recording: recording))
-                hButton.LargeButtonFilled {
-                    guard let url = audioRecorder.recording?.url else {
-                        return
+                VStack(spacing: 12) {
+                    TrackPlayer(audioPlayer: .init(recording: recording))
+                    hButton.LargeButtonFilled {
+                        guard let url = audioRecorder.recording?.url else {
+                            return
+                        }
+                        onSubmit(url)
+                    } content: {
+                        hText(L10n.generalContinueButton)
                     }
-                    onSubmit(url)
-                } content: {
-                    hText(L10n.generalContinueButton)
-                }
-                hButton.LargeButtonText {
-                    audioRecorder.restart()
-                } content: {
-                    hText("Record again")
-                }
-                Spacer()
+                    hButton.LargeButtonText {
+                        withAnimation(.spring()) {
+                            audioRecorder.restart()
+                        }
+                    } content: {
+                        hText("Record again")
+                    }
+                }.transition(.move(edge: .bottom))
             } else {
-                RecordButton()
+                RecordButton().transition(.move(edge: .bottom))
             }
         }
         .environmentObject(audioRecorder)
