@@ -10,7 +10,7 @@ struct EmbarkRecordAction: View {
     let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.AudioRecorderDatum
     @ObservedObject var audioRecorder: AudioRecorder
     let onSubmit: (_ url: URL) -> Void
-
+    
     var body: some View {
         VStack {
             if let recording = audioRecorder.recording {

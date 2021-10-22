@@ -4,6 +4,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import SwiftUI
 
 struct Action { let state: EmbarkState }
 
@@ -100,6 +101,8 @@ extension Action: Viewable {
             delay: 0,
             options: [.allowUserInteraction]
         )
+        
+        let updateViewsCallbacker = Callbacker<Void>()
 
         let hideAnimationSignal = actionDataSignal.withLatestFrom(state.passageNameSignal)
             .animated(style: animationStyle) { _, _ in
@@ -114,6 +117,9 @@ extension Action: Viewable {
             .animated(style: animationStyle) { _ in
                 isHiddenSignal.value = false
                 view.layoutIfNeeded()
+            }
+            .atValue { _ in
+                updateViewsCallbacker.callAll()
             }
 
         return (
@@ -240,18 +246,26 @@ extension Action: Viewable {
                         } else if let recordAction = actionData?.asEmbarkAudioRecorderAction?.audioRecorderData {
                             let audioRecorder = AudioRecorder()
                             innerBag.hold(audioRecorder)
+                            
+                            let recordActionView = EmbarkRecordAction(data: recordAction, audioRecorder: audioRecorder) { url in
+                                self.state.store.setValue(key: recordAction.storeKey, value: url.absoluteString)
+                                performCallback(recordAction.next.fragments.embarkLinkFragment)
+                            }
 
                             let audioRecorderView = HostingView(
-                                rootView: EmbarkRecordAction(data: recordAction, audioRecorder: audioRecorder) { url in
-                                    self.state.store.setValue(key: recordAction.storeKey, value: url.absoluteString)
-                                    performCallback(recordAction.next.fragments.embarkLinkFragment)
-                                }
+                                rootView: recordActionView
                             )
                             view.addArrangedSubview(audioRecorderView)
-
                             innerBag += {
                                 audioRecorderView.removeFromSuperview()
                             }
+                            
+                            innerBag += updateViewsCallbacker.providedSignal.onValue { _ in
+                                audioRecorderView.frame = .zero
+                                audioRecorderView.setNeedsLayout()
+                                audioRecorderView.layoutIfNeeded()
+                            }
+                            
                         }
 
                         return innerBag
