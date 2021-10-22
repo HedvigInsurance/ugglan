@@ -238,13 +238,17 @@ extension Action: Viewable {
                                 )
                                 .onValue(performCallback)
                         } else if let recordAction = actionData?.asEmbarkAudioRecorderAction?.audioRecorderData {
+                            let audioRecorder = AudioRecorder()
+                            innerBag.hold(audioRecorder)
+                            
                             let audioRecorderView = HostingView(
-                                rootView: EmbarkRecordAction(data: recordAction) { url in
+                                rootView: EmbarkRecordAction(data: recordAction, audioRecorder: audioRecorder) { url in
                                     self.state.store.setValue(key: recordAction.storeKey, value: url.absoluteString)
                                     performCallback(recordAction.next.fragments.embarkLinkFragment)
                                 }
                             )
                             view.addArrangedSubview(audioRecorderView)
+                            
                             innerBag += {
                                 audioRecorderView.removeFromSuperview()
                             }

@@ -8,8 +8,8 @@ import hGraphQL
 
 struct EmbarkRecordAction: View {
     let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.AudioRecorderDatum
+    @ObservedObject var audioRecorder: AudioRecorder
     let onSubmit: (_ url: URL) -> Void
-    @StateObject var audioRecorder = AudioRecorder()
 
     var body: some View {
         VStack {
