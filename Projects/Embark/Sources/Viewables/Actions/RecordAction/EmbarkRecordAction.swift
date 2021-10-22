@@ -10,7 +10,7 @@ struct EmbarkRecordAction: View {
     let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.AudioRecorderDatum
     @ObservedObject var audioRecorder: AudioRecorder
     let onSubmit: (_ url: URL) -> Void
-    
+
     var body: some View {
         ZStack(alignment: .bottom) {
             if let recording = audioRecorder.recording {
@@ -31,9 +31,14 @@ struct EmbarkRecordAction: View {
                     } content: {
                         hText("Record again")
                     }
-                }.transition(.move(edge: .bottom))
+                }
+                .transition(.move(edge: .bottom))
             } else {
-                RecordButton().transition(.move(edge: .bottom))
+                RecordButton(isRecording: audioRecorder.isRecording) {
+                    withAnimation(.spring()) {
+                        audioRecorder.toggleRecording()
+                    }
+                }.transition(.asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300)))
             }
         }
         .environmentObject(audioRecorder)
@@ -59,10 +64,11 @@ struct AudioPulseBackground: View {
 }
 
 struct RecordButton: View {
-    @EnvironmentObject var audioRecorder: AudioRecorder
+    var isRecording: Bool
+    var onTap: () -> Void
 
     @ViewBuilder var pulseBackground: some View {
-        if audioRecorder.isRecording {
+        if isRecording {
             AudioPulseBackground()
         } else {
             Color.clear
@@ -73,13 +79,11 @@ struct RecordButton: View {
         ZStack {
             pulseBackground
             SwiftUI.Button {
-                withAnimation(.spring()) {
-                    audioRecorder.toggleRecording()
-                }
+                onTap()
             } label: {
 
             }
-            .buttonStyle(RecordButtonStyle(isRecording: audioRecorder.isRecording))
+            .buttonStyle(RecordButtonStyle(isRecording: isRecording))
         }
     }
 }
