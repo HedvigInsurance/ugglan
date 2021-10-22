@@ -38,7 +38,8 @@ struct EmbarkRecordAction: View {
                     withAnimation(.spring()) {
                         audioRecorder.toggleRecording()
                     }
-                }.transition(.asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300)))
+                }
+                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300)))
             }
         }
         .environmentObject(audioRecorder)
