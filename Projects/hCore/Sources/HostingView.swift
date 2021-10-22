@@ -29,16 +29,16 @@ public class HostingView<Content: View>: UIView {
             make.edges.equalToSuperview()
         }
     }
-    
+
     public override func willMove(toSuperview newSuperview: UIView?) {
         if let viewController = newSuperview?.viewController {
             viewController.addChild(rootViewHostingController)
             rootViewHostingController.didMove(toParent: viewController)
         }
-        
+
         super.willMove(toSuperview: newSuperview)
     }
-    
+
     deinit {
         rootViewHostingController.removeFromParent()
     }
