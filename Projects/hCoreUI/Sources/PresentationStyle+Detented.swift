@@ -247,7 +247,7 @@ extension UIViewController {
                 }
             } else {
                 apply()
-                
+
                 UIView.animate(
                     withDuration: 0.5,
                     delay: 0,
@@ -389,7 +389,7 @@ extension PresentationStyle {
                 }
 
                 apply()
-                
+
                 if let keyboardAnimation = keyboardAnimation {
                     keyboardAnimation.animate { forceLayout() }
                 } else if unanimated {
