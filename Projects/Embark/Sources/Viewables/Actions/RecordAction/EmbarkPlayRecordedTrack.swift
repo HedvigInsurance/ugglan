@@ -7,7 +7,7 @@ import hCoreUI
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
-    
+
     @ViewBuilder var image: some View {
         if audioPlayer.isPlaying {
             Image(uiImage: hCoreUIAssets.pause.image)
@@ -15,7 +15,7 @@ struct TrackPlayer: View {
             Image(uiImage: hCoreUIAssets.play.image)
         }
     }
-    
+
     var body: some View {
         hRow {
             image.tint(hLabelColor.primary)
@@ -29,10 +29,11 @@ struct TrackPlayer: View {
         .withEmptyAccessory
         .onTap {
             audioPlayer.togglePlaying()
-        }.background(
+        }
+        .background(
             RoundedRectangle(cornerRadius: 8)
-                        .fill(hBackgroundColor.secondary)
-                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                .fill(hBackgroundColor.secondary)
+                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
         )
     }
 }
