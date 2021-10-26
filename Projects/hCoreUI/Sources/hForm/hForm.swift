@@ -22,6 +22,16 @@ extension View {
     }
 }
 
+struct BackgroundView: UIViewRepresentable {
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        uiView.backgroundColor = .brand(.primaryBackground())
+    }
+
+    func makeUIView(context: Context) -> some UIView {
+        UIView()
+    }
+}
+
 public struct hForm<Content: View>: View {
     @State var bottomAttachedViewHeight: CGFloat = 0
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
@@ -35,7 +45,7 @@ public struct hForm<Content: View>: View {
 
     public var body: some View {
         ZStack {
-            hBackgroundColor.primary.edgesIgnoringSafeArea(.all)
+            BackgroundView().edgesIgnoringSafeArea(.all)
             ScrollView {
                 VStack {
                     content

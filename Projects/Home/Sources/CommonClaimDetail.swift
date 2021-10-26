@@ -47,7 +47,7 @@ extension CommonClaimDetail: Presentable {
             icon.alignedTo(
                 .leading,
                 configure: { iconView in
-                    iconView.snp.makeConstraints { make in make.height.width.equalTo(30) }
+                    iconView.snp.makeConstraints { make in make.height.width.equalTo(40) }
                 }
             )
         )
