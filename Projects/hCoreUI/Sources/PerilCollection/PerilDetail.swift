@@ -129,41 +129,41 @@ extension PerilDetail: Presentable {
                 gradient.frame = swipeHintBackgroundView.bounds
             }
 
-
             let swipeHintContainer = UIStackView()
             swipeHintContainer.axis = .vertical
             swipeHintContainer.alignment = .center
             swipeHintContainer.spacing = 5
             swipeHintBackgroundView.addSubview(swipeHintContainer)
-            
-            bag += swipeHintBackgroundView.windowSignal.atOnce().onValueDisposePrevious { window in
-                guard let window = window else {
-                    return NilDisposer()
-                }
-                
-                var bottomSafeArea = window.safeAreaInsets.bottom
 
-                if window.traitCollection.userInterfaceIdiom == .pad { bottomSafeArea = 0 }
-                
-                swipeHintContainer.edgeInsets = UIEdgeInsets(
-                    top: 20,
-                    left: 0,
-                    bottom: bottomSafeArea != 0 ? bottomSafeArea : 20,
-                    right: 0
-                )
-                
-                return stackView.didLayoutSignal.onValue { _ in
-                    let mainContentHeight = stackView.frame.size
-                    let navigationBarHeight =
-                        viewController.navigationController?.navigationBar.frame.height ?? 0
-                    viewController.preferredContentSize = CGSize(
-                        width: mainContentHeight.width,
-                        height: mainContentHeight.height
-                            + (swipeHintContainer.frame.height - bottomSafeArea)
-                            + navigationBarHeight
+            bag += swipeHintBackgroundView.windowSignal.atOnce()
+                .onValueDisposePrevious { window in
+                    guard let window = window else {
+                        return NilDisposer()
+                    }
+
+                    var bottomSafeArea = window.safeAreaInsets.bottom
+
+                    if window.traitCollection.userInterfaceIdiom == .pad { bottomSafeArea = 0 }
+
+                    swipeHintContainer.edgeInsets = UIEdgeInsets(
+                        top: 20,
+                        left: 0,
+                        bottom: bottomSafeArea != 0 ? bottomSafeArea : 20,
+                        right: 0
                     )
+
+                    return stackView.didLayoutSignal.onValue { _ in
+                        let mainContentHeight = stackView.frame.size
+                        let navigationBarHeight =
+                            viewController.navigationController?.navigationBar.frame.height ?? 0
+                        viewController.preferredContentSize = CGSize(
+                            width: mainContentHeight.width,
+                            height: mainContentHeight.height
+                                + (swipeHintContainer.frame.height - bottomSafeArea)
+                                + navigationBarHeight
+                        )
+                    }
                 }
-            }
 
             swipeHintContainer.snp.makeConstraints { make in
                 make.top.bottom.trailing.leading.equalToSuperview()
