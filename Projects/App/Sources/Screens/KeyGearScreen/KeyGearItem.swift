@@ -43,7 +43,8 @@ struct KeyGearItem {
         navigationBar.isTranslucent = true
         navigationBar.shadowImage = UIImage()
         navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-        navigationBar.barStyle = .blackTranslucent
+        navigationBar.barStyle = .black
+        navigationBar.isTranslucent = true
         navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationBar.setBackgroundImage(UIImage(), for: .compact)
 

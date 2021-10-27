@@ -27,7 +27,7 @@ public struct LoadingIndicator {
 
 extension LoadingIndicator: Viewable {
     public func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
-        let loadingIndicator = UIActivityIndicatorView(style: .whiteLarge)
+        let loadingIndicator = UIActivityIndicatorView(style: .large)
         loadingIndicator.alpha = 0
         loadingIndicator.color = color
 

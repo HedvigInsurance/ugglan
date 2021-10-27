@@ -56,8 +56,6 @@ extension Header: Presentable {
                         shouldShimmer: false,
                         shouldAnimate: false
                     )
-                default:
-                    break
                 }
             }
 

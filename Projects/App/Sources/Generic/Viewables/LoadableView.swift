@@ -25,7 +25,7 @@ extension LoadableView: Viewable {
         containerView.axis = .vertical
         containerView.addArrangedSubview(matter)
 
-        let loadingIndicator = UIActivityIndicatorView(style: .white)
+        let loadingIndicator = UIActivityIndicatorView(style: .medium)
         loadingIndicator.alpha = 0
         loadingIndicator.color = .purple
 
