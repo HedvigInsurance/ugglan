@@ -38,6 +38,7 @@ extension View {
             if #available(iOS 14, *) {
                 self.background(
                     KFImage(imageURL)
+                        .fade(duration: 0.25)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 )

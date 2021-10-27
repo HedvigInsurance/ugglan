@@ -72,21 +72,22 @@ struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
     let crossSell: hGraphQL.CrossSell
 
-    func didTapCard() {
-        if let name = crossSell.embarkStoryName {
-            store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
-            store.send(.openCrossSellingEmbark(name: name))
-        } else {
-            store.send(.goToFreeTextChat)
+    func openEmbark() {
+        if let embarkStoryName = crossSell.embarkStoryName {
+            store.send(.openCrossSellingEmbark(name: embarkStoryName))
         }
     }
 
     var body: some View {
         SwiftUI.Button {
-            didTapCard()
+            if crossSell.info != nil {
+                store.send(.openCrossSellingDetail(crossSell: crossSell))
+            } else {
+                openEmbark()
+            }
         } label: {
             CrossSellingCardLabel(crossSell: crossSell) {
-                didTapCard()
+                openEmbark()
             }
         }
         .buttonStyle(CrossSellingCardButtonStyle(crossSell: crossSell))
@@ -105,7 +106,8 @@ struct CrossSellingItemPreviews: PreviewProvider {
             blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
             buttonText: "Calculate price",
             embarkStoryName: nil,
-            typeOfContract: "SE_ACCIDENT"
+            typeOfContract: "SE_ACCIDENT",
+            info: nil
         )
     )
 
@@ -117,7 +119,8 @@ struct CrossSellingItemPreviews: PreviewProvider {
             blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
             buttonText: "Calculate price",
             embarkStoryName: nil,
-            typeOfContract: "SE_ACCIDENT"
+            typeOfContract: "SE_ACCIDENT",
+            info: nil
         )
     )
 

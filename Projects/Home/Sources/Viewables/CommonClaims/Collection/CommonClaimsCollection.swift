@@ -16,14 +16,14 @@ extension CommonClaimsCollection: Viewable {
 
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 5
+        layout.minimumInteritemSpacing = 8
 
         let collectionKit = CollectionKit<EmptySection, CommonClaimCard>(layout: layout, holdIn: bag)
         collectionKit.view.clipsToBounds = false
         collectionKit.view.backgroundColor = .clear
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            CGSize(width: min(190, (collectionKit.view.frame.width / 2) - 10), height: 140)
+            CGSize(width: min(190, (collectionKit.view.frame.width / 2) - 5), height: 140)
         }
 
         bag += collectionKit.view.signal(for: \.bounds).delay(by: 0.25)
@@ -64,7 +64,7 @@ extension CommonClaimsCollection: Viewable {
             style: .brand(.title3(color: .primary))
         )
         bag += stackView.addArranged(titleLabel.wrappedIn(UIStackView())) { containerStackView in
-            containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 8, verticalInset: 8)
+            containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 8)
             containerStackView.isLayoutMarginsRelativeArrangement = true
         }
 

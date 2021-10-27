@@ -91,7 +91,9 @@ extension GraphQL.ApiSingleVariableFragment {
         case .int: map[key] = Int(store.getValue(key: from, includeQueue: true) ?? "")
         case .string: map[key] = store.getValue(key: from, includeQueue: true)
         case .boolean: map[key] = store.getValue(key: from, includeQueue: true) == "true"
+        case .file: map[key] = store.getValue(key: from, includeQueue: true)
         case .__unknown: break
+        case .file: break
         }
 
         return map
@@ -263,6 +265,29 @@ extension ResultMap {
     }
 }
 
+extension GraphQLMap {
+    func findFiles() -> (files: [GraphQLFile], result: GraphQLMap) {
+        var files: [GraphQLFile] = []
+
+        let mappedResult = map { item -> (key: String, value: JSONEncodable?) in
+            if let stringValue = item.value as? String {
+                if stringValue.contains("file://") {
+                    files.append(
+                        try! .init(fieldName: item.key, originalName: "file", fileURL: URL(string: stringValue)!)
+                    )
+                    return (item.key, nil)
+                }
+            }
+
+            return item
+        }
+
+        let result = Dictionary(uniqueKeysWithValues: mappedResult)
+
+        return (files: files, result: result)
+    }
+}
+
 extension EmbarkState {
     func handleApi(apiFragment: GraphQL.ApiFragment) -> Future<GraphQL.EmbarkLinkFragment?> {
         handleApiRequest(apiFragment: apiFragment)
@@ -295,14 +320,54 @@ extension EmbarkState {
     }
 
     private func handleApiRequest(apiFragment: GraphQL.ApiFragment) -> Future<ResultMap?> {
-        func performHTTPCall(_ query: String, variables: ResultMap) -> Future<ResultMap?> {
+        func performHTTPCall(_ query: String, variables: GraphQLMap) -> Future<ResultMap?> {
             var urlRequest = URLRequest(url: Environment.current.endpointURL)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            urlRequest.httpBody = try? JSONSerialization.data(
-                withJSONObject: ["query": query, "variables": variables],
-                options: []
-            )
+
+            let (files, variablesWithNilFiles) = variables.findFiles()
+
+            if files.isEmpty {
+                let JSONData = try! JSONSerialization.data(
+                    withJSONObject: ["query": query, "variables": variables],
+                    options: []
+                )
+                urlRequest.httpBody = JSONData
+            } else {
+                let JSONData = try! JSONSerialization.data(
+                    withJSONObject: ["query": query, "variables": variablesWithNilFiles],
+                    options: []
+                )
+
+                let formData = MultipartFormData()
+                try? formData.appendPart(string: String(data: JSONData, encoding: .utf8)!, name: "operations")
+
+                var map: [String: [String]] = [:]
+
+                files.enumerated()
+                    .forEach { item in
+                        map[String(item.offset)] = ["variables.\(item.element.fieldName)"]
+                    }
+
+                let JSONMapData = try! JSONSerialization.data(
+                    withJSONObject: map,
+                    options: []
+                )
+
+                try? formData.appendPart(string: String(data: JSONMapData, encoding: .utf8)!, name: "map")
+
+                files.enumerated()
+                    .forEach { item in
+                        try? formData.appendPart(
+                            data: Data(contentsOf: item.element.fileURL!),
+                            name: String(item.offset),
+                            contentType: "application/octet-stream",
+                            filename: "file"
+                        )
+                    }
+
+                urlRequest.httpBody = try! formData.encode()
+            }
 
             let configuration = URLSessionConfiguration.default
             configuration.httpAdditionalHeaders =

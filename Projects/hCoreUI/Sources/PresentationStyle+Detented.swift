@@ -255,8 +255,7 @@ extension UIViewController {
                     initialSpringVelocity: 1,
                     options: .allowUserInteraction,
                     animations: {
-                        presentationController.presentedViewController.view.layoutIfNeeded()
-                        presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
+                        presentationController.containerView?.layoutSuperviewsIfNeeded()
                     },
                     completion: nil
                 )
@@ -386,8 +385,7 @@ extension PresentationStyle {
                 }
             } else {
                 func forceLayout() {
-                    presentationController.presentedViewController.view.layoutIfNeeded()
-                    presentationController.presentedViewController.view.layoutSuperviewsIfNeeded()
+                    presentationController.containerView?.layoutSuperviewsIfNeeded()
                 }
 
                 apply()

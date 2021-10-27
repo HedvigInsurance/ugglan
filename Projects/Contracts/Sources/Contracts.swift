@@ -5,6 +5,7 @@ import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 public indirect enum ContractFilter {
     var displaysActiveContracts: Bool {
@@ -70,6 +71,7 @@ extension Contracts: View {
 public enum ContractsResult {
     case movingFlow
     case openFreeTextChat
+    case openCrossSellingDetail(crossSell: CrossSell)
     case openCrossSellingEmbark(name: String)
 }
 
@@ -102,6 +104,8 @@ extension Contracts {
                     resultJourney: resultJourney,
                     openDetails: false
                 )
+            } else if case let .openCrossSellingDetail(crossSell) = action {
+                resultJourney(.openCrossSellingDetail(crossSell: crossSell))
             } else if case let .openCrossSellingEmbark(name) = action {
                 resultJourney(.openCrossSellingEmbark(name: name))
             } else if case .goToFreeTextChat = action {

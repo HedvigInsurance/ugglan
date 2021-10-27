@@ -73,12 +73,11 @@ extension FrequentlyAskedQuestionsSection: Presentable {
 
                     innerBag += section.append(row).compactMap { _ in row.viewController }
                         .onValue { viewController in
-                            viewController.present(
+                            innerBag += viewController.present(
                                 FrequentlyAskedQuestionDetail(
                                     frequentlyAskedQuestion: frequentlyAskedQuestion
                                 )
-                                .withCloseButton,
-                                style: .detented(.preferredContentSize)
+                                .journey
                             )
                         }
 

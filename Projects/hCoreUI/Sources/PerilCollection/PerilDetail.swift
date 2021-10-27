@@ -37,8 +37,8 @@ extension PerilDetail: Presentable {
 
         bag += stackView.addArranged(Spacing(height: 20))
 
-        stackView.addArrangedSubview(
-            UILabel(value: peril.title, style: .brand(.title1(color: .primary)))
+        bag += stackView.addArranged(
+            MultilineLabel(value: peril.title, style: .brand(.title1(color: .primary)).centerAligned)
         )
 
         bag += stackView.addArranged(Spacing(height: 15))

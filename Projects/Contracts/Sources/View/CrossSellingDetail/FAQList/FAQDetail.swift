@@ -1,26 +1,29 @@
-import Flow
-import Form
 import Foundation
 import Presentation
 import SwiftUI
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
 
-struct FrequentlyAskedQuestionDetail: View {
-    let frequentlyAskedQuestion: QuoteBundle.FrequentlyAskedQuestion
+public struct FAQDetail: View {
+    var faq: FAQ
+
+    public init(
+        faq: FAQ
+    ) {
+        self.faq = faq
+    }
 
     public var body: some View {
         hForm {
             hSection {
                 VStack(alignment: .leading, spacing: 18) {
                     hText(
-                        frequentlyAskedQuestion.headline ?? "",
+                        faq.title,
                         style: .title1
                     )
                     hText(
-                        frequentlyAskedQuestion.body ?? "",
+                        faq.description,
                         style: .body
                     )
                     .foregroundColor(hLabelColor.secondary)
@@ -32,8 +35,15 @@ struct FrequentlyAskedQuestionDetail: View {
     }
 }
 
-extension FrequentlyAskedQuestionDetail {
-    var journey: some JourneyPresentation {
-        HostingJourney(rootView: self, style: .detented(.scrollViewContentSize)).withDismissButton
+extension FAQDetail {
+    public var journey: some JourneyPresentation {
+        HostingJourney(
+            rootView: self,
+            style: .detented(.scrollViewContentSize),
+            options: [
+                .defaults
+            ]
+        )
+        .withDismissButton
     }
 }

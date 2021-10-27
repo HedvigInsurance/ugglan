@@ -322,7 +322,7 @@ public static func brand(_ color: BrandColor) -> UIColor { color.color }
             case .positive: return positiveColor
             case let .matching(color):
                 return UIColor(dynamic: { _ -> UIColor in
-                    color.luminance > 0.5 ? self.positiveColor : self.negativeColor
+                    color.luminance > 0.3 ? self.positiveColor : self.negativeColor
                 })
             }
         }

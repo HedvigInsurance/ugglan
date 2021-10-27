@@ -24,6 +24,7 @@ extension AppJourney {
         .addConfiguration { presenter in
             presenter.viewController.navigationItem.titleView = .titleWordmarkView
         }
+        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func claimsChat(style: PresentationStyle = .default) -> some JourneyPresentation {
@@ -45,5 +46,6 @@ extension AppJourney {
         .addConfiguration { presenter in
             presenter.viewController.title = L10n.claimsChatTitle
         }
+        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 }
