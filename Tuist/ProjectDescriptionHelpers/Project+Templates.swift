@@ -107,7 +107,7 @@ extension Project {
                 platform: .iOS,
                 product: .framework,
                 bundleId: "com.hedvig.\(name)",
-                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad]),
                 infoPlist: .default,
                 sources: sources,
                 resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
@@ -153,7 +153,7 @@ extension Project {
                 platform: .iOS,
                 product: .unitTests,
                 bundleId: "com.hedvig.\(name)Tests",
-                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad]),
                 infoPlist: .default,
                 sources: "Tests/**/*.swift",
                 dependencies: [
@@ -186,7 +186,7 @@ extension Project {
                 platform: .iOS,
                 product: .app,
                 bundleId: "com.hedvig.example.\(name)Example",
-                deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
                 infoPlist: .extendingDefault(with: [
                     "UIMainStoryboardFile": "",
                     "UILaunchStoryboardName": "LaunchScreen",

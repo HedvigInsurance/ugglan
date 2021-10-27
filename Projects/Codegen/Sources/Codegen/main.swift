@@ -12,9 +12,9 @@ try FileManager.default.createDirectory(at: cliFolderURL, withIntermediateDirect
 
 let endpoint = URL(string: "https://graphql.dev.hedvigit.com/graphql")!
 
-let options = ApolloSchemaOptions(endpointURL: endpoint, outputFolderURL: cliFolderURL)
+let downloadConfiguration = ApolloSchemaDownloadConfiguration(using: .introspection(endpointURL: endpoint), outputFolderURL: cliFolderURL)
 
-try ApolloSchemaDownloader.run(with: cliFolderURL, options: options)
+try ApolloSchemaDownloader.fetch(with: downloadConfiguration)
 
 func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
     guard let dirs = try? FileManager.default.contentsOfDirectory(atPath: basePath) else { return [] }
