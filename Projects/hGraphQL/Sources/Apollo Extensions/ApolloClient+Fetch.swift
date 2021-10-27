@@ -78,7 +78,7 @@ extension ApolloClient {
     ) -> Signal<Query.Data> {
         Signal { callbacker in let bag = DisposeBag()
 
-            let watcher = self.watch(query: query, cachePolicy: cachePolicy) { result in
+            let watcher: GraphQLQueryWatcher<Query> = self.watch(query: query, cachePolicy: cachePolicy) { result in
                 switch result {
                 case let .success(result):
                     if let data = result.data {
