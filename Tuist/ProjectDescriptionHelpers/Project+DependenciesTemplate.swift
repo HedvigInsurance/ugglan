@@ -42,7 +42,7 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/firebase/firebase-ios-sdk",
-                    .upToNextMajor(from: "7.3.1")
+                    .upToNextMajor(from: "8.8.0")
                 )
             ]
         case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.41.0"))]
@@ -139,7 +139,7 @@ public enum ExternalDependencies: CaseIterable {
             }
 
             return [
-                .xcFramework(
+                .xcframework(
                     path: path
                 )
             ]
@@ -158,7 +158,7 @@ extension Project {
         externalDependencies: [ExternalDependencies],
         sdks: [String] = []
     ) -> Project {
-        let frameworkConfigurations: [CustomConfiguration] = [
+        let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
                 settings: [String: SettingValue](),
@@ -171,7 +171,7 @@ extension Project {
             ),
         ]
 
-        let projectConfigurations: [CustomConfiguration] = [
+        let projectConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
                 settings: [String: SettingValue](),
@@ -192,12 +192,14 @@ extension Project {
 
         let packages = externalDependencies.map { externalDependency in externalDependency.swiftPackages() }
             .flatMap { $0 }
+        
+        
 
         return Project(
             name: name,
             organizationName: "Hedvig",
             packages: packages,
-            settings: Settings(configurations: projectConfigurations),
+            settings: .settings(configurations: projectConfigurations),
             targets: [
                 Target(
                     name: name,
@@ -208,9 +210,8 @@ extension Project {
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],
-                    actions: [],
                     dependencies: dependencies,
-                    settings: Settings(base: [:], configurations: frameworkConfigurations)
+                    settings: .settings(base: [:], configurations: frameworkConfigurations)
                 )
             ],
             schemes: [
