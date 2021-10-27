@@ -93,7 +93,6 @@ extension GraphQL.ApiSingleVariableFragment {
         case .boolean: map[key] = store.getValue(key: from, includeQueue: true) == "true"
         case .file: map[key] = store.getValue(key: from, includeQueue: true)
         case .__unknown: break
-        case .file: break
         }
 
         return map

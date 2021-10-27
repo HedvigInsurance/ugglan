@@ -20,20 +20,19 @@ extension PHAsset {
                 completion(.failure(ProcessImageError.notAnImage))
                 return NilDisposer()
             }
-
-            PHImageManager.default()
-                .requestImageData(for: self, options: nil) { data, _, _, _ in
-                    guard let data = data else {
-                        completion(.failure(ProcessImageError.noData))
-                        return
-                    }
-                    guard let image = UIImage(data: data) else {
-                        completion(.failure(ProcessImageError.failedToConvert))
-                        return
-                    }
-
-                    completion(.success(image))
+            
+            PHImageManager.default().requestImageDataAndOrientation(for: self, options: nil) { data, _, _, _ in
+                guard let data = data else {
+                    completion(.failure(ProcessImageError.noData))
+                    return
                 }
+                guard let image = UIImage(data: data) else {
+                    completion(.failure(ProcessImageError.failedToConvert))
+                    return
+                }
+
+                completion(.success(image))
+            }
 
             return NilDisposer()
         }
@@ -111,7 +110,7 @@ extension PHAsset {
                     }
 
                     PHImageManager.default()
-                        .requestImageData(for: self, options: nil) { data, _, _, _ in
+                        .requestImageDataAndOrientation(for: self, options: nil) { data, _, _, _ in
                             guard let data = data else { return }
                             guard let fileName = contentInput?.fullSizeImageURL?.path else {
                                 completion(
