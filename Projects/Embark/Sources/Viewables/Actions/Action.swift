@@ -246,27 +246,25 @@ extension Action: Viewable {
                         } else if let recordAction = actionData?.asEmbarkAudioRecorderAction?.audioRecorderData {
                             let audioRecorder = AudioRecorder()
                             innerBag.hold(audioRecorder)
-
+                            
                             let recordActionView = EmbarkRecordAction(data: recordAction, audioRecorder: audioRecorder)
                             { url in
                                 self.state.store.setValue(key: recordAction.storeKey, value: url.absoluteString)
                                 performCallback(recordAction.next.fragments.embarkLinkFragment)
                             }
-
-                            let audioRecorderView = HostingView(
-                                rootView: recordActionView
-                            )
-                            view.addArrangedSubview(audioRecorderView)
+                            
+                            let audioRecorderController = AdjustableHostingController(rootView: recordActionView)
+                            
+                            view.addArrangedSubview(audioRecorderController.view)
                             innerBag += {
-                                audioRecorderView.removeFromSuperview()
+                                audioRecorderController.view.removeFromSuperview()
                             }
 
                             innerBag += updateViewsCallbacker.providedSignal.onValue { _ in
-                                audioRecorderView.frame = .zero
-                                audioRecorderView.setNeedsLayout()
-                                audioRecorderView.layoutIfNeeded()
+                                audioRecorderController.view.frame = .zero
+                                audioRecorderController.view.setNeedsLayout()
+                                audioRecorderController.view.layoutIfNeeded()
                             }
-
                         }
 
                         return innerBag

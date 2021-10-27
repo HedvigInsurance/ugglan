@@ -17,10 +17,11 @@ public class HostingView<Content: View>: UIView {
     public required init(
         rootView: Content
     ) {
+        
         self.rootViewHostingController = .init(rootView: rootView)
 
         super.init(frame: .zero)
-
+        
         rootViewHostingController.view.backgroundColor = .clear
 
         addSubview(rootViewHostingController.view)
@@ -87,5 +88,60 @@ public class HostingView<Content: View>: UIView {
         } else {
             frame.size = rootViewHostingController.sizeThatFits(in: .zero)
         }
+    }
+}
+
+public struct SizePreferenceKey: PreferenceKey {
+    public static var defaultValue: CGSize = .zero
+
+    public static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+public struct SizingView<T: View>: View {
+    
+    let view: T
+    let updateSizeHandler: ((_ size: CGSize) -> Void)
+    
+    public init(view: T, updateSizeHandler: @escaping (_ size: CGSize) -> Void) {
+        self.view = view
+        self.updateSizeHandler = updateSizeHandler
+    }
+    
+    public var body: some View {
+        view.background(
+            GeometryReader { proxy in
+                Color.clear
+                    .preference(key: SizePreferenceKey.self, value: proxy.size)
+            }
+        )
+        .onPreferenceChange(SizePreferenceKey.self) { preferences in
+            updateSizeHandler(preferences)
+        }
+    }
+    
+    func size(with view: T, geometry: GeometryProxy) -> T {
+        updateSizeHandler(geometry.size)
+        return view
+    }
+}
+
+
+public class AdjustableHostingController<Content: View>: UIHostingController<Content> {
+    public override init(rootView: Content) {
+        super.init(rootView: rootView)
+        
+        view.backgroundColor = .clear
+    }
+    
+    @MainActor @objc required dynamic init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    public override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        self.view.invalidateIntrinsicContentSize()
     }
 }

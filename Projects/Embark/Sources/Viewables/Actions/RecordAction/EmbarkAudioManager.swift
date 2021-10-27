@@ -170,15 +170,6 @@ class AudioRecorder: ObservableObject {
             )
         else { return }
         self.recording = directoryContents.first(where: { $0.absoluteString.contains(filename) })
-            .map { Recording(url: $0, created: Date(), sample: getSample(chunkSize: 4)) }
-    }
-
-    func getSample(chunkSize: Int) -> [CGFloat] {
-        let chunkedAverages = decibelScale.chunked(into: chunkSize)
-            .compactMap {
-                return $0.reduce(0, +) / CGFloat($0.count)
-            }
-
-        return chunkedAverages
+            .map { Recording(url: $0, created: Date(), sample: decibelScale) }
     }
 }
