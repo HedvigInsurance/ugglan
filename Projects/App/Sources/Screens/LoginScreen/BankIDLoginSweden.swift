@@ -27,7 +27,7 @@ extension BankIDLoginSweden {
     }
 
     func generateAutoStartToken() -> Future<URL> {
-        client.perform(mutation: GraphQL.BankIdAuthMutation()).compactMap { $0.bankIdAuth.autoStartToken }
+        client.perform(mutation: GraphQL.BankIdAuthMutation()).compactMap { $0.swedishBankIdAuth.autoStartToken }
             .flatMap { autoStartToken in
                 let urlScheme = Bundle.main.urlScheme ?? ""
                 guard
