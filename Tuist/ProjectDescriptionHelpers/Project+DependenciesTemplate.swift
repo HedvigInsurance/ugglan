@@ -192,8 +192,6 @@ extension Project {
 
         let packages = externalDependencies.map { externalDependency in externalDependency.swiftPackages() }
             .flatMap { $0 }
-        
-        
 
         return Project(
             name: name,
