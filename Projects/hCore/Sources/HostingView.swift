@@ -17,11 +17,11 @@ public class HostingView<Content: View>: UIView {
     public required init(
         rootView: Content
     ) {
-        
+
         self.rootViewHostingController = .init(rootView: rootView)
 
         super.init(frame: .zero)
-        
+
         rootViewHostingController.view.backgroundColor = .clear
 
         addSubview(rootViewHostingController.view)
@@ -100,15 +100,18 @@ public struct SizePreferenceKey: PreferenceKey {
 }
 
 public struct SizingView<T: View>: View {
-    
+
     let view: T
     let updateSizeHandler: ((_ size: CGSize) -> Void)
-    
-    public init(view: T, updateSizeHandler: @escaping (_ size: CGSize) -> Void) {
+
+    public init(
+        view: T,
+        updateSizeHandler: @escaping (_ size: CGSize) -> Void
+    ) {
         self.view = view
         self.updateSizeHandler = updateSizeHandler
     }
-    
+
     public var body: some View {
         view.background(
             GeometryReader { proxy in
@@ -120,28 +123,31 @@ public struct SizingView<T: View>: View {
             updateSizeHandler(preferences)
         }
     }
-    
+
     func size(with view: T, geometry: GeometryProxy) -> T {
         updateSizeHandler(geometry.size)
         return view
     }
 }
 
-
 public class AdjustableHostingController<Content: View>: UIHostingController<Content> {
-    public override init(rootView: Content) {
+    public override init(
+        rootView: Content
+    ) {
         super.init(rootView: rootView)
-        
+
         view.backgroundColor = .clear
     }
-    
-    @MainActor @objc required dynamic init?(coder aDecoder: NSCoder) {
+
+    @MainActor @objc required dynamic init?(
+        coder aDecoder: NSCoder
+    ) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        
+
         self.view.invalidateIntrinsicContentSize()
     }
 }
