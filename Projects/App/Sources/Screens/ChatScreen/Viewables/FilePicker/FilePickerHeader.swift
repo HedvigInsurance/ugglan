@@ -4,6 +4,7 @@ import Foundation
 import Photos
 import UIKit
 import hCore
+import hCoreUI
 
 struct FilePickerHeader { var uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>() }
 
@@ -37,6 +38,27 @@ extension FilePickerHeader: Viewable {
         containerView.axis = .vertical
         containerView.distribution = .fillEqually
         containerView.spacing = 5
+        
+        let barButtonItemAppearance = UIBarButtonItem.appearance()
+        barButtonItemAppearance.setTitleTextAttributes(
+            [NSAttributedString.Key.foregroundColor: UIColor.blue],
+            for: .normal
+        )
+        barButtonItemAppearance.setTitleTextAttributes(
+            [NSAttributedString.Key.foregroundColor: UIColor.blue],
+            for: .highlighted
+        )
+        
+        bag += {
+            barButtonItemAppearance.setTitleTextAttributes(
+                [NSAttributedString.Key.foregroundColor: UIColor.clear],
+                for: .normal
+            )
+            barButtonItemAppearance.setTitleTextAttributes(
+                [NSAttributedString.Key.foregroundColor: UIColor.clear],
+                for: .highlighted
+            )
+        }
 
         func processPickResult(_ result: Either<PHAsset, UIImage>) -> Disposable {
             let innerBag = DisposeBag()
