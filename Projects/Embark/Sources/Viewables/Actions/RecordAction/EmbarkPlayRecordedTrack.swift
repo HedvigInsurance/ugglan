@@ -21,13 +21,16 @@ struct TrackPlayer: View {
         HStack {
             image.tint(hLabelColor.primary)
             let staples = Staples(audioPlayer: audioPlayer)
+                .frame(height: 60)
+                .clipped()
             staples
                 .overlay(
                     OverlayView(audioPlayer: audioPlayer).mask(staples)
                 )
+                
         }
         .padding()
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 8)
                 .fill(hBackgroundColor.secondary)
@@ -50,36 +53,33 @@ struct Staples: View {
     }
     
     var body: some View {
-        HStack(alignment: .center, spacing: 0) {
-            ForEach(trim(sample: audioPlayer.recording.sample).map { Staple(scale: $0) }) { bar in
-                RoundedRectangle(cornerRadius: 1)
-                    .fill(staplesDefaultColor)
-                    .frame(width: 1.85, height: calculateHeightForBar(maxValue: audioPlayer.recording.max, scale: bar.scale))
-                    .padding([.leading, .trailing], 1.85)
+        GeometryReader { geometry in
+            HStack(alignment: .center, spacing: 0) {
+                ForEach(trim(sample: audioPlayer.recording.sample, availableWidth: geometry.size.width).map { Staple(scale: $0) }) { bar in
+                    RoundedRectangle(cornerRadius: 1)
+                        .fill(staplesDefaultColor)
+                        .frame(width: 1.85, height: calculateHeightForBar(maxValue: audioPlayer.recording.max, scale: bar.scale, maxHeight: geometry.size.height))
+                        .padding([.leading, .trailing], 1.85)
+                }
             }
-        }.frame(minWidth: 0, maxWidth: .infinity)
+        }.frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    func trim(sample: [CGFloat]) -> [CGFloat] {
-        var trimmed = sample
-        while trimmed.count > 50 {
-            trimmed = chunkByTwo(sample: trimmed)
+    func trim(sample: [CGFloat], availableWidth: CGFloat) -> [CGFloat] {
+        let trimmed = sample
+        
+        let maxStaples = Int((availableWidth / 3.9) + 3.9)
+        
+        guard trimmed.count < maxStaples else { return trimmed }
+        
+        let chunkSize = max(Int(trimmed.count / maxStaples), 2)
+        
+        return trimmed.chunked(into: chunkSize).compactMap {
+            return $0.reduce(0, +) / CGFloat($0.count)
         }
-        
-        return trimmed
     }
     
-    func chunkByTwo(sample: [CGFloat]) -> [CGFloat] {
-        let chunkedAverages = sample.chunked(into: 2)
-            .compactMap {
-                return $0.reduce(0, +) / CGFloat($0.count)
-            }
-        
-        return chunkedAverages
-    }
-    
-    func calculateHeightForBar(maxValue: CGFloat, scale: CGFloat) -> CGFloat {
-        let maxHeight = CGFloat(60)
+    func calculateHeightForBar(maxValue: CGFloat, scale: CGFloat, maxHeight: CGFloat) -> CGFloat {
         let minHeight = CGFloat(5)
         
         let height = scale / maxValue * maxHeight
