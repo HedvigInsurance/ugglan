@@ -204,7 +204,7 @@ extension Project {
                     platform: .iOS,
                     product: .framework,
                     bundleId: "com.hedvig.\(name)",
-                    deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+                    deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],

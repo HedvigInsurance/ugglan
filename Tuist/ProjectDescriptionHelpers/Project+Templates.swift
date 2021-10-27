@@ -124,7 +124,7 @@ extension Project {
                 platform: .iOS,
                 product: .framework,
                 bundleId: "com.hedvig.\(name)Testing",
-                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad]),
                 infoPlist: .default,
                 sources: "Testing/**/*.swift",
                 dependencies: [
