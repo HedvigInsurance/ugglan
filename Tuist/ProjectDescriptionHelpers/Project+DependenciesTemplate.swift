@@ -52,7 +52,7 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Form",
-                    .exact("3.0.8")
+                    .exact("3.0.9")
                 )
             ]
         case .presentation:
@@ -67,7 +67,7 @@ public enum ExternalDependencies: CaseIterable {
                 .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
             ]
         case .disk:
-            return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.4"))]
+            return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.5"))]
         case .kingfisher:
             return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.0.0"))]
         case .snapkit:
