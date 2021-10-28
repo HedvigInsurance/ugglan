@@ -45,6 +45,10 @@ extension AppJourney {
                 .onDismiss {
                     embark.goBack()
                 }
+            case let .dataCollection(provider, onComplete):
+                DataCollection.journey(provider: provider) { id in
+                    onComplete(id)
+                }
             case let .menu(action):
                 action.journey
             }

@@ -125,7 +125,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
 
                 switch market {
                 case .se:
-                    self.client
+                    bag += self.client
                         .perform(
                             mutation: GraphQL.DataCollectionSwedenMutation(
                                 reference: reference,

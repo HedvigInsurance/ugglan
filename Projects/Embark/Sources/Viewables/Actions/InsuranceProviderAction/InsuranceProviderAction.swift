@@ -29,16 +29,7 @@ enum InsuranceWrapper {
     var isExternal: Bool { false }
 
     var locale: Localization.Locale? {
-        switch self {
-        case .external: return nil
-        case let .previous(data):
-            switch data.previousInsuranceProviderData.providers {
-            case .norwegian: return .nb_NO
-            case .swedish: return .sv_SE
-            case .__unknown: return nil
-            case .none: return nil
-            }
-        }
+        Localization.Locale.currentLocale
     }
 }
 
@@ -169,8 +160,16 @@ extension InsuranceProviderAction: Viewable {
                                 value: provider.name
                             )
                         }
-
-                        if provider.name != L10n.externalInsuranceProviderOtherOption {
+                        
+                        if provider.hasExternalCapabilities {
+                            state.externalRedirectSignal.value = .dataCollection(provider: provider.externalCollectionId ?? "") { id in
+                                if let id = id {
+                                    state.store.setValue(key: "dataCollectionId", value: id.uuidString)
+                                }
+                                
+                                callback(self.data.embarkLinkFragment)
+                            }
+                        } else if provider.name != L10n.externalInsuranceProviderOtherOption {
                             self.state.store.setValue(
                                 key: self.data.key,
                                 value: provider.id

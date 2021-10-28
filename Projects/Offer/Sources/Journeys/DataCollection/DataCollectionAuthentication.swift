@@ -12,14 +12,44 @@ public enum DataCollectionAuthenticationResult: Codable {
 
 struct SwedishBankID: View {
     var autoStartToken: String?
+    
+    func openBankIDApp() {
+        guard let autoStartToken = autoStartToken else {
+            return
+        }
+        
+        let urlScheme = Bundle.main.urlScheme ?? ""
+        
+        guard
+            let url = URL(
+                string:
+                    "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
+            )
+        else {
+            return
+        }
+        
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(
+                url,
+                options: [:],
+                completionHandler: nil
+            )
+        }
+    }
 
     var body: some View {
-        hCoreUIAssets.bankIdLogo.view.resizable()
-            .frame(
-                width: 48,
-                height: 48,
-                alignment: .center
-            )
+        VStack(spacing: 25) {
+            hCoreUIAssets.bankIdLogo.view.resizable()
+                .frame(
+                    width: 48,
+                    height: 48,
+                    alignment: .center
+                ).onAppear {
+                    openBankIDApp()
+                }
+            hText("Open the BankID app...", style: .title3)
+        }
     }
 }
 
@@ -27,7 +57,7 @@ struct NorwegianBankIDWords: View {
     var words: String
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 15) {
             hText("Enter these words", style: .title2)
             hText(words, style: .headline)
         }
@@ -57,18 +87,13 @@ public struct DataCollectionAuthentication: View {
     @PresentableStore var store: DataCollectionStore
 
     public var body: some View {
-        hForm {
-            hSection {
-                PresentableStoreLens(
-                    DataCollectionStore.self,
-                    getter: { state in
-                        state.authMethod
-                    }
-                ) { authMethod in
-                    AuthMethodContainer(authMethod: authMethod)
-                }
+        PresentableStoreLens(
+            DataCollectionStore.self,
+            getter: { state in
+                state.authMethod
             }
-            .sectionContainerStyle(.transparent)
+        ) { authMethod in
+            AuthMethodContainer(authMethod: authMethod)
         }
     }
 }
