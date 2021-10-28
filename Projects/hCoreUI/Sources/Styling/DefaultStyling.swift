@@ -8,16 +8,18 @@ public class NavigationController: UINavigationController {
     public init() {
         super.init(navigationBarClass: NavigationBar.self, toolbarClass: UIToolbar.self)
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    required init?(
+        coder aDecoder: NSCoder
+    ) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     public override func viewWillAppear(_ animated: Bool) {
-         super.viewWillAppear(animated)
-         if #available(iOS 13.0, *) {
-              navigationController?.navigationBar.setNeedsLayout()
-         }
+        super.viewWillAppear(animated)
+        if #available(iOS 13.0, *) {
+            navigationController?.navigationBar.setNeedsLayout()
+        }
     }
 }
 
@@ -93,9 +95,12 @@ extension DefaultStyling {
     }
 
     public static func setNavigationBarAppearance() {
-        UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).scrollEdgeAppearance = scrollEdgeNavigationBarAppearance()
-        UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).standardAppearance = standardNavigationBarAppearance()
-        UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).compactAppearance = compactNavigationBarAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).scrollEdgeAppearance =
+            scrollEdgeNavigationBarAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).standardAppearance =
+            standardNavigationBarAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).compactAppearance =
+            compactNavigationBarAppearance()
     }
 
     public static func installCustom() {
@@ -119,7 +124,8 @@ extension DefaultStyling {
         if #available(iOS 13.0, *) {
             setNavigationBarAppearance()
         } else {
-            UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).shadowImage = UIColor.clear.asImage()
+            UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).shadowImage = UIColor.clear
+                .asImage()
             UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).titleTextAttributes = [
                 NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
                 NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
@@ -203,7 +209,7 @@ extension DefaultStyling {
         UIBarButtonItem.appearance().tintColor = .brand(.primaryTintColor)
 
         let barButtonItemAppearance = UIBarButtonItem.appearance(whenContainedInInstancesOf: [NavigationBar.self])
-        
+
         barButtonItemAppearance.setTitleTextAttributes(
             [NSAttributedString.Key.foregroundColor: UIColor.clear],
             for: .normal
