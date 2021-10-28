@@ -160,13 +160,15 @@ extension InsuranceProviderAction: Viewable {
                                 value: provider.name
                             )
                         }
-                        
+
                         if provider.hasExternalCapabilities {
-                            state.externalRedirectSignal.value = .dataCollection(provider: provider.externalCollectionId ?? "") { id in
+                            state.externalRedirectSignal.value = .dataCollection(
+                                provider: provider.externalCollectionId ?? ""
+                            ) { id in
                                 if let id = id {
                                     state.store.setValue(key: "dataCollectionId", value: id.uuidString)
                                 }
-                                
+
                                 callback(self.data.embarkLinkFragment)
                             }
                         } else if provider.name != L10n.externalInsuranceProviderOtherOption {

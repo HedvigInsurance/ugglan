@@ -12,14 +12,14 @@ public enum DataCollectionAuthenticationResult: Codable {
 
 struct SwedishBankID: View {
     var autoStartToken: String?
-    
+
     func openBankIDApp() {
         guard let autoStartToken = autoStartToken else {
             return
         }
-        
+
         let urlScheme = Bundle.main.urlScheme ?? ""
-        
+
         guard
             let url = URL(
                 string:
@@ -28,7 +28,7 @@ struct SwedishBankID: View {
         else {
             return
         }
-        
+
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(
                 url,
@@ -45,7 +45,8 @@ struct SwedishBankID: View {
                     width: 48,
                     height: 48,
                     alignment: .center
-                ).onAppear {
+                )
+                .onAppear {
                     openBankIDApp()
                 }
             hText("Open the BankID app...", style: .title3)

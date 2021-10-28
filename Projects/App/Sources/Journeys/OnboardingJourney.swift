@@ -1,10 +1,10 @@
+import Embark
 import Flow
 import Foundation
 import Presentation
 import UIKit
 import hCore
 import hCoreUI
-import Embark
 
 extension AppJourney {
     static var onboarding: some JourneyPresentation {
