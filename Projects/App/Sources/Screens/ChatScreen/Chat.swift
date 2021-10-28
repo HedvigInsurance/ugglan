@@ -46,7 +46,7 @@ enum ChatResult {
                         ),
                         options: [.shouldPreserveState]
                     )
-                ) { offerResult in 
+                ) { offerResult in
                     switch offerResult {
                     case .chat:
                         AppJourney
