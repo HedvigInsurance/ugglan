@@ -106,6 +106,14 @@ extension InsuranceProviderAction: Viewable {
                 .valueSignal.compactMap { $0.insuranceProviders }
                 .onValue { providers in
                     let providers = [
+                        [
+                            Environment.current == .staging ? GraphQL.InsuranceProviderFragment(
+                                name: "DEMO",
+                                id: "DEMO",
+                                externalCollectionId: "demo",
+                                hasExternalCapabilities: true
+                            ) : nil
+                        ].compactMap { $0 },
                         providers.map { $0.fragments.insuranceProviderFragment },
                         [
                             .init(
@@ -162,7 +170,13 @@ extension InsuranceProviderAction: Viewable {
                         }
                         
                         if provider.hasExternalCapabilities {
-                            state.externalRedirectSignal.value = .dataCollection(provider: provider.externalCollectionId ?? "") { id in
+                            let externalCollectionID = provider.externalCollectionId ?? ""
+                            let providerID = "\(Localization.Locale.currentLocale.market.rawValue)-\(externalCollectionID)"
+                            
+                            state.externalRedirectSignal.value = .dataCollection(
+                                providerID: providerID.lowercased(),
+                                providerDisplayName: provider.name
+                            ) { id in
                                 if let id = id {
                                     state.store.setValue(key: "dataCollectionId", value: id.uuidString)
                                 }

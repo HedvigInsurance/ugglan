@@ -49,7 +49,7 @@ public struct DataCollectionConfirmation: View {
             return L10n.InsurelyConfirmation.description
         }
 
-        return L10n.InsurelyFailure.description(store.state.provider ?? "")
+        return L10n.InsurelyFailure.description(store.state.providerDisplayName ?? "")
     }
 
     public var body: some View {

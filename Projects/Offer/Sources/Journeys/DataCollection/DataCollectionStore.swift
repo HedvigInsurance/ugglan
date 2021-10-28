@@ -9,7 +9,7 @@ import hGraphQL
 public enum DataCollectionStatus: Codable {
     case none
     case started
-    case waitingForAuthentication
+    case login
     case collecting
     case completed
     case failed
@@ -22,7 +22,8 @@ public enum DataCollectionAuthMethod: Equatable, Codable {
 }
 
 public struct DataCollectionState: StateProtocol {
-    var provider: String? = nil
+    var providerID: String? = nil
+    var providerDisplayName: String? = nil
     var id: UUID? = nil
     var status = DataCollectionStatus.none
     var authMethod: DataCollectionAuthMethod? = nil
@@ -34,7 +35,7 @@ public struct DataCollectionState: StateProtocol {
 }
 
 public enum DataCollectionAction: ActionProtocol {
-    case setProvider(provider: String)
+    case setProvider(providerID: String, providerDisplayName: String)
     case didIntroDecide(decision: DataCollectionIntroDecision)
     case confirmResult(result: DataCollectionConfirmationResult)
     case startAuthentication(personalNumber: String)
@@ -61,14 +62,6 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                     )
                                 )
                             )
-                        } else {
-                            callback(
-                                .value(
-                                    .setAuthMethod(
-                                        method: .swedishBankIDEphemeral
-                                    )
-                                )
-                            )
                         }
                     } else if let extraInformation = data.dataCollectionStatusV2.extraInformation?
                         .asNorwegianBankIdExtraInfo
@@ -80,17 +73,25 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                 )
                             )
                         )
+                    } else {
+                        callback(
+                            .value(
+                                .setAuthMethod(
+                                    method: .swedishBankIDEphemeral
+                                )
+                            )
+                        )
                     }
 
                     switch data.dataCollectionStatusV2.status {
-                    case .login, .waitingForAuthentication:
-                        callback(.value(.setStatus(status: .waitingForAuthentication)))
+                    case .login:
+                        callback(.value(.setStatus(status: .login)))
                     case .collecting, .running:
                         callback(.value(.setStatus(status: .collecting)))
                     case .completedEmpty, .completed, .completedPartial:
                         callback(.value(.setStatus(status: .completed)))
                         callback(.end)
-                    case .failed:
+                    case .failed, .waitingForAuthentication:
                         callback(.value(.setStatus(status: .failed)))
                         callback(.end)
                     case .__unknown(_), .userInput:
@@ -108,20 +109,22 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
     ) -> FiniteSignal<DataCollectionAction>? {
         if case let .startAuthentication(personalNumber) = action,
             let reference = getState().id?.uuidString,
-            let provider = getState().provider
+            let providerID = getState().providerID
         {
             let market = getState().market
 
             return FiniteSignal { callback in
                 let bag = DisposeBag()
 
-                bag += self.dataCollectionSubscription(for: reference)
-                    .atValue { action in
-                        callback(.value(action))
-                    }
-                    .onEnd {
-                        callback(.end)
-                    }
+                func startSubscription() {
+                    bag += self.dataCollectionSubscription(for: reference)
+                        .atValue { action in
+                            callback(.value(action))
+                        }
+                        .onEnd {
+                            callback(.end)
+                        }
+                }
 
                 switch market {
                 case .se:
@@ -129,26 +132,28 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                         .perform(
                             mutation: GraphQL.DataCollectionSwedenMutation(
                                 reference: reference,
-                                provider: provider,
+                                provider: providerID,
                                 personalNumber: personalNumber
                             )
                         )
                         .map { _ in DataCollectionAction.setStatus(status: .started) }
                         .onValue { action in
                             callback(.value(action))
+                            startSubscription()
                         }
                 case .no:
                     self.client
                         .perform(
                             mutation: GraphQL.DataCollectionNorwayMutation(
                                 reference: reference,
-                                provider: provider,
+                                provider: providerID,
                                 personalNumber: personalNumber
                             )
                         )
                         .map { _ in DataCollectionAction.setStatus(status: .started) }
                         .onValue { action in
                             callback(.value(action))
+                            startSubscription()
                         }
                 case .dk:
                     break
@@ -165,8 +170,9 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         var newState = state
 
         switch action {
-        case let .setProvider(provider):
-            newState.provider = provider
+        case let .setProvider(providerID, providerDisplayName):
+            newState.providerID = providerID
+            newState.providerDisplayName = providerDisplayName
         case .startAuthentication:
             newState.id = UUID()
             newState.authMethod = nil
@@ -186,7 +192,8 @@ extension View {
     func mockProvider() -> some View {
         mockState(DataCollectionStore.self) { state in
             var newState = state
-            newState.provider = "Hedvig"
+            newState.providerID = "Hedvig"
+            newState.providerDisplayName = "Hedvig"
             return newState
         }
     }

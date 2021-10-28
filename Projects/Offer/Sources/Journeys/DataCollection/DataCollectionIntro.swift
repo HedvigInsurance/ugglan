@@ -19,7 +19,7 @@ public struct DataCollectionIntro: View {
         hForm {
             hSection {
                 VStack(alignment: .leading, spacing: 16) {
-                    L10n.InsurelyIntro.title(store.state.provider ?? "")
+                    L10n.InsurelyIntro.title(store.state.providerDisplayName ?? "")
                         .hText(.title2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     L10n.InsurelyIntro.description
