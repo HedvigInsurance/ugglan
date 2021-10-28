@@ -20,15 +20,17 @@ public enum DataCollection {
                             ContinueJourney()
                         }
                     }
-                }.onPresent {
+                }
+                .onPresent {
                     let store: DataCollectionStore = globalPresentableStoreContainer.get()
                     onComplete(store.state.id)
                 }
             case .decline:
-                PopJourney().onPresent {
-                    let store: DataCollectionStore = globalPresentableStoreContainer.get()
-                    onComplete(store.state.id)
-                }
+                PopJourney()
+                    .onPresent {
+                        let store: DataCollectionStore = globalPresentableStoreContainer.get()
+                        onComplete(store.state.id)
+                    }
             }
         }
         .addConfiguration { presenter in
