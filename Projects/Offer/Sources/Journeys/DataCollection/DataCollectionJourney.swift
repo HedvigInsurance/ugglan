@@ -17,9 +17,9 @@ public enum DataCollection {
                         DataCollectionConfirmation.journey(
                             wasConfirmed: result == .completed
                         ) { result in
-                            ContinueJourney()
-                        }
-                    }
+                            DismissJourney()
+                        }.hidesBackButton
+                    }.hidesBackButton
                 }
                 .onPresent {
                     let store: DataCollectionStore = globalPresentableStoreContainer.get()

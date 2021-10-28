@@ -176,6 +176,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         case .startAuthentication:
             newState.id = UUID()
             newState.authMethod = nil
+            newState.status = .none
         case let .setStatus(status):
             newState.status = status
         case let .setAuthMethod(method):

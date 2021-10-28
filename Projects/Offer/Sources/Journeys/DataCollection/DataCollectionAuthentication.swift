@@ -4,6 +4,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import Combine
 
 public enum DataCollectionAuthenticationResult: Codable {
     case completed
@@ -49,7 +50,7 @@ struct SwedishBankID: View {
                 .onAppear {
                     openBankIDApp()
                 }
-            hText("Open the BankID app...", style: .title3)
+            hText(L10n.bankIdAuthTitleInitiated, style: .title3)
         }
     }
 }
@@ -66,18 +67,36 @@ struct NorwegianBankIDWords: View {
 }
 
 struct AuthMethodContainer: View {
+    @PresentableStore var store: DataCollectionStore
     var authMethod: DataCollectionAuthMethod?
 
     var body: some View {
-        switch authMethod {
-        case .swedishBankIDEphemeral:
-            SwedishBankID(autoStartToken: nil)
-        case let .swedishBankIDAutoStartToken(token):
-            SwedishBankID(autoStartToken: token)
-        case let .norwegianBankIDWords(words):
-            NorwegianBankIDWords(words: words)
-        case .none:
-            ActivityIndicator(isAnimating: true)
+        PresentableStoreLens(
+            DataCollectionStore.self,
+            getter: { state in
+                state.status
+            }
+        ) { status in
+            if status == .login {
+                switch authMethod {
+                case .swedishBankIDEphemeral:
+                    SwedishBankID(autoStartToken: nil)
+                case let .swedishBankIDAutoStartToken(token):
+                    SwedishBankID(autoStartToken: token)
+                case let .norwegianBankIDWords(words):
+                    NorwegianBankIDWords(words: words)
+                case .none:
+                    ActivityIndicator(isAnimating: true)
+                }
+            } else {
+                ActivityIndicator(isAnimating: true).onReceive(Just(status)) { status in
+                    if status == .completed {
+                        store.send(.confirmResult(result: .completed))
+                    } else if status == .failed {
+                        store.send(.confirmResult(result: .failed))
+                    }
+                }
+            }
         }
     }
 }
@@ -95,7 +114,7 @@ public struct DataCollectionAuthentication: View {
             }
         ) { authMethod in
             AuthMethodContainer(authMethod: authMethod)
-        }
+        }.presentableStoreLensAnimation(.easeInOut(duration: 0.5))
     }
 }
 

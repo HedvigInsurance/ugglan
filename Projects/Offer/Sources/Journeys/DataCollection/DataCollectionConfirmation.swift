@@ -95,6 +95,7 @@ public struct DataCollectionConfirmation: View {
 
 extension DataCollectionConfirmation {
     static func journey<InnerJourney: JourneyPresentation>(
+        style: PresentationStyle = .default,
         wasConfirmed: Bool,
         @JourneyBuilder _ next: @escaping (_ result: DataCollectionConfirmationResult) -> InnerJourney
     ) -> some JourneyPresentation {
@@ -103,7 +104,7 @@ extension DataCollectionConfirmation {
             rootView: DataCollectionConfirmation(
                 wasConfirmed: wasConfirmed
             ),
-            style: .detented(.large)
+            style: style
         ) { action in
             switch action {
             case let .confirmResult(result):
@@ -121,13 +122,13 @@ struct DataCollectionConfirmationPreview: PreviewProvider {
     static var previews: some View {
         Group {
             JourneyPreviewer(
-                DataCollectionConfirmation.journey(wasConfirmed: true) { _ in
+                DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: true) { _ in
                     ContinueJourney()
                 }
             )
             .preferredColorScheme(.light)
             JourneyPreviewer(
-                DataCollectionConfirmation.journey(wasConfirmed: false) { _ in
+                DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: false) { _ in
                     ContinueJourney()
                 }
             )

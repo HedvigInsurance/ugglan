@@ -48,7 +48,7 @@ extension AppJourney {
             case let .dataCollection(providerID, providerDisplayName, onComplete):
                 DataCollection.journey(providerID: providerID, providerDisplayName: providerDisplayName) { id in
                     onComplete(id)
-                }
+                }.mapJourneyDismissToCancel
             case let .menu(action):
                 action.journey
             }
