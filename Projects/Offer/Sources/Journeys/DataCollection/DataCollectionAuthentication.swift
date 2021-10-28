@@ -47,7 +47,7 @@ struct SwedishBankID: View {
                     height: 48,
                     alignment: .center
                 )
-                .onAppear {
+                .onReceive(Just(autoStartToken)) { _ in
                     openBankIDApp()
                 }
             hText(L10n.bankIdAuthTitleInitiated, style: .title3)
@@ -90,8 +90,8 @@ struct AuthMethodContainer: View {
                 }
             } else {
                 ActivityIndicator(isAnimating: true).onReceive(Just(status)) { status in
-                    if status == .completed {
-                        store.send(.confirmResult(result: .completed))
+                    if status == .collecting {
+                        store.send(.confirmResult(result: .started))
                     } else if status == .failed {
                         store.send(.confirmResult(result: .failed))
                     }

@@ -15,9 +15,17 @@ public enum DataCollection {
                 DataCollectionPersonalIdentity.journey {
                     DataCollectionAuthentication.journey { result in
                         DataCollectionConfirmation.journey(
-                            wasConfirmed: result == .completed
+                            wasConfirmed: result == .started
                         ) { result in
-                            DismissJourney()
+                            switch result {
+                            case .started, .failed:
+                                DismissJourney()
+                            case .retry:
+                                PopJourney().onPresent {
+                                    let store: DataCollectionStore = globalPresentableStoreContainer.get()
+                                    store.send(.retryAuthentication)
+                                }
+                            }
                         }.hidesBackButton
                     }.hidesBackButton
                 }
@@ -28,8 +36,7 @@ public enum DataCollection {
             case .decline:
                 PopJourney()
                     .onPresent {
-                        let store: DataCollectionStore = globalPresentableStoreContainer.get()
-                        onComplete(store.state.id)
+                        onComplete(nil)
                     }
             }
         }

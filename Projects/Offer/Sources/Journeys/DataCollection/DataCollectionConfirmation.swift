@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 
 public enum DataCollectionConfirmationResult: Codable {
-    case completed
+    case started
     case failed
     case retry
 
@@ -69,7 +69,7 @@ public struct DataCollectionConfirmation: View {
                 VStack(spacing: 16) {
                     if wasConfirmed {
                         hButton.LargeButtonFilled {
-                            store.send(.confirmResult(result: .completed))
+                            store.send(.confirmResult(result: .started))
                         } content: {
                             L10n.InsurelyConfirmation.continueButtonText.hText()
                         }
@@ -114,7 +114,6 @@ extension DataCollectionConfirmation {
             }
         }
         .configureTitle(L10n.Insurely.title)
-        .withDismissButton
     }
 }
 
