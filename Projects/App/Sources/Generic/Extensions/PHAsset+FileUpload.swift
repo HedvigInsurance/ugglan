@@ -22,7 +22,7 @@ extension PHAsset {
             }
 
             PHImageManager.default()
-                .requestImageData(for: self, options: nil) { data, _, _, _ in
+                .requestImageDataAndOrientation(for: self, options: nil) { data, _, _, _ in
                     guard let data = data else {
                         completion(.failure(ProcessImageError.noData))
                         return
@@ -111,7 +111,7 @@ extension PHAsset {
                     }
 
                     PHImageManager.default()
-                        .requestImageData(for: self, options: nil) { data, _, _, _ in
+                        .requestImageDataAndOrientation(for: self, options: nil) { data, _, _, _ in
                             guard let data = data else { return }
                             guard let fileName = contentInput?.fullSizeImageURL?.path else {
                                 completion(

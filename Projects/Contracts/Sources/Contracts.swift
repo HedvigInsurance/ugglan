@@ -5,6 +5,7 @@ import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 public indirect enum ContractFilter {
     var displaysActiveContracts: Bool {
@@ -38,7 +39,7 @@ public indirect enum ContractFilter {
 
 public struct Contracts {
     @PresentableStore var store: ContractStore
-    let pollTimer = Timer.publish(every: 6, on: .main, in: .common).autoconnect()
+    let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let filter: ContractFilter
 
     public init(
@@ -70,6 +71,7 @@ extension Contracts: View {
 public enum ContractsResult {
     case movingFlow
     case openFreeTextChat
+    case openCrossSellingDetail(crossSell: CrossSell)
     case openCrossSellingEmbark(name: String)
 }
 
@@ -101,6 +103,8 @@ extension Contracts {
                     resultJourney: resultJourney,
                     openDetails: false
                 )
+            } else if case let .openCrossSellingDetail(crossSell) = action {
+                resultJourney(.openCrossSellingDetail(crossSell: crossSell))
             } else if case let .openCrossSellingEmbark(name) = action {
                 resultJourney(.openCrossSellingEmbark(name: name))
             } else if case .goToFreeTextChat = action {
@@ -109,6 +113,10 @@ extension Contracts {
                 resultJourney(.movingFlow)
             }
         }
+        .onPresent({
+            let store: ContractStore = globalPresentableStoreContainer.get()
+            store.send(.resetSignedCrossSells)
+        })
         .addConfiguration({ presenter in
             if let navigationController = presenter.viewController as? UINavigationController {
                 navigationController.isHeroEnabled = true

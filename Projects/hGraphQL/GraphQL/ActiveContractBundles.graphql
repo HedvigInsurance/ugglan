@@ -64,6 +64,26 @@ query ActiveContractBundles($locale: Locale!) {
       callToAction
       info(locale: $locale) {
         displayName
+        aboutSection
+        contractPerils {
+            ...PerilFragment
+        }
+        insurableLimits {
+            ...InsurableLimitFragment
+        }
+        insuranceTerms {
+          displayName
+          url
+          type
+        }
+        highlights {
+            title
+            description
+        }
+        faq {
+            headline
+            body
+        }
       }
       action {
         ... on CrossSellChat {

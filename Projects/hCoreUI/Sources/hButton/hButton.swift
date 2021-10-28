@@ -14,6 +14,7 @@ struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .frame(minHeight: 35)
+            .frame(maxWidth: .infinity)
     }
 }
 

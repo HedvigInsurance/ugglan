@@ -48,8 +48,10 @@ extension AppJourney {
                 AppJourney.movingFlow
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
+            case let .openCrossSellingDetail(crossSell):
+                AppJourney.crossSellingJourney(crossSell: crossSell)
             case let .openCrossSellingEmbark(name):
-                AppJourney.crossSellingJourney(name: name)
+                AppJourney.crossSellingEmbarkJourney(name: name, style: .detented(.large))
             }
         }
         .onTabSelected {

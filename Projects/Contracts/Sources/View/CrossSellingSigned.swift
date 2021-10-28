@@ -54,7 +54,6 @@ public struct CrossSellingSigned: View {
         .hFormAttachToBottom {
             hSection {
                 hButton.LargeButtonFilled {
-                    store.send(.setFocusedCrossSell(focusedCrossSell: nil))
                     store.send(.closeCrossSellingSigned)
                 } content: {
                     hText(L10n.toolbarDoneButton)
@@ -83,7 +82,8 @@ struct CrossSellingSignedPreviews: PreviewProvider {
                 imageURL: URL(string: "https://giraffe.hedvig.com")!,
                 blurHash: "",
                 buttonText: "",
-                typeOfContract: "SE_ACCIDENT"
+                typeOfContract: "SE_ACCIDENT",
+                info: nil
             )
 
             return newState
@@ -101,10 +101,9 @@ extension CrossSellingSigned {
                 DismissJourney()
             }
         }
-        .onPresent {
+        .onDismiss {
             let store: ContractStore = globalPresentableStoreContainer.get()
-            store.send(.fetchContracts)
-            store.send(.fetchContractBundles)
+            store.send(.didSignFocusedCrossSell)
         }
         .addConfiguration { presenter in
             presenter.viewController.navigationItem.hidesBackButton = true

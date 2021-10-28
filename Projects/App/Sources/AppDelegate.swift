@@ -6,6 +6,7 @@ import Datadog
 import DatadogCrashReporting
 import Disk
 import Firebase
+import FirebaseDynamicLinks
 import FirebaseMessaging
 import Flow
 import Form
@@ -71,13 +72,19 @@ let log = Logger.builder
         restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-        guard let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems else {
-            return false
-        }
-        guard let dynamicLink = queryItems.first(where: { $0.name == "link" }) else { return false }
-        guard let dynamicLinkUrl = URL(string: dynamicLink.value) else { return false }
 
-        return handleDeepLink(dynamicLinkUrl)
+        return DynamicLinks.dynamicLinks()
+            .handleUniversalLink(url) { dynamicLink, error in
+                if let error = error {
+                    log.error("Dynamic Link Error", error: error, attributes: [:])
+                }
+
+                guard let dynamicLinkURL = dynamicLink?.url else {
+                    return
+                }
+
+                self.handleDeepLink(dynamicLinkURL)
+            }
     }
 
     func setToken(_ token: String) {

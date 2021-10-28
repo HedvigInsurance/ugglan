@@ -42,24 +42,24 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/firebase/firebase-ios-sdk",
-                    .upToNextMajor(from: "7.3.1")
+                    .upToNextMajor(from: "8.8.0")
                 )
             ]
-        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.41.0"))]
+        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.49.1"))]
         case .flow:
             return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.7"))]
         case .form:
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Form",
-                    .exact("3.0.8")
+                    .exact("3.0.9")
                 )
             ]
         case .presentation:
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Presentation",
-                    .upToNextMajor(from: "2.0.15")
+                    .upToNextMajor(from: "2.0.16")
                 )
             ]
         case .dynamiccolor:
@@ -67,7 +67,7 @@ public enum ExternalDependencies: CaseIterable {
                 .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
             ]
         case .disk:
-            return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.4"))]
+            return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.5"))]
         case .kingfisher:
             return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.0.0"))]
         case .snapkit:
@@ -97,7 +97,7 @@ public enum ExternalDependencies: CaseIterable {
         case .shake: return [.package(url: "https://github.com/shakebugs/shake-ios", .exact("14.1.5"))]
         case .reveal: return []
         case .datadog:
-            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .upToNextMajor(from: "1.7.0-beta3"))]
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.7.1"))]
         }
     }
 
@@ -108,7 +108,12 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "Adyen"), .package(product: "AdyenCard"),
                 .package(product: "AdyenDropIn"),
             ]
-        case .firebase: return [.package(product: "FirebaseAnalytics"), .package(product: "FirebaseMessaging")]
+        case .firebase:
+            return [
+                .package(product: "FirebaseAnalytics"),
+                .package(product: "FirebaseMessaging"),
+                .package(product: "FirebaseDynamicLinks"),
+            ]
         case .kingfisher: return [.package(product: "Kingfisher")]
         case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
         case .flow: return [.package(product: "Flow")]
@@ -134,7 +139,7 @@ public enum ExternalDependencies: CaseIterable {
             }
 
             return [
-                .xcFramework(
+                .xcframework(
                     path: path
                 )
             ]
@@ -153,7 +158,7 @@ extension Project {
         externalDependencies: [ExternalDependencies],
         sdks: [String] = []
     ) -> Project {
-        let frameworkConfigurations: [CustomConfiguration] = [
+        let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
                 settings: [String: SettingValue](),
@@ -166,7 +171,7 @@ extension Project {
             ),
         ]
 
-        let projectConfigurations: [CustomConfiguration] = [
+        let projectConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
                 settings: [String: SettingValue](),
@@ -192,20 +197,19 @@ extension Project {
             name: name,
             organizationName: "Hedvig",
             packages: packages,
-            settings: Settings(configurations: projectConfigurations),
+            settings: .settings(configurations: projectConfigurations),
             targets: [
                 Target(
                     name: name,
                     platform: .iOS,
                     product: .framework,
                     bundleId: "com.hedvig.\(name)",
-                    deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+                    deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],
-                    actions: [],
                     dependencies: dependencies,
-                    settings: Settings(base: [:], configurations: frameworkConfigurations)
+                    settings: .settings(base: [:], configurations: frameworkConfigurations)
                 )
             ],
             schemes: [

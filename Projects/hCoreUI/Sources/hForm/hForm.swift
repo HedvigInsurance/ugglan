@@ -22,7 +22,18 @@ extension View {
     }
 }
 
+struct BackgroundView: UIViewRepresentable {
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        uiView.backgroundColor = .brand(.primaryBackground())
+    }
+
+    func makeUIView(context: Context) -> some UIView {
+        UIView()
+    }
+}
+
 public struct hForm<Content: View>: View {
+    @State var bottomAttachedViewHeight: CGFloat = 0
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     var content: Content
 
@@ -34,15 +45,26 @@ public struct hForm<Content: View>: View {
 
     public var body: some View {
         ZStack {
-            hBackgroundColor.primary.edgesIgnoringSafeArea(.all)
+            BackgroundView().edgesIgnoringSafeArea(.all)
             ScrollView {
                 VStack {
                     content
                 }
                 .frame(maxWidth: .infinity)
                 .tint(hTintColor.lavenderOne)
+                Color.clear
+                    .frame(height: bottomAttachedViewHeight)
             }
-            bottomAttachedView.frame(maxHeight: .infinity, alignment: .bottom)
+            .modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeight))
+            bottomAttachedView
+                .background(
+                    GeometryReader { geo in
+                        Color.clear.onReceive(Just(geo.size.height)) { height in
+                            self.bottomAttachedViewHeight = height
+                        }
+                    }
+                )
+                .frame(maxHeight: .infinity, alignment: .bottom)
         }
     }
 }

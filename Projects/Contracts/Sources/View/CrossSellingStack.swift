@@ -7,8 +7,11 @@ struct CrossSellingStack: View {
     var body: some View {
         PresentableStoreLens(
             ContractStore.self,
-            getter: {
-                $0.contractBundles.flatMap { $0.crossSells }
+            getter: { state in
+                state.contractBundles.flatMap { $0.crossSells }
+                    .filter { crossSell in
+                        !state.signedCrossSells.contains(crossSell)
+                    }
             }
         ) { crossSells in
             if !crossSells.isEmpty {
@@ -21,10 +24,12 @@ struct CrossSellingStack: View {
                     }
                 ) {
                     ForEach(crossSells, id: \.title) { crossSell in
-                        CrossSellingItem(crossSell: crossSell)
+                        CrossSellingItem(crossSell: crossSell).transition(.slide)
                     }
                 }
+                .transition(.slide)
             }
         }
+        .presentableStoreLensAnimation(.spring())
     }
 }

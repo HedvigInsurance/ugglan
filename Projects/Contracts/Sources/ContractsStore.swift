@@ -12,12 +12,26 @@ public struct ContractState: StateProtocol {
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
+    public var signedCrossSells: [CrossSell] = []
 }
 
 extension ContractState {
     public var hasUnseenCrossSell: Bool {
         contractBundles.contains(where: { bundle in bundle.crossSells.contains(where: { !$0.hasBeenSeen }) })
     }
+}
+
+public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol {
+    case detail
+    case peril(peril: Perils)
+    case insurableLimit(insurableLimit: InsurableLimits)
+    case insuranceTerm(insuranceTerm: InsuranceTerm)
+}
+
+public enum CrossSellingFAQListNavigationAction: ActionProtocol {
+    case list
+    case detail(faq: FAQ)
+    case chat
 }
 
 public enum ContractAction: ActionProtocol {
@@ -31,10 +45,18 @@ public enum ContractAction: ActionProtocol {
     case goToFreeTextChat
     case setFocusedCrossSell(focusedCrossSell: CrossSell?)
     case openCrossSellingEmbark(name: String)
+    case openCrossSellingChat
+
+    case crossSellingDetailEmbark(name: String)
+    case crossSellingCoverageDetailNavigation(action: CrossSellingCoverageDetailNavigationAction)
+    case crossSellingFAQListNavigation(action: CrossSellingFAQListNavigationAction)
+    case openCrossSellingDetail(crossSell: CrossSell)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
     case openDetail(contract: Contract)
     case openTerminatedContracts
+    case didSignFocusedCrossSell
+    case resetSignedCrossSells
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {
@@ -65,6 +87,17 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .map {
                     .setContracts(contracts: $0)
                 }
+        case .didSignFocusedCrossSell:
+            return [
+                .fetchContracts,
+                .fetchContractBundles,
+            ]
+            .emitEachThenEnd
+        case let .openCrossSellingDetail(crossSell):
+            return [
+                .setFocusedCrossSell(focusedCrossSell: crossSell)
+            ]
+            .emitEachThenEnd
         default:
             break
         }
@@ -93,6 +126,12 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             }
         case let .setFocusedCrossSell(focusedCrossSell):
             newState.focusedCrossSell = focusedCrossSell
+        case .didSignFocusedCrossSell:
+            newState.focusedCrossSell = nil
+            newState.signedCrossSells = [newState.signedCrossSells, [newState.focusedCrossSell].compactMap { $0 }]
+                .flatMap { $0 }
+        case .resetSignedCrossSells:
+            newState.signedCrossSells = []
         default:
             break
         }

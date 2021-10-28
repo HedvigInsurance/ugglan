@@ -58,7 +58,7 @@ public class EmbarkState {
     }
 
     func startTracking() {
-        bag += currentPassageSignal.readOnly().compactMap { $0?.tracks }
+        bag += currentPassageSignal.atOnce().readOnly().compactMap { $0?.tracks }
             .onValue(on: .background) { tracks in
                 tracks.forEach { track in
                     track.send(
