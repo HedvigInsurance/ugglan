@@ -107,13 +107,15 @@ extension InsuranceProviderAction: Viewable {
                 .onValue { providers in
                     let providers = [
                         [
-                            Environment.current == .staging ? GraphQL.InsuranceProviderFragment(
-                                name: "DEMO",
-                                id: "DEMO",
-                                externalCollectionId: "demo",
-                                hasExternalCapabilities: true
-                            ) : nil
-                        ].compactMap { $0 },
+                            Environment.current == .staging
+                                ? GraphQL.InsuranceProviderFragment(
+                                    name: "DEMO",
+                                    id: "DEMO",
+                                    externalCollectionId: "demo",
+                                    hasExternalCapabilities: true
+                                ) : nil
+                        ]
+                        .compactMap { $0 },
                         providers.map { $0.fragments.insuranceProviderFragment },
                         [
                             .init(
@@ -168,11 +170,12 @@ extension InsuranceProviderAction: Viewable {
                                 value: provider.name
                             )
                         }
-                        
+
                         if provider.hasExternalCapabilities {
                             let externalCollectionID = provider.externalCollectionId ?? ""
-                            let providerID = "\(Localization.Locale.currentLocale.market.rawValue)-\(externalCollectionID)"
-                            
+                            let providerID =
+                                "\(Localization.Locale.currentLocale.market.rawValue)-\(externalCollectionID)"
+
                             state.externalRedirectSignal.value = .dataCollection(
                                 providerID: providerID.lowercased(),
                                 providerDisplayName: provider.name
@@ -180,7 +183,7 @@ extension InsuranceProviderAction: Viewable {
                                 if let id = id {
                                     state.store.setValue(key: "dataCollectionId", value: id.uuidString)
                                 }
-                                
+
                                 callback(self.data.embarkLinkFragment)
                             }
                         } else if provider.name != L10n.externalInsuranceProviderOtherOption {
