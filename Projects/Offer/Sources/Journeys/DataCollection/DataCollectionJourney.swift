@@ -24,14 +24,11 @@ public enum DataCollection {
                                 PopJourney().onPresent {
                                     let store: DataCollectionStore = globalPresentableStoreContainer.get()
                                     store.send(.retryAuthentication)
+                                    onComplete(store.state.id)
                                 }
                             }
                         }.hidesBackButton
                     }.hidesBackButton
-                }
-                .onPresent {
-                    let store: DataCollectionStore = globalPresentableStoreContainer.get()
-                    onComplete(store.state.id)
                 }
             case .decline:
                 PopJourney()
