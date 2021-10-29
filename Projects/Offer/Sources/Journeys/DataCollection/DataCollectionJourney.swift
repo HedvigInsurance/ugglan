@@ -16,8 +16,10 @@ public enum DataCollection {
                         DataCollectionConfirmation.journey(
                             wasConfirmed: result == .started,
                             onComplete: onComplete
-                        ).hidesBackButton
-                    }.hidesBackButton
+                        )
+                        .hidesBackButton
+                    }
+                    .hidesBackButton
                 }
             case .decline:
                 PopJourney()
@@ -27,7 +29,7 @@ public enum DataCollection {
             }
         }
     }
-    
+
     public static func journey(
         providerID: String,
         providerDisplayName: String,

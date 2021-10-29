@@ -110,10 +110,11 @@ extension DataCollectionConfirmation {
             case let .confirmResult(result):
                 switch result {
                 case .started:
-                    DismissJourney().onPresent {
-                        let store: DataCollectionStore = globalPresentableStoreContainer.get()
-                        onComplete(store.state.id)
-                    }
+                    DismissJourney()
+                        .onPresent {
+                            let store: DataCollectionStore = globalPresentableStoreContainer.get()
+                            onComplete(store.state.id)
+                        }
                 case .failed:
                     DismissJourney()
                 case .retry:
@@ -134,13 +135,13 @@ struct DataCollectionConfirmationPreview: PreviewProvider {
         Group {
             JourneyPreviewer(
                 DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: true) { id in
-                    
+
                 }
             )
             .preferredColorScheme(.light)
             JourneyPreviewer(
                 DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: false) { id in
-                    
+
                 }
             )
             .preferredColorScheme(.dark)
