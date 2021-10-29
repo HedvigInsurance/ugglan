@@ -334,7 +334,7 @@ extension Debug {
                 }
             case .openDataCollection:
                 DataCollection.journey(providerID: "Hedvi", providerDisplayName: "Hedvig") { _ in
-                    
+
                 }
             }
         }
