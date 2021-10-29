@@ -94,10 +94,10 @@ public struct DataCollectionConfirmation: View {
 }
 
 extension DataCollectionConfirmation {
-    static func journey<InnerJourney: JourneyPresentation>(
+    static func journey(
         style: PresentationStyle = .default,
         wasConfirmed: Bool,
-        @JourneyBuilder _ next: @escaping (_ result: DataCollectionConfirmationResult) -> InnerJourney
+        onComplete: @escaping (_ id: UUID?) -> Void
     ) -> some JourneyPresentation {
         HostingJourney(
             DataCollectionStore.self,
@@ -108,7 +108,19 @@ extension DataCollectionConfirmation {
         ) { action in
             switch action {
             case let .confirmResult(result):
-                next(result)
+                switch result {
+                case .started:
+                    DismissJourney().onPresent {
+                        let store: DataCollectionStore = globalPresentableStoreContainer.get()
+                        onComplete(store.state.id)
+                    }
+                case .failed:
+                    DismissJourney()
+                case .retry:
+                    DataCollection.journey(
+                        onComplete: onComplete
+                    )
+                }
             default:
                 ContinueJourney()
             }
@@ -121,14 +133,14 @@ struct DataCollectionConfirmationPreview: PreviewProvider {
     static var previews: some View {
         Group {
             JourneyPreviewer(
-                DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: true) { _ in
-                    ContinueJourney()
+                DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: true) { id in
+                    
                 }
             )
             .preferredColorScheme(.light)
             JourneyPreviewer(
-                DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: false) { _ in
-                    ContinueJourney()
+                DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: false) { id in
+                    
                 }
             )
             .preferredColorScheme(.dark)

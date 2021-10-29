@@ -49,12 +49,13 @@ public struct DataCollectionIntro: View {
 
 extension DataCollectionIntro {
     static func journey<InnerJourney: JourneyPresentation>(
+        style: PresentationStyle = .detented(.large),
         @JourneyBuilder _ next: @escaping (_ decision: DataCollectionIntroDecision) -> InnerJourney
     ) -> some JourneyPresentation {
         HostingJourney(
             DataCollectionStore.self,
             rootView: DataCollectionIntro(),
-            style: .detented(.large)
+            style: style
         ) { action in
             switch action {
             case let .didIntroDecide(decision):

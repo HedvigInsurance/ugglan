@@ -35,7 +35,8 @@ public struct DataCollectionPersonalIdentity: View {
                 .padding(.top, 40)
                 VStack {
                     hButton.LargeButtonFilled {
-                        store.send(.startAuthentication(personalNumber: inputtedPersonalNumber))
+                        store.send(.setPersonalNumber(personalNumber: inputtedPersonalNumber))
+                        store.send(.startAuthentication)
                     } content: {
                         L10n.InsurelySsn.continueButtonText.hText()
                     }

@@ -39,8 +39,8 @@ public enum DataCollectionAction: ActionProtocol {
     case setProvider(providerID: String, providerDisplayName: String)
     case didIntroDecide(decision: DataCollectionIntroDecision)
     case confirmResult(result: DataCollectionConfirmationResult)
-    case startAuthentication(personalNumber: String)
-    case retryAuthentication
+    case setPersonalNumber(personalNumber: String)
+    case startAuthentication
     case setStatus(status: DataCollectionStatus)
     case setAuthMethod(method: DataCollectionAuthMethod)
 }
@@ -111,10 +111,12 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         _ getState: @escaping () -> DataCollectionState,
         _ action: DataCollectionAction
     ) -> FiniteSignal<DataCollectionAction>? {
-        if case let .startAuthentication(personalNumber) = action,
+        if case .startAuthentication = action,
             let reference = getState().id?.uuidString,
-            let providerID = getState().providerID
+            let providerID = getState().providerID,
+            let personalNumber = getState().personalNumber
         {
+            cancelEffect(action)
             let market = getState().market
 
             return FiniteSignal { callback in
@@ -165,8 +167,6 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
 
                 return bag
             }
-        } else if case .retryAuthentication = action {
-            return [.startAuthentication(personalNumber: getState().personalNumber ?? "")].emitEachThenEnd
         }
 
         return nil
@@ -179,12 +179,9 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         case let .setProvider(providerID, providerDisplayName):
             newState.providerID = providerID
             newState.providerDisplayName = providerDisplayName
-        case let .startAuthentication(personalNumber):
-            newState.id = UUID()
-            newState.authMethod = nil
-            newState.status = .none
+        case let .setPersonalNumber(personalNumber):
             newState.personalNumber = personalNumber
-        case .retryAuthentication:
+        case .startAuthentication:
             newState.id = UUID()
             newState.authMethod = nil
             newState.status = .none
