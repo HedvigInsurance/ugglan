@@ -44,7 +44,7 @@ struct TrackPlayer: View {
 
 struct Staple: View {
     let staplesDefaultColor: some hColor = hColorScheme.init(light: hGrayscaleColor.one, dark: hGrayscaleColor.two)
-    
+
     var index: Int
     var height: CGFloat
     var value: CGFloat
@@ -60,7 +60,7 @@ struct Staple: View {
             .frame(width: 3, height: height)
             .scaleEffect(x: 1, y: 0.4 + heightRatio, anchor: .center)
     }
-    
+
     func magnitude(of range: Range<CGFloat>) -> CGFloat {
         return range.upperBound - range.lowerBound
     }
@@ -68,15 +68,16 @@ struct Staple: View {
 
 struct Staples: View {
     @ObservedObject var audioPlayer: AudioPlayer
-    
+
     var body: some View {
         let sample = audioPlayer.recording.sample
         let sampleRange = audioPlayer.recording.range
-        
+
         GeometryReader { geometry in
             HStack(alignment: .center) {
                 ForEach(
-                    Array(trim(sample: sample, availableWidth: geometry.size.width).enumerated()), id: \.offset
+                    Array(trim(sample: sample, availableWidth: geometry.size.width).enumerated()),
+                    id: \.offset
                 ) { index, sample in
                     Spacer()
                     Staple(
@@ -84,21 +85,23 @@ struct Staples: View {
                         height: geometry.size.height,
                         value: sample,
                         range: sampleRange
-                    ).animation(.ripple(index: index))
+                    )
+                    .animation(.ripple(index: index))
                 }
-            }.frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity)
         }
     }
-    
+
     func trim(sample: [CGFloat], availableWidth: CGFloat) -> [CGFloat] {
         let trimmed = sample
-        
+
         let count = Double(trimmed.count)
 
         let maxStaples = Double(availableWidth / 4)
 
         guard count > maxStaples else { return trimmed }
-        
+
         let roundUp = ceil(Double(trimmed.count) / maxStaples)
 
         let chunkSize = max(Int(roundUp), 2)
