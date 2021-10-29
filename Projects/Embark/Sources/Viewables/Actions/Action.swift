@@ -253,17 +253,17 @@ extension Action: Viewable {
                                 performCallback(recordAction.next.fragments.embarkLinkFragment)
                             }
 
-                            let audioRecorderController = AdjustableHostingController(rootView: recordActionView)
+                            let audioRecorderController = HostingView(rootView: recordActionView)
 
-                            view.addArrangedSubview(audioRecorderController.view)
+                            view.addArrangedSubview(audioRecorderController)
                             innerBag += {
-                                audioRecorderController.view.removeFromSuperview()
+                                audioRecorderController.removeFromSuperview()
                             }
 
                             innerBag += updateViewsCallbacker.providedSignal.onValue { _ in
-                                audioRecorderController.view.frame = .zero
-                                audioRecorderController.view.setNeedsLayout()
-                                audioRecorderController.view.layoutIfNeeded()
+                                audioRecorderController.frame = .zero
+                                audioRecorderController.setNeedsLayout()
+                                audioRecorderController.layoutIfNeeded()
                             }
                         }
 

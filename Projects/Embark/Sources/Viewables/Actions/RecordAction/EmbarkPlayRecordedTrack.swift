@@ -18,10 +18,10 @@ struct TrackPlayer: View {
     }
 
     var body: some View {
-        HStack {
+        HStack(alignment: .center) {
             image.tint(hLabelColor.primary)
             let staples = Staples(audioPlayer: audioPlayer)
-                .frame(height: 60)
+                .frame(height: 100)
                 .clipped()
             staples
                 .overlay(
@@ -29,7 +29,7 @@ struct TrackPlayer: View {
                 )
 
         }
-        .padding()
+        .padding([.leading, .trailing])
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 8)
@@ -42,61 +42,79 @@ struct TrackPlayer: View {
     }
 }
 
-struct Staples: View {
-    @ObservedObject var audioPlayer: AudioPlayer
-
+struct Staple: View {
     let staplesDefaultColor: some hColor = hColorScheme.init(light: hGrayscaleColor.one, dark: hGrayscaleColor.two)
+    
+    var index: Int
+    var height: CGFloat
+    var value: CGFloat
+    var range: Range<CGFloat>
 
-    struct Staple: Identifiable {
-        var id = UUID()
-        var scale: CGFloat
+    var heightRatio: CGFloat {
+        max(value - range.lowerBound / magnitude(of: range), 0.01)
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            HStack(alignment: .center, spacing: 0) {
-                ForEach(
-                    trim(sample: audioPlayer.recording.sample, availableWidth: geometry.size.width)
-                        .map { Staple(scale: $0) }
-                ) { bar in
-                    RoundedRectangle(cornerRadius: 1)
-                        .fill(staplesDefaultColor)
-                        .frame(
-                            width: 1.85,
-                            height: calculateHeightForBar(
-                                maxValue: audioPlayer.recording.max,
-                                scale: bar.scale,
-                                maxHeight: geometry.size.height
-                            )
-                        )
-                        .padding([.leading, .trailing], 1.85)
-                }
-            }
-        }
-        .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity)
+        Capsule()
+            .fill(staplesDefaultColor)
+            .frame(width: 3, height: height)
+            .scaleEffect(x: 1, y: 0.4 + heightRatio, anchor: .center)
     }
+    
+    func magnitude(of range: Range<CGFloat>) -> CGFloat {
+        return range.upperBound - range.lowerBound
+    }
+}
 
+struct Staples: View {
+    @ObservedObject var audioPlayer: AudioPlayer
+    
+    var body: some View {
+        let sample = audioPlayer.recording.sample
+        let sampleRange = audioPlayer.recording.range
+        
+        GeometryReader { geometry in
+            HStack(alignment: .center) {
+                ForEach(
+                    Array(trim(sample: sample, availableWidth: geometry.size.width).enumerated()), id: \.offset
+                ) { index, sample in
+                    Spacer()
+                    Staple(
+                        index: index,
+                        height: geometry.size.height,
+                        value: sample,
+                        range: sampleRange
+                    ).animation(.ripple(index: index))
+                }
+            }.frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+    
     func trim(sample: [CGFloat], availableWidth: CGFloat) -> [CGFloat] {
         let trimmed = sample
+        
+        let count = Double(trimmed.count)
 
-        let maxStaples = Int((availableWidth / 3.9) + 3.9)
+        let maxStaples = Double(availableWidth / 4)
 
-        guard trimmed.count < maxStaples else { return trimmed }
+        guard count > maxStaples else { return trimmed }
+        
+        let roundUp = ceil(Double(trimmed.count) / maxStaples)
 
-        let chunkSize = max(Int(trimmed.count / maxStaples), 2)
+        let chunkSize = max(Int(roundUp), 2)
 
         return trimmed.chunked(into: chunkSize)
             .compactMap {
                 return $0.reduce(0, +) / CGFloat($0.count)
             }
     }
+}
 
-    func calculateHeightForBar(maxValue: CGFloat, scale: CGFloat, maxHeight: CGFloat) -> CGFloat {
-        let minHeight = CGFloat(5)
-
-        let height = scale / maxValue * maxHeight
-
-        return max(height, minHeight)
+extension Animation {
+    static func ripple(index: Int) -> Animation {
+        Animation.spring(dampingFraction: 0.5)
+            .speed(2)
+            .delay(0.03 * Double(index))
     }
 }
 

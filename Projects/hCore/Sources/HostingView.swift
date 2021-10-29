@@ -3,7 +3,7 @@ import SwiftUI
 import UIKit
 
 public class HostingView<Content: View>: UIView {
-    let rootViewHostingController: UIHostingController<Content>
+    let rootViewHostingController: AdjustableHostingController<Content>
 
     public var swiftUIRootView: Content {
         get {
@@ -96,37 +96,6 @@ public struct SizePreferenceKey: PreferenceKey {
 
     public static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
         value = nextValue()
-    }
-}
-
-public struct SizingView<T: View>: View {
-
-    let view: T
-    let updateSizeHandler: ((_ size: CGSize) -> Void)
-
-    public init(
-        view: T,
-        updateSizeHandler: @escaping (_ size: CGSize) -> Void
-    ) {
-        self.view = view
-        self.updateSizeHandler = updateSizeHandler
-    }
-
-    public var body: some View {
-        view.background(
-            GeometryReader { proxy in
-                Color.clear
-                    .preference(key: SizePreferenceKey.self, value: proxy.size)
-            }
-        )
-        .onPreferenceChange(SizePreferenceKey.self) { preferences in
-            updateSizeHandler(preferences)
-        }
-    }
-
-    func size(with view: T, geometry: GeometryProxy) -> T {
-        updateSizeHandler(geometry.size)
-        return view
     }
 }
 
