@@ -8,6 +8,36 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+
+struct ContractCoverageView: View {
+    @PresentableStore var store: ContractStore
+    let perils: [Perils]
+    let insurableLimits: [InsurableLimits]
+    
+    var body: some View {
+        VStack {
+            hSection {
+                PerilCollection(perils: perils) { peril in
+                    store.send(.contractDetailNavigationAction(action: .peril(peril: peril)))
+                }
+            }.sectionContainerStyle(.transparent)
+            Spacer()
+            SwiftUI.Divider()
+            Spacer()
+            InsurableLimitsSectionView(
+                header: hText(
+                    L10n.contractCoverageMoreInfo,
+                    style: .headline
+                )
+                .foregroundColor(hLabelColor.secondary),
+                limits: insurableLimits
+            ) { limit in
+                store.send(.contractDetailNavigationAction(action: .insurableLimit(insurableLimit: limit)))
+            }
+        }
+    }
+}
+
 struct ContractCoverage {
     let perils: [Perils]
     let insurableLimits: [InsurableLimits]
@@ -18,15 +48,15 @@ extension ContractCoverage: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.title = L10n.contractCoverageMainTitle
-
-        let form = FormView()
+        let stack = UIStackView()
+        stack.axis = .vertical
 
         let insets = EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
 
         let perilCollection = PerilCollection(
             perils: perils,
             didTapPeril: { peril in
-                form.viewController?
+                viewController
                     .present(
                         PerilDetail(peril: peril).withCloseButton,
                         style: .detented(.preferredContentSize, .large)
@@ -35,19 +65,20 @@ extension ContractCoverage: Presentable {
         )
         .padding(insets)
 
-        form.append(HostingView(rootView: perilCollection))
+        stack.addArrangedSubview(HostingView(rootView: perilCollection))
 
-        bag += form.append(Spacing(height: 20))
+        bag += stack.addArranged(Spacing(height: 20))
 
-        bag += form.append(Divider(backgroundColor: .brand(.primaryBorderColor)))
+        bag += stack.addArranged(Divider(backgroundColor: .brand(.primaryBorderColor)))
 
-        bag += form.append(Spacing(height: 20))
+        bag += stack.addArranged(Spacing(height: 20))
 
-        bag += form.append(InsurableLimitsSection(insurableLimits: insurableLimits))
+        bag += stack.addArranged(InsurableLimitsSection(insurableLimits: insurableLimits))
 
-        form.appendSpacing(.custom(20))
+        //form.appendSpacing(.custom(20))
 
-        bag += viewController.install(form, options: [])
+        //bag += viewController.install(form, options: [])
+        viewController.view = stack
 
         return (viewController, bag)
     }

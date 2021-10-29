@@ -9,8 +9,22 @@ import hGraphQL
 
 import SwiftUI
 
-struct ContractInformationz: View {
+struct ContractInformationView: View {
+    @PresentableStore var store: ContractStore
+    @State private var showChangeInfoAlert = false
+    
     let contract: Contract
+    
+    private var changeInfoAlert: SwiftUI.Alert {
+        return Alert(
+                title: Text(L10n.myHomeChangeAlertTitle),
+                message: Text(L10n.myHomeChangeAlertMessage),
+                primaryButton: .destructive(Text(L10n.myHomeChangeAlertActionCancel)),
+                secondaryButton: .default(Text(L10n.myHomeChangeAlertActionConfirm)) {
+                    store.send(.goToFreeTextChat)
+                }
+            )
+    }
     
     var body: some View {
         VStack {
@@ -32,7 +46,11 @@ struct ContractInformationz: View {
                         })
                     }
                     .withHeader {
-                        hText(section.title).body.foregroundColor(hLabelColor.secondary)
+                        hText(
+                            section.title,
+                            style: .headline
+                        )
+                        .foregroundColor(hLabelColor.secondary)
                     }
                 }
             }
@@ -41,7 +59,7 @@ struct ContractInformationz: View {
                     if contract.showsMovingFlowButton {
                         hSection {
                             hButton.LargeButtonOutlined {
-
+                                store.send(.goToMovingFlow)
                             } content: {
                                 hText(L10n.HomeTab.editingSectionChangeAddressLabel)
                             }
@@ -50,9 +68,12 @@ struct ContractInformationz: View {
                 } else {
                     hSection {
                         hButton.LargeButtonText {
-
+                            showChangeInfoAlert = true
                         } content: {
                             hText(L10n.contractDetailHomeChangeInfo)
+                        }
+                        .alert(isPresented: $showChangeInfoAlert) {
+                            changeInfoAlert
                         }
                     }.sectionContainerStyle(.transparent)
                 }
@@ -62,6 +83,7 @@ struct ContractInformationz: View {
 }
 
 struct RenewalInformationCard: View {
+    @PresentableStore var store: ContractStore
     let contract: Contract
     
     var body: some View {
@@ -74,40 +96,13 @@ struct RenewalInformationCard: View {
                 )
             ) {
                 hButton.SmallButtonOutlined {
-                    print("Hello")
+                    store.send(.contractDetailNavigationAction(action: .upcomingAgreement(details: contract.upcomingAgreementsTable)))
                 } content: {
                     L10n.InsuranceDetails.addressUpdateButton.hText()
                 }
             }
         }
     }
-}
-
-struct ContractInformationView: UIViewControllerRepresentable {
-    let contract: Contract
-
-    public class Coordinator {
-        let bag = DisposeBag()
-        let contractInformation: ContractInformation
-        let contract: Contract
-
-        init(contract: Contract) {
-            self.contract = contract
-            self.contractInformation = ContractInformation(contract: contract)
-        }
-    }
-
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(contract: contract)
-    }
-
-    public func makeUIViewController(context: Context) -> some UIViewController {
-        let (view, disposable) = context.coordinator.contractInformation.materialize()
-        context.coordinator.bag += disposable
-        return view
-    }
-    
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 }
 
 struct ContractInformation {

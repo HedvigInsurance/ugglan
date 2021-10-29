@@ -97,7 +97,7 @@ extension Contracts {
                     ),
                     options: [.largeTitleDisplayMode(.never)]
                 )*/
-                ContractDetail.journey(contractRow: ContractRow(contract: contract))
+                ContractDetail(contractRow: ContractRow(contract: contract)).journey()
             } else if case .openTerminatedContracts = action {
                 Self.journey(
                     filter: .terminated(ifEmpty: .none),

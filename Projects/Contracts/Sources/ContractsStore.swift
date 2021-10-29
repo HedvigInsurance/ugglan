@@ -28,6 +28,13 @@ public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol {
     case insuranceTerm(insuranceTerm: InsuranceTerm)
 }
 
+public enum ContractDetailNavigationAction: ActionProtocol {
+    case peril(peril: Perils)
+    case insurableLimit(insurableLimit: InsurableLimits)
+    case document(url: URL, title: String)
+    case upcomingAgreement(details: DetailAgreementsTable)
+}
+
 public enum CrossSellingFAQListNavigationAction: ActionProtocol {
     case list
     case detail(faq: FAQ)
@@ -57,6 +64,8 @@ public enum ContractAction: ActionProtocol {
     case openTerminatedContracts
     case didSignFocusedCrossSell
     case resetSignedCrossSells
+    
+    case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {

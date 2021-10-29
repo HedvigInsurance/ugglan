@@ -12,7 +12,7 @@ try FileManager.default.createDirectory(at: cliFolderURL, withIntermediateDirect
 
 let endpoint = URL(string: "https://graphql.dev.hedvigit.com/graphql")!
 
-let options = ApolloSchemaOptions(endpointURL: endpoint, outputFolderURL: cliFolderURL)
+let options = ApolloSchemaOptions(downloadMethod: .introspection(endpointURL: endpoint), outputFolderURL: cliFolderURL)
 
 try ApolloSchemaDownloader.run(with: cliFolderURL, options: options)
 
