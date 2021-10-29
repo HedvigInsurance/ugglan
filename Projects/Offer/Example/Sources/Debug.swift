@@ -333,7 +333,9 @@ extension Debug {
                     PopJourney()
                 }
             case .openDataCollection:
-                DataCollection.journey(provider: "Hedvig")
+                DataCollection.journey(providerID: "Hedvi", providerDisplayName: "Hedvig") { _ in
+                    
+                }
             }
         }
         .configureTitle("Offer Example")
