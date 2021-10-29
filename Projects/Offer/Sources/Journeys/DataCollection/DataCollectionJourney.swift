@@ -19,12 +19,14 @@ public enum DataCollection {
                         ) { result in
                             switch result {
                             case .started, .failed:
-                                DismissJourney()
+                                DismissJourney().onPresent {
+                                    let store: DataCollectionStore = globalPresentableStoreContainer.get()
+                                    onComplete(store.state.id)
+                                }
                             case .retry:
                                 PopJourney().onPresent {
                                     let store: DataCollectionStore = globalPresentableStoreContainer.get()
                                     store.send(.retryAuthentication)
-                                    onComplete(store.state.id)
                                 }
                             }
                         }.hidesBackButton
