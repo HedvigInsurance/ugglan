@@ -21,13 +21,16 @@ public enum DataCollection {
                             case .started, .failed:
                                 DismissJourney()
                             case .retry:
-                                PopJourney().onPresent {
-                                    let store: DataCollectionStore = globalPresentableStoreContainer.get()
-                                    store.send(.retryAuthentication)
-                                }
+                                PopJourney()
+                                    .onPresent {
+                                        let store: DataCollectionStore = globalPresentableStoreContainer.get()
+                                        store.send(.retryAuthentication)
+                                    }
                             }
-                        }.hidesBackButton
-                    }.hidesBackButton
+                        }
+                        .hidesBackButton
+                    }
+                    .hidesBackButton
                 }
                 .onPresent {
                     let store: DataCollectionStore = globalPresentableStoreContainer.get()

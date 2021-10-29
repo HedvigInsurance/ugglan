@@ -1,10 +1,10 @@
+import Combine
 import Flow
 import Foundation
 import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import Combine
 
 public enum DataCollectionAuthenticationResult: Codable {
     case completed
@@ -89,13 +89,14 @@ struct AuthMethodContainer: View {
                     ActivityIndicator(isAnimating: true)
                 }
             } else {
-                ActivityIndicator(isAnimating: true).onReceive(Just(status)) { status in
-                    if status == .collecting {
-                        store.send(.confirmResult(result: .started))
-                    } else if status == .failed {
-                        store.send(.confirmResult(result: .failed))
+                ActivityIndicator(isAnimating: true)
+                    .onReceive(Just(status)) { status in
+                        if status == .collecting {
+                            store.send(.confirmResult(result: .started))
+                        } else if status == .failed {
+                            store.send(.confirmResult(result: .failed))
+                        }
                     }
-                }
             }
         }
     }
@@ -114,7 +115,8 @@ public struct DataCollectionAuthentication: View {
             }
         ) { authMethod in
             AuthMethodContainer(authMethod: authMethod)
-        }.presentableStoreLensAnimation(.easeInOut(duration: 0.5))
+        }
+        .presentableStoreLensAnimation(.easeInOut(duration: 0.5))
     }
 }
 
