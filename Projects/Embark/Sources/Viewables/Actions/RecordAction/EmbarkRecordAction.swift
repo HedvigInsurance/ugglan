@@ -29,7 +29,7 @@ struct EmbarkRecordAction: View {
                             audioRecorder.restart()
                         }
                     } content: {
-                        hText("Record again")
+                        hText(L10n.embarkRecordAgain)
                     }
                 }
                 .transition(.move(edge: .bottom))

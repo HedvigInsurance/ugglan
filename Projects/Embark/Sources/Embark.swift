@@ -255,9 +255,7 @@ extension Embark: Presentable {
                         if !canGoBack {
                             viewController.navigationItem.leftBarButtonItem = nil
                         } else {
-                            if !viewController.navigationItem.hidesBackButton {
-                                viewController.navigationItem.leftBarButtonItem = backButton
-                            }
+                            viewController.navigationItem.leftBarButtonItem = backButton
                         }
                     }
 
