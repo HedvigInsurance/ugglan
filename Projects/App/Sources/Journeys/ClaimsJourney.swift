@@ -13,19 +13,9 @@ extension AppJourney {
                 ClaimsAskForPushnotifications(),
                 style: .detented(.large, modally: false)
             ) { _ in
-                AppJourney.embark(Embark(name: name), storeOffer: false) { result in
-                    switch result {
-                    case .chat:
-                        AppJourney.freeTextChat().withDismissButton
-                    case .close:
-                        DismissJourney()
-                    case .menu:
-                        ContinueJourney()
-                    case .signed:
-                        DismissJourney()
-                    }
-                }
-                .withJourneyDismissButton
+                AppJourney
+                    .claimsChat()
+                    .withJourneyDismissButton
             }
         }
     }
