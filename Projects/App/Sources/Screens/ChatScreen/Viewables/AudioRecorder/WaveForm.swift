@@ -57,7 +57,8 @@ extension WaveForm: Viewable {
             }
 
         bag += Signal(every: 1 / 60)
-            .onValue { _ in self.audioRecorder.updateMeters()
+            .onValue { _ in
+                self.audioRecorder.updateMeters()
                 pastPeakPower.append(self.audioRecorder.averagePower(forChannel: 0))
                 pastPeakPower = pastPeakPower.suffix(20)
 

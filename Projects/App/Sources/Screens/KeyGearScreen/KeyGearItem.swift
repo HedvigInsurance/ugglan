@@ -214,7 +214,7 @@ extension KeyGearItem: Presentable {
         bag += claimsSection.append(claimsRow)
             .onValue { _ in
                 viewController.present(
-                    AppJourney.claimsJourney
+                    AppJourney.claimsJourney(name: "claims")
                 )
                 .onValue { _ in }
             }
