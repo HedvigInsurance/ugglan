@@ -1,18 +1,18 @@
 import Foundation
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct VariantSelector: View {
     @PresentableStore var store: OfferStore
-    
+
     var variant: QuoteVariant
-    
+
     var price: String {
         "\(variant.bundle.bundleCost.monthlyNet.formattedAmountWithoutSymbol)\(variant.bundle.bundleCost.monthlyNet.currencySymbol)\(L10n.perMonth)"
     }
-    
+
     var body: some View {
         hRow {
             VStack(alignment: .leading, spacing: 25) {
@@ -35,9 +35,15 @@ struct VariantSelector: View {
         .withEmptyAccessory
         .onTap {
             store.send(.setSelectedIds(ids: variant.bundle.quotes.map { $0.id }))
-            
+
             UIApplication.shared.windows.forEach { window in
-                UIView.transition(with: window, duration: 0.25, options: .transitionCrossDissolve, animations: nil, completion: nil)
+                UIView.transition(
+                    with: window,
+                    duration: 0.25,
+                    options: .transitionCrossDissolve,
+                    animations: nil,
+                    completion: nil
+                )
             }
         }
         .overlay(

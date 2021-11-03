@@ -1,12 +1,12 @@
 import Foundation
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct VariantOverlay: View {
     var variant: QuoteVariant
-    
+
     @hColorBuilder func borderColor(isSelected: Bool) -> some hColor {
         if isSelected {
             hLabelColor.primary
@@ -14,7 +14,7 @@ struct VariantOverlay: View {
             hSeparatorColor.separator
         }
     }
-    
+
     var body: some View {
         PresentableStoreLens(
             OfferStore.self,
@@ -23,7 +23,7 @@ struct VariantOverlay: View {
             }
         ) { currentVariant in
             RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                        .stroke(borderColor(isSelected: variant == currentVariant), lineWidth: 2)
+                .stroke(borderColor(isSelected: variant == currentVariant), lineWidth: 2)
         }
     }
 }
