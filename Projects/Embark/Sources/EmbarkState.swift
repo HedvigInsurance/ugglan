@@ -27,6 +27,7 @@ public class EmbarkState {
     public init() {
         defer {
             startTracking()
+            startAPIPassageHandling()
         }
     }
 
@@ -41,6 +42,8 @@ public class EmbarkState {
     var passageNameSignal: ReadSignal<String?> { currentPassageSignal.map { $0?.name } }
 
     var passageTooltipsSignal: ReadSignal<[Tooltip]> { currentPassageSignal.map { $0?.tooltips ?? [] } }
+
+    var isApiLoadingSignal = ReadWriteSignal(false)
 
     func restart() {
         animationDirectionSignal.value = .backwards
@@ -70,6 +73,24 @@ public class EmbarkState {
             }
     }
 
+    func startAPIPassageHandling() {
+        bag += currentPassageSignal.compactMap { $0 }
+            .mapLatestToFuture { passage -> Future<GraphQL.EmbarkLinkFragment?> in
+                guard let apiFragment = passage.api?.fragments.apiFragment else {
+                    return Future(error: ApiError.noApi)
+                }
+
+                self.isApiLoadingSignal.value = true
+
+                return self.handleApi(apiFragment: apiFragment)
+            }
+            .providedSignal.plain().readable(initial: nil).delay(by: 0.5)
+            .onValue({ link in
+                guard let link = link else { return }
+                self.goTo(passageName: link.name, pushHistoryEntry: false)
+            })
+    }
+
     func goBack() {
         trackGoBack()
         animationDirectionSignal.value = .backwards
@@ -78,6 +99,7 @@ public class EmbarkState {
         history.removeLast()
         passageHistorySignal.value = history
         store.removeLastRevision()
+        self.isApiLoadingSignal.value = false
     }
 
     func goTo(passageName: String, pushHistoryEntry: Bool = true) {
@@ -119,6 +141,7 @@ public class EmbarkState {
                     }
                 )
             } else {
+                self.isApiLoadingSignal.value = false
                 currentPassageSignal.value = resultingPassage
             }
         }
@@ -164,7 +187,7 @@ public class EmbarkState {
 
                 guard let totalSteps = self.totalStepsSignal.value else { return 0 }
 
-                if totalSteps == 0 {
+                if totalSteps == 0 || self.passageHistorySignal.value.isEmpty {
                     return 0
                 }
 
