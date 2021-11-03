@@ -59,6 +59,7 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
                 }
               }
             }
+            displayName(locale: $locale)
             bundleCost {
               ...CostFragment
             }

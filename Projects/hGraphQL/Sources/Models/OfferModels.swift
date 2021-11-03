@@ -49,6 +49,7 @@ public struct QuoteBundle: Codable, Equatable {
     public let frequentlyAskedQuestions: [FrequentlyAskedQuestion]
     public let quotes: [Quote]
     public var inception: Inception
+    public var displayName: String
 
     public init(
         bundle: OfferData.QuoteBundle.PossibleVariation.Bundle
@@ -58,6 +59,7 @@ public struct QuoteBundle: Codable, Equatable {
         frequentlyAskedQuestions = bundle.frequentlyAskedQuestions.map { .init(question: $0) }
         quotes = bundle.quotes.map { .init(quote: $0) }
         inception = .init(fragment: bundle.inception.fragments.inceptionFragment)
+        displayName = bundle.displayName
     }
 
     public struct AppConfiguration: Codable, Equatable {

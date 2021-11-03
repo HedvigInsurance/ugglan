@@ -23,7 +23,7 @@ extension CoverageSection: Presentable {
                 let innerBag = DisposeBag()
 
                 if quotes.count > 1 {
-                    innerBag += section.append(MultiQuoteCoverage(quotes: quotes))
+                    innerBag += section.append(MultiQuoteCoverage(quotes: quotes), options: [.autoRemove])
                 } else if let quote = quotes.first {
                     innerBag += section.append(SingleQuoteCoverage(quote: quote), options: [.autoRemove])
                 }

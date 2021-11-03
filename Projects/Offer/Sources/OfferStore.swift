@@ -34,6 +34,7 @@ public enum OfferAction: ActionProtocol {
     case startSign
     case openChat
     case setIds(ids: [String], selectedIds: [String])
+    case setSelectedIds(ids: [String])
     case query
     case setOfferBundle(bundle: OfferBundle)
     case refetch
@@ -159,6 +160,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.offerData = nil
         case let .setIds(ids, selectedIds):
             newState.ids = ids
+            newState.selectedIds = selectedIds
+        case let .setSelectedIds(selectedIds):
             newState.selectedIds = selectedIds
         case let .sign(event):
             if event == .done {
