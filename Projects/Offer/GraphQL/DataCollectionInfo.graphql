@@ -1,0 +1,16 @@
+query DataCollectionInfo($reference: ID!) {
+  externalInsuranceProvider {
+    dataCollectionV2(reference: $reference) {
+      ... on PersonTravelInsuranceCollection {
+        monthlyNetPremium {
+          ...MonetaryAmountFragment
+        }
+      }
+      ... on HouseInsuranceCollection {
+        monthlyNetPremium {
+          ...MonetaryAmountFragment
+        }
+      }
+    }
+  }
+}

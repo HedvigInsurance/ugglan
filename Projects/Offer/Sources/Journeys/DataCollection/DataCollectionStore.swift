@@ -29,6 +29,7 @@ public struct DataCollectionState: StateProtocol {
     var authMethod: DataCollectionAuthMethod? = nil
     var market: Localization.Locale.Market
     var personalNumber: String? = nil
+    var netPremium: MonetaryAmount? = nil
 
     public init() {
         self.market = Localization.Locale.currentLocale.market
@@ -43,6 +44,8 @@ public enum DataCollectionAction: ActionProtocol {
     case startAuthentication
     case setStatus(status: DataCollectionStatus)
     case setAuthMethod(method: DataCollectionAuthMethod)
+    case fetchInfo
+    case setNetPremium(amount: MonetaryAmount?)
 }
 
 public final class DataCollectionStore: StateStore<DataCollectionState, DataCollectionAction> {
@@ -167,6 +170,20 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
 
                 return bag
             }
+        } else if case .setStatus(status: .completed) = action {
+            return [.fetchInfo].emitEachThenEnd
+        } else if case .fetchInfo = action {
+            return self.client.fetch(query: GraphQL.DataCollectionInfoQuery(reference: getState().id?.uuidString ?? "")).map { data in
+                if let info = data.externalInsuranceProvider?.dataCollectionV2.first {
+                    if let netPremiumFragment = info.asPersonTravelInsuranceCollection?.monthlyNetPremium?.fragments.monetaryAmountFragment {
+                        return .setNetPremium(amount: MonetaryAmount(fragment: netPremiumFragment))
+                    } else if let netPremiumFragment = info.asHouseInsuranceCollection?.monthlyNetPremium?.fragments.monetaryAmountFragment {
+                        return .setNetPremium(amount: MonetaryAmount(fragment: netPremiumFragment))
+                    }
+                }
+                
+                return .setStatus(status: .failed)
+            }.valueThenEndSignal
         }
 
         return nil
@@ -189,6 +206,8 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
             newState.status = status
         case let .setAuthMethod(method):
             newState.authMethod = method
+        case let .setNetPremium(amount):
+            newState.netPremium = amount
         default:
             break
         }
