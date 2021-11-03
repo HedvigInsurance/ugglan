@@ -292,6 +292,16 @@ query EmbarkStory($name: String!, $locale: String!) {
             }
           }
         }
+        ... on EmbarkAudioRecorderAction {
+          component
+          audioRecorderData: data {
+            storeKey
+            label
+            next {
+                ...EmbarkLinkFragment
+            }
+          }
+        }
         ... on EmbarkActionCore {
           component
         }

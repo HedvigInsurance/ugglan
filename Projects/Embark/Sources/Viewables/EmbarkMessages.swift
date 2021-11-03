@@ -111,7 +111,15 @@ extension EmbarkMessages: Viewable {
                 nil
             )
 
-        let messagesDataSignal = state.currentPassageSignal.map { $0?.messages }
+        let messagesDataSignal = state.currentPassageSignal.map {
+            passage -> [GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Message] in
+            if passage?.api?.fragments.apiFragment != nil {
+                return []
+            }
+
+            return passage?.messages ?? []
+        }
+
         let responseDataSignal = state.currentPassageSignal.map { $0?.response.fragments.responseFragment }
 
         func mapItems(item: GraphQL.ResponseFragment.AsEmbarkGroupedResponse.Item) -> String {
@@ -132,6 +140,7 @@ extension EmbarkMessages: Viewable {
         }
 
         let animatedResponseSignal: Signal = messagesDataSignal.withLatestFrom(previousResponseSignal)
+            .wait(until: self.state.isApiLoadingSignal.atOnce().map { !$0 })
             .animated(
                 style: .lightBounce(),
                 animations: { _, previousResponse in
@@ -228,8 +237,28 @@ extension EmbarkMessages: Viewable {
             }
         )
 
+        bag += self.state.isApiLoadingSignal.distinct().filter(predicate: { $0 })
+            .onValueDisposePrevious { isLoading in
+                let innerBag = DisposeBag()
+
+                for stackedView in view.subviews { stackedView.removeFromSuperview() }
+
+                innerBag += view.addArranged(
+                    MessageBubble(
+                        text: L10n.embarkLoading,
+                        delay: 0,
+                        animated: true,
+                        animationDelay: 0
+                    )
+                )
+
+                return innerBag
+            }
+
         bag += messagesDataSignal.compactMap { $0 }.driven(by: animateOutSignal)
-            .onValueDisposePrevious { messages in let innerBag = DisposeBag()
+            .wait(until: self.state.isApiLoadingSignal.atOnce().map { !$0 })
+            .onValueDisposePrevious { messages in
+                let innerBag = DisposeBag()
 
                 for stackedView in view.subviews { stackedView.removeFromSuperview() }
 
