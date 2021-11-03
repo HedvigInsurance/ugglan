@@ -33,7 +33,7 @@ public struct QuoteVariant: Codable, Equatable {
     public var bundle: QuoteBundle
     public let tag: String?
     public let id: String
-    
+
     public init(
         variant: OfferData.QuoteBundle.PossibleVariation
     ) {

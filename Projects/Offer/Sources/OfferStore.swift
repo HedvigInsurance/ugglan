@@ -16,11 +16,12 @@ public struct OfferState: StateProtocol {
     var swedishBankIDStatusCode: String? = nil
     var offerData: OfferBundle? = nil
     var hasCheckedOutId: String? = nil
-    
+
     var currentVariant: QuoteVariant? {
-        offerData?.possibleVariations.first(where: { variant in
-            variant.id == selectedIds.joined(separator: "+").lowercased()
-        })
+        offerData?.possibleVariations
+            .first(where: { variant in
+                variant.id == selectedIds.joined(separator: "+").lowercased()
+            })
     }
 
     public init() {}
@@ -177,10 +178,10 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case let .setStartDate(id, startDate):
             newState.startDates[id] = startDate
             guard var newOfferData = newState.offerData else { return newState }
-            
+
             newOfferData.possibleVariations = newOfferData.possibleVariations.map { variant in
                 var newVariant = variant
-                
+
                 switch newVariant.bundle.inception {
                 case let .independent(independentInceptions):
                     let newInceptions = independentInceptions.map {
@@ -202,7 +203,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                         newVariant.bundle.inception = .concurrent(inception: newInception)
                     }
                 }
-                
+
                 return variant
             }
 
