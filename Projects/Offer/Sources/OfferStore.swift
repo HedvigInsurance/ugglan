@@ -16,6 +16,14 @@ public struct OfferState: StateProtocol {
     var swedishBankIDStatusCode: String? = nil
     var offerData: OfferBundle? = nil
     var hasCheckedOutId: String? = nil
+    
+    var dataCollectionEnabled: Bool {
+        offerData?.possibleVariations.first(where: { variant in
+            variant.bundle.quotes.first { quote in
+                quote.dataCollectionID != nil
+            } != nil
+        }) != nil
+    }
 
     var currentVariant: QuoteVariant? {
         offerData?.possibleVariations

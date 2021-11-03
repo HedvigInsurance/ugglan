@@ -142,6 +142,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let perils: [Perils]
         public let insurableLimits: [InsurableLimits]
         public let insuranceTerms: [TermsAndConditions]
+        public var dataCollectionID: String?
 
         public init(
             quote: OfferData.QuoteBundle.PossibleVariation.Bundle.Quote
@@ -156,6 +157,7 @@ public struct QuoteBundle: Codable, Equatable {
             perils = quote.contractPerils.map { .init(fragment: $0.fragments.perilFragment) }
             insurableLimits = quote.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
             insuranceTerms = quote.insuranceTerms.map { .init(displayName: $0.displayName, url: $0.url) }
+            dataCollectionID = quote.dataCollectionId
         }
     }
 
