@@ -1,11 +1,3 @@
-//
-//  VariationSection.swift
-//  Offer
-//
-//  Created by Sam Pettersson on 2021-11-03.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import SwiftUI
 import hCoreUI
