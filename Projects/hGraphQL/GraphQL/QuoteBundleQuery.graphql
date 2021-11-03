@@ -31,49 +31,55 @@ fragment InceptionFragment on QuoteBundleInception {
 
 query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
   quoteBundle(input: { ids: $ids }) {
-    quotes {
-      ... on BundledQuote {
+    possibleVariations {
         id
-        firstName
-        lastName
-        ssn
-        email
-        displayName(locale: $locale)
-        detailsTable(locale: $locale) {
-          ...DetailsTableFragment
+        tag(locale: $locale)
+        bundle {
+            quotes {
+              ... on BundledQuote {
+                id
+                firstName
+                lastName
+                ssn
+                email
+                displayName(locale: $locale)
+                detailsTable(locale: $locale) {
+                  ...DetailsTableFragment
+                }
+                contractPerils(locale: $locale) {
+                  ...PerilFragment
+                }
+                insurableLimits(locale: $locale) {
+                  ...InsurableLimitFragment
+                }
+                insuranceTerms(locale: $locale) {
+                  displayName
+                  url
+                  type
+                }
+              }
+            }
+            bundleCost {
+              ...CostFragment
+            }
+            frequentlyAskedQuestions(locale: $locale) {
+              id
+              headline
+              body
+            }
+            inception {
+              ...InceptionFragment
+            }
+            appConfiguration {
+              showCampaignManagement
+              showFAQ
+              ignoreCampaigns
+              approveButtonTerminology
+              startDateTerminology
+              title
+              gradientOption
+            }
         }
-        contractPerils(locale: $locale) {
-          ...PerilFragment
-        }
-        insurableLimits(locale: $locale) {
-          ...InsurableLimitFragment
-        }
-        insuranceTerms(locale: $locale) {
-          displayName
-          url
-          type
-        }
-      }
-    }
-    bundleCost {
-      ...CostFragment
-    }
-    frequentlyAskedQuestions(locale: $locale) {
-      id
-      headline
-      body
-    }
-    inception {
-      ...InceptionFragment
-    }
-    appConfiguration {
-      showCampaignManagement
-      showFAQ
-      ignoreCampaigns
-      approveButtonTerminology
-      startDateTerminology
-      title
-      gradientOption
     }
   }
   signMethodForQuotes(input: $ids)

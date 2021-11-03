@@ -18,7 +18,7 @@ extension CoverageSection: Presentable {
         let bag = DisposeBag()
 
         bag += store.stateSignal
-            .compactMap { $0.offerData?.quoteBundle.quotes }
+            .compactMap { $0.currentVariant?.bundle.quotes }
             .onValueDisposePrevious { quotes in
                 let innerBag = DisposeBag()
 

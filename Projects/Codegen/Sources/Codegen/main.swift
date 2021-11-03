@@ -52,7 +52,7 @@ sourceUrls.forEach { sourceUrl in
     let codegenOptions = ApolloCodegenOptions(
         namespace: "GraphQL",
         outputFormat: .multipleFiles(inFolderAtURL: folderUrl),
-        urlToSchemaFile: cliFolderURL.appendingPathComponent("schema.json")
+        urlToSchemaFile: cliFolderURL.appendingPathComponent("introspection_response.json")
     )
 
     let fromUrl =

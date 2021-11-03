@@ -6,7 +6,7 @@ import hGraphQL
 
 public enum ExternalRedirect {
     case mailingList
-    case offer(ids: [String])
+    case offer(allIds: [String], selectedIds: [String])
     case close
     case chat
     case dataCollection(providerID: String, providerDisplayName: String, onComplete: (_ id: UUID?) -> Void)
@@ -102,8 +102,12 @@ public class EmbarkState {
                 switch externalRedirect {
                 case .mailingList: externalRedirectSignal.value = .mailingList
                 case .offer:
+                    
+                    let ids = [store.getValue(key: "quoteId")].compactMap { $0 }
+                    
                     externalRedirectSignal.value = .offer(
-                        ids: [store.getValue(key: "quoteId")].compactMap { $0 }
+                        allIds: ids,
+                        selectedIds: ids
                     )
                 case .close:
                     externalRedirectSignal.value = .close
@@ -113,11 +117,29 @@ public class EmbarkState {
                 }
             } else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {
                 Analytics.track("Offer Redirect", properties: [:])
+                let ids = offerRedirectKeys.flatMap { key in
+                    store.getValues(key: key) ?? []
+                }
                 externalRedirectSignal.value = .offer(
-                    ids: offerRedirectKeys.flatMap { key in
-                        store.getValues(key: key) ?? []
-                    }
+                    allIds: ids,
+                    selectedIds: ids
                 )
+            } else if let passingVariantedRedirect = resultingPassage.variantedOfferRedirects.first(where: { redirect in
+                return store.passes(expression: redirect.data.expression.fragments.expressionFragment)
+            }) {
+                let allIds = passingVariantedRedirect.data.allKeys.flatMap { key in
+                    store.getValues(key: key) ?? []
+                }
+                
+                let selectedIds = passingVariantedRedirect.data.selectedKeys.flatMap { key in
+                    store.getValues(key: key) ?? []
+                }
+                
+                Analytics.track("Varianted Offer Redirect", properties: [
+                    "allIds": allIds,
+                    "selectedIds": selectedIds
+                ])
+                externalRedirectSignal.value = .offer(allIds: allIds, selectedIds: selectedIds)
             } else {
                 currentPassageSignal.value = resultingPassage
             }
@@ -137,20 +159,32 @@ public class EmbarkState {
     private var totalStepsSignal = ReadWriteSignal<Int?>(nil)
 
     var progressSignal: ReadSignal<Float> {
+        var visitedPassageDepths: [String: Int] = [:]
+        
         func findMaxDepth(passageName: String, previousDepth: Int = 0) -> Int {
+            if let depth = visitedPassageDepths[passageName] {
+                return depth
+            }
+            
             guard let passage = passagesSignal.value.first(where: { $0.name == passageName }) else {
+                visitedPassageDepths[passageName] = 0
                 return 0
             }
 
             let links = passage.allLinks.map { $0.name }
 
             if links.isEmpty { return previousDepth }
+            
+            visitedPassageDepths[passageName] = previousDepth
+            
+            let depth = links.map { linkPassageName in
+                findMaxDepth(passageName: linkPassageName, previousDepth: previousDepth + 1)
+            }
+            .reduce(0) { result, current in max(result, current) }
+            
+            visitedPassageDepths[passageName] = depth
 
-            return
-                links.map { linkPassageName in
-                    findMaxDepth(passageName: linkPassageName, previousDepth: previousDepth + 1)
-                }
-                .reduce(0) { result, current in max(result, current) }
+            return depth
         }
 
         return

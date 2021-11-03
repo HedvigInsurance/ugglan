@@ -4,7 +4,7 @@ import Foundation
 public typealias OfferData = GraphQL.QuoteBundleQuery.Data
 
 public struct OfferBundle: Codable, Equatable {
-    public var quoteBundle: QuoteBundle
+    public var possibleVariations: [QuoteVariant]
     public let redeemedCampaigns: [RedeemedCampaign]
     public let signMethodForQuotes: SignMethodForQuotes
     public let id: UUID
@@ -22,10 +22,24 @@ public struct OfferBundle: Codable, Equatable {
         data: OfferData,
         id: UUID = UUID()
     ) {
-        quoteBundle = .init(bundle: data.quoteBundle)
+        possibleVariations = data.quoteBundle.possibleVariations.map { .init(variant: $0) }
         redeemedCampaigns = data.redeemedCampaigns.map { .init(displayValue: $0.displayValue) }
         signMethodForQuotes = .init(rawValue: data.signMethodForQuotes.rawValue) ?? .unknown
         self.id = id
+    }
+}
+
+public struct QuoteVariant: Codable, Equatable {
+    public let bundle: QuoteBundle
+    public let tag: String?
+    public let id: String
+    
+    public init(
+        variant: OfferData.QuoteBundle.PossibleVariation
+    ) {
+        self.bundle = QuoteBundle(bundle: variant.bundle)
+        self.tag = variant.tag
+        self.id = variant.id
     }
 }
 
@@ -37,7 +51,7 @@ public struct QuoteBundle: Codable, Equatable {
     public var inception: Inception
 
     public init(
-        bundle: OfferData.QuoteBundle
+        bundle: OfferData.QuoteBundle.PossibleVariation.Bundle
     ) {
         appConfiguration = .init(config: bundle.appConfiguration)
         bundleCost = .init(cost: bundle.bundleCost)
@@ -56,7 +70,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let title: AppConfigTitle
 
         public init(
-            config: OfferData.QuoteBundle.AppConfiguration
+            config: OfferData.QuoteBundle.PossibleVariation.Bundle.AppConfiguration
         ) {
             showCampaignManagement = config.showCampaignManagement
             showFaq = config.showFaq
@@ -93,7 +107,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let monthlyNet: MonetaryAmount
 
         public init(
-            cost: OfferData.QuoteBundle.BundleCost
+            cost: OfferData.QuoteBundle.PossibleVariation.Bundle.BundleCost
         ) {
             freeUntil = cost.freeUntil
             monthlyDiscount = .init(fragment: cost.monthlyDiscount.fragments.monetaryAmountFragment)
@@ -107,7 +121,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let headline: String?
         public let id: String
         public init(
-            question: OfferData.QuoteBundle.FrequentlyAskedQuestion
+            question: OfferData.QuoteBundle.PossibleVariation.Bundle.FrequentlyAskedQuestion
         ) {
             id = question.id
             body = question.body
@@ -128,7 +142,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let insuranceTerms: [TermsAndConditions]
 
         public init(
-            quote: OfferData.QuoteBundle.Quote
+            quote: OfferData.QuoteBundle.PossibleVariation.Bundle.Quote
         ) {
             id = quote.id
             firstName = quote.firstName

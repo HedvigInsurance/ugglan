@@ -14,18 +14,29 @@ public enum OfferOption {
 }
 
 public struct Offer {
-    let offerIDContainer: OfferIDContainer
     let menu: hCore.Menu?
     let options: Set<OfferOption>
 
     public init(
-        offerIDContainer: OfferIDContainer,
         menu: hCore.Menu?,
         options: Set<OfferOption> = []
     ) {
-        self.offerIDContainer = offerIDContainer
         self.menu = menu
         self.options = options
+    }
+}
+
+extension Offer {
+    public func setIds(_ ids: [String]) -> Self {
+        let store: OfferStore = globalPresentableStoreContainer.get()
+        store.send(.setIds(ids: ids, selectedIds: ids))
+        return self
+    }
+    
+    public func setIds(_ ids: [String], selectedIds: [String]) -> Self {
+        let store: OfferStore = globalPresentableStoreContainer.get()
+        store.send(.setIds(ids: ids, selectedIds: selectedIds))
+        return self
     }
 }
 
@@ -55,7 +66,7 @@ extension Offer: Presentable {
         }
 
         let bag = DisposeBag()
-        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.appConfiguration.title }
+        bag += store.stateSignal.compactMap { $0.currentVariant?.bundle.appConfiguration.title }
             .distinct()
             .delay(by: 0.1)
             .onValue { title in
@@ -153,9 +164,8 @@ extension Offer: Presentable {
         return (
             viewController,
             FiniteSignal { callback in
-
-                store.send(.query(ids: self.offerIDContainer.ids))
-
+                store.send(.query)
+                
                 bag += store.onAction(.openChat) {
                     callback(.value(.chat))
                 }

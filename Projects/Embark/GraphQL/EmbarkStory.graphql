@@ -61,8 +61,8 @@ fragment ResponseFragment on EmbarkResponse {
       key
       content {
         ...MessageFragment
-            }
-        }
+      }
+    }
     title {
       text
     }
@@ -219,6 +219,16 @@ query EmbarkStory($name: String!, $locale: String!) {
           keys
         }
       }
+      variantedOfferRedirects {
+        component
+        data {
+          expression {
+            ...ExpressionFragment
+          }
+          allKeys
+          selectedKeys
+        }
+      }
       tooltips {
         description
         title
@@ -260,7 +270,7 @@ query EmbarkStory($name: String!, $locale: String!) {
                   key
                   label
                   unit
-                  }
+                }
               }
               ... on EmbarkDropdownAction {
                 dropDownActionData: data {
@@ -306,17 +316,17 @@ query EmbarkStory($name: String!, $locale: String!) {
           }
         }
         ... on EmbarkAddressAutocompleteAction {
-            component
-            addressAutocompleteActionData: data {
-                placeholder
-                key
-                link {
-                    ...EmbarkLinkFragment
-                }
-                api {
-                    ...ApiFragment
-                }
+          component
+          addressAutocompleteActionData: data {
+            placeholder
+            key
+            link {
+              ...EmbarkLinkFragment
             }
+            api {
+              ...ApiFragment
+            }
+          }
         }
         ... on EmbarkTextActionSet {
           textActionSetData: data {
@@ -324,7 +334,7 @@ query EmbarkStory($name: String!, $locale: String!) {
               ...EmbarkLinkFragment
             }
             api {
-                ...ApiFragment
+              ...ApiFragment
             }
             textActions {
               data {
@@ -352,7 +362,7 @@ query EmbarkStory($name: String!, $locale: String!) {
           }
         }
         ... on EmbarkDatePickerAction {
-                    component
+          component
           next {
             ...EmbarkLinkFragment
           }

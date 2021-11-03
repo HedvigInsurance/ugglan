@@ -32,8 +32,8 @@ extension SignSection: Presentable {
         let row = RowView()
         section.append(row)
 
-        bag += store.stateSignal.compactMap { $0.offerData }
-            .map { ($0.signMethodForQuotes, $0.quoteBundle.appConfiguration.approveButtonTerminology) }
+        bag += store.stateSignal
+            .map { ($0.offerData?.signMethodForQuotes, $0.currentVariant?.bundle.appConfiguration.approveButtonTerminology) }
             .distinct(==)
             .onValueDisposePrevious { signMethodForQuotes, approveButtonTerminology in
                 let innerBag = DisposeBag()
@@ -88,7 +88,7 @@ extension SignSection: Presentable {
                     innerBag += row.append(signButton)
                 case .approveOnly:
                     let signButton = Button(
-                        title: approveButtonTerminology.displayValue,
+                        title: approveButtonTerminology?.displayValue ?? "",
                         type: .standard(
                             backgroundColor: .brand(.secondaryButtonBackgroundColor),
                             textColor: .brand(.secondaryButtonTextColor)
@@ -113,7 +113,7 @@ extension SignSection: Presentable {
                         }
 
                     innerBag += row.append(loadableSignButton)
-                case .unknown:
+                case .unknown, .none:
                     break
                 }
 
