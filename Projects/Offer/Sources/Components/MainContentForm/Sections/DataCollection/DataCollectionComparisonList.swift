@@ -6,7 +6,7 @@ import hGraphQL
 
 struct DataCollectionComparisonList: View {
     @PresentableStore var store: DataCollectionStore
-    
+
     var body: some View {
         hSection(header: hText("Prisjämförelse")) {
             hRow {
@@ -52,7 +52,8 @@ struct DataCollectionComparisonList: View {
                     }
                 }
             }
-        }.onAppear {
+        }
+        .onAppear {
             store.send(.fetchInfo)
         }
     }

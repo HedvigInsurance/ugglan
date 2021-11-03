@@ -173,17 +173,23 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         } else if case .setStatus(status: .completed) = action {
             return [.fetchInfo].emitEachThenEnd
         } else if case .fetchInfo = action {
-            return self.client.fetch(query: GraphQL.DataCollectionInfoQuery(reference: getState().id?.uuidString ?? "")).map { data in
-                if let info = data.externalInsuranceProvider?.dataCollectionV2.first {
-                    if let netPremiumFragment = info.asPersonTravelInsuranceCollection?.monthlyNetPremium?.fragments.monetaryAmountFragment {
-                        return .setNetPremium(amount: MonetaryAmount(fragment: netPremiumFragment))
-                    } else if let netPremiumFragment = info.asHouseInsuranceCollection?.monthlyNetPremium?.fragments.monetaryAmountFragment {
-                        return .setNetPremium(amount: MonetaryAmount(fragment: netPremiumFragment))
+            return self.client.fetch(query: GraphQL.DataCollectionInfoQuery(reference: getState().id?.uuidString ?? ""))
+                .map { data in
+                    if let info = data.externalInsuranceProvider?.dataCollectionV2.first {
+                        if let netPremiumFragment = info.asPersonTravelInsuranceCollection?.monthlyNetPremium?.fragments
+                            .monetaryAmountFragment
+                        {
+                            return .setNetPremium(amount: MonetaryAmount(fragment: netPremiumFragment))
+                        } else if let netPremiumFragment = info.asHouseInsuranceCollection?.monthlyNetPremium?.fragments
+                            .monetaryAmountFragment
+                        {
+                            return .setNetPremium(amount: MonetaryAmount(fragment: netPremiumFragment))
+                        }
                     }
+
+                    return .setStatus(status: .failed)
                 }
-                
-                return .setStatus(status: .failed)
-            }.valueThenEndSignal
+                .valueThenEndSignal
         }
 
         return nil
