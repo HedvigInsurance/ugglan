@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct DataCollectionComparisonContainer: View {
@@ -16,7 +16,9 @@ struct DataCollectionComparisonContainer: View {
             case .failed, .login:
                 hSection(header: hText("Prisjämförelse")) {
                     hRow {
-                        hText("Något gick fel och vi kunde tyvärr inte hämta någon information om din nuvarande hemförsäkring.")
+                        hText(
+                            "Något gick fel och vi kunde tyvärr inte hämta någon information om din nuvarande hemförsäkring."
+                        )
                     }
                 }
             case .completed:

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct DataCollectionSection: View {
@@ -15,6 +15,7 @@ struct DataCollectionSection: View {
             if dataCollectionEnabled {
                 DataCollectionComparisonContainer()
             }
-        }.presentableStoreLensAnimation(.spring())
+        }
+        .presentableStoreLensAnimation(.spring())
     }
 }

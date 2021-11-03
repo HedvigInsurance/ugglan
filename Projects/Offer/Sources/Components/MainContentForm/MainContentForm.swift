@@ -35,10 +35,10 @@ extension MainContentForm: Presentable {
         form.layer.masksToBounds = true
         form.backgroundColor = .brand(.primaryBackground())
         formContainer.addArrangedSubview(form)
-        
+
         form.append(HostingView(rootView: DataCollectionComparisonList()))
         form.append(HostingView(rootView: VariationSection()))
-        
+
         bag += form.append(DetailsSection())
 
         form.appendSpacing(.inbetween)

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct DataCollectionComparisonList: View {
@@ -9,14 +9,16 @@ struct DataCollectionComparisonList: View {
         hSection {
             hRow {
                 hCoreUIAssets.wordmark.view
-            }.withCustomAccessory {
+            }
+            .withCustomAccessory {
                 hText("200 kr/mån")
             }
         }
         hSection {
             hRow {
                 hText("Länsförsäkringar")
-            }.withCustomAccessory {
+            }
+            .withCustomAccessory {
                 hText("200 kr/mån")
             }
         }
