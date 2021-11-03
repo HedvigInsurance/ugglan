@@ -176,30 +176,37 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.swedishBankIDAutoStartToken = autoStartToken
         case let .setStartDate(id, startDate):
             newState.startDates[id] = startDate
-//            guard var newOfferData = newState.offerData else { return newState }
-//            switch newOfferData.quoteBundle.inception {
-//            case let .independent(independentInceptions):
-//                let newInceptions = independentInceptions.map {
-//                    inception -> QuoteBundle.Inception.IndependentInception in
-//                    if inception.correspondingQuote.id == id {
-//                        var copy = inception
-//                        copy.startDate = startDate?.localDateString
-//                        return copy
-//                    }
-//                    return inception
-//                }
-//                newOfferData.quoteBundle.inception = .independent(inceptions: newInceptions)
-//            case .unknown:
-//                break
-//            case .concurrent(let inception):
-//                if inception.correspondingQuotes.contains(where: { $0.id == id }) {
-//                    var newInception = inception
-//                    newInception.startDate = startDate?.localDateString
-//                    newOfferData.quoteBundle.inception = .concurrent(inception: newInception)
-//                }
-//            }
-//
-//            newState.offerData = newOfferData
+            guard var newOfferData = newState.offerData else { return newState }
+            
+            newOfferData.possibleVariations = newOfferData.possibleVariations.map { variant in
+                var newVariant = variant
+                
+                switch newVariant.bundle.inception {
+                case let .independent(independentInceptions):
+                    let newInceptions = independentInceptions.map {
+                        inception -> QuoteBundle.Inception.IndependentInception in
+                        if inception.correspondingQuote.id == id {
+                            var copy = inception
+                            copy.startDate = startDate?.localDateString
+                            return copy
+                        }
+                        return inception
+                    }
+                    newVariant.bundle.inception = .independent(inceptions: newInceptions)
+                case .unknown:
+                    break
+                case .concurrent(let inception):
+                    if inception.correspondingQuotes.contains(where: { $0.id == id }) {
+                        var newInception = inception
+                        newInception.startDate = startDate?.localDateString
+                        newVariant.bundle.inception = .concurrent(inception: newInception)
+                    }
+                }
+                
+                return variant
+            }
+
+            newState.offerData = newOfferData
         case let .setOfferBundle(bundle):
             newState.offerData = bundle
         case let .setLoading(isLoading):

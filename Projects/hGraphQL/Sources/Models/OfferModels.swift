@@ -30,7 +30,7 @@ public struct OfferBundle: Codable, Equatable {
 }
 
 public struct QuoteVariant: Codable, Equatable {
-    public let bundle: QuoteBundle
+    public var bundle: QuoteBundle
     public let tag: String?
     public let id: String
     
