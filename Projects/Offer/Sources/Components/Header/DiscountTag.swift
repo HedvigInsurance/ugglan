@@ -49,7 +49,7 @@ extension DiscountTag: Presentable {
                     return
                 }
                 guard let campaign = data.redeemedCampaigns.first,
-                      currentVariant.bundle.appConfiguration.showCampaignManagement
+                    currentVariant.bundle.appConfiguration.showCampaignManagement
                 else {
                     view.animationSafeIsHidden = true
                     return

@@ -1,12 +1,12 @@
 import Foundation
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct VariantCircle: View {
     var variant: QuoteVariant
-    
+
     @hColorBuilder func backgroundColor(isSelected: Bool) -> some hColor {
         if isSelected {
             hGrayscaleColor.five
@@ -14,7 +14,7 @@ struct VariantCircle: View {
             hBackgroundColor.secondary
         }
     }
-    
+
     var body: some View {
         PresentableStoreLens(
             OfferStore.self,
@@ -29,7 +29,9 @@ struct VariantCircle: View {
                         .aspectRatio(contentMode: .fit)
                         .foregroundColor(hLabelColor.primary.inverted)
                 }
-            }.padding(2).frame(
+            }
+            .padding(2)
+            .frame(
                 width: 22,
                 height: 22
             )

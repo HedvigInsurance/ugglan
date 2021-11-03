@@ -32,7 +32,7 @@ extension Offer {
         store.send(.setIds(ids: ids, selectedIds: ids))
         return self
     }
-    
+
     public func setIds(_ ids: [String], selectedIds: [String]) -> Self {
         let store: OfferStore = globalPresentableStoreContainer.get()
         store.send(.setIds(ids: ids, selectedIds: selectedIds))
@@ -165,7 +165,7 @@ extension Offer: Presentable {
             viewController,
             FiniteSignal { callback in
                 store.send(.query)
-                
+
                 bag += store.onAction(.openChat) {
                     callback(.value(.chat))
                 }
