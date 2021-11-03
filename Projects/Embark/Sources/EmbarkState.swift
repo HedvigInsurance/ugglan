@@ -124,9 +124,9 @@ public class EmbarkState {
                 switch externalRedirect {
                 case .mailingList: externalRedirectSignal.value = .mailingList
                 case .offer:
-                    
+
                     let ids = [store.getValue(key: "quoteId")].compactMap { $0 }
-                    
+
                     externalRedirectSignal.value = .offer(
                         allIds: ids,
                         selectedIds: ids
@@ -152,15 +152,18 @@ public class EmbarkState {
                 let allIds = passingVariantedRedirect.data.allKeys.flatMap { key in
                     store.getValues(key: key) ?? []
                 }
-                
+
                 let selectedIds = passingVariantedRedirect.data.selectedKeys.flatMap { key in
                     store.getValues(key: key) ?? []
                 }
-                
-                Analytics.track("Varianted Offer Redirect", properties: [
-                    "allIds": allIds,
-                    "selectedIds": selectedIds
-                ])
+
+                Analytics.track(
+                    "Varianted Offer Redirect",
+                    properties: [
+                        "allIds": allIds,
+                        "selectedIds": selectedIds,
+                    ]
+                )
                 externalRedirectSignal.value = .offer(allIds: allIds, selectedIds: selectedIds)
             } else {
                 self.isApiLoadingSignal.value = false
@@ -183,12 +186,12 @@ public class EmbarkState {
 
     var progressSignal: ReadSignal<Float> {
         var visitedPassageDepths: [String: Int] = [:]
-        
+
         func findMaxDepth(passageName: String, previousDepth: Int = 0) -> Int {
             if let depth = visitedPassageDepths[passageName] {
                 return depth
             }
-            
+
             guard let passage = passagesSignal.value.first(where: { $0.name == passageName }) else {
                 visitedPassageDepths[passageName] = 0
                 return 0
@@ -197,14 +200,15 @@ public class EmbarkState {
             let links = passage.allLinks.map { $0.name }
 
             if links.isEmpty { return previousDepth }
-            
+
             visitedPassageDepths[passageName] = previousDepth
-            
-            let depth = links.map { linkPassageName in
-                findMaxDepth(passageName: linkPassageName, previousDepth: previousDepth + 1)
-            }
-            .reduce(0) { result, current in max(result, current) }
-            
+
+            let depth =
+                links.map { linkPassageName in
+                    findMaxDepth(passageName: linkPassageName, previousDepth: previousDepth + 1)
+                }
+                .reduce(0) { result, current in max(result, current) }
+
             visitedPassageDepths[passageName] = depth
 
             return depth
