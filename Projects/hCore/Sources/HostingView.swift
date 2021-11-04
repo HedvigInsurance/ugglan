@@ -114,7 +114,7 @@ public class AdjustableHostingController<Content: View>: UIHostingController<Con
     ) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func fixSafeAreaInsets() {
         guard let _class = view?.classForCoder else {
             fatalError()
@@ -123,13 +123,27 @@ public class AdjustableHostingController<Content: View>: UIHostingController<Con
         let safeAreaInsets: @convention(block) (AnyObject) -> UIEdgeInsets = { (sself: AnyObject!) -> UIEdgeInsets in
             return .zero
         }
-        guard let method = class_getInstanceMethod(_class.self, #selector(getter: UIView.safeAreaInsets)) else { return }
-        class_replaceMethod(_class, #selector(getter: UIView.safeAreaInsets), imp_implementationWithBlock(safeAreaInsets), method_getTypeEncoding(method))
+        guard let method = class_getInstanceMethod(_class.self, #selector(getter:UIView.safeAreaInsets)) else { return }
+        class_replaceMethod(
+            _class,
+            #selector(getter:UIView.safeAreaInsets),
+            imp_implementationWithBlock(safeAreaInsets),
+            method_getTypeEncoding(method)
+        )
 
-        let safeAreaLayoutGuide: @convention(block) (AnyObject) -> UILayoutGuide? = { (sself : AnyObject!) -> UILayoutGuide? in return nil }
+        let safeAreaLayoutGuide: @convention(block) (AnyObject) -> UILayoutGuide? = {
+            (sself: AnyObject!) -> UILayoutGuide? in return nil
+        }
 
-        guard let method2 = class_getInstanceMethod(_class.self, #selector(getter: UIView.safeAreaLayoutGuide)) else { return }
-        class_replaceMethod(_class, #selector(getter: UIView.safeAreaLayoutGuide), imp_implementationWithBlock(safeAreaLayoutGuide), method_getTypeEncoding(method2))
+        guard let method2 = class_getInstanceMethod(_class.self, #selector(getter:UIView.safeAreaLayoutGuide)) else {
+            return
+        }
+        class_replaceMethod(
+            _class,
+            #selector(getter:UIView.safeAreaLayoutGuide),
+            imp_implementationWithBlock(safeAreaLayoutGuide),
+            method_getTypeEncoding(method2)
+        )
     }
 
     public override func viewWillLayoutSubviews() {

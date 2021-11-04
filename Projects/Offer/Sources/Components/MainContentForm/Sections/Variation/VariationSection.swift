@@ -6,7 +6,7 @@ import hGraphQL
 
 struct VariationsSection: View {
     let variations: [QuoteVariant]
-    
+
     var body: some View {
         if variations.count > 1 {
             hSection(header: hText(L10n.offerBundleSelectorTitle)) {
