@@ -172,16 +172,15 @@ extension EmbarkPlans: Presentable {
 extension GraphQL.ChoosePlanQuery.Data.EmbarkStory {
     fileprivate var discount: String? { metadata.compactMap { $0.asEmbarkStoryMetadataEntryPill }.first?.pill }
 
-    fileprivate var gradientViewPreset: GradientView.Preset {
+    fileprivate var gradientViewPreset: GradientView.Preset? {
         let background =
-            metadata.compactMap { $0.asEmbarkStoryMetadataEntryBackground?.background }.first
-            ?? .gradientOne
+        metadata.compactMap { $0.asEmbarkStoryMetadataEntryBackground?.background }.first
 
         switch background {
         case .gradientOne: return .insuranceOne
         case .gradientTwo: return .insuranceTwo
         case .gradientThree: return .insuranceThree
-        case .__unknown: return .insuranceOne
+        case .__unknown, .none: return nil
         }
     }
 }

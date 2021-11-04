@@ -18,7 +18,7 @@ struct PlanRow: Equatable, Hashable {
     let title: String
     let discount: String?
     let message: String
-    let gradientType: GradientView.Preset
+    let gradientType: GradientView.Preset?
     let isSelected: ReadWriteSignal<Bool>
 }
 
@@ -120,15 +120,17 @@ extension PlanRow: Reusable {
                             PlanRowContent(selected: self.isSelected.value, row: self)
                         )
                     })
+                
+                if let gradientType = self.gradientType {
+                    let gradientView = GradientView(
+                        gradientOption: .init(preset: gradientType),
+                        shouldShowGradientSignal: self.isSelected
+                    )
 
-                let gradientView = GradientView(
-                    gradientOption: .init(preset: self.gradientType),
-                    shouldShowGradientSignal: self.isSelected
-                )
-
-                bag += contentView.add(gradientView) { view in contentView.sendSubviewToBack(view)
-                    view.snp.makeConstraints { make in
-                        make.top.bottom.trailing.leading.equalToSuperview()
+                    bag += contentView.add(gradientView) { view in contentView.sendSubviewToBack(view)
+                        view.snp.makeConstraints { make in
+                            make.top.bottom.trailing.leading.equalToSuperview()
+                        }
                     }
                 }
 
