@@ -16,7 +16,7 @@ struct SwedishBankID: View {
 
     func openBankIDApp() {
         let urlScheme = Bundle.main.urlScheme ?? ""
-        
+
         guard let autoStartToken = autoStartToken else {
             guard
                 let url = URL(
@@ -34,7 +34,7 @@ struct SwedishBankID: View {
                     completionHandler: nil
                 )
             }
-            
+
             return
         }
 
