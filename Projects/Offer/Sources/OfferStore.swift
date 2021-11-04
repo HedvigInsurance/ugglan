@@ -30,7 +30,7 @@ public struct OfferState: StateProtocol {
         if offerData?.possibleVariations.count == 1 {
             return offerData?.possibleVariations.first
         }
-        
+
         return offerData?.possibleVariations
             .first(where: { variant in
                 variant.id == selectedIds.joined(separator: "+").lowercased()
