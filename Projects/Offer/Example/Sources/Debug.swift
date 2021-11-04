@@ -333,7 +333,7 @@ extension Debug {
                     PopJourney()
                 }
             case .openDataCollection:
-                DataCollection.journey(providerID: "Hedvi", providerDisplayName: "Hedvig") { _ in
+                DataCollection.journey(providerID: "Hedvi", providerDisplayName: "Hedvig") { _, _ in
 
                 }
             }
