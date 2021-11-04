@@ -137,10 +137,15 @@ public enum ExternalDependencies: CaseIterable {
             guard FileManager.default.fileExists(atPath: path.pathString) else {
                 return []
             }
-
+            
+            try? FileManager.default.copyItem(
+                atPath: path.pathString,
+                toPath: "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
+            )
+            
             return [
                 .xcframework(
-                    path: path
+                    path: "RevealServer.xcframework"
                 )
             ]
         case .datadog:
