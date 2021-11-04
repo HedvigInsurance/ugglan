@@ -85,7 +85,7 @@ public struct PerilCollection: View {
                     .buttonStyle(PerilButtonStyle(peril: peril))
                 }
                 if chunk.count == 1 {
-                    Spacer()
+                    Spacer().frame(maxWidth: .infinity)
                 }
             }
             .padding(.bottom, 8)
