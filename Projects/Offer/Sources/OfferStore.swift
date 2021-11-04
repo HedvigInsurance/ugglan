@@ -27,7 +27,11 @@ public struct OfferState: StateProtocol {
     }
 
     var currentVariant: QuoteVariant? {
-        offerData?.possibleVariations
+        if offerData?.possibleVariations.count == 1 {
+            return offerData?.possibleVariations.first
+        }
+        
+        return offerData?.possibleVariations
             .first(where: { variant in
                 variant.id == selectedIds.joined(separator: "+").lowercased()
             })

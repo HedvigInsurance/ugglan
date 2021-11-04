@@ -14,7 +14,7 @@ extension GraphQL.QuoteBundleQuery.Data {
             quoteBundle: .init(
                 possibleVariations: [
                     .init(
-                        id: "bla",
+                        id: "123",
                         tag: nil,
                         bundle: .init(
                             quotes: [
