@@ -174,7 +174,7 @@ extension GraphQL.ChoosePlanQuery.Data.EmbarkStory {
 
     fileprivate var gradientViewPreset: GradientView.Preset? {
         let background =
-        metadata.compactMap { $0.asEmbarkStoryMetadataEntryBackground?.background }.first
+            metadata.compactMap { $0.asEmbarkStoryMetadataEntryBackground?.background }.first
 
         switch background {
         case .gradientOne: return .insuranceOne

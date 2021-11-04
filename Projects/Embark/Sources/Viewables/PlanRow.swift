@@ -120,7 +120,7 @@ extension PlanRow: Reusable {
                             PlanRowContent(selected: self.isSelected.value, row: self)
                         )
                     })
-                
+
                 if let gradientType = self.gradientType {
                     let gradientView = GradientView(
                         gradientOption: .init(preset: gradientType),
