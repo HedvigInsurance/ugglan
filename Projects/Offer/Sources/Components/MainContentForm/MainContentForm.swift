@@ -36,7 +36,7 @@ extension MainContentForm: Presentable {
         form.backgroundColor = .brand(.primaryBackground())
         formContainer.addArrangedSubview(form)
 
-        form.append(HostingView(rootView: DataCollectionComparisonList()))
+        form.append(HostingView(rootView: DataCollectionSection()))
         form.append(HostingView(rootView: VariationSection()))
 
         bag += form.append(DetailsSection())
