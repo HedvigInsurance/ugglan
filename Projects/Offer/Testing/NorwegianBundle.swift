@@ -5,13 +5,17 @@ import TestingUtil
 import hCore
 import hGraphQL
 
-func generateTravelRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.PossibleVariation.Bundle.Quote.DetailsTable.Section.Row] {
+func generateTravelRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.PossibleVariation.Bundle.Quote.DetailsTable
+    .Section.Row]
+{
     [
         .init(title: "Co-insured", subtitle: nil, value: "You + 2")
     ]
 }
 
-func generateHomeRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.PossibleVariation.Bundle.Quote.DetailsTable.Section.Row] {
+func generateHomeRows() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.PossibleVariation.Bundle.Quote.DetailsTable
+    .Section.Row]
+{
     [
         .init(title: "Street", subtitle: nil, value: "An address"),
         .init(title: "Postal code", subtitle: nil, value: "111 44"),
