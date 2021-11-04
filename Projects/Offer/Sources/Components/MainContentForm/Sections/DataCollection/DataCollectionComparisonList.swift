@@ -7,7 +7,7 @@ import hGraphQL
 enum DataCollectionInsuranceItem: Identifiable {
     case hedvig
     case external(insurance: DataCollectionInsurance)
-    
+
     var id: String {
         switch self {
         case .hedvig:
@@ -29,12 +29,15 @@ struct DataCollectionComparisonList: View {
             }
         ) { insurances in
             if !insurances.isEmpty {
-                hSection([
-                    [DataCollectionInsuranceItem.hedvig],
-                    insurances.map { insurance in
-                        DataCollectionInsuranceItem.external(insurance: insurance)
-                    }
-                ].flatMap { $0 }) { item in
+                hSection(
+                    [
+                        [DataCollectionInsuranceItem.hedvig],
+                        insurances.map { insurance in
+                            DataCollectionInsuranceItem.external(insurance: insurance)
+                        },
+                    ]
+                    .flatMap { $0 }
+                ) { item in
                     switch item {
                     case .hedvig:
                         hRow {
@@ -52,7 +55,8 @@ struct DataCollectionComparisonList: View {
                                 }
                             ) { netPremium in
                                 if let netPremium = netPremium {
-                                    hText("\(netPremium.formattedAmount)\(L10n.perMonth)").foregroundColor(hLabelColor.secondary)
+                                    hText("\(netPremium.formattedAmount)\(L10n.perMonth)")
+                                        .foregroundColor(hLabelColor.secondary)
                                 } else {
                                     ActivityIndicator(isAnimating: true)
                                 }
@@ -60,14 +64,17 @@ struct DataCollectionComparisonList: View {
                         }
                     case let .external(insurance):
                         hRow {
-                            hText("\(insurance.displayName) - \(insurance.providerDisplayName)").foregroundColor(hLabelColor.secondary)
+                            hText("\(insurance.displayName) - \(insurance.providerDisplayName)")
+                                .foregroundColor(hLabelColor.secondary)
                         }
                         .withCustomAccessory {
                             Spacer()
-                            hText("\(insurance.monthlyNetPremium.formattedAmount)\(L10n.perMonth)").foregroundColor(hLabelColor.secondary)
+                            hText("\(insurance.monthlyNetPremium.formattedAmount)\(L10n.perMonth)")
+                                .foregroundColor(hLabelColor.secondary)
                         }
                     }
-                }.withHeader {
+                }
+                .withHeader {
                     hText("Prisjämförelse")
                 }
             }

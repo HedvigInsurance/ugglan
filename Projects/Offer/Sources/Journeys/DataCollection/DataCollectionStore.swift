@@ -184,7 +184,8 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                     if let insurances = data.externalInsuranceProvider?.dataCollectionV2 {
                         let dataCollectionInsurances = insurances.compactMap { info -> DataCollectionInsurance? in
                             if let personalTravelCollection = info.asPersonTravelInsuranceCollection,
-                               let monthlyNetPremiumFragment = personalTravelCollection.monthlyNetPremium?.fragments.monetaryAmountFragment
+                                let monthlyNetPremiumFragment = personalTravelCollection.monthlyNetPremium?.fragments
+                                    .monetaryAmountFragment
                             {
                                 return DataCollectionInsurance(
                                     providerDisplayName: getState().providerDisplayName ?? "",
@@ -192,7 +193,8 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                     monthlyNetPremium: MonetaryAmount(fragment: monthlyNetPremiumFragment)
                                 )
                             } else if let houseInsuranceCollection = info.asHouseInsuranceCollection,
-                                let monthlyNetPremiumFragment = houseInsuranceCollection.monthlyNetPremium?.fragments.monetaryAmountFragment
+                                let monthlyNetPremiumFragment = houseInsuranceCollection.monthlyNetPremium?.fragments
+                                    .monetaryAmountFragment
                             {
                                 return DataCollectionInsurance(
                                     providerDisplayName: getState().providerDisplayName ?? "",
@@ -200,10 +202,10 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                     monthlyNetPremium: MonetaryAmount(fragment: monthlyNetPremiumFragment)
                                 )
                             }
-                            
+
                             return nil
                         }
-                        
+
                         return .setInsurances(insurances: dataCollectionInsurances)
                     }
 
