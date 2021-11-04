@@ -18,6 +18,7 @@ Localizable.stringsdict
 __MACOSX
 vendor/bundle
 AppleIncRootCertificate.cer
+Dependencies/CoreDependencies/RevealServer.xcframework
 
 ## Various settings
 *.pbxuser
