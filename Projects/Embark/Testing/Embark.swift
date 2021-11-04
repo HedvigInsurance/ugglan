@@ -57,6 +57,7 @@ extension EmbarkStory {
             name: "Enter Address",
             externalRedirect: nil,
             offerRedirect: nil,
+            variantedOfferRedirects: [],
             tooltips: [],
             allLinks: [],
             response: .makeEmbarkMessage(
