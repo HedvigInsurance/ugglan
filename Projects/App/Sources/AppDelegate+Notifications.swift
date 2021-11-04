@@ -1,4 +1,5 @@
 import Apollo
+import Contracts
 import CoreDependencies
 import FirebaseMessaging
 import Flow
@@ -8,7 +9,6 @@ import Presentation
 import hCore
 import hCoreUI
 import hGraphQL
-import Contracts
 
 extension AppDelegate: MessagingDelegate {
     func registerFCMToken(_ token: String) {
@@ -92,17 +92,19 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     .onValue { _ in
                         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                         ugglanStore.send(.makeTabActive(deeplink: .insurances))
-                        
+
                         let contractsStore: ContractStore = globalPresentableStoreContainer.get()
-                        
+
                         guard let crossSellType = userInfo["CROSS_SELL_TYPE"] as? String else { return }
-                        
+
                         self.bag += contractsStore.stateSignal
-                            .map { $0.contractBundles.flatMap { contractBundle in contractBundle.crossSells }}
-                            .compactMap { $0.first(where: { crossSell in crossSell.notificationType == crossSellType }) }
+                            .map { $0.contractBundles.flatMap { contractBundle in contractBundle.crossSells } }
+                            .compactMap {
+                                $0.first(where: { crossSell in crossSell.notificationType == crossSellType })
+                            }
                             .onFirstValue { crossSell in
                                 contractsStore.send(.openCrossSellingDetail(crossSell: crossSell))
-                        }
+                            }
                     }
             }
         }

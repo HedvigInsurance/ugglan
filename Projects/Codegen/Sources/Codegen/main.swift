@@ -49,7 +49,7 @@ sourceUrls.forEach { sourceUrl in
     if !ishGraphQLFolder {
         try? FileManager.default.createSymbolicLink(at: hGraphQLSymlinkUrl, withDestinationURL: hGraphQLUrl)
     }
-    
+
     let codegenOptions = ApolloCodegenOptions(
         namespace: "GraphQL",
         outputFormat: .multipleFiles(inFolderAtURL: folderUrl),
