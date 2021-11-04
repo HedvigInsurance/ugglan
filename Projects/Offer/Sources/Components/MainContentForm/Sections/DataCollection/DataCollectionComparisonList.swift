@@ -78,6 +78,14 @@ struct DataCollectionComparisonList: View {
                 .withHeader {
                     hText(L10n.offerPriceComparisionHeader)
                 }
+            } else {
+                hSection(header: hText(L10n.offerPriceComparisionHeader)) {
+                    hRow {
+                        hText(
+                            L10n.offerComparisionError
+                        )
+                    }
+                }
             }
         }
         .onAppear {
