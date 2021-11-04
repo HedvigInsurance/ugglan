@@ -38,6 +38,7 @@ sourceUrls.forEach { sourceUrl in
     let folderUrl = sourceUrl.appendingPathComponent("../").appendingPathComponent("Sources")
         .appendingPathComponent("Derived").appendingPathComponent("GraphQL")
 
+    try? FileManager.default.apollo.deleteFolder(at: folderUrl)
     try? FileManager.default.apollo.createFolderIfNeeded(at: folderUrl)
 
     let hGraphQLUrl = sourceRootURL.appendingPathComponent("hGraphQL").appendingPathComponent("GraphQL")
@@ -48,11 +49,11 @@ sourceUrls.forEach { sourceUrl in
     if !ishGraphQLFolder {
         try? FileManager.default.createSymbolicLink(at: hGraphQLSymlinkUrl, withDestinationURL: hGraphQLUrl)
     }
-
+    
     let codegenOptions = ApolloCodegenOptions(
         namespace: "GraphQL",
         outputFormat: .multipleFiles(inFolderAtURL: folderUrl),
-        urlToSchemaFile: cliFolderURL.appendingPathComponent("schema.json")
+        urlToSchemaFile: cliFolderURL.appendingPathComponent("introspection_response.json")
     )
 
     let fromUrl =
