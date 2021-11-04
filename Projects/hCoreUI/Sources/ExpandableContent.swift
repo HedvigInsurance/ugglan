@@ -98,9 +98,10 @@ extension ExpandableContent: Presentable {
             }
         }
 
-        bag += scrollView.contentSizeSignal.atOnce().animated(style: .mediumBounce()) { contentSize in
-            rerenderHeight(size: contentSize)
-        }
+        bag += scrollView.contentSizeSignal.atOnce()
+            .animated(style: .mediumBounce()) { contentSize in
+                rerenderHeight(size: contentSize)
+            }
 
         bag += isExpanded.animated(style: .mediumBounce()) { _ in
             rerenderHeight(size: scrollView.contentSize)
