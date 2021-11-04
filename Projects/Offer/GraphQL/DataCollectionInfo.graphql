@@ -2,11 +2,13 @@ query DataCollectionInfo($reference: ID!) {
   externalInsuranceProvider {
     dataCollectionV2(reference: $reference) {
       ... on PersonTravelInsuranceCollection {
+        insuranceName
         monthlyNetPremium {
           ...MonetaryAmountFragment
         }
       }
       ... on HouseInsuranceCollection {
+        insuranceName
         monthlyNetPremium {
           ...MonetaryAmountFragment
         }

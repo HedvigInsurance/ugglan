@@ -21,6 +21,12 @@ public enum DataCollectionAuthMethod: Equatable, Codable {
     case norwegianBankIDWords(words: String)
 }
 
+public struct DataCollectionInsurance: Equatable, Codable {
+    public var providerDisplayName: String
+    public var displayName: String
+    public var monthlyNetPremium: MonetaryAmount
+}
+
 public struct DataCollectionState: StateProtocol {
     var providerID: String? = nil
     var providerDisplayName: String? = nil
@@ -29,7 +35,7 @@ public struct DataCollectionState: StateProtocol {
     var authMethod: DataCollectionAuthMethod? = nil
     var market: Localization.Locale.Market
     var personalNumber: String? = nil
-    var netPremium: MonetaryAmount? = nil
+    var insurances: [DataCollectionInsurance] = []
 
     public init() {
         self.market = Localization.Locale.currentLocale.market
@@ -45,7 +51,7 @@ public enum DataCollectionAction: ActionProtocol {
     case setStatus(status: DataCollectionStatus)
     case setAuthMethod(method: DataCollectionAuthMethod)
     case fetchInfo
-    case setNetPremium(amount: MonetaryAmount?)
+    case setInsurances(insurances: [DataCollectionInsurance])
 }
 
 public final class DataCollectionStore: StateStore<DataCollectionState, DataCollectionAction> {
@@ -175,16 +181,30 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         } else if case .fetchInfo = action {
             return self.client.fetch(query: GraphQL.DataCollectionInfoQuery(reference: getState().id?.uuidString ?? ""))
                 .map { data in
-                    if let info = data.externalInsuranceProvider?.dataCollectionV2.first {
-                        if let netPremiumFragment = info.asPersonTravelInsuranceCollection?.monthlyNetPremium?.fragments
-                            .monetaryAmountFragment
-                        {
-                            return .setNetPremium(amount: MonetaryAmount(fragment: netPremiumFragment))
-                        } else if let netPremiumFragment = info.asHouseInsuranceCollection?.monthlyNetPremium?.fragments
-                            .monetaryAmountFragment
-                        {
-                            return .setNetPremium(amount: MonetaryAmount(fragment: netPremiumFragment))
+                    if let insurances = data.externalInsuranceProvider?.dataCollectionV2 {
+                        let dataCollectionInsurances = insurances.compactMap { info -> DataCollectionInsurance? in
+                            if let personalTravelCollection = info.asPersonTravelInsuranceCollection,
+                               let monthlyNetPremiumFragment = personalTravelCollection.monthlyNetPremium?.fragments.monetaryAmountFragment
+                            {
+                                return DataCollectionInsurance(
+                                    providerDisplayName: getState().providerDisplayName ?? "",
+                                    displayName: personalTravelCollection.insuranceName ?? "",
+                                    monthlyNetPremium: MonetaryAmount(fragment: monthlyNetPremiumFragment)
+                                )
+                            } else if let houseInsuranceCollection = info.asHouseInsuranceCollection,
+                                let monthlyNetPremiumFragment = houseInsuranceCollection.monthlyNetPremium?.fragments.monetaryAmountFragment
+                            {
+                                return DataCollectionInsurance(
+                                    providerDisplayName: getState().providerDisplayName ?? "",
+                                    displayName: houseInsuranceCollection.insuranceName ?? "",
+                                    monthlyNetPremium: MonetaryAmount(fragment: monthlyNetPremiumFragment)
+                                )
+                            }
+                            
+                            return nil
                         }
+                        
+                        return .setInsurances(insurances: dataCollectionInsurances)
                     }
 
                     return .setStatus(status: .failed)
@@ -212,8 +232,8 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
             newState.status = status
         case let .setAuthMethod(method):
             newState.authMethod = method
-        case let .setNetPremium(amount):
-            newState.netPremium = amount
+        case let .setInsurances(insurances):
+            newState.insurances = insurances
         default:
             break
         }
