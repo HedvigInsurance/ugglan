@@ -9,7 +9,7 @@ struct VariantCircle: View {
 
     @hColorBuilder func backgroundColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hGrayscaleColor.five
+            hLabelColor.primary
         } else {
             hTintColor.clear
         }

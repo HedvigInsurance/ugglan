@@ -42,6 +42,7 @@ struct DataCollectionComparisonList: View {
                     case .hedvig:
                         hRow {
                             hCoreUIAssets.wordmark.view
+                                .renderingMode(.template)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 60, alignment: .center)
