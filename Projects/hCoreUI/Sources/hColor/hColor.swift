@@ -410,6 +410,13 @@ public struct hTintColor {
             dark: Color(hexString: "E24646")
         )
     }
+    
+    public static var clear: some hColor {
+        hColorScheme(
+            light: Color.clear,
+            dark: Color.clear
+        )
+    }
 }
 
 public struct hSeparatorColor {

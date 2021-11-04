@@ -14,10 +14,10 @@ struct DataCollectionComparisonContainer: View {
         ) { status in
             switch status {
             case .failed, .login:
-                hSection(header: hText("Prisjämförelse")) {
+                hSection(header: hText(L10n.offerPriceComparisionHeader)) {
                     hRow {
                         hText(
-                            "Något gick fel och vi kunde tyvärr inte hämta någon information om din nuvarande hemförsäkring."
+                            L10n.offerComparisionError
                         )
                     }
                 }

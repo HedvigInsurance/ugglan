@@ -75,7 +75,7 @@ struct DataCollectionComparisonList: View {
                     }
                 }
                 .withHeader {
-                    hText("Prisjämförelse")
+                    hText(L10n.offerPriceComparisionHeader)
                 }
             }
         }

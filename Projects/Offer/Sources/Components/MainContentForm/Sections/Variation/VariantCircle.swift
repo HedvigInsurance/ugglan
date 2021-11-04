@@ -11,7 +11,7 @@ struct VariantCircle: View {
         if isSelected {
             hGrayscaleColor.five
         } else {
-            hBackgroundColor.secondary
+            hTintColor.clear
         }
     }
 

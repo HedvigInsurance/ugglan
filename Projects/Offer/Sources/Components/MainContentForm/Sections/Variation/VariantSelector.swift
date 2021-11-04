@@ -49,5 +49,7 @@ struct VariantSelector: View {
         .overlay(
             VariantOverlay(variant: variant)
         )
+        .cornerRadius(.defaultCornerRadius)
+        .clipped()
     }
 }
