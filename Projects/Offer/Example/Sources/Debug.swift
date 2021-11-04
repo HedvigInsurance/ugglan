@@ -316,7 +316,7 @@ extension Debug {
             switch action {
             case let .openOffer(fullscreen, prefersLargeTitles):
                 Journey(
-                    Offer(offerIDContainer: .stored, menu: nil, options: [.menuToTrailing]),
+                    Offer(menu: nil, options: [.menuToTrailing]),
                     style: fullscreen
                         ? .modally(
                             presentationStyle: .fullScreen,

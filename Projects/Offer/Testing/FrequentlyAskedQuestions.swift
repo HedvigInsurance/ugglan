@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-func generateFrequentlyAskedQuestions() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.FrequentlyAskedQuestion] {
+func generateFrequentlyAskedQuestions() -> [GraphQL.QuoteBundleQuery.Data.QuoteBundle.PossibleVariation.Bundle.FrequentlyAskedQuestion] {
     [
         .init(
             id: UUID().uuidString,
