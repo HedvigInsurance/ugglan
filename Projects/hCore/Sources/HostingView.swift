@@ -3,22 +3,19 @@ import SwiftUI
 import UIKit
 
 public class HostingView<Content: View>: UIView {
-    let rootViewHostingController: AdjustableHostingController<Content>
+    let rootViewHostingController: AdjustableHostingController<AnyView>
 
     public var swiftUIRootView: Content {
-        get {
-            self.rootViewHostingController.rootView
-        }
-        set {
-            self.rootViewHostingController.rootView = newValue
+        didSet {
+            self.rootViewHostingController.rootView = AnyView(swiftUIRootView.edgesIgnoringSafeArea(.all))
         }
     }
 
     public required init(
         rootView: Content
     ) {
-
-        self.rootViewHostingController = .init(rootView: rootView)
+        self.swiftUIRootView = rootView
+        self.rootViewHostingController = .init(rootView: AnyView(rootView.edgesIgnoringSafeArea(.all)))
 
         super.init(frame: .zero)
 
@@ -106,44 +103,12 @@ public class AdjustableHostingController<Content: View>: UIHostingController<Con
         super.init(rootView: rootView)
 
         view.backgroundColor = .clear
-        fixSafeAreaInsets()
     }
 
     @MainActor @objc required dynamic init?(
         coder aDecoder: NSCoder
     ) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    func fixSafeAreaInsets() {
-        guard let _class = view?.classForCoder else {
-            fatalError()
-        }
-
-        let safeAreaInsets: @convention(block) (AnyObject) -> UIEdgeInsets = { (sself: AnyObject!) -> UIEdgeInsets in
-            return .zero
-        }
-        guard let method = class_getInstanceMethod(_class.self, #selector(getter:UIView.safeAreaInsets)) else { return }
-        class_replaceMethod(
-            _class,
-            #selector(getter:UIView.safeAreaInsets),
-            imp_implementationWithBlock(safeAreaInsets),
-            method_getTypeEncoding(method)
-        )
-
-        let safeAreaLayoutGuide: @convention(block) (AnyObject) -> UILayoutGuide? = {
-            (sself: AnyObject!) -> UILayoutGuide? in return nil
-        }
-
-        guard let method2 = class_getInstanceMethod(_class.self, #selector(getter:UIView.safeAreaLayoutGuide)) else {
-            return
-        }
-        class_replaceMethod(
-            _class,
-            #selector(getter:UIView.safeAreaLayoutGuide),
-            imp_implementationWithBlock(safeAreaLayoutGuide),
-            method_getTypeEncoding(method2)
-        )
     }
 
     public override func viewWillLayoutSubviews() {

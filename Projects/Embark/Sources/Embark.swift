@@ -331,10 +331,8 @@ extension Embark: Presentable {
                 bag += didTapTooltip.onValue {
                     let embarkTooltips = EmbarkTooltips(tooltips: state.passageTooltipsSignal.value)
 
-                    viewController.present(
-                        embarkTooltips.wrappedInCloseButton(),
-                        style: .detented(.preferredContentSize),
-                        options: [.defaults, .prefersLargeTitles(true)]
+                    bag += viewController.present(
+                        embarkTooltips.journey
                     )
                 }
 
