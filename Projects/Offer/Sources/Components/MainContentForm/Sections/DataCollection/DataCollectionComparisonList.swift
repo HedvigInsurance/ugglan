@@ -10,7 +10,10 @@ struct DataCollectionComparisonList: View {
     var body: some View {
         hSection(header: hText("Prisjämförelse")) {
             hRow {
-                hCoreUIAssets.wordmark.view.resizable().aspectRatio(contentMode: .fit).frame(width: 60)
+                hCoreUIAssets.wordmark.view
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 60)
             }
             .withCustomAccessory {
                 Spacer()
