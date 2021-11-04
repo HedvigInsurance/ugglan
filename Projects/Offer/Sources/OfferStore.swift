@@ -332,7 +332,7 @@ extension OfferStore {
                     callback(.value(.setSwedishBankID(statusCode: code)))
                 })
 
-            self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.state.ids))
+            self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.state.selectedIds))
                 .onResult { result in
                     switch result {
                     case .failure:
