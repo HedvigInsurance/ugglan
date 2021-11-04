@@ -15,11 +15,28 @@ struct SwedishBankID: View {
     var autoStartToken: String?
 
     func openBankIDApp() {
+        let urlScheme = Bundle.main.urlScheme ?? ""
+        
         guard let autoStartToken = autoStartToken else {
+            guard
+                let url = URL(
+                    string:
+                        "bankid:///?redirect=\(urlScheme)://bankid"
+                )
+            else {
+                return
+            }
+
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(
+                    url,
+                    options: [:],
+                    completionHandler: nil
+                )
+            }
+            
             return
         }
-
-        let urlScheme = Bundle.main.urlScheme ?? ""
 
         guard
             let url = URL(

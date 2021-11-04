@@ -97,7 +97,7 @@ extension DataCollectionConfirmation {
     static func journey(
         style: PresentationStyle = .default,
         wasConfirmed: Bool,
-        onComplete: @escaping (_ id: UUID?) -> Void
+        onComplete: @escaping (_ id: UUID?, _ personalNumber: String?) -> Void
     ) -> some JourneyPresentation {
         HostingJourney(
             DataCollectionStore.self,
@@ -113,7 +113,10 @@ extension DataCollectionConfirmation {
                     DismissJourney()
                         .onPresent {
                             let store: DataCollectionStore = globalPresentableStoreContainer.get()
-                            onComplete(store.state.id)
+                            onComplete(
+                                store.state.id,
+                                store.state.personalNumber
+                            )
                         }
                 case .failed:
                     DismissJourney()
@@ -134,13 +137,13 @@ struct DataCollectionConfirmationPreview: PreviewProvider {
     static var previews: some View {
         Group {
             JourneyPreviewer(
-                DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: true) { id in
+                DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: true) { _, _ in
 
                 }
             )
             .preferredColorScheme(.light)
             JourneyPreviewer(
-                DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: false) { id in
+                DataCollectionConfirmation.journey(style: .detented(.large), wasConfirmed: false) { _, _ in
 
                 }
             )

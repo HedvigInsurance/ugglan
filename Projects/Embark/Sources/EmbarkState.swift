@@ -9,7 +9,7 @@ public enum ExternalRedirect {
     case offer(allIds: [String], selectedIds: [String])
     case close
     case chat
-    case dataCollection(providerID: String, providerDisplayName: String, onComplete: (_ id: UUID?) -> Void)
+    case dataCollection(providerID: String, providerDisplayName: String, onComplete: (_ id: UUID?, _ personalNumber: String?) -> Void)
     case menu(_ action: MenuChildAction)
 }
 

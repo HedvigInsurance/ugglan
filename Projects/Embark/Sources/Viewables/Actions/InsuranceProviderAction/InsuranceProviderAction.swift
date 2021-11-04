@@ -179,12 +179,18 @@ extension InsuranceProviderAction: Viewable {
                             state.externalRedirectSignal.value = .dataCollection(
                                 providerID: providerID.lowercased(),
                                 providerDisplayName: provider.name
-                            ) { id in
+                            ) { id, personalNumber in
                                 if let id = id {
                                     state.store.setValue(key: "dataCollectionId", value: id.uuidString)
                                 }
+                                
+                                if let personalNumber = personalNumber {
+                                    state.store.setValue(key: "personalNumber", value: personalNumber)
+                                }
 
-                                callback(self.data.embarkLinkFragment)
+                                bag += Signal(after: 0.3).onValue { _ in
+                                    callback(self.data.embarkLinkFragment)
+                                }
                             }
                         } else if provider.name != L10n.externalInsuranceProviderOtherOption {
                             self.state.store.setValue(
