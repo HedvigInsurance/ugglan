@@ -1,10 +1,10 @@
 import Flow
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 public typealias Tooltip = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Tooltip
 
@@ -19,7 +19,8 @@ extension EmbarkTooltips: View {
                     hText(tooltip.description, style: .body).foregroundColor(hLabelColor.primary)
                 }
             }
-        }.sectionContainerStyle(.transparent)
+        }
+        .sectionContainerStyle(.transparent)
     }
 }
 
@@ -29,6 +30,7 @@ extension EmbarkTooltips {
             rootView: self,
             style: .detented(.scrollViewContentSize),
             options: [.defaults]
-        ).withDismissButton.configureTitle(L10n.OnboardingEmbarkFlow.informationModalTitle)
+        )
+        .withDismissButton.configureTitle(L10n.OnboardingEmbarkFlow.informationModalTitle)
     }
 }
