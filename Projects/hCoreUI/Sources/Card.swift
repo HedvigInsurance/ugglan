@@ -1,16 +1,16 @@
 import Flow
 import Form
 import Foundation
+import SwiftUI
 import UIKit
 import hCore
-import SwiftUI
 
 public struct hCard<Content: View>: View {
     private var titleIcon: UIImage
     private var title: String
     private var bodyText: String
     private let content: Content
-    
+
     public init(
         titleIcon: UIImage,
         title: String,
@@ -22,7 +22,7 @@ public struct hCard<Content: View>: View {
         self.bodyText = bodyText
         self.content = content()
     }
-    
+
     public var body: some View {
         VStack {
             HStack {
@@ -37,7 +37,7 @@ public struct hCard<Content: View>: View {
                 .foregroundColor(hLabelColor.secondary)
                 .padding(10)
                 .multilineTextAlignment(.center)
-                
+
             content
         }
         .frame(maxWidth: .infinity)

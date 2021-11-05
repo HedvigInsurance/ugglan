@@ -388,7 +388,7 @@ public struct hTintColor {
             dark: Color(hexString: "2B203B")
         )
     }
-    
+
     public static var yellowOne: some hColor {
         hColorScheme(
             light: Color(hexString: "F2C852"),

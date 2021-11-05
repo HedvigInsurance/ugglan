@@ -8,19 +8,19 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-
 struct ContractCoverageView: View {
     @PresentableStore var store: ContractStore
     let perils: [Perils]
     let insurableLimits: [InsurableLimits]
-    
+
     var body: some View {
         VStack {
             hSection {
                 PerilCollection(perils: perils) { peril in
                     store.send(.contractDetailNavigationAction(action: .peril(peril: peril)))
                 }
-            }.sectionContainerStyle(.transparent)
+            }
+            .sectionContainerStyle(.transparent)
             Spacer()
             SwiftUI.Divider()
             Spacer()
