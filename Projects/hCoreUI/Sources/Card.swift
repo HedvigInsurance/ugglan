@@ -5,61 +5,6 @@ import UIKit
 import hCore
 import SwiftUI
 
-/*public struct CardView: UIViewRepresentable {
-    @Binding public var titleIcon: UIImage
-    @Binding public var title: DisplayableString
-    @Binding public var body: DisplayableString
-    public var backgroundColor: UIColor
-    @Binding public var buttonText: DisplayableString?
-    public var buttonType: ButtonType?
-
-    public init(
-        titleIcon: Binding<UIImage>,
-        title: Binding<DisplayableString>,
-        body: Binding<DisplayableString>,
-        backgroundColor: UIColor,
-        buttonText: Binding<DisplayableString?>?,
-        buttonType: ButtonType? = nil
-    ) {
-        _titleIcon = titleIcon
-        _title = title
-        _body = body
-        self.backgroundColor = backgroundColor
-        _buttonText = buttonText ?? Binding.constant(nil)
-        self.buttonType = buttonType
-    }
-
-    public class Coordinator {
-        let bag = DisposeBag()
-        let isSelectedSignal: ReadWriteSignal<Bool>
-        let bullet: Bullet
-
-        init(
-            isSelectedSignal: ReadWriteSignal<Bool>
-        ) {
-            self.isSelectedSignal = isSelectedSignal
-            self.bullet = Bullet(isSelectedSignal: isSelectedSignal)
-        }
-    }
-
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(isSelectedSignal: .init(false))
-    }
-
-    public func makeUIView(context: Context) -> some UIView {
-        let (view, disposable) = context.coordinator.bullet.materialize(
-            events: ViewableEvents(wasAddedCallbacker: .init())
-        )
-        context.coordinator.isSelectedSignal.value = isSelected
-        context.coordinator.bag += disposable
-        return view
-    }
-
-    public func updateUIView(_ uiView: UIViewType, context: Context) {
-        context.coordinator.isSelectedSignal.value = isSelected
-    }
-}*/
-
 public struct hCard<Content: View>: View {
     private var titleIcon: UIImage
     private var title: String

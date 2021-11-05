@@ -91,12 +91,6 @@ extension Contracts {
             ]
         ) { action in
             if case let .openDetail(contract) = action, openDetails {
-                /*Journey(
-                    ContractDetail(
-                        contractRow: ContractRow(contract: contract)
-                    ),
-                    options: [.largeTitleDisplayMode(.never)]
-                )*/
                 ContractDetail(contractRow: ContractRow(contract: contract)).journey()
             } else if case .openTerminatedContracts = action {
                 Self.journey(
