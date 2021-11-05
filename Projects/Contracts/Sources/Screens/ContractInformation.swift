@@ -64,8 +64,8 @@ struct ContractInformationView: View {
                             } content: {
                                 hText(L10n.HomeTab.editingSectionChangeAddressLabel)
                             }
-                        }
-                        .sectionContainerStyle(.transparent)
+                        }.sectionContainerStyle(.transparent)
+                        ChangePeopleView()
                     }
                 } else {
                     hSection {
@@ -83,6 +83,30 @@ struct ContractInformationView: View {
             }
         }
         .padding(.bottom, 20)
+    }
+}
+
+struct ChangePeopleView: View {
+    @PresentableStore var store: ContractStore
+    
+    var body: some View {
+        hSection {
+            VStack(alignment: .leading, spacing: 16) {
+                L10n.InsuranceDetailsViewYourInfo.editInsuranceTitle
+                    .hText(.title2)
+                L10n.InsuranceDetailsViewYourInfo.editInsuranceDescription
+                    .hText(.subheadline)
+                    .foregroundColor(hLabelColor.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.leading)
+                    .padding(.bottom, 10)
+                hButton.LargeButtonFilled {
+                    store.send(.goToFreeTextChat)
+                } content: {
+                    L10n.InsuranceDetailsViewYourInfo.editInsuranceButton.hText()
+                }
+            }
+        }.sectionContainerStyle(.transparent)
     }
 }
 
