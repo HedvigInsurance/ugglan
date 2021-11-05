@@ -64,7 +64,7 @@ public enum ContractAction: ActionProtocol {
     case openTerminatedContracts
     case didSignFocusedCrossSell
     case resetSignedCrossSells
-    
+
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 }
 

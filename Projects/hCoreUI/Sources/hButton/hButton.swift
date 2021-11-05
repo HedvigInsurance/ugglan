@@ -168,7 +168,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
 
 struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
     var size: ButtonSize
-    
+
     struct Label: View {
         var configuration: Configuration
 
@@ -335,7 +335,7 @@ public enum hButton {
             .buttonStyle(ButtonOutlinedStyle(size: .large))
         }
     }
-    
+
     public struct SmallButtonOutlined<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
