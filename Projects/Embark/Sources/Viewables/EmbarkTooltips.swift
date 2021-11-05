@@ -14,9 +14,12 @@ extension EmbarkTooltips: View {
     var body: some View {
         hForm {
             hSection(tooltips, id: \.title) { tooltip in
-                VStack(spacing: 5) {
+                VStack(spacing: 12) {
                     hText(tooltip.title, style: .title2)
-                    hText(tooltip.description, style: .body).foregroundColor(hLabelColor.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    hText(tooltip.description, style: .body)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .foregroundColor(hLabelColor.primary)
                 }
             }
         }
