@@ -102,19 +102,9 @@ extension Home: Presentable {
 
         bag += form.append(ImportantMessagesSection())
 
-        let rowInsets = UIEdgeInsets(
-            top: 0,
-            left: 25,
-            bottom: 0,
-            right: 25
-        )
-
         let titleSection = form.appendSection()
-        let titleRow = RowView()
-        titleRow.isLayoutMarginsRelativeArrangement = true
-        titleRow.layoutMargins = rowInsets
-        titleSection.append(titleRow)
-        
+        titleSection.dynamicStyle = .brandGrouped(insets: .init(top: 14, left: 14, bottom: 14, right: 14), separatorType: .none)
+    
         store.send(.fetchClaims)
 
         func buildSections(state: HomeState) -> Disposable {
@@ -125,10 +115,10 @@ extension Home: Presentable {
                 
                 if let name = state.memberStateData.name {
                     let label = MultilineLabel(value: L10n.HomeTab.welcomeTitle(name), style: .brand(.largeTitle(color: .primary)))
-                    innerBag += titleRow.append(label)
+                    innerBag += titleSection.append(label)
                 }
                 
-                innerBag += titleSection.append(ActiveSection())
+                innerBag += form.append(ActiveSection())
                 
                 if Localization.Locale.currentLocale.market == .se {
                     let section = HomeVerticalSection(
@@ -146,12 +136,16 @@ extension Home: Presentable {
                             ]
                         )
                     )
+                    
                     innerBag += form.append(section)
                 }
+                
+                innerBag += form.appendSpacingAndDumpOnDispose(.custom(30))
+                
             case .future:
-                innerBag += titleRow.append(FutureSection())
+                innerBag += titleSection.append(FutureSection())
             case .terminated:
-                innerBag += titleRow.append(TerminatedSection())
+                innerBag += titleSection.append(TerminatedSection())
             case .loading:
                 break
             }

@@ -1,6 +1,7 @@
 import Form
 import Foundation
 import UIKit
+import Flow
 
 public enum SpacingType {
     case top
@@ -23,5 +24,21 @@ extension SubviewOrderable {
         view.snp.makeConstraints { make in make.height.equalTo(type.height) }
 
         append(view)
+    }
+    
+    public func appendSpacingAndDumpOnDispose(_ type: SpacingType) -> Disposable {
+        let view = UIView()
+
+        view.snp.makeConstraints { make in make.height.equalTo(type.height) }
+
+        append(view)
+        
+        let disposable = DisposeBag()
+        
+        disposable += {
+            view.removeFromSuperview()
+        }
+        
+        return disposable
     }
 }
