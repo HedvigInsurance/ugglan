@@ -17,8 +17,12 @@ extension UIRefreshControl {
 
         return bag
     }
-    
-    public func store<S: Store>(_ store: S, send: @escaping () -> S.Action, endOn: @escaping (S.Action) -> Bool) -> Disposable {
+
+    public func store<S: Store>(
+        _ store: S,
+        send: @escaping () -> S.Action,
+        endOn: @escaping (S.Action) -> Bool
+    ) -> Disposable {
         let bag = DisposeBag()
 
         bag += self.onValue {

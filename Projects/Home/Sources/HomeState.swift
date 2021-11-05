@@ -12,7 +12,7 @@ public struct MemberStateData: Codable, Equatable {
 public struct HomeState: StateProtocol {
     var memberStateData: MemberStateData = .init(state: .loading, name: nil)
     var claims: [Claim]? = nil
-    
+
     public init() {}
 }
 
@@ -43,18 +43,21 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                 client
                 .fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
                 .map { data in
-                .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))
+                    .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))
                 }
                 .valueThenEndSignal
         case .fetchClaims:
-            return client
+            return
+                client
                 .fetch(
                     query: GraphQL.ClaimsQuery(),
-                    cachePolicy: .fetchIgnoringCacheData)
+                    cachePolicy: .fetchIgnoringCacheData
+                )
                 .compactMap { $0.claims }
                 .map { claims in
                     return .setClaims(claims: claims.map { Claim(claim: $0) })
-                }.valueThenEndSignal
+                }
+                .valueThenEndSignal
         default:
             return nil
         }
