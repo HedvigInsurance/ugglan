@@ -108,7 +108,7 @@ struct AuthMethodContainer: View {
             } else {
                 ActivityIndicator(isAnimating: true)
                     .onReceive(Just(status)) { status in
-                        if status == .collecting {
+                        if status == .collecting || status == .completed {
                             store.send(.confirmResult(result: .started))
                         } else if status == .failed {
                             store.send(.confirmResult(result: .failed))
