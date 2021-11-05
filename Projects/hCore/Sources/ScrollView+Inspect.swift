@@ -57,7 +57,7 @@ public struct ForceScrollViewIndicatorInset: ViewModifier {
     public func body(content: Content) -> some View {
         content.introspectScrollView { scrollView in
             self.scrollView = scrollView
-            
+
             if #available(iOS 15.0, *) {
                 scrollView.viewController?.setContentScrollView(scrollView)
             }
