@@ -27,7 +27,7 @@ extension WebViewLogin: Presentable {
         webView.backgroundColor = .brand(.secondaryBackground())
 
         let activityIndicator = UIActivityIndicatorView()
-        activityIndicator.style = .whiteLarge
+        activityIndicator.style = .large
         activityIndicator.color = .brand(.primaryTintColor)
         activityIndicator.hidesWhenStopped = true
 

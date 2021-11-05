@@ -37,10 +37,10 @@ extension LoadableButton: Viewable {
         bag += button.type.atOnce()
             .onValue { buttonType in
                 if buttonType.backgroundColor.isContrasting(with: .white) {
-                    spinner.style = .white
+                    spinner.style = .medium
                     spinner.tintColor = .white
                 } else {
-                    spinner.style = .gray
+                    spinner.style = .medium
                     spinner.tintColor = .gray
                 }
             }

@@ -173,7 +173,7 @@ let testingContents = """
 let template = Template(
     description: "Framework template",
     attributes: [nameAttribute, .optional("platform", default: "iOS")],
-    files: [
+    items: [
         .string(path: "\(nameAttribute)/Example/Sources/AppDelegate.swift", contents: appDelegateContents),
         .string(
             path: "\(nameAttribute)/Example/Resources/Assets.xcassets/contents.json",

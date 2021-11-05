@@ -93,7 +93,6 @@ extension GraphQL.ApiSingleVariableFragment {
         case .boolean: map[key] = store.getValue(key: from, includeQueue: true) == "true"
         case .file: map[key] = store.getValue(key: from, includeQueue: true)
         case .__unknown: break
-        case .file: break
         }
 
         return map
@@ -340,6 +339,11 @@ extension EmbarkState {
                 )
 
                 let formData = MultipartFormData()
+                urlRequest.setValue(
+                    "multipart/form-data; boundary=\(formData.boundary)",
+                    forHTTPHeaderField: "Content-Type"
+                )
+
                 try? formData.appendPart(string: String(data: JSONData, encoding: .utf8)!, name: "operations")
 
                 var map: [String: [String]] = [:]
@@ -358,11 +362,19 @@ extension EmbarkState {
 
                 files.enumerated()
                     .forEach { item in
-                        try? formData.appendPart(
-                            data: Data(contentsOf: item.element.fileURL!),
+                        let url = item.element.fileURL!
+                        let file = try! GraphQLFile(
+                            fieldName: "file",
+                            originalName: String(item.offset),
+                            fileURL: url
+                        )
+
+                        formData.appendPart(
+                            inputStream: try! file.generateInputStream(),
+                            contentLength: file.contentLength,
                             name: String(item.offset),
-                            contentType: "application/octet-stream",
-                            filename: "file"
+                            contentType: url.mimeType,
+                            filename: file.originalName
                         )
                     }
 
@@ -436,8 +448,8 @@ extension EmbarkState {
                 mutationApi.data.mutation,
                 variables: mutationApi.data.graphQLVariables(store: store)
             )
-            .onValue { resultMap in guard let resultMap = resultMap else { return }
-
+            .onValue { resultMap in
+                guard let resultMap = resultMap else { return }
                 resultMap.insertInto(store: self.store, basedOn: mutationApi)
             }
         }
@@ -457,17 +469,5 @@ extension EmbarkState {
             case .unknown: return "Unknown"
             }
         }
-    }
-
-    var apiResponseSignal: ReadSignal<GraphQL.EmbarkLinkFragment?> {
-        currentPassageSignal.compactMap { $0 }
-            .mapLatestToFuture { passage -> Future<GraphQL.EmbarkLinkFragment?> in
-                guard let apiFragment = passage.api?.fragments.apiFragment else {
-                    return Future(error: ApiError.noApi)
-                }
-
-                return self.handleApi(apiFragment: apiFragment)
-            }
-            .providedSignal.plain().readable(initial: nil)
     }
 }

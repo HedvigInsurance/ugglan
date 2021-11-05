@@ -108,7 +108,7 @@ extension Dictionary {
     }
 }
 
-@_functionBuilder public struct GraphQLMockBuilder {
+@resultBuilder public struct GraphQLMockBuilder {
     public static func buildBlock<M1>(_ m1: M1) -> CombinedMock<(M1)>
     where M1: GraphQLMock {
         var combinedMock = CombinedMock((m1))

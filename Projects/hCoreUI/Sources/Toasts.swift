@@ -202,7 +202,7 @@ public struct Toasts {
 
     let bag = DisposeBag()
     let toastCallbacker = Callbacker<Toast>()
-    let window = UIApplication.shared.keyWindow!
+    let window = UIApplication.shared.windows.first!
 
     public func displayToast(toast: Toast) {
         toastCallbacker.callAll(with: toast)

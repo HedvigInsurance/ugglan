@@ -42,24 +42,24 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/firebase/firebase-ios-sdk",
-                    .upToNextMajor(from: "7.3.1")
+                    .upToNextMajor(from: "8.8.0")
                 )
             ]
-        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.46.0"))]
+        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.49.1"))]
         case .flow:
             return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.7"))]
         case .form:
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Form",
-                    .exact("3.0.8")
+                    .exact("3.0.9")
                 )
             ]
         case .presentation:
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Presentation",
-                    .upToNextMajor(from: "2.0.15")
+                    .upToNextMajor(from: "2.0.16")
                 )
             ]
         case .dynamiccolor:
@@ -67,7 +67,7 @@ public enum ExternalDependencies: CaseIterable {
                 .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
             ]
         case .disk:
-            return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.4"))]
+            return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.5"))]
         case .kingfisher:
             return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.0.0"))]
         case .snapkit:
@@ -139,7 +139,7 @@ public enum ExternalDependencies: CaseIterable {
             }
 
             return [
-                .xcFramework(
+                .xcframework(
                     path: path
                 )
             ]
@@ -158,7 +158,7 @@ extension Project {
         externalDependencies: [ExternalDependencies],
         sdks: [String] = []
     ) -> Project {
-        let frameworkConfigurations: [CustomConfiguration] = [
+        let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
                 settings: [String: SettingValue](),
@@ -171,7 +171,7 @@ extension Project {
             ),
         ]
 
-        let projectConfigurations: [CustomConfiguration] = [
+        let projectConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
                 settings: [String: SettingValue](),
@@ -197,20 +197,19 @@ extension Project {
             name: name,
             organizationName: "Hedvig",
             packages: packages,
-            settings: Settings(configurations: projectConfigurations),
+            settings: .settings(configurations: projectConfigurations),
             targets: [
                 Target(
                     name: name,
                     platform: .iOS,
                     product: .framework,
                     bundleId: "com.hedvig.\(name)",
-                    deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad, .mac]),
+                    deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],
-                    actions: [],
                     dependencies: dependencies,
-                    settings: Settings(base: [:], configurations: frameworkConfigurations)
+                    settings: .settings(base: [:], configurations: frameworkConfigurations)
                 )
             ],
             schemes: [
