@@ -2,9 +2,9 @@ import SwiftUI
 
 struct ScreenPreview<Screen: View>: View {
     var screen: Screen
-    
+
     let colorScheme: ColorScheme
-    
+
     var body: some View {
         ForEach(devices) { device in
             NavigationView {
@@ -18,18 +18,18 @@ struct ScreenPreview<Screen: View>: View {
             .navigationViewStyle(StackNavigationViewStyle())
         }
     }
-    
+
     struct Device: Identifiable {
         let name: String
         let id = UUID()
     }
-    
+
     private var devices: [Device] {
         deviceNames.map {
             .init(name: $0)
         }
     }
-    
+
     private var deviceNames: [String] {
         [
             "iPhone 12"
@@ -39,10 +39,10 @@ struct ScreenPreview<Screen: View>: View {
 
 struct ComponentPreview<Component: View>: View {
     var component: Component
-    
+
     let colorScheme: ColorScheme
     let contentSizeCategory: ContentSizeCategory
-    
+
     var body: some View {
         self.component
             .previewLayout(.sizeThatFits)
@@ -55,12 +55,12 @@ struct ComponentPreview<Component: View>: View {
     }
 }
 
-public extension View {
-    func previewAsScreen(colorScheme: ColorScheme = .light) -> some View {
+extension View {
+    public func previewAsScreen(colorScheme: ColorScheme = .light) -> some View {
         ScreenPreview(screen: self, colorScheme: colorScheme)
     }
-    
-    func previewAsComponent(colorScheme: ColorScheme = .light, size: ContentSizeCategory = .large) -> some View {
+
+    public func previewAsComponent(colorScheme: ColorScheme = .light, size: ContentSizeCategory = .large) -> some View {
         ComponentPreview(component: self, colorScheme: colorScheme, contentSizeCategory: size)
     }
 }
