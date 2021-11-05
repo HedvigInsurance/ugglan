@@ -64,7 +64,8 @@ struct ContractInformationView: View {
                             } content: {
                                 hText(L10n.HomeTab.editingSectionChangeAddressLabel)
                             }
-                        }.sectionContainerStyle(.transparent)
+                        }
+                        .sectionContainerStyle(.transparent)
                         ChangePeopleView()
                     }
                 } else {
@@ -88,7 +89,7 @@ struct ContractInformationView: View {
 
 struct ChangePeopleView: View {
     @PresentableStore var store: ContractStore
-    
+
     var body: some View {
         hSection {
             VStack(alignment: .leading, spacing: 16) {
@@ -106,7 +107,8 @@ struct ChangePeopleView: View {
                     L10n.InsuranceDetailsViewYourInfo.editInsuranceButton.hText()
                 }
             }
-        }.sectionContainerStyle(.transparent)
+        }
+        .sectionContainerStyle(.transparent)
     }
 }
 
