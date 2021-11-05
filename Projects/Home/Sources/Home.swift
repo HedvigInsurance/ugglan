@@ -114,7 +114,7 @@ extension Home: Presentable {
         titleRow.isLayoutMarginsRelativeArrangement = true
         titleRow.layoutMargins = rowInsets
         titleSection.append(titleRow)
-        
+
         store.send(.fetchClaims)
 
         func buildSections(state: HomeState) -> Disposable {
@@ -122,14 +122,17 @@ extension Home: Presentable {
 
             switch state.memberStateData.state {
             case .active:
-                
+
                 if let name = state.memberStateData.name {
-                    let label = MultilineLabel(value: L10n.HomeTab.welcomeTitle(name), style: .brand(.largeTitle(color: .primary)))
+                    let label = MultilineLabel(
+                        value: L10n.HomeTab.welcomeTitle(name),
+                        style: .brand(.largeTitle(color: .primary))
+                    )
                     innerBag += titleRow.append(label)
                 }
-                
+
                 innerBag += titleSection.append(ActiveSection())
-                
+
                 if Localization.Locale.currentLocale.market == .se {
                     let section = HomeVerticalSection(
                         section: .init(
@@ -158,7 +161,7 @@ extension Home: Presentable {
 
             return innerBag
         }
-        
+
         bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
             .mapLatestToFuture { _ in
                 self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)

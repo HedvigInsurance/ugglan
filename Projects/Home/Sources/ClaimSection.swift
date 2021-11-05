@@ -1,11 +1,11 @@
 import SwiftUI
 import hCore
-import hGraphQL
 import hCoreUI
+import hGraphQL
 
 struct ClaimSection: View {
     var claims: [Claim]
-    
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
@@ -15,16 +15,16 @@ struct ClaimSection: View {
                         .padding([.top, .bottom, .trailing])
                 }
             }
-        }.frame(maxWidth: .infinity)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
-
 
 #if DEBUG
 
-struct ClaimSectionPreview: PreviewProvider {
-    static var previews: some View {
-        ClaimSection(claims: [.mock, .mock]).preferredColorScheme(.light).previewAsComponent()
+    struct ClaimSectionPreview: PreviewProvider {
+        static var previews: some View {
+            ClaimSection(claims: [.mock, .mock]).preferredColorScheme(.light).previewAsComponent()
+        }
     }
-}
 #endif
