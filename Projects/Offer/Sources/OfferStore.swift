@@ -87,7 +87,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
     func query(for ids: [String]) -> GraphQL.QuoteBundleQuery {
         GraphQL.QuoteBundleQuery(
-            ids: state.ids,
+            ids: ids,
             locale: Localization.Locale.currentLocale.asGraphQLLocale()
         )
     }
@@ -106,7 +106,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 Analytics.track(
                     "QUOTES_SIGNED",
                     properties: [
-                        "quoteIds": getState().ids
+                        "quoteIds": getState().selectedIds
                     ]
                 )
             }
