@@ -26,6 +26,24 @@ extension ActiveSection: Presentable {
             .onValue { data in label.value = L10n.HomeTab.welcomeTitle(data.member.firstName ?? "") }
 
         section.appendSpacing(.top)
+        
+        bag += store.stateSignal.atOnce().map { $0.claims }.onValueDisposePrevious { claims in
+            
+            let innerBag = DisposeBag()
+            
+            if let claims = claims {
+                let claimsSection = ClaimSection(claims: claims)
+                let claimsView = HostingView(rootView: claimsSection)
+                
+                section.append(claimsView)
+                
+                innerBag += {
+                    claimsView.removeFromSuperview()
+                }
+            }
+
+            return innerBag
+        }
 
         let claimButton = Button(
             title: L10n.HomeTab.claimButtonText,
@@ -74,11 +92,11 @@ extension ActiveSection: Presentable {
                             paragraph: $0.body,
                             icon: $0.illustration.fragments.iconFragment
                         )
-                        .pagerItem
+                            .pagerItem
                     }
                 }
             }
-
+    
         bag += section.append(ConnectPaymentCard())
         bag += section.append(RenewalCard())
 
