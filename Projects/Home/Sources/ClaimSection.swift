@@ -7,12 +7,12 @@ struct ClaimSection: View {
     var claims: [Claim]
     
     var body: some View {
-        ScrollView(.horizontal) {
+        ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
                 ForEach(claims, id: \.id) { claim in
                     ClaimStatus(claim: claim)
                         .frame(width: UIScreen.main.bounds.width * 0.8)
-                        .padding()
+                        .padding([.top, .bottom, .trailing])
                 }
             }
         }.frame(maxWidth: .infinity)

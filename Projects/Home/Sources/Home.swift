@@ -45,7 +45,7 @@ extension Home: Presentable {
     public func materialize() -> (UIViewController, Signal<HomeResult>) {
         let store: HomeStore = self.get()
 
-        store.send(.setMemberContractState(state: .loading))
+        store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
         store.send(.fetchMemberState)
 
         let viewController = UIViewController()
@@ -79,13 +79,18 @@ extension Home: Presentable {
                 send: {
                     .fetchMemberState
                 },
-                endOn: .setMemberContractState(state: .active),
-                .setMemberContractState(state: .future),
-                .setMemberContractState(state: .terminated)
+                endOn: { action in
+                    switch action {
+                    case .setMemberContractState:
+                        return true
+                    default:
+                        return false
+                    }
+                }
             )
 
             let future = store.stateSignal.atOnce()
-                .filter(predicate: { $0.memberContractState != .loading }).future
+                .filter(predicate: { $0.memberStateData.state != .loading }).future
 
             bag += scrollView.performEntryAnimation(
                 contentView: form,
@@ -119,23 +124,11 @@ extension Home: Presentable {
             case .active:
                 
                 if let name = state.memberStateData.name {
-                    var label = MultilineLabel(value: name, style: .brand(.largeTitle(color: .primary)))
+                    let label = MultilineLabel(value: L10n.HomeTab.welcomeTitle(name), style: .brand(.largeTitle(color: .primary)))
                     innerBag += titleRow.append(label)
                 }
                 
-                let claimsSection = HomeVerticalSection(section: .init(title: "", style: .horizontal, children: []))
-                innerBag += form.append(claimsSection)
-                
-                if let claims = state.claims {
-                    let claimsScrollView = ClaimSection(claims: claims)
-                    let claimsView = HostingView(rootView: claimsScrollView)
-                    
-                    claimsSection.append(claimsView)
-                    
-                    innerBag += {
-                        claimsView.removeFromSuperview()
-                    }
-                }
+                innerBag += titleSection.append(ActiveSection())
                 
                 if Localization.Locale.currentLocale.market == .se {
                     let section = HomeVerticalSection(
@@ -155,8 +148,6 @@ extension Home: Presentable {
                     )
                     innerBag += form.append(section)
                 }
-
-                form.appendSpacing(.custom(30))
             case .future:
                 innerBag += titleRow.append(FutureSection())
             case .terminated:
