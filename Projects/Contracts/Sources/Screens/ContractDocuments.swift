@@ -36,18 +36,16 @@ struct ContractDocumentsView: View {
     let contract: Contract
     
     var body: some View {
-        hSection {
-            ForEach(Documents.allCases, id: \.self) { document in
-                if let url = document.url(from: contract) {
-                    hRow {
-                        hText(document.title)
-                    }.withCustomAccessory {
-                        Spacer()
-                        Image(uiImage: hCoreUIAssets.chevronRight.image)
-                    }
-                    .onTap {
-                        store.send(.contractDetailNavigationAction(action: .document(url: url, title: document.title)))
-                    }
+        hSection(Documents.allCases, id: \.title) { document in
+            if let url = document.url(from: contract) {
+                hRow {
+                    hText(document.title)
+                }.withCustomAccessory {
+                    Spacer()
+                    Image(uiImage: hCoreUIAssets.chevronRight.image)
+                }
+                .onTap {
+                    store.send(.contractDetailNavigationAction(action: .document(url: url, title: document.title)))
                 }
             }
         }

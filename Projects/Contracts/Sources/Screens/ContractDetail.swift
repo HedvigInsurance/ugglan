@@ -65,14 +65,15 @@ struct ContractDetail: View {
     
     @State private var selectedView = ContractDetailsViews.information
     
+    @ViewBuilder
     func viewFor(view: ContractDetailsViews) -> some View {
         switch view {
         case .information:
-            return AnyView(contractInformation)
+            contractInformation
         case .coverage:
-            return AnyView(contractCoverage)
+            contractCoverage
         case .documents:
-            return AnyView(contractDocuments)
+            contractDocuments
         }
     }
     
@@ -88,6 +89,23 @@ struct ContractDetail: View {
             insurableLimits: contractRow.contract.insurableLimits
         )
         contractDocuments = ContractDocumentsView(contract: contractRow.contract)
+        
+        let font = Fonts.fontFor(style: .footnote)
+        UISegmentedControl.appearance().setTitleTextAttributes(
+            [
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.secondaryText),
+                NSAttributedString.Key.font: font,
+            ],
+            for: .normal
+        )
+
+        UISegmentedControl.appearance().setTitleTextAttributes(
+            [
+                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                NSAttributedString.Key.font: font,
+            ],
+            for: .selected
+        )
     }
     
     var body: some View {
@@ -97,7 +115,7 @@ struct ContractDetail: View {
                     contractRow.padding(.bottom, 20)
                     Picker("View", selection: $context.selected) {
                         ForEach(ContractDetailsViews.allCases) { view in
-                            Text(view.title).tag(view)
+                            hText(view.title).tag(view)
                         }
                     }.pickerStyle(.segmented)
                 }.sectionContainerStyle(.transparent)
@@ -116,7 +134,7 @@ struct ContractDetail: View {
 extension ContractDetail {
     public func journey(
         style: PresentationStyle = .default,
-        options: PresentationOptions = [.defaults]
+        options: PresentationOptions = [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
