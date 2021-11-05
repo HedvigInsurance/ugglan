@@ -17,15 +17,7 @@ extension ActiveSection: Presentable {
 
         let store: HomeStore = self.get()
 
-        section.dynamicStyle = .brandGrouped(separatorType: .none)
-
-        var label = MultilineLabel(value: "", style: .brand(.largeTitle(color: .primary)))
-        bag += section.append(label)
-
-        client.fetch(query: GraphQL.HomeQuery())
-            .onValue { data in label.value = L10n.HomeTab.welcomeTitle(data.member.firstName ?? "") }
-
-        section.appendSpacing(.top)
+        section.dynamicStyle = .brandGrouped(insets: .init(top: 0, left: 14, bottom: 0, right: 14), separatorType: .none)
         
         bag += store.stateSignal.atOnce().map { $0.claims }.onValueDisposePrevious { claims in
             

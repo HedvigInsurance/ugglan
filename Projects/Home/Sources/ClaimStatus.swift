@@ -29,7 +29,7 @@ struct ClaimStatus: View {
         .background(
             RoundedRectangle(cornerRadius: 10)
                 .fill(hBackgroundColor.tertiary)
-                .shadow(radius: 10)
+                .shadow(radius: 4)
         )
     }
 }

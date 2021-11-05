@@ -377,6 +377,7 @@ extension DynamicSectionStyle {
     }
 
     public static func brandGrouped(
+        insets: UIEdgeInsets = .zero,
         separatorType: SeparatorType,
         borderColor: UIColor = .clear,
         backgroundColor: UIColor = .clear,
@@ -389,7 +390,7 @@ extension DynamicSectionStyle {
             let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
 
             return Style(
-                insets: .zero,
+                insets: insets,
                 rowInsets: .init(inset: 15),
                 itemSpacing: 10,
                 minRowHeight: 0,
