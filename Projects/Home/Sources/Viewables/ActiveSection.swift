@@ -91,9 +91,6 @@ extension ActiveSection: Presentable {
     
         bag += section.append(ConnectPaymentCard())
         bag += section.append(RenewalCard())
-
-        section.appendSpacing(.custom(80))
-
         bag += section.append(CommonClaimsCollection())
 
         return (section, bag)
