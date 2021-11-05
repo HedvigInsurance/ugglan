@@ -1,13 +1,12 @@
 import SwiftUI
-import hGraphQL
-import hCoreUI
 import hCore
+import hCoreUI
+import hGraphQL
 
 struct ClaimStatusBar: View {
     let status: Claim.ClaimStatus
     @State var currentStatus: Claim.ClaimStatus
-    
-    
+
     @hColorBuilder var barColor: some hColor {
         switch (status, currentStatus) {
         case (.reopened, .reopened):
@@ -26,7 +25,7 @@ struct ClaimStatusBar: View {
             hTintColor.lavenderOne
         }
     }
-    
+
     @hColorBuilder var textColor: some hColor {
         switch (status, currentStatus) {
         case (_, .closed):
@@ -43,7 +42,7 @@ struct ClaimStatusBar: View {
             hTintColor.lavenderOne
         }
     }
-    
+
     var body: some View {
         VStack {
             Rectangle()
@@ -51,6 +50,7 @@ struct ClaimStatusBar: View {
                 .frame(height: 4)
             hText(status.text ?? "", style: .caption1)
                 .foregroundColor(textColor)
-        }.frame(maxWidth: .infinity)
+        }
+        .frame(maxWidth: .infinity)
     }
 }

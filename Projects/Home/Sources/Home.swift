@@ -103,8 +103,11 @@ extension Home: Presentable {
         bag += form.append(ImportantMessagesSection())
 
         let titleSection = form.appendSection()
-        titleSection.dynamicStyle = .brandGrouped(insets: .init(top: 14, left: 14, bottom: 14, right: 14), separatorType: .none)
-    
+        titleSection.dynamicStyle = .brandGrouped(
+            insets: .init(top: 14, left: 14, bottom: 14, right: 14),
+            separatorType: .none
+        )
+
         store.send(.fetchClaims)
 
         func buildSections(state: HomeState) -> Disposable {
@@ -112,14 +115,17 @@ extension Home: Presentable {
 
             switch state.memberStateData.state {
             case .active:
-                
+
                 if let name = state.memberStateData.name {
-                    let label = MultilineLabel(value: L10n.HomeTab.welcomeTitle(name), style: .brand(.largeTitle(color: .primary)))
+                    let label = MultilineLabel(
+                        value: L10n.HomeTab.welcomeTitle(name),
+                        style: .brand(.largeTitle(color: .primary))
+                    )
                     innerBag += titleSection.append(label)
                 }
-                
+
                 innerBag += form.append(ActiveSection())
-                
+
                 if Localization.Locale.currentLocale.market == .se {
                     let section = HomeVerticalSection(
                         section: .init(
@@ -136,12 +142,12 @@ extension Home: Presentable {
                             ]
                         )
                     )
-                    
+
                     innerBag += form.append(section)
                 }
-                
+
                 innerBag += form.appendSpacingAndDumpOnDispose(.custom(30))
-                
+
             case .future:
                 innerBag += titleSection.append(FutureSection())
             case .terminated:
@@ -152,7 +158,7 @@ extension Home: Presentable {
 
             return innerBag
         }
-        
+
         bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
             .mapLatestToFuture { _ in
                 self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
