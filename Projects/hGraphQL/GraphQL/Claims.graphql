@@ -1,0 +1,10 @@
+query Claims {
+  claims {
+    id
+    status
+    outcome
+    submittedAt
+    closedAt
+    signedAudioURL
+  }
+}

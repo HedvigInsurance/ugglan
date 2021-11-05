@@ -109,14 +109,34 @@ extension Home: Presentable {
         titleRow.isLayoutMarginsRelativeArrangement = true
         titleRow.layoutMargins = rowInsets
         titleSection.append(titleRow)
+        
+        store.send(.fetchClaims)
 
-        func buildSections(state: MemberContractState) -> Disposable {
+        func buildSections(state: HomeState) -> Disposable {
             let innerBag = DisposeBag()
 
-            switch state {
+            switch state.memberStateData.state {
             case .active:
-                innerBag += titleRow.append(ActiveSection())
-
+                
+                if let name = state.memberStateData.name {
+                    var label = MultilineLabel(value: name, style: .brand(.largeTitle(color: .primary)))
+                    innerBag += titleRow.append(label)
+                }
+                
+                let claimsSection = HomeVerticalSection(section: .init(title: "", style: .horizontal, children: []))
+                innerBag += form.append(claimsSection)
+                
+                if let claims = state.claims {
+                    let claimsScrollView = ClaimSection(claims: claims)
+                    let claimsView = HostingView(rootView: claimsScrollView)
+                    
+                    claimsSection.append(claimsView)
+                    
+                    innerBag += {
+                        claimsView.removeFromSuperview()
+                    }
+                }
+                
                 if Localization.Locale.currentLocale.market == .se {
                     let section = HomeVerticalSection(
                         section: .init(
@@ -147,7 +167,7 @@ extension Home: Presentable {
 
             return innerBag
         }
-
+        
         bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
             .mapLatestToFuture { _ in
                 self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
@@ -157,7 +177,7 @@ extension Home: Presentable {
         return (
             viewController,
             Signal { callback in
-                bag += store.stateSignal.atOnce().map { $0.memberContractState }
+                bag += store.stateSignal.atOnce()
                     .distinct()
                     .onValueDisposePrevious { state in
                         buildSections(state: state)

@@ -4,9 +4,15 @@ import Presentation
 import hCore
 import hGraphQL
 
-public struct HomeState: StateProtocol {
-    var memberContractState: MemberContractState = .loading
+public struct MemberStateData: Codable, Equatable {
+    let state: MemberContractState
+    let name: String?
+}
 
+public struct HomeState: StateProtocol {
+    var memberStateData: MemberStateData = .init(state: .loading, name: nil)
+    var claims: [Claim]? = nil
+    
     public init() {}
 }
 
@@ -16,7 +22,9 @@ public enum HomeAction: ActionProtocol {
     case openMovingFlow
     case openClaims
     case connectPayments
-    case setMemberContractState(state: MemberContractState)
+    case setMemberContractState(state: MemberStateData)
+    case fetchClaims
+    case setClaims(claims: [Claim])
 }
 
 public final class HomeStore: StateStore<HomeState, HomeAction> {
@@ -34,11 +42,19 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
             return
                 client
                 .fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
-                .compactMap { $0.homeState }
-                .map { state in
-                    .setMemberContractState(state: state)
+                .map { data in
+                .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))
                 }
                 .valueThenEndSignal
+        case .fetchClaims:
+            return client
+                .fetch(
+                    query: GraphQL.ClaimsQuery(),
+                    cachePolicy: .fetchIgnoringCacheData)
+                .compactMap { $0.claims }
+                .map { claims in
+                    return .setClaims(claims: claims.map { Claim(claim: $0) })
+                }.valueThenEndSignal
         default:
             return nil
         }
@@ -49,7 +65,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
 
         switch action {
         case .setMemberContractState(let memberState):
-            newState.memberContractState = memberState
+            newState.memberStateData = memberState
         case .openFreeTextChat:
             break
         case .fetchMemberState:
@@ -60,6 +76,10 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
             break
         case .openMovingFlow:
             break
+        case .fetchClaims:
+            break
+        case let .setClaims(claims):
+            newState.claims = claims
         }
 
         return newState

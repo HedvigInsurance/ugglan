@@ -402,6 +402,20 @@ public struct hTintColor {
             dark: Color(hexString: "E24646")
         )
     }
+    
+    public static var orangeOne: some hColor {
+        hColorScheme(
+            light: Color(hexString: "FE9650"),
+            dark: Color(hexString: "FE9650")
+        )
+    }
+    
+    public static var orangeTwo: some hColor {
+        hColorScheme(
+            light: Color(hexString: "FCBA8D"),
+            dark: Color(hexString: "FCBA8D")
+        )
+    }
 }
 
 public struct hSeparatorColor {
