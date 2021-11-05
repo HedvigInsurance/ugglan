@@ -2,20 +2,29 @@ import SwiftUI
 import hCore
 import hGraphQL
 import hCoreUI
+import Combine
 
 struct ClaimSection: View {
     var claims: [Claim]
+    @State var frameWidth: CGFloat = 0
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
                 ForEach(claims, id: \.id) { claim in
                     ClaimStatus(claim: claim)
-                        .frame(width: UIScreen.main.bounds.width * 0.8)
+                        .frame(width: frameWidth * 0.8)
                         .padding([.top, .bottom, .trailing])
                 }
             }
-        }.frame(maxWidth: .infinity)
+        }
+        .background(
+            GeometryReader { geo in
+                Color.clear.onReceive(Just(geo.size.width)) { width in
+                    self.frameWidth = width
+                }
+            }
+        )
     }
 }
 
