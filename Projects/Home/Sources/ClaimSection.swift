@@ -28,11 +28,9 @@ struct ClaimSection: View {
     }
 }
 
-#if DEBUG
 
-    struct ClaimSectionPreview: PreviewProvider {
-        static var previews: some View {
-            ClaimSection(claims: [.mock, .mock]).preferredColorScheme(.light).previewAsComponent()
-        }
+struct ClaimSectionPreview: PreviewProvider {
+    static var previews: some View {
+        ClaimSection(claims: [.mock, .mock]).preferredColorScheme(.light).previewAsComponent()
     }
-#endif
+}

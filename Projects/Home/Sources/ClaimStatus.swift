@@ -15,7 +15,7 @@ struct ClaimStatus: View {
             }
             .padding([.leading, .trailing], 10)
             Spacer().frame(height: 23)
-            hText("New insurance case")
+            hText(L10n.Claim.Casetype.newInsuranceCase)
                 .padding([.leading, .trailing], 10)
             Spacer().frame(height: 20)
             SwiftUI.Divider()
@@ -102,21 +102,14 @@ extension Claim.ClaimStatus {
     }
 }
 
-#if DEBUG
-    extension Claim {
-        public static var mock = Claim(
-            id: "1234",
-            status: .reopened,
-            outcome: .paid,
-            submittedAt: "",
-            closedAt: "",
-            signedAudioURL: nil
-        )
-    }
+public extension Claim {
+    static var mock = Claim(id: "1234", status: .reopened, outcome: .paid, submittedAt: "", closedAt: "", signedAudioURL: nil)
+}
 
     struct ClaimsPreview: PreviewProvider {
         static var previews: some View {
             ClaimStatus(claim: .mock).preferredColorScheme(.light).previewAsComponent()
         }
     }
-#endif
+}
+
