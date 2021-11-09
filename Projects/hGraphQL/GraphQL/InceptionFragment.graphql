@@ -1,0 +1,30 @@
+fragment InceptionFragment on QuoteBundleInception {
+  ... on ConcurrentInception {
+    correspondingQuotes {
+      ... on CompleteQuote {
+        id
+      }
+    }
+    startDate
+    currentInsurer {
+      id
+      displayName
+      switchable
+    }
+  }
+  ... on IndependentInceptions {
+    inceptions {
+      startDate
+      currentInsurer {
+        id
+        displayName
+        switchable
+      }
+      correspondingQuote {
+        ... on CompleteQuote {
+          id
+        }
+      }
+    }
+  }
+}

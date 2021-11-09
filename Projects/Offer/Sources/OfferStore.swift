@@ -9,6 +9,7 @@ import hGraphQL
 public struct OfferState: StateProtocol {
     var isLoading = true
     var hasSignedQuotes = false
+    var onboardingSessionID: String? = nil
     var ids: [String] = []
     var selectedIds: [String] = []
     var startDates: [String: Date?] = [:]
@@ -48,6 +49,7 @@ public enum OfferAction: ActionProtocol {
     case startSign
     case openChat
     case setIds(ids: [String], selectedIds: [String])
+    case setOnboardingSessionID(onboardingSessionID: String?)
     case setSelectedIds(ids: [String])
     case query
     case setOfferBundle(bundle: OfferBundle)
@@ -85,15 +87,41 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
 
-    func query(for ids: [String]) -> GraphQL.QuoteBundleQuery {
-        GraphQL.QuoteBundleQuery(
-            ids: ids,
-            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-        )
-    }
-
     internal var isLoadingSignal: CoreSignal<Read, Bool> {
         stateSignal.map { $0.offerData == nil }
+    }
+    
+    func querySignal(_ getState: @escaping () -> OfferState) -> FiniteSignal<OfferAction> {
+        if let onboardingSessionID = getState().onboardingSessionID {
+            let query = GraphQL.OnboardingSessionQuoteBundleQuery(
+                onboardingSessionID: onboardingSessionID,
+                ids: getState().ids,
+                locale: Localization.Locale.currentLocale.asGraphQLLocale()
+            )
+            
+            return client.fetch(query: query)
+                .compactMap { data in
+                    return OfferBundle(data: data)
+                }
+                .map {
+                    return .setOfferBundle(bundle: $0)
+                }
+                .valueThenEndSignal
+        }
+        
+        let query = GraphQL.QuoteBundleQuery(
+            ids: getState().ids,
+            locale: Localization.Locale.currentLocale.asGraphQLLocale()
+        )
+        
+        return client.fetch(query: query)
+            .compactMap { data in
+                return OfferBundle(data: data)
+            }
+            .map {
+                return .setOfferBundle(bundle: $0)
+            }
+            .valueThenEndSignal
     }
 
     public override func effects(
@@ -113,15 +141,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case .startSign:
             return signQuotesEffect()
         case .query:
-            let query = self.query(for: getState().ids)
-            return client.fetch(query: query)
-                .compactMap { data in
-                    return OfferBundle(data: data)
-                }
-                .map {
-                    return .setOfferBundle(bundle: $0)
-                }
-                .valueThenEndSignal
+            return querySignal(getState)
         case let .removeStartDate(id):
             return self.client
                 .perform(
@@ -142,15 +162,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case let .updateRedeemedCampaigns(discountCode):
             return updateRedeemedCampaigns(discountCode: discountCode)
         case .refetch:
-            let query = query(for: state.ids)
-            return client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData)
-                .compactMap { data in
-                    return OfferBundle(data: data)
-                }
-                .map {
-                    return .setOfferBundle(bundle: $0)
-                }
-                .valueThenEndSignal
+            return querySignal(getState)
         case .didRedeemCampaigns, .didRemoveCampaigns:
             return FiniteSignal { callback in
                 callback(.value(.refetch))
@@ -175,6 +187,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case let .setIds(ids, selectedIds):
             newState.ids = ids
             newState.selectedIds = selectedIds
+        case let .setOnboardingSessionID(onboardingSessionID):
+            newState.onboardingSessionID = onboardingSessionID
         case let .setSelectedIds(selectedIds):
             newState.selectedIds = selectedIds
         case let .sign(event):
@@ -277,13 +291,13 @@ extension OfferStore {
                 else {
                     return Future(error: OfferAction.OfferStoreError.checkoutUpdate)
                 }
+                
+                self.send(.refetch)
 
-                return self.client
-                    .fetch(
-                        query: self.query(for: [quoteId]),
-                        cachePolicy: .fetchIgnoringCacheData
-                    )
-                    .toVoid()
+                return self.stateSignal.filter(predicate: { state in
+                    state.currentVariant?.bundle.quoteFor(id: quoteId)?.email == email &&
+                    state.currentVariant?.bundle.quoteFor(id: quoteId)?.ssn == ssn
+                }).future.toVoid()
             }
     }
 

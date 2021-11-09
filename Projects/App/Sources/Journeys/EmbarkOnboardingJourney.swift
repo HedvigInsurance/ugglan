@@ -23,6 +23,8 @@ struct EmbarkOnboardingJourney {
             case let .menu(action):
                 action.journey
             case let .story(story):
+                let onboardingSessionID = UUID()
+                
                 AppJourney.embark(
                     Embark(
                         name: story.name,
@@ -31,6 +33,7 @@ struct EmbarkOnboardingJourney {
                             children: menuChildren
                         )
                     ),
+                    onboardingSessionID: onboardingSessionID,
                     storeOffer: true
                 ) { offerResult in
                     switch offerResult {

@@ -1,0 +1,54 @@
+fragment QuoteBundleFragment on QuoteBundle {
+    possibleVariations {
+        id
+        tag(locale: $locale)
+        bundle {
+            quotes {
+              ... on BundledQuote {
+                dataCollectionId
+                id
+                firstName
+                lastName
+                ssn
+                email
+                displayName(locale: $locale)
+                detailsTable(locale: $locale) {
+                  ...DetailsTableFragment
+                }
+                contractPerils(locale: $locale) {
+                  ...PerilFragment
+                }
+                insurableLimits(locale: $locale) {
+                  ...InsurableLimitFragment
+                }
+                insuranceTerms(locale: $locale) {
+                  displayName
+                  url
+                  type
+                }
+              }
+            }
+            displayName(locale: $locale)
+            bundleCost {
+              ...CostFragment
+            }
+            frequentlyAskedQuestions(locale: $locale) {
+              id
+              headline
+              body
+            }
+            inception {
+              ...InceptionFragment
+            }
+            appConfiguration {
+              showCampaignManagement
+              showFAQ
+              ignoreCampaigns
+              approveButtonTerminology
+              startDateTerminology
+              title
+              gradientOption
+            }
+        }
+    }
+}

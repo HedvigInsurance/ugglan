@@ -1,0 +1,12 @@
+query OnboardingSessionQuoteBundle($onboardingSessionID: ID!, $ids: [ID!]!, $locale: Locale!) {
+  onboardingSession(id: $onboardingSessionID) {
+    bundle {
+        ...QuoteBundleFragment
+    }
+    campaign {
+        displayValue(locale: $locale)
+    }
+  }
+  signMethodForQuotes(input: $ids)
+}
+

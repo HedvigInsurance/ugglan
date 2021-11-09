@@ -6,6 +6,7 @@ import Presentation
 extension AppJourney {
     static func embark<OfferResultJourney: JourneyPresentation>(
         _ embark: Embark,
+        onboardingSessionID: UUID? = nil,
         storeOffer: Bool,
         style: PresentationStyle = .default,
         @JourneyBuilder offerResultJourney: @escaping (_ result: OfferResult) -> OfferResultJourney
@@ -18,7 +19,7 @@ extension AppJourney {
             offerOptions.insert(.shouldPreserveState)
         }
 
-        return Journey(embark, style: style) { externalRedirect in
+        return Journey(embark.setOnboardingSessionID(onboardingSessionID), style: style) { externalRedirect in
             switch externalRedirect {
             case .mailingList:
                 ContinueJourney()
@@ -32,6 +33,7 @@ extension AppJourney {
                         menu: embark.menu,
                         options: offerOptions
                     )
+                    .setOnboardingSessionID(onboardingSessionID)
                     .setIds(allIds, selectedIds: selectedIds)
                 ) { offerResult in
                     offerResultJourney(offerResult)

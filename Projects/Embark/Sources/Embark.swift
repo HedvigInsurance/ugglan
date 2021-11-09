@@ -356,3 +356,12 @@ extension Embark: Presentable {
         )
     }
 }
+
+extension Embark {
+    public func setOnboardingSessionID(_ id: UUID?) -> Self {
+        if let id = id {
+            self.state.store.setValue(key: "onboardingSessionID", value: id.uuidString)
+        }
+        return self
+    }
+}

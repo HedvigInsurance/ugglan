@@ -1,8 +1,6 @@
 import Flow
 import Foundation
 
-public typealias OfferData = GraphQL.QuoteBundleQuery.Data
-
 public struct OfferBundle: Codable, Equatable {
     public var possibleVariations: [QuoteVariant]
     public let redeemedCampaigns: [RedeemedCampaign]
@@ -19,11 +17,21 @@ public struct OfferBundle: Codable, Equatable {
     }
 
     public init(
-        data: OfferData,
+        data: GraphQL.QuoteBundleQuery.Data,
         id: UUID = UUID()
     ) {
-        possibleVariations = data.quoteBundle.possibleVariations.map { .init(variant: $0) }
+        possibleVariations = data.quoteBundle.fragments.quoteBundleFragment.possibleVariations.map { .init(variant: $0) }
         redeemedCampaigns = data.redeemedCampaigns.map { .init(displayValue: $0.displayValue) }
+        signMethodForQuotes = .init(rawValue: data.signMethodForQuotes.rawValue) ?? .unknown
+        self.id = id
+    }
+    
+    public init(
+        data: GraphQL.OnboardingSessionQuoteBundleQuery.Data,
+        id: UUID = UUID()
+    ) {
+        possibleVariations = data.onboardingSession.bundle?.fragments.quoteBundleFragment.possibleVariations.map { .init(variant: $0) } ?? []
+        redeemedCampaigns = [data.onboardingSession.campaign.map { .init(displayValue: $0.displayValue) }].compactMap { $0 }
         signMethodForQuotes = .init(rawValue: data.signMethodForQuotes.rawValue) ?? .unknown
         self.id = id
     }
@@ -35,7 +43,7 @@ public struct QuoteVariant: Codable, Equatable {
     public let id: String
 
     public init(
-        variant: OfferData.QuoteBundle.PossibleVariation
+        variant: GraphQL.QuoteBundleFragment.PossibleVariation
     ) {
         self.bundle = QuoteBundle(bundle: variant.bundle)
         self.tag = variant.tag
@@ -52,7 +60,7 @@ public struct QuoteBundle: Codable, Equatable {
     public var displayName: String
 
     public init(
-        bundle: OfferData.QuoteBundle.PossibleVariation.Bundle
+        bundle: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle
     ) {
         appConfiguration = .init(config: bundle.appConfiguration)
         bundleCost = .init(cost: bundle.bundleCost)
@@ -72,7 +80,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let title: AppConfigTitle
 
         public init(
-            config: OfferData.QuoteBundle.PossibleVariation.Bundle.AppConfiguration
+            config: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.AppConfiguration
         ) {
             showCampaignManagement = config.showCampaignManagement
             showFaq = config.showFaq
@@ -109,7 +117,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let monthlyNet: MonetaryAmount
 
         public init(
-            cost: OfferData.QuoteBundle.PossibleVariation.Bundle.BundleCost
+            cost: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.BundleCost
         ) {
             freeUntil = cost.freeUntil
             monthlyDiscount = .init(fragment: cost.monthlyDiscount.fragments.monetaryAmountFragment)
@@ -123,7 +131,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let headline: String?
         public let id: String
         public init(
-            question: OfferData.QuoteBundle.PossibleVariation.Bundle.FrequentlyAskedQuestion
+            question: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.FrequentlyAskedQuestion
         ) {
             id = question.id
             body = question.body
@@ -145,7 +153,7 @@ public struct QuoteBundle: Codable, Equatable {
         public var dataCollectionID: String?
 
         public init(
-            quote: OfferData.QuoteBundle.PossibleVariation.Bundle.Quote
+            quote: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Quote
         ) {
             id = quote.id
             firstName = quote.firstName
