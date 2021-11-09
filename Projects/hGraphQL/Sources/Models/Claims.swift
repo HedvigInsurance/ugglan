@@ -1,24 +1,22 @@
 import Foundation
 
 public struct Claim: Codable, Equatable {
-    #if DEBUG
-        public init(
-            id: String,
-            status: Claim.ClaimStatus,
-            outcome: Claim.ClaimOutcome,
-            submittedAt: String,
-            closedAt: String?,
-            signedAudioURL: String?
-        ) {
-            self.id = id
-            self.status = status
-            self.outcome = outcome
-            self.submittedAt = submittedAt
-            self.closedAt = closedAt
-            self.signedAudioURL = signedAudioURL
-        }
-    #endif
-
+    public init(
+        id: String,
+        status: Claim.ClaimStatus,
+        outcome: Claim.ClaimOutcome,
+        submittedAt: String,
+        closedAt: String?,
+        signedAudioURL: String?
+    ) {
+        self.id = id
+        self.status = status
+        self.outcome = outcome
+        self.submittedAt = submittedAt
+        self.closedAt = closedAt
+        self.signedAudioURL = signedAudioURL
+    }
+    
     public let id: String
     public let status: ClaimStatus
     public let outcome: ClaimOutcome

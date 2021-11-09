@@ -16,7 +16,7 @@ struct ClaimSection: View {
                         .frame(width: frameWidth * 0.8)
                         .padding([.top, .bottom, .trailing])
                 }
-            }
+            }.padding([.leading])
         }
         .background(
             GeometryReader { geo in
