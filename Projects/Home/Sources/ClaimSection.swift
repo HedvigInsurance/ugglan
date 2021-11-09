@@ -28,7 +28,6 @@ struct ClaimSection: View {
     }
 }
 
-
 struct ClaimSectionPreview: PreviewProvider {
     static var previews: some View {
         ClaimSection(claims: [.mock, .mock]).preferredColorScheme(.light).previewAsComponent()
