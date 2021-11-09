@@ -106,10 +106,6 @@ extension Home: Presentable {
         bag += form.append(ImportantMessagesSection())
 
         let titleSection = form.appendSection()
-        titleSection.dynamicStyle = .brandGrouped(
-            insets: .init(top: 14, left: 14, bottom: 14, right: 14),
-            separatorType: .none
-        )
         titleSection.dynamicStyle = .brandGrouped(insets: .init(top: 14, left: 14, bottom: 14, right: 14), separatorType: .none)
     
         func buildSections(state: HomeState) -> Disposable {
@@ -170,7 +166,8 @@ extension Home: Presentable {
         return (
             viewController,
             Signal { callback in
-                bag += store.stateSignal.atOnce()
+                bag += store.stateSignal
+                    .atOnce()
                     .distinct()
                     .onValueDisposePrevious { state in
                         buildSections(state: state)
