@@ -11,7 +11,7 @@ struct ClaimStatus: View {
             HStack(alignment: .top) {
                 ClaimPills(claim: claim)
                 Spacer()
-                Image(uiImage: hCoreUIAssets.chevronRight.image).tint(hLabelColor.secondary)
+                //Image(uiImage: hCoreUIAssets.chevronRight.image).tint(hLabelColor.secondary)
             }
             .padding([.leading, .trailing], 10)
             Spacer().frame(height: 23)
