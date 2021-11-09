@@ -16,7 +16,8 @@ struct ClaimSection: View {
                         .frame(width: frameWidth * 0.8)
                         .padding([.top, .bottom, .trailing])
                 }
-            }.padding([.leading], 14)
+            }
+            .padding([.leading], 14)
         }
         .padding([.leading, .trailing], -14)
         .background(
@@ -28,7 +29,6 @@ struct ClaimSection: View {
         )
     }
 }
-
 
 struct ClaimSectionPreview: PreviewProvider {
     static var previews: some View {

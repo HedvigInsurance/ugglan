@@ -65,7 +65,7 @@ extension Home: Presentable {
         }
 
         let bag = DisposeBag()
-        
+
         bag += viewController.viewDidAppearSignal.onValue {
             store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
             store.send(.fetchMemberState)
@@ -106,8 +106,11 @@ extension Home: Presentable {
         bag += form.append(ImportantMessagesSection())
 
         let titleSection = form.appendSection()
-        titleSection.dynamicStyle = .brandGrouped(insets: .init(top: 14, left: 14, bottom: 14, right: 14), separatorType: .none)
-    
+        titleSection.dynamicStyle = .brandGrouped(
+            insets: .init(top: 14, left: 14, bottom: 14, right: 14),
+            separatorType: .none
+        )
+
         func buildSections(state: HomeState) -> Disposable {
             let innerBag = DisposeBag()
 
