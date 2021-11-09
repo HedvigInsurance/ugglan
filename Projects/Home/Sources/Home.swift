@@ -45,10 +45,7 @@ extension Home: Presentable {
     public func materialize() -> (UIViewController, Signal<HomeResult>) {
         let store: HomeStore = self.get()
 
-        store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
-        store.send(.fetchMemberState)
-
-        let viewController = UIViewController()
+        let viewController = LifeCycleProxyViewController()
         viewController.title = L10n.HomeTab.title
         viewController.installChatButton(allowsChatHint: true)
 
@@ -68,6 +65,12 @@ extension Home: Presentable {
         }
 
         let bag = DisposeBag()
+        
+        bag += viewController.viewDidAppearSignal.onValue {
+            store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
+            store.send(.fetchMemberState)
+            store.send(.fetchClaims)
+        }
 
         let form = FormView()
         bag += viewController.install(form) { scrollView in
@@ -107,9 +110,8 @@ extension Home: Presentable {
             insets: .init(top: 14, left: 14, bottom: 14, right: 14),
             separatorType: .none
         )
-
-        store.send(.fetchClaims)
-
+        titleSection.dynamicStyle = .brandGrouped(insets: .init(top: 14, left: 14, bottom: 14, right: 14), separatorType: .none)
+    
         func buildSections(state: HomeState) -> Disposable {
             let innerBag = DisposeBag()
 
