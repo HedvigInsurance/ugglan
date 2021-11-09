@@ -20,18 +20,23 @@ public struct OfferBundle: Codable, Equatable {
         data: GraphQL.QuoteBundleQuery.Data,
         id: UUID = UUID()
     ) {
-        possibleVariations = data.quoteBundle.fragments.quoteBundleFragment.possibleVariations.map { .init(variant: $0) }
+        possibleVariations = data.quoteBundle.fragments.quoteBundleFragment.possibleVariations.map {
+            .init(variant: $0)
+        }
         redeemedCampaigns = data.redeemedCampaigns.map { .init(displayValue: $0.displayValue) }
         signMethodForQuotes = .init(rawValue: data.signMethodForQuotes.rawValue) ?? .unknown
         self.id = id
     }
-    
+
     public init(
         data: GraphQL.OnboardingSessionQuoteBundleQuery.Data,
         id: UUID = UUID()
     ) {
-        possibleVariations = data.onboardingSession.bundle?.fragments.quoteBundleFragment.possibleVariations.map { .init(variant: $0) } ?? []
-        redeemedCampaigns = [data.onboardingSession.campaign.map { .init(displayValue: $0.displayValue) }].compactMap { $0 }
+        possibleVariations =
+            data.onboardingSession.bundle?.fragments.quoteBundleFragment.possibleVariations.map { .init(variant: $0) }
+            ?? []
+        redeemedCampaigns = [data.onboardingSession.campaign.map { .init(displayValue: $0.displayValue) }]
+            .compactMap { $0 }
         signMethodForQuotes = .init(rawValue: data.signMethodForQuotes.rawValue) ?? .unknown
         self.id = id
     }

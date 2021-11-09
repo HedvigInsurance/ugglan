@@ -24,7 +24,7 @@ struct EmbarkOnboardingJourney {
                 action.journey
             case let .story(story):
                 let onboardingSessionID = UUID()
-                
+
                 AppJourney.embark(
                     Embark(
                         name: story.name,

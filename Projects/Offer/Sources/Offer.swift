@@ -38,7 +38,7 @@ extension Offer {
         store.send(.setIds(ids: ids, selectedIds: selectedIds))
         return self
     }
-    
+
     public func setOnboardingSessionID(_ id: UUID?) -> Self {
         if let id = id {
             let store: OfferStore = globalPresentableStoreContainer.get()

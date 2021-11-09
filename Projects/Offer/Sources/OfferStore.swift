@@ -90,7 +90,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
     internal var isLoadingSignal: CoreSignal<Read, Bool> {
         stateSignal.map { $0.offerData == nil }
     }
-    
+
     func querySignal(_ getState: @escaping () -> OfferState) -> FiniteSignal<OfferAction> {
         if let onboardingSessionID = getState().onboardingSessionID {
             let query = GraphQL.OnboardingSessionQuoteBundleQuery(
@@ -98,7 +98,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 ids: getState().ids,
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             )
-            
+
             return client.fetch(query: query)
                 .compactMap { data in
                     return OfferBundle(data: data)
@@ -108,12 +108,12 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 }
                 .valueThenEndSignal
         }
-        
+
         let query = GraphQL.QuoteBundleQuery(
             ids: getState().ids,
             locale: Localization.Locale.currentLocale.asGraphQLLocale()
         )
-        
+
         return client.fetch(query: query)
             .compactMap { data in
                 return OfferBundle(data: data)
@@ -291,13 +291,15 @@ extension OfferStore {
                 else {
                     return Future(error: OfferAction.OfferStoreError.checkoutUpdate)
                 }
-                
+
                 self.send(.refetch)
 
-                return self.stateSignal.filter(predicate: { state in
-                    state.currentVariant?.bundle.quoteFor(id: quoteId)?.email == email &&
-                    state.currentVariant?.bundle.quoteFor(id: quoteId)?.ssn == ssn
-                }).future.toVoid()
+                return self.stateSignal
+                    .filter(predicate: { state in
+                        state.currentVariant?.bundle.quoteFor(id: quoteId)?.email == email
+                            && state.currentVariant?.bundle.quoteFor(id: quoteId)?.ssn == ssn
+                    })
+                    .future.toVoid()
             }
     }
 
