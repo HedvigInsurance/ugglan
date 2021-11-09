@@ -16,7 +16,8 @@ struct ClaimSection: View {
                         .frame(width: frameWidth * 0.8)
                         .padding([.top, .bottom, .trailing])
                 }
-            }.padding([.leading])
+            }
+            .padding([.leading])
         }
         .background(
             GeometryReader { geo in
@@ -27,7 +28,6 @@ struct ClaimSection: View {
         )
     }
 }
-
 
 struct ClaimSectionPreview: PreviewProvider {
     static var previews: some View {
