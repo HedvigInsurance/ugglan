@@ -21,16 +21,16 @@ extension ActiveSection: Presentable {
             insets: .init(top: 0, left: 14, bottom: 0, right: 14),
             separatorType: .none
         )
-        
+
         let claims = ClaimSectionLoading()
         let hostingView = HostingView(rootView: claims)
-        
+
         section.append(hostingView)
-        
+
         bag += {
             hostingView.removeFromSuperview()
         }
-        
+
         let claimButton = Button(
             title: L10n.HomeTab.claimButtonText,
             type: .standard(

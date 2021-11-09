@@ -16,7 +16,7 @@ public struct Claim: Codable, Equatable {
         self.closedAt = closedAt
         self.signedAudioURL = signedAudioURL
     }
-    
+
     public let id: String
     public let status: ClaimStatus
     public let outcome: ClaimOutcome

@@ -102,8 +102,15 @@ extension Claim.ClaimStatus {
     }
 }
 
-public extension Claim {
-    static var mock = Claim(id: "1234", status: .reopened, outcome: .paid, submittedAt: "", closedAt: "", signedAudioURL: nil)
+extension Claim {
+    public static var mock = Claim(
+        id: "1234",
+        status: .reopened,
+        outcome: .paid,
+        submittedAt: "",
+        closedAt: "",
+        signedAudioURL: nil
+    )
 }
 
 struct ClaimsPreview: PreviewProvider {
@@ -111,4 +118,3 @@ struct ClaimsPreview: PreviewProvider {
         ClaimStatus(claim: .mock).preferredColorScheme(.light).previewAsComponent()
     }
 }
-
