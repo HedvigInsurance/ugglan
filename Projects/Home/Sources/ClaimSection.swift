@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimSection: View {
-    var claims: [Claim]
+    @State var claims: [Claim]
     @State var frameWidth: CGFloat = 0
 
     var body: some View {
@@ -16,8 +16,9 @@ struct ClaimSection: View {
                         .frame(width: frameWidth * 0.8)
                         .padding([.top, .bottom, .trailing])
                 }
-            }.padding([.leading])
+            }.padding([.leading], 14)
         }
+        .padding([.leading, .trailing], -14)
         .background(
             GeometryReader { geo in
                 Color.clear.onReceive(Just(geo.size.width)) { width in

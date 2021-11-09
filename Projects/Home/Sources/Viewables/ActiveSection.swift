@@ -21,26 +21,16 @@ extension ActiveSection: Presentable {
             insets: .init(top: 0, left: 14, bottom: 0, right: 14),
             separatorType: .none
         )
-
-        bag += store.stateSignal.atOnce().map { $0.claims }
-            .onValueDisposePrevious { claims in
-
-                let innerBag = DisposeBag()
-
-                if let claims = claims {
-                    let claimsSection = ClaimSection(claims: claims)
-                    let claimsView = HostingView(rootView: claimsSection)
-
-                    section.append(claimsView)
-
-                    innerBag += {
-                        claimsView.removeFromSuperview()
-                    }
-                }
-
-                return innerBag
-            }
-
+        
+        let claims = ClaimSectionLoading()
+        let hostingView = HostingView(rootView: claims)
+        
+        section.append(hostingView)
+        
+        bag += {
+            hostingView.removeFromSuperview()
+        }
+        
         let claimButton = Button(
             title: L10n.HomeTab.claimButtonText,
             type: .standard(
@@ -53,7 +43,7 @@ extension ActiveSection: Presentable {
             store.send(.openClaims)
         }
 
-        section.appendSpacing(.inbetween)
+        bag += section.appendSpacingAndDumpOnDispose(.inbetween)
 
         let howClaimsWorkButton = Button(
             title: L10n.ClaimsExplainer.title,

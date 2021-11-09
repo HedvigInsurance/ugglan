@@ -13,7 +13,7 @@ struct ClaimStatusBar: View {
             hTintColor.orangeOne
         case (_, .closed):
             hTintColor.lavenderOne
-        case (let x, let y) where x == y:
+        case (let lhs, let rhs) where lhs == rhs:
             hLabelColor.primary
         case (.submitted, .beingHandled):
             hLabelColor.secondary
