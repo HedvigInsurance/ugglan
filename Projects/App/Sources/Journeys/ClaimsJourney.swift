@@ -7,16 +7,13 @@ import hCore
 import hCoreUI
 
 extension AppJourney {
-    static func claimsJourney(name: String) -> some JourneyPresentation {
+    static func claimsJourney() -> some JourneyPresentation {
         HonestyPledge.journey {
-            Journey(
-                ClaimsAskForPushnotifications(),
-                style: .detented(.large, modally: false)
-            ) { _ in
-                AppJourney.embark(Embark(name: name), storeOffer: false) { result in
+            AppJourney.notificationJourney {
+                AppJourney.embark(Embark(name: "claims"), storeOffer: false) { result in
                     switch result {
                     case .chat:
-                        AppJourney.freeTextChat().withDismissButton
+                        AppJourney.claimsChat().withDismissButton
                     case .close:
                         DismissJourney()
                     case .menu:
@@ -25,7 +22,26 @@ extension AppJourney {
                         DismissJourney()
                     }
                 }
-                .withJourneyDismissButton
+                .hidesBackButton
+            }
+            .withJourneyDismissButton
+        }
+    }
+}
+
+extension AppJourney {
+    static func notificationJourney<Next: JourneyPresentation>(@JourneyBuilder _ next: @escaping () -> Next) -> some JourneyPresentation {
+        Journey(NotificationLoader(), style: .detented(.large)) { authorization in
+            switch authorization {
+            case .notDetermined:
+                Journey(
+                    ClaimsAskForPushnotifications(),
+                    style: .detented(.large, modally: false)
+                ) { _ in
+                    next()
+                }
+            default:
+                next()
             }
         }
     }
