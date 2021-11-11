@@ -65,9 +65,10 @@ extension Home: Presentable {
         }
 
         let bag = DisposeBag()
+        
+        store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
 
         bag += viewController.viewDidAppearSignal.onValue {
-            store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
             store.send(.fetchMemberState)
             store.send(.fetchClaims)
         }
