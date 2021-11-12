@@ -30,7 +30,9 @@ extension AppJourney {
 }
 
 extension AppJourney {
-    static func notificationJourney<Next: JourneyPresentation>(@JourneyBuilder _ next: @escaping () -> Next) -> some JourneyPresentation {
+    static func notificationJourney<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping () -> Next
+    ) -> some JourneyPresentation {
         Journey(NotificationLoader(), style: .detented(.large)) { authorization in
             switch authorization {
             case .notDetermined:
