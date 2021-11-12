@@ -334,15 +334,16 @@ extension PresentationStyle {
                     viewController.navigationController?.transitioningDelegate
                     as? DetentedTransitioningDelegate
                 let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
-                
+
                 let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
-                
-                let hasLargeTitle = (viewController.navigationController?.navigationBar.prefersLargeTitles ?? false)
+
+                let hasLargeTitle =
+                    (viewController.navigationController?.navigationBar.prefersLargeTitles ?? false)
                     && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
 
                 let totalHeight: CGFloat =
                     scrollView.contentSize.height
-                    + (hasLargeTitle ? 107 : 0)
+                    + (hasLargeTitle ? 107 : 52)
                     + keyboardHeight
                     + 10
 
