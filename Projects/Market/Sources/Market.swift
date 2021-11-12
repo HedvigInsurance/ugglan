@@ -1,8 +1,8 @@
 import Foundation
 import UIKit
 import hCore
-import hGraphQL
 import hCoreUI
+import hGraphQL
 
 public enum Market: String, CaseIterable, Codable {
     case sweden = "SE"
