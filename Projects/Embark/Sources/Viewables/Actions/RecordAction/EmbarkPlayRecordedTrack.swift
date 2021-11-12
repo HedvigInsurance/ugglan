@@ -86,7 +86,6 @@ struct Staples: View {
                         value: sample,
                         range: sampleRange
                     )
-                    .animation(.ripple(index: index))
                 }
             }
             .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity)
@@ -110,14 +109,6 @@ struct Staples: View {
             .compactMap {
                 return $0.reduce(0, +) / CGFloat($0.count)
             }
-    }
-}
-
-extension Animation {
-    static func ripple(index: Int) -> Animation {
-        Animation.spring(dampingFraction: 0.5)
-            .speed(2)
-            .delay(0.03 * Double(index))
     }
 }
 
