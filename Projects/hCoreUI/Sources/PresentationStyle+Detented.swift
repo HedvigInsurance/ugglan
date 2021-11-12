@@ -340,10 +340,14 @@ extension PresentationStyle {
                 let hasLargeTitle =
                     (viewController.navigationController?.navigationBar.prefersLargeTitles ?? false)
                     && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
+                
+                let hasNavigationBar = viewController.navigationController?.navigationBar != nil && (viewController.navigationController?.isNavigationBarHidden ?? true) == false
 
+                let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : 52
+                
                 let totalHeight: CGFloat =
                     scrollView.contentSize.height
-                    + (hasLargeTitle ? 107 : 52)
+                    + (hasNavigationBar ? navigationBarHeight : 0)
                     + keyboardHeight
                     + 10
 
