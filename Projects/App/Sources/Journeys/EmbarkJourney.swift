@@ -24,7 +24,8 @@ extension AppJourney {
                 ContinueJourney()
             case .chat:
                 AppJourney
-                    .freeTextChat().onDismiss {
+                    .freeTextChat()
+                    .onDismiss {
                         embark.goBack()
                     }
                     .withDismissButton
