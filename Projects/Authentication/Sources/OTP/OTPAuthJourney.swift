@@ -16,7 +16,7 @@ public struct OTPAuthJourney {
                     rootView: OTPCodeEntry()
                 ) { action in
                     if case let .navigationAction(action: .authSuccess(accessToken)) = action {
-                        next(accessToken)
+                        next(accessToken).hidesBackButton
                     }
                 }
             }

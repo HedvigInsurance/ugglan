@@ -56,9 +56,10 @@ extension Debug {
                     .style(.detented(.large))
             } else if action == .openOTPJourney {
                 OTPAuthJourney.login { _ in
-                    HostingJourney(rootView: hText("Login success"))
+                    HostingJourney(rootView: hText("Login success")).withJourneyDismissButton
                 }
                 .style(.detented(.large))
+                .mapJourneyDismissToCancel
             }
         }
         .configureTitle("Authentication")

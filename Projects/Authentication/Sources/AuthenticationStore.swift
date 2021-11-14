@@ -109,6 +109,9 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 .otpStateAction(action: .setLoading(isLoading: false)),
             ]
             .emitEachThenEnd
+        } else if case .navigationAction(action: .authSuccess) = action {
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.success)
         }
 
         return nil
