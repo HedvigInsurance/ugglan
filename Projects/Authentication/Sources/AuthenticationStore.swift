@@ -6,17 +6,7 @@ import UIKit
 import hCore
 import hGraphQL
 
-protocol NonDecodable: Decodable, EmptyInitable {}
-
-extension NonDecodable {
-    init(
-        from decoder: Decoder
-    ) throws {
-        self.init()
-    }
-}
-
-struct OTPState: StateProtocol, NonDecodable {
+struct OTPState: StateProtocol {
     var isLoading = false
     var id: String? = nil
     var code: String = ""
@@ -40,6 +30,7 @@ public enum OTPStateAction: ActionProtocol {
     case setEmail(email: String)
     case setID(id: String?)
     case submitEmail
+    case reset
 }
 
 public enum AuthenticationNavigationAction: ActionProtocol {
@@ -121,6 +112,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         switch action {
         case let .otpStateAction(action):
             switch action {
+            case .reset:
+                newState.otpState = .init()
             case let .setCode(code):
                 if state.otpState.isLoading {
                     return newState

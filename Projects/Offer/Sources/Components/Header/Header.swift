@@ -113,7 +113,7 @@ extension Header: Presentable {
         let spacerView = UIView()
         formContainer.addArrangedSubview(spacerView)
 
-        let loadingIndicator = HostingView(rootView: WordmarkActivityIndicator())
+        let loadingIndicator = HostingView(rootView: WordmarkActivityIndicator(.standard))
         scrollView.addSubview(loadingIndicator)
 
         let isLoadingSignal = store.stateSignal.map { $0.isLoading }

@@ -16,6 +16,9 @@ public struct OTPAuthJourney {
                     ContinueJourney()
                 }
             }
+        }.onPresent {
+            let store: AuthenticationStore = globalPresentableStoreContainer.get()
+            store.send(.otpStateAction(action: .reset))
         }
     }
 }

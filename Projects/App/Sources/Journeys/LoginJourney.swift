@@ -6,6 +6,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import Authentication
 
 extension AppJourney {
     fileprivate static var bankIDSweden: some JourneyPresentation {
@@ -44,8 +45,10 @@ extension AppJourney {
             switch market {
             case .se:
                 bankIDSweden
-            case .no, .dk, .fr:
+            case .no, .dk:
                 simpleSign
+            case .fr:
+                OTPAuthJourney.journey.style(.detented(.large))
             }
         }
     }
