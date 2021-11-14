@@ -106,6 +106,41 @@ struct ButtonFilledBackground: View {
     }
 }
 
+struct LoaderOrContent<Content: View>: View {
+    @Environment(\.hButtonIsLoading) var isLoading
+    
+    var content: () -> Content
+    
+    init(@ViewBuilder _ content: @escaping () -> Content) {
+        self.content = content
+    }
+    
+    var body: some View {
+        if isLoading {
+            WordmarkActivityIndicator(.small).invertColorScheme
+        } else {
+            content()
+        }
+    }
+}
+
+private struct EnvironmentHButtonIsLoading: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    var hButtonIsLoading: Bool {
+        get { self[EnvironmentHButtonIsLoading.self] }
+        set { self[EnvironmentHButtonIsLoading.self] = newValue }
+    }
+}
+
+extension View {
+    public func hButtonIsLoading(_ isLoading: Bool) -> some View {
+        self.environment(\.hButtonIsLoading, isLoading)
+    }
+}
+
 struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     var size: ButtonSize
 
@@ -115,33 +150,35 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-
             switch hButtonFilledStyle {
             case .standard:
-                if !isEnabled {
-                    configuration.label
-                        .foregroundColor(
-                            hColorScheme(
-                                light: hLabelColor.primary.inverted,
-                                dark: hLabelColor.quarternary
+                LoaderOrContent {
+                    if !isEnabled {
+                        configuration.label
+                            .foregroundColor(
+                                hColorScheme(
+                                    light: hLabelColor.primary.inverted,
+                                    dark: hLabelColor.quarternary
+                                )
                             )
-                        )
-                } else {
-                    configuration.label
-                        .foregroundColor(hLabelColor.primary.inverted)
+                    } else {
+                        configuration.label
+                            .foregroundColor(hLabelColor.primary.inverted)
+                    }
                 }
             case .overImage:
-                if !isEnabled {
-                    configuration.label
-                        .foregroundColor(
-                            hLabelColor.primary.colorFor(.light, .base)
-                        )
-                } else {
-                    configuration.label
-                        .foregroundColor(hLabelColor.primary.colorFor(.light, .base))
+                LoaderOrContent {
+                    if !isEnabled {
+                        configuration.label
+                            .foregroundColor(
+                                hLabelColor.primary.colorFor(.light, .base)
+                            )
+                    } else {
+                        configuration.label
+                            .foregroundColor(hLabelColor.primary.colorFor(.light, .base))
+                    }
                 }
             }
-
         }
     }
 
@@ -170,9 +207,11 @@ struct LargeButtonOutlinedStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            configuration.label
-                .foregroundColor(hLabelColor.primary)
-                .environment(\.defaultHTextStyle, .body)
+            LoaderOrContent {
+                configuration.label
+                    .foregroundColor(hLabelColor.primary)
+                    .environment(\.defaultHTextStyle, .body)
+            }
         }
     }
 
@@ -221,9 +260,11 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            configuration.label
-                .foregroundColor(hLabelColor.primary)
-                .environment(\.defaultHTextStyle, .body)
+            LoaderOrContent {
+                configuration.label
+                    .foregroundColor(hLabelColor.primary)
+                    .environment(\.defaultHTextStyle, .body)
+            }
         }
     }
 
@@ -248,6 +289,8 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
 }
 
 struct _hButton<Content: View>: View {
+    @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hButtonIsLoading) var isLoading
     var content: () -> Content
     var action: () -> Void
     @State var wasTappedDate: Date? = nil
@@ -266,7 +309,7 @@ struct _hButton<Content: View>: View {
             action()
         }) {
             content().environment(\.hButtonWasTappedDate, wasTappedDate)
-        }
+        }.disabled(isEnabled ? isLoading : false)
     }
 }
 

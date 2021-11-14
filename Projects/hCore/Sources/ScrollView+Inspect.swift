@@ -3,36 +3,63 @@ import Foundation
 import SwiftUI
 import UIKit
 
-struct ScrollViewIntrospector: UIViewRepresentable {
-    var foundScrollView: (_ scrollView: UIScrollView) -> Void
+struct ViewIntrospector<ViewType: UIView>: UIViewRepresentable {
+    var foundView: (_ view: ViewType) -> Void
+    
+    class Coordinator {
+        var view: ViewType? = nil
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
 
     func makeUIView(context: Context) -> some UIView {
         UIView()
     }
 
-    func findScrollView(from: UIView) {
-        if let scrollView = from.subviews
+    func findView(from: UIView) -> ViewType? {
+        if let view = from as? ViewType {
+            return view
+        } else if let view = from.subviews
             .compactMap({ view in
-                view as? UIScrollView
+                findView(from: view)
             })
             .first
         {
-            foundScrollView(scrollView)
-        } else if let parent = from.parent {
-            findScrollView(from: parent)
+            return view
         }
+        
+        return nil
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
+        guard context.coordinator.view == nil else {
+            return
+        }
+        
         DispatchQueue.main.async {
-            findScrollView(from: uiView)
+            guard let superview = uiView.superview?.superview else {
+                return
+            }
+            
+            let view = findView(from: superview)
+            context.coordinator.view = view
+            
+            if let view = view {
+                foundView(view)
+            }
         }
     }
 }
 
 extension View {
     public func introspectScrollView(_ foundScrollView: @escaping (_ scrollView: UIScrollView) -> Void) -> some View {
-        self.background(ScrollViewIntrospector(foundScrollView: foundScrollView))
+        self.background(ViewIntrospector<UIScrollView>(foundView: foundScrollView))
+    }
+    
+    public func introspectTextField(_ foundTextField: @escaping (_ textField: UITextField) -> Void) -> some View {
+        self.background(ViewIntrospector<UITextField>(foundView: foundTextField))
     }
 }
 

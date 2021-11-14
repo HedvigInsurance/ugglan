@@ -135,3 +135,9 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
         self.transform = { $0 }
     }
 }
+
+extension View {
+    public var disposableHostingJourney: HostingJourney<Self, Disposable> {
+        HostingJourney(rootView: self)
+    }
+}

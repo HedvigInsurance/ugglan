@@ -12,7 +12,7 @@ struct ContractBundleLoadingIndicator: View {
             }
         ) { hasLoadedContractBundlesOnce in
             if !hasLoadedContractBundlesOnce {
-                ActivityIndicator(isAnimating: true).padding(.top, 15)
+                WordmarkActivityIndicator().padding(.top, 15)
             }
         }
         .sectionContainerStyle(.transparent)

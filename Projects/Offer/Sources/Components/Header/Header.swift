@@ -113,13 +113,7 @@ extension Header: Presentable {
         let spacerView = UIView()
         formContainer.addArrangedSubview(spacerView)
 
-        let loadingIndicator = UIActivityIndicatorView()
-        if #available(iOS 13.0, *) {
-            loadingIndicator.style = .large
-        } else {
-            loadingIndicator.style = .whiteLarge
-        }
-        loadingIndicator.tintColor = .brand(.primaryText())
+        let loadingIndicator = HostingView(rootView: WordmarkActivityIndicator())
         scrollView.addSubview(loadingIndicator)
 
         let isLoadingSignal = store.stateSignal.map { $0.isLoading }
@@ -138,8 +132,6 @@ extension Header: Presentable {
                     loadingIndicator.removeFromSuperview()
                 }
             }
-
-        loadingIndicator.startAnimating()
 
         loadingIndicator.snp.makeConstraints { make in
             make.center.equalTo(scrollView.frameLayoutGuide.snp.center)
