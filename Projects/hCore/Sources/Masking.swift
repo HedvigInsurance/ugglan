@@ -278,5 +278,6 @@ extension Masking: ViewModifier {
             .keyboardType(keyboardType)
             .textContentType(textContentType)
             .autocapitalization(autocapitalizationType)
+            .disableAutocorrection(type != .none)
     }
 }
