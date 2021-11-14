@@ -35,6 +35,7 @@ public enum OTPStateAction: ActionProtocol {
 
 public enum AuthenticationNavigationAction: ActionProtocol {
     case otpCode
+    case authSuccess(accessToken: String)
 }
 
 public enum AuthenticationAction: ActionProtocol {
@@ -70,8 +71,15 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         otp: state.otpState.code
                     )
                 )
-                .compactMap { _ in
-                    return .otpStateAction(action: .setError(message: "Failed"))
+                .delay(by: 0.5)
+                .compactMap { data in
+                    if let error = data.loginVerifyOtpAttempt.asVerifyOtpLoginAttemptError {
+                        return .otpStateAction(action: .setError(message: error.errorCode))
+                    } else if let success = data.loginVerifyOtpAttempt.asVerifyOtpLoginAttemptSuccess {
+                        return .navigationAction(action: .authSuccess(accessToken: success.accessToken))
+                    }
+                    
+                    return nil
                 }
                 .valueThenEndSignal
         } else if case .otpStateAction(action: .setError) = action {

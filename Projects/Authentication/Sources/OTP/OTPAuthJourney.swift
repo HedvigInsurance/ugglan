@@ -3,7 +3,9 @@ import Presentation
 import hCore
 
 public struct OTPAuthJourney {
-    public static var journey: some JourneyPresentation {
+    public static func login<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping (_ accessToken: String) -> Next
+    ) -> some JourneyPresentation {
         HostingJourney(
             AuthenticationStore.self,
             rootView: OTPEmailEntry()
@@ -13,7 +15,9 @@ public struct OTPAuthJourney {
                     AuthenticationStore.self,
                     rootView: OTPCodeEntry()
                 ) { action in
-                    ContinueJourney()
+                    if case let .navigationAction(action: .authSuccess(accessToken)) = action {
+                        next(accessToken)
+                    }
                 }
             }
         }
@@ -21,5 +25,6 @@ public struct OTPAuthJourney {
             let store: AuthenticationStore = globalPresentableStoreContainer.get()
             store.send(.otpStateAction(action: .reset))
         }
+        .withDismissButton
     }
 }

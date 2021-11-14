@@ -55,7 +55,9 @@ extension Debug {
                     .disposableHostingJourney
                     .style(.detented(.large))
             } else if action == .openOTPJourney {
-                OTPAuthJourney.journey.style(.detented(.large))
+                OTPAuthJourney.login { _ in
+                    HostingJourney(rootView: hText("Login success"))
+                }.style(.detented(.large))
             }
         }
         .configureTitle("Authentication")

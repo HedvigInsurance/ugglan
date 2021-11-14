@@ -311,8 +311,7 @@ struct _hButton<Content: View>: View {
             action()
         }) {
             content().environment(\.hButtonWasTappedDate, wasTappedDate)
-        }
-        .disabled(isEnabled ? isLoading : false)
+        }.allowsHitTesting(!isLoading)
     }
 }
 
