@@ -309,7 +309,7 @@ struct _hButton<Content: View>: View {
         SwiftUI.Button(action: {
             let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
-            
+
             wasTappedDate = Date()
             action()
         }) {
