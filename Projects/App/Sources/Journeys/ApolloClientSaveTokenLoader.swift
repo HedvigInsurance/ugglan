@@ -1,12 +1,12 @@
+import Apollo
 import Flow
 import Foundation
 import Presentation
 import UIKit
-import Apollo
 
 struct ApolloClientSaveTokenLoader: Presentable {
     let accessToken: String
-    
+
     func materialize() -> (UIViewController, Signal<()>) {
         let viewController = PlaceholderViewController()
 
@@ -16,10 +16,11 @@ struct ApolloClientSaveTokenLoader: Presentable {
             viewController,
             Signal { callback in
                 ApolloClient.saveToken(token: accessToken)
-                
-                ApolloClient.initAndRegisterClient().onValue { _ in
-                    callback(())
-                }
+
+                ApolloClient.initAndRegisterClient()
+                    .onValue { _ in
+                        callback(())
+                    }
 
                 return bag
             }

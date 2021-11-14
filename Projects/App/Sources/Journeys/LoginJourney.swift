@@ -52,7 +52,8 @@ extension AppJourney {
                     Journey(ApolloClientSaveTokenLoader(accessToken: accessToken)) { _ in
                         AppJourney.loggedIn
                     }
-                }.style(.detented(.large)).withDismissButton
+                }
+                .style(.detented(.large)).withDismissButton
             }
         }
     }
