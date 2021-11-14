@@ -9,7 +9,7 @@ public struct hTextField: View {
     @State var previousInnerValue: String
     @State private var innerValue: String
     @Binding var value: String
-    
+
     public init(
         masking: Masking,
         value: Binding<String>
