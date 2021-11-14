@@ -1,4 +1,5 @@
 import Apollo
+import Authentication
 import Flow
 import Form
 import Foundation
@@ -9,27 +10,29 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import Authentication
 
 struct Debug: View {
     @PresentableStore var store: DebugStore
-    
+
     var body: some View {
         hForm {
             hSection {
                 hRow {
                     hText("OTP Auth Journey")
-                }.onTap {
+                }
+                .onTap {
                     store.send(.openOTPJourney)
                 }
                 hRow {
                     hText("OTP Email Entry")
-                }.onTap {
+                }
+                .onTap {
                     store.send(.openOTPEmailEntry)
                 }
                 hRow {
                     hText("OTP Code Entry")
-                }.onTap {
+                }
+                .onTap {
                     store.send(.openOTPCodeEntry)
                 }
             }

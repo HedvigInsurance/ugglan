@@ -5,11 +5,11 @@ import UIKit
 
 struct ViewIntrospector<ViewType: UIView>: UIViewRepresentable {
     var foundView: (_ view: ViewType) -> Void
-    
+
     class Coordinator {
         var view: ViewType? = nil
     }
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator()
     }
@@ -29,7 +29,7 @@ struct ViewIntrospector<ViewType: UIView>: UIViewRepresentable {
         {
             return view
         }
-        
+
         return nil
     }
 
@@ -37,15 +37,15 @@ struct ViewIntrospector<ViewType: UIView>: UIViewRepresentable {
         guard context.coordinator.view == nil else {
             return
         }
-        
+
         DispatchQueue.main.async {
             guard let superview = uiView.superview?.superview else {
                 return
             }
-            
+
             let view = findView(from: superview)
             context.coordinator.view = view
-            
+
             if let view = view {
                 foundView(view)
             }
@@ -57,7 +57,7 @@ extension View {
     public func introspectScrollView(_ foundScrollView: @escaping (_ scrollView: UIScrollView) -> Void) -> some View {
         self.background(ViewIntrospector<UIScrollView>(foundView: foundScrollView))
     }
-    
+
     public func introspectTextField(_ foundTextField: @escaping (_ textField: UITextField) -> Void) -> some View {
         self.background(ViewIntrospector<UITextField>(foundView: foundTextField))
     }

@@ -108,13 +108,15 @@ struct ButtonFilledBackground: View {
 
 struct LoaderOrContent<Content: View>: View {
     @Environment(\.hButtonIsLoading) var isLoading
-    
+
     var content: () -> Content
-    
-    init(@ViewBuilder _ content: @escaping () -> Content) {
+
+    init(
+        @ViewBuilder _ content: @escaping () -> Content
+    ) {
         self.content = content
     }
-    
+
     var body: some View {
         if isLoading {
             WordmarkActivityIndicator(.small).invertColorScheme
@@ -309,7 +311,8 @@ struct _hButton<Content: View>: View {
             action()
         }) {
             content().environment(\.hButtonWasTappedDate, wasTappedDate)
-        }.disabled(isEnabled ? isLoading : false)
+        }
+        .disabled(isEnabled ? isLoading : false)
     }
 }
 

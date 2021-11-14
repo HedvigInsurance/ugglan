@@ -1,11 +1,11 @@
+import Apollo
 import ExampleUtil
 import Flow
 import Form
 import Foundation
+import TestingUtil
 import UIKit
 import hCoreUI
-import Apollo
-import TestingUtil
 import hGraphQL
 
 @UIApplicationMain
@@ -17,12 +17,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         application.setup()
-        
+
         ApolloClient.createMock {
             MutationMock(GraphQL.VerifyLoginOtpAttemptMutation.self, duration: 2) { _ in
                 .init(loginVerifyOtpAttempt: .makeVerifyOtpLoginAttemptSuccess(accessToken: ""))
             }
-            
+
             MutationMock(GraphQL.CreateLoginOtpAttemptMutation.self, duration: 2) { _ in
                 .init(loginCreateOtpAttempt: UUID().uuidString)
             }

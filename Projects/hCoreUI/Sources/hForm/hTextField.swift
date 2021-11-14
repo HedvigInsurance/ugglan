@@ -51,14 +51,14 @@ struct hTextFieldPreview: PreviewProvider {
 
 @propertyWrapper public struct hTextFieldFocusState<Value: Hashable>: DynamicProperty {
     @State var field: Value
-    
+
     public var projectedValue: Binding<Value> {
-       Binding(
-           get: { wrappedValue },
-           set: { wrappedValue = $0 }
-       )
-   }
-    
+        Binding(
+            get: { wrappedValue },
+            set: { wrappedValue = $0 }
+        )
+    }
+
     public var wrappedValue: Value {
         get {
             return field
@@ -68,14 +68,16 @@ struct hTextFieldPreview: PreviewProvider {
         }
     }
 
-    public init(wrappedValue: Value) {
+    public init(
+        wrappedValue: Value
+    ) {
         self._field = State(initialValue: wrappedValue)
     }
 }
 
 class TextFieldObserver: NSObject, UITextFieldDelegate {
-    var onReturnTap: () -> () = {}
-    
+    var onReturnTap: () -> Void = {}
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         onReturnTap()
         return false
@@ -92,48 +94,54 @@ struct hTextFieldFocusStateModifier<Value: hTextFieldFocusStateCompliant>: ViewM
     @State var navigationControllerHasFinishedTransition: Bool = false
     @State var textField: UITextField? = nil
     @State var observer = TextFieldObserver()
-    
+
     @Binding var focusedField: Value
     var equals: Value
     var onReturn: () -> Void
-    
+
     func setup() {
         textField?.delegate = observer
-        
+
         observer.onReturnTap = {
             if let next = focusedField.next {
                 focusedField = next
             }
-            
+
             onReturn()
         }
-        
+
         if equals.hashValue == Value.last.hashValue {
             textField?.returnKeyType = .done
         } else {
             textField?.returnKeyType = .next
         }
     }
-    
+
     func body(content: Content) -> some View {
         content.introspectTextField { textField in
             self.textField = textField
-        }.onReceive(Just(focusedField.hashValue &+ navigationControllerHasFinishedTransition.hashValue)) { _ in
+        }
+        .onReceive(Just(focusedField.hashValue &+ navigationControllerHasFinishedTransition.hashValue)) { _ in
             guard navigationControllerHasFinishedTransition else {
                 return
             }
-            
+
             setup()
-            
+
             if focusedField == equals {
                 textField?.becomeFirstResponder()
             } else {
                 textField?.resignFirstResponder()
             }
-        }.simultaneousGesture(TapGesture().onEnded {
-            focusedField = equals
-            setup()
-        }).onReceive(Just(textField != nil && !navigationControllerHasFinishedTransition)) { _ in
+        }
+        .simultaneousGesture(
+            TapGesture()
+                .onEnded {
+                    focusedField = equals
+                    setup()
+                }
+        )
+        .onReceive(Just(textField != nil && !navigationControllerHasFinishedTransition)) { _ in
             guard let textField = textField else {
                 return
             }
@@ -143,15 +151,20 @@ struct hTextFieldFocusStateModifier<Value: hTextFieldFocusStateCompliant>: ViewM
                     // skip waiting for transition if viewController is single viewController in UINavigationController
                     navigationControllerHasFinishedTransition = true
                 } else {
-                    navigationController.transitionCoordinator?.animate(alongsideTransition: nil, completion: { _ in
-                        navigationControllerHasFinishedTransition = true
-                    })
+                    navigationController.transitionCoordinator?
+                        .animate(
+                            alongsideTransition: nil,
+                            completion: { _ in
+                                navigationControllerHasFinishedTransition = true
+                            }
+                        )
                 }
             } else {
                 // no navigation controller so no need to wait for any transition
                 navigationControllerHasFinishedTransition = true
             }
-        }.onDisappear {
+        }
+        .onDisappear {
             isFirstAppear = false
             navigationControllerHasFinishedTransition = false
         }
@@ -162,14 +175,18 @@ extension Bool: hTextFieldFocusStateCompliant {
     public static var last: Bool {
         true
     }
-    
+
     public var next: Bool? {
         return nil
     }
 }
 
 extension hTextField {
-    public func focused<Value: hTextFieldFocusStateCompliant>(_ focusedField: Binding<Value>, equals: Value, onReturn: @escaping () -> Void = {}) -> some View {
+    public func focused<Value: hTextFieldFocusStateCompliant>(
+        _ focusedField: Binding<Value>,
+        equals: Value,
+        onReturn: @escaping () -> Void = {}
+    ) -> some View {
         self.modifier(hTextFieldFocusStateModifier(focusedField: focusedField, equals: equals, onReturn: onReturn))
     }
 }

@@ -1,15 +1,7 @@
-//
-//  OTPCodeDisplay.swift
-//  Authentication
-//
-//  Created by Sam Pettersson on 2021-11-14.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 
 struct ShakeEffect: GeometryEffect {
     var amount: CGFloat = 10
@@ -29,17 +21,18 @@ struct ShakeEffect: GeometryEffect {
 struct OTPCodeDisplay: View {
     var code: String
     var showRedBorders: Bool
-    
-    var codeArray: Array<String> {
-        (0...5).map { offset in
-            if code.count > offset {
-                return String(code[code.index(code.startIndex, offsetBy: offset)])
+
+    var codeArray: [String] {
+        (0...5)
+            .map { offset in
+                if code.count > offset {
+                    return String(code[code.index(code.startIndex, offsetBy: offset)])
+                }
+
+                return ""
             }
-            
-            return ""
-        }
     }
-    
+
     @hColorBuilder func digitStroke(focused: Bool) -> some hColor {
         if showRedBorders {
             hTintColor.red
@@ -49,17 +42,17 @@ struct OTPCodeDisplay: View {
             hSeparatorColor.separator
         }
     }
-    
+
     var body: some View {
         HStack {
             ForEach(Array(codeArray.enumerated()), id: \.offset) { offset, digit in
                 let focused = code.count == offset
                 let hasValue = digit != ""
-                
+
                 if offset == 3 {
                     hText("-").foregroundColor(hLabelColor.tertiary)
                 }
-                
+
                 VStack {
                     VStack {
                         hText(digit, style: .title1)
@@ -78,9 +71,11 @@ struct OTPCodeDisplay: View {
                 )
             }
         }
-        .modifier(ShakeEffect(
-            shakesPerUnit: showRedBorders ? 3 : 0,
-            animatableData: showRedBorders ? 1 : 0
-        ))
+        .modifier(
+            ShakeEffect(
+                shakesPerUnit: showRedBorders ? 3 : 0,
+                animatableData: showRedBorders ? 1 : 0
+            )
+        )
     }
 }

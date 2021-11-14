@@ -1,18 +1,10 @@
-//
-//  OTPEmailEntry.swift
-//  Authentication
-//
-//  Created by Sam Pettersson on 2021-11-12.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
-import Foundation
-import SwiftUI
-import hCoreUI
-import hCore
 import Combine
 import Flow
+import Foundation
 import Presentation
+import SwiftUI
+import hCore
+import hCoreUI
 
 extension Binding {
     init<S: Store>(
@@ -21,7 +13,7 @@ extension Binding {
         setter: @escaping (_ value: Value) -> S.Action
     ) {
         let store: S = globalPresentableStoreContainer.get()
-        
+
         self.init {
             getter(store.stateSignal.value)
         } set: { newValue, _ in
@@ -47,17 +39,20 @@ struct OTPCodeLoadingOverlay: View {
                 .cornerRadius(.defaultCornerRadius)
                 .edgesIgnoringSafeArea(.top)
             }
-        }.presentableStoreLensAnimation(.default)
+        }
+        .presentableStoreLensAnimation(.default)
     }
 }
 
 struct ReadOTPState<Content: View>: View {
     var content: (_ state: OTPState) -> Content
-    
-    init(@ViewBuilder _ content: @escaping (_ state: OTPState) -> Content) {
+
+    init(
+        @ViewBuilder _ content: @escaping (_ state: OTPState) -> Content
+    ) {
         self.content = content
     }
-    
+
     var body: some View {
         PresentableStoreLens(
             AuthenticationStore.self,
@@ -72,9 +67,9 @@ struct ReadOTPState<Content: View>: View {
 
 public struct OTPCodeEntry: View {
     @hTextFieldFocusState var focusCodeField: Bool = true
-    
+
     public init() {}
-    
+
     public var body: some View {
         hForm {
             hSection {
@@ -82,9 +77,12 @@ public struct OTPCodeEntry: View {
                     VStack(spacing: 16) {
                         hText("Check your email.", style: .title1)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        hText("Click the log in button in the email or enter the 6-digit code we've sent to johndoe@gmail.com.", style: .body)
+                        hText(
+                            "Click the log in button in the email or enter the 6-digit code we've sent to johndoe@gmail.com.",
+                            style: .body
+                        )
                     }
-                    
+
                     VStack(spacing: 8) {
                         ReadOTPState { state in
                             OTPCodeDisplay(
@@ -94,7 +92,7 @@ public struct OTPCodeEntry: View {
                             .onTapGesture {
                                 focusCodeField = true
                             }
-                            
+
                             if let errorMessage = state.errorMessage {
                                 hText(
                                     errorMessage,
@@ -103,17 +101,20 @@ public struct OTPCodeEntry: View {
                                 .foregroundColor(hTintColor.red)
                                 .transition(.opacity)
                             }
-                        }.presentableStoreLensAnimation(.default)
+                        }
+                        .presentableStoreLensAnimation(.default)
                     }
                 }
-            }.background(
+            }
+            .background(
                 hTextField(
                     masking: .init(type: .digits),
                     value: Binding(
                         AuthenticationStore.self,
                         getter: { state in
                             state.otpState.code
-                        }, setter: { code in
+                        },
+                        setter: { code in
                             .otpStateAction(action: .setCode(code: code))
                         }
                     )
@@ -121,11 +122,12 @@ public struct OTPCodeEntry: View {
                 .focused($focusCodeField, equals: true)
                 .opacity(0)
             )
-        }.hFormAttachToBottom {
+        }
+        .hFormAttachToBottom {
             ReadOTPState { state in
                 hSection {
                     hButton.LargeButtonFilled {
-                        
+
                     } content: {
                         hText("Open email")
                     }
