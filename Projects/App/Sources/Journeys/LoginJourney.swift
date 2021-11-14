@@ -1,4 +1,5 @@
 import Apollo
+import Authentication
 import Flow
 import Form
 import Foundation
@@ -6,7 +7,6 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
-import Authentication
 
 extension AppJourney {
     fileprivate static var bankIDSweden: some JourneyPresentation {
