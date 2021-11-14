@@ -57,7 +57,8 @@ extension Debug {
             } else if action == .openOTPJourney {
                 OTPAuthJourney.login { _ in
                     HostingJourney(rootView: hText("Login success"))
-                }.style(.detented(.large))
+                }
+                .style(.detented(.large))
             }
         }
         .configureTitle("Authentication")

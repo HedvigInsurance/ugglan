@@ -48,7 +48,8 @@ public struct WordmarkActivityIndicator: View {
         .onAppear {
             self.hasEntered = true
             self.rotating = true
-        }.onDisappear {
+        }
+        .onDisappear {
             self.hasEntered = false
             self.rotating = false
         }

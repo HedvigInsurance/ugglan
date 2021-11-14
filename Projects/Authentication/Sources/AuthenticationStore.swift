@@ -78,7 +78,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     } else if let success = data.loginVerifyOtpAttempt.asVerifyOtpLoginAttemptSuccess {
                         return .navigationAction(action: .authSuccess(accessToken: success.accessToken))
                     }
-                    
+
                     return nil
                 }
                 .valueThenEndSignal
