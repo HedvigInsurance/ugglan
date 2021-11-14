@@ -127,7 +127,10 @@ public struct OTPCodeEntry: View {
             ReadOTPState { state in
                 hSection {
                     hButton.LargeButtonFilled {
-
+                        let mailURL = URL(string: "message://")!
+                        if UIApplication.shared.canOpenURL(mailURL) {
+                            UIApplication.shared.openURL(mailURL)
+                        }
                     } content: {
                         hText("Open email")
                     }

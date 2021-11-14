@@ -48,7 +48,11 @@ extension AppJourney {
             case .no, .dk:
                 simpleSign
             case .fr:
-                OTPAuthJourney.journey.style(.detented(.large))
+                OTPAuthJourney.login { accessToken in
+                    Journey(ApolloClientSaveTokenLoader(accessToken: accessToken)) { _ in
+                        AppJourney.loggedIn
+                    }
+                }.style(.detented(.large)).withDismissButton
             }
         }
     }

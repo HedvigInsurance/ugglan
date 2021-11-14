@@ -63,10 +63,8 @@ struct Loader: Presentable {
         let form = FormView()
         bag += viewController.install(form, scrollView: scrollView)
 
-        let activityIndicatorView = UIActivityIndicatorView(style: .large)
+        let activityIndicatorView = HostingView(rootView: WordmarkActivityIndicator(.standard))
         scrollView.addSubview(activityIndicatorView)
-
-        activityIndicatorView.startAnimating()
 
         return (
             viewController,
