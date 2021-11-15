@@ -65,6 +65,43 @@ struct ReadOTPState<Content: View>: View {
     }
 }
 
+struct ResendOTPCode: View {
+    @State var canResendAtText: String = ""
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
+    func updateText(timeUntil: Int) {
+        canResendAtText = "Resend code in \(String(timeUntil))s"
+    }
+    
+    var body: some View {
+        ReadOTPState { state in
+            if let date = state.canResendAt {
+                let timeUntil = Int(Date().timeIntervalSince(date))
+                
+                if timeUntil >= 0 {
+                    hButton.SmallButtonFilled {
+                        
+                    } content: {
+                        hText("Resend")
+                    }
+                } else {
+                    hText(
+                        canResendAtText,
+                        style: .subheadline
+                    )
+                    .foregroundColor(hLabelColor.tertiary)
+                    .onReceive(timer) { _ in
+                        updateText(timeUntil: abs(timeUntil))
+                    }
+                    .onAppear {
+                        updateText(timeUntil: abs(timeUntil))
+                    }
+                }
+            }
+        }.padding(.top, 44)
+    }
+}
+
 public struct OTPCodeEntry: View {
     @hTextFieldFocusState var focusCodeField: Bool = true
 
@@ -101,6 +138,8 @@ public struct OTPCodeEntry: View {
                                 .foregroundColor(hTintColor.red)
                                 .transition(.opacity)
                             }
+                            
+                            ResendOTPCode()
                         }
                         .presentableStoreLensAnimation(.default)
                     }

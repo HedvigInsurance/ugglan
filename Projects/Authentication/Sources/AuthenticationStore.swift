@@ -12,6 +12,7 @@ struct OTPState: StateProtocol {
     var code: String = ""
     var errorMessage: String? = nil
     var email: String = ""
+    var canResendAt: Date? = nil
 
     public init() {}
 }
@@ -31,6 +32,7 @@ public enum OTPStateAction: ActionProtocol {
     case setID(id: String?)
     case submitEmail
     case reset
+    case resendCode
 }
 
 public enum AuthenticationNavigationAction: ActionProtocol {
@@ -144,7 +146,11 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             case let .setEmail(email):
                 newState.otpState.email = email
             case let .setID(id):
+                newState.otpState.code = ""
                 newState.otpState.id = id
+                newState.otpState.canResendAt = Date().addingTimeInterval(60)
+            case .resendCode:
+                newState.otpState.code = ""
             default:
                 break
             }

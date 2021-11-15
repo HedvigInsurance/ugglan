@@ -25,6 +25,5 @@ public struct OTPAuthJourney {
             let store: AuthenticationStore = globalPresentableStoreContainer.get()
             store.send(.otpStateAction(action: .reset))
         }
-        .withDismissButton
     }
 }
