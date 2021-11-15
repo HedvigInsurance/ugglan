@@ -68,19 +68,19 @@ struct ReadOTPState<Content: View>: View {
 struct ResendOTPCode: View {
     @State var canResendAtText: String = ""
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
+
     func updateText(timeUntil: Int) {
         canResendAtText = "Resend code in \(String(timeUntil))s"
     }
-    
+
     var body: some View {
         ReadOTPState { state in
             if let date = state.canResendAt {
                 let timeUntil = Int(Date().timeIntervalSince(date))
-                
+
                 if timeUntil >= 0 {
                     hButton.SmallButtonFilled {
-                        
+
                     } content: {
                         hText("Resend")
                     }
@@ -98,7 +98,8 @@ struct ResendOTPCode: View {
                     }
                 }
             }
-        }.padding(.top, 44)
+        }
+        .padding(.top, 44)
     }
 }
 
@@ -138,7 +139,7 @@ public struct OTPCodeEntry: View {
                                 .foregroundColor(hTintColor.red)
                                 .transition(.opacity)
                             }
-                            
+
                             ResendOTPCode()
                         }
                         .presentableStoreLensAnimation(.default)
