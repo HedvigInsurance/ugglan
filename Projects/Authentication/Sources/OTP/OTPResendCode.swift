@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 
 struct ResendOTPCode: View {
     @PresentableStore var store: AuthenticationStore
@@ -32,7 +32,9 @@ struct ResendOTPCode: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 20, height: 20)
                             .rotationEffect(state.isResending ? Angle(degrees: 0) : Angle(degrees: 360))
-                            .animation(state.isResending ? .linear(duration: 1).repeatForever(autoreverses: false) : .default)
+                            .animation(
+                                state.isResending ? .linear(duration: 1).repeatForever(autoreverses: false) : .default
+                            )
                         hText("Resend code", style: .subheadline)
                     }
                 }

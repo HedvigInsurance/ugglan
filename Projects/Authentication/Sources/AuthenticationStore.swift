@@ -117,7 +117,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             generator.notificationOccurred(.success)
         } else if case .otpStateAction(action: .resendCode) = action {
             let state = getState()
-            
+
             return
                 client.perform(
                     mutation: GraphQL.ResendLoginOtpMutation(id: state.otpState.id ?? "2")
