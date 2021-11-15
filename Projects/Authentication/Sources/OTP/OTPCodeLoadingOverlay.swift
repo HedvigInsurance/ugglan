@@ -1,14 +1,6 @@
-//
-//  OTPCodeLoadingOverlay.swift
-//  Authentication
-//
-//  Created by Sam Pettersson on 2021-11-15.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
-import hCore
 import SwiftUI
+import hCore
 import hCoreUI
 
 struct OTPCodeLoadingOverlay: View {

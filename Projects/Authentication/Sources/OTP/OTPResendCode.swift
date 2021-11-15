@@ -1,11 +1,3 @@
-//
-//  OTPResendCode.swift
-//  Authentication
-//
-//  Created by Sam Pettersson on 2021-11-15.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import SwiftUI
 import hCoreUI
@@ -17,12 +9,12 @@ struct ResendOTPCode: View {
     func updateText(timeUntil: Int) {
         canResendAtText = "Resend code in \(String(timeUntil))s"
     }
-    
+
     func timeUntil(state: OTPState) -> Int {
         guard let date = state.canResendAt else {
             return 0
         }
-        
+
         return Int(Date().timeIntervalSince(date))
     }
 
