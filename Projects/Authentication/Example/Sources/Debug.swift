@@ -49,16 +49,16 @@ extension Debug {
             if action == .openOTPEmailEntry {
                 OTPEmailEntry()
                     .disposableHostingJourney
-                    .style(.detented(.large))
+                    .setStyle(.detented(.large))
             } else if action == .openOTPCodeEntry {
                 OTPCodeEntry()
                     .disposableHostingJourney
-                    .style(.detented(.large))
+                    .setStyle(.detented(.large))
             } else if action == .openOTPJourney {
                 OTPAuthJourney.login { _ in
                     HostingJourney(rootView: hText("Login success")).withJourneyDismissButton
                 }
-                .style(.detented(.large))
+                .setStyle(.detented(.large))
                 .mapJourneyDismissToCancel
             }
         }

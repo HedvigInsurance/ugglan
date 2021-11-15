@@ -53,7 +53,7 @@ extension AppJourney {
                         AppJourney.loggedIn
                     }
                 }
-                .style(.detented(.large)).withDismissButton
+                .setStyle(.detented(.large)).withDismissButton
             }
         }
     }

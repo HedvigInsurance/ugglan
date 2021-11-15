@@ -1,8 +1,10 @@
 import Foundation
 import SwiftUI
 import hCoreUI
+import hCore
 
 struct ResendOTPCode: View {
+    @PresentableStore var store: AuthenticationStore
     @State var canResendAtText: String = ""
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -21,10 +23,18 @@ struct ResendOTPCode: View {
     var body: some View {
         ReadOTPState { state in
             if timeUntil(state: state) >= 0 {
-                hButton.SmallButtonFilled {
-
-                } content: {
-                    hText("Resend")
+                SwiftUI.Button {
+                    store.send(.otpStateAction(action: .resendCode))
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(uiImage: hCoreUIAssets.refresh.image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 20, height: 20)
+                            .rotationEffect(state.isResending ? Angle(degrees: 0) : Angle(degrees: 360))
+                            .animation(state.isResending ? .linear(duration: 1).repeatForever(autoreverses: false) : .default)
+                        hText("Resend code", style: .subheadline)
+                    }
                 }
             } else {
                 hText(

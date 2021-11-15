@@ -8,6 +8,7 @@ import hGraphQL
 
 struct OTPState: StateProtocol {
     var isLoading = false
+    var isResending = false
     var id: String? = nil
     var code: String = ""
     var errorMessage: String? = nil
@@ -114,6 +115,17 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case .navigationAction(action: .authSuccess) = action {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
+        } else if case .otpStateAction(action: .resendCode) = action {
+            let state = getState()
+            
+            return
+                client.perform(
+                    mutation: GraphQL.ResendLoginOtpMutation(id: state.otpState.id ?? "2")
+                )
+                .map { data in
+                    .otpStateAction(action: .setID(id: data.loginResendOtp))
+                }
+                .valueThenEndSignal
         }
 
         return nil
@@ -149,8 +161,10 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 newState.otpState.code = ""
                 newState.otpState.id = id
                 newState.otpState.canResendAt = Date().addingTimeInterval(60)
+                newState.otpState.isResending = false
             case .resendCode:
                 newState.otpState.code = ""
+                newState.otpState.isResending = true
             default:
                 break
             }
