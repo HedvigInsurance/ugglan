@@ -6,103 +6,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-extension Binding {
-    init<S: Store>(
-        _ storeType: S.Type,
-        getter: @escaping (_ state: S.State) -> Value,
-        setter: @escaping (_ value: Value) -> S.Action
-    ) {
-        let store: S = globalPresentableStoreContainer.get()
-
-        self.init {
-            getter(store.stateSignal.value)
-        } set: { newValue, _ in
-            store.send(setter(newValue))
-        }
-    }
-}
-
-struct OTPCodeLoadingOverlay: View {
-    var body: some View {
-        PresentableStoreLens(
-            AuthenticationStore.self,
-            getter: { state in
-                state.otpState.isLoading
-            }
-        ) { isLoading in
-            if isLoading {
-                HStack {
-                    WordmarkActivityIndicator(.standard)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(hBackgroundColor.primary.opacity(0.7))
-                .cornerRadius(.defaultCornerRadius)
-                .edgesIgnoringSafeArea(.top)
-            }
-        }
-        .presentableStoreLensAnimation(.default)
-    }
-}
-
-struct ReadOTPState<Content: View>: View {
-    var content: (_ state: OTPState) -> Content
-
-    init(
-        @ViewBuilder _ content: @escaping (_ state: OTPState) -> Content
-    ) {
-        self.content = content
-    }
-
-    var body: some View {
-        PresentableStoreLens(
-            AuthenticationStore.self,
-            getter: { state in
-                state.otpState
-            }
-        ) { state in
-            content(state)
-        }
-    }
-}
-
-struct ResendOTPCode: View {
-    @State var canResendAtText: String = ""
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
-    func updateText(timeUntil: Int) {
-        canResendAtText = "Resend code in \(String(timeUntil))s"
-    }
-
-    var body: some View {
-        ReadOTPState { state in
-            if let date = state.canResendAt {
-                let timeUntil = Int(Date().timeIntervalSince(date))
-
-                if timeUntil >= 0 {
-                    hButton.SmallButtonFilled {
-
-                    } content: {
-                        hText("Resend")
-                    }
-                } else {
-                    hText(
-                        canResendAtText,
-                        style: .subheadline
-                    )
-                    .foregroundColor(hLabelColor.tertiary)
-                    .onReceive(timer) { _ in
-                        updateText(timeUntil: abs(timeUntil))
-                    }
-                    .onAppear {
-                        updateText(timeUntil: abs(timeUntil))
-                    }
-                }
-            }
-        }
-        .padding(.top, 44)
-    }
-}
-
 public struct OTPCodeEntry: View {
     @hTextFieldFocusState var focusCodeField: Bool = true
 
@@ -169,7 +72,11 @@ public struct OTPCodeEntry: View {
                     hButton.LargeButtonFilled {
                         let mailURL = URL(string: "message://")!
                         if UIApplication.shared.canOpenURL(mailURL) {
-                            UIApplication.shared.openURL(mailURL)
+                            UIApplication.shared.open(
+                                mailURL,
+                                options: [:],
+                                completionHandler: nil
+                            )
                         }
                     } content: {
                         hText("Open email")
