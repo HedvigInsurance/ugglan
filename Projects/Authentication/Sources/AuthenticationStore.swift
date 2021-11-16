@@ -180,6 +180,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 newState.otpState.isResending = false
             case .resendCode:
                 newState.otpState.code = ""
+                newState.otpState.errorMessage = nil
                 newState.otpState.isResending = true
             default:
                 break
