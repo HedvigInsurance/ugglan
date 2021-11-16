@@ -55,7 +55,8 @@ extension ChatButton: Viewable {
 
         bag += chatButtonView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
-        bag += chatButtonView.signal(for: .touchUpInside).onValue { _ in Self.openChatHandler(presentingViewController) }
+        bag += chatButtonView.signal(for: .touchUpInside)
+            .onValue { _ in Self.openChatHandler(presentingViewController) }
 
         let chatIcon = UIImageView()
         chatIcon.isUserInteractionEnabled = false
