@@ -4,7 +4,7 @@ import UIKit
 import hCore
 
 public struct ChatButton {
-    public static var openChatHandler: (_ self: Self) -> Void = { _ in }
+    public static var openChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
     public let presentingViewController: UIViewController
     public let allowsChatHint: Bool
 
@@ -55,7 +55,7 @@ extension ChatButton: Viewable {
 
         bag += chatButtonView.signal(for: .touchUpInside).feedback(type: .impactLight)
 
-        bag += chatButtonView.signal(for: .touchUpInside).onValue { _ in Self.openChatHandler(self) }
+        bag += chatButtonView.signal(for: .touchUpInside).onValue { _ in Self.openChatHandler(presentingViewController) }
 
         let chatIcon = UIImageView()
         chatIcon.isUserInteractionEnabled = false

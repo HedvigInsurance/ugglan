@@ -1,6 +1,9 @@
 import Foundation
 import Presentation
 import hCore
+import UIKit
+import hCoreUI
+import Flow
 
 public struct OTPAuthJourney {
     public static func login<Next: JourneyPresentation>(
@@ -18,6 +21,16 @@ public struct OTPAuthJourney {
                     if case let .navigationAction(action: .authSuccess(accessToken)) = action {
                         next(accessToken).hidesBackButton
                     }
+                }.addConfiguration { presenter in
+                    let barButtonItem = UIBarButtonItem(
+                        title: L10n.Login.NavigationBar.RightElement.help
+                    )
+                    
+                    presenter.bag += barButtonItem.onValue { _ in
+                        ChatButton.openChatHandler(presenter.viewController)
+                    }
+                    
+                    presenter.viewController.navigationItem.rightBarButtonItem = barButtonItem
                 }
             }
         }
