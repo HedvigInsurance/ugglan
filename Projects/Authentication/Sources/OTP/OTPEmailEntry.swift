@@ -31,7 +31,7 @@ public struct OTPEmailEntry: View {
                         L10n.Login.enterYourEmailAddress,
                         style: .title1
                     )
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     hTextField(
                         masking: emailMasking,
                         value: Binding(

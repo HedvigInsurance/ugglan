@@ -131,8 +131,9 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 .flatMapLatest { data in
                     [
                         .otpStateAction(action: .setID(id: data.loginResendOtp)),
-                        .otpStateAction(action: .showResentToast)
-                    ].emitEachThenEnd
+                        .otpStateAction(action: .showResentToast),
+                    ]
+                    .emitEachThenEnd
                 }
         } else if case .otpStateAction(action: .showResentToast) = action {
             Toasts.shared.displayToast(
