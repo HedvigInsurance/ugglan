@@ -9,7 +9,7 @@ import hCoreUI
 public struct OTPCodeEntry: View {
     @PresentableStore var store: AuthenticationStore
     @hTextFieldFocusState var focusCodeField: Bool? = true
-    
+
     var codeBinding: Binding<String> {
         Binding(
             AuthenticationStore.self,
@@ -43,20 +43,27 @@ public struct OTPCodeEntry: View {
                                 code: state.code,
                                 showRedBorders: state.errorMessage != nil
                             )
-                            .background(PasteView {
-                                guard let pasteBoardValue = UIPasteboard.general.value else {
-                                    return
+                            .background(
+                                PasteView {
+                                    guard let pasteBoardValue = UIPasteboard.general.value else {
+                                        return
+                                    }
+
+                                    let onlyDigitsCode =
+                                        pasteBoardValue.components(
+                                            separatedBy: CharacterSet.decimalDigits.inverted
+                                        )
+                                        .joined()
+
+                                    codeBinding.wrappedValue = String(onlyDigitsCode.prefix(6))
                                 }
-                                
-                                let onlyDigitsCode = pasteBoardValue.components(
-                                    separatedBy: CharacterSet.decimalDigits.inverted
-                                ).joined()
-                                
-                                codeBinding.wrappedValue = String(onlyDigitsCode.prefix(6))
-                            })
-                            .simultaneousGesture(TapGesture().onEnded({ _ in
-                                focusCodeField = true
-                            }))
+                            )
+                            .simultaneousGesture(
+                                TapGesture()
+                                    .onEnded({ _ in
+                                        focusCodeField = true
+                                    })
+                            )
 
                             if let errorMessage = state.errorMessage {
                                 hText(

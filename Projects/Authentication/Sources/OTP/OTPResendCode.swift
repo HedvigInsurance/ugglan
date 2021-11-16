@@ -37,7 +37,8 @@ struct ResendOTPCode: View {
                             )
                         hText("Resend code", style: .subheadline)
                     }
-                }.tint(hLabelColor.primary)
+                }
+                .tint(hLabelColor.primary)
             } else {
                 hText(
                     canResendAtText,

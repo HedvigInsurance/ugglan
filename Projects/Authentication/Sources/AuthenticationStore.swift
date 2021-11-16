@@ -106,12 +106,13 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 .flatMapLatest { data in
                     [
                         .navigationAction(action: .otpCode),
-                        .otpStateAction(action: .setID(id: data.loginCreateOtpAttempt))
-                    ].emitEachThenEnd
+                        .otpStateAction(action: .setID(id: data.loginCreateOtpAttempt)),
+                    ]
+                    .emitEachThenEnd
                 }
         } else if case .otpStateAction(action: .setID) = action {
             return [
-                .otpStateAction(action: .setLoading(isLoading: false)),
+                .otpStateAction(action: .setLoading(isLoading: false))
             ]
             .emitEachThenEnd
         } else if case .navigationAction(action: .authSuccess) = action {

@@ -83,7 +83,7 @@ class TextFieldObserver: NSObject, UITextFieldDelegate {
         onReturnTap()
         return false
     }
-    
+
     func textFieldDidEndEditing(_ textField: UITextField) {
         onDidEndEditing()
     }
@@ -114,7 +114,7 @@ struct hTextFieldFocusStateModifier<Value: hTextFieldFocusStateCompliant>: ViewM
 
             onReturn()
         }
-        
+
         observer.onDidEndEditing = {
             focusedField = nil
         }
