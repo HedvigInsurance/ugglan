@@ -49,7 +49,8 @@ public struct OTPEmailEntry: View {
                             onSubmit()
                         }
                         .hTextFieldError(state.errorMessage)
-                    }.presentableStoreLensAnimation(.default)
+                    }
+                    .presentableStoreLensAnimation(.default)
                 }
             }
         }

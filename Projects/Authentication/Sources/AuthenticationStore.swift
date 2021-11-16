@@ -111,7 +111,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     case .failure:
                         return [
                             .otpStateAction(action: .setLoading(isLoading: false)),
-                            .otpStateAction(action: .setError(message: L10n.Login.TextInput.emailErrorNotValid))
+                            .otpStateAction(action: .setError(message: L10n.Login.TextInput.emailErrorNotValid)),
                         ]
                         .emitEachThenEnd
                     case let .success(data):

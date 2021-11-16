@@ -20,7 +20,6 @@ extension View {
     }
 }
 
-
 public struct hTextField: View {
     @Environment(\.hTextFieldError) var errorMessage
     var masking: Masking
