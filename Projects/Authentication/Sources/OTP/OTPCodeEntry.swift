@@ -29,12 +29,14 @@ public struct OTPCodeEntry: View {
             hSection {
                 VStack(spacing: 50) {
                     VStack(spacing: 16) {
-                        hText("Check your email.", style: .title1)
+                        hText(L10n.Login.Title.checkYourEmail, style: .title1)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        hText(
-                            "Click the log in button in the email or enter the 6-digit code we've sent to johndoe@gmail.com.",
-                            style: .body
-                        )
+                        ReadOTPState { state in
+                            hText(
+                                L10n.Login.Subtitle.verificationCodeEmail(state.email),
+                                style: .body
+                            )
+                        }
                     }
 
                     VStack(spacing: 8) {

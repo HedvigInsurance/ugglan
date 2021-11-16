@@ -27,7 +27,10 @@ public struct OTPEmailEntry: View {
         hForm {
             hSection {
                 VStack(spacing: 50) {
-                    hText("Please enter your email address below.", style: .title1)
+                    hText(
+                        L10n.Login.enterYourEmailAddress,
+                        style: .title1
+                    )
                         .frame(maxWidth: .infinity, alignment: .leading)
                     hTextField(
                         masking: emailMasking,
@@ -53,7 +56,7 @@ public struct OTPEmailEntry: View {
                     hButton.LargeButtonFilled {
                         onSubmit()
                     } content: {
-                        hText("Continue")
+                        hText(L10n.Login.continueButton)
                     }
                     .hButtonIsLoading(state.isLoading)
                 }

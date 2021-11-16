@@ -9,7 +9,7 @@ struct ResendOTPCode: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     func updateText(timeUntil: Int) {
-        canResendAtText = "Resend code in \(String(timeUntil))s"
+        canResendAtText = L10n.Login.MediumButton.Inactive.resendCodeIn(timeUntil)
     }
 
     func timeUntil(state: OTPState) -> Int {
@@ -35,7 +35,7 @@ struct ResendOTPCode: View {
                             .animation(
                                 state.isResending ? .linear(duration: 1).repeatForever(autoreverses: false) : .default
                             )
-                        hText("Resend code", style: .subheadline)
+                        hText(L10n.Login.SmediumButton.Active.resendCode, style: .subheadline)
                     }
                 }
                 .tint(hLabelColor.primary)

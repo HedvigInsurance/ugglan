@@ -4,6 +4,7 @@ import Foundation
 import Presentation
 import UIKit
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct OTPState: StateProtocol {
@@ -34,6 +35,7 @@ public enum OTPStateAction: ActionProtocol {
     case submitEmail
     case reset
     case resendCode
+    case showResentToast
 }
 
 public enum AuthenticationNavigationAction: ActionProtocol {
@@ -125,10 +127,20 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 client.perform(
                     mutation: GraphQL.ResendLoginOtpMutation(id: state.otpState.id ?? "2")
                 )
-                .map { data in
-                    .otpStateAction(action: .setID(id: data.loginResendOtp))
-                }
                 .valueThenEndSignal
+                .flatMapLatest { data in
+                    [
+                        .otpStateAction(action: .setID(id: data.loginResendOtp)),
+                        .otpStateAction(action: .showResentToast)
+                    ].emitEachThenEnd
+                }
+        } else if case .otpStateAction(action: .showResentToast) = action {
+            Toasts.shared.displayToast(
+                toast: .init(
+                    symbol: .icon(hCoreUIAssets.refresh.image),
+                    body: L10n.Login.Snackbar.codeResent
+                )
+            )
         }
 
         return nil
