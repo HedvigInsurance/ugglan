@@ -3,7 +3,26 @@ import Foundation
 import SwiftUI
 import hCore
 
+private struct EnvironmentHTextFieldError: EnvironmentKey {
+    static let defaultValue: String? = nil
+}
+
+extension EnvironmentValues {
+    public var hTextFieldError: String? {
+        get { self[EnvironmentHTextFieldError.self] }
+        set { self[EnvironmentHTextFieldError.self] = newValue }
+    }
+}
+
+extension View {
+    public func hTextFieldError(_ message: String?) -> some View {
+        self.environment(\.hTextFieldError, message)
+    }
+}
+
+
 public struct hTextField: View {
+    @Environment(\.hTextFieldError) var errorMessage
     var masking: Masking
     var placeholder: String
     @State var previousInnerValue: String
@@ -23,19 +42,34 @@ public struct hTextField: View {
 
     public var body: some View {
         VStack {
-            SwiftUI.TextField(placeholder, text: $innerValue)
-                .modifier(hFontModifier(style: .body))
-                .modifier(masking)
-                .tint(hLabelColor.primary)
-                .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
-                    if shouldUpdate {
-                        value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
-                        innerValue = value
-                        previousInnerValue = value
+            HStack {
+                SwiftUI.TextField(placeholder, text: $innerValue)
+                    .modifier(hFontModifier(style: .body))
+                    .modifier(masking)
+                    .tint(hLabelColor.primary)
+                    .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
+                        if shouldUpdate {
+                            value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
+                            innerValue = value
+                            previousInnerValue = value
+                        }
                     }
+                    .frame(minHeight: 40)
+                if errorMessage != nil {
+                    Image(uiImage: hCoreUIAssets.circularExclamationPoint.image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(hTintColor.red)
                 }
-                .frame(minHeight: 40)
+            }
             SwiftUI.Divider()
+            if let errorMessage = errorMessage {
+                hText(errorMessage, style: .footnote)
+                    .padding(.top, 7)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .foregroundColor(hTintColor.red)
+            }
         }
     }
 }

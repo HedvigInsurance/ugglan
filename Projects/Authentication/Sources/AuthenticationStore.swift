@@ -104,13 +104,23 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         email: state.otpState.email
                     )
                 )
-                .valueThenEndSignal
-                .flatMapLatest { data in
-                    [
-                        .navigationAction(action: .otpCode),
-                        .otpStateAction(action: .setID(id: data.loginCreateOtpAttempt)),
-                    ]
-                    .emitEachThenEnd
+                .resultSignal
+                .delay(by: 0.5)
+                .flatMapLatest { result -> FiniteSignal<AuthenticationAction> in
+                    switch result {
+                    case .failure:
+                        return [
+                            .otpStateAction(action: .setLoading(isLoading: false)),
+                            .otpStateAction(action: .setError(message: L10n.Login.TextInput.emailErrorNotValid))
+                        ]
+                        .emitEachThenEnd
+                    case let .success(data):
+                        return [
+                            .navigationAction(action: .otpCode),
+                            .otpStateAction(action: .setID(id: data.loginCreateOtpAttempt)),
+                        ]
+                        .emitEachThenEnd
+                    }
                 }
         } else if case .otpStateAction(action: .setID) = action {
             return [
@@ -125,7 +135,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
 
             return
                 client.perform(
-                    mutation: GraphQL.ResendLoginOtpMutation(id: state.otpState.id ?? "2")
+                    mutation: GraphQL.ResendLoginOtpMutation(id: state.otpState.id ?? "")
                 )
                 .valueThenEndSignal
                 .flatMapLatest { data in
@@ -182,6 +192,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 newState.otpState.code = ""
                 newState.otpState.errorMessage = nil
                 newState.otpState.isResending = true
+            case .submitEmail:
+                newState.otpState.errorMessage = nil
             default:
                 break
             }

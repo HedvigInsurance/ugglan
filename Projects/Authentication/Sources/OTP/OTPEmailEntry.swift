@@ -32,21 +32,24 @@ public struct OTPEmailEntry: View {
                         style: .title1
                     )
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    hTextField(
-                        masking: emailMasking,
-                        value: Binding(
-                            AuthenticationStore.self,
-                            getter: { state in
-                                state.otpState.email
-                            },
-                            setter: { email in
-                                .otpStateAction(action: .setEmail(email: email))
-                            }
+                    ReadOTPState { state in
+                        hTextField(
+                            masking: emailMasking,
+                            value: Binding(
+                                AuthenticationStore.self,
+                                getter: { state in
+                                    state.otpState.email
+                                },
+                                setter: { email in
+                                    .otpStateAction(action: .setEmail(email: email))
+                                }
+                            )
                         )
-                    )
-                    .focused($focusEmailField, equals: true) {
-                        onSubmit()
-                    }
+                        .focused($focusEmailField, equals: true) {
+                            onSubmit()
+                        }
+                        .hTextFieldError(state.errorMessage)
+                    }.presentableStoreLensAnimation(.default)
                 }
             }
         }
