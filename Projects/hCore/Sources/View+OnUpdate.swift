@@ -1,13 +1,5 @@
-//
-//  View+OnUpdate.swift
-//  hCore
-//
-//  Created by Sam Pettersson on 2021-11-16.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
-import Foundation
 import Combine
+import Foundation
 import SwiftUI
 
 extension View {

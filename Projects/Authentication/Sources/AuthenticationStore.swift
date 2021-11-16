@@ -81,7 +81,9 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 .delay(by: 0.5)
                 .compactMap { data in
                     if data.loginVerifyOtpAttempt.asVerifyOtpLoginAttemptError != nil {
-                        return .otpStateAction(action: .setCodeError(message: L10n.Login.CodeInput.ErrorMsg.codeNotValid))
+                        return .otpStateAction(
+                            action: .setCodeError(message: L10n.Login.CodeInput.ErrorMsg.codeNotValid)
+                        )
                     } else if let success = data.loginVerifyOtpAttempt.asVerifyOtpLoginAttemptSuccess {
                         return .navigationAction(action: .authSuccess(accessToken: success.accessToken))
                     }
