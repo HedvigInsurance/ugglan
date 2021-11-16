@@ -30,6 +30,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             MutationMock(GraphQL.CreateLoginOtpAttemptMutation.self, duration: 2) { _ in
                 .init(loginCreateOtpAttempt: UUID().uuidString)
             }
+            
+            MutationMock(GraphQL.ResendLoginOtpMutation.self, duration: 2) { _ in
+                .init(loginResendOtp: UUID().uuidString)
+            }
         }
 
         return true

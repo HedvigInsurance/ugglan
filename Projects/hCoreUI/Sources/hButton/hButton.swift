@@ -119,7 +119,9 @@ struct LoaderOrContent<Content: View>: View {
 
     var body: some View {
         if isLoading {
-            WordmarkActivityIndicator(.small).invertColorScheme
+            ActivityIndicator(
+                style: .medium
+            )
         } else {
             content()
         }

@@ -31,13 +31,13 @@ struct ResendOTPCode: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 20, height: 20)
-                            .rotationEffect(state.isResending ? Angle(degrees: 0) : Angle(degrees: 360))
+                            .rotationEffect(state.isResending ? Angle(degrees: 0) : Angle(degrees: -360))
                             .animation(
                                 state.isResending ? .linear(duration: 1).repeatForever(autoreverses: false) : .default
                             )
                         hText("Resend code", style: .subheadline)
                     }
-                }
+                }.tint(hLabelColor.primary)
             } else {
                 hText(
                     canResendAtText,

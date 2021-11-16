@@ -50,16 +50,16 @@ struct hTextFieldPreview: PreviewProvider {
 }
 
 @propertyWrapper public struct hTextFieldFocusState<Value: Hashable>: DynamicProperty {
-    @State var field: Value
+    @State var field: Value?
 
-    public var projectedValue: Binding<Value> {
+    public var projectedValue: Binding<Value?> {
         Binding(
             get: { wrappedValue },
             set: { wrappedValue = $0 }
         )
     }
 
-    public var wrappedValue: Value {
+    public var wrappedValue: Value? {
         get {
             return field
         }
@@ -69,7 +69,7 @@ struct hTextFieldPreview: PreviewProvider {
     }
 
     public init(
-        wrappedValue: Value
+        wrappedValue: Value?
     ) {
         self._field = State(initialValue: wrappedValue)
     }
@@ -77,10 +77,15 @@ struct hTextFieldPreview: PreviewProvider {
 
 class TextFieldObserver: NSObject, UITextFieldDelegate {
     var onReturnTap: () -> Void = {}
+    var onDidEndEditing: () -> Void = {}
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         onReturnTap()
         return false
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        onDidEndEditing()
     }
 }
 
@@ -95,19 +100,23 @@ struct hTextFieldFocusStateModifier<Value: hTextFieldFocusStateCompliant>: ViewM
     @State var textField: UITextField? = nil
     @State var observer = TextFieldObserver()
 
-    @Binding var focusedField: Value
-    var equals: Value
+    @Binding var focusedField: Value?
+    var equals: Value?
     var onReturn: () -> Void
 
     func setup() {
         textField?.delegate = observer
 
         observer.onReturnTap = {
-            if let next = focusedField.next {
+            if let next = focusedField?.next {
                 focusedField = next
             }
 
             onReturn()
+        }
+        
+        observer.onDidEndEditing = {
+            focusedField = nil
         }
 
         if equals.hashValue == Value.last.hashValue {
@@ -183,8 +192,8 @@ extension Bool: hTextFieldFocusStateCompliant {
 
 extension hTextField {
     public func focused<Value: hTextFieldFocusStateCompliant>(
-        _ focusedField: Binding<Value>,
-        equals: Value,
+        _ focusedField: Binding<Value?>,
+        equals: Value?,
         onReturn: @escaping () -> Void = {}
     ) -> some View {
         self.modifier(hTextFieldFocusStateModifier(focusedField: focusedField, equals: equals, onReturn: onReturn))

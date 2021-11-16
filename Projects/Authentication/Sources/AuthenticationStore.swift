@@ -102,13 +102,15 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         email: state.otpState.email
                     )
                 )
-                .map { data in
-                    .otpStateAction(action: .setID(id: data.loginCreateOtpAttempt))
-                }
                 .valueThenEndSignal
+                .flatMapLatest { data in
+                    [
+                        .navigationAction(action: .otpCode),
+                        .otpStateAction(action: .setID(id: data.loginCreateOtpAttempt))
+                    ].emitEachThenEnd
+                }
         } else if case .otpStateAction(action: .setID) = action {
             return [
-                .navigationAction(action: .otpCode),
                 .otpStateAction(action: .setLoading(isLoading: false)),
             ]
             .emitEachThenEnd

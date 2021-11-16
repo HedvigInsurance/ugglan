@@ -1,6 +1,25 @@
 import Foundation
 import SwiftUI
 
+public struct ActivityIndicator: UIViewRepresentable {
+    var style: UIActivityIndicatorView.Style
+
+    public init(
+        style: UIActivityIndicatorView.Style
+    ) {
+        self.style = style
+    }
+
+    public func makeUIView(context: Context) -> UIActivityIndicatorView {
+        UIActivityIndicatorView()
+    }
+
+    public func updateUIView(_ uiView: UIActivityIndicatorView, context: Context) {
+        uiView.startAnimating()
+        uiView.color = .brand(.primaryText(true))
+    }
+}
+
 public struct WordmarkActivityIndicator: View {
     @State var rotating: Bool = false
     @State var hasEntered: Bool = false
@@ -29,18 +48,12 @@ public struct WordmarkActivityIndicator: View {
     public var body: some View {
         ZStack {
             Circle()
-                .stroke(lineWidth: 1.0)
-                .opacity(0.5)
+                .stroke(lineWidth: 2.0)
                 .foregroundColor(hLabelColor.primary)
-
-            Circle()
-                .trim(from: 0.0, to: 0.7)
-                .stroke(style: StrokeStyle(lineWidth: 1.0, lineCap: .round, lineJoin: .round))
-                .foregroundColor(hLabelColor.primary)
-                .rotationEffect(rotating ? Angle(degrees: 0) : Angle(degrees: 360))
-                .animation(self.rotating ? .linear(duration: 1).repeatForever(autoreverses: false) : .default)
 
             hText("H", style: .largeTitle).minimumScaleFactor(0.1).padding(1.5)
+                .rotationEffect(rotating ? Angle(degrees: 0) : Angle(degrees: -360))
+                .animation(self.rotating ? .linear(duration: 1.5).repeatForever(autoreverses: false) : .default)
         }
         .frame(width: frameSize, height: frameSize)
         .scaleEffect(hasEntered ? 1 : 0.8)

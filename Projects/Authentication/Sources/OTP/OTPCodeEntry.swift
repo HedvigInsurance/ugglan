@@ -7,7 +7,20 @@ import hCore
 import hCoreUI
 
 public struct OTPCodeEntry: View {
-    @hTextFieldFocusState var focusCodeField: Bool = true
+    @PresentableStore var store: AuthenticationStore
+    @hTextFieldFocusState var focusCodeField: Bool? = true
+    
+    var codeBinding: Binding<String> {
+        Binding(
+            AuthenticationStore.self,
+            getter: { state in
+                state.otpState.code
+            },
+            setter: { code in
+                .otpStateAction(action: .setCode(code: code))
+            }
+        )
+    }
 
     public init() {}
 
@@ -30,9 +43,20 @@ public struct OTPCodeEntry: View {
                                 code: state.code,
                                 showRedBorders: state.errorMessage != nil
                             )
-                            .onTapGesture {
+                            .background(PasteView {
+                                guard let pasteBoardValue = UIPasteboard.general.value else {
+                                    return
+                                }
+                                
+                                let onlyDigitsCode = pasteBoardValue.components(
+                                    separatedBy: CharacterSet.decimalDigits.inverted
+                                ).joined()
+                                
+                                codeBinding.wrappedValue = String(onlyDigitsCode.prefix(6))
+                            })
+                            .simultaneousGesture(TapGesture().onEnded({ _ in
                                 focusCodeField = true
-                            }
+                            }))
 
                             if let errorMessage = state.errorMessage {
                                 hText(
@@ -52,40 +76,14 @@ public struct OTPCodeEntry: View {
             .background(
                 hTextField(
                     masking: .init(type: .digits),
-                    value: Binding(
-                        AuthenticationStore.self,
-                        getter: { state in
-                            state.otpState.code
-                        },
-                        setter: { code in
-                            .otpStateAction(action: .setCode(code: code))
-                        }
-                    )
+                    value: codeBinding
                 )
                 .focused($focusCodeField, equals: true)
                 .opacity(0)
             )
         }
         .hFormAttachToBottom {
-            ReadOTPState { state in
-                hSection {
-                    hButton.LargeButtonFilled {
-                        let mailURL = URL(string: "message://")!
-                        if UIApplication.shared.canOpenURL(mailURL) {
-                            UIApplication.shared.open(
-                                mailURL,
-                                options: [:],
-                                completionHandler: nil
-                            )
-                        }
-                    } content: {
-                        hText("Open email")
-                    }
-                }
-                .offset(x: 0, y: state.code.isEmpty ? 0 : 150)
-                .opacity(state.code.isEmpty ? 1 : 0)
-                .animation(.spring(), value: state.code)
-            }
+            OpenEmailClientButton()
         }
         .overlay(OTPCodeLoadingOverlay())
         .sectionContainerStyle(.transparent)
