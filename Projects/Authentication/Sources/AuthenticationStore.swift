@@ -12,7 +12,8 @@ struct OTPState: StateProtocol {
     var isResending = false
     var id: String? = nil
     var code: String = ""
-    var errorMessage: String? = nil
+    var codeErrorMessage: String? = nil
+    var emailErrorMessage: String? = nil
     var email: String = ""
     var canResendAt: Date? = nil
 
@@ -29,7 +30,8 @@ public enum OTPStateAction: ActionProtocol {
     case setCode(code: String)
     case verifyCode
     case setLoading(isLoading: Bool)
-    case setError(message: String?)
+    case setCodeError(message: String?)
+    case setEmailError(message: String?)
     case setEmail(email: String)
     case setID(id: String?)
     case submitEmail
@@ -78,8 +80,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 )
                 .delay(by: 0.5)
                 .compactMap { data in
-                    if let error = data.loginVerifyOtpAttempt.asVerifyOtpLoginAttemptError {
-                        return .otpStateAction(action: .setError(message: error.errorCode))
+                    if data.loginVerifyOtpAttempt.asVerifyOtpLoginAttemptError != nil {
+                        return .otpStateAction(action: .setCodeError(message: L10n.Login.CodeInput.ErrorMsg.codeNotValid))
                     } else if let success = data.loginVerifyOtpAttempt.asVerifyOtpLoginAttemptSuccess {
                         return .navigationAction(action: .authSuccess(accessToken: success.accessToken))
                     }
@@ -87,7 +89,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     return nil
                 }
                 .valueThenEndSignal
-        } else if case .otpStateAction(action: .setError) = action {
+        } else if case .otpStateAction(action: .setCodeError) = action {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.error)
 
@@ -111,7 +113,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     case .failure:
                         return [
                             .otpStateAction(action: .setLoading(isLoading: false)),
-                            .otpStateAction(action: .setError(message: L10n.Login.TextInput.emailErrorNotValid)),
+                            .otpStateAction(action: .setEmailError(message: L10n.Login.TextInput.emailErrorNotValid)),
                         ]
                         .emitEachThenEnd
                     case let .success(data):
@@ -176,13 +178,16 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     newState.otpState.code = String(code.suffix(1))
                 }
 
-                newState.otpState.errorMessage = nil
+                newState.otpState.codeErrorMessage = nil
             case let .setLoading(isLoading):
                 newState.otpState.isLoading = isLoading
-            case let .setError(message):
-                newState.otpState.errorMessage = message
+            case let .setCodeError(message):
+                newState.otpState.codeErrorMessage = message
+            case let .setEmailError(message):
+                newState.otpState.emailErrorMessage = message
             case let .setEmail(email):
                 newState.otpState.email = email
+                newState.otpState.emailErrorMessage = nil
             case let .setID(id):
                 newState.otpState.code = ""
                 newState.otpState.id = id
@@ -190,10 +195,10 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 newState.otpState.isResending = false
             case .resendCode:
                 newState.otpState.code = ""
-                newState.otpState.errorMessage = nil
+                newState.otpState.codeErrorMessage = nil
                 newState.otpState.isResending = true
             case .submitEmail:
-                newState.otpState.errorMessage = nil
+                newState.otpState.emailErrorMessage = nil
             default:
                 break
             }

@@ -43,7 +43,7 @@ public struct OTPCodeEntry: View {
                         ReadOTPState { state in
                             OTPCodeDisplay(
                                 code: state.code,
-                                showRedBorders: state.errorMessage != nil
+                                showRedBorders: state.codeErrorMessage != nil
                             )
                             .background(
                                 PasteView {
@@ -67,7 +67,7 @@ public struct OTPCodeEntry: View {
                                     })
                             )
 
-                            if let errorMessage = state.errorMessage {
+                            if let errorMessage = state.codeErrorMessage {
                                 hText(
                                     errorMessage,
                                     style: .footnote

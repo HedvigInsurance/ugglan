@@ -48,7 +48,7 @@ public struct OTPEmailEntry: View {
                         .focused($focusEmailField, equals: true) {
                             onSubmit()
                         }
-                        .hTextFieldError(state.errorMessage)
+                        .hTextFieldError(state.emailErrorMessage)
                     }
                     .presentableStoreLensAnimation(.default)
                 }
