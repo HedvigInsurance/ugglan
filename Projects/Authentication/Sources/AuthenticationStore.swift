@@ -193,6 +193,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             case let .setID(id):
                 newState.otpState.code = ""
                 newState.otpState.id = id
+                newState.otpState.codeErrorMessage = nil
+                newState.otpState.emailErrorMessage = nil
                 newState.otpState.canResendAt = Date().addingTimeInterval(60)
                 newState.otpState.isResending = false
             case .resendCode:
