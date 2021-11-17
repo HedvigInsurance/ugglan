@@ -29,7 +29,8 @@ struct TrackPlayer: View {
                 )
 
         }
-        .padding([.leading, .trailing])
+        .padding(.vertical, 5)
+        .padding(.horizontal, 10)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 8)
@@ -37,7 +38,9 @@ struct TrackPlayer: View {
                 .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
         )
         .onTapGesture {
-            audioPlayer.togglePlaying()
+            withAnimation(.spring()) {
+                audioPlayer.togglePlaying()
+            }
         }
     }
 }
@@ -51,14 +54,14 @@ struct Staple: View {
     var range: Range<CGFloat>
 
     var heightRatio: CGFloat {
-        max(value - range.lowerBound / magnitude(of: range), 0.01)
+        max((value - range.lowerBound) / magnitude(of: range), 0.05)
     }
 
     var body: some View {
         Capsule()
             .fill(staplesDefaultColor)
-            .frame(width: 3, height: height)
-            .scaleEffect(x: 1, y: 0.4 + heightRatio, anchor: .center)
+            .frame(width: 2, height: height)
+            .scaleEffect(x: 1, y: heightRatio, anchor: .center)
     }
 
     func magnitude(of range: Range<CGFloat>) -> CGFloat {
@@ -78,12 +81,12 @@ struct Staples: View {
                 ForEach(
                     Array(trim(sample: sample, availableWidth: geometry.size.width).enumerated()),
                     id: \.offset
-                ) { index, sample in
+                ) { index, sampleHeight in
                     Spacer()
                     Staple(
                         index: index,
                         height: geometry.size.height,
-                        value: sample,
+                        value: sampleHeight,
                         range: sampleRange
                     )
                 }
@@ -97,7 +100,7 @@ struct Staples: View {
 
         let count = Double(trimmed.count)
 
-        let maxStaples = Double(availableWidth / 4)
+        let maxStaples = Double(availableWidth / 2)
 
         guard count > maxStaples else { return trimmed }
 
