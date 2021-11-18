@@ -41,8 +41,6 @@ extension GraphQL.QuoteBundleQuery.Data {
                 quotes: [
                     .init(
                         id: "123",
-                        firstName: "Hedvig",
-                        lastName: "Hedvigsen",
                         displayName: "Innboforsikring",
                         detailsTable: generateDetailsTable(
                             title: "Innboforsikring",
