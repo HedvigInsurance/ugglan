@@ -189,31 +189,28 @@ public class EmbarkState {
     private var totalStepsSignal = ReadWriteSignal<Int?>(nil)
 
     var progressSignal: ReadSignal<Float> {
-        var visitedPassageDepths: [String: Int] = [:]
-
-        func findMaxDepth(passageName: String, previousDepth: Int = 0) -> Int {
-            if let depth = visitedPassageDepths[passageName] {
-                return depth
+        func findMaxDepth(passageName: String, previousDepth: Int = 0, visitedPassages: [String] = []) -> Int {
+            if visitedPassages.contains(passageName) {
+                return previousDepth
             }
 
             guard let passage = passagesSignal.value.first(where: { $0.name == passageName }) else {
-                visitedPassageDepths[passageName] = 0
-                return 0
+                return previousDepth
             }
 
             let links = passage.allLinks.map { $0.name }
 
             if links.isEmpty { return previousDepth }
 
-            visitedPassageDepths[passageName] = previousDepth
-
             let depth =
                 links.map { linkPassageName in
-                    findMaxDepth(passageName: linkPassageName, previousDepth: previousDepth + 1)
+                    findMaxDepth(
+                        passageName: linkPassageName,
+                        previousDepth: previousDepth + 1,
+                        visitedPassages: [visitedPassages, [passageName]].flatMap { $0 }
+                    )
                 }
                 .reduce(0) { result, current in max(result, current) }
-
-            visitedPassageDepths[passageName] = depth
 
             return depth
         }
