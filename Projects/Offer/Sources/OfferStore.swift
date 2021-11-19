@@ -217,7 +217,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     }
                 }
 
-                return variant
+                return newVariant
             }
 
             newState.offerData = newOfferData
