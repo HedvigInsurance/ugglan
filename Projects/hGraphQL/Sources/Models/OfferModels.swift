@@ -148,8 +148,8 @@ public struct QuoteBundle: Codable, Equatable {
             quote: OfferData.QuoteBundle.PossibleVariation.Bundle.Quote
         ) {
             id = quote.id
-            firstName = quote.firstName
-            lastName = quote.lastName
+            firstName = quote.firstName ?? ""
+            lastName = quote.lastName ?? ""
             ssn = quote.ssn
             email = quote.email
             displayName = quote.displayName
