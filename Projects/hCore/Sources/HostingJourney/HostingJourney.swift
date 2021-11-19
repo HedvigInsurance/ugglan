@@ -13,7 +13,7 @@ public struct PresentableStore<S: Store> {
 }
 
 public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
-    public typealias P = AnyPresentable<UIViewController, Result>
+    public typealias P = AnyPresentable<UIHostingController<RootView>, Result>
 
     public var onDismiss: (Error?) -> Void
 

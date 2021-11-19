@@ -5,9 +5,14 @@ import UIKit
 import hCore
 import hCoreUI
 
+public enum OTPAuthJourneyNext {
+    case success(accessToken: String)
+    case chat
+}
+
 public struct OTPAuthJourney {
     public static func login<Next: JourneyPresentation>(
-        @JourneyBuilder _ next: @escaping (_ accessToken: String) -> Next
+        @JourneyBuilder _ next: @escaping (_ next: OTPAuthJourneyNext) -> Next
     ) -> some JourneyPresentation {
         HostingJourney(
             AuthenticationStore.self,
@@ -19,7 +24,9 @@ public struct OTPAuthJourney {
                     rootView: OTPCodeEntry()
                 ) { action in
                     if case let .navigationAction(action: .authSuccess(accessToken)) = action {
-                        next(accessToken).hidesBackButton
+                        next(.success(accessToken: accessToken)).hidesBackButton
+                    } else if case .navigationAction(action: .chat) = action {
+                        next(.chat)
                     }
                 }
                 .addConfiguration { presenter in
@@ -28,7 +35,8 @@ public struct OTPAuthJourney {
                     )
 
                     presenter.bag += barButtonItem.onValue { _ in
-                        ChatButton.openChatHandler(presenter.viewController)
+                        let store: AuthenticationStore = globalPresentableStoreContainer.get()
+                        store.send(.navigationAction(action: .chat))
                     }
 
                     presenter.viewController.navigationItem.rightBarButtonItem = barButtonItem

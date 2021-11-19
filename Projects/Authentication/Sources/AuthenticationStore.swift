@@ -43,6 +43,7 @@ public enum OTPStateAction: ActionProtocol {
 public enum AuthenticationNavigationAction: ActionProtocol {
     case otpCode
     case authSuccess(accessToken: String)
+    case chat
 }
 
 public enum AuthenticationAction: ActionProtocol {
