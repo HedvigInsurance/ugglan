@@ -17,6 +17,7 @@ extension UIScrollView {
         let bag = DisposeBag()
 
         bag += isExpandedSignal.atOnce()
+            .driven(by: scrollView.contentSizeSignal.atOnce())
             .throttle(0.5)
             .atValue({ isExpanded in
                 if isExpanded {
