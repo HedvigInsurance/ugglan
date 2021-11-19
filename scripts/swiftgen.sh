@@ -1,4 +1,9 @@
-TMPDIR=/tmp/swiftgen-6.4.0
+if [ -z "$CI" ]; then
+    TMPDIR=/tmp/swiftgen-6.4.0
+else
+    mkdir build
+    TMPDIR=build/swiftgen-6.4.0
+fi
 
 mkdir Projects/hCoreUI/Sources/Derived
 mkdir Projects/App/Sources/Derived
