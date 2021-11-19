@@ -44,7 +44,7 @@ extension AppJourney {
             switch market {
             case .se:
                 bankIDSweden
-            case .no, .dk:
+            case .no, .dk, .fr:
                 simpleSign
             }
         }

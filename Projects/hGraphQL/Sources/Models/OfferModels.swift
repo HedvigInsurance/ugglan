@@ -117,8 +117,6 @@ public struct QuoteBundle: Codable, Equatable {
 
     public struct Quote: Codable, Equatable {
         public let id: String
-        public let firstName: String
-        public let lastName: String
         public let ssn: String?
         public let email: String?
         public let displayName: String
@@ -131,8 +129,6 @@ public struct QuoteBundle: Codable, Equatable {
             quote: OfferData.QuoteBundle.Quote
         ) {
             id = quote.id
-            firstName = quote.firstName
-            lastName = quote.lastName
             ssn = quote.ssn
             email = quote.email
             displayName = quote.displayName

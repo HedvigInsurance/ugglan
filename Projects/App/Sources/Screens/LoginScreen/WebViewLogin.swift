@@ -90,7 +90,7 @@ extension WebViewLogin {
                 client.perform(mutation: GraphQL.BankIdNorwayAuthMutation(personalNumber: text))
                     .compactMap { $0.norwegianBankIdAuth.redirectUrl }
                     .compactMap { URL(string: $0) }.onValue { url in completion(.success(url)) }
-            case .se: completion(.failure(BankIDLoginError.invalidMarket))
+            case .se, .fr: completion(.failure(BankIDLoginError.invalidMarket))
             }
 
             return bag

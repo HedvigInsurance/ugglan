@@ -13,7 +13,7 @@ extension AppJourney {
                 Journey(OnboardingChat()) { result in
                     result.journey
                 }
-            case .no, .dk:
+            case .no, .dk, .fr:
                 EmbarkOnboardingJourney.journey
             }
         }
