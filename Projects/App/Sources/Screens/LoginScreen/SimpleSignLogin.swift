@@ -94,6 +94,7 @@ extension Localization.Locale.Market {
         case .no: return .init(type: .norwegianPersonalNumber)
         case .se: return .init(type: .personalNumber)
         case .dk: return .init(type: .danishPersonalNumber)
+        case .fr: return .init(type: .email)
         }
     }
 
@@ -102,6 +103,7 @@ extension Localization.Locale.Market {
         case .no: return L10n.SimpleSignLogin.TextField.label
         case .se: return nil
         case .dk: return L10n.SimpleSignLogin.TextField.labelDk
+        case .fr: return nil
         }
     }
 
@@ -110,6 +112,7 @@ extension Localization.Locale.Market {
         case .no: return L10n.SimpleSign.signIn
         case .se: return ""
         case .dk: return L10n.SimpleSign.signInDk
+        case .fr: return ""
         }
     }
 }

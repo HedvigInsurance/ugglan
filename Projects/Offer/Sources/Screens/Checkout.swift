@@ -215,6 +215,7 @@ extension Localization.Locale.Market {
         case .no: return .init(type: .norwegianPersonalNumber)
         case .se: return .init(type: .personalNumber)
         case .dk: return .init(type: .danishPersonalNumber)
+        case .fr: return .init(type: .email)
         }
     }
 }
