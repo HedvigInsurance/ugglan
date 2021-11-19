@@ -1,4 +1,3 @@
-
 if [ -z "$CI" ]; then
     TMPDIR=/tmp/swiftgen-6.4.0
 else
