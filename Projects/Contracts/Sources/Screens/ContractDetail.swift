@@ -130,6 +130,7 @@ struct ContractDetail: View {
                     if context.trigger == panel {
                         viewFor(view: panel)
                             .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                            .animation(.spring(blendDuration: 0.3))
                     }
                 }
             }
