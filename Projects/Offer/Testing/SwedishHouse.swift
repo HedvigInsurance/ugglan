@@ -20,8 +20,6 @@ extension GraphQL.QuoteBundleQuery.Data {
                             quotes: [
                                 .init(
                                     id: "123",
-                                    firstName: "Hedvig",
-                                    lastName: "Hedvigsen",
                                     displayName: "House insurance",
                                     detailsTable: .init(
                                         title: "House insurance",
