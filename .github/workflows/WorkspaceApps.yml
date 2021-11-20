@@ -23,7 +23,7 @@ jobs:
         name: generated_files
         path: |
           *.xcworkspace
-          Projects/**/*.xcodeproj
+          **/*.xcodeproj
           **/Derived/*/**.swift
           **/Derived/*/**.plist
   build_ugglan:
