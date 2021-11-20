@@ -29,8 +29,6 @@ platform :ios do
     end
     
     lane :setup do
-        sh("cd ..; scripts/post-checkout.sh")
-        sh("cd ..; tuist generate")
         ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
     end
 
