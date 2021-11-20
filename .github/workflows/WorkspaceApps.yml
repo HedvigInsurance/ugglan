@@ -15,22 +15,25 @@ jobs:
     runs-on: self-hosted
     
     steps:
-    - uses: actions/checkout@v2
     - name: Post checkout
       run: sh scripts/post-checkout.sh
     - name: Upload generated files
       uses: actions/upload-artifact@v2
       with:
-        name: build_dir
-        path: .
+        name: generated_files
+        path: |
+          *.xcworkspace
+          *.xcodeproj
+          **/Derived/*/**.swift
   build_ugglan:
     runs-on: self-hosted
     needs: [generate]
 
     steps:
+    - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: build_dir
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -54,9 +57,10 @@ jobs:
     needs: [generate]
 
     steps:
+    - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: build_dir
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -80,9 +84,10 @@ jobs:
     needs: [generate]
 
     steps:
+    - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: build_dir
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -106,9 +111,10 @@ jobs:
     needs: [generate]
 
     steps:
+    - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: build_dir
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -132,10 +138,10 @@ jobs:
     needs: [generate]
 
     steps:
-
+    - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: build_dir
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -159,9 +165,10 @@ jobs:
     needs: [generate]
 
     steps:
+    - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: build_dir
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -185,10 +192,10 @@ jobs:
     needs: [generate]
 
     steps:
-
+    - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: build_dir
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -211,6 +218,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build_ugglan, build_embark, build_hedvig, build_home, build_forever, build_offer, build_hcoreui]
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
         with:
           path: fastlane/build_output
