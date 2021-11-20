@@ -177,7 +177,7 @@ extension InsuranceProviderAction: Viewable {
                                 value: provider.name
                             )
                         }
-                        
+
                         guard data.isExternal else {
                             self.state.store.setValue(
                                 key: self.data.key,
