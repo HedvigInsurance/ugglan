@@ -25,6 +25,7 @@ jobs:
           *.xcworkspace
           Projects/**/*.xcodeproj
           **/Derived/*/**.swift
+          **/Derived/*/**.plist
   build_ugglan:
     runs-on: self-hosted
     needs: [generate]
