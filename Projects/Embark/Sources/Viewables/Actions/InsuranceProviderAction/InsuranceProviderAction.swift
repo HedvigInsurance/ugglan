@@ -26,7 +26,14 @@ enum InsuranceWrapper {
         }
     }
 
-    var isExternal: Bool { false }
+    var isExternal: Bool {
+        switch self {
+        case .external:
+            return true
+        case .previous:
+            return false
+        }
+    }
 
     var locale: Localization.Locale? {
         Localization.Locale.currentLocale
@@ -107,7 +114,7 @@ extension InsuranceProviderAction: Viewable {
                 .onValue { providers in
                     let providers = [
                         [
-                            Environment.current == .staging
+                            Environment.current == .staging && data.isExternal
                                 ? GraphQL.InsuranceProviderFragment(
                                     name: "DEMO",
                                     id: "DEMO",
@@ -170,6 +177,15 @@ extension InsuranceProviderAction: Viewable {
                                 value: provider.name
                             )
                         }
+                        
+                        guard data.isExternal else {
+                            self.state.store.setValue(
+                                key: self.data.key,
+                                value: provider.id
+                            )
+                            callback(self.data.embarkLinkFragment)
+                            return
+                        }
 
                         if provider.hasExternalCapabilities {
                             let externalCollectionID = provider.externalCollectionId ?? ""
@@ -182,6 +198,7 @@ extension InsuranceProviderAction: Viewable {
                             ) { id, personalNumber in
                                 if let id = id {
                                     state.store.setValue(key: "dataCollectionId", value: id.uuidString)
+                                    state.store.setValue(key: "\(data.key)_dataCollectionId", value: id.uuidString)
                                 }
 
                                 if let personalNumber = personalNumber {
