@@ -5,7 +5,7 @@ inputs:
  scheme:
    description: “Scheme”
    required: true
-  project_path:
+  path:
    description: "Path to project"
    required: true
   identifier:
@@ -15,15 +15,15 @@ inputs:
 runs:
  using: "composite"
  steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
-        with:
-          name: generated_files
-      - uses: ./.github/actions/FastlaneAction
-        with:
-          lane: ios build identifier:${{ inputs.identifier }} path:${{ inputs.project-path }} scheme:${{ inputs.lane }}
-      - name: Upload app
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ inputs.lane }}.ipa
-          path: fastlane/build_output/${{ inputs.lane }}.ipa
+  - uses: actions/checkout@v2
+  - uses: actions/download-artifact@v2
+    with:
+      name: generated_files
+  - uses: ./.github/actions/FastlaneAction
+    with:
+      lane: ios build identifier:${{ inputs.identifier }} path:${{ inputs.project-path }} scheme:${{ inputs.lane }}
+  - name: Upload app
+    uses: actions/upload-artifact@v2
+    with:
+      name: ${{ inputs.lane }}.ipa
+      path: fastlane/build_output/${{ inputs.lane }}.ipa

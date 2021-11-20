@@ -30,3 +30,4 @@ runs:
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
           FASTLANE_XCODE_LIST_TIMEOUT: '180'
         run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
+        shell: zsh
