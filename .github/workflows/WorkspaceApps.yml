@@ -24,8 +24,8 @@ jobs:
         path: |
           *.xcworkspace
           **/*.xcodeproj
-          **/Derived/*/**.swift
-          **/Derived/*/**.plist
+          **/Derived/**/*.swift
+          **/Derived/**/*.plist
   build_ugglan:
     runs-on: self-hosted
     needs: [generate]
