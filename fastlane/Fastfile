@@ -151,7 +151,6 @@ platform :ios do
             sh("security list-keychains -d user")
             sh("security default-keychain -d user")
             sh("security find-identity -v -p codesigning CI")
-            sh("security set-key-partition-list -S apple-tool:,apple: -s -k #{ENV["MATCH_PASSWORD"]} ~/Library/Keychains/CI-db")
         end
     end
     
