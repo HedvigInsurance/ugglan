@@ -29,7 +29,7 @@ jobs:
           **/Resources/*.lproj
   build_ugglan:
     needs: [generate]
-    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@${{ github.sha }}
     with:
       lane: ios build path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
       name: Ugglan
@@ -42,7 +42,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   build_embark:
     needs: [generate]
-    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@${{ github.sha }}
     with:
       lane: ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
       name: EmbarkExample
