@@ -23,7 +23,7 @@ jobs:
         name: generated_files
         path: |
           *.xcworkspace
-          *.xcodeproj
+          Projects/**/*.xcodeproj
           **/Derived/*/**.swift
   build_ugglan:
     runs-on: self-hosted
