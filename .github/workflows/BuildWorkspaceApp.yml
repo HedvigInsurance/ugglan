@@ -66,9 +66,9 @@ jobs:
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
           FASTLANE_XCODE_LIST_TIMEOUT: '180'
         run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
-    - name: Upload app
-      uses: actions/upload-artifact@v2
-      with:
-        name: ${{ inputs.name }}.ipa
-        path: fastlane/build_output/${{ inputs.name }}.ipa
+      - name: Upload app
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.name }}.ipa
+          path: fastlane/build_output/${{ inputs.name }}.ipa
 
