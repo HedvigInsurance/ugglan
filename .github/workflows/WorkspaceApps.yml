@@ -11,7 +11,24 @@ on:
     branches: ['*']
 
 jobs:
+  generate:
+    runs-on: self-hosted
+    
+    steps:
+    - name: Post checkout
+      run: sh scripts/post-checkout.sh
+    - name: Upload generated files
+      uses: actions/upload-artifact@v2
+      with:
+        name: generated_files
+        path: |
+          *.xcworkspace
+          **/*.xcodeproj
+          **/Derived/**/*.swift
+          **/Derived/**/*.plist
+          **/Resources/*.lproj
   build_ugglan:
+    needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
     with:
       lane: ios build path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
@@ -24,6 +41,7 @@ jobs:
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   build_embark:
+    needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
     with:
       lane: ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample

@@ -28,25 +28,8 @@ on:
         required: true
 
 jobs:
-  generate:
-    runs-on: self-hosted
-    
-    steps:
-    - name: Post checkout
-      run: sh scripts/post-checkout.sh
-    - name: Upload generated files
-      uses: actions/upload-artifact@v2
-      with:
-        name: generated_files
-        path: |
-          *.xcworkspace
-          **/*.xcodeproj
-          **/Derived/**/*.swift
-          **/Derived/**/*.plist
-          **/Resources/*.lproj
   build:
     runs-on: self-hosted
-    needs: [generate]
 
     steps:
       - uses: actions/checkout@v2
