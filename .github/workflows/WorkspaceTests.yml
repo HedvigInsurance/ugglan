@@ -11,26 +11,31 @@ on:
     branches: ['*']
 
 jobs:
-  download_translations:
+  generate:
     runs-on: self-hosted
     
     steps:
-    - name: Download translations
-      run: sh scripts/translations.sh
-    - name: Upload translations
+    - name: Post checkout
+      run: sh scripts/post-checkout.sh
+    - name: Upload generated files
       uses: actions/upload-artifact@v2
       with:
-        name: translations
-        path: Projects/hCore/Resources
+        name: generated_files
+        path: |
+          *.xcworkspace
+          **/*.xcodeproj
+          **/Derived/**/*.swift
+          **/Derived/**/*.plist
+          **/Resources/*.lproj
   test_ugglan:
     runs-on: self-hosted
-    needs: [download_translations]
+    needs: [generate]
 
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: translations
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -50,13 +55,13 @@ jobs:
         path: fastlane/test_output/Ugglan.xcresult
   test_hCore:
     runs-on: self-hosted
-    needs: [download_translations]
+    needs: [generate]
 
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: translations
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -76,13 +81,13 @@ jobs:
         path: fastlane/test_output/hCore.xcresult
   test_hCoreUI:
     runs-on: self-hosted
-    needs: [download_translations]
+    needs: [generate]
 
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: translations
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -102,13 +107,13 @@ jobs:
         path: fastlane/test_output/hCoreUI.xcresult
   test_forever:
     runs-on: self-hosted
-    needs: [download_translations]
+    needs: [generate]
 
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: translations
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -128,13 +133,13 @@ jobs:
         path: fastlane/test_output/Forever.xcresult
   test_contracts:
     runs-on: self-hosted
-    needs: [download_translations]
+    needs: [generate]
 
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: translations
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
@@ -154,13 +159,13 @@ jobs:
         path: fastlane/test_output/Contracts.xcresult
   test_home:
     runs-on: self-hosted
-    needs: [download_translations]
+    needs: [generate]
 
     steps:
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
       with:
-        name: translations
+        name: generated_files
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
