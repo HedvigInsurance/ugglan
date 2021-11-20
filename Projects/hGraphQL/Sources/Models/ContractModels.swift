@@ -189,7 +189,7 @@ public struct AngelStories: Codable {
     public let addressChange: String
 }
 
-public struct DetailAgreementsTable: Codable, Hashable {
+public struct DetailAgreementsTable: Codable, Hashable, Identifiable {
     public init(
         sections: [DetailAgreementsTable.Section],
         title: String
@@ -198,6 +198,9 @@ public struct DetailAgreementsTable: Codable, Hashable {
         self.title = title
     }
 
+    public var id: String {
+        return title
+    }
     public let sections: [Section]
     public let title: String
     public init(
@@ -207,7 +210,7 @@ public struct DetailAgreementsTable: Codable, Hashable {
         title = fragment.title
     }
 
-    public struct Section: Codable, Hashable {
+    public struct Section: Codable, Hashable, Identifiable {
         public init(
             title: String,
             rows: [DetailAgreementsTable.Row]
@@ -216,6 +219,9 @@ public struct DetailAgreementsTable: Codable, Hashable {
             self.rows = rows
         }
 
+        public var id: String {
+            return title
+        }
         public let title: String
         public let rows: [Row]
 
