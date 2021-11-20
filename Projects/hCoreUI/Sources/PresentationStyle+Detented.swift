@@ -390,7 +390,9 @@ extension PresentationStyle {
             }
 
             if #available(iOS 15.0, *) {
-                if let sheetPresentationController = presentationController as? UISheetPresentationController {
+                if unanimated {
+                    apply()
+                } else if let sheetPresentationController = presentationController as? UISheetPresentationController {
                     sheetPresentationController.animateChanges {
                         apply()
                     }

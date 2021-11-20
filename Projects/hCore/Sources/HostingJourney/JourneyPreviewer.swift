@@ -5,6 +5,7 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import Form
 
 public struct PreviewJourney<InnerJourney: JourneyPresentation>: JourneyPresentation {
     public var onDismiss: (Error?) -> Void
@@ -43,7 +44,7 @@ public struct JourneyPreviewer<Journey: JourneyPresentation>: UIViewControllerRe
 
         let store = ApolloStore()
         let client = ApolloClient(url: URL(string: "https://graphql.dev.hedvigit.com/graphql")!)
-
+        
         Dependencies.shared.add(
             module: Module { () -> ApolloClient in
                 client

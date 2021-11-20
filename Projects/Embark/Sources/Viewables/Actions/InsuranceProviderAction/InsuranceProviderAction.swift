@@ -31,7 +31,7 @@ enum InsuranceWrapper {
         case .external:
             return true
         case .previous:
-            return false
+            return true
         }
     }
 

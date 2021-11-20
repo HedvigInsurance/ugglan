@@ -5,20 +5,54 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+struct DataCollectionAuthOption: Identifiable, Equatable, Hashable {
+    static func == (lhs: DataCollectionAuthOption, rhs: DataCollectionAuthOption) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    var id: String {
+        label
+    }
+    var masking: Masking
+    var label: String
+}
+
 public struct DataCollectionPersonalIdentity: View {
-    public init() {}
+    public init() {
+        self._authOption = State(initialValue: Self.authOptions.first!)
+    }
 
-    @State var inputtedPersonalNumber = ""
+    @State var inputtedValue = ""
     @PresentableStore var store: DataCollectionStore
-
-    var masking: Masking {
+    
+    @State var authOption: DataCollectionAuthOption
+    
+    static var authOptions: [DataCollectionAuthOption] {
         switch Localization.Locale.currentLocale.market {
         case .no:
-            return Masking(type: .norwegianPersonalNumber)
+            return [
+                DataCollectionAuthOption(
+                    masking: .init(type: .norwegianPersonalNumber),
+                    label: L10n.InsurelyNoSsn.inputLabel
+                ),
+                DataCollectionAuthOption(
+                    masking: .init(type: .none),
+                    label: L10n.phoneNumberRowTitle
+                )
+            ]
         case .se:
-            return Masking(type: .personalNumber)
+            return [
+                DataCollectionAuthOption(
+                    masking: .init(type: .personalNumber),
+                    label: L10n.InsurelySeSsn.inputLabel
+                )
+            ]
         default:
-            return Masking(type: .none)
+            return []
         }
     }
 
@@ -28,14 +62,26 @@ public struct DataCollectionPersonalIdentity: View {
                 L10n.InsurelySeSsn.title
                     .hText(.title2)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                
+                if Self.authOptions.count > 1 {
+                    Picker("View", selection: $authOption) {
+                        ForEach(Self.authOptions) { option in
+                            hText(option.label).tag(option)
+                       }
+                   }
+                   .pickerStyle(.segmented)
+                   .padding(.top, 40)
+                }
+                
                 hTextField(
-                    masking: masking,
-                    value: $inputtedPersonalNumber
+                    masking: authOption.masking,
+                    value: $inputtedValue
                 )
                 .padding(.top, 40)
+                
                 VStack {
                     hButton.LargeButtonFilled {
-                        store.send(.setPersonalNumber(personalNumber: inputtedPersonalNumber))
+                        store.send(.setPersonalNumber(personalNumber: inputtedValue))
                         store.send(.startAuthentication)
                     } content: {
                         L10n.InsurelySsn.continueButtonText.hText()
