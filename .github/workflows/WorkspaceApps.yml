@@ -11,137 +11,33 @@ on:
     branches: ['*']
 
 jobs:
-  generate:
-    runs-on: self-hosted
-    
-    steps:
-    - name: Post checkout
-      run: sh scripts/post-checkout.sh
-    - name: Upload generated files
-      uses: actions/upload-artifact@v2
-      with:
-        name: generated_files
-        path: |
-          *.xcworkspace
-          **/*.xcodeproj
-          **/Derived/**/*.swift
-          **/Derived/**/*.plist
-          **/Resources/*.lproj
   build_ugglan:
-    runs-on: self-hosted
-    needs: [generate]
-
-    steps:
-    - uses: ./.github/actions/BuildWorkspaceApp
-      with:
-        identifier: com.hedvig.test.app
-        path: Projects/App/Ugglan.xcodeproj
-        scheme: Ugglan
+    uses: ./.github/workflows/BuildWorkspaceApp.yml
+    with:
+      lane: ios build path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
+      name: Ugglan
+    secrets:
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+      HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+      HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
+      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+      S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   build_embark:
-    runs-on: self-hosted
-    needs: [generate]
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: generated_files
-    - uses: ./.github/actions/FastlaneAction
-      with:
-        lane: ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
-    - name: Upload app
-      uses: actions/upload-artifact@v2
-      with:
-        name: EmbarkExample.ipa
-        path: fastlane/build_output/EmbarkExample.ipa
-  build_hedvig:
-    runs-on: self-hosted
-    needs: [generate]
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: generated_files
-    - uses: ./.github/actions/FastlaneAction
-      with:
-        lane: ios build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig
-    - name: Upload app
-      uses: actions/upload-artifact@v2
-      with:
-        name: Hedvig.ipa
-        path: fastlane/build_output/Hedvig.ipa
-  build_home:
-    runs-on: self-hosted
-    needs: [generate]
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: generated_files
-    - uses: ./.github/actions/FastlaneAction
-      with:
-        lane: ios build path:Projects/Home/Home.xcodeproj scheme:HomeExample
-    - name: Upload app
-      uses: actions/upload-artifact@v2
-      with:
-        name: HomeExample.ipa
-        path: fastlane/build_output/HomeExample.ipa
-  build_forever:
-    runs-on: self-hosted
-    needs: [generate]
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: generated_files
-    - uses: ./.github/actions/FastlaneAction
-      with:
-        lane: ios build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample
-    - name: Upload app
-      uses: actions/upload-artifact@v2
-      with:
-        name: ForeverExample.ipa
-        path: fastlane/build_output/ForeverExample.ipa
-  build_offer:
-    runs-on: self-hosted
-    needs: [generate]
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: generated_files
-    - uses: ./.github/actions/FastlaneAction
-      with:
-        lane: ios build path:Projects/Offer/Offer.xcodeproj scheme:OfferExample
-    - name: Upload app
-      uses: actions/upload-artifact@v2
-      with:
-        name: OfferExample.ipa
-        path: fastlane/build_output/OfferExample.ipa
-  build_hcoreui:
-    runs-on: self-hosted
-    needs: [generate]
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: generated_files
-    - uses: ./.github/actions/FastlaneAction
-      with:
-        lane: ios build path:Projects/hCoreUI/hCoreUI.xcodeproj scheme:hCoreUIExample
-    - name: Upload app
-      uses: actions/upload-artifact@v2
-      with:
-        name: hCoreUIExample.ipa
-        path: fastlane/build_output/hCoreUIExample.ipa
+    uses: ./.github/workflows/BuildWorkspaceApp.yml
+    with:
+      lane: ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
+      name: EmbarkExample
+    secrets:
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+      HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+      HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
+      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+      S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   slack:
     runs-on: ubuntu-latest
-    needs: [build_ugglan, build_embark, build_hedvig, build_home, build_forever, build_offer, build_hcoreui]
+    needs: [build_ugglan, build_embark]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
