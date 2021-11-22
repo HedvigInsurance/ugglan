@@ -28,7 +28,6 @@ extension JSONObject {
                         color: .black,
                         bulletPoints: [],
                         buttonTitle: "A button",
-                        claimFirstMessage: "Mock",
                         title: "Mock title"
                     )
                 )

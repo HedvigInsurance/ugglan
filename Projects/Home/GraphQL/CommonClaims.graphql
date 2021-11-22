@@ -16,7 +16,6 @@ query CommonClaims($locale: Locale!) {
                     }
                 }
                 buttonTitle
-                claimFirstMessage
                 color
                 title
             }

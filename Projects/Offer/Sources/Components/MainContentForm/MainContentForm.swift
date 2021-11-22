@@ -37,7 +37,6 @@ extension MainContentForm: Presentable {
         formContainer.addArrangedSubview(form)
 
         form.append(HostingView(rootView: DataCollectionSection()))
-        form.append(HostingView(rootView: VariationSection()))
 
         bag += form.append(DetailsSection())
 

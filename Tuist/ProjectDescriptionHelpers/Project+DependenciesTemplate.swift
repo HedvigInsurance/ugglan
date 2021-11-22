@@ -138,7 +138,7 @@ public enum ExternalDependencies: CaseIterable {
                 return []
             }
 
-            try? FileManager.default.copyItem(
+            try! FileManager.default.copyItem(
                 atPath: path.pathString,
                 toPath:
                     "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
