@@ -390,6 +390,13 @@ public struct hTintColor {
         )
     }
 
+    public static var lavenderTwo: some hColor {
+        hColorScheme(
+            light: Color(hexString: "E7D6FF"),
+            dark: Color(hexString: "2B203B")
+        )
+    }
+
     public static var yellowOne: some hColor {
         hColorScheme(
             light: Color(hexString: "F2C852"),
