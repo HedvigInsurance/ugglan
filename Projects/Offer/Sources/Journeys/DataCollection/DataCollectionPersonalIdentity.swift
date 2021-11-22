@@ -9,11 +9,11 @@ struct DataCollectionAuthOption: Identifiable, Equatable, Hashable {
     static func == (lhs: DataCollectionAuthOption, rhs: DataCollectionAuthOption) -> Bool {
         lhs.id == rhs.id
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-    
+
     var id: String {
         label
     }
@@ -28,9 +28,9 @@ public struct DataCollectionPersonalIdentity: View {
 
     @State var inputtedValue = ""
     @PresentableStore var store: DataCollectionStore
-    
+
     @State var authOption: DataCollectionAuthOption
-    
+
     static var authOptions: [DataCollectionAuthOption] {
         switch Localization.Locale.currentLocale.market {
         case .no:
@@ -42,7 +42,7 @@ public struct DataCollectionPersonalIdentity: View {
                 DataCollectionAuthOption(
                     masking: .init(type: .none),
                     label: L10n.phoneNumberRowTitle
-                )
+                ),
             ]
         case .se:
             return [
@@ -62,23 +62,23 @@ public struct DataCollectionPersonalIdentity: View {
                 L10n.InsurelySeSsn.title
                     .hText(.title2)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                
+
                 if Self.authOptions.count > 1 {
                     Picker("View", selection: $authOption) {
                         ForEach(Self.authOptions) { option in
                             hText(option.label).tag(option)
-                       }
-                   }
-                   .pickerStyle(.segmented)
-                   .padding(.top, 40)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.top, 40)
                 }
-                
+
                 hTextField(
                     masking: authOption.masking,
                     value: $inputtedValue
                 )
                 .padding(.top, 40)
-                
+
                 VStack {
                     hButton.LargeButtonFilled {
                         store.send(.setPersonalNumber(personalNumber: inputtedValue))
