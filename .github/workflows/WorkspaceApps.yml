@@ -31,7 +31,7 @@ jobs:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
     with:
-      lane: ios build path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
+      lane: ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
       name: Ugglan
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
