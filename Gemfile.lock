@@ -193,6 +193,7 @@ GEM
     simctl (1.6.8)
       CFPropertyList
       naturally
+    slack-notifier (2.4.0)
     terminal-notifier (2.0.0)
     terminal-table (1.8.0)
       unicode-display_width (~> 1.1, >= 1.1.1)
@@ -232,6 +233,7 @@ DEPENDENCIES
   fastlane-plugin-xchtmlreport
   jwt (~> 2.2, >= 2.2.3)
   octokit (~> 4.0)
+  slack-notifier (~> 2.4)
   xcpretty-json-formatter
   xcresult
 
