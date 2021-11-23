@@ -108,7 +108,7 @@ class EmbarkStore {
             print("POPPING LAST REVISION, NEW STORE:", revisions.last ?? "missing revision")
         }
     }
-    
+
     func isFalsyEquals(value: String, equalTo: String) -> Bool {
         switch equalTo {
         case "false":
@@ -123,7 +123,11 @@ class EmbarkStore {
     func passes(expression: GraphQL.BasicExpressionFragment) -> Bool {
         if let binaryExpression = expression.asEmbarkExpressionBinary {
             switch binaryExpression.expressionBinaryType {
-            case .equals: return isFalsyEquals(value: getValueWithNull(key: binaryExpression.key), equalTo: binaryExpression.value)
+            case .equals:
+                return isFalsyEquals(
+                    value: getValueWithNull(key: binaryExpression.key),
+                    equalTo: binaryExpression.value
+                )
             case .lessThan:
                 if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
                     return storeFloat < binaryExpression.value.floatValue
@@ -148,7 +152,11 @@ class EmbarkStore {
                 }
 
                 return false
-            case .notEquals: return !isFalsyEquals(value: getValueWithNull(key: binaryExpression.key), equalTo: binaryExpression.value)
+            case .notEquals:
+                return !isFalsyEquals(
+                    value: getValueWithNull(key: binaryExpression.key),
+                    equalTo: binaryExpression.value
+                )
             case .__unknown: return false
             }
         }
