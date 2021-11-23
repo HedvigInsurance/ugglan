@@ -103,10 +103,10 @@ struct AuthMethodContainer: View {
                 case let .norwegianBankIDWords(words):
                     NorwegianBankIDWords(words: words)
                 case .none:
-                    ActivityIndicator(isAnimating: true)
+                    ActivityIndicator(style: .medium)
                 }
             } else {
-                ActivityIndicator(isAnimating: true)
+                ActivityIndicator(style: .medium)
                     .onReceive(Just(status)) { status in
                         if status == .collecting || status == .completed {
                             store.send(.confirmResult(result: .started))

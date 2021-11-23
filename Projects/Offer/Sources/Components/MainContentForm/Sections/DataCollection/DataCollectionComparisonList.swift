@@ -59,7 +59,7 @@ struct DataCollectionComparisonList: View {
                                     hText("\(netPremium.formattedAmount)\(L10n.perMonth)")
                                         .foregroundColor(hLabelColor.secondary)
                                 } else {
-                                    ActivityIndicator(isAnimating: true)
+                                    ActivityIndicator(style: .medium)
                                 }
                             }
                         }

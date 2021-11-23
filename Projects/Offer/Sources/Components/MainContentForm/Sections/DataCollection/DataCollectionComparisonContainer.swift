@@ -26,7 +26,7 @@ struct DataCollectionComparisonContainer: View {
             case .none:
                 EmptyView()
             case .started, .collecting:
-                ActivityIndicator(isAnimating: true)
+                ActivityIndicator(style: .medium)
             }
         }
     }
