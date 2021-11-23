@@ -24,7 +24,7 @@ public enum Market: String, CaseIterable, Codable {
         case .norway: return "Norge"
         case .sweden: return "Sverige"
         case .denmark: return "Danmark"
-        case .france: return "La France"
+        case .france: return "France"
         }
     }
 
