@@ -20,7 +20,8 @@ extension EmbarkTooltips: View {
                     hText(tooltip.description, style: .body)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(hLabelColor.primary)
-                }.padding(.bottom, 15)
+                }
+                .padding(.bottom, 15)
             }
         }
         .sectionContainerStyle(.transparent)
