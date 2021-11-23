@@ -56,6 +56,9 @@
 	<string>public.app-category.finance</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>ms-outlook</string>
+		<string>googlegmail</string>
+		<string>message</string>
 		<string>bankid</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
