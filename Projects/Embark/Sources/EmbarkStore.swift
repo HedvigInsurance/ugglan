@@ -108,11 +108,22 @@ class EmbarkStore {
             print("POPPING LAST REVISION, NEW STORE:", revisions.last ?? "missing revision")
         }
     }
+    
+    func isFalsyEquals(value: String, equalTo: String) -> Bool {
+        switch equalTo {
+        case "false":
+            return value == "null" || value == "false" || value.isEmpty
+        case "true":
+            return !value.isEmpty
+        default:
+            return value == equalTo
+        }
+    }
 
     func passes(expression: GraphQL.BasicExpressionFragment) -> Bool {
         if let binaryExpression = expression.asEmbarkExpressionBinary {
             switch binaryExpression.expressionBinaryType {
-            case .equals: return getValue(key: binaryExpression.key) == binaryExpression.value
+            case .equals: return isFalsyEquals(value: getValueWithNull(key: binaryExpression.key), equalTo: binaryExpression.value)
             case .lessThan:
                 if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
                     return storeFloat < binaryExpression.value.floatValue
@@ -137,7 +148,7 @@ class EmbarkStore {
                 }
 
                 return false
-            case .notEquals: return getValue(key: binaryExpression.key) != binaryExpression.value
+            case .notEquals: return !isFalsyEquals(value: getValueWithNull(key: binaryExpression.key), equalTo: binaryExpression.value)
             case .__unknown: return false
             }
         }
@@ -187,7 +198,7 @@ class EmbarkStore {
         if let binaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectBinaryExpression {
             switch binaryExpression.binaryType {
             case .equals:
-                if getValueWithNull(key: binaryExpression.key) == binaryExpression.value {
+                if isFalsyEquals(value: getValueWithNull(key: binaryExpression.key), equalTo: binaryExpression.value) {
                     return binaryExpression.to
                 }
             case .lessThan:
@@ -217,7 +228,7 @@ class EmbarkStore {
                 }
 
             case .notEquals:
-                if getValueWithNull(key: binaryExpression.key) != binaryExpression.value {
+                if !isFalsyEquals(value: getValueWithNull(key: binaryExpression.key), equalTo: binaryExpression.value) {
                     return binaryExpression.to
                 }
             case .__unknown: break
