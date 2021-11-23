@@ -133,12 +133,13 @@ public enum ExternalDependencies: CaseIterable {
             let path = Path(
                 "\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Application Support/Reveal/RevealServer/RevealServer.xcframework"
             )
-            let destinationPath = "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
+            let destinationPath =
+                "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
 
             guard FileManager.default.fileExists(atPath: path.pathString) else {
                 return []
             }
-            
+
             if !FileManager.default.fileExists(atPath: destinationPath) {
                 try! FileManager.default.copyItem(
                     atPath: path.pathString,
