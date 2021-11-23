@@ -29,9 +29,9 @@ enum InsuranceWrapper {
     var isExternal: Bool {
         switch self {
         case .external:
-            return true
+            return Localization.Locale.currentLocale.market == .se
         case .previous:
-            return true
+            return false
         }
     }
 
