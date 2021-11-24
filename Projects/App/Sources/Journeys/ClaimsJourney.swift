@@ -8,12 +8,30 @@ import hCoreUI
 import Home
 
 extension AppJourney {
-    static func claimsJourney<RedirectJourney: JourneyPresentation>(@JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney) -> some JourneyPresentation {
+    static var claimJourney: some JourneyPresentation {
+        AppJourney.claimsJourneyPledgeAndNotificationWrapper { redirect in
+            switch redirect {
+            case .chat:
+                AppJourney.claimsChat()
+                    .withDismissButton
+            case .close:
+                DismissJourney()
+            case .menu:
+                ContinueJourney()
+            case .mailingList:
+                DismissJourney()
+            case .offer:
+                DismissJourney()
+            }
+        }
+    }
+    
+    private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(@JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney) -> some JourneyPresentation {
         HonestyPledge.journey {
             AppJourney.notificationJourney {
                 let embark = Embark(name: "claims")
                 
-                AppJourney.embark(embark, redirectJourney: redirectJourney)
+                AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
             }
             .withJourneyDismissButton
         }
@@ -24,7 +42,7 @@ extension AppJourney {
     static func notificationJourney<Next: JourneyPresentation>(
         @JourneyBuilder _ next: @escaping () -> Next
     ) -> some JourneyPresentation {
-        Journey(NotificationLoader(), style: .detented(.large)) { authorization in
+        Journey(NotificationLoader(), style: .detented(.large, modally: false)) { authorization in
             switch authorization {
             case .notDetermined:
                 Journey(

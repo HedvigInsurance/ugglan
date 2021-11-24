@@ -21,7 +21,7 @@ extension AppJourney {
             case .startMovingFlow:
                 AppJourney.movingFlow
             case .openClaims:
-                AppJourney.claimsJourney(redirectJourney: embarkClaims)
+                AppJourney.claimJourney
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
             case .openConnectPayments:
@@ -39,27 +39,6 @@ extension AppJourney {
                 return false
             }
         }
-    }
-    
-    fileprivate static func embarkClaims(_ redirect: ExternalRedirect) -> some JourneyPresentation {
-        AppJourney.claimsJourney { redirect in
-            switch redirect {
-            case .chat:
-                AppJourney.claimsChat()
-                    .sendActionOnValue(HomeStore.self, .fetchClaims)
-                    .withDismissButton
-            case .close:
-                DismissJourney()
-                    .sendActionOnValue(HomeStore.self, .fetchClaims)
-            case .menu:
-                ContinueJourney()
-            case .mailingList:
-                DismissJourney()
-            case .offer:
-                DismissJourney()
-            }
-        }
-        
     }
     
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -162,7 +141,7 @@ extension AppJourney {
                     if action == .openChat {
                         AppJourney.freeTextChat()
                     } else if action == .openClaims {
-                        AppJourney.claimsJourney(redirectJourney: embarkClaims)
+                        AppJourney.claimJourney
                     }
                 }
         }
