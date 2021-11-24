@@ -148,9 +148,22 @@ platform :ios do
 
     private_lane :allow_keychain do
         if is_ci
-            sh("security list-keychains -d user")
-            sh("security default-keychain -d user")
-            sh("security find-identity -v -p codesigning CI")
+            sh(
+                command: "security default-keychain -d user",
+                log: false
+            )
+            sh(
+                command: "security list-keychains -d user",
+                log: false
+            )
+            sh(
+                command: "security find-identity -v -p codesigning CI",
+                log: false
+            )
+            sh(
+                command: "security set-key-partition-list -S apple-tool:,apple: -s -k #{ENV["MATCH_PASSWORD"]} ~/Library/Keychains/CI-db",
+                log: false
+            )
         end
     end
     
