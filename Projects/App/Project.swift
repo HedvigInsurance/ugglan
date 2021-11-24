@@ -98,8 +98,9 @@ let project = Project(
             scripts: targetScripts,
             dependencies: [
                 appDependencies,
-                [.target(name: "Ugglan-AppClip")]
-            ].flatMap { $0 },
+                [.target(name: "Ugglan-AppClip")],
+            ]
+            .flatMap { $0 },
             settings: .settings(configurations: ugglanConfigurations)
         ),
         Target(
@@ -152,8 +153,9 @@ let project = Project(
             scripts: targetScripts,
             dependencies: [
                 appDependencies,
-                [.sdk(name: "AppClip.framework", status: .required)]
-            ].flatMap { $0 },
+                [.sdk(name: "AppClip.framework", status: .required)],
+            ]
+            .flatMap { $0 },
             settings: .settings(configurations: hedvigConfigurations)
         ),
     ],
