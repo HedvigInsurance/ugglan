@@ -35,6 +35,7 @@ public struct CrossSell: Codable, Equatable {
     public var blurHash: String
     public var buttonText: String
     public var embarkStoryName: String?
+    public var notificationType: String
     public var info: CrossSellInfo?
     public var hasBeenSeen: Bool {
         didSet {
@@ -62,6 +63,7 @@ public struct CrossSell: Codable, Equatable {
         typeOfContract: String,
         info: CrossSellInfo?
     ) {
+        self.notificationType = ""
         self.title = title
         self.description = description
         self.imageURL = imageURL
@@ -83,6 +85,7 @@ public struct CrossSell: Codable, Equatable {
             return nil
         }
 
+        notificationType = data.type.rawValue
         imageURL = parsedImageURL
         buttonText = data.callToAction
         embarkStoryName = data.action.asCrossSellEmbark?.embarkStory.name

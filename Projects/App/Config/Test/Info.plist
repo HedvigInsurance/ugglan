@@ -18,13 +18,14 @@
 		<string>en</string>
 		<string>da</string>
 		<string>nb</string>
+		<string>fr</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>6.2.0</string>
+	<string>6.3.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -40,7 +41,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>5592</string>
+	<string>5593</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<true/>
 	<key>FacebookAppID</key>
@@ -53,6 +54,9 @@
 	<string>public.app-category.finance</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>message</string>
+		<string>googlegmail</string>
+		<string>ms-outlook</string>
 		<string>bankid</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>

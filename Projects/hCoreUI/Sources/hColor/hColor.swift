@@ -60,6 +60,14 @@ extension Shape {
     }
 }
 
+extension InsettableShape {
+    public func strokeBorder<S>(_ content: S, lineWidth: CGFloat = 1) -> some View where S: hColor {
+        ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
+            self.strokeBorder(content.colorFor(colorScheme, userInterfaceLevel).color, lineWidth: lineWidth)
+        }
+    }
+}
+
 public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: hColor {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.userInterfaceLevel) var userInterfaceLevel
@@ -379,6 +387,13 @@ public struct hTintColor {
         hColorScheme(
             light: Color(hexString: "C9ABF5"),
             dark: Color(hexString: "BE9BF3")
+        )
+    }
+
+    public static var lavenderTwo: some hColor {
+        hColorScheme(
+            light: Color(hexString: "E7D6FF"),
+            dark: Color(hexString: "2B203B")
         )
     }
 

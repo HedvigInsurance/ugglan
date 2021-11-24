@@ -1,0 +1,28 @@
+name: CleanDerivedData
+
+defaults:
+  run:
+    shell: bash -ieo pipefail {0}
+
+on:
+  - workflow_dispatch
+
+jobs:
+  machineOne:
+    runs-on: MachineOne
+    
+    steps:
+    - name: Delete DerivedData
+      run: rm -rf ~/actions-runner*/DerivedData/*
+  machineTwo:
+    runs-on: MachineTwo
+    
+    steps:
+    - name: Delete DerivedData
+      run: rm -rf ~/actions-runner*/DerivedData/*
+  machineThree:
+    runs-on: MachineThree
+    
+    steps:
+    - name: Delete DerivedData
+      run: rm -rf ~/actions-runner*/DerivedData/*

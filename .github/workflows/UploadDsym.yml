@@ -3,6 +3,11 @@ name: Upload DSYM
 on:
   schedule:
      - cron:  '0 8 * * *'
+  workflow_dispatch:
+    inputs:
+      versionNumber:
+        description: 'Version number'
+        required: true
 
 jobs:
   upload-dsym:
@@ -14,9 +19,10 @@ jobs:
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
       env:
-        FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
         FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
-        FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+        APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+        APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
         DOWNLOAD_DSYMS_APP_IDENTIFIER: ${{ secrets.DOWNLOAD_DSYMS_APP_IDENTIFIER }}
         DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         DOWNLOAD_DSYMS_MIN_VERSION: ${{ secrets.DOWNLOAD_DSYMS_MIN_VERSION }}

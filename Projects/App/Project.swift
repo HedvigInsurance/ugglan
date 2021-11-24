@@ -63,6 +63,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Offer", path: .relativeToRoot("Projects/Offer")),
         .project(target: "Market", path: .relativeToRoot("Projects/Market")),
         .project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
+        .project(target: "Authentication", path: .relativeToRoot("Projects/Authentication")),
         .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
         .project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
         .project(
