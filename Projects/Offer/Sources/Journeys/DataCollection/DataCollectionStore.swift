@@ -193,8 +193,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                 startSubscription()
                             }
                     }
-                    
-                    
+
                 case .dk, .fr:
                     break
                 }

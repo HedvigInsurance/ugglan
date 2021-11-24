@@ -86,7 +86,7 @@ public struct DataCollectionPersonalIdentity: View {
                         } else {
                             store.send(.setCredential(credential: .personalNumber(number: inputtedValue)))
                         }
-                        
+
                         store.send(.startAuthentication)
                     } content: {
                         L10n.InsurelySsn.continueButtonText.hText()

@@ -113,7 +113,7 @@ extension DataCollectionConfirmation {
                     DismissJourney()
                         .onPresent {
                             let store: DataCollectionStore = globalPresentableStoreContainer.get()
-                            
+
                             if case let .personalNumber(personalNumber) = store.state.credential {
                                 onComplete(
                                     store.state.id,
@@ -124,7 +124,7 @@ extension DataCollectionConfirmation {
                                     store.state.id,
                                     nil
                                 )
-                            }                            
+                            }
                         }
                 case .failed:
                     DismissJourney()
