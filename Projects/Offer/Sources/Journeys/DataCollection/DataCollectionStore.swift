@@ -161,7 +161,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                             callback(.value(action))
                             startSubscription()
                         }
-                case .dk:
+                case .dk, .fr:
                     break
                 }
 
