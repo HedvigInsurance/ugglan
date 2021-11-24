@@ -93,6 +93,7 @@ public struct DataCollectionPersonalIdentity: View {
                     }
                 }
                 .padding(.top, 40)
+                .disabled(!authOption.masking.isValid(text: inputtedValue))
             }
             .sectionContainerStyle(.transparent)
         }
