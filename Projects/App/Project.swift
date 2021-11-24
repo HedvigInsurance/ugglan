@@ -96,7 +96,10 @@ let project = Project(
             resources: ["Resources/**", "Config/Test/Resources/**"],
             entitlements: "Config/Test/Ugglan.entitlements",
             scripts: targetScripts,
-            dependencies: appDependencies,
+            dependencies: [
+                appDependencies,
+                [.target(name: "Ugglan-AppClip")]
+            ].flatMap { $0 },
             settings: .settings(configurations: ugglanConfigurations)
         ),
         Target(
@@ -134,6 +137,23 @@ let project = Project(
             entitlements: "Config/Production/Hedvig.entitlements",
             scripts: targetScripts,
             dependencies: appDependencies,
+            settings: .settings(configurations: hedvigConfigurations)
+        ),
+        Target(
+            name: "Ugglan-AppClip",
+            platform: .iOS,
+            product: .appClip,
+            bundleId: "com.hedvig.test.app.clip",
+            deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
+            infoPlist: "Config/Test/AppClip.Info.plist",
+            sources: ["AppClip/Sources/**"],
+            resources: ["Resources/**", "Config/Test/Resources/**"],
+            entitlements: "Config/Test/AppClip.entitlements",
+            scripts: targetScripts,
+            dependencies: [
+                appDependencies,
+                [.sdk(name: "AppClip.framework", status: .required)]
+            ].flatMap { $0 },
             settings: .settings(configurations: hedvigConfigurations)
         ),
     ],
