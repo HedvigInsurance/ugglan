@@ -16,7 +16,6 @@ public struct ActivityIndicator: UIViewRepresentable {
 
     public func updateUIView(_ uiView: UIActivityIndicatorView, context: Context) {
         uiView.startAnimating()
-        uiView.color = .brand(.primaryText(true))
     }
 }
 
