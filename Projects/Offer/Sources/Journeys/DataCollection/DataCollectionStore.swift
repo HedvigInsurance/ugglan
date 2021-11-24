@@ -27,6 +27,11 @@ public struct DataCollectionInsurance: Equatable, Codable {
     public var monthlyNetPremium: MonetaryAmount
 }
 
+public enum DataCollectionCredential: Equatable, Codable {
+    case personalNumber(number: String)
+    case phoneNumber(number: String)
+}
+
 public struct DataCollectionState: StateProtocol {
     var providerID: String? = nil
     var providerDisplayName: String? = nil
@@ -34,7 +39,7 @@ public struct DataCollectionState: StateProtocol {
     var status = DataCollectionStatus.none
     var authMethod: DataCollectionAuthMethod? = nil
     var market: Localization.Locale.Market
-    var personalNumber: String? = nil
+    var credential: DataCollectionCredential? = nil
     var insurances: [DataCollectionInsurance] = []
 
     public init() {
@@ -46,7 +51,7 @@ public enum DataCollectionAction: ActionProtocol {
     case setProvider(providerID: String, providerDisplayName: String)
     case didIntroDecide(decision: DataCollectionIntroDecision)
     case confirmResult(result: DataCollectionConfirmationResult)
-    case setPersonalNumber(personalNumber: String)
+    case setCredential(credential: DataCollectionCredential)
     case startAuthentication
     case setStatus(status: DataCollectionStatus)
     case setAuthMethod(method: DataCollectionAuthMethod)
@@ -123,7 +128,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         if case .startAuthentication = action,
             let reference = getState().id?.uuidString,
             let providerID = getState().providerID,
-            let personalNumber = getState().personalNumber
+            let credential = getState().credential
         {
             cancelEffect(action)
             let market = getState().market
@@ -143,33 +148,53 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
 
                 switch market {
                 case .se:
-                    bag += self.client
-                        .perform(
-                            mutation: GraphQL.DataCollectionSwedenMutation(
-                                reference: reference,
-                                provider: providerID,
-                                personalNumber: personalNumber
+                    if case let .personalNumber(personalNumber) = credential {
+                        bag += self.client
+                            .perform(
+                                mutation: GraphQL.DataCollectionSwedenMutation(
+                                    reference: reference,
+                                    provider: providerID,
+                                    personalNumber: personalNumber
+                                )
                             )
-                        )
-                        .map { _ in DataCollectionAction.setStatus(status: .started) }
-                        .onValue { action in
-                            callback(.value(action))
-                            startSubscription()
-                        }
+                            .map { _ in DataCollectionAction.setStatus(status: .started) }
+                            .onValue { action in
+                                callback(.value(action))
+                                startSubscription()
+                            }
+                    }
                 case .no:
-                    self.client
-                        .perform(
-                            mutation: GraphQL.DataCollectionNorwayMutation(
-                                reference: reference,
-                                provider: providerID,
-                                personalNumber: personalNumber
+                    if case let .personalNumber(personalNumber) = credential {
+                        self.client
+                            .perform(
+                                mutation: GraphQL.DataCollectionNorwayMutation(
+                                    reference: reference,
+                                    provider: providerID,
+                                    personalNumber: personalNumber
+                                )
                             )
-                        )
-                        .map { _ in DataCollectionAction.setStatus(status: .started) }
-                        .onValue { action in
-                            callback(.value(action))
-                            startSubscription()
-                        }
+                            .map { _ in DataCollectionAction.setStatus(status: .started) }
+                            .onValue { action in
+                                callback(.value(action))
+                                startSubscription()
+                            }
+                    } else if case let .phoneNumber(phoneNumber) = credential {
+                        self.client
+                            .perform(
+                                mutation: GraphQL.DataCollectionNorwayPhoneMutation(
+                                    reference: reference,
+                                    provider: providerID,
+                                    phoneNumber: phoneNumber
+                                )
+                            )
+                            .map { _ in DataCollectionAction.setStatus(status: .started) }
+                            .onValue { action in
+                                callback(.value(action))
+                                startSubscription()
+                            }
+                    }
+                    
+                    
                 case .dk, .fr:
                     break
                 }
@@ -224,8 +249,8 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         case let .setProvider(providerID, providerDisplayName):
             newState.providerID = providerID
             newState.providerDisplayName = providerDisplayName
-        case let .setPersonalNumber(personalNumber):
-            newState.personalNumber = personalNumber
+        case let .setCredential(credential):
+            newState.credential = credential
         case .startAuthentication:
             newState.id = UUID()
             newState.authMethod = nil

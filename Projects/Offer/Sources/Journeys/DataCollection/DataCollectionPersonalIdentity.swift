@@ -40,7 +40,7 @@ public struct DataCollectionPersonalIdentity: View {
                     label: L10n.InsurelyNoSsn.inputLabel
                 ),
                 DataCollectionAuthOption(
-                    masking: .init(type: .none),
+                    masking: .init(type: .digits),
                     label: L10n.phoneNumberRowTitle
                 ),
             ]
@@ -81,7 +81,12 @@ public struct DataCollectionPersonalIdentity: View {
 
                 VStack {
                     hButton.LargeButtonFilled {
-                        store.send(.setPersonalNumber(personalNumber: inputtedValue))
+                        if authOption.masking.type == .digits {
+                            store.send(.setCredential(credential: .phoneNumber(number: inputtedValue)))
+                        } else {
+                            store.send(.setCredential(credential: .personalNumber(number: inputtedValue)))
+                        }
+                        
                         store.send(.startAuthentication)
                     } content: {
                         L10n.InsurelySsn.continueButtonText.hText()
