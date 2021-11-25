@@ -139,7 +139,7 @@ platform :ios do
                     name: "CI",
                     password: ENV["MATCH_PASSWORD"],
                     unlock: true,
-                    timeout: false,
+                    timeout: 0,
                     lock_when_sleeps: false
                 )
             end
