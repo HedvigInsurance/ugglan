@@ -13,9 +13,11 @@ extension AppJourney {
             switch redirect {
             case .chat:
                 AppJourney.claimsChat()
+                    .sendActionImmediately(HomeStore.self, .setClaimsNeedsUpdating)
                     .withDismissButton
             case .close:
                 DismissJourney()
+                    .sendActionImmediately(HomeStore.self, .setClaimsNeedsUpdating)
             case .menu:
                 ContinueJourney()
             case .mailingList:

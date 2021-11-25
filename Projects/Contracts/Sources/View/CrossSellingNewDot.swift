@@ -23,6 +23,5 @@ struct CrossSellingUnseenCircle: View {
                     }
             }
         }
-
     }
 }

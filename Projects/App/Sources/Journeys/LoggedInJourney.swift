@@ -157,7 +157,7 @@ extension AppJourney {
 }
 
 extension JourneyPresentation {
-    func sendActionOnValue<S: Store>(
+    func sendActionImmediately<S: Store>(
         _ storeType: S.Type,
         _ action: S.Action
     ) -> Self {
