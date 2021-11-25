@@ -173,11 +173,8 @@ extension InsuranceProviderAction: Viewable {
 
                         if provider.hasExternalCapabilities {
                             let externalCollectionID = provider.externalCollectionId ?? ""
-                            let providerID =
-                                "\(Localization.Locale.currentLocale.market.rawValue)-\(externalCollectionID)"
-
                             state.externalRedirectSignal.value = .dataCollection(
-                                providerID: providerID.lowercased(),
+                                providerID: externalCollectionID,
                                 providerDisplayName: provider.name
                             ) { id in
                                 if let id = id {
