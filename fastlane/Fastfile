@@ -142,6 +142,11 @@ platform :ios do
                 timeout: 0,
                 lock_when_sleeps: false
             )
+
+            unlock_keychain(
+                path: "CI",
+                password: ENV["MATCH_PASSWORD"]
+            )
         end
     end
 
