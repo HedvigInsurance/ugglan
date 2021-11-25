@@ -699,12 +699,14 @@ platform :ios do
                 derived_data_path: is_ci ? "../../../DerivedData" : nil,
             )
             xchtmlreport(
+                binary_path: "/opt/homebrew/bin/xchtmlreport",
                 result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"],
                 enable_junit: true
             )
             handle_xcresult_result(scheme: scheme)
         rescue => ex
             xchtmlreport(
+                binary_path: "/opt/homebrew/bin/xchtmlreport",
                 result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"],
                 enable_junit: true
             )
@@ -733,6 +735,7 @@ platform :ios do
         
         def report(schemes)
             xchtmlreport(
+                binary_path: "/opt/homebrew/bin/xchtmlreport",
                 result_bundle_paths: schemes.map { |scheme| "fastlane/test_output/#{scheme}.xcresult" }.filter { |path| File.directory?(path) }
             )
         end
