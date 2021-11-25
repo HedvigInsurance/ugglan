@@ -1,8 +1,6 @@
 import Flow
 import Foundation
 
-public typealias OfferData = GraphQL.QuoteBundleQuery.Data
-
 public struct OfferBundle: Codable, Equatable {
     public var quoteBundle: QuoteBundle
     public let redeemedCampaigns: [RedeemedCampaign]
@@ -19,7 +17,7 @@ public struct OfferBundle: Codable, Equatable {
     }
 
     public init(
-        data: OfferData,
+        data: GraphQL.QuoteBundleQuery.Data,
         id: UUID = UUID()
     ) {
         quoteBundle = .init(bundle: data.quoteBundle)
@@ -37,7 +35,7 @@ public struct QuoteBundle: Codable, Equatable {
     public var inception: Inception
 
     public init(
-        bundle: OfferData.QuoteBundle
+        bundle: GraphQL.QuoteBundleQuery.Data.QuoteBundle
     ) {
         appConfiguration = .init(config: bundle.appConfiguration)
         bundleCost = .init(cost: bundle.bundleCost)
@@ -56,7 +54,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let title: AppConfigTitle
 
         public init(
-            config: OfferData.QuoteBundle.AppConfiguration
+            config: GraphQL.QuoteBundleQuery.Data.QuoteBundle.AppConfiguration
         ) {
             showCampaignManagement = config.showCampaignManagement
             showFaq = config.showFaq
@@ -93,7 +91,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let monthlyNet: MonetaryAmount
 
         public init(
-            cost: OfferData.QuoteBundle.BundleCost
+            cost: GraphQL.QuoteBundleQuery.Data.QuoteBundle.BundleCost
         ) {
             freeUntil = cost.freeUntil
             monthlyDiscount = .init(fragment: cost.monthlyDiscount.fragments.monetaryAmountFragment)
@@ -107,7 +105,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let headline: String?
         public let id: String
         public init(
-            question: OfferData.QuoteBundle.FrequentlyAskedQuestion
+            question: GraphQL.QuoteBundleQuery.Data.QuoteBundle.FrequentlyAskedQuestion
         ) {
             id = question.id
             body = question.body
@@ -126,7 +124,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let insuranceTerms: [TermsAndConditions]
 
         public init(
-            quote: OfferData.QuoteBundle.Quote
+            quote: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote
         ) {
             id = quote.id
             ssn = quote.ssn
