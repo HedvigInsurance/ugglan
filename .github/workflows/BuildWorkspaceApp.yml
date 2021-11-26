@@ -32,6 +32,8 @@ on:
         required: true
       S3_SECRET_ACCESS_KEY:
         required: true
+      SSH_CACHE_CREDENTIALS:
+        required: true
 
 jobs:
   should_run:
@@ -59,12 +61,8 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: generated_files
-      - name: Cache derived data
-        uses: actions/cache@v2
-        with:
-          path: |
-            DerivedData
-          key: ${{ runner.os }}-${{ inputs.name }}
+      - name: Fetch cache
+        run: scp -r ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }} DerivedData
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
@@ -79,6 +77,8 @@ jobs:
           FASTLANE_XCODE_LIST_TIMEOUT: '180'
           BUILD_NAME: build_${{ inputs.name }}
         run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
+      - name: Upload cache
+        run: scp -r DerivedData ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }}
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
@@ -96,12 +96,8 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: generated_files
-      - name: Cache derived data
-        uses: actions/cache@v2
-        with:
-          path: |
-            DerivedData
-          key: ${{ runner.os }}-${{ inputs.name }}
+      - name: Fetch cache
+        run: scp -r ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }} DerivedData
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
