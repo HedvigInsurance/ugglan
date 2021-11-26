@@ -1,0 +1,29 @@
+name: 'ShouldRun'
+description: 'Check if build should be ran'
+inputs:
+  path:
+    description: 'The project path'
+    required: true
+    default: ''
+outputs:
+  should-run:
+    description: "If we should run"
+    value: ${{ inputs.path == 'Projects/App' || github.ref == 'refs/heads/main' || steps.changed-files.outputs.any_changed == 'true' }}
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v11.7
+      with:
+        files: |
+          ${{ inputs.path }}
+          Projects/Dependencies
+          Projects/hCore
+          Projects/hCoreUI
+          Projects/hGraphQL
+          Projects/ExampleUtil
+          Projects/TestingUtil
+          Projects/Testing
+          Tuist
