@@ -34,6 +34,7 @@ jobs:
     with:
       lane: ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
       name: Ugglan
+      path: Projects/App
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
@@ -57,6 +58,7 @@ jobs:
     with:
       lane: ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
       name: EmbarkExample
+      path: rojects/Embark
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
@@ -80,6 +82,7 @@ jobs:
     with:
       lane: ios build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig
       name: Hedvig
+      path: Projects/App/Ugglan.xcodeproj
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
@@ -93,6 +96,7 @@ jobs:
     with:
       lane: ios build path:Projects/Home/Home.xcodeproj scheme:HomeExample
       name: HomeExample
+      path: Projects/Home
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
@@ -116,6 +120,7 @@ jobs:
     with:
       lane: ios build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample
       name: ForeverExample
+      path: Projects/Forever
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
@@ -139,6 +144,7 @@ jobs:
     with:
       lane: ios build path:Projects/Offer/Offer.xcodeproj scheme:OfferExample
       name: OfferExample
+      path: Projects/Offer
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
@@ -162,6 +168,7 @@ jobs:
     with:
       lane: ios build path:Projects/hCoreUI/hCoreUI.xcodeproj scheme:hCoreUIExample
       name: hCoreUIExample
+      path: Projects/hCoreUI
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
