@@ -64,7 +64,7 @@ jobs:
         with:
           path: |
             DerivedData
-          key: ${{ runner.os }}-${{ inputs.name }}-${{ github.sha }}
+          key: ${{ runner.os }}-${{ inputs.name }}
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
@@ -87,7 +87,7 @@ jobs:
 
   test:
     needs: build
-    if: inputs.test_scheme
+    if: ${{ inputs.test_scheme }}
     runs-on: self-hosted
     timeout-minutes: 30
 
@@ -101,7 +101,7 @@ jobs:
         with:
           path: |
             DerivedData
-          key: ${{ runner.os }}-${{ inputs.name }}-${{ github.sha }}
+          key: ${{ runner.os }}-${{ inputs.name }}
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
