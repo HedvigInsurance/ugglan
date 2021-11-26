@@ -42,7 +42,7 @@ jobs:
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_ugglan:
-    needs: [generate]
+    needs: [generate, build_ugglan]
     uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
     with:
       scheme: Ugglan
@@ -65,7 +65,7 @@ jobs:
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_embark:
-    needs: [generate]
+    needs: [generate, build_embark]
     uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
     with:
       scheme: Embark
@@ -101,7 +101,7 @@ jobs:
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_home:
-    needs: [generate]
+    needs: [generate, build_home]
     uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
     with:
       scheme: Home
@@ -124,7 +124,7 @@ jobs:
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_forever:
-    needs: [generate]
+    needs: [generate, build_forever]
     uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
     with:
       scheme: Forever
@@ -147,7 +147,7 @@ jobs:
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_offer:
-    needs: [generate]
+    needs: [generate, build_offer]
     uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
     with:
       scheme: Offer
@@ -170,7 +170,7 @@ jobs:
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_hcoreui:
-    needs: [generate]
+    needs: [generate, build_hcoreui]
     uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
     with:
       scheme: hCoreUI
