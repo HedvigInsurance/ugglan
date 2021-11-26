@@ -29,8 +29,6 @@ platform :ios do
     end
     
     lane :setup do
-        sh("cd ..; scripts/post-checkout.sh")
-        sh("cd ..; tuist generate")
         ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
     end
 
@@ -132,28 +130,44 @@ platform :ios do
     private_lane :setup_keychain do
         if is_ci
             if File.exist? File.expand_path("~/Library/Keychains/CI-db")
-                unlock_keychain(
-                    path: "CI",
-                    password: ENV["MATCH_PASSWORD"]
-                )
-            else
-                create_keychain(
+                delete_keychain(
                     name: "CI",
-                    password: ENV["MATCH_PASSWORD"],
-                    unlock: true,
-                    timeout: false,
-                    lock_when_sleeps: false
                 )
             end
+
+            create_keychain(
+                name: "CI",
+                password: ENV["MATCH_PASSWORD"],
+                unlock: true,
+                timeout: 0,
+                lock_when_sleeps: false
+            )
+
+            unlock_keychain(
+                path: "CI",
+                password: ENV["MATCH_PASSWORD"]
+            )
         end
     end
 
     private_lane :allow_keychain do
         if is_ci
-            sh("security list-keychains -d user")
-            sh("security default-keychain -d user")
-            sh("security find-identity -v -p codesigning CI")
-            sh("security set-key-partition-list -S apple-tool:,apple: -s -k #{ENV["MATCH_PASSWORD"]} ~/Library/Keychains/CI-db")
+            sh(
+                command: "security default-keychain -d user",
+                log: false
+            )
+            sh(
+                command: "security list-keychains -d user",
+                log: false
+            )
+            sh(
+                command: "security find-identity -v -p codesigning CI",
+                log: false
+            )
+            sh(
+                command: "security set-key-partition-list -S apple-tool:,apple: -s -k #{ENV["MATCH_PASSWORD"]} ~/Library/Keychains/CI-db",
+                log: false
+            )
         end
     end
     
@@ -683,14 +697,17 @@ platform :ios do
                 output_style: "rspec",
                 skip_package_dependencies_resolution: true,
                 derived_data_path: is_ci ? "../../../DerivedData" : nil,
+                number_of_retries: 5
             )
             xchtmlreport(
+                binary_path: "/opt/homebrew/bin/xchtmlreport",
                 result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"],
                 enable_junit: true
             )
             handle_xcresult_result(scheme: scheme)
         rescue => ex
             xchtmlreport(
+                binary_path: "/opt/homebrew/bin/xchtmlreport",
                 result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"],
                 enable_junit: true
             )
@@ -719,6 +736,7 @@ platform :ios do
         
         def report(schemes)
             xchtmlreport(
+                binary_path: "/opt/homebrew/bin/xchtmlreport",
                 result_bundle_paths: schemes.map { |scheme| "fastlane/test_output/#{scheme}.xcresult" }.filter { |path| File.directory?(path) }
             )
         end

@@ -3,15 +3,10 @@ name: Upload DSYM
 on:
   schedule:
      - cron:  '0 8 * * *'
-  workflow_dispatch:
-    inputs:
-      versionNumber:
-        description: 'Version number'
-        required: true
 
 jobs:
   upload-dsym:
-    runs-on: MachineOne
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v2
