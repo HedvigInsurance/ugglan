@@ -33,7 +33,6 @@ on:
 jobs:
   should_run:
     runs-on: ubuntu-latest
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@only-run-if-changed
     with:
       path: ${{ inputs.path }}
       
