@@ -40,7 +40,7 @@ extension AppJourney {
             }
         }
     }
-    
+
     fileprivate static var contractsTab: some JourneyPresentation {
         Contracts.journey { result in
             switch result {
@@ -65,54 +65,54 @@ extension AppJourney {
             }
         }
     }
-    
+
     fileprivate static var keyGearTab: some JourneyPresentation {
         Journey(
             KeyGearOverview(),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         )
-            .configureTabBarItem
-            .onTabSelected {
-                ContextGradient.currentOption = .none
-            }
+        .configureTabBarItem
+        .onTabSelected {
+            ContextGradient.currentOption = .none
+        }
     }
-    
+
     fileprivate static var foreverTab: some JourneyPresentation {
         Journey(
             Forever(service: ForeverServiceGraphQL()),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         )
-            .configureTabBarItem
-            .onTabSelected {
-                ContextGradient.currentOption = .forever
+        .configureTabBarItem
+        .onTabSelected {
+            ContextGradient.currentOption = .forever
+        }
+        .makeTabSelected(UgglanStore.self) { action in
+            if case .makeTabActive(let deepLink) = action {
+                return deepLink == .forever
+            } else {
+                return false
             }
-            .makeTabSelected(UgglanStore.self) { action in
-                if case .makeTabActive(let deepLink) = action {
-                    return deepLink == .forever
-                } else {
-                    return false
-                }
-            }
+        }
     }
-    
+
     fileprivate static var profileTab: some JourneyPresentation {
         Journey(
             Profile(),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         )
-            .configureTabBarItem
-            .onTabSelected {
-                ContextGradient.currentOption = .profile
+        .configureTabBarItem
+        .onTabSelected {
+            ContextGradient.currentOption = .profile
+        }
+        .makeTabSelected(UgglanStore.self) { action in
+            if case .makeTabActive(let deepLink) = action {
+                return deepLink == .profile
+            } else {
+                return false
             }
-            .makeTabSelected(UgglanStore.self) { action in
-                if case .makeTabActive(let deepLink) = action {
-                    return deepLink == .profile
-                } else {
-                    return false
-                }
-            }
+        }
     }
-    
+
     static var loggedIn: some JourneyPresentation {
         Journey(FeaturesLoader(), options: []) { features in
             TabbedJourney(
@@ -136,19 +136,19 @@ extension AppJourney {
                     profileTab
                 }
             )
-                .syncTabIndex()
-                .onAction(UgglanStore.self) { action in
-                    if action == .openChat {
-                        AppJourney.freeTextChat()
-                    } else if action == .openClaims {
-                        AppJourney.claimJourney
-                    }
+            .syncTabIndex()
+            .onAction(UgglanStore.self) { action in
+                if action == .openChat {
+                    AppJourney.freeTextChat()
+                } else if action == .openClaims {
+                    AppJourney.claimJourney
                 }
+            }
         }
         .onPresent {
             ApplicationState.preserveState(.loggedIn)
             AnalyticsCoordinator().setUserId()
-            
+
             if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
                 UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
             }
@@ -162,10 +162,9 @@ extension JourneyPresentation {
         _ action: S.Action
     ) -> Self {
         let store: S = self.presentable.get()
-        
+
         store.send(action)
-        
+
         return self
     }
 }
-

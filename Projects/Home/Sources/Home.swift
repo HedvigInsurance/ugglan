@@ -71,7 +71,7 @@ extension Home: Presentable {
         bag += viewController.viewDidAppearSignal.onValue {
             fetch()
         }
-        
+
         func fetch() {
             store.send(.fetchMemberState)
             store.send(.fetchClaims)

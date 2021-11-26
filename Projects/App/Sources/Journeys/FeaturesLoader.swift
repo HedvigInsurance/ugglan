@@ -1,8 +1,8 @@
 import Flow
+import Form
 import Foundation
 import Presentation
 import UIKit
-import Form
 import hCoreUI
 
 struct FeaturesLoader: Presentable {
@@ -60,14 +60,14 @@ struct NotificationLoader: Presentable {
     func materialize() -> (UIViewController, FiniteSignal<UNAuthorizationStatus>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
-        
+
         viewController.view.backgroundColor = .white
 
         let activityIndicatorView = UIActivityIndicatorView(style: .large)
         viewController.view.addSubview(activityIndicatorView)
 
         activityIndicatorView.startAnimating()
-        
+
         activityIndicatorView.snp.remakeConstraints { make in
             make.center.equalToSuperview()
         }

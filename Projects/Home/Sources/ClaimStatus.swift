@@ -21,7 +21,7 @@ struct ClaimStatus: View {
             SwiftUI.Divider()
             Spacer().frame(height: 16)
             HStack {
-                ForEach(claim.segments, id:\.text) { segment in
+                ForEach(claim.segments, id: \.text) { segment in
                     ClaimStatusBar(status: segment)
                 }
             }
@@ -64,7 +64,8 @@ extension Claim.ClaimPill {
             hPillFill(
                 text: self.text,
                 backgroundColor: hBackgroundColor.primary
-            ).invertColorScheme
+            )
+            .invertColorScheme
         case .reopened:
             hPillFill(text: self.text, backgroundColor: hTintColor.orangeTwo)
         case .none:

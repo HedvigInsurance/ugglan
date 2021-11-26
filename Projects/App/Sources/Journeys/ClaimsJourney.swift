@@ -1,11 +1,11 @@
 import Embark
 import Flow
 import Foundation
+import Home
 import Presentation
 import UIKit
 import hCore
 import hCoreUI
-import Home
 
 extension AppJourney {
     static var claimJourney: some JourneyPresentation {
@@ -27,12 +27,14 @@ extension AppJourney {
             }
         }
     }
-    
-    private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(@JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney) -> some JourneyPresentation {
+
+    private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
+        @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney
+    ) -> some JourneyPresentation {
         HonestyPledge.journey {
             AppJourney.notificationJourney {
                 let embark = Embark(name: "claims")
-                
+
                 AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
             }
             .withJourneyDismissButton

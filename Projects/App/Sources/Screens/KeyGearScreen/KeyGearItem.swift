@@ -212,7 +212,7 @@ extension KeyGearItem: Presentable {
         claimsRow.append(hCoreUIAssets.chevronRight.image)
 
         let store: UgglanStore = self.get()
-        
+
         bag += claimsSection.append(claimsRow)
             .onValue { _ in
                 store.send(.openClaims)
