@@ -727,6 +727,7 @@ platform :ios do
             "hCoreUI",
             "Forever",
             "Contracts",
+            "Embark",
             "Home"
         ]
 
