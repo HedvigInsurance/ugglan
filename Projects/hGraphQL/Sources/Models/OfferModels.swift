@@ -1,6 +1,7 @@
 import Flow
 import Foundation
 
+
 public struct OfferBundle: Codable, Equatable {
     public var quoteBundle: QuoteBundle
     public let redeemedCampaigns: [RedeemedCampaign]
