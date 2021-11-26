@@ -59,9 +59,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download generated
-        run: scp -r ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
+        run: rsync -r ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
       - name: Fetch cache
-        run: scp -r ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }} DerivedData || true
+        run: rsync -r ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }} DerivedData || true
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
@@ -77,7 +77,7 @@ jobs:
           BUILD_NAME: build_${{ inputs.name }}
         run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
       - name: Upload cache
-        run: scp -r DerivedData ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }} || true
+        run: rsync -r DerivedData ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }} || true
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
