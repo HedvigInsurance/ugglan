@@ -1,7 +1,7 @@
-import SwiftUI
 import Combine
-import Presentation
 import Flow
+import Presentation
+import SwiftUI
 
 public struct Poller<S: Store, Value: Equatable, Content: View>: View {
     public typealias Getter = (_ state: S.State) -> Value
@@ -47,10 +47,13 @@ public struct Poller<S: Store, Value: Equatable, Content: View>: View {
         .onReceive(pollTimer) { _ in
             store.send(fetchAction)
         }
-        .onReceive(store.stateSignal.plain().distinct { lhs, rhs in
-                        self.getter(lhs) == self.getter(rhs)
-                        }
-                    .publisher) { _ in
+        .onReceive(
+            store.stateSignal.plain()
+                .distinct { lhs, rhs in
+                    self.getter(lhs) == self.getter(rhs)
+                }
+                .publisher
+        ) { _ in
             pollTimer.upstream.connect().cancel()
             self.value = getter(store.stateSignal.value)
         }
