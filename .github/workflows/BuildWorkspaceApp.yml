@@ -17,7 +17,7 @@ on:
         required: true
         type: string
       test_scheme:
-        required: true
+        required: false
         type: string
     secrets:
       MATCH_PASSWORD:
@@ -87,6 +87,7 @@ jobs:
 
   test:
     needs: build
+    if: inputs.test_scheme
     runs-on: self-hosted
     timeout-minutes: 30
 
