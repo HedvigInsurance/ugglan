@@ -135,7 +135,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   slack:
     runs-on: ubuntu-latest
-    if: needs.ugglan.result == 'success'
+    if: always()
     needs:
       - ugglan
       - embark
