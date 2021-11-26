@@ -30,7 +30,7 @@ jobs:
           **/Resources/*.lproj
   build_ugglan:
     needs: [generate]
-    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@main
     with:
       lane: ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
       name: Ugglan
@@ -43,7 +43,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_ugglan:
     needs: [generate, build_ugglan]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@main
     with:
       scheme: Ugglan
     secrets:
@@ -53,7 +53,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   build_embark:
     needs: [generate]
-    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@main
     with:
       lane: ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
       name: EmbarkExample
@@ -66,7 +66,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_embark:
     needs: [generate, build_embark]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@main
     with:
       scheme: Embark
     secrets:
@@ -76,7 +76,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   build_hedvig:
     needs: [generate]
-    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@main
     with:
       lane: ios build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig
       name: Hedvig
@@ -89,7 +89,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   build_home:
     needs: [generate]
-    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@main
     with:
       lane: ios build path:Projects/Home/Home.xcodeproj scheme:HomeExample
       name: HomeExample
@@ -102,7 +102,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_home:
     needs: [generate, build_home]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@main
     with:
       scheme: Home
     secrets:
@@ -112,7 +112,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   build_forever:
     needs: [generate]
-    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@main
     with:
       lane: ios build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample
       name: ForeverExample
@@ -125,7 +125,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_forever:
     needs: [generate, build_forever]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@main
     with:
       scheme: Forever
     secrets:
@@ -135,7 +135,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   build_offer:
     needs: [generate]
-    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@main
     with:
       lane: ios build path:Projects/Offer/Offer.xcodeproj scheme:OfferExample
       name: OfferExample
@@ -148,7 +148,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_offer:
     needs: [generate, build_offer]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@main
     with:
       scheme: Offer
     secrets:
@@ -158,7 +158,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   build_hcoreui:
     needs: [generate]
-    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@main
     with:
       lane: ios build path:Projects/hCoreUI/hCoreUI.xcodeproj scheme:hCoreUIExample
       name: hCoreUIExample
@@ -171,7 +171,7 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   test_hcoreui:
     needs: [generate, build_hcoreui]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@ci-generate-before
+    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@main
     with:
       scheme: hCoreUI
     secrets:
