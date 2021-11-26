@@ -51,7 +51,7 @@ jobs:
     needs: should_run
     runs-on: self-hosted
     timeout-minutes: 30
-    if: ${{ jobs.should_run.steps.changed-files.outputs.any_changed == 'true' }}
+    if: ${{ job.should_run.steps.changed-files.outputs.any_changed == 'true' }}
 
     steps:
       - uses: actions/checkout@v2
