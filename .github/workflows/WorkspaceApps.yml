@@ -18,16 +18,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Post checkout
       run: sh scripts/post-checkout.sh
-    - name: Upload generated files
-      uses: actions/upload-artifact@v2
-      with:
-        name: generated_files
-        path: |
-          *.xcworkspace
-          **/*.xcodeproj
-          **/Derived/**/*.swift
-          **/Derived/**/*.plist
-          **/Resources/*.lproj
+    - name: Upload generated
+        run: scp -r {*.xcworkspace,**/*.xcodeproj,**/Derived/**/*.plist,**/Resources/*.lproj} ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
   ugglan:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
