@@ -22,7 +22,7 @@ struct ClaimStatusBar: View {
             hLabelColor.primary
         }
     }
-    
+
     @hColorBuilder var textColor: some hColor {
         switch status.type {
         case .paid, .reopened, .currentlyActive, .none:

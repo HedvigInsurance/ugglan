@@ -30,7 +30,7 @@ extension ActiveSection: Presentable {
         bag += {
             hostingView.removeFromSuperview()
         }
-        
+
         bag += store.onAction(.setClaimsNeedsUpdating) {
             claims.shouldPoll = true
         }
