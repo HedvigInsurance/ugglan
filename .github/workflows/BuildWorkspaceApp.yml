@@ -57,7 +57,6 @@ jobs:
     if: needs.should_run.outputs.should_run == 'true'
 
     steps:
-      - uses: actions/checkout@v2
       - name: Download generated
         run: rsync -r ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
       - name: Fetch cache
@@ -91,10 +90,8 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
-        with:
-          name: generated_files
+      - name: Download generated
+        run: rsync -r ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
       - name: Fetch cache
         run: scp -r ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }} DerivedData || true
       - name: Bundle install
