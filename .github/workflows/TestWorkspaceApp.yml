@@ -24,7 +24,7 @@ jobs:
   should_run:
     runs-on: ubuntu-latest
     outputs:
-      should_run: ${{ github.ref == 'refs/heads/main' || steps.changed-files.outputs.any_changed == 'true' }}
+      should_run: ${{ inputs.path == 'Projects/App' || github.ref == 'refs/heads/main' || steps.changed-files.outputs.any_changed == 'true' }}
 
     steps:
       - uses: actions/checkout@v2
@@ -38,6 +38,9 @@ jobs:
             Projects/hCore
             Projects/hCoreUI
             Projects/hGraphQL
+            Projects/ExampleUtil
+            Projects/TestingUtil
+            Projects/Testing
   build:
     runs-on: self-hosted
     timeout-minutes: 30
