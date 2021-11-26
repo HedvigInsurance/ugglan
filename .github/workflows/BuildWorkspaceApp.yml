@@ -59,6 +59,12 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: generated_files
+      - name: Cache derived data
+        uses: actions/cache@v2
+        with:
+          path: |
+            ../../../DerivedData
+          key: ${{ runner.os }}-${{ inputs.name }}-${{ github.sha }}
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
@@ -89,6 +95,12 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: generated_files
+      - name: Cache derived data
+        uses: actions/cache@v2
+        with:
+          path: |
+            ../../../DerivedData
+          key: ${{ runner.os }}-${{ inputs.name }}-${{ github.sha }}
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
