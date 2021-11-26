@@ -28,7 +28,7 @@ jobs:
           **/Derived/**/*.swift
           **/Derived/**/*.plist
           **/Resources/*.lproj
-  build_ugglan:
+  ugglan:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
@@ -43,7 +43,7 @@ jobs:
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  build_embark:
+  embark:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
@@ -58,7 +58,7 @@ jobs:
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  build_hedvig:
+  hedvig:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
@@ -73,7 +73,7 @@ jobs:
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  build_home:
+  home:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
@@ -88,7 +88,7 @@ jobs:
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  build_forever:
+  forever:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
@@ -103,7 +103,7 @@ jobs:
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  build_offer:
+  offer:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
@@ -118,7 +118,7 @@ jobs:
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  build_hcoreui:
+  hcoreui:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
@@ -135,15 +135,15 @@ jobs:
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
   slack:
     runs-on: ubuntu-latest
-    if: needs.build_ugglan.result == 'success'
+    if: needs.ugglan.result == 'success'
     needs:
-      - build_ugglan
-      - build_embark
-      - build_hedvig
-      - build_home
-      - build_forever
-      - build_offer
-      - build_hcoreui
+      - ugglan
+      - embark
+      - hedvig
+      - home
+      - forever
+      - offer
+      - hcoreui
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
