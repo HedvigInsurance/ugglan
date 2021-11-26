@@ -63,7 +63,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ../../../DerivedData
+            DerivedData
           key: ${{ runner.os }}-${{ inputs.name }}-${{ github.sha }}
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
@@ -99,7 +99,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ../../../DerivedData
+            DerivedData
           key: ${{ runner.os }}-${{ inputs.name }}-${{ github.sha }}
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
