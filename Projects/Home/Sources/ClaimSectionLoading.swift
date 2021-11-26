@@ -9,16 +9,25 @@ import Flow
 
 struct ClaimSectionLoading: View {
     
+    @State
+    var shouldPoll = false
+    
+    @ViewBuilder
+    func claimsSection(_ claims: [Claim]) -> some View {
+        if claims.isEmpty {
+            EmptyView()
+        } else {
+            ClaimSection(claims: claims)
+        }
+    }
+    
     var body: some View {
         Poller(HomeStore.self,
                getter: { $0.claims ?? [] },
-               fetchAction: .fetchClaims)
+               fetchAction: .fetchClaims,
+               shouldPoll: $shouldPoll)
         { claims in
-            if claims.isEmpty {
-                EmptyView()
-            } else {
-                ClaimSection(claims: claims)
-            }
+           claimsSection(claims)
         }
     }
 }
@@ -31,6 +40,9 @@ struct Poller<S: Store, Value: Equatable, Content: View>: View {
     @State
     var value: Value
     
+    @Binding
+    var shouldPoll: Bool
+    
     var getter: Getter
     var fetchAction: S.Action
     
@@ -42,6 +54,7 @@ struct Poller<S: Store, Value: Equatable, Content: View>: View {
         _ storeType: S.Type,
         getter: @escaping Getter,
         fetchAction: S.Action,
+        shouldPoll: Binding<Bool>,
         @ViewBuilder _ content: @escaping (_ value: Value) -> Content
     ) {
         self.getter = getter
@@ -51,7 +64,15 @@ struct Poller<S: Store, Value: Equatable, Content: View>: View {
         let store: S = globalPresentableStoreContainer.get()
         self.store = store
         
+        self._shouldPoll = shouldPoll
+        
         self._value = State(initialValue: getter(store.stateSignal.value))
+    }
+    
+    private var claimsDidChange: ReadSignalPublisher<S.State> {
+        store.stateSignal.distinct { lhs, rhs in
+            self.getter(lhs) == self.getter(rhs)
+        }.publisher
     }
     
     public var body: some View {
@@ -59,9 +80,7 @@ struct Poller<S: Store, Value: Equatable, Content: View>: View {
             value
         ).onReceive(pollTimer) { _ in
             store.send(fetchAction)
-        }.onReceive(store.stateSignal.distinct { lhs, rhs in
-            self.getter(lhs) == self.getter(rhs)
-        }.publisher) { _ in
+        }.onReceive(claimsDidChange) { _ in
             pollTimer.upstream.connect().cancel()
             self.value = getter(store.stateSignal.value)
         }

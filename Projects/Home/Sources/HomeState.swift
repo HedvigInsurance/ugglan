@@ -12,7 +12,6 @@ public struct MemberStateData: Codable, Equatable {
 public struct HomeState: StateProtocol {
     var memberStateData: MemberStateData = .init(state: .loading, name: nil)
     var claims: [Claim]? = nil
-    var claimsNeedsUpdating = false
 
     public init() {}
 }
@@ -88,7 +87,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         case let .setClaims(claims):
             newState.claims = claims
         case .setClaimsNeedsUpdating:
-            newState.claimsNeedsUpdating = true
+            break
         }
 
         return newState

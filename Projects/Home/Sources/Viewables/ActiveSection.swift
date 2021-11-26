@@ -30,6 +30,10 @@ extension ActiveSection: Presentable {
         bag += {
             hostingView.removeFromSuperview()
         }
+        
+        bag += store.onAction(.setClaimsNeedsUpdating) {
+            claims.shouldPoll = true
+        }
 
         let claimButton = Button(
             title: L10n.HomeTab.claimButtonText,
