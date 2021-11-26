@@ -49,6 +49,7 @@ jobs:
           S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
           FASTLANE_XCODE_LIST_TIMEOUT: '180'
+          GITHUB_JOB: build_${{ inputs.name }}
         run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
       - name: Upload app
         uses: actions/upload-artifact@v2
