@@ -60,7 +60,7 @@ jobs:
       - name: Download generated
         run: rsync -ra ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
       - name: Fetch cache
-        run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }}/DerivedData ~/actions-runner/DerivedData || true
+        run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }}/DerivedData /Users/app/actions-runner/DerivedData || true
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
@@ -76,7 +76,7 @@ jobs:
           BUILD_NAME: build_${{ inputs.name }}
         run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
       - name: Upload cache
-        run: rsync -ra DerivedData ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }} || true
+        run: rsync -raWPop /Users/app/actions-runner ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }} || true
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
@@ -93,7 +93,7 @@ jobs:
       - name: Download generated
         run: rsync -r ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
       - name: Fetch cache
-        run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }}/DerivedData ~/actions-runner/DerivedData || true
+        run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }}/DerivedData /Users/app/actions-runner/DerivedData || true
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
@@ -106,6 +106,8 @@ jobs:
           HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
           BUILD_NAME: test_${{ inputs.name }}
         run: arch -arm64 bundle exec fastlane ios test scheme:${{ inputs.test_scheme }}
+      - name: Upload cache
+        run: rsync -raWPop /Users/app/actions-runner ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }} || true
       - name: Upload test results
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
