@@ -33,6 +33,8 @@ on:
 jobs:
   should_run:
     runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.changed-files.outputs.any_changed == 'true' }}
 
     steps:
       - uses: actions/checkout@v2
@@ -51,7 +53,7 @@ jobs:
     needs: should_run
     runs-on: self-hosted
     timeout-minutes: 30
-    if: job.should_run.steps.changed-files.outputs.any_changed == 'true'
+    if: needs.should_run.outputs.should_run == 'true'
 
     steps:
       - uses: actions/checkout@v2
