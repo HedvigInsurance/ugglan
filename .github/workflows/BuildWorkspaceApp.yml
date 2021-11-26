@@ -57,8 +57,9 @@ jobs:
     if: needs.should_run.outputs.should_run == 'true'
 
     steps:
+      - uses: actions/checkout@v2
       - name: Download generated
-        run: rm -rf . && rsync -rai ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
+        run: rsync -rai ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
       - name: Fetch cache
         run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/actions-runner || true
       - name: Bundle install
@@ -90,8 +91,9 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - uses: actions/checkout@v2
       - name: Download generated
-        run: rm -rf . && rsync -rai ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
+        run: rsync -rai ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
       - name: Fetch cache
         run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/actions-runner || true
       - name: Bundle install
