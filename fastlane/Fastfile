@@ -293,8 +293,8 @@ platform :ios do
             
         file_path = "../build/reports/errors.json"
 
-        name = ENV["GITHUB_JOB"]
-        title = "#{ENV["GITHUB_JOB"]}"
+        name = ENV["BUILD_NAME"]
+        title = "#{ENV["BUILD_NAME"]}"
         summary = "Build succeeded without any remarks"
         conclusion = "success" 
         annotations = []
@@ -309,7 +309,7 @@ platform :ios do
                 error_definition = error["file_path"].split(":")
                 file = error_definition[0]
 
-                name = ENV["GITHUB_JOB"]
+                name = ENV["BUILD_NAME"]
                 summary = "There where some warnings"
                 conclusion = "neutral"
 
@@ -329,7 +329,7 @@ platform :ios do
                 error_definition = error["file_path"].split(":")
                 file = error_definition[0]
 
-                name = ENV["GITHUB_JOB"]
+                name = ENV["BUILD_NAME"]
                 summary = "There where some errors"
                 conclusion = "failure"
 
@@ -406,7 +406,7 @@ platform :ios do
                     })
                 end
 
-                name = ENV["GITHUB_JOB"]
+                name = ENV["BUILD_NAME"]
                 summary = "There where some warnings"
                 conclusion = "neutral"
             end
@@ -429,7 +429,7 @@ platform :ios do
                 })
             end
 
-            name = ENV["GITHUB_JOB"]
+            name = ENV["BUILD_NAME"]
             conclusion = "Some tests failed"
             conclusion = "failure"
         }
@@ -447,7 +447,7 @@ platform :ios do
         if !annotations.empty?
             update_annotations(
                 name: name,
-                title: "#{ENV["GITHUB_JOB"]}",
+                title: "#{ENV["BUILD_NAME"]}",
                 summary: summary,
                 conclusion: conclusion,
                 annotations: annotations,
@@ -455,8 +455,8 @@ platform :ios do
             )
         else
             update_annotations(
-                name: ENV["GITHUB_JOB"],
-                title: "#{ENV["GITHUB_JOB"]}",
+                name: ENV["BUILD_NAME"],
+                title: "#{ENV["BUILD_NAME"]}",
                 summary: "Tests passed.",
                 conclusion: "success",
                 annotations: annotations,
