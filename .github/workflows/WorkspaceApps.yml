@@ -35,19 +35,10 @@ jobs:
       lane: ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
       name: Ugglan
       path: Projects/App
+      test_scheme: Ugglan
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-      HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
-      HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
-      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-      S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  test_ugglan:
-    needs: [generate, build_ugglan]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@only-run-if-changed
-    with:
-      scheme: Ugglan
-    secrets:
       HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
@@ -59,19 +50,10 @@ jobs:
       lane: ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
       name: EmbarkExample
       path: Projects/Embark
+      test_scheme: Embark
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-      HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
-      HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
-      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-      S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  test_embark:
-    needs: [generate, build_embark]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@only-run-if-changed
-    with:
-      scheme: Embark
-    secrets:
       HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
@@ -83,6 +65,7 @@ jobs:
       lane: ios build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig
       name: Hedvig
       path: Projects/App
+      test_scheme: Hedvig
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
@@ -97,19 +80,10 @@ jobs:
       lane: ios build path:Projects/Home/Home.xcodeproj scheme:HomeExample
       name: HomeExample
       path: Projects/Home
+      test_scheme: Home
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-      HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
-      HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
-      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-      S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  test_home:
-    needs: [generate, build_home]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@only-run-if-changed
-    with:
-      scheme: Home
-    secrets:
       HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
@@ -121,19 +95,10 @@ jobs:
       lane: ios build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample
       name: ForeverExample
       path: Projects/Forever
+      test_scheme: Forever
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-      HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
-      HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
-      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-      S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  test_forever:
-    needs: [generate, build_forever]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@only-run-if-changed
-    with:
-      scheme: Forever
-    secrets:
       HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
@@ -145,19 +110,10 @@ jobs:
       lane: ios build path:Projects/Offer/Offer.xcodeproj scheme:OfferExample
       name: OfferExample
       path: Projects/Offer
+      test_scheme: Offer
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-      HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
-      HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
-      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-      S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  test_offer:
-    needs: [generate, build_offer]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@only-run-if-changed
-    with:
-      scheme: Offer
-    secrets:
       HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
@@ -169,19 +125,10 @@ jobs:
       lane: ios build path:Projects/hCoreUI/hCoreUI.xcodeproj scheme:hCoreUIExample
       name: hCoreUIExample
       path: Projects/hCoreUI
+      test_scheme: hCoreUI
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-      HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
-      HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
-      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-      S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-  test_hcoreui:
-    needs: [generate, build_hcoreui]
-    uses: HedvigInsurance/ugglan/.github/workflows/TestWorkspaceApp.yml@only-run-if-changed
-    with:
-      scheme: hCoreUI
-    secrets:
       HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
       HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
