@@ -8,6 +8,7 @@ extension PresentationStyle {
         let future = Future<Void> { completion in
             from.present(viewController, animated: true) { completion(.success) }
 
+            
             return NilDisposer()
         }
 
