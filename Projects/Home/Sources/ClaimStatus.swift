@@ -21,9 +21,9 @@ struct ClaimStatus: View {
             SwiftUI.Divider()
             Spacer().frame(height: 16)
             HStack {
-                ClaimStatusBar(status: .submitted, currentStatus: claim.status)
-                ClaimStatusBar(status: .beingHandled, currentStatus: claim.status)
-                ClaimStatusBar(status: .closed, currentStatus: claim.status)
+                ForEach(claim.segments, id:\.text) { segment in
+                    ClaimStatusBar(status: segment)
+                }
             }
             .padding([.leading, .trailing], 10)
         }
@@ -41,76 +41,40 @@ struct ClaimPills: View {
 
     var body: some View {
         HStack {
-            claim.status.pill
-            claim.outcome.pill
+            ForEach(claim.pills, id: \.text) { claimPill in
+                claimPill.pill
+            }
         }
     }
 }
 
-extension Claim.ClaimStatus {
-    var text: String? {
-        switch self {
-        case .none:
-            return nil
-        case .submitted:
-            return L10n.Claim.StatusBar.submitted
-        case .beingHandled:
-            return L10n.Claim.StatusBar.beingHandled
+extension Claim.ClaimPill {
+    @ViewBuilder
+    var pill: some View {
+        switch self.type {
+        case .open:
+            hPillOutline(text: self.text)
         case .closed:
-            return L10n.Claim.StatusBar.closed
+            hPillFill(
+                text: text,
+                backgroundColor: hBackgroundColor.primary.inverted
+            )
+            .invertColorScheme
+        case .payment:
+            hPillFill(
+                text: self.text,
+                backgroundColor: hBackgroundColor.primary
+            ).invertColorScheme
         case .reopened:
-            return nil
-        }
-    }
-}
-
-extension Claim.ClaimOutcome {
-    @ViewBuilder
-    var pill: some View {
-        switch self {
-        case .paid:
-            hPillFill(text: L10n.Claim.Decision.paid.uppercased(), backgroundColor: hBackgroundColor.primary)
-                .invertColorScheme
-        case .notCompensated:
-            hPillFill(
-                text: L10n.Claim.Decision.notCompensated.uppercased(),
-                backgroundColor: hBackgroundColor.primary.inverted
-            )
-            .invertColorScheme
-        case .notCovered:
-            hPillFill(
-                text: L10n.Claim.Decision.notCovered.uppercased(),
-                backgroundColor: hBackgroundColor.primary.inverted
-            )
-            .invertColorScheme
+            hPillFill(text: self.text, backgroundColor: hTintColor.orangeTwo)
         case .none:
-            EmptyView()
-        }
-    }
-}
-
-extension Claim.ClaimStatus {
-    @ViewBuilder
-    var pill: some View {
-        if self == .beingHandled || self == .submitted {
-            hPillOutline(text: L10n.Home.ClaimCard.Pill.claim.uppercased())
-        } else if self == .reopened {
-            hPillFill(text: L10n.Home.ClaimCard.Pill.reopened.uppercased(), backgroundColor: hTintColor.orangeTwo)
-        } else {
             EmptyView()
         }
     }
 }
 
 extension Claim {
-    public static var mock = Claim(
-        id: "1234",
-        status: .reopened,
-        outcome: .paid,
-        submittedAt: "",
-        closedAt: "",
-        signedAudioURL: nil
-    )
+    public static var mock = Claim(id: "123", pills: [], segments: [], title: "Blah", subtitle: "Blah")
 }
 
 struct ClaimsPreview: PreviewProvider {

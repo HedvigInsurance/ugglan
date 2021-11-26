@@ -26,6 +26,7 @@ public enum UgglanAction: ActionProtocol {
     case fetchFeatures
     case setFeatures(features: [UgglanState.Feature]?)
     case showLoggedIn
+    case openClaims
     case exchangePaymentLink(link: String)
     case exchangeFailed
     case didAcceptHonestyPledge
@@ -99,6 +100,8 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             newState.selectedTabIndex = tabIndex
         case let .setFeatures(features):
             newState.features = features
+        case .openClaims:
+            break
         default:
             break
         }

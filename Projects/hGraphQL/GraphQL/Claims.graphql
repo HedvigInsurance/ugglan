@@ -1,10 +1,15 @@
-query Claims {
-  claims {
-    id
-    status
-    outcome
-    submittedAt
-    closedAt
-    signedAudioURL
+query ClaimStatusCards($locale: Locale!) {
+      claims_statusCards(locale: $locale) {
+        id
+        pills {
+          text
+          type
+        }
+        title
+        subtitle
+        progressSegments{
+          text
+          type
+        }
   }
 }

@@ -211,12 +211,11 @@ extension KeyGearItem: Presentable {
         let claimsRow = RowView(title: L10n.keyGearReportClaimRow, style: .brand(.headline(color: .primary)))
         claimsRow.append(hCoreUIAssets.chevronRight.image)
 
+        let store: UgglanStore = self.get()
+        
         bag += claimsSection.append(claimsRow)
             .onValue { _ in
-                viewController.present(
-                    AppJourney.claimsJourney()
-                )
-                .onValue { _ in }
+                store.send(.openClaims)
             }
 
         bag += innerForm.append(Spacing(height: 10))

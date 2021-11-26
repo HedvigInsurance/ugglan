@@ -51,12 +51,14 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
             return
                 client
                 .fetch(
-                    query: GraphQL.ClaimsQuery(),
+                    query: GraphQL.ClaimStatusCardsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
                     cachePolicy: .fetchIgnoringCacheData
                 )
-                .compactMap { $0.claims }
-                .map { claims in
-                    return .setClaims(claims: claims.map { Claim(claim: $0) })
+                .compactMap {
+                    ClaimStatusCards(cardData: $0)
+                }
+                .map { claimData in
+                    return .setClaims(claims: claimData.claims)
                 }
                 .valueThenEndSignal
         default:

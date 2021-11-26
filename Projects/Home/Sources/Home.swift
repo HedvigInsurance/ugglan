@@ -69,6 +69,10 @@ extension Home: Presentable {
         store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
 
         bag += viewController.viewDidAppearSignal.onValue {
+            fetch()
+        }
+        
+        func fetch() {
             store.send(.fetchMemberState)
             store.send(.fetchClaims)
         }

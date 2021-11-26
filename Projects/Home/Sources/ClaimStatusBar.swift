@@ -4,42 +4,33 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimStatusBar: View {
-    let status: Claim.ClaimStatus
-    @State var currentStatus: Claim.ClaimStatus
+    let status: Claim.ClaimStatusProgressSegment
 
     @hColorBuilder var barColor: some hColor {
-        switch (status, currentStatus) {
-        case (.reopened, .reopened):
-            hTintColor.orangeOne
-        case (_, .closed):
-            hTintColor.lavenderOne
-        case (let lhs, let rhs) where lhs == rhs:
+        switch status.type {
+        case .currentlyActive:
             hLabelColor.primary
-        case (.submitted, .beingHandled):
+        case .pastInactive:
             hLabelColor.secondary
-        case (.beingHandled, .submitted):
-            hLabelColor.tertiary
-        case (.closed, _):
-            hLabelColor.tertiary
-        default:
+        case .paid:
             hTintColor.lavenderOne
+        case .reopened:
+            hTintColor.orangeOne
+        case .futureInactive:
+            hLabelColor.tertiary
+        case .none:
+            hLabelColor.primary
         }
     }
-
+    
     @hColorBuilder var textColor: some hColor {
-        switch (status, currentStatus) {
-        case (_, .closed):
+        switch status.type {
+        case .paid, .reopened, .currentlyActive, .none:
             hLabelColor.primary
-        case (let x, let y) where x == y:
-            hLabelColor.primary
-        case (.submitted, .beingHandled):
+        case .futureInactive:
+            hLabelColor.tertiary
+        case .pastInactive:
             hLabelColor.secondary
-        case (.beingHandled, .submitted):
-            hLabelColor.tertiary
-        case (.closed, _):
-            hLabelColor.tertiary
-        default:
-            hTintColor.lavenderOne
         }
     }
 
@@ -48,7 +39,7 @@ struct ClaimStatusBar: View {
             Rectangle()
                 .fill(barColor)
                 .frame(height: 4)
-            hText(status.text ?? "", style: .caption1)
+            hText(status.text, style: .caption1)
                 .foregroundColor(textColor)
         }
         .frame(maxWidth: .infinity)
