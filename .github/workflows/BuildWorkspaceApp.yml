@@ -60,7 +60,7 @@ jobs:
       - name: Download generated
         run: rsync -ra ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
       - name: Fetch cache
-        run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }}/DerivedData ./../../ || true
+        run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }}/DerivedData ./../../../ || true
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
@@ -93,7 +93,7 @@ jobs:
       - name: Download generated
         run: rsync -r ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }} .
       - name: Fetch cache
-        run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }}/DerivedData ./../../ || true
+        run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/${{ runner.os }}-${{ inputs.name }}/DerivedData ./../../../ || true
       - name: Bundle install
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
