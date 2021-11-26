@@ -697,6 +697,7 @@ platform :ios do
                 output_style: "rspec",
                 skip_package_dependencies_resolution: true,
                 derived_data_path: is_ci ? "../../../DerivedData" : nil,
+                number_of_retries: 5
             )
             xchtmlreport(
                 binary_path: "/opt/homebrew/bin/xchtmlreport",
