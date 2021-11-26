@@ -55,13 +55,7 @@ jobs:
     if: needs.should_run.outputs.should_run == 'true'
 
     steps:
-      - name: Should run
-        id: should_run
-        uses: ./.github/actions/should-run
-        with:
-          path: ${{ inputs.path }}
       - uses: actions/checkout@v2
-        if: steps.should_run.outputs.should_run == 'true'
       - uses: actions/download-artifact@v2
         with:
           name: generated_files
