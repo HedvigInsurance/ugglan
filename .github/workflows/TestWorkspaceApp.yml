@@ -41,6 +41,8 @@ jobs:
             Projects/ExampleUtil
             Projects/TestingUtil
             Projects/Testing
+            Tuist            
+
   build:
     runs-on: self-hosted
     timeout-minutes: 30

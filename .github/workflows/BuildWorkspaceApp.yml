@@ -51,6 +51,7 @@ jobs:
             Projects/ExampleUtil
             Projects/TestingUtil
             Projects/Testing
+            Tuist
 
   build:
     needs: should_run
