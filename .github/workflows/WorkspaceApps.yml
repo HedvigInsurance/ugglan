@@ -58,7 +58,7 @@ jobs:
     with:
       lane: ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
       name: EmbarkExample
-      path: rojects/Embark
+      path: Projects/Embark
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
@@ -82,7 +82,7 @@ jobs:
     with:
       lane: ios build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig
       name: Hedvig
-      path: Projects/App/Ugglan.xcodeproj
+      path: Projects/App
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
