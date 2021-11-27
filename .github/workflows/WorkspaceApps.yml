@@ -19,7 +19,7 @@ jobs:
     - name: Post checkout
       run: sh scripts/post-checkout.sh
     - name: Upload generated
-      run: rsync -rav --include="*/" --include='*.xcworkspace/**/*' --include='*.xcodeproj/**/*' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**/*.plist' --include='**/Resources/**/*.lproj' --include='**/Derived/**/*.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
+      run: rsync -rav --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**/*.plist' --include='**/Resources/**/*.lproj' --include='**/Derived/**/*.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
   ugglan:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
