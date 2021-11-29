@@ -7,7 +7,7 @@ defaults:
 on:
   workflow_call:
     inputs:
-      projects:
+      matrix:
         required: true
         type: string
     secrets:
@@ -31,8 +31,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      matrix:
-        project: ${{fromJson(inputs.projects)}}
+      matrix: ${{fromJson(inputs.matrix)}}
       
     outputs:
       should_run: ${{ steps.should_run.outputs.should_run }}
