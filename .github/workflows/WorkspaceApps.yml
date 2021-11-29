@@ -24,7 +24,7 @@ jobs:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
-      projects: |
+      matrix: |
         {
           "include": [
             {
