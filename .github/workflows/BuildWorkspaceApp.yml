@@ -43,14 +43,14 @@ jobs:
         id: should_run
         uses: ./.github/actions/should-run
         with:
-          path: ${{ matrix.path }}
+          path: ${{ matrix }}
 
   build:
     runs-on: self-hosted
     timeout-minutes: 30
     needs: should_run
     if: needs.should_run.outputs.should_run == 'true'
-    
+
     steps:
       - uses: actions/checkout@v2
       - name: Download generated
