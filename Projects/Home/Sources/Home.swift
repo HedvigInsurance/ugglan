@@ -7,6 +7,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import SwiftUI
 
 public struct Home {
     @Inject var client: ApolloClient
@@ -44,8 +45,8 @@ extension Future {
 extension Home: Presentable {
     public func materialize() -> (UIViewController, Signal<HomeResult>) {
         let store: HomeStore = self.get()
-
-        let viewController = LifeCycleProxyViewController()
+            
+        let viewController = UIViewController()
         viewController.title = L10n.HomeTab.title
         viewController.installChatButton(allowsChatHint: true)
 
@@ -67,14 +68,15 @@ extension Home: Presentable {
         let bag = DisposeBag()
 
         store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
-
-        bag += viewController.viewDidAppearSignal.onValue {
+        
+        let onAppearProxy = SwiftUI.Color.clear.onAppear {
             fetch()
         }
-
+        
+        let hostingProxy = HostingView(rootView: onAppearProxy)
+        
         func fetch() {
             store.send(.fetchMemberState)
-            store.send(.fetchClaims)
         }
 
         let form = FormView()
@@ -82,6 +84,8 @@ extension Home: Presentable {
             let refreshControl = UIRefreshControl()
             scrollView.refreshControl = refreshControl
 
+            scrollView.addSubview(hostingProxy)
+            
             bag += refreshControl.store(
                 store,
                 send: {

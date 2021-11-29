@@ -19,7 +19,7 @@ public struct Claim: Codable, Equatable {
         cardData: GraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
     ) {
         self.id = cardData.id
-        self.pills = cardData.pills.map { .init(text: $0.text, type: .init(rawValue: $0.type.rawValue) ?? .none) }
+        self.pills = cardData.pills.map { .init(text: $0.text, type: .init(rawValue: $0.type.rawValue.lowercased()) ?? .none) }
         self.segments = cardData.progressSegments.map {
             .init(text: $0.text, type: .init(rawValue: $0.type.rawValue) ?? .none)
         }
@@ -51,18 +51,6 @@ public struct Claim: Codable, Equatable {
             case reopened
             case closed
             case payment
-
-            public init?(
-                rawValue: RawValue
-            ) {
-                switch rawValue {
-                case "OPEN": self = .open
-                case "PAYMENT": self = .payment
-                case "CLOSED": self = .closed
-                case "REOPENED": self = .reopened
-                default: self = .none
-                }
-            }
         }
     }
 
@@ -90,11 +78,11 @@ public struct Claim: Codable, Equatable {
                 rawValue: RawValue
             ) {
                 switch rawValue {
-                case "PAST_INACTIVE": self = .pastInactive
-                case "CURRENTLY_ACTIVE": self = .currentlyActive
-                case "FUTURE_INACTIVE": self = .futureInactive
-                case "REOPENED": self = .reopened
-                case "PAID": self = .paid
+                case "PAST_INACTIVE", "pastInactive": self = .pastInactive
+                case "CURRENTLY_ACTIVE", "currentlyActive": self = .currentlyActive
+                case "FUTURE_INACTIVE", "futureInactive": self = .futureInactive
+                case "REOPENED", "reopened": self = .reopened
+                case "PAID", "paid": self = .paid
                 default: self = .none
                 }
             }
