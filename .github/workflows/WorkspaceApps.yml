@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: set-matrix
-        uses: JoshuaTheMiller/conditional-build-matrix        
+        uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
         with:          
           inputFile: '.github/workflows/matrix.json'
           filter: '[*]' 
