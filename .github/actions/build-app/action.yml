@@ -40,25 +40,25 @@ runs:
   steps:
     - uses: actions/checkout@v2
     - name: Download generated
-      run: rsync -ra ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
+      run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
     - name: Fetch cache
-      run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/actions-runner || true
+      run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/actions-runner || true
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
     - name: Fastlane Action
       env:
-        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-        MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
-        HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
-        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
-        S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-        S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+        MATCH_PASSWORD: ${{ inputs.MATCH_PASSWORD }}
+        MATCH_GITHUB_TOKEN: ${{ inputs.MATCH_GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ inputs.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ inputs.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
+        S3_ACCESS_KEY: ${{ inputs.S3_ACCESS_KEY }}
+        S3_SECRET_ACCESS_KEY: ${{ inputs.S3_SECRET_ACCESS_KEY }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
         BUILD_NAME: build_${{ inputs.name }}
       run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
     - name: Upload cache
-      run: rsync -raWPop /Users/app/actions-runner/DerivedData ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
+      run: rsync -raWPop /Users/app/actions-runner/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
