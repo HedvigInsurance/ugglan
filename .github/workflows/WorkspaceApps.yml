@@ -33,6 +33,7 @@ jobs:
     name: Build ${{ matrix.name }}
 
     strategy:
+      fail-fast: false
       matrix: ${{ fromJSON(needs.generate.outputs.matrix) }}
 
     steps:
@@ -67,6 +68,7 @@ jobs:
     name: Test ${{ matrix.name }}
 
     strategy:
+      fail-fast: false
       matrix: ${{ fromJSON(needs.generate.outputs.matrix) }}
 
     steps:
