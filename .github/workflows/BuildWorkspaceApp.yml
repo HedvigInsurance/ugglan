@@ -39,6 +39,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - run: echo ${{ matrix }}
       - name: Should run
         id: should_run
         uses: ./.github/actions/should-run
