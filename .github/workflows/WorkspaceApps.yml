@@ -32,36 +32,21 @@ jobs:
           TASKS=$(echo $(cat .github/workflows/matrix.json) | sed 's/ //g' )
           echo "::set-output name=matrix::$TASKS"
 
-  should_run:
-    runs-on: ubuntu-latest
-    needs: [matrix]
+  build:
+    runs-on: self-hosted
+    needs: [generate, matrix]
 
     strategy:
-      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
+      matrix: ${{ matrix.outputs.matrix }}
 
     steps:
-      - uses: actions/checkout@v2
       - name: Should run
         id: should_run
         uses: ./.github/actions/should-run
         with:
           path: ${{ matrix.path }}
-      - id: set-matrix
-        uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
-        with:
-          inputFile: ".github/workflows/matrix.json"
-          filter: '[?name==`${{ matrix.name }}`]'
-      - run: echo "::set-output name=matrix_${{ matrix.name }}::${{ steps.set-matrix.outputs.matrix }}"
-
-  build:
-    runs-on: self-hosted
-    needs: [generate, should_run]
-
-    strategy:
-      matrix: ${{ needs.should_run.outputs }}
-
-    steps:
       - name: Build
+        if: steps.should_run.outputs.should_run == 'true'
         uses: ./.github/actions/build-app          
         with:
           lane: ${{ matrix.lane }}
@@ -75,6 +60,32 @@ jobs:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           SSH_CACHE_CREDENTIALS: ${{ secrets.SSH_CACHE_CREDENTIALS }}
+
+    test:
+      runs-on: self-hosted
+      needs: [generate, should_run]
+
+      strategy:
+        matrix: ${{ needs.should_run.outputs }}
+
+      steps:
+        - name: Should run
+          id: should_run
+          uses: ./.github/actions/should-run
+          with:
+            path: ${{ matrix.path }}
+        - name: Build
+          if: steps.should_run.outputs.should_run == 'true'
+          uses: ./.github/actions/test-app          
+          with:
+            test_scheme: ${{ matrix.test_scheme }}
+            MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+            MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
+            HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
+            HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
+            S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+            S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+            SSH_CACHE_CREDENTIALS: ${{ secrets.SSH_CACHE_CREDENTIALS }}
 
   slack:
     runs-on: ubuntu-latest

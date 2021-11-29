@@ -1,15 +1,6 @@
-name: 'BuildApp'
-description: 'Build an app'
+name: 'TestApp'
+description: 'Test an app'
 inputs:
-  lane:
-    required: true
-    type: string
-  name:
-    required: true
-    type: string
-  path:
-    required: true
-    type: string
   test_scheme:
     required: false
     type: string
@@ -59,14 +50,13 @@ runs:
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
         BUILD_NAME: build_${{ inputs.name }}
-      run: arch -arm64 bundle exec fastlane ios test scheme:${{ inputs.test_scheme }}
+      run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
       shell: bash
     - name: Upload cache
       run: rsync -raWPop /Users/app/actions-runner/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
       shell: bash
-    - name: Upload test results
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: Ugglan.xcresult
-          path: fastlane/test_output/${{ inputs.test_scheme }}.xcresult
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.name }}.ipa
+        path: fastlane/build_output/${{ inputs.name }}.ipa
