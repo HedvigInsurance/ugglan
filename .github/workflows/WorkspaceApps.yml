@@ -69,6 +69,8 @@ jobs:
             }
           ]
         })}}
+    steps:
+      - run: echo ${{ matrix.name }}
 
   build:
     needs: [configure_matrix]
