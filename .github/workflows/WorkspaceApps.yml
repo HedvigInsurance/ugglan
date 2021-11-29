@@ -13,6 +13,9 @@ on:
 jobs:
   generate:
     runs-on: self-hosted
+
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     
     steps:
     - uses: actions/checkout@v2
