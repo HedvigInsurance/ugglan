@@ -35,8 +35,6 @@ jobs:
   should_run:
     runs-on: ubuntu-latest
     needs: [matrix]
-    name: should_run_${{ matrix.name }}
-    id: should_run_${{ matrix.name }}
 
     strategy:
       matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
