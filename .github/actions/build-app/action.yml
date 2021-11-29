@@ -41,10 +41,13 @@ runs:
     - uses: actions/checkout@v2
     - name: Download generated
       run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
+      shell: bash
     - name: Fetch cache
       run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/actions-runner || true
+      shell: bash
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
+      shell: bash
     - name: Fastlane Action
       env:
         MATCH_PASSWORD: ${{ inputs.MATCH_PASSWORD }}
@@ -57,8 +60,10 @@ runs:
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
         BUILD_NAME: build_${{ inputs.name }}
       run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
+      shell: bash
     - name: Upload cache
       run: rsync -raWPop /Users/app/actions-runner/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
+      shell: bash
     - name: Upload app
       uses: actions/upload-artifact@v2
       with:
