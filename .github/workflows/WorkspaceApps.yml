@@ -24,7 +24,7 @@ jobs:
     needs: [generate]
     strategy:
       matrix: |
-        ${{fromJson({
+        ${{fromJson("{
           "include": [
             {
               "lane": "ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan",
@@ -68,7 +68,7 @@ jobs:
               "test_scheme": "hCoreUI"
             }
           ]
-        })}}
+        }")}}
     steps:
       - run: echo ${{ matrix.name }}
 
