@@ -21,6 +21,7 @@ jobs:
     - name: Upload generated
       run: rsync -rav --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
   start:
+    runs-on: ubuntu-latest
     needs: [generate]
     strategy:
       matrix:
