@@ -13,21 +13,27 @@ inputs:
   test_scheme:
     required: false
     type: string
-secrets:
   MATCH_PASSWORD:
     required: true
+    type: string
   MATCH_GITHUB_TOKEN:
     required: true
+    type: string
   HEDVIG_GITHUB_APP_ID:
     required: true
+    type: string
   HEDVIG_GITHUB_APP_PRIVATE_KEY:
     required: true
+    type: string
   S3_ACCESS_KEY:
     required: true
+    type: string
   S3_SECRET_ACCESS_KEY:
     required: true
+    type: string
   SSH_CACHE_CREDENTIALS:
     required: true
+    type: string
 
 runs:
   using: "composite"
