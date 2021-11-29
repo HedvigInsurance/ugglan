@@ -85,7 +85,6 @@ jobs:
 
   test:
     needs: build
-    if: ${{ matrix.test_scheme }}
     runs-on: self-hosted
     timeout-minutes: 30
 
@@ -95,13 +94,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        if: ${{ matrix.test_scheme }}
       - name: Download generated
+        if: ${{ matrix.test_scheme }}
         run: rsync -ra ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
       - name: Fetch cache
+        if: ${{ matrix.test_scheme }}
         run: rsync -raWPop ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/actions-runner || true
       - name: Bundle install
+        if: ${{ matrix.test_scheme }}
         run: arch -arm64 sudo --preserve-env bundle install
       - name: Fastlane Action
+        if: ${{ matrix.test_scheme }}
         env:
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
           FASTLANE_XCODE_LIST_TIMEOUT: '180'
@@ -112,9 +116,10 @@ jobs:
           BUILD_NAME: test_${{ matrix.name }}
         run: arch -arm64 bundle exec fastlane ios test scheme:${{ matrix.test_scheme }}
       - name: Upload cache
+        if: ${{ matrix.test_scheme }}
         run: rsync -raWPop /Users/app/actions-runner/DerivedData ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
       - name: Upload test results
-        if: ${{ always() }}
+        if: ${{ matrix.test_scheme }}
         uses: actions/upload-artifact@v2
         with:
           name: Ugglan.xcresult
