@@ -44,6 +44,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
       - name: Should run
         id: should_run
         uses: ./.github/actions/should-run
@@ -76,6 +78,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
       - name: Should run
         id: should_run
         uses: ./.github/actions/should-run
