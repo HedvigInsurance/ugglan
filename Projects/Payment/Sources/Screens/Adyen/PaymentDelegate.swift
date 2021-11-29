@@ -9,11 +9,13 @@ import UIKit
 
 class AdyenPresentationDelegate: NSObject, PresentationDelegate {
     let viewController: UIViewController
-    
-    init(viewController: UIViewController) {
+
+    init(
+        viewController: UIViewController
+    ) {
         self.viewController = viewController
     }
-    
+
     func present(component: PresentableComponent) {
         viewController.present(component.viewController)
     }
@@ -88,9 +90,9 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
                 self.handleResult(success: false)
             }
         }
-        
+
         bag.hold(delegate)
-        
+
         let presentationDelegate = AdyenPresentationDelegate(viewController: viewController)
         bag.hold(presentationDelegate)
 
