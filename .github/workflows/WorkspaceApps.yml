@@ -23,6 +23,7 @@ jobs:
   build_and_test:
     strategy:
       matrix:
+        uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
         include:
             - lane: ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
               name: Ugglan
@@ -52,7 +53,6 @@ jobs:
               path: Projects/hCoreUI
               test_scheme: hCoreUI
     needs: [generate]
-    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
       lane: ${{ matrix.lane }}
       name: ${{ matrix.name }}
