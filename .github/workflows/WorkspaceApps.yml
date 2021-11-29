@@ -23,6 +23,8 @@ jobs:
   configure_matrix:
     runs-on: ubuntu-latest
     needs: [generate]
+    name: ${{ matrix.name }}
+
     strategy:
       matrix:
         include:
@@ -61,7 +63,7 @@ jobs:
       - run: echo '::set-output name=test_scheme::${{ matrix.test_scheme }}'
 
   build:
-    needs: [configure_matrix]
+    needs: [Ugglan, EmbarkExample, Hedvig, HomeExample, hCoreUIExample]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
       lane: ${{ needs.configure_matrix.outputs.lane }}
@@ -76,7 +78,7 @@ jobs:
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
       SSH_CACHE_CREDENTIALS: ${{ secrets.SSH_CACHE_CREDENTIALS }}
-      
+
   slack:
     runs-on: ubuntu-latest
     if: always()
