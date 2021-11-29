@@ -67,7 +67,7 @@ jobs:
 
   test:
     runs-on: self-hosted
-    needs: [generate, build]
+    needs: [generate, matrix, build]
 
     name: Test ${{ matrix.name }}
 
