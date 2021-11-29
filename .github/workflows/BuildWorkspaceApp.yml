@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: echo ${{ matrix }}
+      - run: echo ${{ matrix.path }}
       - name: Should run
         id: should_run
         uses: ./.github/actions/should-run
