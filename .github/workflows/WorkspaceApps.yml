@@ -37,7 +37,7 @@ jobs:
     needs: [generate, matrix]
 
     strategy:
-      matrix: ${{ needs.matrix.outputs.matrix }}
+      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
 
     steps:
       - name: Should run
@@ -66,7 +66,7 @@ jobs:
     needs: [generate, build]
 
     strategy:
-      matrix: ${{ needs.matrix.outputs.matrix }}
+      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
 
     steps:
       - name: Should run
