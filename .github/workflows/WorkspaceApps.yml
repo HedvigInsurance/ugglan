@@ -50,7 +50,7 @@ jobs:
         uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
         with:
           inputFile: "".github/workflows/matrix.json"
-          filter: "[?name==`${{ matrix.name }}`]""
+          filter: "[?name==`${{ matrix.name }}`]"
       - run: echo "::set-output name=matrix_${{ matrix.name }}::${{ steps.set-matrix.outputs.matrix }}"
 
   build:
@@ -58,7 +58,7 @@ jobs:
     needs: [generate, should_run]
 
     strategy:
-      matrix: ${{ fromJson(needs.should_run.outputs.matrix) }}
+      matrix: ${{ toJSON(needs.should_run.outputs) }}
 
     steps:
       - name: Build
