@@ -63,7 +63,7 @@ jobs:
 
   test:
     runs-on: self-hosted
-    needs: [generate, should_run]
+    needs: [generate, build]
 
     strategy:
       matrix: ${{ needs.matrix.outputs.matrix }}
