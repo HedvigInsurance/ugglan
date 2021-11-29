@@ -54,16 +54,19 @@ jobs:
             path: Projects/hCoreUI
             test_scheme: hCoreUI
     steps:
-      - run: echo ${{ matrix.name }}
+      - run: echo '::set-output name=lane::${{ matrix.lane }}'
+      - run: echo '::set-output name=name::${{ matrix.name }}'
+      - run: echo '::set-output name=path::${{ matrix.path }}'
+      - run: echo '::set-output name=test_scheme::${{ matrix.test_scheme }}'
 
   build:
     needs: [configure_matrix]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
-      lane: ${{ matrix.lane }}
-      path: ${{ matrix.path }}
-      name: ${{ matrix.name }}
-      test_scheme: ${{ matrix.test_scheme }}
+      lane: ${{ needs.configure_matrix.outputs.lane }}
+      path: ${{ needs.configure_matrix.outputs.path }}
+      name: ${{ needs.configure_matrix.outputs.name }}
+      test_scheme: ${{ needs.configure_matrix.outputs.test_scheme }}
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
