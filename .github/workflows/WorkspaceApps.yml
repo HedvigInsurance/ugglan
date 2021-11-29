@@ -50,7 +50,6 @@ jobs:
   build:
     runs-on: self-hosted
     needs: [matrix, generate, should_run]
-    if: needs.should_run.outputs.should_run == 'true'
 
     strategy:
       matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
