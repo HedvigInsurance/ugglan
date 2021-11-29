@@ -31,30 +31,6 @@ jobs:
           - ios build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample
           - ios build path:Projects/Offer/Offer.xcodeproj scheme:OfferExample
           - ios build path:Projects/hCoreUI/hCoreUI.xcodeproj scheme:hCoreUIExample
-        name:
-          - Ugglan
-          - EmbarkExample
-          - Hedvig
-          - HomeExample
-          - ForeverExample
-          - OfferExample
-          - hCoreUIExample
-        path:
-          - Projects/App
-          - Projects/Embark
-          - Projects/App
-          - Projects/Home
-          - Projects/Forever
-          - Projects/Offer
-          - Projects/hCoreUI
-        test_scheme:
-          - Ugglan
-          - Embark
-          - 
-          - Home
-          - Forever
-          - Offer
-          - hCoreUI
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
