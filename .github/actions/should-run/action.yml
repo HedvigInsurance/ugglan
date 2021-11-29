@@ -8,7 +8,7 @@ inputs:
 outputs:
   should_run:
     description: "If we should run"
-    value: ${{ inputs.path == 'Projects/App' || github.ref == 'refs/heads/main' || steps.changed-files.outputs.any_changed == 'true' }}
+    value: ${{ inputs.path == 'Projects/App' || steps.changed-files.outputs.any_changed == 'true' }}
 runs:
   using: "composite"
   steps:
