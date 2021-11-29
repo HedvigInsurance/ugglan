@@ -7,17 +7,8 @@ defaults:
 on:
   workflow_call:
     inputs:
-      lane:
+      projects:
         required: true
-        type: string
-      name:
-        required: true
-        type: string
-      path:
-        required: true
-        type: string
-      test_scheme:
-        required: false
         type: string
     secrets:
       MATCH_PASSWORD:
@@ -38,6 +29,10 @@ on:
 jobs:
   should_run:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        project: ${{fromJson(inputs.projects)}}
       
     outputs:
       should_run: ${{ steps.should_run.outputs.should_run }}
@@ -48,13 +43,17 @@ jobs:
         id: should_run
         uses: ./.github/actions/should-run
         with:
-          path: ${{ inputs.path }}
+          path: ${{ matrix.path }}
 
   build:
     runs-on: self-hosted
     timeout-minutes: 30
     needs: should_run
     if: needs.should_run.outputs.should_run == 'true'
+
+    strategy:
+      matrix:
+        project: ${{fromJson(inputs.projects)}}
 
     steps:
       - uses: actions/checkout@v2
@@ -74,21 +73,25 @@ jobs:
           S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
           FASTLANE_XCODE_LIST_TIMEOUT: '180'
-          BUILD_NAME: build_${{ inputs.name }}
-        run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
+          BUILD_NAME: build_${{ matrix.name }}
+        run: arch -arm64 bundle exec fastlane ${{ matrix.lane }}
       - name: Upload cache
         run: rsync -raWPop /Users/app/actions-runner/DerivedData ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
       - name: Upload app
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ inputs.name }}.ipa
-          path: fastlane/build_output/${{ inputs.name }}.ipa
+          name: ${{ matrix.name }}.ipa
+          path: fastlane/build_output/${{ matrix.name }}.ipa
 
   test:
     needs: build
-    if: ${{ inputs.test_scheme }}
+    if: ${{ matrix.test_scheme }}
     runs-on: self-hosted
     timeout-minutes: 30
+
+    strategy:
+      matrix:
+        project: ${{fromJson(inputs.projects)}}
 
     steps:
       - uses: actions/checkout@v2
@@ -106,8 +109,8 @@ jobs:
           S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           HEDVIG_GITHUB_APP_ID: ${{ secrets.HEDVIG_GITHUB_APP_ID }}
           HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
-          BUILD_NAME: test_${{ inputs.name }}
-        run: arch -arm64 bundle exec fastlane ios test scheme:${{ inputs.test_scheme }}
+          BUILD_NAME: test_${{ matrix.name }}
+        run: arch -arm64 bundle exec fastlane ios test scheme:${{ matrix.test_scheme }}
       - name: Upload cache
         run: rsync -raWPop /Users/app/actions-runner/DerivedData ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
       - name: Upload test results
@@ -115,5 +118,5 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Ugglan.xcresult
-          path: fastlane/test_output/${{ inputs.test_scheme }}.xcresult
+          path: fastlane/test_output/${{ matrix.test_scheme }}.xcresult
 

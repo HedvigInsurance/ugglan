@@ -21,43 +21,53 @@ jobs:
     - name: Upload generated
       run: rsync -rav --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
   build_and_test:
-    strategy:
-      matrix:
-        include:
-            - lane: ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan
-              name: Ugglan
-              path: Projects/App
-              test_scheme: Ugglan
-            - lane: ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample
-              name: EmbarkExample
-              path: Projects/Embark
-              test_scheme: Embark
-            - lane: ios build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig
-              name: Hedvig
-              path: Projects/App
-            - lane: ios build path:Projects/Home/Home.xcodeproj scheme:HomeExample
-              name: HomeExample
-              path: Projects/Home
-              test_scheme: Home
-            - lane: ios build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample
-              name: ForeverExample
-              path: Projects/Forever
-              test_scheme: Forever
-            - lane: ios build path:Projects/Offer/Offer.xcodeproj scheme:OfferExample
-              name: OfferExample
-              path: Projects/Offer
-              test_scheme: Offer
-            - lane: ios build path:Projects/hCoreUI/hCoreUI.xcodeproj scheme:hCoreUIExample
-              name: hCoreUIExample
-              path: Projects/hCoreUI
-              test_scheme: hCoreUI
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
     with:
-      lane: ${{ matrix.lane }}
-      name: ${{ matrix.name }}
-      path: ${{ matrix.path }}
-      test_scheme: ${{ matrix.test_scheme }}
+      projects: >
+[
+	{
+		"lane": "ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan",
+		"name": "Ugglan",
+		"path": "Projects/App",
+		"test_scheme": "Ugglan"
+	},
+	{
+		"lane": "ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample",
+		"name": "EmbarkExample",
+		"path": "Projects/Embark",
+		"test_scheme": "Embark"
+	},
+	{
+		"lane": "ios build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig",
+		"name": "Hedvig",
+		"path": "Projects/App"
+	},
+	{
+		"lane": "ios build path:Projects/Home/Home.xcodeproj scheme:HomeExample",
+		"name": "HomeExample",
+		"path": "Projects/Home",
+		"test_scheme": "Home"
+	},
+	{
+		"lane": "ios build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample",
+		"name": "ForeverExample",
+		"path": "Projects/Forever",
+		"test_scheme": "Forever"
+	},
+	{
+		"lane": "ios build path:Projects/Offer/Offer.xcodeproj scheme:OfferExample",
+		"name": "OfferExample",
+		"path": "Projects/Offer",
+		"test_scheme": "Offer"
+	},
+	{
+		"lane": "ios build path:Projects/hCoreUI/hCoreUI.xcodeproj scheme:hCoreUIExample",
+		"name": "hCoreUIExample",
+		"path": "Projects/hCoreUI",
+		"test_scheme": "hCoreUI"
+	}
+]
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
