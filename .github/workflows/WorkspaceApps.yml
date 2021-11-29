@@ -20,27 +20,20 @@ jobs:
       run: sh scripts/post-checkout.sh
     - name: Upload generated
       run: rsync -rav --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
-    
-  matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v2
-      - id: set-matrix
-        uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
-        with:          
-          inputFile: '.github/workflows/matrix.json'
-          filter: '[*]' 
+    - id: set-matrix
+      uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
+      with:          
+        inputFile: '.github/workflows/matrix.json'
+        filter: '[*]'
 
   build:
     runs-on: self-hosted
-    needs: [generate, matrix]
+    needs: [generate]
 
     name: Build ${{ matrix.name }}
 
     strategy:
-      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.generate.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v2
@@ -69,12 +62,12 @@ jobs:
 
   test:
     runs-on: self-hosted
-    needs: [generate, matrix, build]
+    needs: [generate, build]
 
     name: Test ${{ matrix.name }}
 
     strategy:
-      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.generate.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v2
