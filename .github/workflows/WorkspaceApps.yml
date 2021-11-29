@@ -41,6 +41,7 @@ jobs:
       matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
 
     steps:
+      - uses: actions/checkout@v2
       - name: Should run
         id: should_run
         uses: ./.github/actions/should-run
@@ -70,6 +71,7 @@ jobs:
       matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
 
     steps:
+      - uses: actions/checkout@v2
       - name: Should run
         id: should_run
         uses: ./.github/actions/should-run
