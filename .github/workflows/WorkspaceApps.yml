@@ -20,12 +20,12 @@ jobs:
       run: sh scripts/post-checkout.sh
     - name: Upload generated
       run: rsync -rav --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
-  build_and_test:
+  start:
     needs: [generate]
     uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
-    with:
+    strategy:
       matrix: |
-        {
+        ${{fromJson({
           "include": [
             {
               "lane": "ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan",
@@ -69,7 +69,16 @@ jobs:
               "test_scheme": "hCoreUI"
             }
           ]
-        }
+        })}}
+
+  build:
+    needs: [configure_matrix]
+    uses: HedvigInsurance/ugglan/.github/workflows/BuildWorkspaceApp.yml@only-run-if-changed
+    with:
+      lane: ${{ matrix.lane }}
+      path: ${{ matrix.path }}
+      name: ${{ matrix.name }}
+      test_scheme: ${{ matrix.test_scheme }}
     secrets:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_GITHUB_TOKEN: ${{ secrets.MATCH_GITHUB_TOKEN }}
