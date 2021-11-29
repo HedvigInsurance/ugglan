@@ -58,7 +58,7 @@ jobs:
     needs: [generate, should_run]
 
     strategy:
-      matrix: ${{ toJSON(needs.should_run.outputs) }}
+      matrix: ${{ needs.should_run.outputs }}
 
     steps:
       - name: Build
