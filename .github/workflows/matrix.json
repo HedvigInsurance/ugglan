@@ -39,5 +39,11 @@
         "name": "hCoreUIExample",
         "path": "Projects/hCoreUI",
         "test_scheme": "hCoreUI"
+    },
+    {
+        "lane": "ios build path:Projects/Authentication/Authentication.xcodeproj scheme:AuthenticationExample",
+        "name": "AuthenticationExample",
+        "path": "Projects/Authentication",
+        "test_scheme": "Authentication"
     }
 ]
