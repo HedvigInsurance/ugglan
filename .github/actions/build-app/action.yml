@@ -1,0 +1,71 @@
+name: 'BuildApp'
+description: 'Build an app'
+inputs:
+  lane:
+    required: true
+    type: string
+  name:
+    required: true
+    type: string
+  path:
+    required: true
+    type: string
+  test_scheme:
+    required: false
+    type: string
+  MATCH_PASSWORD:
+    required: true
+    type: string
+  MATCH_GITHUB_TOKEN:
+    required: true
+    type: string
+  HEDVIG_GITHUB_APP_ID:
+    required: true
+    type: string
+  HEDVIG_GITHUB_APP_PRIVATE_KEY:
+    required: true
+    type: string
+  S3_ACCESS_KEY:
+    required: true
+    type: string
+  S3_SECRET_ACCESS_KEY:
+    required: true
+    type: string
+  SSH_CACHE_CREDENTIALS:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+    - name: Download generated
+      run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
+      shell: bash
+    - name: Fetch cache
+      run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/actions-runner || true
+      shell: bash
+    - name: Bundle install
+      run: arch -arm64 sudo --preserve-env bundle install
+      shell: bash
+    - name: Fastlane Action
+      env:
+        MATCH_PASSWORD: ${{ inputs.MATCH_PASSWORD }}
+        MATCH_GITHUB_TOKEN: ${{ inputs.MATCH_GITHUB_TOKEN }}
+        HEDVIG_GITHUB_APP_ID: ${{ inputs.HEDVIG_GITHUB_APP_ID }}
+        HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ inputs.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
+        S3_ACCESS_KEY: ${{ inputs.S3_ACCESS_KEY }}
+        S3_SECRET_ACCESS_KEY: ${{ inputs.S3_SECRET_ACCESS_KEY }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
+        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+        BUILD_NAME: build_${{ inputs.name }}
+      run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
+      shell: bash
+    - name: Upload cache
+      run: rsync -raWPop /Users/app/actions-runner/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
+      shell: bash
+    - name: Upload app
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.name }}.ipa
+        path: fastlane/build_output/${{ inputs.name }}.ipa
