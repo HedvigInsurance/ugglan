@@ -2,7 +2,7 @@ name: 'TestApp'
 description: 'Test an app'
 inputs:
   test_scheme:
-    required: false
+    required: true
     type: string
   MATCH_PASSWORD:
     required: true
