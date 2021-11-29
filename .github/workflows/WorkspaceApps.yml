@@ -39,9 +39,6 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
 
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-
     steps:
       - uses: actions/checkout@v2
       - name: Should run
@@ -52,8 +49,9 @@ jobs:
       - id: set-matrix
         uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
         with:
-          inputFile: '.github/workflows/matrix.json'
-          filter: '[?name==`${{ matrix.name }}`]'
+          inputFile: "".github/workflows/matrix.json"
+          filter: "[?name==`${{ matrix.name }}`]""
+      - run: echo "::set-output name=matrix_${{ matrix.name }}::${{ steps.set-matrix.outputs.matrix }}"
 
   build:
     runs-on: self-hosted
