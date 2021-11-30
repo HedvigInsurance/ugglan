@@ -16,8 +16,12 @@ struct ClaimSectionLoading: View {
     func claimsSection(_ claims: [Claim]) -> some View {
         if claims.isEmpty {
             EmptyView()
+        } else if claims.count == 1, let claim = claims.first {
+            ClaimStatus(claim: claim)
+                .padding([.bottom, .top])
         } else {
             ClaimSection(claims: claims)
+                .padding([.bottom, .top])
         }
     }
 

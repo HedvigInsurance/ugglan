@@ -12,11 +12,11 @@ struct ClaimStatus: View {
                 ClaimPills(claim: claim)
                 Spacer()
             }
-            .padding([.leading, .trailing], 10)
-            Spacer().frame(height: 23)
-            hText(L10n.Claim.Casetype.newInsuranceCase)
-                .padding([.leading, .trailing], 10)
+            .padding([.leading, .trailing], 16)
             Spacer().frame(height: 20)
+            hText(claim.title)
+                .padding([.leading, .trailing], 16)
+            Spacer().frame(height: 38)
             SwiftUI.Divider()
             Spacer().frame(height: 16)
             HStack {
@@ -24,13 +24,13 @@ struct ClaimStatus: View {
                     ClaimStatusBar(status: segment)
                 }
             }
-            .padding([.leading, .trailing], 10)
+            .padding([.leading, .trailing], 16)
         }
-        .padding([.top, .bottom], 10)
+        .padding([.top, .bottom], 16)
         .background(
             RoundedRectangle(cornerRadius: 10)
                 .fill(hBackgroundColor.tertiary)
-                .shadow(radius: 4)
+                .hShadow()
         )
     }
 }
