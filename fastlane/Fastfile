@@ -709,7 +709,8 @@ platform :ios do
             "Forever",
             "Contracts",
             "Embark",
-            "Home"
+            "Home",
+            "Payment"
         ]
 
         if ENV["SCHEME_FILTER"]
