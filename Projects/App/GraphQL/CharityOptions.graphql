@@ -2,9 +2,7 @@ query CharityOptions {
     cashbackOptions {
         id
         name
-        title
         imageUrl
-        description
         paragraph
     }
 }
