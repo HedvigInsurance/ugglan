@@ -7,6 +7,20 @@ import Flow
 import Foundation
 import UIKit
 
+class AdyenPresentationDelegate: NSObject, PresentationDelegate {
+    let viewController: UIViewController
+
+    init(
+        viewController: UIViewController
+    ) {
+        self.viewController = viewController
+    }
+
+    func present(component: PresentableComponent) {
+        viewController.present(component.viewController, animated: true)
+    }
+}
+
 class PaymentDelegate: NSObject, PaymentComponentDelegate {
     let viewController: UIViewController
     let paymentMethod: PaymentMethod
@@ -37,6 +51,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
             component.stopLoadingIfNeeded()
         } else if let component = component as? PresentableComponent {
             component.stopLoadingIfNeeded()
+            component.viewController.dismiss(animated: true, completion: nil)
         }
     }
 
@@ -79,10 +94,14 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
 
         bag.hold(delegate)
 
+        let presentationDelegate = AdyenPresentationDelegate(viewController: viewController)
+        bag.hold(presentationDelegate)
+
         switch action {
         case let .redirect(redirectAction):
             let redirectComponent = RedirectComponent(apiContext: HedvigAdyenAPIContext().apiContext)
             redirectComponent.delegate = delegate
+            redirectComponent.presentationDelegate = presentationDelegate
             redirectComponent.handle(redirectAction)
             bag.hold(redirectComponent)
         case let .await(awaitAction):
@@ -93,12 +112,15 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         case .sdk: fatalError("Not implemented")
         case let .threeDS2Fingerprint(fingerprintAction):
             threeDS2Component.delegate = delegate
+            threeDS2Component.presentationDelegate = presentationDelegate
             threeDS2Component.handle(fingerprintAction)
         case let .threeDS2Challenge(challengeAction):
             threeDS2Component.delegate = delegate
+            threeDS2Component.presentationDelegate = presentationDelegate
             threeDS2Component.handle(challengeAction)
         case let .threeDS2(action):
             threeDS2Component.delegate = delegate
+            threeDS2Component.presentationDelegate = presentationDelegate
             threeDS2Component.handle(action)
         case .voucher(_): break
         case .qrCode(_): break
