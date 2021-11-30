@@ -17,7 +17,7 @@ class AdyenPresentationDelegate: NSObject, PresentationDelegate {
     }
 
     func present(component: PresentableComponent) {
-        viewController.present(component.viewController)
+        viewController.present(component.viewController, animated: true)
     }
 }
 
@@ -51,6 +51,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
             component.stopLoadingIfNeeded()
         } else if let component = component as? PresentableComponent {
             component.stopLoadingIfNeeded()
+            component.viewController.dismiss(animated: true, completion: nil)
         }
     }
 
