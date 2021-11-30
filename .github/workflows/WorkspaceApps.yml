@@ -13,6 +13,9 @@ on:
 jobs:
   generate:
     runs-on: self-hosted
+
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     
     steps:
     - uses: actions/checkout@v2
@@ -20,37 +23,32 @@ jobs:
       run: sh scripts/post-checkout.sh
     - name: Upload generated
       run: rsync -rav --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
-    
-  matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v2
-      - id: set-matrix
-        uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
-        with:          
-          inputFile: '.github/workflows/matrix.json'
-          filter: '[*]' 
+    - id: set-matrix
+      uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
+      with:          
+        inputFile: '.github/workflows/matrix.json'
+        filter: '[*]'
 
   build:
     runs-on: self-hosted
-    needs: [generate, matrix]
+    needs: [generate]
 
     name: Build ${{ matrix.name }}
 
     strategy:
-      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.generate.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v2
       - name: Should run
+        if: github.ref != 'refs/heads/main'
         id: should_run
         uses: ./.github/actions/should-run
         with:
           path: ${{ matrix.path }}
       - name: Build
-        if: steps.should_run.outputs.should_run == 'true'
+        if: github.ref == 'refs/heads/main' || steps.should_run.outputs.should_run == 'true'
         uses: ./.github/actions/build-app          
         with:
           lane: ${{ matrix.lane }}
@@ -67,22 +65,24 @@ jobs:
 
   test:
     runs-on: self-hosted
-    needs: [generate, matrix, build]
+    needs: [generate]
 
     name: Test ${{ matrix.name }}
 
     strategy:
-      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.generate.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v2
       - name: Should run
+        if: github.ref != 'refs/heads/main'
         id: should_run
         uses: ./.github/actions/should-run
         with:
           path: ${{ matrix.path }}
       - name: Test
-        if: steps.should_run.outputs.should_run == 'true' && matrix.test_scheme
+        if: (github.ref == 'refs/heads/main' || steps.should_run.outputs.should_run == 'true') && matrix.test_scheme
         uses: ./.github/actions/test-app          
         with:
           test_scheme: ${{ matrix.test_scheme }}
