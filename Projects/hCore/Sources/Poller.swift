@@ -56,12 +56,5 @@ public struct Poller<S: Store, Value: Equatable, Content: View>: View {
         .onReceive(pollTimer) { _ in
             store.send(fetchAction)
         }
-        .onReceive(shouldPoll.description.publisher) { _ in
-            if shouldPoll {
-                self.pollTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
-            } else {
-                self.pollTimer.upstream.connect().cancel()
-            }
-        }
     }
 }

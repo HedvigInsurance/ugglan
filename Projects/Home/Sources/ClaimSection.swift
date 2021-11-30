@@ -5,15 +5,17 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimSection: View {
-    @State var claims: [Claim]
+    internal init(claims: [Claim]) {
+        state = ClaimSectionState(claims: claims)
+    }
     
-    @ObservedObject var state = ClaimSectionState()
+    @ObservedObject var state: ClaimSectionState
     
     var body: some View {
         VStack {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(claims, id: \.id) { claim in
+                    ForEach(state.claims, id: \.id) { claim in
                         ClaimStatus(claim: claim)
                             .frame(width: state.frameWidth * 0.9)
                             .padding([.top, .bottom])
@@ -30,10 +32,9 @@ struct ClaimSection: View {
                 }
             )
             .introspectScrollView { scrollView in
-                scrollView.isPagingEnabled = true
                 state.scrollView = scrollView
             }
-            hPagerDots(currentIndex: state.currentIndex, totalCount: claims.count)
+            hPagerDots(currentIndex: state.currentIndex, totalCount: state.claims.count)
         }
     }
 }
