@@ -32,6 +32,7 @@ jobs:
   build:
     runs-on: self-hosted
     needs: [generate]
+    timeout-minutes: 25
 
     name: Build ${{ matrix.name }}
 
@@ -66,6 +67,7 @@ jobs:
   test:
     runs-on: self-hosted
     needs: [generate]
+    timeout-minutes: 25
 
     name: Test ${{ matrix.name }}
 
