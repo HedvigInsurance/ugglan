@@ -77,6 +77,7 @@ extension Home: Presentable {
 
         func fetch() {
             store.send(.fetchMemberState)
+            store.send(.fetchClaims)
         }
 
         let form = FormView()
