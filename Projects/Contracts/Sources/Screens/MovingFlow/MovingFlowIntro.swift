@@ -76,12 +76,12 @@ extension MovingFlowIntro: Presentable {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
-        
+
         let infoContainerView = UIStackView()
         infoContainerView.axis = .vertical
         infoContainerView.addArrangedSubview(imageView)
         infoContainerView.spacing = 16
-        
+
         infoContainerView.layoutMargins = UIEdgeInsets(horizontalInset: 14, verticalInset: 0)
         infoContainerView.isLayoutMarginsRelativeArrangement = true
 
@@ -96,17 +96,18 @@ extension MovingFlowIntro: Presentable {
         bag += infoContainerView.addArranged(titleLabel)
         bag += infoContainerView.addArranged(descriptionLabel)
         form.append(infoContainerView)
-        
-        bag += scrollView.didLayoutSignal.readable().withLatestFrom($section).onValue { _, state in
-            switch state {
-            case .normal, .manual:
-                infoContainerView.snp.remakeConstraints { make in
-                    make.top.equalTo((viewController.view.frame.height / 2) - (infoContainerView.frame.height))
+
+        bag += scrollView.didLayoutSignal.readable().withLatestFrom($section)
+            .onValue { _, state in
+                switch state {
+                case .normal, .manual:
+                    infoContainerView.snp.remakeConstraints { make in
+                        make.top.equalTo((viewController.view.frame.height / 2) - (infoContainerView.frame.height))
+                    }
+                default:
+                    break
                 }
-            default:
-                break
             }
-        }
 
         bag += $section.onValueDisposePrevious { state in
             let innerBag = DisposeBag()
