@@ -76,8 +76,14 @@ extension MovingFlowIntro: Presentable {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
-
-        form.append(imageView)
+        
+        let infoContainerView = UIStackView()
+        infoContainerView.axis = .vertical
+        infoContainerView.addArrangedSubview(imageView)
+        infoContainerView.spacing = 16
+        
+        infoContainerView.layoutMargins = UIEdgeInsets(horizontalInset: 14, verticalInset: 0)
+        infoContainerView.isLayoutMarginsRelativeArrangement = true
 
         let titleLabel = MultilineLabel(value: "", style: .brand(.title2(color: .primary)).aligned(to: .center))
         let descriptionLabel = MultilineLabel(
@@ -87,9 +93,20 @@ extension MovingFlowIntro: Presentable {
 
         form.appendSpacing(.top)
 
-        bag += form.append(titleLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
-        form.appendSpacing(.inbetween)
-        bag += form.append(descriptionLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
+        bag += infoContainerView.addArranged(titleLabel)
+        bag += infoContainerView.addArranged(descriptionLabel)
+        form.append(infoContainerView)
+        
+        bag += scrollView.didLayoutSignal.readable().withLatestFrom($section).onValue { _, state in
+            switch state {
+            case .normal, .manual:
+                infoContainerView.snp.remakeConstraints { make in
+                    make.top.equalTo((viewController.view.frame.height / 2) - (infoContainerView.frame.height))
+                }
+            default:
+                break
+            }
+        }
 
         bag += $section.onValueDisposePrevious { state in
             let innerBag = DisposeBag()
