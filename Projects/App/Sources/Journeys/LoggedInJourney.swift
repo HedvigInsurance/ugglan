@@ -21,7 +21,8 @@ extension AppJourney {
             case .startMovingFlow:
                 AppJourney.movingFlow
             case .openClaims:
-                AppJourney.claimJourney
+                AppJourney
+                    .claimJourney
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
             case .openConnectPayments:
@@ -157,6 +158,7 @@ extension AppJourney {
 }
 
 extension JourneyPresentation {
+    @discardableResult
     func sendActionImmediately<S: Store>(
         _ storeType: S.Type,
         _ action: S.Action

@@ -13,11 +13,9 @@ extension AppJourney {
             switch redirect {
             case .chat:
                 AppJourney.claimsChat()
-                    .sendActionImmediately(HomeStore.self, .setClaimsNeedsUpdating)
                     .withDismissButton
             case .close:
                 DismissJourney()
-                    .sendActionImmediately(HomeStore.self, .setClaimsNeedsUpdating)
             case .menu:
                 ContinueJourney()
             case .mailingList:
@@ -25,6 +23,10 @@ extension AppJourney {
             case .offer:
                 DismissJourney()
             }
+        }
+        .sendActionImmediately(HomeStore.self, .startPollingClaims)
+        .onDismiss {
+            DismissJourney().sendActionImmediately(HomeStore.self, .stopPollingClaims)
         }
     }
 

@@ -25,7 +25,8 @@ public enum HomeAction: ActionProtocol {
     case setMemberContractState(state: MemberStateData)
     case fetchClaims
     case setClaims(claims: [Claim])
-    case setClaimsNeedsUpdating
+    case startPollingClaims
+    case stopPollingClaims
 }
 
 public final class HomeStore: StateStore<HomeState, HomeAction> {
@@ -61,9 +62,15 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                     return .setClaims(claims: claimData.claims)
                 }
                 .valueThenEndSignal
+        case .startPollingClaims:
+            return Signal(every: 2).map { .fetchClaims }
+        case .stopPollingClaims:
+            cancelEffect(.startPollingClaims)
         default:
             return nil
         }
+        
+        return nil
     }
 
     public override func reduce(_ state: HomeState, _ action: HomeAction) -> HomeState {
@@ -86,7 +93,9 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
             break
         case let .setClaims(claims):
             newState.claims = claims
-        case .setClaimsNeedsUpdating:
+        case .startPollingClaims:
+            break
+        case .stopPollingClaims:
             break
         }
 
