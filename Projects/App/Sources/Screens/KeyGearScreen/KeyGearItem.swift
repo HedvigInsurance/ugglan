@@ -43,7 +43,8 @@ struct KeyGearItem {
         navigationBar.isTranslucent = true
         navigationBar.shadowImage = UIImage()
         navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-        navigationBar.barStyle = .blackTranslucent
+        navigationBar.barStyle = .black
+        navigationBar.isTranslucent = true
         navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationBar.setBackgroundImage(UIImage(), for: .compact)
 
@@ -213,7 +214,7 @@ extension KeyGearItem: Presentable {
         bag += claimsSection.append(claimsRow)
             .onValue { _ in
                 viewController.present(
-                    AppJourney.claimsJourney
+                    AppJourney.claimsJourney(name: "claims")
                 )
                 .onValue { _ in }
             }

@@ -1,4 +1,5 @@
 import Apollo
+import Authentication
 import Flow
 import Form
 import Foundation
@@ -46,6 +47,18 @@ extension AppJourney {
                 bankIDSweden
             case .no, .dk:
                 simpleSign
+            case .fr:
+                OTPAuthJourney.login { next in
+                    switch next {
+                    case let .success(accessToken):
+                        Journey(ApolloClientSaveTokenLoader(accessToken: accessToken)) { _ in
+                            AppJourney.loggedIn
+                        }
+                    case .chat:
+                        AppJourney.freeTextChat().withDismissButton
+                    }
+                }
+                .setStyle(.detented(.large)).withDismissButton
             }
         }
     }

@@ -57,6 +57,7 @@ query ActiveContractBundles($locale: Locale!) {
     }
     potentialCrossSells {
       contractType
+      type
       title
       description
       imageUrl

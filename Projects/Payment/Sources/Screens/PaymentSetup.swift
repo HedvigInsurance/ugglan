@@ -23,7 +23,7 @@ extension PaymentSetup: Presentable {
     public func materialize() -> (UIViewController, Future<Void>) {
         switch Localization.Locale.currentLocale.market {
         case .se: return DirectDebitSetup(setupType: setupType).materialize()
-        case .no, .dk: return AdyenPayInSync(urlScheme: urlScheme).materialize()
+        case .no, .dk, .fr: return AdyenPayInSync(urlScheme: urlScheme).materialize()
         }
     }
 }

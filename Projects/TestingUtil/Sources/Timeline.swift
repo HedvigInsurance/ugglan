@@ -50,7 +50,7 @@ public struct TimelineEntry<T> {
     }
 }
 
-@_functionBuilder public struct TimelineBuilder<T> {
+@resultBuilder public struct TimelineBuilder<T> {
     public static func buildBlock(_ partialResults: TimelineEntry<T>...) -> Timeline<T> {
         Timeline(entries: partialResults)
     }

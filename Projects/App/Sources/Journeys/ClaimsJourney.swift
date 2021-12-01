@@ -1,3 +1,4 @@
+import Embark
 import Flow
 import Foundation
 import Presentation
@@ -6,7 +7,7 @@ import hCore
 import hCoreUI
 
 extension AppJourney {
-    static var claimsJourney: some JourneyPresentation {
+    static func claimsJourney(name: String) -> some JourneyPresentation {
         HonestyPledge.journey {
             Journey(
                 ClaimsAskForPushnotifications(),
@@ -16,7 +17,6 @@ extension AppJourney {
                     .claimsChat()
                     .withJourneyDismissButton
             }
-            .withJourneyDismissButton
         }
     }
 }

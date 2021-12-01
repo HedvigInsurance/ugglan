@@ -34,8 +34,6 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
     quotes {
       ... on BundledQuote {
         id
-        firstName
-        lastName
         ssn
         email
         displayName(locale: $locale)

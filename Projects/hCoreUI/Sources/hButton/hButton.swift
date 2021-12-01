@@ -14,7 +14,8 @@ struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .frame(minHeight: 35)
-            .frame(maxWidth: .infinity)
+            .padding(.leading)
+            .padding(.trailing)
     }
 }
 
@@ -106,6 +107,45 @@ struct ButtonFilledBackground: View {
     }
 }
 
+struct LoaderOrContent<Content: View>: View {
+    @Environment(\.hButtonIsLoading) var isLoading
+
+    var content: () -> Content
+
+    init(
+        @ViewBuilder _ content: @escaping () -> Content
+    ) {
+        self.content = content
+    }
+
+    var body: some View {
+        if isLoading {
+            ActivityIndicator(
+                style: .medium
+            )
+        } else {
+            content()
+        }
+    }
+}
+
+private struct EnvironmentHButtonIsLoading: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    var hButtonIsLoading: Bool {
+        get { self[EnvironmentHButtonIsLoading.self] }
+        set { self[EnvironmentHButtonIsLoading.self] = newValue }
+    }
+}
+
+extension View {
+    public func hButtonIsLoading(_ isLoading: Bool) -> some View {
+        self.environment(\.hButtonIsLoading, isLoading)
+    }
+}
+
 struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     var size: ButtonSize
 
@@ -115,33 +155,35 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-
             switch hButtonFilledStyle {
             case .standard:
-                if !isEnabled {
-                    configuration.label
-                        .foregroundColor(
-                            hColorScheme(
-                                light: hLabelColor.primary.inverted,
-                                dark: hLabelColor.quarternary
+                LoaderOrContent {
+                    if !isEnabled {
+                        configuration.label
+                            .foregroundColor(
+                                hColorScheme(
+                                    light: hLabelColor.primary.inverted,
+                                    dark: hLabelColor.quarternary
+                                )
                             )
-                        )
-                } else {
-                    configuration.label
-                        .foregroundColor(hLabelColor.primary.inverted)
+                    } else {
+                        configuration.label
+                            .foregroundColor(hLabelColor.primary.inverted)
+                    }
                 }
             case .overImage:
-                if !isEnabled {
-                    configuration.label
-                        .foregroundColor(
-                            hLabelColor.primary.colorFor(.light, .base)
-                        )
-                } else {
-                    configuration.label
-                        .foregroundColor(hLabelColor.primary.colorFor(.light, .base))
+                LoaderOrContent {
+                    if !isEnabled {
+                        configuration.label
+                            .foregroundColor(
+                                hLabelColor.primary.colorFor(.light, .base)
+                            )
+                    } else {
+                        configuration.label
+                            .foregroundColor(hLabelColor.primary.colorFor(.light, .base))
+                    }
                 }
             }
-
         }
     }
 
@@ -165,14 +207,18 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     }
 }
 
-struct LargeButtonOutlinedStyle: SwiftUI.ButtonStyle {
+struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
+    var size: ButtonSize
+
     struct Label: View {
         var configuration: Configuration
 
         var body: some View {
-            configuration.label
-                .foregroundColor(hLabelColor.primary)
-                .environment(\.defaultHTextStyle, .body)
+            LoaderOrContent {
+                configuration.label
+                    .foregroundColor(hLabelColor.primary)
+                    .environment(\.defaultHTextStyle, .body)
+            }
         }
     }
 
@@ -207,7 +253,7 @@ struct LargeButtonOutlinedStyle: SwiftUI.ButtonStyle {
         VStack {
             Label(configuration: configuration).contentShape(Rectangle())
         }
-        .modifier(LargeButtonModifier())
+        .buttonSizeModifier(size)
         .background(Color.clear)
         .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
         .clipShape(RoundedRectangle(cornerRadius: .defaultCornerRadius))
@@ -221,9 +267,11 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            configuration.label
-                .foregroundColor(hLabelColor.primary)
-                .environment(\.defaultHTextStyle, .body)
+            LoaderOrContent {
+                configuration.label
+                    .foregroundColor(hLabelColor.primary)
+                    .environment(\.defaultHTextStyle, .body)
+            }
         }
     }
 
@@ -248,6 +296,8 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
 }
 
 struct _hButton<Content: View>: View {
+    @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hButtonIsLoading) var isLoading
     var content: () -> Content
     var action: () -> Void
     @State var wasTappedDate: Date? = nil
@@ -262,11 +312,15 @@ struct _hButton<Content: View>: View {
 
     var body: some View {
         SwiftUI.Button(action: {
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.impactOccurred()
+
             wasTappedDate = Date()
             action()
         }) {
             content().environment(\.hButtonWasTappedDate, wasTappedDate)
         }
+        .allowsHitTesting(!isLoading)
     }
 }
 
@@ -329,7 +383,27 @@ public enum hButton {
             _hButton(action: action) {
                 content()
             }
-            .buttonStyle(LargeButtonOutlinedStyle())
+            .buttonStyle(ButtonOutlinedStyle(size: .large))
+        }
+    }
+
+    public struct SmallButtonOutlined<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: action) {
+                content()
+            }
+            .buttonStyle(ButtonOutlinedStyle(size: .small))
         }
     }
 

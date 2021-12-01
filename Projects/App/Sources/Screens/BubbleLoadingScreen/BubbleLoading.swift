@@ -36,7 +36,7 @@ extension BubbleLoading: Presentable {
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.startAnimating()
-        activityIndicator.style = .whiteLarge
+        activityIndicator.style = .large
         activityIndicator.alpha = 0
 
         containerView.addSubview(activityIndicator)

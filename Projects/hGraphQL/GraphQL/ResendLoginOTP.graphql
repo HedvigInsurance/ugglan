@@ -1,0 +1,3 @@
+mutation ResendLoginOTP($id: ID!) {
+    login_resendOtp(id: $id)
+}

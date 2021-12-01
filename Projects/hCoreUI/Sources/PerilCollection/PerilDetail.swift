@@ -129,22 +129,41 @@ extension PerilDetail: Presentable {
                 gradient.frame = swipeHintBackgroundView.bounds
             }
 
-            let keyWindow = UIApplication.shared.keyWindow
-            var bottomSafeArea = keyWindow?.safeAreaInsets.bottom ?? 0
-
-            if keyWindow?.traitCollection.userInterfaceIdiom == .pad { bottomSafeArea = 0 }
-
             let swipeHintContainer = UIStackView()
-            swipeHintContainer.edgeInsets = UIEdgeInsets(
-                top: 20,
-                left: 0,
-                bottom: bottomSafeArea != 0 ? bottomSafeArea : 20,
-                right: 0
-            )
             swipeHintContainer.axis = .vertical
             swipeHintContainer.alignment = .center
             swipeHintContainer.spacing = 5
             swipeHintBackgroundView.addSubview(swipeHintContainer)
+
+            bag += swipeHintBackgroundView.windowSignal.atOnce()
+                .onValueDisposePrevious { window in
+                    guard let window = window else {
+                        return NilDisposer()
+                    }
+
+                    var bottomSafeArea = window.safeAreaInsets.bottom
+
+                    if window.traitCollection.userInterfaceIdiom == .pad { bottomSafeArea = 0 }
+
+                    swipeHintContainer.edgeInsets = UIEdgeInsets(
+                        top: 20,
+                        left: 0,
+                        bottom: bottomSafeArea != 0 ? bottomSafeArea : 20,
+                        right: 0
+                    )
+
+                    return stackView.didLayoutSignal.onValue { _ in
+                        let mainContentHeight = stackView.frame.size
+                        let navigationBarHeight =
+                            viewController.navigationController?.navigationBar.frame.height ?? 0
+                        viewController.preferredContentSize = CGSize(
+                            width: mainContentHeight.width,
+                            height: mainContentHeight.height
+                                + (swipeHintContainer.frame.height - bottomSafeArea)
+                                + navigationBarHeight
+                        )
+                    }
+                }
 
             swipeHintContainer.snp.makeConstraints { make in
                 make.top.bottom.trailing.leading.equalToSuperview()
@@ -169,17 +188,6 @@ extension PerilDetail: Presentable {
             swipeHintContainer.addArrangedSubview(swipeHintLabel)
 
             bag += viewController.install(form, scrollView: scrollView)
-
-            bag += stackView.didLayoutSignal.onValue { _ in let mainContentHeight = stackView.frame.size
-                let navigationBarHeight =
-                    viewController.navigationController?.navigationBar.frame.height ?? 0
-                viewController.preferredContentSize = CGSize(
-                    width: mainContentHeight.width,
-                    height: mainContentHeight.height
-                        + (swipeHintContainer.frame.height - bottomSafeArea)
-                        + navigationBarHeight
-                )
-            }
 
             bag += viewController.currentDetentSignal.animated(style: .lightBounce()) { detent in
                 swipeHintBackgroundView.alpha = detent == .large ? 0 : 1

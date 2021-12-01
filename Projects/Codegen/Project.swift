@@ -22,7 +22,7 @@ let project = Project(
             name: "Apollo Codegen",
             shared: true,
             buildAction: BuildAction(targets: ["Codegen"]),
-            runAction: RunAction(executable: "Codegen")
+            runAction: .runAction(executable: .init(stringLiteral: "Codegen"))
         )
     ]
 )

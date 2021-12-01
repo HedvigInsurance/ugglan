@@ -16,9 +16,9 @@ Hedvig is a new approach to insurance currently available in Sweden, Norway and 
 
    `bash <(curl -Ls https://install.tuist.io)`
 
-3. Run tuist up
+3. Run post-checkout
 
-   `tuist up`
+   `scripts/post-checkout.sh`
 
 4. Run tuist generate
 

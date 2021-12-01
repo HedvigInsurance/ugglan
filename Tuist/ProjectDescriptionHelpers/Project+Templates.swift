@@ -18,7 +18,7 @@ extension Project {
         sdks: [String] = [],
         includesGraphQL: Bool = false
     ) -> Project {
-        let frameworkConfigurations: [CustomConfiguration] = [
+        let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
                 settings: [String: SettingValue](),
@@ -31,7 +31,7 @@ extension Project {
             ),
         ]
 
-        let testsConfigurations: [CustomConfiguration] = [
+        let testsConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
                 settings: [String: SettingValue](),
@@ -43,7 +43,7 @@ extension Project {
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
             ),
         ]
-        let appConfigurations: [CustomConfiguration] = [
+        let appConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
                 settings: [String: SettingValue](),
@@ -55,7 +55,7 @@ extension Project {
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
             ),
         ]
-        let projectConfigurations: [CustomConfiguration] = [
+        let projectConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
                 settings: [String: SettingValue](),
@@ -107,13 +107,12 @@ extension Project {
                 platform: .iOS,
                 product: .framework,
                 bundleId: "com.hedvig.\(name)",
-                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad]),
                 infoPlist: .default,
                 sources: sources,
                 resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
-                actions: [],
                 dependencies: targetDependencies,
-                settings: Settings(base: [:], configurations: frameworkConfigurations)
+                settings: .settings(base: [:], configurations: frameworkConfigurations)
             )
 
             projectTargets.append(frameworkTarget)
@@ -125,10 +124,9 @@ extension Project {
                 platform: .iOS,
                 product: .framework,
                 bundleId: "com.hedvig.\(name)Testing",
-                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad]),
                 infoPlist: .default,
                 sources: "Testing/**/*.swift",
-                actions: [],
                 dependencies: [
                     [
                         .target(name: "\(name)"),
@@ -143,7 +141,7 @@ extension Project {
                     ], targetDependencies,
                 ]
                 .flatMap { $0 },
-                settings: Settings(base: [:], configurations: frameworkConfigurations)
+                settings: .settings(base: [:], configurations: frameworkConfigurations)
             )
 
             projectTargets.append(testingTarget)
@@ -155,10 +153,9 @@ extension Project {
                 platform: .iOS,
                 product: .unitTests,
                 bundleId: "com.hedvig.\(name)Tests",
-                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone, .ipad]),
                 infoPlist: .default,
                 sources: "Tests/**/*.swift",
-                actions: [],
                 dependencies: [
                     [
                         .target(name: "\(name)Example"),
@@ -177,7 +174,7 @@ extension Project {
                     ], testsDependencies,
                 ]
                 .flatMap { $0 },
-                settings: Settings(base: [:], configurations: testsConfigurations)
+                settings: .settings(base: [:], configurations: testsConfigurations)
             )
 
             projectTargets.append(testTarget)
@@ -189,9 +186,10 @@ extension Project {
                 platform: .iOS,
                 product: .app,
                 bundleId: "com.hedvig.example.\(name)Example",
-                deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad, .mac]),
+                deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
                 infoPlist: .extendingDefault(with: [
                     "UIMainStoryboardFile": "",
+                    "NSMicrophoneUsageDescription": "Hedvig uses the microphone to let you record messages and videos.",
                     "UILaunchStoryboardName": "LaunchScreen",
                     "UIApplicationSceneManifest": [
                         "UIApplicationSupportsMultipleScenes": true,
@@ -209,7 +207,7 @@ extension Project {
                 ]),
                 sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
                 resources: "Example/Resources/**",
-                actions: [
+                scripts: [
                     .post(
                         path: "../../scripts/post-build-action.sh",
                         arguments: [],
@@ -235,7 +233,7 @@ extension Project {
                     targetDependencies,
                 ]
                 .flatMap { $0 },
-                settings: Settings(
+                settings: .settings(
                     base: [
                         "PROVISIONING_PROFILE_SPECIFIER":
                             "match Development com.hedvig.example.*"
@@ -248,8 +246,8 @@ extension Project {
         }
 
         func getTestAction() -> TestAction {
-            TestAction(
-                targets: [
+            TestAction.targets(
+                [
                     TestableTarget(
                         target: TargetReference(stringLiteral: "\(name)Tests"),
                         parallelizable: true
@@ -261,7 +259,7 @@ extension Project {
                     ],
                     launchArguments: []
                 ),
-                coverage: true
+                options: .options(coverage: true)
             )
         }
 
@@ -269,7 +267,7 @@ extension Project {
             name: name,
             organizationName: "Hedvig",
             packages: [],
-            settings: Settings(configurations: projectConfigurations),
+            settings: .settings(configurations: projectConfigurations),
             targets: projectTargets,
             schemes: [
                 Scheme(
@@ -287,9 +285,7 @@ extension Project {
                             TargetReference(stringLiteral: "\(name)Example")
                         ]),
                         testAction: getTestAction(),
-                        runAction: RunAction(
-                            executable: TargetReference(stringLiteral: "\(name)Example")
-                        )
+                        runAction: .runAction(executable: TargetReference(stringLiteral: "\(name)Example"))
                     ) : nil,
             ]
             .compactMap { $0 },

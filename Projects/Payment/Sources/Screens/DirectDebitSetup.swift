@@ -89,7 +89,7 @@ extension DirectDebitSetup: Presentable {
         }
 
         let activityIndicator = UIActivityIndicatorView()
-        activityIndicator.style = .whiteLarge
+        activityIndicator.style = .large
         activityIndicator.color = .brand(.primaryTintColor)
 
         webView.addSubview(activityIndicator)

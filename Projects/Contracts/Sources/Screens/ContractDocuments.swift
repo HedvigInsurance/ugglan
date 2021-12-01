@@ -2,63 +2,53 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
 
-struct ContractDocuments { let contract: Contract }
+enum Documents: CaseIterable {
+    case certificate, terms
 
-extension ContractDocuments: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
-        let viewController = UIViewController()
-        viewController.title = L10n.insurancePageMyDocumentsTitle
-        let bag = DisposeBag()
+    var title: String {
+        switch self {
+        case .certificate:
+            return L10n.myDocumentsInsuranceCertificate
+        case .terms:
+            return L10n.myDocumentsInsuranceTerms
+        }
+    }
 
-        let form = FormView()
+    func url(from contract: Contract) -> URL? {
+        switch self {
+        case .certificate:
+            return URL(string: contract.currentAgreement.certificateUrl)
+        case .terms:
+            return URL(string: contract.termsAndConditions.url)
+        }
+    }
+}
 
-        let section = form.appendSection()
-        section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
+struct ContractDocumentsView: View {
+    @PresentableStore var store: ContractStore
 
-        func showSections() {
-            if let url = URL(string: contract.currentAgreement.certificateUrl) {
-                let certificateRow = RowView(
-                    title: L10n.myDocumentsInsuranceCertificate,
-                    style: .brand(.body(color: .primary))
-                )
-                certificateRow.append(hCoreUIAssets.chevronRight.image)
+    let contract: Contract
 
-                bag += section.append(certificateRow)
-                    .onValue { _ in
-                        viewController.present(
-                            Document(url: url, title: L10n.myDocumentsInsuranceCertificate)
-                                .withCloseButton,
-                            style: .detented(.large)
-                        )
-                    }
-            }
-
-            if let url = URL(string: contract.termsAndConditions.url) {
-                let insuranceTermsRow = RowView(
-                    title: L10n.myDocumentsInsuranceTerms,
-                    style: .brand(.body(color: .primary))
-                )
-                insuranceTermsRow.append(hCoreUIAssets.chevronRight.image)
-
-                bag += section.append(insuranceTermsRow)
-                    .onValue { _ in
-                        viewController.present(
-                            Document(url: url, title: L10n.myDocumentsInsuranceTerms)
-                                .withCloseButton,
-                            style: .detented(.large)
-                        )
-                    }
+    var body: some View {
+        hSection(Documents.allCases, id: \.title) { document in
+            if let url = document.url(from: contract) {
+                hRow {
+                    hText(document.title)
+                }
+                .withCustomAccessory {
+                    Spacer()
+                    Image(uiImage: hCoreUIAssets.chevronRight.image)
+                }
+                .onTap {
+                    store.send(.contractDetailNavigationAction(action: .document(url: url, title: document.title)))
+                }
             }
         }
-
-        showSections()
-        bag += viewController.install(form, options: [])
-
-        return (viewController, bag)
     }
 }

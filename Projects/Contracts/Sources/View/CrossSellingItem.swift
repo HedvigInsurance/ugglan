@@ -22,6 +22,7 @@ struct CrossSellingCardLabel: View {
                 didTapButton()
             } content: {
                 hText(crossSell.buttonText)
+                    .frame(maxWidth: .infinity)
             }
             .hButtonFilledStyle(.overImage)
         }
@@ -74,6 +75,7 @@ struct CrossSellingItem: View {
     func openEmbark() {
         if let embarkStoryName = crossSell.embarkStoryName {
             store.send(.openCrossSellingEmbark(name: embarkStoryName))
+            store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
         }
     }
 

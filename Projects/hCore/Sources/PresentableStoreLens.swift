@@ -4,14 +4,14 @@ import Foundation
 import Presentation
 import SwiftUI
 
-class ReadSignalSubscription<S: Subscriber, Value>: Subscription where S.Input == Value, S.Failure == Never {
+class SignalSubscription<S: Subscriber, Value>: Subscription where S.Input == Value, S.Failure == Never {
     private var subscriber: S?
 
     fileprivate var bag: DisposeBag? = DisposeBag()
-    fileprivate var signal: ReadSignal<Value>?
+    fileprivate var signal: Signal<Value>?
 
     init(
-        signal: ReadSignal<Value>,
+        signal: Signal<Value>,
         subscriber: S
     ) {
         self.subscriber = subscriber
@@ -31,14 +31,14 @@ class ReadSignalSubscription<S: Subscriber, Value>: Subscription where S.Input =
     }
 }
 
-public class ReadSignalPublisher<Value>: Publisher {
+public class SignalPublisher<Value>: Publisher {
     public typealias Output = Value
     public typealias Failure = Never
 
-    fileprivate var signal: ReadSignal<Value>
+    fileprivate var signal: Signal<Value>
 
     init(
-        signal: ReadSignal<Value>
+        signal: Signal<Value>
     ) {
         self.signal = signal
     }
@@ -46,14 +46,14 @@ public class ReadSignalPublisher<Value>: Publisher {
     public func receive<S: Subscriber>(
         subscriber: S
     ) where S.Input == Output, S.Failure == Failure {
-        let subscription = ReadSignalSubscription(signal: signal, subscriber: subscriber)
+        let subscription = SignalSubscription(signal: signal, subscriber: subscriber)
         subscriber.receive(subscription: subscription)
     }
 }
 
-extension CoreSignal where Kind == Read {
-    public var publisher: ReadSignalPublisher<Value> {
-        ReadSignalPublisher(signal: self)
+extension CoreSignal where Kind == Plain {
+    public var publisher: SignalPublisher<Value> {
+        SignalPublisher(signal: self)
     }
 }
 
@@ -112,6 +112,7 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         )
         .onReceive(
             store.stateSignal
+                .plain()
                 .distinct({ lhs, rhs in
                     self.getter(lhs) == self.getter(rhs)
                 })

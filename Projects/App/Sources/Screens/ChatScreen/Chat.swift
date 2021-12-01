@@ -24,14 +24,6 @@ enum NavigationEvent {
     case dashboard, offer, login
 }
 
-extension JourneyPresentation {
-    public var hidesBackButton: Self {
-        addConfiguration { presenter in
-            presenter.viewController.navigationItem.hidesBackButton = true
-        }
-    }
-}
-
 enum ChatResult {
     case offer(ids: [String])
     case loggedIn

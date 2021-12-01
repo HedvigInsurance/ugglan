@@ -4,7 +4,6 @@ import Form
 import Foundation
 import Hero
 import Kingfisher
-import Mixpanel
 import Presentation
 import UIKit
 import hCore

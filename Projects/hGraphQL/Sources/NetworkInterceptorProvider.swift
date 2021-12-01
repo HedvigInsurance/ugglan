@@ -6,7 +6,7 @@ public var urlSessionClientProvider: () -> URLSessionClient = {
     URLSessionClient()
 }
 
-public class NetworkInterceptorProvider: LegacyInterceptorProvider {
+public class NetworkInterceptorProvider: DefaultInterceptorProvider {
     let token: String
     let acceptLanguageHeader: String
     let userAgent: String

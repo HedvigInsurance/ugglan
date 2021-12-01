@@ -13,8 +13,8 @@ import hCoreUI
 
 struct CrossFrameworkCoordinator {
     static func setup() {
-        ChatButton.openChatHandler = { chatButton in
-            chatButton.presentingViewController
+        ChatButton.openChatHandler = { viewController in
+            viewController
                 .present(
                     AppJourney.freeTextChat().withDismissButton
                 )

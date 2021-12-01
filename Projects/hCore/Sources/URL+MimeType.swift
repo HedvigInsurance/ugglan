@@ -3,7 +3,7 @@ import MobileCoreServices
 
 extension URL {
     /// returns the mimeType based on the pathExtension on the URL
-    var mimeType: String {
+    public var mimeType: String {
         let pathExtension = self.pathExtension
         let fallback = "application/octet-stream"
 
