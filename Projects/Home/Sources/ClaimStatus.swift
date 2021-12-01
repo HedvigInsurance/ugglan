@@ -16,13 +16,14 @@ struct ClaimStatus: View {
             Spacer().frame(height: 20)
             hText(claim.title)
                 .padding([.leading, .trailing], 16)
-            Spacer().frame(height: 2)
+            Spacer().frame(height: 4)
             hText(claim.subtitle, style: .caption1 )
+                .foregroundColor(hLabelColor.secondary)
                 .padding([.leading, .trailing], 16)
-            Spacer().frame(height: 38)
+            Spacer().frame(height: 20)
             SwiftUI.Divider()
             Spacer().frame(height: 16)
-            HStack {
+            HStack(spacing: 6) {
                 ForEach(claim.segments, id: \.text) { segment in
                     ClaimStatusBar(status: segment)
                 }

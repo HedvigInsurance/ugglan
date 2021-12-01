@@ -25,14 +25,16 @@ public struct hPillOutline: View {
         func body(content: Content) -> some View {
             if colorScheme == .light {
                 content
-                    .padding(5)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
                     .overlay(
                         RoundedRectangle(cornerRadius: .smallCornerRadius)
                             .stroke(hLabelColor.primary, lineWidth: 1.0)
                     )
             } else {
                 content
-                    .padding(5)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
                     .overlay(
                         RoundedRectangle(cornerRadius: .smallCornerRadius)
                             .stroke(hLabelColor.primary, lineWidth: 1.0)
