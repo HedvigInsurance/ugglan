@@ -86,8 +86,8 @@ extension CharityPicker: Viewable {
                         id: cashbackOption.id ?? "",
                         name: cashbackOption.name ?? "",
                         title: cashbackOption.name ?? "",
-                        description: cashbackOption.paragraph ?? "",
-                        paragraph: cashbackOption.paragraph ?? ""
+                        description: cashbackOption.description ?? "",
+                        paragraph: cashbackOption.description ?? ""
                     )
                 }
 
