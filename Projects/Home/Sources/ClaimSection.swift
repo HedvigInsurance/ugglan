@@ -20,7 +20,8 @@ struct ClaimSection: View {
                     ForEach(state.claims, id: \.id) { claim in
                         ClaimStatus(claim: claim)
                             .frame(width: state.frameWidth * 0.9)
-                            .padding([.top, .bottom])
+                            .padding(.top)
+                            .padding(.bottom, 5)
                     }
                 }
                 .padding([.leading, .trailing], 14)
@@ -37,6 +38,7 @@ struct ClaimSection: View {
                 state.scrollView = scrollView
             }
             hPagerDots(currentIndex: state.currentIndex, totalCount: state.claims.count)
+                .padding(.bottom, 5)
         }
     }
 }

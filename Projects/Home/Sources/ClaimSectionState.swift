@@ -30,16 +30,6 @@ class ClaimSectionState: NSObject, ObservableObject, UIScrollViewDelegate {
     @Published
     private(set) var currentIndex: Int = 0
 
-    private func calculateCurrentVisibleItem() {
-        let predictedIndex = ceil((scrollView?.contentOffset.x ?? 0.0) / (self.frameWidth * 0.9))
-
-        let newIndex = Int(predictedIndex)
-
-        guard currentIndex != newIndex else { return }
-
-        currentIndex = newIndex
-    }
-
     func scrollViewWillEndDragging(
         _ scrollView: UIScrollView,
         withVelocity velocity: CGPoint,
@@ -61,22 +51,29 @@ class ClaimSectionState: NSObject, ObservableObject, UIScrollViewDelegate {
 
         let estimatedTotalNumber = round(contentTotalSize / cardWidth)
 
-        var index = currentCardNumber
-
-        if currentCardNumber > estimatedTotalNumber {
+        if currentCardNumber >= estimatedTotalNumber {
             currentCardNumber = estimatedTotalNumber
         } else if currentCardNumber < 0 {
             currentCardNumber = 0
-            index = 0
-        } else if currentCardNumber == estimatedTotalNumber {
-            index = currentCardNumber - 1
         }
 
         let targetOffset = currentCardNumber * (cardWidth + 8)
 
         targetContentOffset.pointee = CGPoint(x: targetOffset, y: scrollView.contentOffset.y)
 
-        currentIndex = Int(index)
+        updateIndex(currentCardNumber: Int(currentCardNumber))
+    }
+    
+    func updateIndex(currentCardNumber: Int) {
+        var index = currentCardNumber
+        
+        if index <= 0 {
+            index = 0
+        } else if index >= claims.count {
+            index = claims.count - 1
+        }
+        
+        currentIndex = index
     }
 
     func updateFrameWidth(width: CGFloat) {
