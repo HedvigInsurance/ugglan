@@ -7,7 +7,7 @@ public struct Poller<S: Store, Value: Equatable, Content: View>: View {
     public typealias Getter = (_ state: S.State) -> Value
 
     @State
-    var pollTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
+    var pollTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     @State
     var value: Value
