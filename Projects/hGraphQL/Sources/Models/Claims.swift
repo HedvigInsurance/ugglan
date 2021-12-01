@@ -19,7 +19,9 @@ public struct Claim: Codable, Equatable {
         cardData: GraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
     ) {
         self.id = cardData.id
-        self.pills = cardData.pills.map { .init(text: $0.text, type: .init(rawValue: $0.type.rawValue.lowercased()) ?? .none) }
+        self.pills = cardData.pills.map {
+            .init(text: $0.text, type: .init(rawValue: $0.type.rawValue.lowercased()) ?? .none)
+        }
         self.segments = cardData.progressSegments.map {
             .init(text: $0.text, type: .init(rawValue: $0.type.rawValue) ?? .none)
         }

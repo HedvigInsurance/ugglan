@@ -3,11 +3,11 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 public struct Home {
     @Inject var client: ApolloClient
@@ -45,7 +45,7 @@ extension Future {
 extension Home: Presentable {
     public func materialize() -> (UIViewController, Signal<HomeResult>) {
         let store: HomeStore = self.get()
-            
+
         let viewController = UIViewController()
         viewController.title = L10n.HomeTab.title
         viewController.installChatButton(allowsChatHint: true)
@@ -68,13 +68,13 @@ extension Home: Presentable {
         let bag = DisposeBag()
 
         store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
-        
+
         let onAppearProxy = SwiftUI.Color.clear.onAppear {
             fetch()
         }
-        
+
         let hostingProxy = HostingView(rootView: onAppearProxy)
-        
+
         func fetch() {
             store.send(.fetchMemberState)
         }
@@ -85,7 +85,7 @@ extension Home: Presentable {
             scrollView.refreshControl = refreshControl
 
             scrollView.addSubview(hostingProxy)
-            
+
             bag += refreshControl.store(
                 store,
                 send: {

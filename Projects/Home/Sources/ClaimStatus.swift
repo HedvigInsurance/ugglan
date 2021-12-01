@@ -73,7 +73,13 @@ extension Claim.ClaimPill {
 }
 
 extension Claim {
-    public static var mock = Claim(id: "123", pills: [.init(text: "abc", type: .payment)], segments: [], title: "Blah", subtitle: "Blah")
+    public static var mock = Claim(
+        id: "123",
+        pills: [.init(text: "abc", type: .payment)],
+        segments: [],
+        title: "Blah",
+        subtitle: "Blah"
+    )
 }
 
 struct ClaimsPreview: PreviewProvider {
