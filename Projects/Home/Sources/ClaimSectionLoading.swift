@@ -16,15 +16,13 @@ struct ClaimSectionLoading: View {
     
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
-        
-        
         self.store = store
     }
     
     @ViewBuilder
     func claimsSection(_ claims: [Claim]) -> some View {
         if claims.isEmpty {
-            EmptyView()
+            Spacer().frame(height: 40)
         } else if claims.count == 1, let claim = claims.first {
             ClaimStatus(claim: claim)
                 .padding([.bottom, .top])
