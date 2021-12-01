@@ -8,17 +8,17 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimSectionLoading: View {
-    
+
     @State
     var shouldPoll = false
-    
+
     var store: HomeStore
-    
+
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         self.store = store
     }
-    
+
     @ViewBuilder
     func claimsSection(_ claims: [Claim]) -> some View {
         if claims.isEmpty {
@@ -31,7 +31,7 @@ struct ClaimSectionLoading: View {
                 .padding([.bottom, .top])
         }
     }
-    
+
     var body: some View {
         VStack {
             if shouldPoll {
@@ -48,16 +48,17 @@ struct ClaimSectionLoading: View {
                     HomeStore.self,
                     getter: { state in
                         state.claims ?? []
-                    }, setter: { _ in
+                    },
+                    setter: { _ in
                         .fetchClaims
                     }
                 ) { claims, _ in
                     claimsSection(claims)
                 }
             }
-        }.onReceive(store.actionSignal.filter(predicate: {$0 == .setClaimsNeedsUpdating}).publisher) { updateClaims in
+        }
+        .onReceive(store.actionSignal.filter(predicate: { $0 == .setClaimsNeedsUpdating }).publisher) { updateClaims in
             shouldPoll = true
         }
     }
 }
-

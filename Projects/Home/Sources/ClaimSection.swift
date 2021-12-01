@@ -5,12 +5,14 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimSection: View {
-    internal init(claims: [Claim]) {
+    internal init(
+        claims: [Claim]
+    ) {
         state = ClaimSectionState(claims: claims)
     }
-    
+
     @ObservedObject var state: ClaimSectionState
-    
+
     var body: some View {
         VStack {
             ScrollView(.horizontal, showsIndicators: false) {

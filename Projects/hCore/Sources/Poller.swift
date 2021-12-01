@@ -45,14 +45,17 @@ public struct Poller<S: Store, Value: Equatable, Content: View>: View {
         content(
             value
         )
-        .onReceive(store.stateSignal.plain().distinct { lhs, rhs in
-                            self.getter(lhs) == self.getter(rhs)
-                            }
-                        .publisher) { _ in
-                shouldPoll = false
-                pollTimer.upstream.connect().cancel()
-                self.value = getter(store.stateSignal.value)
-            }
+        .onReceive(
+            store.stateSignal.plain()
+                .distinct { lhs, rhs in
+                    self.getter(lhs) == self.getter(rhs)
+                }
+                .publisher
+        ) { _ in
+            shouldPoll = false
+            pollTimer.upstream.connect().cancel()
+            self.value = getter(store.stateSignal.value)
+        }
         .onReceive(pollTimer) { _ in
             store.send(fetchAction)
         }
