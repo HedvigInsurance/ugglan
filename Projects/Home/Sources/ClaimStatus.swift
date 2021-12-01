@@ -4,7 +4,7 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimStatus: View {
-    @State var claim: Claim
+    var claim: Claim
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -36,7 +36,7 @@ struct ClaimStatus: View {
 }
 
 struct ClaimPills: View {
-    @State var claim: Claim
+    var claim: Claim
 
     var body: some View {
         HStack {
@@ -62,9 +62,8 @@ extension Claim.ClaimPill {
         case .payment:
             hPillFill(
                 text: self.text,
-                backgroundColor: hBackgroundColor.primary
+                backgroundColor: hColorScheme(light: hTintColor.lavenderTwo, dark: hTintColor.lavenderOne)
             )
-            .invertColorScheme
         case .reopened:
             hPillFill(text: self.text, backgroundColor: hTintColor.orangeTwo)
         case .none:
@@ -74,7 +73,7 @@ extension Claim.ClaimPill {
 }
 
 extension Claim {
-    public static var mock = Claim(id: "123", pills: [], segments: [], title: "Blah", subtitle: "Blah")
+    public static var mock = Claim(id: "123", pills: [.init(text: "abc", type: .payment)], segments: [], title: "Blah", subtitle: "Blah")
 }
 
 struct ClaimsPreview: PreviewProvider {

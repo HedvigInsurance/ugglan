@@ -33,12 +33,11 @@ extension ActiveSection: Presentable {
 
         let claimButton = Button(
             title: L10n.HomeTab.claimButtonText,
-            type: .standard(
-                backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonTextColor)
-            )
+            type: .standardOutline(borderColor: .brand(.primaryText()),
+                           textColor: .brand(.primaryText()))
         )
         bag += section.append(claimButton)
+        
         bag += claimButton.onTapSignal.onValue {
             store.send(.openClaims)
         }
@@ -53,6 +52,11 @@ extension ActiveSection: Presentable {
             )
         )
         bag += section.append(howClaimsWorkButton.alignedTo(alignment: .center))
+        
+        bag += store.stateSignal.atOnce().map { ($0.claims?.count ?? 0) > 0 }.onValue { hasClaims in
+            claimButton.title.value = hasClaims ? L10n.Home.OpenClaim.startNewClaimButton : L10n.HomeTab.claimButtonText
+        }
+        
         bag += howClaimsWorkButton.onTapSignal.compactMap { section.viewController }
             .onValue { viewController in
                 var pager = Pager(

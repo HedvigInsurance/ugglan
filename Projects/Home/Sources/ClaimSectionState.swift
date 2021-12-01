@@ -53,17 +53,21 @@ class ClaimSectionState: NSObject, ObservableObject, UIScrollViewDelegate {
         
         let estimatedTotalNumber = round(contentTotalSize / cardWidth)
         
+        var index = currentCardNumber
+        
         if currentCardNumber > estimatedTotalNumber {
             currentCardNumber = estimatedTotalNumber
         } else if currentCardNumber < 0 {
             currentCardNumber = 0
+        } else if currentCardNumber == estimatedTotalNumber {
+            index = currentCardNumber - 1
         }
         
         let targetOffset = currentCardNumber * (cardWidth + 8)
         
         targetContentOffset.pointee = CGPoint(x: targetOffset, y: scrollView.contentOffset.y)
         
-        currentIndex = Int(currentCardNumber)
+        currentIndex = Int(index)
     }
     
     func updateFrameWidth(width: CGFloat) {
