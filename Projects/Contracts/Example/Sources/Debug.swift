@@ -18,7 +18,7 @@ struct Debug: View {
                 .onTap {
                     store.send(.openCrossSellingSigned)
                 }
-                
+
                 hRow {
                     hText("Open CrossSellingDetail")
                 }
@@ -60,7 +60,7 @@ extension Debug {
                     },
                     style: .detented(.large)
                 )
-            
+
             case .openCrossSellingDetail:
                 CrossSellingCoverageDetail(crossSell: .mock())
                     .journey(
@@ -83,6 +83,7 @@ extension CrossSell {
             blurHash: "blurHash",
             buttonText: "Button text",
             typeOfContract: "Type of contract",
-            info: nil)
+            info: nil
+        )
     }
 }
