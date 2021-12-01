@@ -59,6 +59,7 @@ class ClaimSectionState: NSObject, ObservableObject, UIScrollViewDelegate {
             currentCardNumber = estimatedTotalNumber
         } else if currentCardNumber < 0 {
             currentCardNumber = 0
+            index = 0
         } else if currentCardNumber == estimatedTotalNumber {
             index = currentCardNumber - 1
         }
