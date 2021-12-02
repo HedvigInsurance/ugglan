@@ -127,7 +127,12 @@ extension DataCollectionConfirmation {
                             }
                         }
                 case .failed:
-                    DismissJourney()
+                    DismissJourney().onPresent {
+                        onComplete(
+                            nil,
+                            nil
+                        )
+                    }
                 case .retry:
                     DataCollection.journey(
                         onComplete: onComplete

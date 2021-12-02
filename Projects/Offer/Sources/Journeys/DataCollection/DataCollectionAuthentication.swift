@@ -42,6 +42,7 @@ struct SwedishBankID: View {
                     options: [:],
                     completionHandler: nil
                 )
+                showLoader = true
             }
 
             return
@@ -62,6 +63,8 @@ struct SwedishBankID: View {
                 options: [:],
                 completionHandler: nil
             )
+            
+            showLoader = true
         }
     }
 
