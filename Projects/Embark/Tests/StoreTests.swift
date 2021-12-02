@@ -156,16 +156,26 @@ final class StoreTests: XCTestCase {
                 }
             }
 
-        XCTAssertEqual(values.flatMap({ map in
-            map.values
-        }).sorted(), componentValues.flatMap({ map in
-            map.values
-        }).sorted())
-        
-        XCTAssertEqual(values.flatMap({ map in
-            map.keys
-        }).sorted(), componentValues.flatMap({ map in
-            map.keys
-        }).sorted())
+        XCTAssertEqual(
+            values.flatMap({ map in
+                map.values
+            })
+            .sorted(),
+            componentValues.flatMap({ map in
+                map.values
+            })
+            .sorted()
+        )
+
+        XCTAssertEqual(
+            values.flatMap({ map in
+                map.keys
+            })
+            .sorted(),
+            componentValues.flatMap({ map in
+                map.keys
+            })
+            .sorted()
+        )
     }
 }
