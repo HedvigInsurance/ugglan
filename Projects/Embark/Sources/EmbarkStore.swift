@@ -176,13 +176,13 @@ class EmbarkStore {
         if let multiple = expression.asEmbarkExpressionMultiple {
             switch multiple.expressionMultipleType {
             case .and:
-                return !multiple.subExpressions
+                return multiple.subExpressions
                     .map { subExpression -> Bool in
                         self.passes(expression: subExpression.fragments.basicExpressionFragment)
                     }
-                    .contains(false)
+                    .allSatisfy({ passes in passes })
             case .or:
-                return !multiple.subExpressions
+                return multiple.subExpressions
                     .map { subExpression -> Bool in
                         self.passes(expression: subExpression.fragments.basicExpressionFragment)
                     }
