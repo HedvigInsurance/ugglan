@@ -118,7 +118,7 @@ extension InsuranceProviderAction: Viewable {
                                 ? GraphQL.InsuranceProviderFragment(
                                     name: "DEMO",
                                     id: "DEMO",
-                                    externalCollectionId: "demo",
+                                    externalCollectionId: "se-demo",
                                     hasExternalCapabilities: true
                                 ) : nil
                         ]
