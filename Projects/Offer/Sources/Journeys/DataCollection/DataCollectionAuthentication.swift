@@ -14,9 +14,16 @@ public enum DataCollectionAuthenticationResult: Codable {
 struct SwedishBankID: View {
     var autoStartToken: String?
 
+    @State var hasOpenedBankID = false
     @State var showLoader = false
 
     func openBankIDApp() {
+        guard !hasOpenedBankID else {
+            return
+        }
+        
+        self.hasOpenedBankID = true
+        
         let urlScheme = Bundle.main.urlScheme ?? ""
 
         guard let autoStartToken = autoStartToken else {
