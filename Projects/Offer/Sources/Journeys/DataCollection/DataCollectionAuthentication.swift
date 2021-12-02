@@ -13,6 +13,8 @@ public enum DataCollectionAuthenticationResult: Codable {
 
 struct SwedishBankID: View {
     var autoStartToken: String?
+    
+    @State var showLoader = false
 
     func openBankIDApp() {
         let urlScheme = Bundle.main.urlScheme ?? ""
@@ -55,6 +57,14 @@ struct SwedishBankID: View {
             )
         }
     }
+    
+    private func showLoaderAfterDelay() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+            withAnimation(.easeInOut) {
+                showLoader = true
+            }
+        }
+    }
 
     var body: some View {
         VStack(spacing: 25) {
@@ -67,7 +77,14 @@ struct SwedishBankID: View {
                 .onReceive(Just(autoStartToken)) { _ in
                     openBankIDApp()
                 }
-            hText(L10n.bankIdAuthTitleInitiated, style: .title3)
+                .onAppear {
+                    showLoaderAfterDelay()
+                }
+            if showLoader {
+                ActivityIndicator(style: .medium)
+            } else {
+                hText(L10n.bankIdAuthTitleInitiated, style: .title3)
+            }
         }
     }
 }

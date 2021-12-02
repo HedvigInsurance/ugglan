@@ -46,6 +46,7 @@ struct DataCollectionComparisonList: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 60, alignment: .center)
+                                .foregroundColor(hLabelColor.primary)
                         }
                         .withCustomAccessory {
                             Spacer()
