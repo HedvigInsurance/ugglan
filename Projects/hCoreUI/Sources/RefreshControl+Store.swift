@@ -26,9 +26,10 @@ extension UIRefreshControl {
         let bag = DisposeBag()
 
         bag += self.onValue {
-            send().forEach { action in
-                store.send(action)
-            }
+            send()
+                .forEach { action in
+                    store.send(action)
+                }
             bag += store.actionSignal.onValue { action in
                 if endOn(action) {
                     self.endRefreshing()

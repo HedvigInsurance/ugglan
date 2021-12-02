@@ -17,7 +17,7 @@ struct ClaimStatus: View {
             hText(claim.title)
                 .padding([.leading, .trailing], 16)
             Spacer().frame(height: 4)
-            hText(claim.subtitle, style: .caption1 )
+            hText(claim.subtitle, style: .caption1)
                 .foregroundColor(hLabelColor.secondary)
                 .padding([.leading, .trailing], 16)
             Spacer().frame(height: 20)
