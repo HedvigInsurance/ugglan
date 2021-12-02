@@ -63,7 +63,7 @@ struct SwedishBankID: View {
                 options: [:],
                 completionHandler: nil
             )
-            
+
             showLoader = true
         }
     }
