@@ -102,14 +102,14 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                     switch data.dataCollectionStatusV2.status {
                     case .running:
                         callback(.value(.setStatus(status: .none)))
-                    case .login, .waitingForAuthentication:
+                    case .login:
                         callback(.value(.setStatus(status: .login)))
                     case .collecting:
                         callback(.value(.setStatus(status: .collecting)))
                     case .completed, .completedPartial:
                         callback(.value(.setStatus(status: .completed)))
                         callback(.end)
-                    case .failed, .completedEmpty:
+                    case .failed, .completedEmpty, .waitingForAuthentication:
                         callback(.value(.setStatus(status: .failed)))
                         callback(.end)
                     case .__unknown(_), .userInput:
