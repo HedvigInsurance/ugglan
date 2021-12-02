@@ -20,13 +20,15 @@ extension UIRefreshControl {
 
     public func store<S: Store>(
         _ store: S,
-        send: @escaping () -> S.Action,
+        send: @escaping () -> [S.Action],
         endOn: @escaping (S.Action) -> Bool
     ) -> Disposable {
         let bag = DisposeBag()
 
         bag += self.onValue {
-            store.send(send())
+            send().forEach { action in
+                store.send(action)
+            }
             bag += store.actionSignal.onValue { action in
                 if endOn(action) {
                     self.endRefreshing()

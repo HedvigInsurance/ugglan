@@ -90,7 +90,8 @@ extension Home: Presentable {
             bag += refreshControl.store(
                 store,
                 send: {
-                    .fetchMemberState
+                    [.fetchMemberState,
+                    .fetchClaims]
                 },
                 endOn: { action in
                     switch action {
