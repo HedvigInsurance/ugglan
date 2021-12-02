@@ -69,7 +69,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         default:
             return nil
         }
-        
+
         return nil
     }
 

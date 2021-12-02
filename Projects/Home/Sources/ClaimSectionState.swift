@@ -63,16 +63,16 @@ class ClaimSectionState: NSObject, ObservableObject, UIScrollViewDelegate {
 
         updateIndex(currentCardNumber: Int(currentCardNumber))
     }
-    
+
     func updateIndex(currentCardNumber: Int) {
         var index = currentCardNumber
-        
+
         if index <= 0 {
             index = 0
         } else if index >= claims.count {
             index = claims.count - 1
         }
-        
+
         currentIndex = index
     }
 
