@@ -21,9 +21,9 @@ struct SwedishBankID: View {
         guard !hasOpenedBankID else {
             return
         }
-        
+
         self.hasOpenedBankID = true
-        
+
         let urlScheme = Bundle.main.urlScheme ?? ""
 
         guard let autoStartToken = autoStartToken else {
