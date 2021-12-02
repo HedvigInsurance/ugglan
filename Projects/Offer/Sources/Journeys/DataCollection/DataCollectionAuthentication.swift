@@ -13,7 +13,7 @@ public enum DataCollectionAuthenticationResult: Codable {
 
 struct SwedishBankID: View {
     var autoStartToken: String?
-    
+
     @State var showLoader = false
 
     func openBankIDApp() {
@@ -57,7 +57,7 @@ struct SwedishBankID: View {
             )
         }
     }
-    
+
     private func showLoaderAfterDelay() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
             withAnimation(.easeInOut) {
