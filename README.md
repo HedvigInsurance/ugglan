@@ -19,12 +19,16 @@ Hedvig is a new approach to insurance currently available in Sweden, Norway and 
 3. Run post-checkout
 
    `scripts/post-checkout.sh`
+   
+4. Install swift-format
 
-4. Run tuist generate
+   `scripts/install-swift-format.sh`
+
+5. Run tuist generate
 
    `tuist generate`
    
-5. Open workspace
+6. Open workspace
 
    `open Ugglan.xcworkspace`
 
