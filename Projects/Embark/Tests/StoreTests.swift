@@ -138,7 +138,8 @@ final class StoreTests: XCTestCase {
 
         let storeValues = store.getAllValues()
 
-        XCTAssertEqual(storedMultiActionValues, storeValues)
+        XCTAssertEqual(storedMultiActionValues.keys.sorted(), storeValues.keys.sorted())
+        XCTAssertEqual(storedMultiActionValues.values.sorted(), storeValues.values.sorted())
     }
 
     func testGetMultiActionItems() {
