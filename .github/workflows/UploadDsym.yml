@@ -10,8 +10,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
-    - run: brew install node
-    - run: npm install -g @datadog/datadog-ci
+    - run: arch -arm64 brew install node
+    - run: arch -arm64 npm install -g @datadog/datadog-ci
     - name: Fastlane Action
       env:
         FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
