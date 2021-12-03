@@ -8,6 +8,7 @@ public struct DebugState: StateProtocol {
 
 public enum DebugAction: ActionProtocol {
     case openCrossSellingSigned
+    case openCrossSellingDetail
 }
 
 public final class DebugStore: StateStore<DebugState, DebugAction> {

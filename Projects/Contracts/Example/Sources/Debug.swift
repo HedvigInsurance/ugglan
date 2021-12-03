@@ -4,6 +4,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct Debug: View {
     @PresentableStore var store: DebugStore
@@ -17,6 +18,13 @@ struct Debug: View {
                 .onTap {
                     store.send(.openCrossSellingSigned)
                 }
+                
+                hRow {
+                    hText("Open CrossSellingDetail")
+                }
+                .onTap {
+                    store.send(.openCrossSellingDetail)
+                }
             }
         }
     }
@@ -29,7 +37,8 @@ extension Debug {
         )
         .configureTitle("Contracts debug")
         .onAction(DebugStore.self) { action in
-            if action == .openCrossSellingSigned {
+            switch action {
+            case .openCrossSellingSigned:
                 HostingJourney(
                     rootView: CrossSellingSigned(
                         startDate: Date()
@@ -51,7 +60,29 @@ extension Debug {
                     },
                     style: .detented(.large)
                 )
+            
+            case .openCrossSellingDetail:
+                CrossSellingCoverageDetail(crossSell: .mock())
+                    .journey(
+                        style: .detented(.large, modally: true),
+                        options: [.embedInNavigationController]
+                    )
+                    .withDismissButton
+                    .scrollEdgeBarButtonItemHandler
             }
         }
+    }
+}
+
+extension CrossSell {
+    public static func mock() -> CrossSell {
+        .init(
+            title: "Title",
+            description: "description",
+            imageURL: .mock,
+            blurHash: "blurHash",
+            buttonText: "Button text",
+            typeOfContract: "Type of contract",
+            info: nil)
     }
 }

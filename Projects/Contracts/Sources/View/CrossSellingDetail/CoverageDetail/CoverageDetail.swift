@@ -84,5 +84,6 @@ extension CrossSellingCoverageDetail {
                 .withDismissButton
             }
         }
+        .configureTitle(L10n.CrossSell.Info.fullCoverageRow)
     }
 }

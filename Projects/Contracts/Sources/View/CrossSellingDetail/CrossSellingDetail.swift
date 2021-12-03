@@ -76,6 +76,7 @@ extension CrossSellingDetail {
                 CrossSellingFAQList(crossSell: self.crossSell).journey(next)
             }
         }
+        .configureTitle(L10n.CrossSellingCardSeAccident.title)
         .withDismissButton
         .scrollEdgeBarButtonItemHandler
     }
