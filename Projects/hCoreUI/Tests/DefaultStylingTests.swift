@@ -16,7 +16,7 @@ final class DefaultStylingTests: XCTestCase {
 
     func testBase() {
         let bag = DisposeBag()
-        let navigationController = UINavigationController()
+        let navigationController = NavigationController()
         navigationController.navigationBar.prefersLargeTitles = true
 
         let viewController = UIViewController()
@@ -42,7 +42,7 @@ final class DefaultStylingTests: XCTestCase {
 
     func testDarkMode() {
         let bag = DisposeBag()
-        let navigationController = UINavigationController()
+        let navigationController = NavigationController()
         navigationController.navigationBar.prefersLargeTitles = true
         navigationController.overrideUserInterfaceStyle = .dark
 
@@ -70,7 +70,7 @@ final class DefaultStylingTests: XCTestCase {
 
     func testDarkModeElevated() {
         let bag = DisposeBag()
-        let navigationController = UINavigationController()
+        let navigationController = NavigationController()
         navigationController.navigationBar.prefersLargeTitles = true
         navigationController.overrideUserInterfaceStyle = .dark
 
