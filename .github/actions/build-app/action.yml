@@ -38,9 +38,12 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Clean
-      run: rm -rf *
+    - name: Clean working directory
       shell: bash
+      run: |
+        cd $RUNNER_WORKSPACE
+        cd ..
+        rm -r *
     - uses: actions/checkout@v2
     - name: Download generated
       run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
