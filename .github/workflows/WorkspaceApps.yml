@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Git clean
-        run: git clean -f
+        run: git add . && git reset --hard HEAD
       - name: Post checkout
         run: sh scripts/post-checkout.sh
       - name: Upload generated
@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Git clean
-        run: git clean -f
+        run: git add . && git reset --hard HEAD
       - name: Should run
         if: github.ref != 'refs/heads/main'
         id: should_run
@@ -82,7 +82,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Git clean
-        run: git clean -f
+        run: git add . && git reset --hard HEAD
       - name: Should run
         if: github.ref != 'refs/heads/main'
         id: should_run
