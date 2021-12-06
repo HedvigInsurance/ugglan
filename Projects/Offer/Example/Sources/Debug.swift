@@ -316,7 +316,7 @@ extension Debug {
             switch action {
             case let .openOffer(fullscreen, prefersLargeTitles):
                 Journey(
-                    Offer(offerIDContainer: .stored, menu: nil, options: [.menuToTrailing]),
+                    Offer(menu: nil, options: [.menuToTrailing]).setIds(["123"]),
                     style: fullscreen
                         ? .modally(
                             presentationStyle: .fullScreen,
@@ -333,7 +333,7 @@ extension Debug {
                     PopJourney()
                 }
             case .openDataCollection:
-                DataCollection.journey(providerID: "Hedvi", providerDisplayName: "Hedvig") { _ in
+                DataCollection.journey(providerID: "Hedvi", providerDisplayName: "Hedvig") { _, _ in
 
                 }
             }

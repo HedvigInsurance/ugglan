@@ -19,7 +19,7 @@ extension SwitcherSection: Presentable {
         let bag = DisposeBag()
 
         bag += store.stateSignal
-            .compactMap { $0.offerData?.quoteBundle }
+            .compactMap { $0.currentVariant?.bundle }
             .onValueDisposePrevious { quoteBundle in
                 let innerBag = DisposeBag()
 

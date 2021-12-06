@@ -20,7 +20,7 @@ extension DiscountCodeSection: Presentable {
 
         let store: OfferStore = self.get()
 
-        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.appConfiguration.showCampaignManagement }
+        bag += store.stateSignal.compactMap { $0.currentVariant?.bundle.appConfiguration.showCampaignManagement }
             .onValue { showCampaignManagement in
                 section.isHidden = !showCampaignManagement
             }

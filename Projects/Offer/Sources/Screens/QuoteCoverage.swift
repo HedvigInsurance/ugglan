@@ -14,7 +14,7 @@ struct QuoteCoverage {
 extension QuoteCoverage: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = "Coverage"
+        viewController.title = L10n.offerScreenCoverageTitle
         let bag = DisposeBag()
 
         let form = FormView()

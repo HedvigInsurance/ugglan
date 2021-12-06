@@ -18,21 +18,23 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     
     steps:
-    - uses: actions/checkout@v2
-    - name: Post checkout
-      run: sh scripts/post-checkout.sh
-    - name: Upload generated
-      run: rsync -rav --exclude=".git/" --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
-    - id: set-matrix
-      uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
-      with:          
-        inputFile: '.github/workflows/matrix.json'
-        filter: '[*]'
+      - uses: actions/checkout@v2
+      - name: Git clean
+        run: git add . && git reset --hard HEAD
+      - name: Post checkout
+        run: sh scripts/post-checkout.sh
+      - name: Upload generated
+        run: rsync -rav --exclude=".git/" --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
+      - id: set-matrix
+        uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
+        with:          
+          inputFile: '.github/workflows/matrix.json'
+          filter: '[*]'
 
   build:
     runs-on: self-hosted
     needs: [generate]
-    timeout-minutes: 25
+    timeout-minutes: 50
 
     name: Build ${{ matrix.name }}
 
@@ -42,6 +44,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Git clean
+        run: git add . && git reset --hard HEAD
       - name: Should run
         if: github.ref != 'refs/heads/main'
         id: should_run
@@ -67,7 +71,7 @@ jobs:
   test:
     runs-on: self-hosted
     needs: [generate]
-    timeout-minutes: 25
+    timeout-minutes: 50
 
     name: Test ${{ matrix.name }}
 
@@ -77,6 +81,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Git clean
+        run: git add . && git reset --hard HEAD
       - name: Should run
         if: github.ref != 'refs/heads/main'
         id: should_run

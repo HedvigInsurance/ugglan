@@ -90,7 +90,7 @@ extension StartDateSection: Presentable {
 
         let bag = DisposeBag()
 
-        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle }
+        bag += store.stateSignal.compactMap { $0.currentVariant?.bundle }
             .map { ($0.displayableStartDate, $0.startDateTerminology) }
             .distinct(==)
             .onValueDisposePrevious { displayableStartDate, startDateTerminology in
@@ -138,7 +138,7 @@ extension StartDateSection: Presentable {
                 row.append(hCoreUIAssets.chevronRight.image)
 
                 innerBag += section.append(row).compactMap { _ in row.viewController }
-                    .withLatestFrom(store.stateSignal.atOnce().compactMap { $0.offerData?.quoteBundle })
+                    .withLatestFrom(store.stateSignal.atOnce().compactMap { $0.currentVariant?.bundle })
                     .onValue { viewController, quoteBundle in
                         viewController.present(
                             StartDate(quoteBundle: quoteBundle).wrappedInCloseButton(),
