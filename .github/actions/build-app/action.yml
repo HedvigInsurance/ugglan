@@ -42,9 +42,6 @@ runs:
     - name: Download generated
       run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
       shell: bash
-    - name: Delete DerivedData
-      run: sudo rm -rf /Users/app/Library/Developer/Xcode/DerivedData
-      shell: bash
     - name: Fetch cache
       run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/Library/Developer/Xcode/ || true
       shell: bash
