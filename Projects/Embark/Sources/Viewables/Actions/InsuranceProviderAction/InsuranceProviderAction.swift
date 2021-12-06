@@ -201,7 +201,7 @@ extension InsuranceProviderAction: Viewable {
                                 if let personalNumber = personalNumber {
                                     state.store.setValue(key: "personalNumber", value: personalNumber)
                                 }
-                                
+
                                 state.store.setValue(key: self.data.key, value: provider.id)
 
                                 bag += Signal(after: 0.3)
