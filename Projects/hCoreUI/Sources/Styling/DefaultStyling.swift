@@ -1,12 +1,13 @@
 import Flow
 import Form
 import Foundation
+import Presentation
 import StoreKit
 import UIKit
 
-public class NavigationController: UINavigationController {
+public class hNavigationController: UINavigationController {
     public init() {
-        super.init(navigationBarClass: NavigationBar.self, toolbarClass: UIToolbar.self)
+        super.init(navigationBarClass: UINavigationBar.self, toolbarClass: UIToolbar.self)
     }
 
     required init?(
@@ -14,16 +15,7 @@ public class NavigationController: UINavigationController {
     ) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if #available(iOS 13.0, *) {
-            navigationController?.navigationBar.setNeedsLayout()
-        }
-    }
 }
-
-public class NavigationBar: UINavigationBar {}
 
 extension BarButtonStyle {
     public static var destructive = BarButtonStyle(text: .brand(.headline(color: .destructive)))
@@ -95,15 +87,17 @@ extension DefaultStyling {
     }
 
     public static func setNavigationBarAppearance() {
-        UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).scrollEdgeAppearance =
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).scrollEdgeAppearance =
             scrollEdgeNavigationBarAppearance()
-        UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).standardAppearance =
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).standardAppearance =
             standardNavigationBarAppearance()
-        UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).compactAppearance =
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).compactAppearance =
             compactNavigationBarAppearance()
     }
 
     public static func installCustom() {
+        customNavigationController = { _ in hNavigationController() }
+
         ListTableView.appearance().backgroundColor = .brand(.primaryBackground())
 
         for view in [FormScrollView.self, FormTableView.self] {
@@ -124,16 +118,18 @@ extension DefaultStyling {
         if #available(iOS 13.0, *) {
             setNavigationBarAppearance()
         } else {
-            UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).shadowImage = UIColor.clear
+            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).shadowImage = UIColor
+                .clear
                 .asImage()
-            UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).titleTextAttributes = [
+            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).titleTextAttributes = [
                 NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
                 NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
             ]
-            UINavigationBar.appearance(whenContainedInInstancesOf: [NavigationBar.self]).largeTitleTextAttributes = [
-                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
-            ]
+            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self])
+                .largeTitleTextAttributes = [
+                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
+                ]
         }
 
         UITabBar.appearance().backgroundColor = tabBarBackgroundColor
@@ -190,7 +186,7 @@ extension DefaultStyling {
             .primaryTintColor
         )
 
-        UIBarButtonItem.appearance(whenContainedInInstancesOf: [NavigationBar.self])
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationController.self])
             .setTitleTextAttributes(
                 [
                     NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
@@ -198,7 +194,7 @@ extension DefaultStyling {
                 for: .normal
             )
 
-        UIBarButtonItem.appearance(whenContainedInInstancesOf: [NavigationBar.self])
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationController.self])
             .setTitleTextAttributes(
                 [
                     NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
@@ -208,7 +204,9 @@ extension DefaultStyling {
 
         UIBarButtonItem.appearance().tintColor = .brand(.primaryTintColor)
 
-        let barButtonItemAppearance = UIBarButtonItem.appearance(whenContainedInInstancesOf: [NavigationBar.self])
+        let barButtonItemAppearance = UIBarButtonItem.appearance(whenContainedInInstancesOf: [
+            hNavigationController.self
+        ])
 
         barButtonItemAppearance.setTitleTextAttributes(
             [NSAttributedString.Key.foregroundColor: UIColor.clear],
