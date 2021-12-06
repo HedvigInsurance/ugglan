@@ -23,6 +23,8 @@ extension AppJourney {
                 DismissJourney()
             case .offer:
                 DismissJourney()
+            case .dataCollection:
+                ContinueJourney()
             }
         }
         .sendActionImmediately(HomeStore.self, .startPollingClaims)
