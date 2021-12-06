@@ -33,8 +33,8 @@ runs:
     - name: Download generated
       run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
       shell: bash
-    - name: Clean DerivedData ZIP files
-      run: rm -rf /Users/app/actions-runner/DerivedData/SourcePackages/artifacts/**/*.zip
+    - name: Clean local DerivedData
+      run: sudo rm -rf /Users/app/Library/Developer/Xcode/DerivedData/
       shell: bash
     - name: Fetch cache
       run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/actions-runner || true
