@@ -4,8 +4,14 @@ import Presentation
 import hCore
 import hGraphQL
 
+public struct MemberStateData: Codable, Equatable {
+    let state: MemberContractState
+    let name: String?
+}
+
 public struct HomeState: StateProtocol {
-    var memberContractState: MemberContractState = .loading
+    var memberStateData: MemberStateData = .init(state: .loading, name: nil)
+    var claims: [Claim]? = nil
 
     public init() {}
 }
@@ -16,7 +22,11 @@ public enum HomeAction: ActionProtocol {
     case openMovingFlow
     case openClaims
     case connectPayments
-    case setMemberContractState(state: MemberContractState)
+    case setMemberContractState(state: MemberStateData)
+    case fetchClaims
+    case setClaims(claims: [Claim])
+    case startPollingClaims
+    case stopPollingClaims
 }
 
 public final class HomeStore: StateStore<HomeState, HomeAction> {
@@ -34,14 +44,33 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
             return
                 client
                 .fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
-                .compactMap { $0.homeState }
-                .map { state in
-                    .setMemberContractState(state: state)
+                .map { data in
+                    .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))
                 }
                 .valueThenEndSignal
+        case .fetchClaims:
+            return
+                client
+                .fetch(
+                    query: GraphQL.ClaimStatusCardsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+                    cachePolicy: .fetchIgnoringCacheData
+                )
+                .compactMap {
+                    ClaimStatusCards(cardData: $0)
+                }
+                .map { claimData in
+                    return .setClaims(claims: claimData.claims)
+                }
+                .valueThenEndSignal
+        case .startPollingClaims:
+            return Signal(every: 2).map { .fetchClaims }
+        case .stopPollingClaims:
+            cancelEffect(.startPollingClaims)
         default:
             return nil
         }
+
+        return nil
     }
 
     public override func reduce(_ state: HomeState, _ action: HomeAction) -> HomeState {
@@ -49,7 +78,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
 
         switch action {
         case .setMemberContractState(let memberState):
-            newState.memberContractState = memberState
+            newState.memberStateData = memberState
         case .openFreeTextChat:
             break
         case .fetchMemberState:
@@ -59,6 +88,14 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         case .connectPayments:
             break
         case .openMovingFlow:
+            break
+        case .fetchClaims:
+            break
+        case let .setClaims(claims):
+            newState.claims = claims
+        case .startPollingClaims:
+            break
+        case .stopPollingClaims:
             break
         }
 

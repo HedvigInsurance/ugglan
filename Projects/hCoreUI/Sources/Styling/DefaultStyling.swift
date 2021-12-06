@@ -401,6 +401,7 @@ extension DynamicSectionStyle {
     }
 
     public static func brandGrouped(
+        insets: UIEdgeInsets = .zero,
         separatorType: SeparatorType,
         borderColor: UIColor = .clear,
         backgroundColor: UIColor = .clear,
@@ -413,7 +414,7 @@ extension DynamicSectionStyle {
             let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
 
             return Style(
-                insets: .zero,
+                insets: insets,
                 rowInsets: .init(inset: 15),
                 itemSpacing: 10,
                 minRowHeight: 0,
@@ -638,6 +639,7 @@ extension DynamicTableViewFormStyle {
 final class ListTableView: UITableView {}
 
 extension CGFloat {
+    public static var smallCornerRadius: CGFloat = 4
     public static var defaultCornerRadius: CGFloat = 8
     public static var smallIconWidth: CGFloat = 16
 }
