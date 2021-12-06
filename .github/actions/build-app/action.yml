@@ -72,10 +72,3 @@ runs:
       with:
         name: ${{ inputs.name }}.ipa
         path: fastlane/build_output/${{ inputs.name }}.ipa
-    - name: Clean working directory
-      if: ${{ always() }}
-      shell: bash
-      run: |
-        cd $RUNNER_WORKSPACE
-        cd ..
-        rm -r *

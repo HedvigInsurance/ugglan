@@ -18,16 +18,17 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     
     steps:
-    - uses: actions/checkout@v2
-    - name: Post checkout
-      run: sh scripts/post-checkout.sh
-    - name: Upload generated
-      run: rsync -rav --exclude=".git/" --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
-    - id: set-matrix
-      uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
-      with:          
-        inputFile: '.github/workflows/matrix.json'
-        filter: '[*]'
+      - uses: AutoModality/action-clean@v1
+      - uses: actions/checkout@v2
+      - name: Post checkout
+        run: sh scripts/post-checkout.sh
+      - name: Upload generated
+        run: rsync -rav --exclude=".git/" --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
+      - id: set-matrix
+        uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
+        with:          
+          inputFile: '.github/workflows/matrix.json'
+          filter: '[*]'
 
   build:
     runs-on: self-hosted
@@ -41,6 +42,7 @@ jobs:
       matrix: ${{ fromJSON(needs.generate.outputs.matrix) }}
 
     steps:
+      - uses: AutoModality/action-clean@v1
       - uses: actions/checkout@v2
       - name: Should run
         if: github.ref != 'refs/heads/main'
@@ -76,6 +78,7 @@ jobs:
       matrix: ${{ fromJSON(needs.generate.outputs.matrix) }}
 
     steps:
+      - uses: AutoModality/action-clean@v1
       - uses: actions/checkout@v2
       - name: Should run
         if: github.ref != 'refs/heads/main'

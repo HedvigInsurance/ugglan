@@ -64,10 +64,3 @@ runs:
       with:
         name: Ugglan.xcresult
         path: fastlane/test_output/${{ inputs.test_scheme }}.xcresult
-    - name: Clean working directory
-      if: ${{ always() }}
-      shell: bash
-      run: |
-        cd $RUNNER_WORKSPACE
-        cd ..
-        rm -r *
