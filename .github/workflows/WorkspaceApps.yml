@@ -18,8 +18,9 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     
     steps:
-      - uses: AutoModality/action-clean@v1
       - uses: actions/checkout@v2
+      - name: Git clean
+        run: git clean -f
       - name: Post checkout
         run: sh scripts/post-checkout.sh
       - name: Upload generated
@@ -42,8 +43,9 @@ jobs:
       matrix: ${{ fromJSON(needs.generate.outputs.matrix) }}
 
     steps:
-      - uses: AutoModality/action-clean@v1
       - uses: actions/checkout@v2
+      - name: Git clean
+        run: git clean -f
       - name: Should run
         if: github.ref != 'refs/heads/main'
         id: should_run
@@ -78,8 +80,9 @@ jobs:
       matrix: ${{ fromJSON(needs.generate.outputs.matrix) }}
 
     steps:
-      - uses: AutoModality/action-clean@v1
       - uses: actions/checkout@v2
+      - name: Git clean
+        run: git clean -f
       - name: Should run
         if: github.ref != 'refs/heads/main'
         id: should_run
