@@ -43,10 +43,10 @@ runs:
       run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
       shell: bash
     - name: Clean local DerivedData
-      run: sudo rm -rf /Users/app/Library/Developer/Xcode/DerivedData/
+      run: sudo rm -rf /Users/app/Library/Developer/Xcode/DerivedData && sudo rm -rf /Users/app/actions-runner/DerivedData
       shell: bash
     - name: Fetch cache
-      run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/actions-runner || true
+      run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/Library/Developer/Xcode/ || true
       shell: bash
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
