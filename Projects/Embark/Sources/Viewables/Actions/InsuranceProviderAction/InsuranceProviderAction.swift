@@ -21,7 +21,7 @@ enum InsuranceWrapper {
 
     var key: String {
         switch self {
-        case .external: return "previousInsurer"
+        case let .external(data): return data.externalInsuranceProviderData.storeKey
         case let .previous(data): return data.previousInsuranceProviderData.storeKey
         }
     }
@@ -201,6 +201,8 @@ extension InsuranceProviderAction: Viewable {
                                 if let personalNumber = personalNumber {
                                     state.store.setValue(key: "personalNumber", value: personalNumber)
                                 }
+                                
+                                state.store.setValue(key: self.data.key, value: provider.id)
 
                                 bag += Signal(after: 0.3)
                                     .onValue { _ in

@@ -386,6 +386,7 @@ query EmbarkStory($name: String!, $locale: String!) {
         ... on EmbarkExternalInsuranceProviderAction {
           component
           externalInsuranceProviderData: data {
+            storeKey
             next {
               ...EmbarkLinkFragment
             }
