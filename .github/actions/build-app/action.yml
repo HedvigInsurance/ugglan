@@ -43,7 +43,7 @@ runs:
       run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
       shell: bash
     - name: Fetch cache
-      run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/actions-runner || true
+      run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/Library/Developer/Xcode/ || true
       shell: bash
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
@@ -62,7 +62,7 @@ runs:
       run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
       shell: bash
     - name: Upload cache
-      run: rsync -raWPop /Users/app/actions-runner/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
+      run: rsync -raWPop /Users/app/Library/Developer/Xcode/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
       shell: bash
     - name: Upload app
       uses: actions/upload-artifact@v2
