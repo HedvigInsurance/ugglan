@@ -1,15 +1,15 @@
 import Flow
 import Form
 import Foundation
+import Presentation
 import StoreKit
 import UIKit
-import Presentation
 
 public class hNavigationController: UINavigationController {
     public init() {
         super.init(navigationBarClass: UINavigationBar.self, toolbarClass: UIToolbar.self)
     }
-    
+
     required init?(
         coder aDecoder: NSCoder
     ) {
@@ -97,7 +97,7 @@ extension DefaultStyling {
 
     public static func installCustom() {
         customNavigationController = { _ in hNavigationController() }
-        
+
         ListTableView.appearance().backgroundColor = .brand(.primaryBackground())
 
         for view in [FormScrollView.self, FormTableView.self] {
@@ -118,16 +118,18 @@ extension DefaultStyling {
         if #available(iOS 13.0, *) {
             setNavigationBarAppearance()
         } else {
-            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).shadowImage = UIColor.clear
+            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).shadowImage = UIColor
+                .clear
                 .asImage()
             UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).titleTextAttributes = [
                 NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
                 NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
             ]
-            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).largeTitleTextAttributes = [
-                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
-            ]
+            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self])
+                .largeTitleTextAttributes = [
+                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
+                ]
         }
 
         UITabBar.appearance().backgroundColor = tabBarBackgroundColor
@@ -202,7 +204,9 @@ extension DefaultStyling {
 
         UIBarButtonItem.appearance().tintColor = .brand(.primaryTintColor)
 
-        let barButtonItemAppearance = UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationController.self])
+        let barButtonItemAppearance = UIBarButtonItem.appearance(whenContainedInInstancesOf: [
+            hNavigationController.self
+        ])
 
         barButtonItemAppearance.setTitleTextAttributes(
             [NSAttributedString.Key.foregroundColor: UIColor.clear],
