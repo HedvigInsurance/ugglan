@@ -381,7 +381,6 @@ let log = Logger.builder
 
         launchView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
-        customNavigationController = { _ in NavigationController() }
         DefaultStyling.installCustom()
 
         Messaging.messaging().delegate = self
