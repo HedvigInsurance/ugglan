@@ -1,0 +1,16 @@
+subscription DataCollection($reference: ID!) {
+    dataCollectionStatusV2(
+        reference: $reference
+    ) {
+        extraInformation {
+            ... on SwedishBankIdExtraInfo {
+                autoStartToken
+                swedishBankIdQrCode
+            }
+            ... on NorwegianBankIdExtraInfo {
+                norwegianBankIdWords
+            }
+        }
+        status
+    }
+}

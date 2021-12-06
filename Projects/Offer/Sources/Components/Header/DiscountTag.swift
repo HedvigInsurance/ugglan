@@ -43,9 +43,13 @@ extension DiscountTag: Presentable {
         )
         contentStackView.addArrangedSubview(titleLabel)
 
-        bag += store.stateSignal.compactMap { $0.offerData }
-            .animated(style: SpringAnimationStyle.lightBounce()) { data in
-                guard let campaign = data.redeemedCampaigns.first, data.quoteBundle.appConfiguration.showCampaignManagement
+        bag += store.stateSignal
+            .animated(style: SpringAnimationStyle.lightBounce()) { state in
+                guard let currentVariant = state.currentVariant, let data = state.offerData else {
+                    return
+                }
+                guard let campaign = data.redeemedCampaigns.first,
+                    currentVariant.bundle.appConfiguration.showCampaignManagement
                 else {
                     view.animationSafeIsHidden = true
                     return

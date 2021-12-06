@@ -34,7 +34,7 @@ extension Header: Presentable {
             shouldShowGradientSignal: .init(true)
         )
 
-        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.appConfiguration.gradientOption }
+        bag += store.stateSignal.compactMap { $0.currentVariant?.bundle.appConfiguration.gradientOption }
             .onValue { gradientOption in
                 switch gradientOption {
                 case .one:

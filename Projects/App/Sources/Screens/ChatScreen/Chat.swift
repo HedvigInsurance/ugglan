@@ -35,7 +35,6 @@ enum ChatResult {
             case let .offer(ids):
                 Journey(
                     Offer(
-                        offerIDContainer: .exact(ids: ids, shouldStore: true),
                         menu: Menu(
                             title: nil,
                             children: [
@@ -46,6 +45,7 @@ enum ChatResult {
                         ),
                         options: [.shouldPreserveState]
                     )
+                    .setIds(ids)
                 ) { offerResult in
                     switch offerResult {
                     case .chat:

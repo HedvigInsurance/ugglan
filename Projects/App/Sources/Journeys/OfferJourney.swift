@@ -7,7 +7,6 @@ extension AppJourney {
     static var storedOnboardingOffer: some JourneyPresentation {
         Journey(
             Offer(
-                offerIDContainer: .stored,
                 menu: Menu(
                     title: nil,
                     children: [

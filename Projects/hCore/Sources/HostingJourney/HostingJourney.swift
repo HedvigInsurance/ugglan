@@ -48,6 +48,9 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
 
         configure = { presenter in
             presenter.bag += result?
+                .filter(predicate: { _ in
+                    presenter.viewController.view.window != nil
+                })
                 .onValue { value in
                     let presentation = content(value)
 

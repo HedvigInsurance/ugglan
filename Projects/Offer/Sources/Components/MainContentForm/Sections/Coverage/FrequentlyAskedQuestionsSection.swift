@@ -51,12 +51,12 @@ extension FrequentlyAskedQuestionsSection: Presentable {
         )
         section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
-        bag += store.stateSignal.map { $0.offerData?.quoteBundle.appConfiguration.showFaq ?? false }
+        bag += store.stateSignal.map { $0.currentVariant?.bundle.appConfiguration.showFaq ?? false }
             .onValue { shouldShowFaq in
                 section.isHidden = !shouldShowFaq
             }
 
-        bag += store.stateSignal.compactMap { $0.offerData?.quoteBundle.frequentlyAskedQuestions }
+        bag += store.stateSignal.compactMap { $0.currentVariant?.bundle.frequentlyAskedQuestions }
             .onValueDisposePrevious { frequentlyAskedQuestions in
                 let innerBag = DisposeBag()
 

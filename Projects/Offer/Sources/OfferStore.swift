@@ -10,11 +10,32 @@ public struct OfferState: StateProtocol {
     var isLoading = true
     var hasSignedQuotes = false
     var ids: [String] = []
+    var selectedIds: [String] = []
     var startDates: [String: Date?] = [:]
     var swedishBankIDAutoStartToken: String? = nil
     var swedishBankIDStatusCode: String? = nil
     var offerData: OfferBundle? = nil
     var hasCheckedOutId: String? = nil
+
+    var dataCollectionEnabled: Bool {
+        offerData?.possibleVariations
+            .first(where: { variant in
+                variant.bundle.quotes.first { quote in
+                    quote.dataCollectionID != nil
+                } != nil
+            }) != nil
+    }
+
+    var currentVariant: QuoteVariant? {
+        if offerData?.possibleVariations.count == 1 {
+            return offerData?.possibleVariations.first
+        }
+
+        return offerData?.possibleVariations
+            .first(where: { variant in
+                variant.id == selectedIds.joined(separator: "+").lowercased()
+            })
+    }
 
     public init() {}
 }
@@ -26,7 +47,9 @@ public enum OfferAction: ActionProtocol {
     case setSwedishBankID(statusCode: String)
     case startSign
     case openChat
-    case query(ids: [String])
+    case setIds(ids: [String], selectedIds: [String])
+    case setSelectedIds(ids: [String])
+    case query
     case setOfferBundle(bundle: OfferBundle)
     case refetch
 
@@ -64,7 +87,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
     func query(for ids: [String]) -> GraphQL.QuoteBundleQuery {
         GraphQL.QuoteBundleQuery(
-            ids: state.ids,
+            ids: ids,
             locale: Localization.Locale.currentLocale.asGraphQLLocale()
         )
     }
@@ -83,14 +106,14 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 Analytics.track(
                     "QUOTES_SIGNED",
                     properties: [
-                        "quoteIds": getState().ids
+                        "quoteIds": getState().selectedIds
                     ]
                 )
             }
         case .startSign:
             return signQuotesEffect()
-        case let .query(ids):
-            let query = self.query(for: ids)
+        case .query:
+            let query = self.query(for: getState().ids)
             return client.fetch(query: query)
                 .compactMap { data in
                     return OfferBundle(data: data)
@@ -146,10 +169,14 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         var newState = state
 
         switch action {
-        case let .query(ids):
+        case .query:
             newState.isLoading = true
             newState.offerData = nil
+        case let .setIds(ids, selectedIds):
             newState.ids = ids
+            newState.selectedIds = selectedIds
+        case let .setSelectedIds(selectedIds):
+            newState.selectedIds = selectedIds
         case let .sign(event):
             if event == .done {
                 newState.hasSignedQuotes = true
@@ -164,26 +191,33 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case let .setStartDate(id, startDate):
             newState.startDates[id] = startDate
             guard var newOfferData = newState.offerData else { return newState }
-            switch newOfferData.quoteBundle.inception {
-            case let .independent(independentInceptions):
-                let newInceptions = independentInceptions.map {
-                    inception -> QuoteBundle.Inception.IndependentInception in
-                    if inception.correspondingQuote.id == id {
-                        var copy = inception
-                        copy.startDate = startDate?.localDateString
-                        return copy
+
+            newOfferData.possibleVariations = newOfferData.possibleVariations.map { variant in
+                var newVariant = variant
+
+                switch newVariant.bundle.inception {
+                case let .independent(independentInceptions):
+                    let newInceptions = independentInceptions.map {
+                        inception -> QuoteBundle.Inception.IndependentInception in
+                        if inception.correspondingQuote.id == id {
+                            var copy = inception
+                            copy.startDate = startDate?.localDateString
+                            return copy
+                        }
+                        return inception
                     }
-                    return inception
+                    newVariant.bundle.inception = .independent(inceptions: newInceptions)
+                case .unknown:
+                    break
+                case .concurrent(let inception):
+                    if inception.correspondingQuotes.contains(where: { $0.id == id }) {
+                        var newInception = inception
+                        newInception.startDate = startDate?.localDateString
+                        newVariant.bundle.inception = .concurrent(inception: newInception)
+                    }
                 }
-                newOfferData.quoteBundle.inception = .independent(inceptions: newInceptions)
-            case .unknown:
-                break
-            case .concurrent(let inception):
-                if inception.correspondingQuotes.contains(where: { $0.id == id }) {
-                    var newInception = inception
-                    newInception.startDate = startDate?.localDateString
-                    newOfferData.quoteBundle.inception = .concurrent(inception: newInception)
-                }
+
+                return newVariant
             }
 
             newState.offerData = newOfferData
@@ -302,7 +336,7 @@ extension OfferStore {
                     callback(.value(.setSwedishBankID(statusCode: code)))
                 })
 
-            self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.state.ids))
+            self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.state.selectedIds))
                 .onResult { result in
                     switch result {
                     case .failure:

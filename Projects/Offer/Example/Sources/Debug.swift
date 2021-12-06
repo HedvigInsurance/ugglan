@@ -33,6 +33,16 @@ struct Debug: View {
         store.send(.openOffer(fullscreen: presentFullScreen, prefersLargeTitles: prefersLargeTitles))
     }
 
+    func openDataCollection<Mock: GraphQLMock>(locale: Localization.Locale, @GraphQLMockBuilder _ mocks: () -> Mock) {
+        Localization.Locale.currentLocale = locale
+
+        ApolloClient.createMock {
+            mocks()
+        }
+
+        store.send(.openDataCollection)
+    }
+
     var body: some View {
         let rows = [
             OfferDebugRow(
@@ -269,10 +279,28 @@ struct Debug: View {
             }
             hSection {
                 hRow {
-                    hText("Data collection")
+                    hText("Data collection - Sweden")
                 }
                 .onTap {
-                    store.send(.openDataCollection)
+                    openDataCollection(locale: .en_SE) {
+                        SubscriptionMock(
+                            GraphQL.DataCollectionSubscription.self,
+                            timeline: { operation in
+                                TimelineEntry(
+                                    after: 2,
+                                    data: GraphQL.DataCollectionSubscription.Data(
+                                        dataCollectionStatusV2: .init(
+                                            extraInformation: .makeSwedishBankIdExtraInfo(
+                                                autoStartToken: nil,
+                                                swedishBankIdQrCode: nil
+                                            ),
+                                            status: .waitingForAuthentication
+                                        )
+                                    )
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -288,7 +316,7 @@ extension Debug {
             switch action {
             case let .openOffer(fullscreen, prefersLargeTitles):
                 Journey(
-                    Offer(offerIDContainer: .stored, menu: nil, options: [.menuToTrailing]),
+                    Offer(menu: nil, options: [.menuToTrailing]).setIds(["123"]),
                     style: fullscreen
                         ? .modally(
                             presentationStyle: .fullScreen,
@@ -305,7 +333,9 @@ extension Debug {
                     PopJourney()
                 }
             case .openDataCollection:
-                DataCollection.journey
+                DataCollection.journey(providerID: "Hedvi", providerDisplayName: "Hedvig") { _, _ in
+
+                }
             }
         }
         .configureTitle("Offer Example")

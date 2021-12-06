@@ -168,7 +168,7 @@ public struct Masking {
         case .none:
             return nil
         case .personalNumber:
-            return nil
+            return L10n.InsurelySeSsn.assistiveText
         case .norwegianPersonalNumber:
             return L10n.SimpleSignLogin.TextField.helperText
         case .danishPersonalNumber:

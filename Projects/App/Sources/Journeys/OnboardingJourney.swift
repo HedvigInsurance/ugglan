@@ -1,3 +1,4 @@
+import Embark
 import Flow
 import Foundation
 import Presentation
@@ -7,18 +8,10 @@ import hCoreUI
 
 extension AppJourney {
     static var onboarding: some JourneyPresentation {
-        MarketGroupJourney { market in
-            switch market {
-            case .se:
-                Journey(OnboardingChat()) { result in
-                    result.journey
-                }
-            case .no, .dk, .fr:
-                EmbarkOnboardingJourney.journey
+        EmbarkOnboardingJourney
+            .journey
+            .onPresent {
+                ApplicationState.preserveState(.onboarding)
             }
-        }
-        .onPresent {
-            ApplicationState.preserveState(.onboarding)
-        }
     }
 }

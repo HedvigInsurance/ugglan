@@ -19,7 +19,7 @@ public struct DataCollectionIntro: View {
         hForm {
             hSection {
                 VStack(alignment: .leading, spacing: 16) {
-                    L10n.InsurelyIntro.title("PROVIDER")
+                    L10n.InsurelyIntro.title(store.state.providerDisplayName ?? "")
                         .hText(.title2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     L10n.InsurelyIntro.description
@@ -49,12 +49,13 @@ public struct DataCollectionIntro: View {
 
 extension DataCollectionIntro {
     static func journey<InnerJourney: JourneyPresentation>(
+        style: PresentationStyle = .detented(.large),
         @JourneyBuilder _ next: @escaping (_ decision: DataCollectionIntroDecision) -> InnerJourney
     ) -> some JourneyPresentation {
         HostingJourney(
             DataCollectionStore.self,
             rootView: DataCollectionIntro(),
-            style: .detented(.large)
+            style: style
         ) { action in
             switch action {
             case let .didIntroDecide(decision):
@@ -84,5 +85,6 @@ struct DataCollectionIntroPreview: PreviewProvider {
             )
             .preferredColorScheme(.dark)
         }
+        .mockProvider()
     }
 }
