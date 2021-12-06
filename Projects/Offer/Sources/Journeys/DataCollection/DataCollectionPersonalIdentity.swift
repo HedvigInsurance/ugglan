@@ -28,6 +28,7 @@ public struct DataCollectionPersonalIdentity: View {
 
     @State var inputtedValue = ""
     @PresentableStore var store: DataCollectionStore
+    @hTextFieldFocusState var focusTextField: Bool? = true
 
     @State var authOption: DataCollectionAuthOption
 
@@ -77,6 +78,7 @@ public struct DataCollectionPersonalIdentity: View {
                     masking: authOption.masking,
                     value: $inputtedValue
                 )
+                .focused($focusTextField, equals: true)
                 .padding(.top, 40)
 
                 VStack {
