@@ -45,5 +45,23 @@
         "name": "AuthenticationExample",
         "path": "Projects/Authentication",
         "test_scheme": "Authentication"
+    },
+    {
+        "lane": "ios build path:Projects/Contracts/Contracts.xcodeproj scheme:ContractsExample",
+        "name": "ContractsExample",
+        "path": "Projects/Contracts",
+        "test_scheme": "Contracts"
+    },
+    {
+        "lane": "ios build path:Projects/Payment/Payment.xcodeproj scheme:PaymentExample",
+        "name": "PaymentExample",
+        "path": "Projects/Payment",
+        "test_scheme": "Payment"
+    },
+    {
+        "lane": "ios build path:Projects/Market/Market.xcodeproj scheme:MarketExample",
+        "name": "MarketExample",
+        "path": "Projects/Market",
+        "test_scheme": "Market"
     }
 ]

@@ -34,7 +34,7 @@ runs:
       run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
       shell: bash
     - name: Fetch cache
-      run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/actions-runner || true
+      run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/Library/Developer/Xcode/ || true
       shell: bash
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
@@ -49,11 +49,11 @@ runs:
         S3_SECRET_ACCESS_KEY: ${{ inputs.S3_SECRET_ACCESS_KEY }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
         FASTLANE_XCODE_LIST_TIMEOUT: '180'
-        BUILD_NAME: build_${{ inputs.name }}
+        BUILD_NAME: test_${{ inputs.test_scheme }}
       run: arch -arm64 bundle exec fastlane ios test scheme:${{ inputs.test_scheme }}
       shell: bash
     - name: Upload cache
-      run: rsync -raWPop /Users/app/actions-runner/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
+      run: rsync -raWPop /Users/app/Library/Developer/Xcode/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
       shell: bash
     - name: Upload test results
       if: ${{ always() }}
@@ -61,3 +61,6 @@ runs:
       with:
         name: Ugglan.xcresult
         path: fastlane/test_output/${{ inputs.test_scheme }}.xcresult
+    - name: Delete build artifacts
+      run: sudo rm -rf /Users/app/Library/Developer/Xcode/Archives && sudo rm -rf /Users/app/Library/Developer/Xcode/DerivedData/TestResults
+      shell: bash

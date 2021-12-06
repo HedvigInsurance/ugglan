@@ -19,12 +19,16 @@ Hedvig is a new approach to insurance currently available in Sweden, Norway and 
 3. Run post-checkout
 
    `scripts/post-checkout.sh`
+   
+4. Install swift-format
 
-4. Run tuist generate
+   `scripts/install-swift-format.sh`
+
+5. Run tuist generate
 
    `tuist generate`
    
-5. Open workspace
+6. Open workspace
 
    `open Ugglan.xcworkspace`
 
@@ -48,7 +52,7 @@ We use swift-format for formatting, it's ran on all staged files automatically i
    
 ## How to release
 
-Before release making sure you `Cancel` any pending releases on App Store Connect.
+Before release making sure you `Cancel` or release any pending releases on App Store Connect.
 
 1. Go to `Actions` -> `ProductionDeploy`
 

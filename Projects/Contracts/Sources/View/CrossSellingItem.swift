@@ -75,6 +75,7 @@ struct CrossSellingItem: View {
     func openEmbark() {
         if let embarkStoryName = crossSell.embarkStoryName {
             store.send(.openCrossSellingEmbark(name: embarkStoryName))
+            store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
         }
     }
 

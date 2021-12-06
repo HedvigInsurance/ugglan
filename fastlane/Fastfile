@@ -267,11 +267,11 @@ platform :ios do
                 error_definition = error["file_path"].split(":")
                 file = error_definition[0]
 
-                name = ENV["BUILD_NAME"]
-                summary = "There where some warnings"
-                conclusion = "neutral"
-
                 if Find.find(main_dir).include?(file)
+                    name = ENV["BUILD_NAME"]
+                    summary = "There where some warnings"
+                    conclusion = "neutral"
+                    
                     annotations.append({
                         path: file.sub!(main_dir + "/", ""),
                         start_line: error_definition[1].to_i,

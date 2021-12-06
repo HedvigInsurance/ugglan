@@ -1,8 +1,6 @@
 name: Upload DSYM
 
-on:
-  schedule:
-     - cron:  '0 8 * * *'
+on: [workflow_dispatch]
 
 jobs:
   upload-dsym:
@@ -12,6 +10,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
+    - run: arch -arm64 brew install node
+    - run: arch -arm64 npm install -g @datadog/datadog-ci
     - name: Fastlane Action
       env:
         FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
