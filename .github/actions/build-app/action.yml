@@ -38,12 +38,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Clean working directory
-      shell: bash
-      run: |
-        cd $RUNNER_WORKSPACE
-        cd ..
-        rm -r *
     - uses: actions/checkout@v2
     - name: Download generated
       run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
@@ -78,3 +72,9 @@ runs:
       with:
         name: ${{ inputs.name }}.ipa
         path: fastlane/build_output/${{ inputs.name }}.ipa
+    - name: Clean working directory
+      shell: bash
+      run: |
+        cd $RUNNER_WORKSPACE
+        cd ..
+        rm -r *

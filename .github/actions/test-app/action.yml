@@ -29,12 +29,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Clean working directory
-      shell: bash
-      run: |
-        cd $RUNNER_WORKSPACE
-        cd ..
-        rm -r *
     - uses: actions/checkout@v2
     - name: Download generated
       run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
@@ -70,3 +64,9 @@ runs:
       with:
         name: Ugglan.xcresult
         path: fastlane/test_output/${{ inputs.test_scheme }}.xcresult
+    - name: Clean working directory
+      shell: bash
+      run: |
+        cd $RUNNER_WORKSPACE
+        cd ..
+        rm -r *
