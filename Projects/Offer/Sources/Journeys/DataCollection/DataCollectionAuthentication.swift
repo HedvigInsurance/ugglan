@@ -182,7 +182,7 @@ extension DataCollectionAuthentication {
             }
         }
         .configureTitle(L10n.Insurely.title)
-        .withDismissButton
+        .withJourneyDismissButton
     }
 }
 
