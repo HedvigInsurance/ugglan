@@ -61,3 +61,5 @@ runs:
       with:
         name: Ugglan.xcresult
         path: fastlane/test_output/${{ inputs.test_scheme }}.xcresult
+    - name: Delete build artifacts
+      run: sudo rm -rf /Users/app/Library/Developer/Xcode/Archives && sudo rm -rf /Users/app/Library/Developer/Xcode/DerivedData/TestResults
