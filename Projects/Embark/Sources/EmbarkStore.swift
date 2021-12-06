@@ -112,7 +112,7 @@ class EmbarkStore {
     func passes(expression: GraphQL.BasicExpressionFragment) -> Bool {
         if let binaryExpression = expression.asEmbarkExpressionBinary {
             switch binaryExpression.expressionBinaryType {
-            case .equals: return getValue(key: binaryExpression.key) == binaryExpression.value
+            case .equals: return getValueWithNull(key: binaryExpression.key) == binaryExpression.value
             case .lessThan:
                 if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
                     return storeFloat < binaryExpression.value.floatValue

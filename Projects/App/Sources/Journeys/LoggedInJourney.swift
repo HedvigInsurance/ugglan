@@ -21,7 +21,8 @@ extension AppJourney {
             case .startMovingFlow:
                 AppJourney.movingFlow
             case .openClaims:
-                AppJourney.claimsJourney(name: "claims")
+                AppJourney
+                    .claimJourney
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
             case .openConnectPayments:
@@ -140,6 +141,8 @@ extension AppJourney {
             .onAction(UgglanStore.self) { action in
                 if action == .openChat {
                     AppJourney.freeTextChat()
+                } else if action == .openClaims {
+                    AppJourney.claimJourney
                 }
             }
         }
@@ -151,5 +154,19 @@ extension AppJourney {
                 UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
             }
         }
+    }
+}
+
+extension JourneyPresentation {
+    @discardableResult
+    func sendActionImmediately<S: Store>(
+        _ storeType: S.Type,
+        _ action: S.Action
+    ) -> Self {
+        let store: S = self.presentable.get()
+
+        store.send(action)
+
+        return self
     }
 }

@@ -3,6 +3,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
@@ -45,9 +46,6 @@ extension Home: Presentable {
     public func materialize() -> (UIViewController, Signal<HomeResult>) {
         let store: HomeStore = self.get()
 
-        store.send(.setMemberContractState(state: .loading))
-        store.send(.fetchMemberState)
-
         let viewController = UIViewController()
         viewController.title = L10n.HomeTab.title
         viewController.installChatButton(allowsChatHint: true)
@@ -69,23 +67,46 @@ extension Home: Presentable {
 
         let bag = DisposeBag()
 
+        store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
+
+        let onAppearProxy = SwiftUI.Color.clear.onAppear {
+            fetch()
+        }
+
+        let hostingProxy = HostingView(rootView: onAppearProxy)
+
+        func fetch() {
+            store.send(.fetchMemberState)
+            store.send(.fetchClaims)
+        }
+
         let form = FormView()
         bag += viewController.install(form) { scrollView in
             let refreshControl = UIRefreshControl()
             scrollView.refreshControl = refreshControl
 
+            scrollView.addSubview(hostingProxy)
+
             bag += refreshControl.store(
                 store,
                 send: {
-                    .fetchMemberState
+                    [
+                        .fetchMemberState,
+                        .fetchClaims,
+                    ]
                 },
-                endOn: .setMemberContractState(state: .active),
-                .setMemberContractState(state: .future),
-                .setMemberContractState(state: .terminated)
+                endOn: { action in
+                    switch action {
+                    case .setMemberContractState:
+                        return true
+                    default:
+                        return false
+                    }
+                }
             )
 
             let future = store.stateSignal.atOnce()
-                .filter(predicate: { $0.memberContractState != .loading }).future
+                .filter(predicate: { $0.memberStateData.state != .loading }).future
 
             bag += scrollView.performEntryAnimation(
                 contentView: form,
@@ -97,25 +118,27 @@ extension Home: Presentable {
 
         bag += form.append(ImportantMessagesSection())
 
-        let rowInsets = UIEdgeInsets(
-            top: 0,
-            left: 25,
-            bottom: 0,
-            right: 25
+        let titleSection = form.appendSection()
+        titleSection.dynamicStyle = .brandGrouped(
+            insets: .init(top: 14, left: 14, bottom: 14, right: 14),
+            separatorType: .none
         )
 
-        let titleSection = form.appendSection()
-        let titleRow = RowView()
-        titleRow.isLayoutMarginsRelativeArrangement = true
-        titleRow.layoutMargins = rowInsets
-        titleSection.append(titleRow)
-
-        func buildSections(state: MemberContractState) -> Disposable {
+        func buildSections(state: HomeState) -> Disposable {
             let innerBag = DisposeBag()
 
-            switch state {
+            switch state.memberStateData.state {
             case .active:
-                innerBag += titleRow.append(ActiveSection())
+
+                if let name = state.memberStateData.name {
+                    let label = MultilineLabel(
+                        value: L10n.HomeTab.welcomeTitle(name),
+                        style: .brand(.largeTitle(color: .primary))
+                    )
+                    innerBag += titleSection.append(label)
+                }
+
+                innerBag += form.append(ActiveSection())
 
                 if Localization.Locale.currentLocale.market == .se {
                     let section = HomeVerticalSection(
@@ -133,14 +156,16 @@ extension Home: Presentable {
                             ]
                         )
                     )
+
                     innerBag += form.append(section)
                 }
 
-                form.appendSpacing(.custom(30))
+                innerBag += form.appendSpacingAndDumpOnDispose(.custom(30))
+
             case .future:
-                innerBag += titleRow.append(FutureSection())
+                innerBag += titleSection.append(FutureSection())
             case .terminated:
-                innerBag += titleRow.append(TerminatedSection())
+                innerBag += titleSection.append(TerminatedSection())
             case .loading:
                 break
             }
@@ -157,7 +182,8 @@ extension Home: Presentable {
         return (
             viewController,
             Signal { callback in
-                bag += store.stateSignal.atOnce().map { $0.memberContractState }
+                bag += store.stateSignal
+                    .atOnce()
                     .distinct()
                     .onValueDisposePrevious { state in
                         buildSections(state: state)

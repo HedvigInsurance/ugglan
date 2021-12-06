@@ -8,7 +8,9 @@ struct EmbarkMessages { let state: EmbarkState }
 
 extension EmbarkMessages: Viewable {
     func parseMessage(message: GraphQL.MessageFragment) -> String? {
-        if message.expressions.isEmpty { return message.text }
+        if message.expressions.isEmpty {
+            return message.text
+        }
 
         return parse(message.expressions.map { $0.fragments.expressionFragment })
     }

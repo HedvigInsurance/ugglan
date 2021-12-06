@@ -17,15 +17,19 @@ extension ActiveSection: Presentable {
 
         let store: HomeStore = self.get()
 
-        section.dynamicStyle = .brandGrouped(separatorType: .none)
+        section.dynamicStyle = .brandGrouped(
+            insets: .init(top: 0, left: 14, bottom: 0, right: 14),
+            separatorType: .none
+        )
 
-        var label = MultilineLabel(value: "", style: .brand(.largeTitle(color: .primary)))
-        bag += section.append(label)
+        let claims = ClaimSectionLoading()
+        let hostingView = HostingView(rootView: claims)
 
-        client.fetch(query: GraphQL.HomeQuery())
-            .onValue { data in label.value = L10n.HomeTab.welcomeTitle(data.member.firstName ?? "") }
+        section.append(hostingView)
 
-        section.appendSpacing(.top)
+        bag += {
+            hostingView.removeFromSuperview()
+        }
 
         let claimButton = Button(
             title: L10n.HomeTab.claimButtonText,
@@ -35,11 +39,12 @@ extension ActiveSection: Presentable {
             )
         )
         bag += section.append(claimButton)
+
         bag += claimButton.onTapSignal.onValue {
             store.send(.openClaims)
         }
 
-        section.appendSpacing(.inbetween)
+        bag += section.appendSpacingAndDumpOnDispose(.inbetween)
 
         let howClaimsWorkButton = Button(
             title: L10n.ClaimsExplainer.title,
@@ -49,6 +54,24 @@ extension ActiveSection: Presentable {
             )
         )
         bag += section.append(howClaimsWorkButton.alignedTo(alignment: .center))
+
+        bag += store.stateSignal.atOnce().map { ($0.claims?.count ?? 0) > 0 }
+            .onValue { hasClaims in
+
+                claimButton.title.value =
+                    hasClaims ? L10n.Home.OpenClaim.startNewClaimButton : L10n.HomeTab.claimButtonText
+                claimButton.type.value =
+                    hasClaims
+                    ? .standardOutline(
+                        borderColor: .brand(.primaryText()),
+                        textColor: .brand(.primaryText())
+                    )
+                    : .standard(
+                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                        textColor: .brand(.secondaryButtonTextColor)
+                    )
+            }
+
         bag += howClaimsWorkButton.onTapSignal.compactMap { section.viewController }
             .onValue { viewController in
                 var pager = Pager(
@@ -81,9 +104,6 @@ extension ActiveSection: Presentable {
 
         bag += section.append(ConnectPaymentCard())
         bag += section.append(RenewalCard())
-
-        section.appendSpacing(.custom(80))
-
         bag += section.append(CommonClaimsCollection())
 
         return (section, bag)
