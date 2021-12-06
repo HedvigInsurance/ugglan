@@ -6,7 +6,7 @@ import hCore
 public enum DataCollection {
     static func journey(
         style: PresentationStyle = .default,
-        onComplete: @escaping (_ id: UUID?) -> Void
+        onComplete: @escaping (_ id: UUID?, _ personalNumber: String?) -> Void
     ) -> some JourneyPresentation {
         DataCollectionIntro.journey(style: style) { decision in
             switch decision {
@@ -24,7 +24,7 @@ public enum DataCollection {
             case .decline:
                 PopJourney()
                     .onPresent {
-                        onComplete(nil)
+                        onComplete(nil, nil)
                     }
             }
         }
@@ -33,7 +33,7 @@ public enum DataCollection {
     public static func journey(
         providerID: String,
         providerDisplayName: String,
-        onComplete: @escaping (_ id: UUID?) -> Void
+        onComplete: @escaping (_ id: UUID?, _ personalNumber: String?) -> Void
     ) -> some JourneyPresentation {
         journey(
             style: .detented(.large),

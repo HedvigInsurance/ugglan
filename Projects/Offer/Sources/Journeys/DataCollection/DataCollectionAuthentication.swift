@@ -14,12 +14,39 @@ public enum DataCollectionAuthenticationResult: Codable {
 struct SwedishBankID: View {
     var autoStartToken: String?
 
+    @State var hasOpenedBankID = false
+    @State var showLoader = false
+
     func openBankIDApp() {
-        guard let autoStartToken = autoStartToken else {
+        guard !hasOpenedBankID else {
             return
         }
 
+        self.hasOpenedBankID = true
+
         let urlScheme = Bundle.main.urlScheme ?? ""
+
+        guard let autoStartToken = autoStartToken else {
+            guard
+                let url = URL(
+                    string:
+                        "bankid:///?redirect=\(urlScheme)://bankid"
+                )
+            else {
+                return
+            }
+
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(
+                    url,
+                    options: [:],
+                    completionHandler: nil
+                )
+                showLoader = true
+            }
+
+            return
+        }
 
         guard
             let url = URL(
@@ -36,6 +63,16 @@ struct SwedishBankID: View {
                 options: [:],
                 completionHandler: nil
             )
+
+            showLoader = true
+        }
+    }
+
+    private func showLoaderAfterDelay() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+            withAnimation(.easeInOut) {
+                showLoader = true
+            }
         }
     }
 
@@ -50,7 +87,14 @@ struct SwedishBankID: View {
                 .onReceive(Just(autoStartToken)) { _ in
                     openBankIDApp()
                 }
-            hText(L10n.bankIdAuthTitleInitiated, style: .title3)
+                .onAppear {
+                    showLoaderAfterDelay()
+                }
+            if showLoader {
+                ActivityIndicator(style: .medium)
+            } else {
+                hText(L10n.bankIdAuthTitleInitiated, style: .title3)
+            }
         }
     }
 }
@@ -91,7 +135,7 @@ struct AuthMethodContainer: View {
             } else {
                 ActivityIndicator(style: .medium)
                     .onReceive(Just(status)) { status in
-                        if status == .collecting {
+                        if status == .collecting || status == .completed {
                             store.send(.confirmResult(result: .started))
                         } else if status == .failed {
                             store.send(.confirmResult(result: .failed))
@@ -138,7 +182,7 @@ extension DataCollectionAuthentication {
             }
         }
         .configureTitle(L10n.Insurely.title)
-        .withDismissButton
+        .withJourneyDismissButton
     }
 }
 

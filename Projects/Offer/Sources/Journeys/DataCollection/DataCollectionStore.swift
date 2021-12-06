@@ -21,6 +21,17 @@ public enum DataCollectionAuthMethod: Equatable, Codable {
     case norwegianBankIDWords(words: String)
 }
 
+public struct DataCollectionInsurance: Equatable, Codable {
+    public var providerDisplayName: String
+    public var displayName: String
+    public var monthlyNetPremium: MonetaryAmount
+}
+
+public enum DataCollectionCredential: Equatable, Codable {
+    case personalNumber(number: String)
+    case phoneNumber(number: String)
+}
+
 public struct DataCollectionState: StateProtocol {
     var providerID: String? = nil
     var providerDisplayName: String? = nil
@@ -28,7 +39,8 @@ public struct DataCollectionState: StateProtocol {
     var status = DataCollectionStatus.none
     var authMethod: DataCollectionAuthMethod? = nil
     var market: Localization.Locale.Market
-    var personalNumber: String? = nil
+    var credential: DataCollectionCredential? = nil
+    var insurances: [DataCollectionInsurance] = []
 
     public init() {
         self.market = Localization.Locale.currentLocale.market
@@ -39,10 +51,12 @@ public enum DataCollectionAction: ActionProtocol {
     case setProvider(providerID: String, providerDisplayName: String)
     case didIntroDecide(decision: DataCollectionIntroDecision)
     case confirmResult(result: DataCollectionConfirmationResult)
-    case setPersonalNumber(personalNumber: String)
+    case setCredential(credential: DataCollectionCredential)
     case startAuthentication
     case setStatus(status: DataCollectionStatus)
     case setAuthMethod(method: DataCollectionAuthMethod)
+    case fetchInfo
+    case setInsurances(insurances: [DataCollectionInsurance])
 }
 
 public final class DataCollectionStore: StateStore<DataCollectionState, DataCollectionAction> {
@@ -92,10 +106,10 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                         callback(.value(.setStatus(status: .login)))
                     case .collecting:
                         callback(.value(.setStatus(status: .collecting)))
-                    case .completedEmpty, .completed, .completedPartial:
+                    case .completed, .completedPartial:
                         callback(.value(.setStatus(status: .completed)))
                         callback(.end)
-                    case .failed, .waitingForAuthentication:
+                    case .failed, .completedEmpty, .waitingForAuthentication:
                         callback(.value(.setStatus(status: .failed)))
                         callback(.end)
                     case .__unknown(_), .userInput:
@@ -114,7 +128,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         if case .startAuthentication = action,
             let reference = getState().id?.uuidString,
             let providerID = getState().providerID,
-            let personalNumber = getState().personalNumber
+            let credential = getState().credential
         {
             cancelEffect(action)
             let market = getState().market
@@ -134,39 +148,94 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
 
                 switch market {
                 case .se:
-                    bag += self.client
-                        .perform(
-                            mutation: GraphQL.DataCollectionSwedenMutation(
-                                reference: reference,
-                                provider: providerID,
-                                personalNumber: personalNumber
+                    if case let .personalNumber(personalNumber) = credential {
+                        bag += self.client
+                            .perform(
+                                mutation: GraphQL.DataCollectionSwedenMutation(
+                                    reference: reference,
+                                    provider: providerID,
+                                    personalNumber: personalNumber
+                                )
                             )
-                        )
-                        .map { _ in DataCollectionAction.setStatus(status: .started) }
-                        .onValue { action in
-                            callback(.value(action))
-                            startSubscription()
-                        }
+                            .map { _ in DataCollectionAction.setStatus(status: .started) }
+                            .onValue { action in
+                                callback(.value(action))
+                                startSubscription()
+                            }
+                    }
                 case .no:
-                    self.client
-                        .perform(
-                            mutation: GraphQL.DataCollectionNorwayMutation(
-                                reference: reference,
-                                provider: providerID,
-                                personalNumber: personalNumber
+                    if case let .personalNumber(personalNumber) = credential {
+                        self.client
+                            .perform(
+                                mutation: GraphQL.DataCollectionNorwayMutation(
+                                    reference: reference,
+                                    provider: providerID,
+                                    personalNumber: personalNumber
+                                )
                             )
-                        )
-                        .map { _ in DataCollectionAction.setStatus(status: .started) }
-                        .onValue { action in
-                            callback(.value(action))
-                            startSubscription()
-                        }
+                            .map { _ in DataCollectionAction.setStatus(status: .started) }
+                            .onValue { action in
+                                callback(.value(action))
+                                startSubscription()
+                            }
+                    } else if case let .phoneNumber(phoneNumber) = credential {
+                        self.client
+                            .perform(
+                                mutation: GraphQL.DataCollectionNorwayPhoneMutation(
+                                    reference: reference,
+                                    provider: providerID,
+                                    phoneNumber: phoneNumber
+                                )
+                            )
+                            .map { _ in DataCollectionAction.setStatus(status: .started) }
+                            .onValue { action in
+                                callback(.value(action))
+                                startSubscription()
+                            }
+                    }
+
                 case .dk, .fr:
                     break
                 }
 
                 return bag
             }
+        } else if case .setStatus(status: .completed) = action {
+            return [.fetchInfo].emitEachThenEnd
+        } else if case .fetchInfo = action {
+            return self.client.fetch(query: GraphQL.DataCollectionInfoQuery(reference: getState().id?.uuidString ?? ""))
+                .map { data in
+                    if let insurances = data.externalInsuranceProvider?.dataCollectionV2 {
+                        let dataCollectionInsurances = insurances.compactMap { info -> DataCollectionInsurance? in
+                            if let personalTravelCollection = info.asPersonTravelInsuranceCollection,
+                                let monthlyNetPremiumFragment = personalTravelCollection.monthlyNetPremium?.fragments
+                                    .monetaryAmountFragment
+                            {
+                                return DataCollectionInsurance(
+                                    providerDisplayName: getState().providerDisplayName ?? "",
+                                    displayName: personalTravelCollection.insuranceName ?? "",
+                                    monthlyNetPremium: MonetaryAmount(fragment: monthlyNetPremiumFragment)
+                                )
+                            } else if let houseInsuranceCollection = info.asHouseInsuranceCollection,
+                                let monthlyNetPremiumFragment = houseInsuranceCollection.monthlyNetPremium?.fragments
+                                    .monetaryAmountFragment
+                            {
+                                return DataCollectionInsurance(
+                                    providerDisplayName: getState().providerDisplayName ?? "",
+                                    displayName: houseInsuranceCollection.insuranceName ?? "",
+                                    monthlyNetPremium: MonetaryAmount(fragment: monthlyNetPremiumFragment)
+                                )
+                            }
+
+                            return nil
+                        }
+
+                        return .setInsurances(insurances: dataCollectionInsurances)
+                    }
+
+                    return .setStatus(status: .failed)
+                }
+                .valueThenEndSignal
         }
 
         return nil
@@ -179,8 +248,8 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         case let .setProvider(providerID, providerDisplayName):
             newState.providerID = providerID
             newState.providerDisplayName = providerDisplayName
-        case let .setPersonalNumber(personalNumber):
-            newState.personalNumber = personalNumber
+        case let .setCredential(credential):
+            newState.credential = credential
         case .startAuthentication:
             newState.id = UUID()
             newState.authMethod = nil
@@ -189,6 +258,8 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
             newState.status = status
         case let .setAuthMethod(method):
             newState.authMethod = method
+        case let .setInsurances(insurances):
+            newState.insurances = insurances
         default:
             break
         }

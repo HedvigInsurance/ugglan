@@ -6,10 +6,14 @@ import hGraphQL
 
 public enum ExternalRedirect {
     case mailingList
-    case offer(ids: [String])
+    case offer(allIds: [String], selectedIds: [String])
     case close
     case chat
-    case dataCollection(providerID: String, providerDisplayName: String, onComplete: (_ id: UUID?) -> Void)
+    case dataCollection(
+        providerID: String,
+        providerDisplayName: String,
+        onComplete: (_ id: UUID?, _ personalNumber: String?) -> Void
+    )
     case menu(_ action: MenuChildAction)
 }
 
@@ -124,8 +128,12 @@ public class EmbarkState {
                 switch externalRedirect {
                 case .mailingList: externalRedirectSignal.value = .mailingList
                 case .offer:
+
+                    let ids = [store.getValue(key: "quoteId")].compactMap { $0 }
+
                     externalRedirectSignal.value = .offer(
-                        ids: [store.getValue(key: "quoteId")].compactMap { $0 }
+                        allIds: ids,
+                        selectedIds: ids
                     )
                 case .close:
                     externalRedirectSignal.value = .close
@@ -135,11 +143,32 @@ public class EmbarkState {
                 }
             } else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {
                 Analytics.track("Offer Redirect", properties: [:])
+                let ids = offerRedirectKeys.flatMap { key in
+                    store.getValues(key: key) ?? []
+                }
                 externalRedirectSignal.value = .offer(
-                    ids: offerRedirectKeys.flatMap { key in
-                        store.getValues(key: key) ?? []
-                    }
+                    allIds: ids,
+                    selectedIds: ids
                 )
+            } else if let passingVariantedRedirect = resultingPassage.variantedOfferRedirects.first(where: { redirect in
+                return store.passes(expression: redirect.data.expression.fragments.expressionFragment)
+            }) {
+                let allIds = passingVariantedRedirect.data.allKeys.flatMap { key in
+                    store.getValues(key: key) ?? []
+                }
+
+                let selectedIds = passingVariantedRedirect.data.selectedKeys.flatMap { key in
+                    store.getValues(key: key) ?? []
+                }
+
+                Analytics.track(
+                    "Varianted Offer Redirect",
+                    properties: [
+                        "allIds": allIds,
+                        "selectedIds": selectedIds,
+                    ]
+                )
+                externalRedirectSignal.value = .offer(allIds: allIds, selectedIds: selectedIds)
             } else {
                 self.isApiLoadingSignal.value = false
                 currentPassageSignal.value = resultingPassage
@@ -160,20 +189,30 @@ public class EmbarkState {
     private var totalStepsSignal = ReadWriteSignal<Int?>(nil)
 
     var progressSignal: ReadSignal<Float> {
-        func findMaxDepth(passageName: String, previousDepth: Int = 0) -> Int {
+        func findMaxDepth(passageName: String, previousDepth: Int = 0, visitedPassages: [String] = []) -> Int {
+            if visitedPassages.contains(passageName) {
+                return previousDepth
+            }
+
             guard let passage = passagesSignal.value.first(where: { $0.name == passageName }) else {
-                return 0
+                return previousDepth
             }
 
             let links = passage.allLinks.map { $0.name }
 
             if links.isEmpty { return previousDepth }
 
-            return
+            let depth =
                 links.map { linkPassageName in
-                    findMaxDepth(passageName: linkPassageName, previousDepth: previousDepth + 1)
+                    findMaxDepth(
+                        passageName: linkPassageName,
+                        previousDepth: previousDepth + 1,
+                        visitedPassages: [visitedPassages, [passageName]].flatMap { $0 }
+                    )
                 }
                 .reduce(0) { result, current in max(result, current) }
+
+            return depth
         }
 
         return

@@ -61,6 +61,9 @@ runs:
         BUILD_NAME: build_${{ inputs.name }}
       run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
       shell: bash
+    - name: Delete build artifacts
+      run: sudo rm -rf /Users/app/Library/Developer/Xcode/Archives && sudo rm -rf /Users/app/Library/Developer/Xcode/DerivedData/TestResults
+      shell: bash
     - name: Upload cache
       run: rsync -raWPop /Users/app/Library/Developer/Xcode/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
       shell: bash
@@ -69,6 +72,3 @@ runs:
       with:
         name: ${{ inputs.name }}.ipa
         path: fastlane/build_output/${{ inputs.name }}.ipa
-    - name: Delete build artifacts
-      run: sudo rm -rf /Users/app/Library/Developer/Xcode/Archives && sudo rm -rf /Users/app/Library/Developer/Xcode/DerivedData/TestResults
-      shell: bash

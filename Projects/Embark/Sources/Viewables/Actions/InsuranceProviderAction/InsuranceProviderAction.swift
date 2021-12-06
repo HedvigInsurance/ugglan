@@ -21,12 +21,19 @@ enum InsuranceWrapper {
 
     var key: String {
         switch self {
-        case .external: return "previousInsurer"
+        case let .external(data): return data.externalInsuranceProviderData.storeKey
         case let .previous(data): return data.previousInsuranceProviderData.storeKey
         }
     }
 
-    var isExternal: Bool { false }
+    var isExternal: Bool {
+        switch self {
+        case .external:
+            return Localization.Locale.currentLocale.market == .se
+        case .previous:
+            return false
+        }
+    }
 
     var locale: Localization.Locale? {
         Localization.Locale.currentLocale
@@ -107,11 +114,11 @@ extension InsuranceProviderAction: Viewable {
                 .onValue { providers in
                     let providers = [
                         [
-                            Environment.current == .staging
+                            Environment.current == .staging && data.isExternal
                                 ? GraphQL.InsuranceProviderFragment(
                                     name: "DEMO",
                                     id: "DEMO",
-                                    externalCollectionId: "demo",
+                                    externalCollectionId: "se-demo",
                                     hasExternalCapabilities: true
                                 ) : nil
                         ]
@@ -171,17 +178,36 @@ extension InsuranceProviderAction: Viewable {
                             )
                         }
 
+                        guard data.isExternal else {
+                            self.state.store.setValue(
+                                key: self.data.key,
+                                value: provider.id
+                            )
+                            callback(self.data.embarkLinkFragment)
+                            return
+                        }
+
                         if provider.hasExternalCapabilities {
                             let externalCollectionID = provider.externalCollectionId ?? ""
                             state.externalRedirectSignal.value = .dataCollection(
                                 providerID: externalCollectionID,
                                 providerDisplayName: provider.name
-                            ) { id in
+                            ) { id, personalNumber in
                                 if let id = id {
                                     state.store.setValue(key: "dataCollectionId", value: id.uuidString)
+                                    state.store.setValue(key: "\(data.key)_dataCollectionId", value: id.uuidString)
                                 }
 
-                                callback(self.data.embarkLinkFragment)
+                                if let personalNumber = personalNumber {
+                                    state.store.setValue(key: "personalNumber", value: personalNumber)
+                                }
+
+                                state.store.setValue(key: self.data.key, value: provider.id)
+
+                                bag += Signal(after: 0.3)
+                                    .onValue { _ in
+                                        callback(self.data.embarkLinkFragment)
+                                    }
                             }
                         } else if provider.name != L10n.externalInsuranceProviderOtherOption {
                             self.state.store.setValue(

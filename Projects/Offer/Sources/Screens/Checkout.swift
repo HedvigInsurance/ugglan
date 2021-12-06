@@ -45,7 +45,7 @@ extension Checkout: Presentable {
         let form = FormView()
         bag += viewController.install(form)
 
-        bag += store.stateSignal.atOnce().compactMap { $0.offerData?.quoteBundle }
+        bag += store.stateSignal.atOnce().compactMap { $0.currentVariant?.bundle }
             .onFirstValue({ quoteBundle in
                 let header = UIStackView()
                 header.spacing = 16

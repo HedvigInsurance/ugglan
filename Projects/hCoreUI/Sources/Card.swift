@@ -153,7 +153,7 @@ extension Card: Viewable {
 
         let headerView = UIStackView()
         headerView.alignment = .center
-        headerView.distribution = .fillProportionally
+        headerView.distribution = .fill
         headerView.spacing = 8
         headerWrapperView.addArrangedSubview(headerView)
 

@@ -1,8 +1,10 @@
 import Flow
 import Foundation
 
+public typealias OfferData = GraphQL.QuoteBundleQuery.Data
+
 public struct OfferBundle: Codable, Equatable {
-    public var quoteBundle: QuoteBundle
+    public var possibleVariations: [QuoteVariant]
     public let redeemedCampaigns: [RedeemedCampaign]
     public let signMethodForQuotes: SignMethodForQuotes
     public let id: UUID
@@ -17,13 +19,27 @@ public struct OfferBundle: Codable, Equatable {
     }
 
     public init(
-        data: GraphQL.QuoteBundleQuery.Data,
+        data: OfferData,
         id: UUID = UUID()
     ) {
-        quoteBundle = .init(bundle: data.quoteBundle)
+        possibleVariations = data.quoteBundle.possibleVariations.map { .init(variant: $0) }
         redeemedCampaigns = data.redeemedCampaigns.map { .init(displayValue: $0.displayValue) }
         signMethodForQuotes = .init(rawValue: data.signMethodForQuotes.rawValue) ?? .unknown
         self.id = id
+    }
+}
+
+public struct QuoteVariant: Codable, Equatable {
+    public var bundle: QuoteBundle
+    public let tag: String?
+    public let id: String
+
+    public init(
+        variant: OfferData.QuoteBundle.PossibleVariation
+    ) {
+        self.bundle = QuoteBundle(bundle: variant.bundle)
+        self.tag = variant.tag
+        self.id = variant.id
     }
 }
 
@@ -33,15 +49,17 @@ public struct QuoteBundle: Codable, Equatable {
     public let frequentlyAskedQuestions: [FrequentlyAskedQuestion]
     public let quotes: [Quote]
     public var inception: Inception
+    public var displayName: String
 
     public init(
-        bundle: GraphQL.QuoteBundleQuery.Data.QuoteBundle
+        bundle: OfferData.QuoteBundle.PossibleVariation.Bundle
     ) {
         appConfiguration = .init(config: bundle.appConfiguration)
         bundleCost = .init(cost: bundle.bundleCost)
         frequentlyAskedQuestions = bundle.frequentlyAskedQuestions.map { .init(question: $0) }
         quotes = bundle.quotes.map { .init(quote: $0) }
         inception = .init(fragment: bundle.inception.fragments.inceptionFragment)
+        displayName = bundle.displayName
     }
 
     public struct AppConfiguration: Codable, Equatable {
@@ -54,7 +72,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let title: AppConfigTitle
 
         public init(
-            config: GraphQL.QuoteBundleQuery.Data.QuoteBundle.AppConfiguration
+            config: OfferData.QuoteBundle.PossibleVariation.Bundle.AppConfiguration
         ) {
             showCampaignManagement = config.showCampaignManagement
             showFaq = config.showFaq
@@ -91,7 +109,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let monthlyNet: MonetaryAmount
 
         public init(
-            cost: GraphQL.QuoteBundleQuery.Data.QuoteBundle.BundleCost
+            cost: OfferData.QuoteBundle.PossibleVariation.Bundle.BundleCost
         ) {
             freeUntil = cost.freeUntil
             monthlyDiscount = .init(fragment: cost.monthlyDiscount.fragments.monetaryAmountFragment)
@@ -105,7 +123,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let headline: String?
         public let id: String
         public init(
-            question: GraphQL.QuoteBundleQuery.Data.QuoteBundle.FrequentlyAskedQuestion
+            question: OfferData.QuoteBundle.PossibleVariation.Bundle.FrequentlyAskedQuestion
         ) {
             id = question.id
             body = question.body
@@ -122,9 +140,10 @@ public struct QuoteBundle: Codable, Equatable {
         public let perils: [Perils]
         public let insurableLimits: [InsurableLimits]
         public let insuranceTerms: [TermsAndConditions]
+        public var dataCollectionID: String?
 
         public init(
-            quote: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote
+            quote: OfferData.QuoteBundle.PossibleVariation.Bundle.Quote
         ) {
             id = quote.id
             ssn = quote.ssn
@@ -134,6 +153,7 @@ public struct QuoteBundle: Codable, Equatable {
             perils = quote.contractPerils.map { .init(fragment: $0.fragments.perilFragment) }
             insurableLimits = quote.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
             insuranceTerms = quote.insuranceTerms.map { .init(displayName: $0.displayName, url: $0.url) }
+            dataCollectionID = quote.dataCollectionId
         }
     }
 

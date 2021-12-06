@@ -26,19 +26,13 @@ extension AppJourney {
                 AppJourney.freeTextChat()
             case .close:
                 DismissJourney()
-            case let .offer(ids):
+            case let .offer(allIds, selectedIds):
                 Journey(
                     Offer(
-                        offerIDContainer:
-                            .exact(
-                                ids:
-                                    ids,
-                                shouldStore:
-                                    storeOffer
-                            ),
                         menu: embark.menu,
                         options: offerOptions
                     )
+                    .setIds(allIds, selectedIds: selectedIds)
                 ) { offerResult in
                     offerResultJourney(offerResult)
                 }
@@ -46,9 +40,11 @@ extension AppJourney {
                     embark.goBack()
                 }
             case let .dataCollection(providerID, providerDisplayName, onComplete):
-                DataCollection.journey(providerID: providerID, providerDisplayName: providerDisplayName) { id in
-                    onComplete(id)
-                }
+                DataCollection.journey(
+                    providerID: providerID,
+                    providerDisplayName: providerDisplayName,
+                    onComplete: onComplete
+                )
                 .mapJourneyDismissToCancel
             case let .menu(action):
                 action.journey

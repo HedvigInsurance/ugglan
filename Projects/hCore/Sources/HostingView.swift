@@ -3,22 +3,19 @@ import SwiftUI
 import UIKit
 
 public class HostingView<Content: View>: UIView {
-    let rootViewHostingController: AdjustableHostingController<Content>
+    let rootViewHostingController: AdjustableHostingController<AnyView>
 
     public var swiftUIRootView: Content {
-        get {
-            self.rootViewHostingController.rootView
-        }
-        set {
-            self.rootViewHostingController.rootView = newValue
+        didSet {
+            self.rootViewHostingController.rootView = AnyView(swiftUIRootView.edgesIgnoringSafeArea(.all))
         }
     }
 
     public required init(
         rootView: Content
     ) {
-
-        self.rootViewHostingController = .init(rootView: rootView)
+        self.swiftUIRootView = rootView
+        self.rootViewHostingController = .init(rootView: AnyView(rootView.edgesIgnoringSafeArea(.all)))
 
         super.init(frame: .zero)
 
