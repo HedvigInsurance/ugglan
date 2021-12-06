@@ -56,7 +56,7 @@ runs:
       run: arch -arm64 bundle exec fastlane ios test scheme:${{ inputs.test_scheme }}
       shell: bash
     - name: Upload cache
-      run: rsync -raWPop /Users/app/actions-runner/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
+      run: rsync -raWPop /Users/app/Library/Developer/Xcode/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
       shell: bash
     - name: Upload test results
       if: ${{ always() }}
