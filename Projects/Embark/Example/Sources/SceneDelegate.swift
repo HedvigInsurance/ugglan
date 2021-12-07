@@ -5,6 +5,7 @@ import Form
 import Foundation
 import UIKit
 import hCore
+import hCoreUI
 
 @available(iOS 13, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -24,7 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             ApolloClient.saveToken(token: "tBmMTBw4OAPC5w==.TNrYtXtgMrDzxw==.KyJBBOTLaw1/Pg==")
 
             ApolloClient.initClient()
-                .onValue { store, client in let navigationController = UINavigationController()
+                .onValue { store, client in let navigationController = hNavigationController()
                     navigationController.navigationBar.prefersLargeTitles = true
                     self.window?.rootViewController = navigationController
 

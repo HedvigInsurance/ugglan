@@ -3,6 +3,7 @@ import Form
 import Foundation
 import UIKit
 import hCore
+import hCoreUI
 
 @available(iOS 13, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -18,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let window = UIWindow(windowScene: windowScene)
             self.window = window
 
-            let navigationController = UINavigationController()
+            let navigationController = hNavigationController()
             navigationController.navigationBar.prefersLargeTitles = true
 
             window.rootViewController = navigationController
