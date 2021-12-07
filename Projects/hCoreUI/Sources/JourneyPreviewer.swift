@@ -6,7 +6,6 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
-import hCoreUI
 
 public struct PreviewJourney<InnerJourney: JourneyPresentation>: JourneyPresentation {
     public var onDismiss: (Error?) -> Void
