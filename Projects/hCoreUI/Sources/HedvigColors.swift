@@ -106,7 +106,10 @@ public enum BrandColor { case primaryBackground(_ negative: Bool = false)
                 trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.black
             })
         case .primaryButtonBackgroundColor: return BrandColorBase.lavender
-        case .primaryButtonTextColor: return BrandColorBase.black
+        case .primaryButtonTextColor:
+            return UIColor(dynamic: { trait -> UIColor in
+                trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.black
+            })
         case .secondaryButtonBackgroundColor:
             return UIColor(dynamic: { trait -> UIColor in
                 trait.userInterfaceStyle == .dark ? BrandColorBase.lavender : BrandColorBase.black
