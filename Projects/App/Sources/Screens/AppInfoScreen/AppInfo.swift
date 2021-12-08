@@ -171,7 +171,7 @@ extension AppInfo: Presentable {
                 title: language.title,
                 icon: language.icon,
                 trailingIcon: hCoreUIAssets.external.image,
-                trailingIconTintColor: UIColor.TypographyColor.secondary.positiveColor,
+                trailingIconTintColor: UIColor.typographyColor(.secondary),
                 value: value(row: language)
             )
 
