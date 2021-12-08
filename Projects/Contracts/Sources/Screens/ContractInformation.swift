@@ -56,7 +56,7 @@ struct ContractInformationView: View {
                 }
             }
             if contract.currentAgreement.status != .terminated {
-                if Localization.Locale.currentLocale.market == .se {
+                if [.se, .no].contains(Localization.Locale.currentLocale.market) {
                     if contract.showsMovingFlowButton {
                         hSection {
                             hButton.LargeButtonOutlined {
