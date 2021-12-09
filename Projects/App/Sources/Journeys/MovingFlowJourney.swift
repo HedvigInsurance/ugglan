@@ -10,7 +10,6 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import Contracts
 
 extension JourneyPresentation {
     fileprivate var withCompletedToast: Self {

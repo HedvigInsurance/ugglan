@@ -58,7 +58,7 @@ public enum CrossSellingFAQListNavigationAction: ActionProtocol {
 public enum ContractAction: ActionProtocol {
     // fetch everything
     case fetch
-    
+
     // Fetch contracts for terminated
     case fetchContractBundles
     case fetchContracts
