@@ -27,7 +27,7 @@ extension MovingFlowSuccess: Presentable {
             title: L10n.MovingConfirmation.Success.buttonText,
             type: .standardOutline(
                 borderColor: .brand(.primaryBorderColor),
-                textColor: .brand(.secondaryButtonTextColor)
+                textColor: .brand(.primaryBorderColor)
             )
         )
 
