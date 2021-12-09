@@ -37,6 +37,7 @@ public struct hCard<Content: View>: View {
                 .foregroundColor(hLabelColor.secondary)
                 .padding(10)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
 
             content
         }

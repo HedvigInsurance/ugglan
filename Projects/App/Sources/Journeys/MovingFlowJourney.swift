@@ -10,6 +10,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Contracts
 
 extension JourneyPresentation {
     fileprivate var withCompletedToast: Self {
@@ -50,7 +51,9 @@ extension AppJourney {
                         ContinueJourney()
                     case let .signed(_, startDates):
                         Journey(MovingFlowSuccess(startDate: startDates.first?.value)) { _ in
-                            DismissJourney().withCompletedToast
+                            DismissJourney()
+                                .sendActionImmediately(ContractStore.self, .fetch)
+                                .withCompletedToast
                         }
                         .hidesBackButton.withJourneyDismissButton
                     }

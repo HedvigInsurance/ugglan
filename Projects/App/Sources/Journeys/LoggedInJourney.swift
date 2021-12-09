@@ -163,10 +163,9 @@ extension JourneyPresentation {
         _ storeType: S.Type,
         _ action: S.Action
     ) -> Self {
-        let store: S = self.presentable.get()
-
-        store.send(action)
-
-        return self
+        return self.onPresent {
+            let store: S = self.presentable.get()
+            store.send(action)
+        }
     }
 }

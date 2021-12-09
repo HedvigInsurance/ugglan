@@ -170,7 +170,7 @@ extension ContractDetail {
                 Journey(
                     UpcomingAddressChangeDetails(details: details),
                     style: .detented(.scrollViewContentSize, .large)
-                )
+                ).withDismissButton
             }
         }
     }

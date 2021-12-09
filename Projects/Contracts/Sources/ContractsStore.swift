@@ -56,6 +56,9 @@ public enum CrossSellingFAQListNavigationAction: ActionProtocol {
 }
 
 public enum ContractAction: ActionProtocol {
+    // fetch everything
+    case fetch
+    
     // Fetch contracts for terminated
     case fetchContractBundles
     case fetchContracts
@@ -110,10 +113,15 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .map {
                     .setContracts(contracts: $0)
                 }
-        case .didSignFocusedCrossSell:
+        case .fetch:
             return [
                 .fetchContracts,
                 .fetchContractBundles,
+            ]
+            .emitEachThenEnd
+        case .didSignFocusedCrossSell:
+            return [
+                .fetch
             ]
             .emitEachThenEnd
         case let .openCrossSellingDetail(crossSell):
