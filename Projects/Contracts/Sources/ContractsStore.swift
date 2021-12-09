@@ -15,7 +15,7 @@ public struct ContractState: StateProtocol {
     public var signedCrossSells: [CrossSell] = []
 
     func contractForId(_ id: String) -> Contract? {
-        if let inBundleContract = contractBundles.flatMap { $0.contracts }
+        if let inBundleContract = contractBundles.flatMap({ $0.contracts })
         .first(where: { contract in
             contract.id == id
         }) {
