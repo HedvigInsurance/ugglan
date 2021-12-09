@@ -33,9 +33,13 @@ enum Documents: CaseIterable {
 struct ContractDocumentsView: View {
     @PresentableStore var store: ContractStore
 
-    let contract: Contract
+    let id: String
 
     var body: some View {
+        PresentableStoreLens(ContractStore.self, getter: { state in
+            state.contractForId(id)
+        }) { contract in
+            if let contract = contract {
         hSection(Documents.allCases, id: \.title) { document in
             if let url = document.url(from: contract) {
                 hRow {
@@ -49,6 +53,9 @@ struct ContractDocumentsView: View {
                     store.send(.contractDetailNavigationAction(action: .document(url: url, title: document.title)))
                 }
             }
+        }
+            }
+            
         }
     }
 }

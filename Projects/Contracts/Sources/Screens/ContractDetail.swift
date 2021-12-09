@@ -59,7 +59,7 @@ struct ContractDetail: View {
     @PresentableStore var store: ContractStore
     @EnvironmentObject var context: TabControllerContext
 
-    var contractRow: ContractRow
+    var id: String
 
     let contractInformation: ContractInformationView
     let contractCoverage: ContractCoverageView
@@ -80,17 +80,15 @@ struct ContractDetail: View {
     }
 
     init(
-        contractRow: ContractRow
+        id: String
     ) {
-        self.contractRow = contractRow
-        self.contractRow.allowDetailNavigation = false
+        self.id = id
 
-        contractInformation = ContractInformationView(contract: contractRow.contract)
+        contractInformation = ContractInformationView(id: id)
         contractCoverage = ContractCoverageView(
-            perils: contractRow.contract.contractPerils,
-            insurableLimits: contractRow.contract.insurableLimits
+            id: id
         )
-        contractDocuments = ContractDocumentsView(contract: contractRow.contract)
+        contractDocuments = ContractDocumentsView(id: id)
 
         let font = Fonts.fontFor(style: .footnote)
         UISegmentedControl.appearance()
@@ -116,7 +114,7 @@ struct ContractDetail: View {
         VStack {
             hForm {
                 hSection {
-                    contractRow.padding(.bottom, 20)
+                    ContractRow(id: id).padding(.bottom, 20)
                     Picker("View", selection: $context.selected) {
                         ForEach(ContractDetailsViews.allCases) { view in
                             hText(view.title).tag(view)

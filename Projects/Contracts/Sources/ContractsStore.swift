@@ -13,6 +13,18 @@ public struct ContractState: StateProtocol {
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
+    
+    func contractForId(_ id: String) -> Contract? {
+        if let inBundleContract = contractBundles.flatMap { $0.contracts }.first(where: { contract in
+            contract.id == id
+        }) {
+            return inBundleContract
+        }
+        
+        return contracts.first { contract in
+            contract.id == id
+        }
+    }
 }
 
 extension ContractState {
@@ -60,7 +72,7 @@ public enum ContractAction: ActionProtocol {
     case openCrossSellingDetail(crossSell: CrossSell)
     case hasSeenCrossSells(value: Bool)
     case closeCrossSellingSigned
-    case openDetail(contract: Contract)
+    case openDetail(contractId: String)
     case openTerminatedContracts
     case didSignFocusedCrossSell
     case resetSignedCrossSells
