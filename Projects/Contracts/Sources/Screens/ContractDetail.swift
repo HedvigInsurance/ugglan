@@ -122,6 +122,7 @@ struct ContractDetail: View {
                     }
                     .pickerStyle(.segmented)
                 }
+                .withoutBottomPadding
                 .sectionContainerStyle(.transparent)
 
                 ForEach(ContractDetailsViews.allCases) { panel in

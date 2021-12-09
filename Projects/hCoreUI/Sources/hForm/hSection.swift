@@ -174,6 +174,11 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         .padding([.leading, .trailing], horizontalSizeClass == .regular ? 60 : 15)
         .padding([.top, .bottom], 15)
     }
+    
+    /// removes hSection bottom padding
+    public var withoutBottomPadding: some View {
+        self.padding(.bottom, -15)
+    }
 
     public func withHeader<Header: View>(
         @ViewBuilder _ builder: @escaping () -> Header
