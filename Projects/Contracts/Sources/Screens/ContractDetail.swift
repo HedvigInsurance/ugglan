@@ -117,7 +117,8 @@ struct ContractDetail: View {
                     ContractRow(
                         id: id,
                         allowDetailNavigation: false
-                    ).padding(.bottom, 20)
+                    )
+                    .padding(.bottom, 20)
                     Picker("View", selection: $context.selected) {
                         ForEach(ContractDetailsViews.allCases) { view in
                             hText(view.title).tag(view)
