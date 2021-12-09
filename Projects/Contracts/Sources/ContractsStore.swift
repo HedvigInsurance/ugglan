@@ -13,14 +13,16 @@ public struct ContractState: StateProtocol {
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
-    
+
     func contractForId(_ id: String) -> Contract? {
-        if let inBundleContract = contractBundles.flatMap { $0.contracts }.first(where: { contract in
-            contract.id == id
-        }) {
+        if let inBundleContract = contractBundles.flatMap { $0.contracts }
+            .first(where: { contract in
+                contract.id == id
+            })
+        {
             return inBundleContract
         }
-        
+
         return contracts.first { contract in
             contract.id == id
         }

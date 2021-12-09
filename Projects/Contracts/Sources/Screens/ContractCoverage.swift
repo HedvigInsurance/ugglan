@@ -13,9 +13,12 @@ struct ContractCoverageView: View {
     let id: String
 
     var body: some View {
-        PresentableStoreLens(ContractStore.self, getter: { state in
-            state.contractForId(id)
-        }) { contract in
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: { state in
+                state.contractForId(id)
+            }
+        ) { contract in
             if let contract = contract {
                 VStack {
                     hSection {

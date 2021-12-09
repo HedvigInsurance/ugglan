@@ -129,9 +129,12 @@ struct ContractRow: View {
     var allowDetailNavigation = true
 
     var body: some View {
-        PresentableStoreLens(ContractStore.self, getter: { state in
-            state.contractForId(id)
-        }) { contract in
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: { state in
+                state.contractForId(id)
+            }
+        ) { contract in
             if let contract = contract {
                 SwiftUI.Button {
                     store.send(.openDetail(contractId: contract.id))

@@ -26,9 +26,12 @@ struct ContractInformationView: View {
     }
 
     var body: some View {
-        PresentableStoreLens(ContractStore.self, getter: { state in
-            state.contractForId(id)
-        }) { contract in
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: { state in
+                state.contractForId(id)
+            }
+        ) { contract in
             if let contract = contract {
                 VStack {
                     if contract.upcomingAgreementDate?.localDateString != nil {
