@@ -351,11 +351,11 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
 
             newState.sessions = [newState.sessions, [newSession]].flatMap { $0 }
         case let .removeSession(id):
-            newState.sessions = 
+            newState.sessions =
                 newState.sessions.filter({ session in
                     session.id != id
                 })
-            
+
         }
 
         return newState

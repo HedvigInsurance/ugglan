@@ -38,15 +38,16 @@ public enum DataCollection {
         onComplete: @escaping (_ id: UUID?, _ personalNumber: String?) -> Void
     ) -> some JourneyPresentation {
         let store: DataCollectionStore = globalPresentableStoreContainer.get()
-       
+
         let existingSession = store.state.sessions.first { session in
             session.providerID == providerID
         }
-        
+
         if let existingSession = existingSession {
-            ContinueJourney().onPresent {
-                onComplete(existingSession.id, nil)
-            }
+            ContinueJourney()
+                .onPresent {
+                    onComplete(existingSession.id, nil)
+                }
         } else {
             let sessionID = UUID()
 
@@ -57,7 +58,9 @@ public enum DataCollection {
             )
             .addConfiguration { presenter in
                 let store: DataCollectionStore = globalPresentableStoreContainer.get()
-                store.send(.startSession(id: sessionID, providerID: providerID, providerDisplayName: providerDisplayName))
+                store.send(
+                    .startSession(id: sessionID, providerID: providerID, providerDisplayName: providerDisplayName)
+                )
             }
             .onError { _ in
                 store.send(.removeSession(id: sessionID))
