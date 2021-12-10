@@ -1,5 +1,6 @@
 import Flow
 import Foundation
+import Presentation
 import SnapshotTesting
 import SwiftUI
 import Testing
@@ -7,7 +8,6 @@ import TestingUtil
 import XCTest
 import hCoreUI
 import hGraphQL
-import Presentation
 
 @testable import Contracts
 
@@ -35,7 +35,7 @@ final class ContractRowTests: XCTestCase {
 
     func testContractRow() {
         let mockContract = Contract.mock(displayName: "NorwegianHome", status: .active)
-        
+
         let activeContractRow = ContractRow(
             id: mockContract.id
         )
@@ -61,15 +61,15 @@ extension Contract {
             statusPills: ["TERMINATED"],
             detailPills: ["ADDRESS", "COVERS YOU + 2"]
         )
-        
+
         let store: ContractStore = globalPresentableStoreContainer.get()
         var state = ContractState()
         state.contracts = [
             contract
         ]
-        
+
         store.setState(state)
-        
+
         return contract
     }
 }
