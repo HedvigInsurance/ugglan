@@ -6,6 +6,7 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hCore
 
 public struct PreviewJourney<InnerJourney: JourneyPresentation>: JourneyPresentation {
     public var onDismiss: (Error?) -> Void
@@ -59,7 +60,7 @@ public struct JourneyPreviewer<Journey: JourneyPresentation>: UIViewControllerRe
     }
 
     public func makeUIViewController(context: Context) -> some UIViewController {
-        let navigationController = UINavigationController()
+        let navigationController = hNavigationController()
 
         var options = journey.options
         options.insert(.unanimated)
