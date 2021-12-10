@@ -55,7 +55,7 @@ public struct DataCollectionState: StateProtocol {
         guard let id = id else {
             return nil
         }
-        
+
         return sessions.first { session in
             session.id == id
         }
@@ -272,7 +272,8 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                         .monetaryAmountFragment
                                 {
                                     return DataCollectionInsurance(
-                                        providerDisplayName: getState().sessionFor(sessionId)?.providerDisplayName ?? "",
+                                        providerDisplayName: getState().sessionFor(sessionId)?.providerDisplayName
+                                            ?? "",
                                         displayName: personalTravelCollection.insuranceName ?? "",
                                         monthlyNetPremium: MonetaryAmount(fragment: monthlyNetPremiumFragment)
                                     )
@@ -282,7 +283,8 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                         .monetaryAmountFragment
                                 {
                                     return DataCollectionInsurance(
-                                        providerDisplayName: getState().sessionFor(sessionId)?.providerDisplayName ?? "",
+                                        providerDisplayName: getState().sessionFor(sessionId)?.providerDisplayName
+                                            ?? "",
                                         displayName: houseInsuranceCollection.insuranceName ?? "",
                                         monthlyNetPremium: MonetaryAmount(fragment: monthlyNetPremiumFragment)
                                     )
