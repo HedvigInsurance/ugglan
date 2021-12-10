@@ -11,7 +11,20 @@ public struct OfferState: StateProtocol {
     var hasSignedQuotes = false
     var ids: [String] = []
     var selectedIds: [String] = []
-    var startDates: [String: Date?] = [:]
+    var startDates: [String: Date?] {
+        switch currentVariant?.bundle.inception {
+        case let .concurrent(concurrentInception):
+            return concurrentInception.correspondingQuotes.reduce(into: [:]) { partialResult, quote in
+                partialResult[quote.id ?? ""] = concurrentInception.startDate?.localDateToDate ?? Date()
+            }
+        case let .independent(inceptions):
+            return inceptions.reduce(into: [:]) { partialResult, inception in
+                partialResult[inception.correspondingQuote.id ?? ""] = inception.startDate?.localDateToDate ?? Date()
+            }
+        default:
+            return [:]
+        }
+    }
     var swedishBankIDAutoStartToken: String? = nil
     var swedishBankIDStatusCode: String? = nil
     var offerData: OfferBundle? = nil
@@ -189,7 +202,6 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case let .startSwedishBankIDSign(autoStartToken):
             newState.swedishBankIDAutoStartToken = autoStartToken
         case let .setStartDate(id, startDate):
-            newState.startDates[id] = startDate
             guard var newOfferData = newState.offerData else { return newState }
 
             newOfferData.possibleVariations = newOfferData.possibleVariations.map { variant in

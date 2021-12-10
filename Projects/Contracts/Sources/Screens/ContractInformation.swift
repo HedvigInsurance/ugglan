@@ -12,7 +12,7 @@ struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
     @State private var showChangeInfoAlert = false
 
-    let contract: Contract
+    let id: String
 
     private var changeInfoAlert: SwiftUI.Alert {
         return Alert(
@@ -26,64 +26,73 @@ struct ContractInformationView: View {
     }
 
     var body: some View {
-        VStack {
-            if contract.upcomingAgreementDate?.localDateString != nil {
-                hSection {
-                    RenewalInformationCard(contract: contract)
-                }
-                .sectionContainerStyle(.transparent)
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: { state in
+                state.contractForId(id)
             }
-            if let table = contract.currentAgreementsTable {
-                ForEach(table.sections) { section in
-                    hSection(section.rows, id: \.title) { row in
-                        hRow {
-                            hText(row.title)
-                        }
-                        .withCustomAccessory({
-                            Spacer()
-                            hText(String(row.value), style: .body)
-                                .foregroundColor(hLabelColor.secondary)
-                                .padding(.trailing, 8)
-                        })
-                    }
-                    .withHeader {
-                        hText(
-                            section.title,
-                            style: .headline
-                        )
-                        .foregroundColor(hLabelColor.secondary)
-                    }
-                }
-            }
-            if contract.currentAgreement.status != .terminated {
-                if Localization.Locale.currentLocale.market == .se {
-                    if contract.showsMovingFlowButton {
+        ) { contract in
+            if let contract = contract {
+                VStack {
+                    if contract.upcomingAgreementDate?.localDateString != nil {
                         hSection {
-                            hButton.LargeButtonOutlined {
-                                store.send(.goToMovingFlow)
-                            } content: {
-                                hText(L10n.HomeTab.editingSectionChangeAddressLabel)
-                            }
+                            RenewalInformationCard(contract: contract)
                         }
                         .sectionContainerStyle(.transparent)
-                        ChangePeopleView()
                     }
-                } else {
-                    hSection {
-                        hButton.LargeButtonText {
-                            showChangeInfoAlert = true
-                        } content: {
-                            hText(L10n.contractDetailHomeChangeInfo)
-                        }
-                        .alert(isPresented: $showChangeInfoAlert) {
-                            changeInfoAlert
+                    if let table = contract.currentAgreementsTable {
+                        ForEach(table.sections) { section in
+                            hSection(section.rows, id: \.title) { row in
+                                hRow {
+                                    hText(row.title)
+                                }
+                                .withCustomAccessory({
+                                    Spacer()
+                                    hText(String(row.value), style: .body)
+                                        .foregroundColor(hLabelColor.secondary)
+                                        .padding(.trailing, 8)
+                                })
+                            }
+                            .withHeader {
+                                hText(
+                                    section.title,
+                                    style: .headline
+                                )
+                                .foregroundColor(hLabelColor.secondary)
+                            }
                         }
                     }
-                    .sectionContainerStyle(.transparent)
+                    if contract.currentAgreement.status != .terminated {
+                        if [.se, .no].contains(Localization.Locale.currentLocale.market) {
+                            if contract.showsMovingFlowButton {
+                                hSection {
+                                    hButton.LargeButtonOutlined {
+                                        store.send(.goToMovingFlow)
+                                    } content: {
+                                        hText(L10n.HomeTab.editingSectionChangeAddressLabel)
+                                    }
+                                }
+                                .sectionContainerStyle(.transparent)
+                                ChangePeopleView()
+                            }
+                        } else {
+                            hSection {
+                                hButton.LargeButtonText {
+                                    showChangeInfoAlert = true
+                                } content: {
+                                    hText(L10n.contractDetailHomeChangeInfo)
+                                }
+                                .alert(isPresented: $showChangeInfoAlert) {
+                                    changeInfoAlert
+                                }
+                            }
+                            .sectionContainerStyle(.transparent)
+                        }
+                    }
                 }
+                .padding(.bottom, 20)
             }
         }
-        .padding(.bottom, 20)
     }
 }
 

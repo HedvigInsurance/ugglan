@@ -33,22 +33,34 @@ enum Documents: CaseIterable {
 struct ContractDocumentsView: View {
     @PresentableStore var store: ContractStore
 
-    let contract: Contract
+    let id: String
 
     var body: some View {
-        hSection(Documents.allCases, id: \.title) { document in
-            if let url = document.url(from: contract) {
-                hRow {
-                    hText(document.title)
-                }
-                .withCustomAccessory {
-                    Spacer()
-                    Image(uiImage: hCoreUIAssets.chevronRight.image)
-                }
-                .onTap {
-                    store.send(.contractDetailNavigationAction(action: .document(url: url, title: document.title)))
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: { state in
+                state.contractForId(id)
+            }
+        ) { contract in
+            if let contract = contract {
+                hSection(Documents.allCases, id: \.title) { document in
+                    if let url = document.url(from: contract) {
+                        hRow {
+                            hText(document.title)
+                        }
+                        .withCustomAccessory {
+                            Spacer()
+                            Image(uiImage: hCoreUIAssets.chevronRight.image)
+                        }
+                        .onTap {
+                            store.send(
+                                .contractDetailNavigationAction(action: .document(url: url, title: document.title))
+                            )
+                        }
+                    }
                 }
             }
+
         }
     }
 }

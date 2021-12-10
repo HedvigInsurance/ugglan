@@ -47,6 +47,9 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
                     query: GraphQL.FeaturesQuery(),
                     cachePolicy: .fetchIgnoringCacheData
                 )
+                .mapError({ error in
+                    .init(member: .init(features: []))
+                })
                 .compactMap { $0.member.features }
                 .map { features in
                     .setFeatures(
