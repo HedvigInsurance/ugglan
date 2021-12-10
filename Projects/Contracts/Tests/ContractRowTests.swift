@@ -1,5 +1,6 @@
 import Flow
 import Foundation
+import Presentation
 import SnapshotTesting
 import SwiftUI
 import Testing
@@ -18,32 +19,34 @@ final class ContractRowTests: XCTestCase {
         setupScreenShotTests()
     }
 
-    func assert(_ row: ContractRow) {
+    func assert(_ row: ContractRow, _ contract: Contract) {
         assertSnapshot(
             matching: row,
             as: .image(layout: .fixed(width: 375, height: 200)),
-            named: "\(row.contract.displayName)_\(row.contract.currentAgreement.status!)"
+            named: "\(contract.displayName)_\(contract.currentAgreement.status!)"
         )
 
         assertSnapshot(
             matching: row.colorScheme(.dark),
             as: .image(layout: .fixed(width: 375, height: 200)),
-            named: "\(row.contract.displayName)_\(row.contract.currentAgreement.status!)_dark"
+            named: "\(contract.displayName)_\(contract.currentAgreement.status!)_dark"
         )
     }
 
     func testContractRow() {
+        let mockContract = Contract.mock(displayName: "NorwegianHome", status: .active)
+
         let activeContractRow = ContractRow(
-            contract: .mock(displayName: "NorwegianHome", status: .active)
+            id: mockContract.id
         )
 
-        assert(activeContractRow)
+        assert(activeContractRow, mockContract)
     }
 }
 
 extension Contract {
     public static func mock(displayName: String, status: ContractStatus) -> Contract {
-        .init(
+        let contract = Contract(
             id: "mock_norwegian_123",
             upcomingAgreementsTable: .mock(),
             currentAgreementsTable: .mock(),
@@ -58,6 +61,16 @@ extension Contract {
             statusPills: ["TERMINATED"],
             detailPills: ["ADDRESS", "COVERS YOU + 2"]
         )
+
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        var state = ContractState()
+        state.contracts = [
+            contract
+        ]
+
+        store.setState(state)
+
+        return contract
     }
 }
 

@@ -48,7 +48,7 @@ extension AppJourney {
             case .movingFlow:
                 AppJourney.movingFlow
             case .openFreeTextChat:
-                AppJourney.freeTextChat()
+                AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingDetail(crossSell):
                 AppJourney.crossSellingJourney(crossSell: crossSell)
             case let .openCrossSellingEmbark(name):
@@ -163,10 +163,9 @@ extension JourneyPresentation {
         _ storeType: S.Type,
         _ action: S.Action
     ) -> Self {
-        let store: S = self.presentable.get()
-
-        store.send(action)
-
-        return self
+        return self.onPresent {
+            let store: S = self.presentable.get()
+            store.send(action)
+        }
     }
 }

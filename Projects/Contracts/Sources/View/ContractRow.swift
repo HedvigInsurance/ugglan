@@ -125,44 +125,54 @@ struct ContractRow: View {
     @PresentableStore var store: ContractStore
     @State var frameWidth: CGFloat = 0
 
-    var contract: Contract
+    var id: String
     var allowDetailNavigation = true
 
     var body: some View {
-        SwiftUI.Button {
-            store.send(.openDetail(contract: contract))
-        } label: {
-            EmptyView()
-        }
-        .disabled(!allowDetailNavigation)
-        .buttonStyle(ContractRowButtonStyle(contract: contract))
-        .background(
-            GeometryReader { geo in
-                Color.clear.onReceive(Just(geo.size.width)) { width in
-                    self.frameWidth = width
-                }
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: { state in
+                state.contractForId(id)
             }
-        )
-        .enableHero(
-            "ContractRow_\(contract.id)",
-            modifiers: [
-                .spring(stiffness: 250, damping: 25),
-                .when(
-                    { context -> Bool in !context.isMatched },
-                    [
-                        .init(applyFunction: { (state: inout HeroTargetState) in
-                            state.append(
-                                .translate(
-                                    x: -frameWidth
-                                        * 1.3,
-                                    y: 0,
-                                    z: 0
-                                )
-                            )
-                        })
+        ) { contract in
+            if let contract = contract {
+                SwiftUI.Button {
+                    store.send(.openDetail(contractId: contract.id))
+                } label: {
+                    EmptyView()
+                }
+                .disabled(!allowDetailNavigation)
+                .buttonStyle(ContractRowButtonStyle(contract: contract))
+                .background(
+                    GeometryReader { geo in
+                        Color.clear.onReceive(Just(geo.size.width)) { width in
+                            self.frameWidth = width
+                        }
+                    }
+                )
+                .enableHero(
+                    "ContractRow_\(contract.id)",
+                    modifiers: [
+                        .spring(stiffness: 250, damping: 25),
+                        .when(
+                            { context -> Bool in !context.isMatched },
+                            [
+                                .init(applyFunction: { (state: inout HeroTargetState) in
+                                    state.append(
+                                        .translate(
+                                            x: -frameWidth
+                                                * 1.3,
+                                            y: 0,
+                                            z: 0
+                                        )
+                                    )
+                                })
+                            ]
+                        ),
                     ]
-                ),
-            ]
-        )
+                )
+            }
+        }
+
     }
 }

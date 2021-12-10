@@ -39,7 +39,7 @@ extension ContractTable: View {
                 }
             ) { contracts in
                 ForEach(contracts, id: \.id) { contract in
-                    ContractRow(contract: contract)
+                    ContractRow(id: contract.id)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 15)
                         .transition(.slide)

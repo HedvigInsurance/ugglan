@@ -90,8 +90,8 @@ extension Contracts {
                 .largeTitleDisplayMode(filter.displaysActiveContracts ? .always : .never),
             ]
         ) { action in
-            if case let .openDetail(contract) = action, openDetails {
-                ContractDetail(contractRow: ContractRow(contract: contract)).journey()
+            if case let .openDetail(contractId) = action, openDetails {
+                ContractDetail(id: contractId).journey()
             } else if case .openTerminatedContracts = action {
                 Self.journey(
                     filter: .terminated(ifEmpty: .none),
