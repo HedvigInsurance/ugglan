@@ -122,7 +122,8 @@ extension DataCollectionPersonalIdentity {
     ) -> some JourneyPresentation {
         HostingJourney(
             DataCollectionStore.self,
-            rootView: DataCollectionPersonalIdentity().environment(\.dataCollectionSessionID, sessionID),
+            rootView: DataCollectionPersonalIdentity()
+                .environment(\.dataCollectionSessionID, sessionID),
             style: .detented(.large, modally: modally)
         ) { action in
             if case .session(id: sessionID, action: .startAuthentication) = action {

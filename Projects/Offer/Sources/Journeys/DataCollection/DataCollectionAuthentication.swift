@@ -112,31 +112,29 @@ struct NorwegianBankIDWords: View {
 
 struct AuthMethodContainer: View {
     @PresentableStore var store: DataCollectionStore
-    var authMethod: DataCollectionAuthMethod?
+    var session: DataCollectionSession
 
     var body: some View {
-        ReadDataCollectionSession { session in
-            if session.status == .login {
-                switch authMethod {
-                case .swedishBankIDEphemeral:
-                    SwedishBankID(autoStartToken: nil)
-                case let .swedishBankIDAutoStartToken(token):
-                    SwedishBankID(autoStartToken: token)
-                case let .norwegianBankIDWords(words):
-                    NorwegianBankIDWords(words: words)
-                case .none:
-                    ActivityIndicator(style: .medium)
-                }
-            } else {
+        if session.status == .login {
+            switch session.authMethod {
+            case .swedishBankIDEphemeral:
+                SwedishBankID(autoStartToken: nil)
+            case let .swedishBankIDAutoStartToken(token):
+                SwedishBankID(autoStartToken: token)
+            case let .norwegianBankIDWords(words):
+                NorwegianBankIDWords(words: words)
+            case .none:
                 ActivityIndicator(style: .medium)
-                    .onReceive(Just(session.status)) { status in
-                        if status == .collecting || status == .completed {
-                            store.send(.session(id: session.id, action: .confirmResult(result: .started)))
-                        } else if status == .failed {
-                            store.send(.session(id: session.id, action: .confirmResult(result: .failed)))
-                        }
-                    }
             }
+        } else {
+            ActivityIndicator(style: .medium)
+                .onReceive(Just(session.status)) { status in
+                    if status == .collecting || status == .completed {
+                        store.send(.session(id: session.id, action: .confirmResult(result: .started)))
+                    } else if status == .failed {
+                        store.send(.session(id: session.id, action: .confirmResult(result: .failed)))
+                    }
+                }
         }
     }
 }
@@ -148,7 +146,7 @@ public struct DataCollectionAuthentication: View {
 
     public var body: some View {
         ReadDataCollectionSession { session in
-            AuthMethodContainer(authMethod: session.authMethod)
+            AuthMethodContainer(session: session)
         }
         .presentableStoreLensAnimation(.easeInOut(duration: 0.5))
     }
@@ -162,7 +160,8 @@ extension DataCollectionAuthentication {
     ) -> some JourneyPresentation {
         HostingJourney(
             DataCollectionStore.self,
-            rootView: DataCollectionAuthentication(),
+            rootView: DataCollectionAuthentication()
+                .environment(\.dataCollectionSessionID, sessionID),
             style: style
         ) { action in
             switch action {

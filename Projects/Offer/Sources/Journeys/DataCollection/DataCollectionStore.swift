@@ -52,7 +52,11 @@ public struct DataCollectionState: StateProtocol {
     var sessions: [DataCollectionSession] = []
 
     func sessionFor(_ id: UUID?) -> DataCollectionSession? {
-        sessions.first { session in
+        guard let id = id else {
+            return nil
+        }
+        
+        return sessions.first { session in
             session.id == id
         }
     }
@@ -168,15 +172,9 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
     ) -> FiniteSignal<DataCollectionAction>? {
         switch action {
         case let .session(sessionId, sessionAction):
-            func getSession() -> DataCollectionSession? {
-                getState().sessions
-                    .first { session in
-                        session.id == sessionId
-                    }
-            }
 
             if case .startAuthentication = sessionAction,
-                let session = getSession()
+                let session = getState().sessionFor(sessionId)
             {
                 cancelEffect(action)
                 let market = session.market
@@ -264,7 +262,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                 .emitEachThenEnd
             } else if case .fetchInfo = sessionAction {
                 return self.client
-                    .fetch(query: GraphQL.DataCollectionInfoQuery(reference: getSession()?.id.uuidString ?? ""))
+                    .fetch(query: GraphQL.DataCollectionInfoQuery(reference: sessionId.uuidString))
                     .map { data in
                         if let insurances = data.externalInsuranceProvider?.dataCollectionV2 {
                             let dataCollectionInsurances = insurances.compactMap { info -> DataCollectionInsurance? in
@@ -274,7 +272,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                         .monetaryAmountFragment
                                 {
                                     return DataCollectionInsurance(
-                                        providerDisplayName: getSession()?.providerDisplayName ?? "",
+                                        providerDisplayName: getState().sessionFor(sessionId)?.providerDisplayName ?? "",
                                         displayName: personalTravelCollection.insuranceName ?? "",
                                         monthlyNetPremium: MonetaryAmount(fragment: monthlyNetPremiumFragment)
                                     )
@@ -284,7 +282,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                         .monetaryAmountFragment
                                 {
                                     return DataCollectionInsurance(
-                                        providerDisplayName: getSession()?.providerDisplayName ?? "",
+                                        providerDisplayName: getState().sessionFor(sessionId)?.providerDisplayName ?? "",
                                         displayName: houseInsuranceCollection.insuranceName ?? "",
                                         monthlyNetPremium: MonetaryAmount(fragment: monthlyNetPremiumFragment)
                                     )
@@ -312,9 +310,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
 
         switch action {
         case let .session(sessionId, action: sessionAction):
-            if var newSession = newState.sessions.first(where: { session in
-                session.id == sessionId
-            }) {
+            if var newSession = newState.sessionFor(sessionId) {
                 switch sessionAction {
                 case let .setCredential(credential):
                     newSession.credential = credential
