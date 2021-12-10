@@ -36,7 +36,7 @@ extension EmbarkSelectActionOption: Viewable {
         stackView.isUserInteractionEnabled = false
         stackView.alignment = .center
         stackView.axis = .vertical
-        stackView.spacing = 6
+        stackView.spacing = 12
         stackView.layoutMargins = UIEdgeInsets(top: 15, left: 10, bottom: 15, right: 10)
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.insetsLayoutMarginsFromSafeArea = false
@@ -75,6 +75,15 @@ extension EmbarkSelectActionOption: Viewable {
         return (
             control,
             Signal { callback in
+                if let badge = data.badge, !badge.isEmpty {
+                    let label = MultilineLabel(
+                        value: badge,
+                        style: TextStyle.brand(.subHeadline(color: .primary)).centerAligned
+                    )
+
+                    bag += stackView.addArranged(label)
+                }
+                
                 let valueLabel = MultilineLabel(
                     value: data.link.fragments.embarkLinkFragment.label,
                     style: TextStyle.brand(.headline(color: .primary)).centerAligned
