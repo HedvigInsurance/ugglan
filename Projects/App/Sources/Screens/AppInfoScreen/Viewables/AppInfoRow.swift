@@ -11,11 +11,13 @@ public struct AppInfoRow {
         title: String,
         icon: UIImage?,
         trailingIcon: UIImage?,
+        trailingIconTintColor: UIColor? = nil,
         value: Future<String>
     ) {
         self.title = title
         self.icon = icon
         self.trailingIcon = trailingIcon
+        self.trailingIconTintColor = trailingIconTintColor
         self.value = value
         onSelect = onSelectCallbacker.providedSignal
     }
@@ -23,6 +25,7 @@ public struct AppInfoRow {
     let title: String
     let icon: UIImage?
     let trailingIcon: UIImage?
+    let trailingIconTintColor: UIColor?
     let value: Future<String>
 
     private let onSelectCallbacker = Callbacker<Void>()
@@ -59,6 +62,9 @@ extension AppInfoRow: Viewable {
 
         if let trailingIcon = trailingIcon {
             let trailingImageView = UIImageView()
+            if let tintColor = trailingIconTintColor {
+                trailingImageView.tintColor = tintColor
+            }
             trailingImageView.image = trailingIcon
             row.append(trailingImageView)
             bag += events.onSelect.lazyBindTo(callbacker: onSelectCallbacker)
