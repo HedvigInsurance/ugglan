@@ -50,19 +50,19 @@ public struct DataCollectionSession: StateProtocol {
 
 public struct DataCollectionState: StateProtocol {
     var sessions: [DataCollectionSession] = []
-    
+
     func sessionFor(_ id: UUID?) -> DataCollectionSession? {
         sessions.first { session in
             session.id == id
         }
     }
-    
+
     var allInsurances: [DataCollectionInsurance] {
         sessions.flatMap { session in
             session.insurances
         }
     }
-    
+
     var allStatuses: [DataCollectionStatus] {
         sessions.map { session in
             session.status
@@ -96,15 +96,19 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         FiniteSignal { callback in
             let bag = DisposeBag()
 
-            bag += self.client.subscribe(subscription: GraphQL.DataCollectionSubscription(reference: sessionId.uuidString))
+            bag += self.client
+                .subscribe(subscription: GraphQL.DataCollectionSubscription(reference: sessionId.uuidString))
                 .onValue({ data in
                     if let extraInformation = data.dataCollectionStatusV2.extraInformation?.asSwedishBankIdExtraInfo {
                         if let token = extraInformation.autoStartToken {
                             callback(
                                 .value(
-                                    .session(id: sessionId, action: .setAuthMethod(
-                                        method: .swedishBankIDAutoStartToken(token: token)
-                                    ))
+                                    .session(
+                                        id: sessionId,
+                                        action: .setAuthMethod(
+                                            method: .swedishBankIDAutoStartToken(token: token)
+                                        )
+                                    )
                                 )
                             )
                         }
@@ -113,17 +117,25 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                     {
                         callback(
                             .value(
-                                .session(id: sessionId, action: .setAuthMethod(
-                                    method: .norwegianBankIDWords(words: extraInformation.norwegianBankIdWords ?? "")
-                                ))
+                                .session(
+                                    id: sessionId,
+                                    action: .setAuthMethod(
+                                        method: .norwegianBankIDWords(
+                                            words: extraInformation.norwegianBankIdWords ?? ""
+                                        )
+                                    )
+                                )
                             )
                         )
                     } else {
                         callback(
                             .value(
-                                .session(id: sessionId, action: .setAuthMethod(
-                                    method: .swedishBankIDEphemeral
-                                ))
+                                .session(
+                                    id: sessionId,
+                                    action: .setAuthMethod(
+                                        method: .swedishBankIDEphemeral
+                                    )
+                                )
                             )
                         )
                     }
@@ -157,11 +169,12 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
         switch action {
         case let .session(sessionId, sessionAction):
             func getSession() -> DataCollectionSession? {
-                getState().sessions.first { session in
-                    session.id == sessionId
-                }
+                getState().sessions
+                    .first { session in
+                        session.id == sessionId
+                    }
             }
-            
+
             if case .startAuthentication = sessionAction,
                 let session = getSession()
             {
@@ -195,7 +208,9 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                         personalNumber: personalNumber
                                     )
                                 )
-                                .map { _ in DataCollectionAction.session(id: sessionId, action: .setStatus(status: .started)) }
+                                .map { _ in
+                                    DataCollectionAction.session(id: sessionId, action: .setStatus(status: .started))
+                                }
                                 .onValue { action in
                                     callback(.value(action))
                                     startSubscription()
@@ -211,7 +226,9 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                         personalNumber: personalNumber
                                     )
                                 )
-                                .map { _ in DataCollectionAction.session(id: sessionId, action: .setStatus(status: .started)) }
+                                .map { _ in
+                                    DataCollectionAction.session(id: sessionId, action: .setStatus(status: .started))
+                                }
                                 .onValue { action in
                                     callback(.value(action))
                                     startSubscription()
@@ -225,7 +242,9 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                         phoneNumber: phoneNumber
                                     )
                                 )
-                                .map { _ in DataCollectionAction.session(id: sessionId, action: .setStatus(status: .started)) }
+                                .map { _ in
+                                    DataCollectionAction.session(id: sessionId, action: .setStatus(status: .started))
+                                }
                                 .onValue { action in
                                     callback(.value(action))
                                     startSubscription()
@@ -241,14 +260,17 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
             } else if case .setStatus(status: .completed) = sessionAction {
                 return [
                     .session(id: sessionId, action: .fetchInfo)
-                ].emitEachThenEnd
+                ]
+                .emitEachThenEnd
             } else if case .fetchInfo = sessionAction {
-                return self.client.fetch(query: GraphQL.DataCollectionInfoQuery(reference: getSession()?.id.uuidString ?? ""))
+                return self.client
+                    .fetch(query: GraphQL.DataCollectionInfoQuery(reference: getSession()?.id.uuidString ?? ""))
                     .map { data in
                         if let insurances = data.externalInsuranceProvider?.dataCollectionV2 {
                             let dataCollectionInsurances = insurances.compactMap { info -> DataCollectionInsurance? in
                                 if let personalTravelCollection = info.asPersonTravelInsuranceCollection,
-                                    let monthlyNetPremiumFragment = personalTravelCollection.monthlyNetPremium?.fragments
+                                    let monthlyNetPremiumFragment = personalTravelCollection.monthlyNetPremium?
+                                        .fragments
                                         .monetaryAmountFragment
                                 {
                                     return DataCollectionInsurance(
@@ -257,7 +279,8 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                         monthlyNetPremium: MonetaryAmount(fragment: monthlyNetPremiumFragment)
                                     )
                                 } else if let houseInsuranceCollection = info.asHouseInsuranceCollection,
-                                    let monthlyNetPremiumFragment = houseInsuranceCollection.monthlyNetPremium?.fragments
+                                    let monthlyNetPremiumFragment = houseInsuranceCollection.monthlyNetPremium?
+                                        .fragments
                                         .monetaryAmountFragment
                                 {
                                     return DataCollectionInsurance(
@@ -308,18 +331,18 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                 default:
                     break
                 }
-                
+
                 newState.sessions = [
                     newState.sessions.filter({ session in
                         session.id != sessionId
                     }),
                     [
                         newSession
-                    ]
-                ].flatMap { $0 }
+                    ],
+                ]
+                .flatMap { $0 }
             }
-            
-            
+
         case let .startSession(id, providerID, providerDisplayName):
             var newSession = DataCollectionSession()
             newSession.id = id
@@ -327,7 +350,7 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
             newSession.providerDisplayName = providerDisplayName
             newSession.providerID = providerID
             newSession.providerDisplayName = providerDisplayName
-            
+
             newState.sessions = [newState.sessions, [newSession]].flatMap { $0 }
         }
 
@@ -339,15 +362,15 @@ extension View {
     func mockProvider() -> some View {
         mockState(DataCollectionStore.self) { state in
             var newState = state
-            
+
             var newSession = DataCollectionSession()
             newSession.providerID = "Hedvig"
             newSession.providerDisplayName = "Hedvig"
-            
+
             newState.sessions = [
                 newSession
             ]
-            
+
             return newState
         }
     }

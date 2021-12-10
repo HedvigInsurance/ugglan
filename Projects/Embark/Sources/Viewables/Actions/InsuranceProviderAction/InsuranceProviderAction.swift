@@ -118,7 +118,8 @@ extension InsuranceProviderAction: Viewable {
                                 ? GraphQL.InsuranceProviderFragment(
                                     name: "DEMO",
                                     id: "DEMO",
-                                    externalCollectionId: "\(Localization.Locale.currentLocale.market.rawValue)-demo".lowercased(),
+                                    externalCollectionId: "\(Localization.Locale.currentLocale.market.rawValue)-demo"
+                                        .lowercased(),
                                     hasExternalCapabilities: true
                                 ) : nil
                         ]

@@ -85,9 +85,19 @@ public struct DataCollectionPersonalIdentity: View {
                     VStack {
                         hButton.LargeButtonFilled {
                             if authOption.masking.type == .digits {
-                                store.send(.session(id: session.id, action: .setCredential(credential: .phoneNumber(number: inputtedValue))))
+                                store.send(
+                                    .session(
+                                        id: session.id,
+                                        action: .setCredential(credential: .phoneNumber(number: inputtedValue))
+                                    )
+                                )
                             } else {
-                                store.send(.session(id: session.id, action: .setCredential(credential: .personalNumber(number: inputtedValue))))
+                                store.send(
+                                    .session(
+                                        id: session.id,
+                                        action: .setCredential(credential: .personalNumber(number: inputtedValue))
+                                    )
+                                )
                             }
 
                             store.send(.session(id: session.id, action: .startAuthentication))

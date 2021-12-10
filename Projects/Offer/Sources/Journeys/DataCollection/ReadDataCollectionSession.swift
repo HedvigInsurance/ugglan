@@ -1,11 +1,3 @@
-//
-//  File.swift
-//  Offer
-//
-//  Created by Sam Pettersson on 2021-12-10.
-//  Copyright © 2021 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import SwiftUI
 import hCore
@@ -23,13 +15,15 @@ extension EnvironmentValues {
 
 struct ReadDataCollectionSession<Content: View>: View {
     @Environment(\.dataCollectionSessionID) var sessionID
-    
+
     var content: (_ session: DataCollectionSession) -> Content
-    
-    init(@ViewBuilder _ content: @escaping (_ session: DataCollectionSession) -> Content) {
+
+    init(
+        @ViewBuilder _ content: @escaping (_ session: DataCollectionSession) -> Content
+    ) {
         self.content = content
     }
-    
+
     var body: some View {
         PresentableStoreLens(DataCollectionStore.self, getter: { state in state.sessionFor(sessionID) }) { session in
             if let session = session {

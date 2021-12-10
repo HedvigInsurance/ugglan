@@ -38,7 +38,7 @@ public enum DataCollection {
         onComplete: @escaping (_ id: UUID?, _ personalNumber: String?) -> Void
     ) -> some JourneyPresentation {
         let sessionID = UUID()
-        
+
         journey(
             style: .detented(.large),
             sessionID: sessionID,

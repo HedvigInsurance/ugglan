@@ -43,7 +43,7 @@ public struct DataCollectionConfirmation: View {
 
         return L10n.InsurelyFailure.title
     }
-    
+
     func description(_ session: DataCollectionSession) -> String {
         if wasConfirmed {
             return L10n.InsurelyConfirmation.description
@@ -106,7 +106,8 @@ extension DataCollectionConfirmation {
             DataCollectionStore.self,
             rootView: DataCollectionConfirmation(
                 wasConfirmed: wasConfirmed
-            ).environment(\.dataCollectionSessionID, sessionID),
+            )
+            .environment(\.dataCollectionSessionID, sessionID),
             style: style
         ) { action in
             switch action {
@@ -116,7 +117,7 @@ extension DataCollectionConfirmation {
                     DismissJourney()
                         .onPresent {
                             let store: DataCollectionStore = globalPresentableStoreContainer.get()
-                            
+
                             if let session = store.state.sessionFor(sessionID) {
                                 if case let .personalNumber(personalNumber) = session.credential {
                                     onComplete(
@@ -142,7 +143,7 @@ extension DataCollectionConfirmation {
                 case .retry:
                     let store: DataCollectionStore = globalPresentableStoreContainer.get()
                     let session = store.state.sessionFor(sessionID)
-                    
+
                     DataCollection.journey(
                         providerID: session?.providerID ?? "",
                         providerDisplayName: session?.providerDisplayName ?? "",
@@ -161,13 +162,17 @@ struct DataCollectionConfirmationPreview: PreviewProvider {
     static var previews: some View {
         Group {
             JourneyPreviewer(
-                DataCollectionConfirmation.journey(style: .detented(.large), sessionID: UUID(), wasConfirmed: true) { _, _ in
+                DataCollectionConfirmation.journey(style: .detented(.large), sessionID: UUID(), wasConfirmed: true) {
+                    _,
+                    _ in
 
                 }
             )
             .preferredColorScheme(.light)
             JourneyPreviewer(
-                DataCollectionConfirmation.journey(style: .detented(.large), sessionID: UUID(), wasConfirmed: false) { _, _ in
+                DataCollectionConfirmation.journey(style: .detented(.large), sessionID: UUID(), wasConfirmed: false) {
+                    _,
+                    _ in
 
                 }
             )
