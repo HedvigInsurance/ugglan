@@ -19,6 +19,7 @@ public enum DataCollectionAuthMethod: Equatable, Codable {
     case swedishBankIDEphemeral
     case swedishBankIDAutoStartToken(token: String)
     case norwegianBankIDWords(words: String)
+    case norwegianBankID
 }
 
 public struct DataCollectionInsurance: Equatable, Codable {
@@ -132,13 +133,24 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                                 )
                             )
                         )
-                    } else {
+                    } else if Localization.Locale.currentLocale.market == .se {
                         callback(
                             .value(
                                 .session(
                                     id: sessionId,
                                     action: .setAuthMethod(
                                         method: .swedishBankIDEphemeral
+                                    )
+                                )
+                            )
+                        )
+                    } else if Localization.Locale.currentLocale.market == .no {
+                        callback(
+                            .value(
+                                .session(
+                                    id: sessionId,
+                                    action: .setAuthMethod(
+                                        method: .norwegianBankID
                                     )
                                 )
                             )

@@ -104,8 +104,17 @@ struct NorwegianBankIDWords: View {
 
     var body: some View {
         VStack(spacing: 15) {
-            hText("Enter these words", style: .title2)
+            hText(L10n.insurelyBankidEnterWords, style: .title2)
             hText(words, style: .headline)
+        }
+    }
+}
+
+struct NorwegianBankID: View {
+    var body: some View {
+        VStack(spacing: 15) {
+            hText(L10n.insurelyBankidNoOpenBankid, style: .title2)
+            ActivityIndicator(style: .medium)
         }
     }
 }
@@ -123,6 +132,8 @@ struct AuthMethodContainer: View {
                 SwedishBankID(autoStartToken: token)
             case let .norwegianBankIDWords(words):
                 NorwegianBankIDWords(words: words)
+            case .norwegianBankID:
+                NorwegianBankID()
             case .none:
                 ActivityIndicator(style: .medium)
             }

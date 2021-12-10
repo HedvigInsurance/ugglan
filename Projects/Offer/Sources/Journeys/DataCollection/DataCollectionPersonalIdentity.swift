@@ -61,7 +61,7 @@ public struct DataCollectionPersonalIdentity: View {
         ReadDataCollectionSession { session in
             hForm {
                 hSection {
-                    L10n.InsurelySeSsn.title
+                    L10n.InsurelyCredentials.title
                         .hText(.title2)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
