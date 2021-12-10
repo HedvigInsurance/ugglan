@@ -58,46 +58,48 @@ public struct DataCollectionPersonalIdentity: View {
     }
 
     public var body: some View {
-        hForm {
-            hSection {
-                L10n.InsurelySeSsn.title
-                    .hText(.title2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        ReadDataCollectionSession { session in
+            hForm {
+                hSection {
+                    L10n.InsurelySeSsn.title
+                        .hText(.title2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
 
-                if Self.authOptions.count > 1 {
-                    Picker("View", selection: $authOption) {
-                        ForEach(Self.authOptions) { option in
-                            hText(option.label).tag(option)
+                    if Self.authOptions.count > 1 {
+                        Picker("View", selection: $authOption) {
+                            ForEach(Self.authOptions) { option in
+                                hText(option.label).tag(option)
+                            }
                         }
+                        .pickerStyle(.segmented)
+                        .padding(.top, 40)
                     }
-                    .pickerStyle(.segmented)
+
+                    hTextField(
+                        masking: authOption.masking,
+                        value: $inputtedValue
+                    )
+                    .focused($focusTextField, equals: true)
                     .padding(.top, 40)
-                }
 
-                hTextField(
-                    masking: authOption.masking,
-                    value: $inputtedValue
-                )
-                .focused($focusTextField, equals: true)
-                .padding(.top, 40)
+                    VStack {
+                        hButton.LargeButtonFilled {
+                            if authOption.masking.type == .digits {
+                                store.send(.session(id: session.id, action: .setCredential(credential: .phoneNumber(number: inputtedValue))))
+                            } else {
+                                store.send(.session(id: session.id, action: .setCredential(credential: .personalNumber(number: inputtedValue))))
+                            }
 
-                VStack {
-                    hButton.LargeButtonFilled {
-                        if authOption.masking.type == .digits {
-                            store.send(.setCredential(credential: .phoneNumber(number: inputtedValue)))
-                        } else {
-                            store.send(.setCredential(credential: .personalNumber(number: inputtedValue)))
+                            store.send(.session(id: session.id, action: .startAuthentication))
+                        } content: {
+                            L10n.InsurelySsn.continueButtonText.hText()
                         }
-
-                        store.send(.startAuthentication)
-                    } content: {
-                        L10n.InsurelySsn.continueButtonText.hText()
                     }
+                    .padding(.top, 40)
+                    .disabled(!authOption.masking.isValid(text: inputtedValue))
                 }
-                .padding(.top, 40)
-                .disabled(!authOption.masking.isValid(text: inputtedValue))
+                .sectionContainerStyle(.transparent)
             }
-            .sectionContainerStyle(.transparent)
         }
     }
 }
@@ -105,14 +107,15 @@ public struct DataCollectionPersonalIdentity: View {
 extension DataCollectionPersonalIdentity {
     static func journey<InnerJourney: JourneyPresentation>(
         modally: Bool = false,
+        sessionID: UUID,
         @JourneyBuilder _ next: @escaping () -> InnerJourney
     ) -> some JourneyPresentation {
         HostingJourney(
             DataCollectionStore.self,
-            rootView: DataCollectionPersonalIdentity(),
+            rootView: DataCollectionPersonalIdentity().environment(\.dataCollectionSessionID, sessionID),
             style: .detented(.large, modally: modally)
         ) { action in
-            if case .startAuthentication = action {
+            if case .session(id: sessionID, action: .startAuthentication) = action {
                 next()
             }
         }
@@ -125,13 +128,13 @@ struct DataCollectionPersonalIdentityPreview: PreviewProvider {
     static var previews: some View {
         Group {
             JourneyPreviewer(
-                DataCollectionPersonalIdentity.journey(modally: true) {
+                DataCollectionPersonalIdentity.journey(modally: true, sessionID: UUID()) {
                     ContinueJourney()
                 }
             )
             .preferredColorScheme(.light)
             JourneyPreviewer(
-                DataCollectionPersonalIdentity.journey(modally: true) {
+                DataCollectionPersonalIdentity.journey(modally: true, sessionID: UUID()) {
                     ContinueJourney()
                 }
             )

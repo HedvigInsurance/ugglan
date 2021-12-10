@@ -115,13 +115,8 @@ struct AuthMethodContainer: View {
     var authMethod: DataCollectionAuthMethod?
 
     var body: some View {
-        PresentableStoreLens(
-            DataCollectionStore.self,
-            getter: { state in
-                state.status
-            }
-        ) { status in
-            if status == .login {
+        ReadDataCollectionSession { session in
+            if session.status == .login {
                 switch authMethod {
                 case .swedishBankIDEphemeral:
                     SwedishBankID(autoStartToken: nil)
@@ -134,11 +129,11 @@ struct AuthMethodContainer: View {
                 }
             } else {
                 ActivityIndicator(style: .medium)
-                    .onReceive(Just(status)) { status in
+                    .onReceive(Just(session.status)) { status in
                         if status == .collecting || status == .completed {
-                            store.send(.confirmResult(result: .started))
+                            store.send(.session(id: session.id, action: .confirmResult(result: .started)))
                         } else if status == .failed {
-                            store.send(.confirmResult(result: .failed))
+                            store.send(.session(id: session.id, action: .confirmResult(result: .failed)))
                         }
                     }
             }
@@ -152,13 +147,8 @@ public struct DataCollectionAuthentication: View {
     @PresentableStore var store: DataCollectionStore
 
     public var body: some View {
-        PresentableStoreLens(
-            DataCollectionStore.self,
-            getter: { state in
-                state.authMethod
-            }
-        ) { authMethod in
-            AuthMethodContainer(authMethod: authMethod)
+        ReadDataCollectionSession { session in
+            AuthMethodContainer(authMethod: session.authMethod)
         }
         .presentableStoreLensAnimation(.easeInOut(duration: 0.5))
     }
@@ -167,6 +157,7 @@ public struct DataCollectionAuthentication: View {
 extension DataCollectionAuthentication {
     static func journey<InnerJourney: JourneyPresentation>(
         style: PresentationStyle = .default,
+        sessionID: UUID,
         @JourneyBuilder _ next: @escaping (_ result: DataCollectionConfirmationResult) -> InnerJourney
     ) -> some JourneyPresentation {
         HostingJourney(
@@ -175,7 +166,7 @@ extension DataCollectionAuthentication {
             style: style
         ) { action in
             switch action {
-            case let .confirmResult(result):
+            case .session(id: sessionID, action: .confirmResult(let result)):
                 next(result)
             default:
                 ContinueJourney()
@@ -190,13 +181,13 @@ struct DataCollectionAuthenticationPreview: PreviewProvider {
     static var previews: some View {
         Group {
             JourneyPreviewer(
-                DataCollectionAuthentication.journey(style: .detented(.large)) { _ in
+                DataCollectionAuthentication.journey(style: .detented(.large), sessionID: UUID()) { _ in
                     ContinueJourney()
                 }
             )
             .preferredColorScheme(.light)
             JourneyPreviewer(
-                DataCollectionAuthentication.journey(style: .detented(.large)) { _ in
+                DataCollectionAuthentication.journey(style: .detented(.large), sessionID: UUID()) { _ in
                     ContinueJourney()
                 }
             )

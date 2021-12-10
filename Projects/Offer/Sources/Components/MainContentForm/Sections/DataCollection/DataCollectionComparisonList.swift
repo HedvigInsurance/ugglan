@@ -25,7 +25,7 @@ struct DataCollectionComparisonList: View {
         PresentableStoreLens(
             DataCollectionStore.self,
             getter: { state in
-                state.insurances
+                state.allInsurances
             }
         ) { insurances in
             if !insurances.isEmpty {
@@ -90,7 +90,9 @@ struct DataCollectionComparisonList: View {
             }
         }
         .onAppear {
-            store.send(.fetchInfo)
+            store.state.sessions.forEach { session in
+                store.send(.session(id: session.id, action: .fetchInfo))
+            }
         }
     }
 }

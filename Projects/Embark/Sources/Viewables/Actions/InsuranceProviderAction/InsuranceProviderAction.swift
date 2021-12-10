@@ -29,9 +29,9 @@ enum InsuranceWrapper {
     var isExternal: Bool {
         switch self {
         case .external:
-            return Localization.Locale.currentLocale.market == .se
+            return [.se, .no].contains(Localization.Locale.currentLocale.market)
         case .previous:
-            return false
+            return true
         }
     }
 
@@ -118,7 +118,7 @@ extension InsuranceProviderAction: Viewable {
                                 ? GraphQL.InsuranceProviderFragment(
                                     name: "DEMO",
                                     id: "DEMO",
-                                    externalCollectionId: "se-demo",
+                                    externalCollectionId: "\(Localization.Locale.currentLocale.market.rawValue)-demo".lowercased(),
                                     hasExternalCapabilities: true
                                 ) : nil
                         ]

@@ -9,11 +9,12 @@ struct DataCollectionComparisonContainer: View {
         PresentableStoreLens(
             DataCollectionStore.self,
             getter: { state in
-                state.status
+                state.allStatuses
             }
-        ) { status in
-            switch status {
-            case .failed, .login:
+        ) { statuses in
+            if statuses.contains(.completed) {
+                DataCollectionComparisonList()
+            } else if statuses.contains(.failed) || statuses.contains(.login) {
                 hSection(header: hText(L10n.offerPriceComparisionHeader)) {
                     hRow {
                         hText(
@@ -21,11 +22,7 @@ struct DataCollectionComparisonContainer: View {
                         )
                     }
                 }
-            case .completed:
-                DataCollectionComparisonList()
-            case .none:
-                EmptyView()
-            case .started, .collecting:
+            } else if statuses.contains(.started) || statuses.contains(.collecting) {
                 ActivityIndicator(style: .medium)
             }
         }
