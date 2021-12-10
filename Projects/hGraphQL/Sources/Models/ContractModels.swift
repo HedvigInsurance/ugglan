@@ -316,7 +316,7 @@ public struct CurrentAgreement: Codable, Hashable {
         guard let currentAgreement = currentAgreement else {
             return nil
         }
-        
+
         certificateUrl = currentAgreement.certificateUrl
         activeFrom = currentAgreement.activeFrom
         activeTo = currentAgreement.activeTo
@@ -330,7 +330,7 @@ public struct CurrentAgreement: Codable, Hashable {
         guard let currentAgreement = currentAgreement else {
             return nil
         }
-        
+
         certificateUrl = currentAgreement.certificateUrl
         activeFrom = currentAgreement.activeFrom
         activeTo = currentAgreement.activeTo

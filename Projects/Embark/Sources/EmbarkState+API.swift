@@ -104,7 +104,7 @@ extension GraphQL.ApiGeneratedVariableFragment {
         var map = GraphQLMap()
 
         switch type {
-            
+
         case .uuid:
             let uuid = UUID().uuidString
             map[key] = uuid
