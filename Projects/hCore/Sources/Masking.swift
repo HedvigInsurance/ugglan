@@ -63,7 +63,8 @@ public struct Masking {
             return emailPredicate.evaluate(with: text)
         case .norwegianPostalCode: return text.count == 4
         case .postalCode: return unmask(text: text).count == 5
-        case .digits: return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text)) && !text.isEmpty
+        case .digits:
+            return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text)) && !text.isEmpty
         case .none: return true
         }
     }
