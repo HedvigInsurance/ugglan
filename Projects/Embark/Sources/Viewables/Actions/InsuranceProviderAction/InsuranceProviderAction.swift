@@ -31,7 +31,7 @@ enum InsuranceWrapper {
         case .external:
             return [.se, .no].contains(Localization.Locale.currentLocale.market)
         case .previous:
-            return true
+            return false
         }
     }
 

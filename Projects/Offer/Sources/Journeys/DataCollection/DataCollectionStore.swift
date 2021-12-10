@@ -89,6 +89,7 @@ public enum DataCollectionSessionAction: ActionProtocol {
 
 public enum DataCollectionAction: ActionProtocol {
     case startSession(id: UUID, providerID: String, providerDisplayName: String)
+    case removeSession(id: UUID)
     case session(id: UUID, action: DataCollectionSessionAction)
 }
 
@@ -317,7 +318,6 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
                 case let .setCredential(credential):
                     newSession.credential = credential
                 case .startAuthentication:
-                    newSession.id = UUID()
                     newSession.authMethod = nil
                     newSession.status = .none
                 case let .setStatus(status):
@@ -350,6 +350,12 @@ public final class DataCollectionStore: StateStore<DataCollectionState, DataColl
             newSession.providerDisplayName = providerDisplayName
 
             newState.sessions = [newState.sessions, [newSession]].flatMap { $0 }
+        case let .removeSession(id):
+            newState.sessions = 
+                newState.sessions.filter({ session in
+                    session.id != id
+                })
+            
         }
 
         return newState

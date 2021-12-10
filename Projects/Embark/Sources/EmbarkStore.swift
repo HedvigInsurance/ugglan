@@ -81,9 +81,17 @@ class EmbarkStore {
     func getValue(key: String, includeQueue: Bool = false) -> String? {
         return getValues(key: key, includeQueue: includeQueue)?.first
     }
+    
+    var supportedFeatures = [
+        "Supports.DataCollectionNorway"
+    ]
 
-    func getValueWithNull(key: String) -> String {
-        getValue(key: key) ?? "null"
+    func getValueWithNullAndSupportedFeatures(key: String) -> String {
+        if (supportedFeatures.contains(key)) {
+            return "true"
+        }
+        
+        return getValue(key: key) ?? "null"
     }
 
     func getPrefillValue(key: String) -> String? { prefill[key] }
@@ -112,7 +120,7 @@ class EmbarkStore {
     func passes(expression: GraphQL.BasicExpressionFragment) -> Bool {
         if let binaryExpression = expression.asEmbarkExpressionBinary {
             switch binaryExpression.expressionBinaryType {
-            case .equals: return getValueWithNull(key: binaryExpression.key) == binaryExpression.value
+            case .equals: return getValueWithNullAndSupportedFeatures(key: binaryExpression.key) == binaryExpression.value
             case .lessThan:
                 if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
                     return storeFloat < binaryExpression.value.floatValue
@@ -187,7 +195,7 @@ class EmbarkStore {
         if let binaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectBinaryExpression {
             switch binaryExpression.binaryType {
             case .equals:
-                if getValueWithNull(key: binaryExpression.key) == binaryExpression.value {
+                if getValueWithNullAndSupportedFeatures(key: binaryExpression.key) == binaryExpression.value {
                     return binaryExpression.to
                 }
             case .lessThan:
@@ -217,7 +225,7 @@ class EmbarkStore {
                 }
 
             case .notEquals:
-                if getValueWithNull(key: binaryExpression.key) != binaryExpression.value {
+                if getValueWithNullAndSupportedFeatures(key: binaryExpression.key) != binaryExpression.value {
                     return binaryExpression.to
                 }
             case .__unknown: break

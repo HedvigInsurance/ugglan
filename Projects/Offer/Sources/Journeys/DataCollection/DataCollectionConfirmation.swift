@@ -76,6 +76,7 @@ public struct DataCollectionConfirmation: View {
                             }
                         } else {
                             hButton.LargeButtonFilled {
+                                store.send(.removeSession(id: session.id))
                                 store.send(.session(id: session.id, action: .confirmResult(result: .retry)))
                             } content: {
                                 L10n.InsurelyFailure.retryButtonText.hText()
