@@ -62,7 +62,7 @@ struct ContractInformationView: View {
                             }
                         }
                     }
-                    if contract.currentAgreement.status != .terminated {
+                    if contract.currentAgreement?.status != .terminated {
                         if [.se, .no].contains(Localization.Locale.currentLocale.market) {
                             if contract.showsMovingFlowButton {
                                 hSection {
