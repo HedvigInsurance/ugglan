@@ -14,7 +14,7 @@ struct ClaimSection: View {
     }
 
     @ObservedObject var state: ClaimSectionState
-    
+
     var store: HomeStore
 
     var body: some View {

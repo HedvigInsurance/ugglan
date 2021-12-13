@@ -5,7 +5,7 @@ import hGraphQL
 
 struct ClaimStatus: View {
     var claim: Claim
-    
+
     var store: HomeStore
 
     var body: some View {

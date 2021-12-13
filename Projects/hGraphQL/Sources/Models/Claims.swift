@@ -31,7 +31,7 @@ public struct Claim: Codable, Equatable {
         }
         self.title = cardData.title
         self.subtitle = cardData.subtitle
-        
+
         self.claimDetailData = ClaimDetailData(claim: cardData.claim)
     }
 
@@ -41,9 +41,11 @@ public struct Claim: Codable, Equatable {
     public let title: String
     public let subtitle: String
     public let claimDetailData: ClaimDetailData
-    
+
     public struct ClaimDetailData: Codable, Equatable {
-        internal init(claim: ClaimStatusCard.Claim) {
+        internal init(
+            claim: ClaimStatusCard.Claim
+        ) {
             self.id = claim.id
             self.status = .init(rawValue: claim.status.rawValue) ?? .none
             self.outcome = .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none
@@ -57,7 +59,7 @@ public struct Claim: Codable, Equatable {
             self.type = claim.type ?? ""
             self.payout = .init(amount: claim.payout?.amount ?? "", currency: claim.payout?.currency ?? "")
         }
-        
+
         public let id: String
         public let status: ClaimStatus
         public let outcome: ClaimOutcome
@@ -68,7 +70,7 @@ public struct Claim: Codable, Equatable {
         public let statusParagraph: String
         public let type: String
         public let payout: MonetaryAmount
-        
+
         public enum ClaimStatus: String, Codable {
             case none
             case submitted
@@ -106,7 +108,7 @@ public struct Claim: Codable, Equatable {
                 }
             }
         }
-        
+
     }
 
     public struct ClaimPill: Codable, Equatable {
