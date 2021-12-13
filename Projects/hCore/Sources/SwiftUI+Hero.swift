@@ -8,8 +8,29 @@ struct HeroViewContainer<Content: View>: View, UIViewRepresentable {
     let modifiers: [HeroModifier]
     let content: Content
 
+    class Coordinator {
+        internal init(
+            hostingView: HostingView<AnyView>
+        ) {
+            self.hostingView = hostingView
+        }
+
+        func updateRootView(_ content: AnyView) {
+            self.hostingView.swiftUIRootView = content
+        }
+
+        var hostingView: HostingView<AnyView>
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(hostingView: HostingView(rootView: AnyView(EmptyView())))
+    }
+
     func makeUIView(context: Context) -> some UIView {
-        let view = HostingView(rootView: content.modifier(TransferEnvironment(environment: context.environment)))
+        let view = context.coordinator.hostingView
+        context.coordinator.updateRootView(
+            AnyView(content.modifier(TransferEnvironment(environment: context.environment)))
+        )
         return view
     }
 
@@ -17,6 +38,9 @@ struct HeroViewContainer<Content: View>: View, UIViewRepresentable {
         uiView.hero.isEnabled = true
         uiView.hero.id = isHeroEnabled ? id : nil
         uiView.hero.modifiers = modifiers
+        context.coordinator.updateRootView(
+            AnyView(content.modifier(TransferEnvironment(environment: context.environment)))
+        )
     }
 }
 

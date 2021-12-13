@@ -82,7 +82,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let contractPerils: [Perils]
     public let insurableLimits: [InsurableLimits]
     public let termsAndConditions: TermsAndConditions
-    public let currentAgreement: CurrentAgreement
+    public let currentAgreement: CurrentAgreement?
     public let statusPills: [String]
     public let detailPills: [String]
     public let showsMovingFlowButton: Bool
@@ -310,9 +310,13 @@ public struct CurrentAgreement: Codable, Hashable {
     public let premium: MonetaryAmount
     public let status: ContractStatus?
 
-    init(
-        currentAgreement: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract.CurrentAgreement
+    init?(
+        currentAgreement: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract.CurrentAgreement?
     ) {
+        guard let currentAgreement = currentAgreement else {
+            return nil
+        }
+
         certificateUrl = currentAgreement.certificateUrl
         activeFrom = currentAgreement.activeFrom
         activeTo = currentAgreement.activeTo
@@ -320,9 +324,13 @@ public struct CurrentAgreement: Codable, Hashable {
         status = .init(rawValue: currentAgreement.status.rawValue)
     }
 
-    init(
-        currentAgreement: GraphQL.ContractsQuery.Data.Contract.CurrentAgreement
+    init?(
+        currentAgreement: GraphQL.ContractsQuery.Data.Contract.CurrentAgreement?
     ) {
+        guard let currentAgreement = currentAgreement else {
+            return nil
+        }
+
         certificateUrl = currentAgreement.certificateUrl
         activeFrom = currentAgreement.activeFrom
         activeTo = currentAgreement.activeTo

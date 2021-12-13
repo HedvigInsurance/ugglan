@@ -1,6 +1,7 @@
 import Flow
 import Foundation
 import UIKit
+import hCoreUI
 
 @available(iOS 13, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -15,7 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
             self.window = window
-            let navigationController = UINavigationController()
+            let navigationController = hNavigationController()
             navigationController.navigationBar.prefersLargeTitles = true
 
             window.rootViewController = navigationController

@@ -20,7 +20,7 @@ struct ContractTable {
                 .flatMap { $0.contracts }
         case .terminated:
             return state.contracts.filter { contract in
-                contract.currentAgreement.status == .terminated
+                contract.currentAgreement?.status == .terminated
             }
         case .none: return []
         }
