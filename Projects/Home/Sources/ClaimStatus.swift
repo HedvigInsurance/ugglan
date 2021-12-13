@@ -5,6 +5,8 @@ import hGraphQL
 
 struct ClaimStatus: View {
     var claim: Claim
+    
+    var store: HomeStore
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -29,6 +31,9 @@ struct ClaimStatus: View {
                 }
             }
             .padding([.leading, .trailing], 16)
+        }
+        .onTapGesture {
+            store.send(.openClaimDetails(claim: claim))
         }
         .padding([.top, .bottom], 16)
         .background(

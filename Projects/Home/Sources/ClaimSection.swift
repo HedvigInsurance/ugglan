@@ -6,19 +6,23 @@ import hGraphQL
 
 struct ClaimSection: View {
     internal init(
-        claims: [Claim]
+        claims: [Claim],
+        store: HomeStore
     ) {
         state = ClaimSectionState(claims: claims)
+        self.store = store
     }
 
     @ObservedObject var state: ClaimSectionState
+    
+    var store: HomeStore
 
     var body: some View {
         VStack {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(state.claims, id: \.id) { claim in
-                        ClaimStatus(claim: claim)
+                        ClaimStatus(claim: claim, store: store)
                             .frame(width: state.frameWidth * 0.9)
                             .padding(.top)
                             .padding(.bottom, 5)
