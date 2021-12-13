@@ -83,7 +83,7 @@ extension EmbarkSelectActionOption: Viewable {
 
                     bag += stackView.addArranged(label)
                 }
-                
+
                 let valueLabel = MultilineLabel(
                     value: data.link.fragments.embarkLinkFragment.label,
                     style: TextStyle.brand(.headline(color: .primary)).centerAligned
