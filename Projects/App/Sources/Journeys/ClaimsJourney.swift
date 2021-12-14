@@ -80,7 +80,7 @@ extension JourneyPresentation {
     func sendActionOnDismiss<S: Store>(_ storeType: S.Type, _ action: S.Action) -> Self {
         return self.onDismiss {
             let store: S = self.presentable.get()
-            
+
             store.send(action)
         }
     }
