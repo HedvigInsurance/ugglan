@@ -33,6 +33,11 @@ extension AppJourney {
         .onTabSelected {
             ContextGradient.currentOption = .home
         }
+        .onAction(HomeStore.self) { action in
+            if case let .openClaimDetails(claim) = action {
+                AppJourney.claimDetailJourney
+            }
+        }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
                 return deepLink == .home

@@ -63,7 +63,8 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                     return .setClaims(claims: claimData.claims)
                 }
                 .valueThenEndSignal
-        case .startPollingClaims:
+        case .startPollingClaims
+            :
             return Signal(every: 2).map { .fetchClaims }
         case .stopPollingClaims:
             cancelEffect(.startPollingClaims)

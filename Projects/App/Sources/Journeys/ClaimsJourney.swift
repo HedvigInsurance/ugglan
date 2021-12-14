@@ -78,3 +78,15 @@ extension AppJourney {
         }
     }
 }
+
+
+extension AppJourney {
+    static var claimDetailJourney: some JourneyPresentation {
+        HostingJourney(
+            UgglanStore.self,
+            rootView: ClaimDetailView(),
+            options: [.embedInNavigationController]) { action in
+            DismissJourney()
+        }
+    }
+}

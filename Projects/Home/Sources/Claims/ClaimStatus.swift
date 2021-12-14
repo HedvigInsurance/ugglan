@@ -33,15 +33,15 @@ struct ClaimStatus: View {
             }
             .padding([.leading, .trailing], 16)
         }
-        .onTapGesture {
-            store.send(.openClaimDetails(claim: claim))
-        }
         .padding([.top, .bottom], 16)
         .background(
             RoundedRectangle(cornerRadius: 10)
                 .fill(hBackgroundColor.tertiary)
                 .hShadow()
         )
+        .onTapGesture {
+            store.send(.openClaimDetails(claim: claim))
+        }
     }
 }
 
