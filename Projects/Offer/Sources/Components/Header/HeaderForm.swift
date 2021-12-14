@@ -32,8 +32,12 @@ extension HeaderForm: Presentable {
 
         let section = form.appendSection()
         section.dynamicStyle = .brandGroupedNoBackground
+        
+        section.appendSpacing(.custom(20))
+        
+        section.append(HostingView(rootView: BundleNameLabel()))
 
-        section.appendSpacing(.custom(30))
+        section.appendSpacing(.custom(10))
 
         bag += section.append(PriceRow(placement: .header))
 

@@ -35,6 +35,7 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
         id
         tag(locale: $locale)
         bundle {
+            displayName(locale: $locale)
             quotes {
               ... on BundledQuote {
                 dataCollectionId
