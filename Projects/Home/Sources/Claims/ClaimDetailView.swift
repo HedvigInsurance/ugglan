@@ -1,15 +1,17 @@
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct ClaimDetailView: View {
     var claim: Claim
-    
-    public init(claim: Claim) {
+
+    public init(
+        claim: Claim
+    ) {
         self.claim = claim
     }
-    
+
     public var body: some View {
         VStack {
             TappableCard {
@@ -19,17 +21,17 @@ public struct ClaimDetailView: View {
                     }
                 }
                 .padding(16)
-                
+
                 Spacer()
                     .frame(maxHeight: 8)
-                
+
                 hText("We have received your claim and will start reviewing it soon.")
                     .multilineTextAlignment(.leading)
-                
+
                 Spacer()
                     .frame(maxHeight: 20)
                 Divider()
-                
+
                 HStack(alignment: .center) {
                     VStack(alignment: .leading, spacing: 3) {
                         hText("Questions", style: .caption1)

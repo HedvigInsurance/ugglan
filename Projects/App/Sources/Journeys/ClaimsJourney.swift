@@ -80,13 +80,13 @@ extension AppJourney {
     }
 }
 
-
 extension AppJourney {
     static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
         HostingJourney(
             UgglanStore.self,
             rootView: ClaimDetailView(claim: claim),
-            options: [.embedInNavigationController]) { action in
+            options: [.embedInNavigationController]
+        ) { action in
             DismissJourney()
         }
     }

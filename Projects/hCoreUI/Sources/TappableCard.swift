@@ -4,7 +4,7 @@ import hCore
 public struct TappableCard<Content: View>: View {
     private let content: Content
     var action: (() -> Void)?
-    
+
     public init(
         action: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> Content
@@ -12,7 +12,7 @@ public struct TappableCard<Content: View>: View {
         self.action = action
         self.content = content()
     }
-    
+
     public var body: some View {
         VStack {
             content
@@ -28,7 +28,7 @@ public struct TappableCard<Content: View>: View {
 struct TappableCard_Previews: PreviewProvider {
     static var previews: some View {
         TappableCard {
-            
+
         }
     }
 }
