@@ -35,7 +35,7 @@ extension AppJourney {
         }
         .onAction(HomeStore.self) { action in
             if case let .openClaimDetails(claim) = action {
-                AppJourney.claimDetailJourney
+                AppJourney.claimDetailJourney(claim: claim)
             }
         }
         .makeTabSelected(UgglanStore.self) { action in
