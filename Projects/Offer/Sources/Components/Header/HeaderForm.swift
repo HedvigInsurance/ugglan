@@ -32,9 +32,9 @@ extension HeaderForm: Presentable {
 
         let section = form.appendSection()
         section.dynamicStyle = .brandGroupedNoBackground
-        
+
         section.appendSpacing(.custom(20))
-        
+
         section.append(HostingView(rootView: BundleNameLabel()))
 
         section.appendSpacing(.custom(10))
