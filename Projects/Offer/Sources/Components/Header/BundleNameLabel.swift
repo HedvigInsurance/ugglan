@@ -13,7 +13,10 @@ struct BundleNameLabel: View {
             }
         ) { bundleName in
             if let bundleName = bundleName {
-                hText(bundleName, style: .subheadline).foregroundColor(hLabelColor.secondary)
+                hText(bundleName, style: .subheadline)
+                    .foregroundColor(hLabelColor.secondary)
+                    .padding(.horizontal, 10)
+                    .multilineTextAlignment(.center)
             }
         }
         .presentableStoreLensAnimation(.spring())
