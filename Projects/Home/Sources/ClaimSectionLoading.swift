@@ -24,10 +24,10 @@ struct ClaimSectionLoading: View {
         if claims.isEmpty {
             Spacer().frame(height: 40)
         } else if claims.count == 1, let claim = claims.first {
-            ClaimStatus(claim: claim, store: store)
+            ClaimStatus(claim: claim)
                 .padding([.bottom, .top])
         } else {
-            ClaimSection(claims: claims, store: store)
+            ClaimSection(claims: claims)
                 .padding([.bottom, .top])
         }
     }

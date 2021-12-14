@@ -5,7 +5,8 @@ import hGraphQL
 
 struct ClaimStatus: View {
     var claim: Claim
-
+    
+    @PresentableStore
     var store: HomeStore
 
     var body: some View {
@@ -78,21 +79,5 @@ extension Claim.ClaimPill {
         case .none:
             EmptyView()
         }
-    }
-}
-
-extension Claim {
-    public static var mock = Claim(
-        id: "123",
-        pills: [.init(text: "abc", type: .payment)],
-        segments: [],
-        title: "Blah",
-        subtitle: "Blah"
-    )
-}
-
-struct ClaimsPreview: PreviewProvider {
-    static var previews: some View {
-        ClaimStatus(claim: .mock).preferredColorScheme(.light).previewAsComponent()
     }
 }

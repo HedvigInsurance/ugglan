@@ -43,11 +43,24 @@ public struct Claim: Codable, Equatable {
     public let claimDetailData: ClaimDetailData
 
     public struct ClaimDetailData: Codable, Equatable {
+        internal init(id: String, status: Claim.ClaimDetailData.ClaimStatus, outcome: Claim.ClaimDetailData.ClaimOutcome, submittedAt: Date?, closedAt: Date?, signedAudioURL: String, progressSegments: [Claim.ClaimStatusProgressSegment], statusParagraph: String, type: String, payout: MonetaryAmount) {
+            self.id = id
+            self.status = status
+            self.outcome = outcome
+            self.submittedAt = submittedAt
+            self.closedAt = closedAt
+            self.signedAudioURL = signedAudioURL
+            self.progressSegments = progressSegments
+            self.statusParagraph = statusParagraph
+            self.type = type
+            self.payout = payout
+        }
+        
         internal init(
             claim: ClaimStatusCard.Claim
         ) {
             self.id = claim.id
-            self.status = .init(rawValue: claim.status.rawValue) ?? .none
+            self.status = .none
             self.outcome = .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none
             self.submittedAt = claim.submittedAt.localDateToDate
             self.closedAt = claim.closedAt?.localDateToDate

@@ -6,15 +6,15 @@ import hGraphQL
 
 struct ClaimSection: View {
     internal init(
-        claims: [Claim],
-        store: HomeStore
+        claims: [Claim]
     ) {
         state = ClaimSectionState(claims: claims)
-        self.store = store
     }
 
-    @ObservedObject var state: ClaimSectionState
+    @ObservedObject
+    var state: ClaimSectionState
 
+    @PresentableStore
     var store: HomeStore
 
     var body: some View {
@@ -22,7 +22,7 @@ struct ClaimSection: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(state.claims, id: \.id) { claim in
-                        ClaimStatus(claim: claim, store: store)
+                        ClaimStatus(claim: claim)
                             .frame(width: state.frameWidth * 0.9)
                             .padding(.top)
                             .padding(.bottom, 5)
@@ -44,11 +44,5 @@ struct ClaimSection: View {
             hPagerDots(currentIndex: state.currentIndex, totalCount: state.claims.count)
                 .padding(.bottom, 5)
         }
-    }
-}
-
-struct ClaimSectionPreview: PreviewProvider {
-    static var previews: some View {
-        ClaimSection(claims: [.mock, .mock]).preferredColorScheme(.light).previewAsComponent()
     }
 }
