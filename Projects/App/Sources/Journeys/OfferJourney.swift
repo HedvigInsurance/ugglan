@@ -44,6 +44,7 @@ extension AppJourney {
                 style: .default,
                 options: [
                     .defaults,
+                    .autoPop,
                     .prefersLargeTitles(true),
                     .largeTitleDisplayMode(.always),
                     .allowSwipeDismissAlways,
@@ -51,6 +52,6 @@ extension AppJourney {
             )
             .withJourneyDismissButton
             .hidesBackButton
-        }
+        }.mapJourneyDismissToCancel
     }
 }

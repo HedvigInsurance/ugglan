@@ -8,7 +8,7 @@ import hCoreUI
 enum AdyenError: Error { case cancelled, tokenization, action, failed }
 
 extension AdyenError: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Void>) {
         let tryAgainButton = Button(
             title: L10n.PayInError.retryButton,
             type: .standard(
@@ -46,14 +46,14 @@ extension AdyenError: Presentable {
 
         return (
             viewController,
-            Future { completion in
+            FiniteSignal { callback in
                 let bag = DisposeBag()
 
                 bag += signal.onValue { shouldRetry in
                     if shouldRetry {
-                        completion(.success)
+                       callback(.value(()))
                     } else {
-                        completion(.failure(AdyenError.cancelled))
+                       callback(.end)
                     }
                 }
 

@@ -8,9 +8,16 @@ extension AppJourney {
     ) -> some JourneyPresentation {
         Journey(
             PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
-            style: .detented(.large)
-        ) { success in
-            next(success)
+            style: .detented(.large),
+            options: [.defaults, .autoPopSelfAndSuccessors]
+        ) { result in
+            if let success = result.left {
+                next(success)
+            } else if let options = result.right {
+                Journey(AdyenPayIn(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")) { success in
+                    next(success)
+                }.withJourneyDismissButton
+            }
         }
     }
 }

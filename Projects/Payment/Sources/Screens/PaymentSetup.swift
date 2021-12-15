@@ -20,10 +20,14 @@ public struct PaymentSetup {
 }
 
 extension PaymentSetup: Presentable {
-    public func materialize() -> (UIViewController, FiniteSignal<Bool>) {
+    public func materialize() -> (UIViewController, FiniteSignal<Either<Bool, AdyenOptions>>) {
         switch Localization.Locale.currentLocale.market {
-        case .se: return DirectDebitSetup(setupType: setupType).materialize()
-        case .no, .dk, .fr: return AdyenPayInSync(urlScheme: urlScheme).materialize()
+        case .se:
+            let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
+            return (viewController, result.map { .left($0) })
+        case .no, .dk, .fr:
+            let (viewController, result) = AdyenPayInSync(urlScheme: urlScheme).materialize()
+            return (viewController, result.map { .right($0) })
         }
     }
 }

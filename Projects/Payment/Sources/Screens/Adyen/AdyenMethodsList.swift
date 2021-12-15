@@ -74,6 +74,8 @@ extension AdyenMethodsList: Presentable {
                                 didSubmitHandler: didSubmit
                             ) {
                                 callback(.value(true))
+                            } onEnd: {
+                                callback(.end)
                             } onRetry: {
                                 bag +=
                                     viewController.present(
@@ -82,6 +84,9 @@ extension AdyenMethodsList: Presentable {
                                             vc.title = viewController.title
                                         }
                                     )
+                                    .atEnd {
+                                        callback(.end)
+                                    }
                                     .onValue { success in callback(.value(success)) }
                             } onSuccess: {
                                 self.onSuccess()

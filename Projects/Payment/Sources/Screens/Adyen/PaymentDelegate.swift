@@ -26,6 +26,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
     let paymentMethod: PaymentMethod
     let didSubmitHandler: AdyenMethodsList.DidSubmit
     let onCompletion: () -> Void
+    let onEnd: () -> Void
     let onRetry: () -> Void
     let onSuccess: () -> Void
     let bag = DisposeBag()
@@ -35,12 +36,14 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         paymentMethod: PaymentMethod,
         didSubmitHandler: @escaping AdyenMethodsList.DidSubmit,
         onCompletion: @escaping () -> Void,
+        onEnd: @escaping () -> Void,
         onRetry: @escaping () -> Void,
         onSuccess: @escaping () -> Void
     ) {
         self.viewController = viewController
         self.paymentMethod = paymentMethod
         self.didSubmitHandler = didSubmitHandler
+        self.onEnd = onEnd
         self.onCompletion = onCompletion
         self.onRetry = onRetry
         self.onSuccess = onSuccess
@@ -59,14 +62,23 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         if success {
             onSuccess()
 
-            viewController.present(
+            bag += viewController.present(
                 AdyenSuccess(paymentMethod: paymentMethod),
-                style: .detented(.large, modally: false)
+                style: .detented(.large, modally: false),
+                options: [.defaults, .autoPop]
             )
+            .atEnd {
+                self.onEnd()
+            }
             .onValue { _ in self.onCompletion() }
         } else {
-            viewController.present(AdyenError.failed, style: .detented(.large, modally: false))
-                .onValue { _ in self.onRetry() }.onError { _ in self.onCompletion() }
+            bag += viewController.present(
+                AdyenError.failed,
+                style: .detented(.large, modally: false),
+                options: [.defaults, .autoPop]
+            )
+                .atEnd {  self.onEnd() }
+                .onValue { _ in self.onRetry() }
         }
     }
 
@@ -89,6 +101,10 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
             case .failure:
                 self.stopLoading(withSuccess: false, in: component)
                 self.handleResult(success: false)
+            }
+            
+            if let component = component as? PresentableComponent {
+                component.viewController.dismiss(animated: true, completion: nil)
             }
         }
 

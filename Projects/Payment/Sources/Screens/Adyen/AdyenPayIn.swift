@@ -29,13 +29,18 @@ extension AdyenMethodsList {
     }
 }
 
-struct AdyenPayIn: Presentable {
+public struct AdyenPayIn: Presentable {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
     let adyenOptions: AdyenOptions
     let urlScheme: String
+    
+    public init(adyenOptions: AdyenOptions, urlScheme: String) {
+        self.adyenOptions = adyenOptions
+        self.urlScheme = urlScheme
+    }
 
-    func materialize() -> (UIViewController, FiniteSignal<Bool>) {
+    public func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let (viewController, result) = AdyenMethodsList(adyenOptions: adyenOptions) { data, _, onResult in
             guard let jsonData = try? JSONEncoder().encode(data.paymentMethod.encodable),
                 let json = String(data: jsonData, encoding: .utf8)
@@ -82,7 +87,6 @@ struct AdyenPayIn: Presentable {
                 .flatMapResult { _ in client.fetch(query: GraphQL.ActivePaymentMethodsQuery()) }
                 .onValue { _ in }
         }
-        .wrappedInCloseButton()
         .materialize()
 
         viewController.title = L10n.adyenPayinTitle
