@@ -31,7 +31,7 @@ public struct ClaimDetailView: View {
                 HStack {
                     Spacer()
                     VStack(spacing: 4) {
-                        hText("Submitted", style: .caption2)
+                        hText(L10n.ClaimStatusDetail.submitted, style: .caption2)
                             .foregroundColor(hLabelColor.secondary)
 
                         // TODO: Parse submitted time into readable format
@@ -44,7 +44,7 @@ public struct ClaimDetailView: View {
 
                     Spacer()
                     VStack(spacing: 4) {
-                        hText("Closed", style: .caption2)
+                        hText(L10n.ClaimStatusDetail.closed, style: .caption2)
                             .foregroundColor(hLabelColor.secondary)
 
                         // TODO: Show closed time from a computed property
@@ -53,10 +53,12 @@ public struct ClaimDetailView: View {
                     Spacer()
                 }
             }
+            .padding(.top, 25)
 
             Spacer()
                 .frame(height: 24)
-
+            
+            // Status card section
             TappableCard(alignment: .leading) {
                 HStack(spacing: 6) {
                     ForEach(claim.segments, id: \.text) { segment in
@@ -78,9 +80,9 @@ public struct ClaimDetailView: View {
 
                 HStack(alignment: .center) {
                     VStack(alignment: .leading, spacing: 3) {
-                        hText("Questions", style: .caption1)
+                        hText(L10n.ClaimStatus.Contact.Generic.subtitle, style: .caption1)
                             .foregroundColor(hLabelColor.secondary)
-                        hText("Contact us in the chat", style: .callout)
+                        hText(L10n.ClaimStatus.Contact.Generic.title, style: .callout)
                     }
                     Spacer()
 
@@ -98,8 +100,32 @@ public struct ClaimDetailView: View {
                 .padding(16)
             }
             .padding(.horizontal, 16)
+            
+            Spacer()
+                .frame(height: 52)
+            
+            // Audio files section
+            VStack(alignment: .leading) {
+                hText(L10n.ClaimStatus.files, style: .headline)
+                
+                Spacer()
+                    .frame(height: 16)
+                
+                // TODO: Add audio player here
+                
+                Spacer()
+                    .frame(height: 8)
+                
+                hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
+                    .foregroundColor(hLabelColor.secondary)
+            }
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
+            .padding(.horizontal, 16)
+            
 
             Spacer()
         }
+        .background(hBackgroundColor.primary)
+        .navigationBarTitle(Text(L10n.ClaimStatus.title), displayMode: .inline)
     }
 }
