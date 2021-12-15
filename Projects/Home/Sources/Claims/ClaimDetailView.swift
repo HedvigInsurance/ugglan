@@ -21,42 +21,42 @@ public struct ClaimDetailView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 18, height: 22)
-                
+
                 // TODO: Add title as a computed property
                 hText("New insurance case", style: .headline)
-                
+
                 Spacer()
                     .frame(height: 16)
-                
+
                 HStack {
                     Spacer()
                     VStack(spacing: 4) {
                         hText("Submitted", style: .caption2)
                             .foregroundColor(hLabelColor.secondary)
-                        
+
                         // TODO: Parse submitted time into readable format
                         hText("1 min ago", style: .caption1)
                     }
-                    
+
                     Spacer()
                     Divider()
                         .frame(maxHeight: 32)
-                    
+
                     Spacer()
                     VStack(spacing: 4) {
                         hText("Closed", style: .caption2)
                             .foregroundColor(hLabelColor.secondary)
-                        
+
                         // TODO: Show closed time from a computed property
                         hText("-", style: .caption1)
                     }
                     Spacer()
                 }
             }
-            
+
             Spacer()
                 .frame(height: 24)
-            
+
             TappableCard(alignment: .leading) {
                 HStack(spacing: 6) {
                     ForEach(claim.segments, id: \.text) { segment in
@@ -83,7 +83,7 @@ public struct ClaimDetailView: View {
                         hText("Contact us in the chat", style: .callout)
                     }
                     Spacer()
-                    
+
                     hCoreUIAssets.chat.view
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -92,7 +92,7 @@ public struct ClaimDetailView: View {
                 .padding(16)
             }
             .padding(.horizontal, 16)
-            
+
             Spacer()
         }
     }
