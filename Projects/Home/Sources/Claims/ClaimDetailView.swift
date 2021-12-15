@@ -83,11 +83,17 @@ public struct ClaimDetailView: View {
                         hText("Contact us in the chat", style: .callout)
                     }
                     Spacer()
-
-                    hCoreUIAssets.chat.view
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 22.56, height: 19.17)
+                    
+                    ZStack {
+                        RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                            .fill(hBackgroundColor.primary)
+                            .frame(width: 40, height: 40)
+                        
+                        hCoreUIAssets.chatSolid.view
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 23, height: 19)
+                    }
                 }
                 .padding(16)
             }
