@@ -32,7 +32,11 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
 
         client.perform(mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(req: detailsJson))
             .onValue { data in
-                if [.pending, .completed].contains(data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished?.tokenizationResult)
+                if [.pending, .completed]
+                    .contains(
+                        data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished?
+                            .tokenizationResult
+                    )
                 {
                     self.onResult(.success(.make(())))
                 } else if let data = data.submitAdditionalPaymentDetails
