@@ -290,7 +290,7 @@ extension OfferStore {
                 else {
                     return Future(error: OfferAction.OfferStoreError.checkoutUpdate)
                 }
-                
+
                 return self.client
                     .fetch(
                         query: self.query(for: [quoteId]),
