@@ -75,3 +75,13 @@ struct AdyenPayOut: Presentable {
         return (viewController, result)
     }
 }
+
+extension AdyenPayOut {
+    public func journey<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping (_ success: Bool) -> Next
+    ) -> some JourneyPresentation {
+        Journey(self) { success in
+            next(success)
+        }
+    }
+}

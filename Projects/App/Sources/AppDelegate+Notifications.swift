@@ -58,30 +58,27 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             } else if notificationType == "CONNECT_DIRECT_DEBIT" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                     .onValue { _ in
-                        self.bag += self.window.rootViewController?
-                            .present(
-                                PaymentSetup(
-                                    setupType: .initial,
-                                    urlScheme: Bundle.main.urlScheme ?? ""
-                                ),
-                                style: .modal,
-                                options: [.defaults]
-                            )
-                            .onValue({ _ in
-
+                        self.window.rootViewController?
+                            .present(PaymentSetup(
+                                setupType: .initial,
+                                urlScheme: Bundle.main.urlScheme ?? ""
+                            ).journey { _ in
+                                DismissJourney()
+                            }).onValue({ _ in
+                                
                             })
                     }
             } else if notificationType == "PAYMENT_FAILED" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                     .onValue { _ in
-                        self.bag += self.window.rootViewController?
+                        self.window.rootViewController?
                             .present(
                                 PaymentSetup(
                                     setupType: .replacement,
                                     urlScheme: Bundle.main.urlScheme ?? ""
-                                ),
-                                style: .modal,
-                                options: [.defaults]
+                                ).journey { _ in
+                                    DismissJourney()
+                                }
                             )
                             .onValue({ _ in
 

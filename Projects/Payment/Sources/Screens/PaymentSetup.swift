@@ -31,3 +31,24 @@ extension PaymentSetup: Presentable {
         }
     }
 }
+
+extension PaymentSetup {
+    public func journey<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping (_ success: Bool) -> Next
+    ) -> some JourneyPresentation {
+        Journey(
+            self,
+            style: .detented(.large),
+            options: [.defaults, .autoPopSelfAndSuccessors]
+        ) { result in
+            if let success = result.left {
+                next(success)
+            } else if let options = result.right {
+                Journey(AdyenPayIn(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")) { success in
+                    next(success)
+                }
+                .withJourneyDismissButton
+            }
+        }
+    }
+}

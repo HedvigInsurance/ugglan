@@ -6,6 +6,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
 
 struct BankDetailsSection {
     @Inject var client: ApolloClient
@@ -57,16 +58,15 @@ extension BankDetailsSection: Viewable {
                     let setup = PaymentSetup(
                         setupType: hasAlreadyConnected ? .replacement : .initial,
                         urlScheme: self.urlScheme
+                    ).journey { _ in
+                        DismissJourney()
+                    }
+                    
+                    viewController.present(
+                        setup
                     )
-                    bag +=
-                        viewController.present(
-                            setup,
-                            style: .modally(),
-                            options: [.defaults, .allowSwipeDismissAlways]
-                        )
-                        .onValue({ _ in
-
-                        })
+                    .onValue({ _ in
+                    })
                 }
 
             bag += { section.remove(paymentSetupRow) }

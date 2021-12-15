@@ -6,6 +6,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
 
 struct PayoutDetailsSection {
     @Inject var client: ApolloClient
@@ -28,15 +29,16 @@ extension PayoutDetailsSection: Viewable {
 
         func presentPayOut(_ viewController: UIViewController) {
             payOutOptions.onValue { options in
-                bag +=
                     viewController.present(
-                        AdyenPayOut(adyenOptions: options, urlScheme: urlScheme).wrappedInCloseButton(),
-                        style: .detented(.scrollViewContentSize),
-                        options: [.defaults, .allowSwipeDismissAlways]
+                        AdyenPayOut(adyenOptions: options, urlScheme: urlScheme)
+                        .journey({ _ in
+                            DismissJourney()
+                        })
+                        .setStyle(.detented(.scrollViewContentSize))
+                        .setOptions([.defaults, .allowSwipeDismissAlways])
+                        .withJourneyDismissButton
                     )
-                    .onValue { _ in
-
-                    }
+                    .onValue { _ in }
             }
         }
 

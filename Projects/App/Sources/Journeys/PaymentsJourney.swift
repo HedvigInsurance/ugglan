@@ -14,7 +14,7 @@ extension AppJourney {
             if let success = result.left {
                 next(success)
             } else if let options = result.right {
-                Journey(AdyenPayIn(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")) { success in
+                AdyenPayIn(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "").journey { success in
                     next(success)
                 }
                 .withJourneyDismissButton

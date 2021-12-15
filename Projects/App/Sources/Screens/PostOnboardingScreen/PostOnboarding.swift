@@ -114,21 +114,17 @@ extension PostOnboarding: Presentable {
                     let (table, disposable) = self.makeTable(isSwitching: isSwitching) { action in
                         switch action {
                         case .payment:
-                            bag +=
                                 viewController.present(
                                     PaymentSetup(
                                         setupType: .postOnboarding,
                                         urlScheme: Bundle.main.urlScheme ?? ""
-                                    ),
-                                    style: .modally(
-                                        presentationStyle: .formSheet,
-                                        transitionStyle: nil,
-                                        capturesStatusBarAppearance: true
-                                    )
+                                    ).journey({ _ in
+                                        DismissJourney()
+                                    }).onDismiss {
+                                        collectionKit.scrollToNextItem()
+                                    }
                                 )
-                                .onValue { _ in
-                                    collectionKit.scrollToNextItem()
-                                }
+                                .onValue { _ in }
                         case .push:
                             UIApplication.shared.appDelegate.registerForPushNotifications()
                                 .onValue { _ in callback(()) }
