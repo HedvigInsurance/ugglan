@@ -43,7 +43,18 @@ public struct Claim: Codable, Equatable {
     public let claimDetailData: ClaimDetailData
 
     public struct ClaimDetailData: Codable, Equatable {
-        internal init(id: String, status: Claim.ClaimDetailData.ClaimStatus, outcome: Claim.ClaimDetailData.ClaimOutcome, submittedAt: String?, closedAt: String?, signedAudioURL: String, progressSegments: [Claim.ClaimStatusProgressSegment], statusParagraph: String, type: String, payout: MonetaryAmount) {
+        internal init(
+            id: String,
+            status: Claim.ClaimDetailData.ClaimStatus,
+            outcome: Claim.ClaimDetailData.ClaimOutcome,
+            submittedAt: String?,
+            closedAt: String?,
+            signedAudioURL: String,
+            progressSegments: [Claim.ClaimStatusProgressSegment],
+            statusParagraph: String,
+            type: String,
+            payout: MonetaryAmount
+        ) {
             self.id = id
             self.status = status
             self.outcome = outcome
@@ -55,7 +66,7 @@ public struct Claim: Codable, Equatable {
             self.type = type
             self.payout = payout
         }
-        
+
         internal init(
             claim: ClaimStatusCard.Claim
         ) {

@@ -11,17 +11,17 @@ public struct ClaimDetailView: View {
     ) {
         self.claim = claim
     }
-    
+
     private var statusParagraph: String {
         claim.claimDetailData.statusParagraph
     }
-    
+
     private var submittedDate: String {
         guard let submitted = claim.claimDetailData.submittedAt else { return "-" }
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
-        
+
         guard let date = dateFormatter.date(from: submitted) else { return "-" }
 
         if !Calendar.current.isDateInWeek(from: date) {
@@ -48,7 +48,7 @@ public struct ClaimDetailView: View {
 
                 // TODO: Add title as a computed property
                 hText("New insurance case", style: .headline)
-                
+
                 // TODO: Add subtitle as a computed property
                 // TODO: Hide subtitle for new insurance cases
                 hText("Contents insurance", style: .footnote)
