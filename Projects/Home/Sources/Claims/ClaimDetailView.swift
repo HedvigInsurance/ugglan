@@ -11,6 +11,30 @@ public struct ClaimDetailView: View {
     ) {
         self.claim = claim
     }
+    
+    private var statusParagraph: String {
+        claim.claimDetailData.statusParagraph
+    }
+    
+    private var submittedDate: String {
+        guard let submitted = claim.claimDetailData.submittedAt else { return "-" }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
+        
+        guard let date = dateFormatter.date(from: submitted) else { return "-" }
+
+        if !Calendar.current.isDateInWeek(from: date) {
+            dateFormatter.dateFormat = "dd-MM-yyyy, HH:mm"
+            return dateFormatter.string(from: date)
+        } else if Calendar.current.isDateInToday(date) {
+            dateFormatter.dateFormat = "HH:mm"
+            return dateFormatter.string(from: date)
+        } else {
+            dateFormatter.dateFormat = "EEEE HH:mm"
+            return dateFormatter.string(from: date)
+        }
+    }
 
     public var body: some View {
         VStack {
@@ -24,6 +48,11 @@ public struct ClaimDetailView: View {
 
                 // TODO: Add title as a computed property
                 hText("New insurance case", style: .headline)
+                
+                // TODO: Add subtitle as a computed property
+                // TODO: Hide subtitle for new insurance cases
+                hText("Contents insurance", style: .footnote)
+                    .foregroundColor(hLabelColor.secondary)
 
                 Spacer()
                     .frame(height: 16)
@@ -34,8 +63,7 @@ public struct ClaimDetailView: View {
                         hText(L10n.ClaimStatusDetail.submitted, style: .caption2)
                             .foregroundColor(hLabelColor.secondary)
 
-                        // TODO: Parse submitted time into readable format
-                        hText("1 min ago", style: .caption1)
+                        hText(submittedDate, style: .caption1)
                     }
 
                     Spacer()
@@ -70,7 +98,7 @@ public struct ClaimDetailView: View {
                 Spacer()
                     .frame(maxHeight: 8)
 
-                hText("We have received your claim and will start reviewing it soon.")
+                hText(statusParagraph)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 16)
 
@@ -126,5 +154,14 @@ public struct ClaimDetailView: View {
         }
         .background(hBackgroundColor.primary)
         .navigationBarTitle(Text(L10n.ClaimStatus.title), displayMode: .inline)
+    }
+}
+
+extension Calendar {
+    /// returns a boolean indicating if provided date is in the same week as current week
+    func isDateInWeek(from date: Date) -> Bool {
+        let currentWeek = component(Calendar.Component.weekOfYear, from: Date())
+        let otherWeek = component(Calendar.Component.weekOfYear, from: date)
+        return (currentWeek == otherWeek)
     }
 }

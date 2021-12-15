@@ -43,7 +43,7 @@ public struct Claim: Codable, Equatable {
     public let claimDetailData: ClaimDetailData
 
     public struct ClaimDetailData: Codable, Equatable {
-        internal init(id: String, status: Claim.ClaimDetailData.ClaimStatus, outcome: Claim.ClaimDetailData.ClaimOutcome, submittedAt: Date?, closedAt: Date?, signedAudioURL: String, progressSegments: [Claim.ClaimStatusProgressSegment], statusParagraph: String, type: String, payout: MonetaryAmount) {
+        internal init(id: String, status: Claim.ClaimDetailData.ClaimStatus, outcome: Claim.ClaimDetailData.ClaimOutcome, submittedAt: String?, closedAt: String?, signedAudioURL: String, progressSegments: [Claim.ClaimStatusProgressSegment], statusParagraph: String, type: String, payout: MonetaryAmount) {
             self.id = id
             self.status = status
             self.outcome = outcome
@@ -62,8 +62,8 @@ public struct Claim: Codable, Equatable {
             self.id = claim.id
             self.status = .none
             self.outcome = .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none
-            self.submittedAt = claim.submittedAt.localDateToDate
-            self.closedAt = claim.closedAt?.localDateToDate
+            self.submittedAt = claim.submittedAt
+            self.closedAt = claim.closedAt
             self.signedAudioURL = claim.signedAudioUrl ?? ""
             self.progressSegments = claim.progressSegments.map {
                 .init(text: $0.text, type: .init(rawValue: $0.type.rawValue) ?? .none)
@@ -76,8 +76,8 @@ public struct Claim: Codable, Equatable {
         public let id: String
         public let status: ClaimStatus
         public let outcome: ClaimOutcome
-        public let submittedAt: Date?
-        public let closedAt: Date?
+        public let submittedAt: String?
+        public let closedAt: String?
         public let signedAudioURL: String
         public let progressSegments: [ClaimStatusProgressSegment]
         public let statusParagraph: String
