@@ -31,7 +31,7 @@ public struct ClaimDetailView: View {
         else { return "-" }
         return readableDateString(from: date)
     }
-    
+
     /// Converts date into a readable friendly string
     private func readableDateString(from date: Date) -> String {
         // TODO: Localize strings used for yesterday and hours/minutes ago
@@ -156,7 +156,7 @@ public struct ClaimDetailView: View {
                 // Audio files section
                 VStack(alignment: .leading) {
                     hText(L10n.ClaimStatus.files, style: .headline)
-                    
+
                     Spacer()
                         .frame(height: 16)
 
@@ -165,8 +165,7 @@ public struct ClaimDetailView: View {
                         TrackPlayer(audioPlayer: .init(recording: .init(url: url, created: Date(), sample: [])))
                             .frame(height: 64)
                     }
-                    
-                    
+
                     Spacer()
                         .frame(height: 8)
 
