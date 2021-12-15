@@ -62,7 +62,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
     func stopLoading(withSuccess success: Bool, in component: PaymentComponent) {
         component.stopLoadingIfNeeded()
         component.finalizeIfNeeded(with: success)
-        
+
         self.presentationDelegates.forEach { presentationDelegate in
             presentationDelegate.dismissAll()
         }
