@@ -36,15 +36,19 @@ extension AppJourney {
             }
         }
     }
-    
+
     static var offerCheckout: some JourneyPresentation {
         paymentSetup { success in
-            Journey(Checkout(), style: .default, options: [
-                .defaults,
-                .prefersLargeTitles(true),
-                .largeTitleDisplayMode(.always),
-                .allowSwipeDismissAlways
-            ])
+            Journey(
+                Checkout(),
+                style: .default,
+                options: [
+                    .defaults,
+                    .prefersLargeTitles(true),
+                    .largeTitleDisplayMode(.always),
+                    .allowSwipeDismissAlways,
+                ]
+            )
             .withJourneyDismissButton
             .hidesBackButton
         }

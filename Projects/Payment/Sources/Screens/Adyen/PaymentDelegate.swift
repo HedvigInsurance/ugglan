@@ -93,7 +93,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         }
 
         bag.hold(delegate)
-        
+
         let presentationDelegate: PresentationDelegate
 
         if let component = component as? PresentableComponent {
@@ -103,7 +103,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         }
 
         bag.hold(presentationDelegate)
-        
+
         switch action {
         case let .redirect(redirectAction):
             let redirectComponent = RedirectComponent(apiContext: HedvigAdyenAPIContext().apiContext)

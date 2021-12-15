@@ -2,12 +2,12 @@ import Apollo
 import Flow
 import Form
 import Presentation
+import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
-import SwiftUI
 
 struct Profile { @Inject var client: ApolloClient }
 
@@ -29,7 +29,7 @@ extension Profile: Presentable {
 
         let settingsSection = SettingsSection(presentingViewController: viewController)
         bag += form.append(settingsSection)
-        
+
         form.appendSpacing(.custom(20))
 
         let query = GraphQL.ProfileQuery()

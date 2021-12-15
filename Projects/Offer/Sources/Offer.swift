@@ -170,7 +170,7 @@ extension Offer: Presentable {
                 bag += store.onAction(.openChat) {
                     callback(.value(.chat))
                 }
-                
+
                 bag += store.onAction(.openCheckout) {
                     callback(.value(.openCheckout))
                 }

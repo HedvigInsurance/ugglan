@@ -33,8 +33,9 @@ extension AdyenError: Presentable {
             body: L10n.PayInError.body,
             actions: [
                 (true, tryAgainButton),
-                ApplicationState.currentState == .loggedIn ? (false, cancelButton) : nil
-            ].compactMap { $0 },
+                ApplicationState.currentState == .loggedIn ? (false, cancelButton) : nil,
+            ]
+            .compactMap { $0 },
             showLogo: false
         )
 

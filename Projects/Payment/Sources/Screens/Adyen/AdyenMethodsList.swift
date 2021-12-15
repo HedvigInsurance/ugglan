@@ -75,13 +75,14 @@ extension AdyenMethodsList: Presentable {
                             ) {
                                 callback(.value(true))
                             } onRetry: {
-                                bag += viewController.present(
-                                    self.wrappedInCloseButton(),
-                                    configure: { vc, _ in
-                                        vc.title = viewController.title
-                                    }
-                                )
-                                .onValue { success in callback(.value(success)) }
+                                bag +=
+                                    viewController.present(
+                                        self.wrappedInCloseButton(),
+                                        configure: { vc, _ in
+                                            vc.title = viewController.title
+                                        }
+                                    )
+                                    .onValue { success in callback(.value(success)) }
                             } onSuccess: {
                                 self.onSuccess()
                             }
@@ -103,7 +104,7 @@ extension AdyenMethodsList: Presentable {
                                     )
                                 } else {
                                     let componentViewController = component.viewController
-                                    
+
                                     let closeButton = CloseButton()
                                     let closeButtonItem = UIBarButtonItem(viewable: closeButton)
 
@@ -112,7 +113,7 @@ extension AdyenMethodsList: Presentable {
                                     bag += closeButton.onTapSignal.onValue { _ in
                                         componentViewController.dismiss(animated: true, completion: nil)
                                     }
-                                    
+
                                     viewController.present(
                                         componentViewController.embededInNavigationController([.defaults]),
                                         animated: true

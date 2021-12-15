@@ -76,7 +76,7 @@ struct AdyenPayIn: Presentable {
                     data.payinMethodStatus = .active
                 }
             }
-            
+
             // refetch to refresh UI
             Future().delay(by: 0.5)
                 .flatMapResult { _ in client.fetch(query: GraphQL.ActivePaymentMethodsQuery()) }

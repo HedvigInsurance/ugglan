@@ -66,8 +66,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 ),
                                 style: .modal,
                                 options: [.defaults]
-                            ).onValue({ _ in
-                                
+                            )
+                            .onValue({ _ in
+
                             })
                     }
             } else if notificationType == "PAYMENT_FAILED" {
@@ -81,8 +82,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 ),
                                 style: .modal,
                                 options: [.defaults]
-                            ).onValue({ _ in
-                                
+                            )
+                            .onValue({ _ in
+
                             })
                     }
             } else if notificationType == "OPEN_INSURANCE_TAB" {

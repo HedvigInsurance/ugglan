@@ -42,7 +42,7 @@ extension DiscountTag: Presentable {
             style: textStyle
         )
         contentStackView.addArrangedSubview(titleLabel)
-        
+
         bag += store.stateSignal
             .animated(style: SpringAnimationStyle.lightBounce()) { state in
                 guard let currentVariant = state.currentVariant, let data = state.offerData else {

@@ -34,15 +34,16 @@ extension AdyenPayInSync: Presentable {
             viewController,
             FiniteSignal { callback in
                 AdyenMethodsList.payInOptions.onValue { options in
-                    bag += viewController.present(
-                        AdyenPayIn(adyenOptions: options, urlScheme: urlScheme)
-                    )
-                    .atEnd {
-                        callback(.end)
-                    }
-                    .onValue({ success in
-                        callback(.value(success))
-                    })
+                    bag +=
+                        viewController.present(
+                            AdyenPayIn(adyenOptions: options, urlScheme: urlScheme)
+                        )
+                        .atEnd {
+                            callback(.end)
+                        }
+                        .onValue({ success in
+                            callback(.value(success))
+                        })
                 }
 
                 return bag

@@ -35,7 +35,7 @@ extension AppJourney {
         }
         .onPresent {
             let client: ApolloClient = Dependencies.shared.resolve()
-            
+
             client.perform(mutation: GraphQL.TriggerFreeTextChatMutation())
                 .onValue { _ in
                     chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {

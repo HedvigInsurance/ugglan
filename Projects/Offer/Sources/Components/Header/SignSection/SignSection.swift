@@ -31,7 +31,7 @@ extension SignSection: Presentable {
 
         let row = RowView()
         section.append(row)
-        
+
         bag += store.stateSignal
             .map {
                 ($0.offerData?.signMethodForQuotes, $0.currentVariant?.bundle.appConfiguration.approveButtonTerminology)
