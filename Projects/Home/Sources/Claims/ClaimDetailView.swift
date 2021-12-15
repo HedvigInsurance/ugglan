@@ -83,12 +83,12 @@ public struct ClaimDetailView: View {
                         hText("Contact us in the chat", style: .callout)
                     }
                     Spacer()
-                    
+
                     ZStack {
                         RoundedRectangle(cornerRadius: .defaultCornerRadius)
                             .fill(hBackgroundColor.primary)
                             .frame(width: 40, height: 40)
-                        
+
                         hCoreUIAssets.chatSolid.view
                             .resizable()
                             .aspectRatio(contentMode: .fit)
