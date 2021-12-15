@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Presentation
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import Presentation
 
 struct BankDetailsSection {
     @Inject var client: ApolloClient
@@ -58,10 +58,11 @@ extension BankDetailsSection: Viewable {
                     let setup = PaymentSetup(
                         setupType: hasAlreadyConnected ? .replacement : .initial,
                         urlScheme: self.urlScheme
-                    ).journey { _ in
+                    )
+                    .journey { _ in
                         DismissJourney()
                     }
-                    
+
                     viewController.present(
                         setup
                     )

@@ -114,17 +114,19 @@ extension PostOnboarding: Presentable {
                     let (table, disposable) = self.makeTable(isSwitching: isSwitching) { action in
                         switch action {
                         case .payment:
-                                viewController.present(
-                                    PaymentSetup(
-                                        setupType: .postOnboarding,
-                                        urlScheme: Bundle.main.urlScheme ?? ""
-                                    ).journey({ _ in
-                                        DismissJourney()
-                                    }).onDismiss {
-                                        collectionKit.scrollToNextItem()
-                                    }
+                            viewController.present(
+                                PaymentSetup(
+                                    setupType: .postOnboarding,
+                                    urlScheme: Bundle.main.urlScheme ?? ""
                                 )
-                                .onValue { _ in }
+                                .journey({ _ in
+                                    DismissJourney()
+                                })
+                                .onDismiss {
+                                    collectionKit.scrollToNextItem()
+                                }
+                            )
+                            .onValue { _ in }
                         case .push:
                             UIApplication.shared.appDelegate.registerForPushNotifications()
                                 .onValue { _ in callback(()) }

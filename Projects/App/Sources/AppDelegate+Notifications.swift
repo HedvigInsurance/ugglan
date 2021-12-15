@@ -59,13 +59,17 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                     .onValue { _ in
                         self.window.rootViewController?
-                            .present(PaymentSetup(
-                                setupType: .initial,
-                                urlScheme: Bundle.main.urlScheme ?? ""
-                            ).journey { _ in
-                                DismissJourney()
-                            }).onValue({ _ in
-                                
+                            .present(
+                                PaymentSetup(
+                                    setupType: .initial,
+                                    urlScheme: Bundle.main.urlScheme ?? ""
+                                )
+                                .journey { _ in
+                                    DismissJourney()
+                                }
+                            )
+                            .onValue({ _ in
+
                             })
                     }
             } else if notificationType == "PAYMENT_FAILED" {
@@ -76,7 +80,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 PaymentSetup(
                                     setupType: .replacement,
                                     urlScheme: Bundle.main.urlScheme ?? ""
-                                ).journey { _ in
+                                )
+                                .journey { _ in
                                     DismissJourney()
                                 }
                             )

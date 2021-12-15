@@ -16,7 +16,7 @@ class AdyenPresentationDelegate: NSObject, PresentationDelegate {
     ) {
         self.viewController = viewController
     }
-    
+
     func dismissAll() {
         presentedViewControllers.forEach { viewController in
             viewController.dismiss(animated: true, completion: nil)
@@ -38,7 +38,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
     let onRetry: () -> Void
     let onSuccess: () -> Void
     let bag = DisposeBag()
-    
+
     var presentationDelegates: [AdyenPresentationDelegate] = []
 
     init(
@@ -64,7 +64,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         self.presentationDelegates.forEach { presentationDelegate in
             presentationDelegate.dismissAll()
         }
-        
+
         if let component = component as? PresentableComponent {
             component.viewController.dismiss(animated: true, completion: nil)
         }
@@ -119,7 +119,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         }
 
         bag.hold(delegate)
-        
+
         let presentationDelegate: AdyenPresentationDelegate
 
         if let component = component as? PresentableComponent {
@@ -127,7 +127,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         } else {
             presentationDelegate = AdyenPresentationDelegate(viewController: viewController)
         }
-        
+
         presentationDelegates.append(presentationDelegate)
 
         switch action {

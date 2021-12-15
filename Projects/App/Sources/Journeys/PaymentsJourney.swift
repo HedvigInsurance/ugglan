@@ -14,10 +14,11 @@ extension AppJourney {
             if let success = result.left {
                 next(success)
             } else if let options = result.right {
-                AdyenPayIn(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "").journey { success in
-                    next(success)
-                }
-                .withJourneyDismissButton
+                AdyenPayIn(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")
+                    .journey { success in
+                        next(success)
+                    }
+                    .withJourneyDismissButton
             }
         }
     }
