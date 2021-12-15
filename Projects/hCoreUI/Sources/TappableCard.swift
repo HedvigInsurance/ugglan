@@ -3,18 +3,21 @@ import hCore
 
 public struct TappableCard<Content: View>: View {
     private let content: Content
+    private let alignment: HorizontalAlignment
     var action: (() -> Void)?
 
     public init(
+        alignment: HorizontalAlignment = .center,
         action: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) {
+        self.alignment = alignment
         self.action = action
         self.content = content()
     }
 
     public var body: some View {
-        VStack {
+        VStack(alignment: alignment) {
             content
         }
         .background(

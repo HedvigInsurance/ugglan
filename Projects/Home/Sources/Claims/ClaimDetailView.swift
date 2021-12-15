@@ -14,7 +14,50 @@ public struct ClaimDetailView: View {
 
     public var body: some View {
         VStack {
-            TappableCard {
+            // Claim status header
+            VStack(alignment: .center) {
+                // TODO: Add Image as computed property
+                hCoreUIAssets.infoShield.view
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 18, height: 22)
+                
+                // TODO: Add title as a computed property
+                hText("New insurance case", style: .headline)
+                
+                Spacer()
+                    .frame(height: 16)
+                
+                HStack {
+                    Spacer()
+                    VStack(spacing: 4) {
+                        hText("Submitted", style: .caption2)
+                            .foregroundColor(hLabelColor.secondary)
+                        
+                        // TODO: Parse submitted time into readable format
+                        hText("1 min ago", style: .caption1)
+                    }
+                    
+                    Spacer()
+                    Divider()
+                        .frame(maxHeight: 32)
+                    
+                    Spacer()
+                    VStack(spacing: 4) {
+                        hText("Closed", style: .caption2)
+                            .foregroundColor(hLabelColor.secondary)
+                        
+                        // TODO: Show closed time from a computed property
+                        hText("-", style: .caption1)
+                    }
+                    Spacer()
+                }
+            }
+            
+            Spacer()
+                .frame(height: 24)
+            
+            TappableCard(alignment: .leading) {
                 HStack(spacing: 6) {
                     ForEach(claim.segments, id: \.text) { segment in
                         ClaimStatusBar(status: segment)
@@ -27,6 +70,7 @@ public struct ClaimDetailView: View {
 
                 hText("We have received your claim and will start reviewing it soon.")
                     .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 16)
 
                 Spacer()
                     .frame(maxHeight: 20)
@@ -39,14 +83,17 @@ public struct ClaimDetailView: View {
                         hText("Contact us in the chat", style: .callout)
                     }
                     Spacer()
-                    Image(uiImage: hCoreUIAssets.chat.image)
+                    
+                    hCoreUIAssets.chat.view
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 40, height: 40)
+                        .frame(width: 22.56, height: 19.17)
                 }
                 .padding(16)
             }
-            .padding([.leading, .trailing], 16)
+            .padding(.horizontal, 16)
+            
+            Spacer()
         }
     }
 }
