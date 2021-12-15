@@ -57,7 +57,7 @@ public struct ClaimDetailView: View {
 
             Spacer()
                 .frame(height: 24)
-            
+
             // Status card section
             TappableCard(alignment: .leading) {
                 HStack(spacing: 6) {
@@ -100,28 +100,27 @@ public struct ClaimDetailView: View {
                 .padding(16)
             }
             .padding(.horizontal, 16)
-            
+
             Spacer()
                 .frame(height: 52)
-            
+
             // Audio files section
             VStack(alignment: .leading) {
                 hText(L10n.ClaimStatus.files, style: .headline)
-                
+
                 Spacer()
                     .frame(height: 16)
-                
+
                 // TODO: Add audio player here
-                
+
                 Spacer()
                     .frame(height: 8)
-                
+
                 hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
                     .foregroundColor(hLabelColor.secondary)
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
             .padding(.horizontal, 16)
-            
 
             Spacer()
         }
