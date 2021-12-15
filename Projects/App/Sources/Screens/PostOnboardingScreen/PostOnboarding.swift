@@ -72,8 +72,9 @@ struct PostOnboarding {
         )
 
         let table = Table(rows: [
-            ReusableSignalViewable(viewable: payment), ReusableSignalViewable(viewable: pushNotifications),
-        ])
+            Localization.Locale.currentLocale.market == .se ? ReusableSignalViewable(viewable: payment) : nil,
+            ReusableSignalViewable(viewable: pushNotifications)
+        ].compactMap { $0 })
 
         return (table, bag)
     }
