@@ -28,13 +28,15 @@ extension PayoutDetailsSection: Viewable {
 
         func presentPayOut(_ viewController: UIViewController) {
             payOutOptions.onValue { options in
-                bag += viewController.present(
-                    AdyenPayOut(adyenOptions: options, urlScheme: urlScheme).wrappedInCloseButton(),
-                    style: .detented(.scrollViewContentSize),
-                    options: [.defaults, .allowSwipeDismissAlways]
-                ).onValue { _ in
-                    
-                }
+                bag +=
+                    viewController.present(
+                        AdyenPayOut(adyenOptions: options, urlScheme: urlScheme).wrappedInCloseButton(),
+                        style: .detented(.scrollViewContentSize),
+                        options: [.defaults, .allowSwipeDismissAlways]
+                    )
+                    .onValue { _ in
+
+                    }
             }
         }
 

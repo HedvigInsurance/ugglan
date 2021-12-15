@@ -16,7 +16,8 @@ extension AppJourney {
             } else if let options = result.right {
                 Journey(AdyenPayIn(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")) { success in
                     next(success)
-                }.withJourneyDismissButton
+                }
+                .withJourneyDismissButton
             }
         }
     }

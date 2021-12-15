@@ -34,8 +34,11 @@ public struct AdyenPayIn: Presentable {
     @Inject var store: ApolloStore
     let adyenOptions: AdyenOptions
     let urlScheme: String
-    
-    public init(adyenOptions: AdyenOptions, urlScheme: String) {
+
+    public init(
+        adyenOptions: AdyenOptions,
+        urlScheme: String
+    ) {
         self.adyenOptions = adyenOptions
         self.urlScheme = urlScheme
     }

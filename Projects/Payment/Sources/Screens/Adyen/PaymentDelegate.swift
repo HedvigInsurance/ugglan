@@ -62,22 +62,24 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         if success {
             onSuccess()
 
-            bag += viewController.present(
-                AdyenSuccess(paymentMethod: paymentMethod),
-                style: .detented(.large, modally: false),
-                options: [.defaults, .autoPop]
-            )
-            .atEnd {
-                self.onEnd()
-            }
-            .onValue { _ in self.onCompletion() }
+            bag +=
+                viewController.present(
+                    AdyenSuccess(paymentMethod: paymentMethod),
+                    style: .detented(.large, modally: false),
+                    options: [.defaults, .autoPop]
+                )
+                .atEnd {
+                    self.onEnd()
+                }
+                .onValue { _ in self.onCompletion() }
         } else {
-            bag += viewController.present(
-                AdyenError.failed,
-                style: .detented(.large, modally: false),
-                options: [.defaults, .autoPop]
-            )
-                .atEnd {  self.onEnd() }
+            bag +=
+                viewController.present(
+                    AdyenError.failed,
+                    style: .detented(.large, modally: false),
+                    options: [.defaults, .autoPop]
+                )
+                .atEnd { self.onEnd() }
                 .onValue { _ in self.onRetry() }
         }
     }
@@ -102,7 +104,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
                 self.stopLoading(withSuccess: false, in: component)
                 self.handleResult(success: false)
             }
-            
+
             if let component = component as? PresentableComponent {
                 component.viewController.dismiss(animated: true, completion: nil)
             }

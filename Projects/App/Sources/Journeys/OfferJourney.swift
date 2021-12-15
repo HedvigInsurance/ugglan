@@ -52,6 +52,7 @@ extension AppJourney {
             )
             .withJourneyDismissButton
             .hidesBackButton
-        }.mapJourneyDismissToCancel
+        }
+        .mapJourneyDismissToCancel
     }
 }

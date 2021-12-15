@@ -51,9 +51,9 @@ extension AdyenError: Presentable {
 
                 bag += signal.onValue { shouldRetry in
                     if shouldRetry {
-                       callback(.value(()))
+                        callback(.value(()))
                     } else {
-                       callback(.end)
+                        callback(.end)
                     }
                 }
 
