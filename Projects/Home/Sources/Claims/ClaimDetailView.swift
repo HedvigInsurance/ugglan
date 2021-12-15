@@ -19,17 +19,19 @@ public struct ClaimDetailView: View {
     private var submittedDate: String {
         let dateFormatter = DateFormatter.withIso8601Format("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
         guard let submitted = claim.claimDetailData.submittedAt,
-                let date = dateFormatter.date(from: submitted) else { return "-" }
+            let date = dateFormatter.date(from: submitted)
+        else { return "-" }
         return readableDateString(from: date)
     }
-    
+
     private var closedDate: String {
         let dateFormatter = DateFormatter.withIso8601Format("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
         guard let closed = claim.claimDetailData.closedAt,
-                let date = dateFormatter.date(from: closed) else { return "-" }
+            let date = dateFormatter.date(from: closed)
+        else { return "-" }
         return readableDateString(from: date)
     }
-    
+
     private func readableDateString(from date: Date) -> String {
         // TODO: Localize strings used for yesterday and hours/minutes ago
         let dateFormatter = DateFormatter()
@@ -40,10 +42,10 @@ public struct ClaimDetailView: View {
                     dateFormatter.dateFormat = "dd-MM-yyyy, HH:mm"
                     return dateFormatter.string(from: date)
                 }
-                
+
                 return minutes > 1 ? "\(minutes) minutes ago" : "1 minute ago"
             }
-            
+
             return hours > 1 ? "\(hours) hours ago" : "1 hour ago"
         } else if Calendar.current.isDateInYesterday(date) {
             dateFormatter.dateFormat = "HH:mm"
