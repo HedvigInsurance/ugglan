@@ -3,10 +3,12 @@ import Payment
 import Presentation
 
 extension AppJourney {
-    static var paymentSetup: some JourneyPresentation {
+    static func paymentSetup<Next: JourneyPresentation>(@JourneyBuilder _ next: @escaping (_ success: Bool) -> Next) -> some JourneyPresentation {
         Journey(
             PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
             style: .detented(.large)
-        )
+        ) { success in
+            next(success)
+        }
     }
 }

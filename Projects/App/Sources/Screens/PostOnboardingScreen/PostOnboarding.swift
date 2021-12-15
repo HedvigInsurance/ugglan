@@ -110,7 +110,7 @@ extension PostOnboarding: Presentable {
                     let (table, disposable) = self.makeTable(isSwitching: isSwitching) { action in
                         switch action {
                         case .payment:
-                            viewController.present(
+                            bag += viewController.present(
                                 PaymentSetup(
                                     setupType: .postOnboarding,
                                     urlScheme: Bundle.main.urlScheme ?? ""
@@ -121,7 +121,9 @@ extension PostOnboarding: Presentable {
                                     capturesStatusBarAppearance: true
                                 )
                             )
-                            .onResult { _ in collectionKit.scrollToNextItem() }
+                            .onValue { _ in
+                                collectionKit.scrollToNextItem()
+                            }
                         case .push:
                             UIApplication.shared.appDelegate.registerForPushNotifications()
                                 .onValue { _ in callback(()) }

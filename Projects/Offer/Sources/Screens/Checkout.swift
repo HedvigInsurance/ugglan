@@ -6,7 +6,8 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct Checkout {
+public struct Checkout {
+    public init() {}
 }
 
 enum CheckoutError: Error {
@@ -34,7 +35,7 @@ extension Checkout: Presentable {
         viewController.present(alert)
     }
 
-    func materialize() -> (UIViewController, Future<Void>) {
+    public func materialize() -> (UIViewController, Future<Void>) {
         let checkoutButton = CheckoutButton()
         let viewController = AccessoryViewController(accessoryView: checkoutButton)
         viewController.title = L10n.checkoutTitle

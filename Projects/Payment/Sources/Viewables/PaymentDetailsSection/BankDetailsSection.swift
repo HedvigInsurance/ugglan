@@ -58,11 +58,13 @@ extension BankDetailsSection: Viewable {
                         setupType: hasAlreadyConnected ? .replacement : .initial,
                         urlScheme: self.urlScheme
                     )
-                    viewController.present(
+                    bag += viewController.present(
                         setup,
                         style: .modally(),
                         options: [.defaults, .allowSwipeDismissAlways]
-                    )
+                    ).onValue({ _ in
+                        
+                    })
                 }
 
             bag += { section.remove(paymentSetupRow) }

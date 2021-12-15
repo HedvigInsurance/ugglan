@@ -31,7 +31,22 @@ extension AppJourney {
                 ContinueJourney()
             case let .menu(action):
                 action.journey
+            case .openCheckout:
+                offerCheckout
             }
+        }
+    }
+    
+    static var offerCheckout: some JourneyPresentation {
+        paymentSetup { success in
+            Journey(Checkout(), style: .default, options: [
+                .defaults,
+                .prefersLargeTitles(true),
+                .largeTitleDisplayMode(.always),
+                .allowSwipeDismissAlways
+            ])
+            .withJourneyDismissButton
+            .hidesBackButton
         }
     }
 }

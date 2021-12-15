@@ -58,7 +58,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             } else if notificationType == "CONNECT_DIRECT_DEBIT" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                     .onValue { _ in
-                        self.window.rootViewController?
+                        self.bag += self.window.rootViewController?
                             .present(
                                 PaymentSetup(
                                     setupType: .initial,
@@ -66,12 +66,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 ),
                                 style: .modal,
                                 options: [.defaults]
-                            )
+                            ).onValue({ _ in
+                                
+                            })
                     }
             } else if notificationType == "PAYMENT_FAILED" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                     .onValue { _ in
-                        self.window.rootViewController?
+                        self.bag += self.window.rootViewController?
                             .present(
                                 PaymentSetup(
                                     setupType: .replacement,
@@ -79,7 +81,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 ),
                                 style: .modal,
                                 options: [.defaults]
-                            )
+                            ).onValue({ _ in
+                                
+                            })
                     }
             } else if notificationType == "OPEN_INSURANCE_TAB" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }

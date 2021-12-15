@@ -10,7 +10,7 @@ import hCoreUI
 struct AdyenPayInSync { let urlScheme: String }
 
 extension AdyenPayInSync: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -32,14 +32,17 @@ extension AdyenPayInSync: Presentable {
 
         return (
             viewController,
-            Future { completion in
+            FiniteSignal { callback in
                 AdyenMethodsList.payInOptions.onValue { options in
-                    viewController.present(
+                    bag += viewController.present(
                         AdyenPayIn(adyenOptions: options, urlScheme: urlScheme)
-                            .wrappedInCloseButton()
                     )
-                    .onValue { _ in completion(.success) }
-                    .onError { error in completion(.failure(error)) }
+                    .atEnd {
+                        callback(.end)
+                    }
+                    .onValue({ success in
+                        callback(.value(success))
+                    })
                 }
 
                 return bag

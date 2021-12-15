@@ -31,7 +31,7 @@ extension SignSection: Presentable {
 
         let row = RowView()
         section.append(row)
-
+        
         bag += store.stateSignal
             .map {
                 ($0.offerData?.signMethodForQuotes, $0.currentVariant?.bundle.appConfiguration.approveButtonTerminology)
@@ -77,14 +77,7 @@ extension SignSection: Presentable {
 
                     innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
                         .onValue { viewController in
-                            viewController.present(
-                                Checkout().wrappedInCloseButton(),
-                                style: .detented(.large),
-                                options: [
-                                    .defaults, .prefersLargeTitles(true),
-                                    .largeTitleDisplayMode(.always),
-                                ]
-                            )
+                            store.send(.openCheckout)
                         }
 
                     innerBag += row.append(signButton)

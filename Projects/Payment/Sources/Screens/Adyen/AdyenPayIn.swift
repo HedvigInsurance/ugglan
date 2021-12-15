@@ -35,7 +35,7 @@ struct AdyenPayIn: Presentable {
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let (viewController, result) = AdyenMethodsList(adyenOptions: adyenOptions) { data, _, onResult in
             guard let jsonData = try? JSONEncoder().encode(data.paymentMethod.encodable),
                 let json = String(data: jsonData, encoding: .utf8)
@@ -76,12 +76,13 @@ struct AdyenPayIn: Presentable {
                     data.payinMethodStatus = .active
                 }
             }
-
+            
             // refetch to refresh UI
             Future().delay(by: 0.5)
                 .flatMapResult { _ in client.fetch(query: GraphQL.ActivePaymentMethodsQuery()) }
                 .onValue { _ in }
         }
+        .wrappedInCloseButton()
         .materialize()
 
         viewController.title = L10n.adyenPayinTitle

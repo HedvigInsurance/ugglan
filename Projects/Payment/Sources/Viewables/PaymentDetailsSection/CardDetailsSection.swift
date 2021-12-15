@@ -27,11 +27,13 @@ extension CardDetailsSection: Viewable {
 
         func presentPayIn(_ viewController: UIViewController) {
             payInOptions.onValue { options in
-                viewController.present(
+                bag += viewController.present(
                     AdyenPayIn(adyenOptions: options, urlScheme: urlScheme).wrappedInCloseButton(),
                     style: .detented(.scrollViewContentSize),
                     options: [.defaults, .allowSwipeDismissAlways]
-                )
+                ).onValue { _ in
+                    
+                }
             }
         }
 
