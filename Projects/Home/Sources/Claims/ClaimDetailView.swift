@@ -17,21 +17,39 @@ public struct ClaimDetailView: View {
     }
 
     private var submittedDate: String {
-        guard let submitted = claim.claimDetailData.submittedAt else { return "-" }
-
+        let dateFormatter = DateFormatter.withIso8601Format("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
+        guard let submitted = claim.claimDetailData.submittedAt,
+                let date = dateFormatter.date(from: submitted) else { return "-" }
+        return readableDateString(from: date)
+    }
+    
+    private var closedDate: String {
+        let dateFormatter = DateFormatter.withIso8601Format("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
+        guard let closed = claim.claimDetailData.closedAt,
+                let date = dateFormatter.date(from: closed) else { return "-" }
+        return readableDateString(from: date)
+    }
+    
+    private func readableDateString(from date: Date) -> String {
+        // TODO: Localize strings used for yesterday and hours/minutes ago
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
-
-        guard let date = dateFormatter.date(from: submitted) else { return "-" }
-
-        if !Calendar.current.isDateInWeek(from: date) {
-            dateFormatter.dateFormat = "dd-MM-yyyy, HH:mm"
-            return dateFormatter.string(from: date)
-        } else if Calendar.current.isDateInToday(date) {
+        if Calendar.current.isDateInToday(date) {
+            guard let hours = Calendar.current.dateComponents([.hour], from: date, to: Date()).hour, hours >= 1 else {
+                // Show minutes ago
+                guard let minutes = Calendar.current.dateComponents([.minute], from: date, to: Date()).minute else {
+                    dateFormatter.dateFormat = "dd-MM-yyyy, HH:mm"
+                    return dateFormatter.string(from: date)
+                }
+                
+                return minutes > 1 ? "\(minutes) minutes ago" : "1 minute ago"
+            }
+            
+            return hours > 1 ? "\(hours) hours ago" : "1 hour ago"
+        } else if Calendar.current.isDateInYesterday(date) {
             dateFormatter.dateFormat = "HH:mm"
-            return dateFormatter.string(from: date)
+            return "Yesterday " + dateFormatter.string(from: date)
         } else {
-            dateFormatter.dateFormat = "EEEE HH:mm"
+            dateFormatter.dateFormat = "dd-MM-yyyy, HH:mm"
             return dateFormatter.string(from: date)
         }
     }
@@ -75,8 +93,7 @@ public struct ClaimDetailView: View {
                         hText(L10n.ClaimStatusDetail.closed, style: .caption2)
                             .foregroundColor(hLabelColor.secondary)
 
-                        // TODO: Show closed time from a computed property
-                        hText("-", style: .caption1)
+                        hText(closedDate, style: .caption1)
                     }
                     Spacer()
                 }
@@ -157,11 +174,11 @@ public struct ClaimDetailView: View {
     }
 }
 
-extension Calendar {
-    /// returns a boolean indicating if provided date is in the same week as current week
-    func isDateInWeek(from date: Date) -> Bool {
-        let currentWeek = component(Calendar.Component.weekOfYear, from: Date())
-        let otherWeek = component(Calendar.Component.weekOfYear, from: date)
-        return (currentWeek == otherWeek)
+extension DateFormatter {
+    static func withIso8601Format(_ format: String) -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .iso8601)
+        formatter.dateFormat = format
+        return formatter
     }
 }
