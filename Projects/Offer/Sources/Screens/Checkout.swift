@@ -52,11 +52,13 @@ extension Checkout: Presentable {
                 header.spacing = 16
                 header.axis = .vertical
 
-                header.addArrangedSubview(HostingView(
-                    rootView: hText(quoteBundle.displayName, style: .title1)
-                        .foregroundColor(.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                ))
+                header.addArrangedSubview(
+                    HostingView(
+                        rootView: hText(quoteBundle.displayName, style: .title1)
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    )
+                )
 
                 bag += header.addArrangedSubview(PriceRow(placement: .checkout))
 
