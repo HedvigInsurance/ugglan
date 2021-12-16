@@ -368,6 +368,7 @@ query EmbarkStory($name: String!, $locale: String!) {
               api {
                 ...ApiFragment
               }
+              badge
             }
           }
         }
