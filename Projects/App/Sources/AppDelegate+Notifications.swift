@@ -62,7 +62,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                             .present(
                                 PaymentSetup(
                                     setupType: .initial
-                                ).journeyThenDismiss
+                                )
+                                .journeyThenDismiss
                             )
                             .onValue({ _ in
 
@@ -75,7 +76,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                             .present(
                                 PaymentSetup(
                                     setupType: .replacement
-                                ).journeyThenDismiss
+                                )
+                                .journeyThenDismiss
                             )
                             .onValue({ _ in
 

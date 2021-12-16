@@ -60,7 +60,7 @@ extension PaymentSetup {
             }
         }
     }
-    
+
     /// Sets up payment and then dismisses
     public var journeyThenDismiss: some JourneyPresentation {
         journey { _ in

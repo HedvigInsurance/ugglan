@@ -1,8 +1,8 @@
 import Foundation
 import Offer
+import Payment
 import Presentation
 import hCore
-import Payment
 
 extension AppJourney {
     static var storedOnboardingOffer: some JourneyPresentation {
@@ -39,22 +39,23 @@ extension AppJourney {
     }
 
     static var offerCheckout: some JourneyPresentation {
-        PaymentSetup(setupType: .initial).journey { success in
-            Journey(
-                Checkout(),
-                style: .default,
-                options: [
-                    .defaults,
-                    .autoPop,
-                    .prefersLargeTitles(true),
-                    .largeTitleDisplayMode(.always),
-                    .allowSwipeDismissAlways,
-                ]
-            )
-            .withJourneyDismissButton
-            .hidesBackButton
-        }
-        .setOptions([.defaults, .allowSwipeDismissAlways])
-        .mapJourneyDismissToCancel
+        PaymentSetup(setupType: .initial)
+            .journey { success in
+                Journey(
+                    Checkout(),
+                    style: .default,
+                    options: [
+                        .defaults,
+                        .autoPop,
+                        .prefersLargeTitles(true),
+                        .largeTitleDisplayMode(.always),
+                        .allowSwipeDismissAlways,
+                    ]
+                )
+                .withJourneyDismissButton
+                .hidesBackButton
+            }
+            .setOptions([.defaults, .allowSwipeDismissAlways])
+            .mapJourneyDismissToCancel
     }
 }
