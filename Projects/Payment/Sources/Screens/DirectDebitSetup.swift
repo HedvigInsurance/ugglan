@@ -168,7 +168,7 @@ extension DirectDebitSetup: Presentable {
                                             GraphQL
                                             .CancelDirectDebitRequestMutation()
                                     )
-                                    .onValue { _ in }
+                                    .sink()
                                 callback(.value(true))
                             }
                         }
@@ -231,7 +231,7 @@ extension DirectDebitSetup: Presentable {
                     .onValue { _ in
                         self.client
                             .perform(mutation: GraphQL.CancelDirectDebitRequestMutation())
-                            .onValue { _ in }
+                            .sink()
                     }
 
                 return DelayedDisposer(bag, delay: 1)

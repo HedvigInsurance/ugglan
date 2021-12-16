@@ -63,7 +63,7 @@ extension AttachGIFPane: Viewable {
 
         let (searchBarView, searchBarValue) = searchBar.materialize(events: events)
 
-        bag += searchBarValue.onValue { _ in }
+        bag += searchBarValue.nil()
 
         let searchBarContainer = UIStackView()
         searchBarContainer.isLayoutMarginsRelativeArrangement = true

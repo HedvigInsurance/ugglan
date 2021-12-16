@@ -62,7 +62,7 @@ public struct AdyenPayIn: Presentable {
                                 query: GraphQL.ActivePaymentMethodsQuery(),
                                 cachePolicy: .fetchIgnoringCacheData
                             )
-                            .onValue { _ in }
+                            .sink()
                         }
                         onResult(.success(.make(())))
                     } else if let data = data.tokenizePaymentDetails?.asTokenizationResponseAction {
@@ -88,7 +88,7 @@ public struct AdyenPayIn: Presentable {
             // refetch to refresh UI
             Future().delay(by: 0.5)
                 .flatMapResult { _ in client.fetch(query: GraphQL.ActivePaymentMethodsQuery()) }
-                .onValue { _ in }
+                .sink()
         }
         .materialize()
 

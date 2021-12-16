@@ -64,8 +64,7 @@ extension BankDetailsSection: Viewable {
                     viewController.present(
                         setup
                     )
-                    .onValue({ _ in
-                    })
+                    .sink()
                 }
 
             bag += { section.remove(paymentSetupRow) }

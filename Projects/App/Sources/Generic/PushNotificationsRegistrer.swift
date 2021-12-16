@@ -37,7 +37,7 @@ struct PushNotificationsRegister: Presentable {
                     title: L10n.pushNotificationsAlertActionOk,
                     action: {
                         UIApplication.shared.appDelegate.registerForPushNotifications()
-                            .onValue { _ in }
+                            .sink()
                     }
                 ),
                 Alert.Action(

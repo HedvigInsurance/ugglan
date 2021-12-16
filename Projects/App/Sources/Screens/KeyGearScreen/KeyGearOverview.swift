@@ -126,7 +126,7 @@ struct KeyGearOverview {
                                 query: GraphQL.KeyGearItemsQuery(),
                                 cachePolicy: .fetchIgnoringCacheData
                             )
-                            .onValue { _ in }
+                            .sink()
                         bag.dispose()
                     }
             }

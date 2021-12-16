@@ -124,7 +124,7 @@ extension PostOnboarding: Presentable {
                                     collectionKit.scrollToNextItem()
                                 }
                             )
-                            .onValue { _ in }
+                            .sink()
                         case .push:
                             UIApplication.shared.appDelegate.registerForPushNotifications()
                                 .onValue { _ in callback(()) }

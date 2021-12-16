@@ -38,7 +38,7 @@ extension PayoutDetailsSection: Viewable {
                         .setOptions([.defaults, .allowSwipeDismissAlways])
                         .withJourneyDismissButton
                 )
-                .onValue { _ in }
+                .sink()
             }
         }
 
