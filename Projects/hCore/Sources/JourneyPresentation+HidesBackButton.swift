@@ -1,12 +1,16 @@
 import Foundation
 import Presentation
+import Flow
 
 extension JourneyPresentation {
     /// removes back button and disables interactive poping
     public var hidesBackButton: Self {
         addConfiguration { presenter in
             presenter.viewController.navigationItem.hidesBackButton = true
-            presenter.viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+            
+            presenter.bag += presenter.viewController.view.didMoveToWindowSignal.onValue({ _ in
+                presenter.viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+            })
         }
     }
 
@@ -14,7 +18,10 @@ extension JourneyPresentation {
     public var showsBackButton: Self {
         addConfiguration { presenter in
             presenter.viewController.navigationItem.hidesBackButton = false
-            presenter.viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+            
+            presenter.bag += presenter.viewController.view.didMoveToWindowSignal.onValue({ _ in
+                presenter.viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+            })
         }
     }
 }
