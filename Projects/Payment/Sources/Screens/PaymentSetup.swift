@@ -12,7 +12,7 @@ public struct PaymentSetup {
 
     public init(
         setupType: SetupType,
-        urlScheme: String
+        urlScheme: String = Bundle.main.urlScheme ?? ""
     ) {
         self.setupType = setupType
         self.urlScheme = urlScheme
@@ -58,6 +58,13 @@ extension PaymentSetup {
                 }
                 .withJourneyDismissButton
             }
+        }
+    }
+    
+    /// Sets up payment and then dismisses
+    public var journeyThenDismiss: some JourneyPresentation {
+        journey { _ in
+            DismissJourney()
         }
     }
 }

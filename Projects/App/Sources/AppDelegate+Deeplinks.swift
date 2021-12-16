@@ -19,10 +19,8 @@ extension AppDelegate {
 
         if path == .directDebit {
             rootViewController.present(
-                PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? "")
-                    .journey({ _ in
-                        DismissJourney()
-                    })
+                PaymentSetup(setupType: .initial)
+                    .journeyThenDismiss
             )
             .onValue { _ in
 

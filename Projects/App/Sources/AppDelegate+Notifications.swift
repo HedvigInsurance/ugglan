@@ -61,12 +61,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         self.window.rootViewController?
                             .present(
                                 PaymentSetup(
-                                    setupType: .initial,
-                                    urlScheme: Bundle.main.urlScheme ?? ""
-                                )
-                                .journey { _ in
-                                    DismissJourney()
-                                }
+                                    setupType: .initial
+                                ).journeyThenDismiss
                             )
                             .onValue({ _ in
 
@@ -78,12 +74,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         self.window.rootViewController?
                             .present(
                                 PaymentSetup(
-                                    setupType: .replacement,
-                                    urlScheme: Bundle.main.urlScheme ?? ""
-                                )
-                                .journey { _ in
-                                    DismissJourney()
-                                }
+                                    setupType: .replacement
+                                ).journeyThenDismiss
                             )
                             .onValue({ _ in
 

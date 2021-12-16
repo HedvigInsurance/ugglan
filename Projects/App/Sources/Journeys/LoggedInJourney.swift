@@ -26,9 +26,7 @@ extension AppJourney {
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
             case .openConnectPayments:
-                AppJourney.paymentSetup { _ in
-                    DismissJourney()
-                }
+                PaymentSetup(setupType: .initial).journeyThenDismiss
             }
         }
         .configureTabBarItem

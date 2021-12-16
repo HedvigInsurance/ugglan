@@ -119,9 +119,7 @@ extension PostOnboarding: Presentable {
                                     setupType: .postOnboarding,
                                     urlScheme: Bundle.main.urlScheme ?? ""
                                 )
-                                .journey({ _ in
-                                    DismissJourney()
-                                })
+                                .journeyThenDismiss
                                 .onDismiss {
                                     collectionKit.scrollToNextItem()
                                 }

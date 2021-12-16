@@ -58,10 +58,7 @@ extension BankDetailsSection: Viewable {
                     let setup = PaymentSetup(
                         setupType: hasAlreadyConnected ? .replacement : .initial,
                         urlScheme: self.urlScheme
-                    )
-                    .journey { _ in
-                        DismissJourney()
-                    }
+                    ).journeyThenDismiss
 
                     viewController.present(
                         setup

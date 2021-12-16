@@ -2,6 +2,7 @@ import Foundation
 import Offer
 import Presentation
 import hCore
+import Payment
 
 extension AppJourney {
     static var storedOnboardingOffer: some JourneyPresentation {
@@ -38,7 +39,7 @@ extension AppJourney {
     }
 
     static var offerCheckout: some JourneyPresentation {
-        paymentSetup { success in
+        PaymentSetup(setupType: .initial).journey { success in
             Journey(
                 Checkout(),
                 style: .default,
