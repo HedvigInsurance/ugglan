@@ -110,9 +110,6 @@ extension Checkout: Presentable {
 
                 bag += ssnMasking.applyMasking(ssnTextField)
 
-                let shouldHideEmailField = quoteBundle.quotes.allSatisfy { $0.email != nil }
-                emailRow.isHidden = shouldHideEmailField
-
                 bag += form.chainAllControlResponders()
 
                 let isValidSignal = combineLatest(

@@ -9,7 +9,7 @@ extension JourneyPresentation {
             presenter.viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         }
     }
-    
+
     /// shows back button and activates interactive poping
     public var showsBackButton: Self {
         addConfiguration { presenter in
