@@ -53,6 +53,7 @@ extension AppJourney {
             .withJourneyDismissButton
             .hidesBackButton
         }
+        .setOptions([.defaults, .allowSwipeDismissAlways])
         .mapJourneyDismissToCancel
     }
 }
