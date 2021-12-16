@@ -52,21 +52,11 @@ extension Checkout: Presentable {
                 header.spacing = 16
                 header.axis = .vertical
 
-                let titleLabel = MultilineLabel(
-                    value: quoteBundle.quotes.reduce(
-                        "",
-                        { previousString, quote in
-                            return previousString.isEmpty
-                                ? quote.displayName
-                                : "\(previousString) + \n\(quote.displayName)"
-                        }
-                    ),
-                    style: TextStyle.brand(.title1(color: .secondary))
-                        .restyled({ (style: inout TextStyle) in
-                            style.lineHeight = quoteBundle.quotes.count > 1 ? 45 : 0
-                        })
-                )
-                bag += header.addArranged(titleLabel)
+                header.addArrangedSubview(HostingView(
+                    rootView: hText(quoteBundle.displayName, style: .title1)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                ))
 
                 bag += header.addArrangedSubview(PriceRow(placement: .checkout))
 
