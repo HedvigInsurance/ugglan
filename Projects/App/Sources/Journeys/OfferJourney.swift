@@ -51,7 +51,9 @@ extension AppJourney {
                         .largeTitleDisplayMode(.always),
                         .allowSwipeDismissAlways,
                     ]
-                )
+                ) { _ in
+                    DismissJourney()
+                }
                 .withJourneyDismissButton
                 .hidesBackButton
             }

@@ -35,7 +35,7 @@ extension Checkout: Presentable {
         viewController.present(alert)
     }
 
-    public func materialize() -> (UIViewController, Future<Void>) {
+    public func materialize() -> (UIViewController, FiniteSignal<Void>) {
         let checkoutButton = CheckoutButton()
         let viewController = AccessoryViewController(accessoryView: checkoutButton)
         viewController.title = L10n.checkoutTitle
@@ -154,7 +154,7 @@ extension Checkout: Presentable {
 
         return (
             viewController,
-            Future { completion in
+            FiniteSignal { callback in
 
                 func toggleAllowDismissal() {
                     if #available(iOS 13.0, *) {
@@ -189,7 +189,7 @@ extension Checkout: Presentable {
                     }
 
                     bag += store.onAction(.sign(event: .done)) {
-                        completion(.success)
+                        callback(.value(()))
                     }
                 }
 
