@@ -1,4 +1,5 @@
 import Adyen
+import Apollo
 import Flow
 import Form
 import Foundation
@@ -6,12 +7,11 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
-import Apollo
 import hGraphQL
 
 struct AdyenPayInSync {
     @Inject var client: ApolloClient
-    
+
     let setupType: PaymentSetup.SetupType
     let urlScheme: String
 }
@@ -48,7 +48,7 @@ extension AdyenPayInSync: Presentable {
                         } else {
                             callback(.value(.right(())))
                         }
-                }
+                    }
 
                 return bag
             }

@@ -27,13 +27,16 @@ extension PaymentSetup: Presentable {
             return (viewController, result.map { .left($0) })
         case .no, .dk, .fr:
             let (viewController, result) = AdyenPayInSync(setupType: setupType, urlScheme: urlScheme).materialize()
-            return (viewController, result.map { adyenPayInResult in
-                if let options = adyenPayInResult.left {
-                    return .right(options)
+            return (
+                viewController,
+                result.map { adyenPayInResult in
+                    if let options = adyenPayInResult.left {
+                        return .right(options)
+                    }
+
+                    return .left(true)
                 }
-                
-                return .left(true)
-            })
+            )
         }
     }
 }
