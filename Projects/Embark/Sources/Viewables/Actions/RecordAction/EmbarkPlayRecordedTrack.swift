@@ -65,7 +65,11 @@ struct Staple: View {
     }
 
     func magnitude(of range: Range<CGFloat>) -> CGFloat {
-        return range.upperBound - range.lowerBound
+        let range = range.upperBound - range.lowerBound
+        if range.isNaN || range.isZero || range.isSignalingNaN
+        { return 0.1 } else {
+            return range
+        }
     }
 }
 
