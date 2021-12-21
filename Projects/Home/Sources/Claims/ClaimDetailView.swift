@@ -1,14 +1,14 @@
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import Presentation
 import hGraphQL
 
 public struct ClaimDetailView: View {
     let claim: Claim
-    
+
     var store: HomeStore
-    
+
     public init(
         claim: Claim
     ) {
