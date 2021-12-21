@@ -58,22 +58,18 @@ public struct ClaimDetailView: View {
     }
 
     public var body: some View {
-        ScrollView(showsIndicators: false) {
+        hForm {
             VStack {
                 // Claim status header
                 VStack(alignment: .center) {
-                    // TODO: Add Image as computed property
                     hCoreUIAssets.infoShield.view
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 18, height: 22)
 
-                    // TODO: Add title as a computed property
-                    hText("New insurance case", style: .headline)
+                    hText(claim.title, style: .headline)
 
-                    // TODO: Add subtitle as a computed property
-                    // TODO: Hide subtitle for new insurance cases
-                    hText("Contents insurance", style: .footnote)
+                    hText(claim.subtitle, style: .footnote)
                         .foregroundColor(hLabelColor.secondary)
 
                     Spacer()
@@ -117,14 +113,14 @@ public struct ClaimDetailView: View {
                     .padding(16)
 
                     Spacer()
-                        .frame(maxHeight: 8)
+                        .frame(height: 8)
 
                     hText(statusParagraph)
                         .multilineTextAlignment(.leading)
                         .padding(.horizontal, 16)
 
                     Spacer()
-                        .frame(maxHeight: 20)
+                        .frame(height: 20)
                     Divider()
 
                     HStack(alignment: .center) {
@@ -160,7 +156,7 @@ public struct ClaimDetailView: View {
                     Spacer()
                         .frame(height: 16)
 
-                    // TODO: Add audio player here
+                    // TODO: Add waveform to trackplayer
                     if let url = URL(string: claim.claimDetailData.signedAudioURL) {
                         TrackPlayer(audioPlayer: .init(recording: .init(url: url, created: Date(), sample: [])))
                             .frame(height: 64)

@@ -10,16 +10,13 @@ struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
 
     @ViewBuilder var image: some View {
-        if audioPlayer.isPlaying {
-            Image(uiImage: hCoreUIAssets.pause.image)
-        } else {
-            Image(uiImage: hCoreUIAssets.play.image)
-        }
+        Image(uiImage: audioPlayer.isPlaying ? hCoreUIAssets.pause.image : hCoreUIAssets.play.image)
+            .foregroundColor(hLabelColor.link)
     }
 
     var body: some View {
         HStack(alignment: .center) {
-            image.tint(hColorScheme(light: hTintColor.lavenderOne, dark: hTintColor.lavenderTwo))
+            image
             let staples = Staples(audioPlayer: audioPlayer)
                 .frame(height: 50)
                 .clipped()
