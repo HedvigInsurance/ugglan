@@ -139,6 +139,7 @@ extension AppJourney {
                     profileTab
                 }
             )
+            .sendActionImmediately(ContractStore.self, .fetch)
             .syncTabIndex()
             .onAction(UgglanStore.self) { action in
                 if action == .openChat {

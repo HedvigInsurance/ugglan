@@ -29,9 +29,7 @@ extension AppJourney {
             }
         }
         .sendActionImmediately(HomeStore.self, .startPollingClaims)
-        .onDismiss {
-            DismissJourney().sendActionImmediately(HomeStore.self, .stopPollingClaims)
-        }
+        .sendActionOnDismiss(HomeStore.self, .stopPollingClaims)
     }
 
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
@@ -76,6 +74,15 @@ extension AppJourney {
     ) -> some JourneyPresentation {
         Journey(embark, style: style) { redirect in
             redirectJourney(redirect)
+        }
+    }
+}
+extension JourneyPresentation {
+    func sendActionOnDismiss<S: Store>(_ storeType: S.Type, _ action: S.Action) -> Self {
+        return self.onDismiss {
+            let store: S = self.presentable.get()
+
+            store.send(action)
         }
     }
 }
