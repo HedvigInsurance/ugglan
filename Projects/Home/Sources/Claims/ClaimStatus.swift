@@ -5,7 +5,7 @@ import hGraphQL
 
 struct ClaimStatus: View {
     var claim: Claim
-    
+
     @PresentableStore
     var store: HomeStore
 
