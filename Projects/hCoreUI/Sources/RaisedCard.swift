@@ -4,15 +4,12 @@ import hCore
 public struct RaisedCard<Content: View>: View {
     private let content: Content
     private let alignment: HorizontalAlignment
-    var action: (() -> Void)?
 
     public init(
         alignment: HorizontalAlignment = .center,
-        action: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.alignment = alignment
-        self.action = action
         self.content = content()
     }
 
@@ -28,7 +25,7 @@ public struct RaisedCard<Content: View>: View {
     }
 }
 
-struct TappableCard_Previews: PreviewProvider {
+struct RaisedCard_Previews: PreviewProvider {
     static var previews: some View {
         RaisedCard {
 
