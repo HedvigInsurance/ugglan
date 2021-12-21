@@ -75,6 +75,9 @@ public struct ClaimDetailView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 23, height: 19)
                     }
+                    .onTapGesture {
+                        print("Tapped the chat button")
+                    }
                 }
                 .padding(16)
             }
@@ -84,21 +87,20 @@ public struct ClaimDetailView: View {
                 .frame(height: 52)
 
             // Audio files section
-            VStack(alignment: .leading) {
-                hText(L10n.ClaimStatus.files, style: .headline)
-
-                Spacer()
-                    .frame(height: 16)
-
+            VStack(alignment: .leading, spacing: 8) {
                 // TODO: Add waveform to trackplayer
                 if let url = URL(string: claim.claimDetailData.signedAudioURL) {
-                    TrackPlayer(audioPlayer: .init(recording: .init(url: url, created: Date(), sample: [])))
-                        .frame(height: 64)
+                    TrackPlayer(
+                        audioPlayer: .init(
+                            recording: .init(
+                                url: url,
+                                created: Date(),
+                                sample: []
+                            )
+                        )
+                    )
+                    .frame(height: 64)
                 }
-
-                Spacer()
-                    .frame(height: 8)
-
                 hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
                     .foregroundColor(hLabelColor.secondary)
             }

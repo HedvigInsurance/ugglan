@@ -27,16 +27,13 @@ extension AppJourney {
                 AppJourney.freeTextChat()
             case .openConnectPayments:
                 AppJourney.paymentSetup
+            case let .openClaimDetails(claim):
+                AppJourney.claimDetailJourney(claim: claim)
             }
         }
         .configureTabBarItem
         .onTabSelected {
             ContextGradient.currentOption = .home
-        }
-        .onAction(HomeStore.self) { action in
-            if case let .openClaimDetails(claim) = action {
-                AppJourney.claimDetailJourney(claim: claim)
-            }
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
