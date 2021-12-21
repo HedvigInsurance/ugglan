@@ -66,21 +66,24 @@ public struct ClaimDetailView: View {
 
                     hText(claim.subtitle, style: .footnote)
                         .foregroundColor(hLabelColor.secondary)
-                    
+
                     if let payout = claim.claimDetailData.payout, !payout.amount.isEmpty {
                         Spacer()
                             .frame(height: 12)
-                        
+
                         HStack(alignment: .firstTextBaseline) {
                             hPillFill(
                                 text: L10n.Claim.Decision.paid,
-                                backgroundColor: hColorScheme(light: hTintColor.lavenderTwo, dark: hTintColor.lavenderOne)
+                                backgroundColor: hColorScheme(
+                                    light: hTintColor.lavenderTwo,
+                                    dark: hTintColor.lavenderOne
+                                )
                             )
-                            
+
                             Spacer()
                                 .frame(width: 8)
                             hText(payout.amount, style: .largeTitle)
-                            
+
                             Spacer()
                                 .frame(width: 2)
                             hText(payout.currency)
