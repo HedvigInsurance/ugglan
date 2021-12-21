@@ -36,14 +36,14 @@ public struct ClaimDetailView: View {
     private func readableDateString(from date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.locale = Localization.Locale.currentLocale.foundation
-        
+
         let dateFormatter = DateFormatter()
         if Calendar.current.isDateInToday(date) {
             formatter.dateTimeStyle = .numeric
             return formatter.localizedString(for: date, relativeTo: Date())
         } else if Calendar.current.isDateInYesterday(date) {
             formatter.dateTimeStyle = .named
-            
+
             dateFormatter.dateFormat = "HH:mm"
             return formatter.localizedString(for: date, relativeTo: Date()) + dateFormatter.string(from: date)
         } else {
