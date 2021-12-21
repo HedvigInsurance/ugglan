@@ -100,26 +100,24 @@ struct ClaimDetailHeader: View {
                 .frame(height: 16)
 
             HStack {
-                Spacer()
                 VStack(spacing: 4) {
                     hText(L10n.ClaimStatusDetail.submitted, style: .caption2)
                         .foregroundColor(hLabelColor.secondary)
 
                     hText(submittedDate, style: .caption1)
                 }
+                .frame(maxWidth: .infinity)
 
-                Spacer()
                 Divider()
-                    .frame(maxHeight: 32)
+                    .frame(height: 32)
 
-                Spacer()
                 VStack(spacing: 4) {
                     hText(L10n.ClaimStatusDetail.closed, style: .caption2)
                         .foregroundColor(hLabelColor.secondary)
 
                     hText(closedDate, style: .caption1)
                 }
-                Spacer()
+                .frame(maxWidth: .infinity)
             }
         }
     }
