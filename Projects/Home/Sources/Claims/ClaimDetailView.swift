@@ -32,7 +32,7 @@ public struct ClaimDetailView: View {
 
         return nil
     }
-    
+
     private var contactChatView: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 3) {
