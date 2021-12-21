@@ -53,7 +53,8 @@ struct ClaimDetailHeader: View {
             formatter.dateTimeStyle = .named
 
             dateFormatter.dateFormat = "HH:mm"
-            return formatter.localizedString(for: date, relativeTo: Date()) + dateFormatter.string(from: date)
+            return formatter.localizedString(for: date, relativeTo: Date()) + " " +
+            dateFormatter.string(from: date)
         } else {
             dateFormatter.dateFormat = "dd-MM-yyyy, HH:mm"
             return dateFormatter.string(from: date)
@@ -120,5 +121,17 @@ struct ClaimDetailHeader: View {
                 .frame(maxWidth: .infinity)
             }
         }
+    }
+}
+
+struct ClaimDetailHeader_Previews: PreviewProvider {
+    static var previews: some View {
+        ClaimDetailHeader(
+            title: "Insurance case",
+            subtitle: "Home Insurance Renter",
+            submitted: "2021-12-21T09:09:35.331995Z",
+            closed: nil,
+            payout: MonetaryAmount(amount: "3400,00", currency: "SEK")
+        )
     }
 }

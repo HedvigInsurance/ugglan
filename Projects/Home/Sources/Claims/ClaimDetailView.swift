@@ -91,26 +91,9 @@ public struct ClaimDetailView: View {
             Spacer()
                 .frame(height: 52)
 
-            // Audio files section
-            VStack(alignment: .leading, spacing: 8) {
-                // TODO: Add waveform to trackplayer
-                if let url = URL(string: claim.claimDetailData.signedAudioURL) {
-                    TrackPlayer(
-                        audioPlayer: .init(
-                            recording: .init(
-                                url: url,
-                                created: Date(),
-                                sample: []
-                            )
-                        )
-                    )
-                    .frame(height: 64)
-                }
-                hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
-                    .foregroundColor(hLabelColor.secondary)
-            }
-            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
-            .padding(.horizontal, 16)
+            ClaimDetailFilesView(
+                signedAudioURL: claim.claimDetailData.signedAudioURL
+            )
 
             Spacer()
         }
