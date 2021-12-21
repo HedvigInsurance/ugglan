@@ -15,15 +15,16 @@ public struct ClaimDetailView: View {
     private var statusParagraph: String {
         claim.claimDetailData.statusParagraph
     }
-    
+
     /// Displays payout only if claim status is closed and outcome is paid. Nil otherwise and it won't be displayed
     private var payoutDisplayAmount: MonetaryAmount? {
         if case .closed = claim.claimDetailData.status,
-           case .paid = claim.claimDetailData.outcome,
-           !claim.claimDetailData.payout.amount.isEmpty  {
+            case .paid = claim.claimDetailData.outcome,
+            !claim.claimDetailData.payout.amount.isEmpty
+        {
             return claim.claimDetailData.payout
         }
-        
+
         return nil
     }
 
