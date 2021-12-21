@@ -9,7 +9,7 @@ struct ClaimDetailHeader: View {
         subtitle: String,
         submitted: String?,
         closed: String?,
-        payout: MonetaryAmount
+        payout: MonetaryAmount?
     ) {
         self.title = title
         self.subtitle = subtitle
@@ -22,7 +22,7 @@ struct ClaimDetailHeader: View {
     let subtitle: String
     let submitted: String?
     let closed: String?
-    let payout: MonetaryAmount
+    let payout: MonetaryAmount?
 
     private var submittedDate: String {
         let dateFormatter = DateFormatter.withIso8601Format("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
@@ -72,7 +72,7 @@ struct ClaimDetailHeader: View {
             hText(subtitle, style: .footnote)
                 .foregroundColor(hLabelColor.secondary)
 
-            if !payout.amount.isEmpty {
+            if let payout = payout {
                 Spacer()
                     .frame(height: 12)
 
