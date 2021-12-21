@@ -70,8 +70,7 @@ public struct ClaimDetailView: View {
             )
             .padding(.vertical, 24)
 
-            // Status card section
-            TappableCard(alignment: .leading) {
+            RaisedCard(alignment: .leading) {
                 HStack(spacing: 6) {
                     ForEach(claim.segments, id: \.text) { segment in
                         ClaimStatusBar(status: segment)

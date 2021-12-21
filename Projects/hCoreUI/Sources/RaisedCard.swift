@@ -1,7 +1,7 @@
 import SwiftUI
 import hCore
 
-public struct TappableCard<Content: View>: View {
+public struct RaisedCard<Content: View>: View {
     private let content: Content
     private let alignment: HorizontalAlignment
     var action: (() -> Void)?
@@ -30,7 +30,7 @@ public struct TappableCard<Content: View>: View {
 
 struct TappableCard_Previews: PreviewProvider {
     static var previews: some View {
-        TappableCard {
+        RaisedCard {
 
         }
     }
