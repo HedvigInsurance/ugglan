@@ -1,15 +1,20 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import Presentation
 import hGraphQL
 
 public struct ClaimDetailView: View {
     let claim: Claim
-
+    
+    var store: HomeStore
+    
     public init(
         claim: Claim
     ) {
         self.claim = claim
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        self.store = store
     }
 
     private var statusParagraph: String {
@@ -76,7 +81,7 @@ public struct ClaimDetailView: View {
                             .frame(width: 23, height: 19)
                     }
                     .onTapGesture {
-                        print("Tapped the chat button")
+                        store.send(.openFreeTextChat)
                     }
                 }
                 .padding(16)
