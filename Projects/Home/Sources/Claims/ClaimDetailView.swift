@@ -34,23 +34,18 @@ public struct ClaimDetailView: View {
 
     /// Converts date into a readable friendly string
     private func readableDateString(from date: Date) -> String {
-        // TODO: Localize strings used for yesterday and hours/minutes ago
+        let formatter = RelativeDateTimeFormatter()
+        formatter.locale = Localization.Locale.currentLocale.foundation
+        
         let dateFormatter = DateFormatter()
         if Calendar.current.isDateInToday(date) {
-            guard let hours = Calendar.current.dateComponents([.hour], from: date, to: Date()).hour, hours >= 1 else {
-                // Show minutes ago
-                guard let minutes = Calendar.current.dateComponents([.minute], from: date, to: Date()).minute else {
-                    dateFormatter.dateFormat = "dd-MM-yyyy, HH:mm"
-                    return dateFormatter.string(from: date)
-                }
-
-                return minutes > 1 ? "\(minutes) minutes ago" : "1 minute ago"
-            }
-
-            return hours > 1 ? "\(hours) hours ago" : "1 hour ago"
+            formatter.dateTimeStyle = .numeric
+            return formatter.localizedString(for: date, relativeTo: Date())
         } else if Calendar.current.isDateInYesterday(date) {
+            formatter.dateTimeStyle = .named
+            
             dateFormatter.dateFormat = "HH:mm"
-            return "Yesterday " + dateFormatter.string(from: date)
+            return formatter.localizedString(for: date, relativeTo: Date()) + dateFormatter.string(from: date)
         } else {
             dateFormatter.dateFormat = "dd-MM-yyyy, HH:mm"
             return dateFormatter.string(from: date)
