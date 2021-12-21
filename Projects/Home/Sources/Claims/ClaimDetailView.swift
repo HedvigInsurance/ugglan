@@ -66,6 +66,27 @@ public struct ClaimDetailView: View {
 
                     hText(claim.subtitle, style: .footnote)
                         .foregroundColor(hLabelColor.secondary)
+                    
+                    if let payout = claim.claimDetailData.payout, !payout.amount.isEmpty {
+                        Spacer()
+                            .frame(height: 12)
+                        
+                        HStack(alignment: .firstTextBaseline) {
+                            hPillFill(
+                                text: L10n.Claim.Decision.paid,
+                                backgroundColor: hColorScheme(light: hTintColor.lavenderTwo, dark: hTintColor.lavenderOne)
+                            )
+                            
+                            Spacer()
+                                .frame(width: 8)
+                            hText(payout.amount, style: .largeTitle)
+                            
+                            Spacer()
+                                .frame(width: 2)
+                            hText(payout.currency)
+                                .foregroundColor(hLabelColor.secondary)
+                        }
+                    }
 
                     Spacer()
                         .frame(height: 16)
@@ -108,9 +129,10 @@ public struct ClaimDetailView: View {
                     .padding(16)
 
                     Spacer()
-                        .frame(height: 8)
+                        .frame(height: 24)
 
                     hText(statusParagraph)
+                        .fixedSize(horizontal: false, vertical: true)
                         .multilineTextAlignment(.leading)
                         .padding(.horizontal, 16)
 
