@@ -43,7 +43,7 @@ public struct ClaimDetailView: View {
                         .multilineTextAlignment(.leading)
                         .padding(.horizontal, 16)
                         .padding(.bottom, 20)
-                    
+
                     Divider()
 
                     HStack(alignment: .center) {

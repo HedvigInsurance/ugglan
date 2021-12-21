@@ -1,6 +1,6 @@
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct ClaimDetailHeader: View {
@@ -17,13 +17,13 @@ struct ClaimDetailHeader: View {
         self.closed = closed
         self.payout = payout
     }
-    
+
     let title: String
     let subtitle: String
     let submitted: String?
     let closed: String?
     let payout: MonetaryAmount
-    
+
     private var submittedDate: String {
         let dateFormatter = DateFormatter.withIso8601Format("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
         guard let submitted = submitted,
@@ -59,7 +59,7 @@ struct ClaimDetailHeader: View {
             return dateFormatter.string(from: date)
         }
     }
-    
+
     var body: some View {
         VStack {
             hCoreUIAssets.infoShield.view
