@@ -32,6 +32,32 @@ public struct ClaimDetailView: View {
 
         return nil
     }
+    
+    private var contactChatView: some View {
+        HStack(alignment: .center) {
+            VStack(alignment: .leading, spacing: 3) {
+                hText(L10n.ClaimStatus.Contact.Generic.subtitle, style: .caption1)
+                    .foregroundColor(hLabelColor.secondary)
+                hText(L10n.ClaimStatus.Contact.Generic.title, style: .callout)
+            }
+            Spacer()
+
+            ZStack {
+                RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                    .fill(hBackgroundColor.primary)
+                    .frame(width: 40, height: 40)
+
+                hCoreUIAssets.chatSolid.view
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 23, height: 19)
+            }
+            .onTapGesture {
+                store.send(.openFreeTextChat)
+            }
+        }
+        .padding(16)
+    }
 
     public var body: some View {
         hForm {
@@ -62,29 +88,7 @@ public struct ClaimDetailView: View {
 
                 Divider()
 
-                HStack(alignment: .center) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        hText(L10n.ClaimStatus.Contact.Generic.subtitle, style: .caption1)
-                            .foregroundColor(hLabelColor.secondary)
-                        hText(L10n.ClaimStatus.Contact.Generic.title, style: .callout)
-                    }
-                    Spacer()
-
-                    ZStack {
-                        RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                            .fill(hBackgroundColor.primary)
-                            .frame(width: 40, height: 40)
-
-                        hCoreUIAssets.chatSolid.view
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 23, height: 19)
-                    }
-                    .onTapGesture {
-                        store.send(.openFreeTextChat)
-                    }
-                }
-                .padding(16)
+                contactChatView
             }
             .padding(.horizontal, 16)
 
