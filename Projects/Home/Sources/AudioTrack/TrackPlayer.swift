@@ -59,16 +59,12 @@ struct OverlayView: View {
     }
 }
 
-struct Recording {
-    var url: URL
-}
-
 class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     internal init(
-        recording: Recording,
+        url: URL,
         isPlaying: Bool = false
     ) {
-        self.recording = recording
+        self.url = url
         self.isPlaying = isPlaying
     }
 
@@ -79,7 +75,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     let playerTimer = Timer.publish(every: 1 / 30, on: .main, in: .common)
         .autoconnect()
 
-    let recording: Recording
+    let url: URL
 
     private(set) var isPlaying: Bool = false {
         didSet {
@@ -109,7 +105,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
         }
 
         do {
-            audioPlayer = try AVAudioPlayer(contentsOf: recording.url)
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.play()
             audioPlayer?.delegate = self
             isPlaying = true
