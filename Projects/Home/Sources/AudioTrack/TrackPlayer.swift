@@ -17,7 +17,7 @@ struct TrackPlayer: View {
     var body: some View {
         HStack(spacing: 16) {
             image
-            
+
             WaveformView()
                 .frame(maxWidth: .infinity)
                 .overlay(

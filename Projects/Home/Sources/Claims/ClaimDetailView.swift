@@ -96,7 +96,7 @@ public struct ClaimDetailView: View {
             ClaimDetailFilesView(
                 signedAudioURL: claim.claimDetailData.signedAudioURL
             )
-            
+
             Spacer()
         }
         .padding(.horizontal, 16)
