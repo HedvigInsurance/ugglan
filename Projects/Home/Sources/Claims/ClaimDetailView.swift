@@ -89,7 +89,6 @@ public struct ClaimDetailView: View {
 
                 contactChatView
             }
-            .padding(.horizontal, 16)
 
             Spacer()
                 .frame(height: 52)
@@ -97,9 +96,10 @@ public struct ClaimDetailView: View {
             ClaimDetailFilesView(
                 signedAudioURL: claim.claimDetailData.signedAudioURL
             )
-
+            
             Spacer()
         }
+        .padding(.horizontal, 16)
         .background(hBackgroundColor.primary)
         .navigationBarTitle(Text(L10n.ClaimStatus.title), displayMode: .inline)
     }

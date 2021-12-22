@@ -15,19 +15,16 @@ struct TrackPlayer: View {
     }
 
     var body: some View {
-        HStack(alignment: .center) {
+        HStack(spacing: 16) {
             image
-            let staples = Staples(audioPlayer: audioPlayer)
-                .frame(height: 50)
-                .clipped()
-            staples
+            
+            WaveformView()
+                .frame(maxWidth: .infinity)
                 .overlay(
-                    OverlayView(audioPlayer: audioPlayer).mask(staples)
+                    OverlayView(audioPlayer: audioPlayer)
                 )
-
         }
-        .padding(.vertical, 5)
-        .padding(.horizontal, 10)
+        .padding(.horizontal, 16)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: .defaultCornerRadius)
@@ -39,76 +36,6 @@ struct TrackPlayer: View {
                 audioPlayer.togglePlaying()
             }
         }
-    }
-}
-
-struct Staple: View {
-    let staplesDefaultColor: some hColor = hColorScheme(light: hTintColor.lavenderOne, dark: hTintColor.lavenderTwo)
-
-    var index: Int
-    var height: CGFloat
-    var value: CGFloat
-    var range: Range<CGFloat>
-
-    var heightRatio: CGFloat {
-        max((value - range.lowerBound) / magnitude(of: range), 0.05)
-    }
-
-    var body: some View {
-        Capsule()
-            .fill(staplesDefaultColor)
-            .frame(width: 2, height: height)
-            .scaleEffect(x: 1, y: heightRatio, anchor: .center)
-    }
-
-    func magnitude(of range: Range<CGFloat>) -> CGFloat {
-        return range.upperBound - range.lowerBound
-    }
-}
-
-struct Staples: View {
-    @ObservedObject var audioPlayer: AudioPlayer
-
-    var body: some View {
-        let sample = audioPlayer.recording.sample
-        let sampleRange = audioPlayer.recording.range
-
-        GeometryReader { geometry in
-            HStack(alignment: .center) {
-                ForEach(
-                    Array(trim(sample: sample, availableWidth: geometry.size.width).enumerated()),
-                    id: \.offset
-                ) { index, sampleHeight in
-                    Spacer()
-                    Staple(
-                        index: index,
-                        height: geometry.size.height,
-                        value: sampleHeight,
-                        range: sampleRange
-                    )
-                }
-            }
-            .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity)
-        }
-    }
-
-    func trim(sample: [CGFloat], availableWidth: CGFloat) -> [CGFloat] {
-        let trimmed = sample
-
-        let count = Double(trimmed.count)
-
-        let maxStaples = Double(availableWidth / 2)
-
-        guard count > maxStaples else { return trimmed }
-
-        let roundUp = ceil(Double(trimmed.count) / maxStaples)
-
-        let chunkSize = max(Int(roundUp), 2)
-
-        return trimmed.chunked(into: chunkSize)
-            .compactMap {
-                return $0.reduce(0, +) / CGFloat($0.count)
-            }
     }
 }
 

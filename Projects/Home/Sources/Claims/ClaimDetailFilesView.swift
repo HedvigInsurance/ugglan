@@ -23,7 +23,6 @@ struct ClaimDetailFilesView: View {
             hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
                 .foregroundColor(hLabelColor.secondary)
         }
-        .padding(16)
     }
 }
 
