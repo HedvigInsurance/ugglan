@@ -7,14 +7,11 @@ struct ClaimDetailFilesView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // TODO: Add waveform to trackplayer
             if let url = URL(string: signedAudioURL) {
                 TrackPlayer(
                     audioPlayer: .init(
                         recording: .init(
-                            url: url,
-                            created: Date(),
-                            sample: []
+                            url: url
                         )
                     )
                 )

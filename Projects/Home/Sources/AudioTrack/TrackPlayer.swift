@@ -61,15 +61,6 @@ struct OverlayView: View {
 
 struct Recording {
     var url: URL
-    var created: Date
-    var sample: [CGFloat]
-    var max: CGFloat {
-        return sample.max() ?? 1.0
-    }
-    var range: Range<CGFloat> {
-        guard sample.count > 0 else { return 0..<0 }
-        return sample.min()!..<sample.max()!
-    }
 }
 
 class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {

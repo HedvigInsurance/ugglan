@@ -39,7 +39,7 @@ struct WaveformView: View {
         .frame(maxWidth: .infinity, maxHeight: maxStripeHeight)
     }
 
-    func makeView(_ geometry: GeometryProxy) -> some View {
+    private func makeView(_ geometry: GeometryProxy) -> some View {
         // Get the number of stripes by dividing width with individual stripe width
         // Individual stripe width = stripeWidth + stripeSpacing
         let count = geometry.size.width / (stripeWidth + stripeSpacing)

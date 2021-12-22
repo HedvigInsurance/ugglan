@@ -53,7 +53,7 @@ struct ClaimDetailHeader: View {
             formatter.dateTimeStyle = .named
 
             dateFormatter.dateFormat = "HH:mm"
-            return formatter.localizedString(for: date, relativeTo: Date()) + " " + dateFormatter.string(from: date)
+            return formatter.localizedString(for: date, relativeTo: Date()).capitalized + " " + dateFormatter.string(from: date)
         } else {
             dateFormatter.dateFormat = "dd-MM-yyyy, HH:mm"
             return dateFormatter.string(from: date)
@@ -78,7 +78,7 @@ struct ClaimDetailHeader: View {
 
                 HStack(alignment: .firstTextBaseline) {
                     hPillFill(
-                        text: L10n.Claim.Decision.paid,
+                        text: L10n.Claim.Decision.paid.uppercased(),
                         backgroundColor: hColorScheme(
                             light: hTintColor.lavenderTwo,
                             dark: hTintColor.lavenderOne
