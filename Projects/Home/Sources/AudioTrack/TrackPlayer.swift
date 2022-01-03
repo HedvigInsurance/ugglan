@@ -1,4 +1,4 @@
-import AVFAudio
+import AVFoundation
 import Combine
 import Foundation
 import SwiftUI
@@ -50,10 +50,6 @@ struct OverlayView: View {
                 Rectangle()
                     .fill(staplesMaskColor)
                     .frame(width: geometry.size.width * audioPlayer.progress)
-                    .onReceive(audioPlayer.playerTimer) { input in
-                        guard audioPlayer.isPlaying else { return }
-                        audioPlayer.refreshPlayer()
-                    }
             }
         }
     }
@@ -70,7 +66,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
 
-    var audioPlayer: AVAudioPlayer?
+    var audioPlayer: AVPlayer?
 
     let playerTimer = Timer.publish(every: 1 / 30, on: .main, in: .common)
         .autoconnect()
@@ -104,22 +100,23 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
             print("Playing over the device's speakers failed")
         }
 
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.play()
-            audioPlayer?.delegate = self
-            isPlaying = true
-        } catch {
-            print("Playback failed.")
-        }
+        let playerItem = AVPlayerItem(url: url)
+        audioPlayer = AVPlayer(playerItem: playerItem)
+        
+        audioPlayer?.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 1), queue: .main, using: { [weak self] time in
+            guard let self = self else { return }
+            if let item = self.audioPlayer?.currentItem, item.status == .readyToPlay {
+                let duration = CMTimeGetSeconds(item.duration), timeInFloat = CMTimeGetSeconds(time)
+                self.progress = timeInFloat/duration
+                
+            }
+        })
+        
+        audioPlayer?.actionAtItemEnd = .pause
+        audioPlayer?.play()
+        isPlaying = true
     }
-
-    func refreshPlayer() {
-        guard let elapsedTime = audioPlayer?.currentTime, let maxTime = audioPlayer?.duration else { return }
-
-        self.progress = elapsedTime / maxTime
-    }
-
+    
     private func stopPlaying() {
         audioPlayer?.pause()
         isPlaying = false
