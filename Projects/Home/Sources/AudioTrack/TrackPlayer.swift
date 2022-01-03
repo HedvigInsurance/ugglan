@@ -102,21 +102,27 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
         let playerItem = AVPlayerItem(url: url)
         audioPlayer = AVPlayer(playerItem: playerItem)
-        
-        audioPlayer?.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 1), queue: .main, using: { [weak self] time in
-            guard let self = self else { return }
-            if let item = self.audioPlayer?.currentItem, item.status == .readyToPlay {
-                let duration = CMTimeGetSeconds(item.duration), timeInFloat = CMTimeGetSeconds(time)
-                self.progress = timeInFloat/duration
-                
-            }
-        })
-        
+
+        audioPlayer?
+            .addPeriodicTimeObserver(
+                forInterval: CMTime(value: 1, timescale: 1),
+                queue: .main,
+                using: { [weak self] time in
+                    guard let self = self else { return }
+                    if let item = self.audioPlayer?.currentItem, item.status == .readyToPlay {
+                        let duration = CMTimeGetSeconds(item.duration)
+                        let timeInFloat = CMTimeGetSeconds(time)
+                        self.progress = timeInFloat / duration
+
+                    }
+                }
+            )
+
         audioPlayer?.actionAtItemEnd = .pause
         audioPlayer?.play()
         isPlaying = true
     }
-    
+
     private func stopPlaying() {
         audioPlayer?.pause()
         isPlaying = false
