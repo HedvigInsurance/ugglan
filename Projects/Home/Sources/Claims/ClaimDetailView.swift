@@ -44,7 +44,7 @@ public struct ClaimDetailView: View {
                 payout: payoutDisplayAmount
             )
             .padding(.vertical, 24)
-            
+
             // Card showing the status of claim
             RaisedCard(alignment: .leading) {
                 HStack(spacing: 6) {
@@ -69,7 +69,7 @@ public struct ClaimDetailView: View {
 
             Spacer()
                 .frame(height: 52)
-            
+
             // Section to show attachments for the claim
             ClaimDetailFilesView(
                 signedAudioURL: claim.claimDetailData.signedAudioURL

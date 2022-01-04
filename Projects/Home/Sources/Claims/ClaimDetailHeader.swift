@@ -26,7 +26,8 @@ struct ClaimDetailHeader: View {
 
     private var submittedDate: String {
         guard let submitted = submitted,
-              let date = submitted.localDateToIso8601Date(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ") else {
+            let date = submitted.localDateToIso8601Date(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
+        else {
             return "-"
         }
         return readableDateString(from: date)
@@ -34,7 +35,7 @@ struct ClaimDetailHeader: View {
 
     private var closedDate: String {
         guard let closed = closed,
-              let date = closed.localDateToIso8601Date(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
+            let date = closed.localDateToIso8601Date(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
         else { return "-" }
         return readableDateString(from: date)
     }

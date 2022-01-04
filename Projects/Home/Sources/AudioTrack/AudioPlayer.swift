@@ -1,6 +1,6 @@
-import Foundation
-import Combine
 import AVFoundation
+import Combine
+import Foundation
 
 class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     internal init(

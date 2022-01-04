@@ -4,11 +4,13 @@ import hCoreUI
 
 struct ContactChatView: View {
     let store: HomeStore
-    
-    init(store: HomeStore) {
+
+    init(
+        store: HomeStore
+    ) {
         self.store = store
     }
-    
+
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 3) {
