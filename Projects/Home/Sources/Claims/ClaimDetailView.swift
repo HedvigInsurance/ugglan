@@ -33,34 +33,9 @@ public struct ClaimDetailView: View {
         return nil
     }
 
-    private var contactChatView: some View {
-        HStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 3) {
-                hText(L10n.ClaimStatus.Contact.Generic.subtitle, style: .caption1)
-                    .foregroundColor(hLabelColor.secondary)
-                hText(L10n.ClaimStatus.Contact.Generic.title, style: .callout)
-            }
-            Spacer()
-
-            ZStack {
-                RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                    .fill(hBackgroundColor.primary)
-                    .frame(width: 40, height: 40)
-
-                hCoreUIAssets.chatSolid.view
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 23, height: 19)
-            }
-            .onTapGesture {
-                store.send(.openFreeTextChat)
-            }
-        }
-        .padding(16)
-    }
-
     public var body: some View {
         hForm {
+            // Header for Claim status details
             ClaimDetailHeader(
                 title: claim.title,
                 subtitle: claim.subtitle,
@@ -69,7 +44,8 @@ public struct ClaimDetailView: View {
                 payout: payoutDisplayAmount
             )
             .padding(.vertical, 24)
-
+            
+            // Card showing the status of claim
             RaisedCard(alignment: .leading) {
                 HStack(spacing: 6) {
                     ForEach(claim.segments, id: \.text) { segment in
@@ -87,13 +63,14 @@ public struct ClaimDetailView: View {
 
                 Divider()
 
-                contactChatView
+                ContactChatView(store: self.store)
             }
             .padding(.horizontal, 16)
 
             Spacer()
                 .frame(height: 52)
-
+            
+            // Section to show attachments for the claim
             ClaimDetailFilesView(
                 signedAudioURL: claim.claimDetailData.signedAudioURL
             )

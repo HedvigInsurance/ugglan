@@ -25,17 +25,16 @@ struct ClaimDetailHeader: View {
     let payout: MonetaryAmount?
 
     private var submittedDate: String {
-        let dateFormatter = DateFormatter.withIso8601Format("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
         guard let submitted = submitted,
-            let date = dateFormatter.date(from: submitted)
-        else { return "-" }
+              let date = submitted.localDateToIso8601Date(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ") else {
+            return "-"
+        }
         return readableDateString(from: date)
     }
 
     private var closedDate: String {
-        let dateFormatter = DateFormatter.withIso8601Format("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
         guard let closed = closed,
-            let date = dateFormatter.date(from: closed)
+              let date = closed.localDateToIso8601Date(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
         else { return "-" }
         return readableDateString(from: date)
     }
