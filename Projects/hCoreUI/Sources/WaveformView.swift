@@ -1,12 +1,23 @@
 import GameKit
 import SwiftUI
-import hCoreUI
 
-struct WaveformView: View {
+public struct WaveformView<StripeColor: hColor>: View {
     private let stripeWidth: CGFloat = 2
     private let stripeSpacing: CGFloat = 3
-    private let mean: Float = 20
-    private let deviation: Float = 6
+    private let mean: Float
+    private let deviation: Float
+    
+    private let stripeColor: StripeColor
+    
+    public init(
+        mean: Float = 20,
+        deviation: Float = 6,
+        stripeColor: StripeColor
+    ) {
+        self.mean = mean
+        self.deviation = deviation
+        self.stripeColor = stripeColor
+    }
 
     private var maxStripeHeight: CGFloat {
         // The possible range of values in a guassian distribution is
@@ -30,7 +41,7 @@ struct WaveformView: View {
         return numbers
     }
 
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .center) {
             GeometryReader { geometry in
                 self.makeView(geometry)
@@ -48,7 +59,7 @@ struct WaveformView: View {
         return HStack(spacing: stripeSpacing) {
             ForEach(heights, id: \.self) { height in
                 RoundedRectangle(cornerRadius: stripeWidth / 2)
-                    .fill(hLabelColor.link)
+                    .fill(self.stripeColor)
                     .frame(width: stripeWidth, height: abs(CGFloat(height)))
             }
         }
@@ -57,6 +68,8 @@ struct WaveformView: View {
 
 struct WaveformView_Previews: PreviewProvider {
     static var previews: some View {
-        WaveformView()
+        WaveformView(
+            stripeColor: hLabelColor.link
+        )
     }
 }

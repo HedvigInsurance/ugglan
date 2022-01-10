@@ -14,7 +14,7 @@ struct TrackPlayer: View {
         HStack(spacing: 16) {
             image
 
-            WaveformView()
+            WaveformView(stripeColor: hLabelColor.link)
                 .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, 16)
