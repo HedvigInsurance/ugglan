@@ -25,8 +25,8 @@ struct TrackPlayer: View {
                 deviation: 10,
                 stripeColor: hColorScheme.init(light: hGrayscaleColor.one, dark: hGrayscaleColor.two)
             )
-                .frame(height: 100)
-                .clipped()
+            .frame(height: 100)
+            .clipped()
             waveform
                 .overlay(
                     OverlayView(audioPlayer: audioPlayer).mask(waveform)

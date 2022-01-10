@@ -6,9 +6,9 @@ public struct WaveformView<StripeColor: hColor>: View {
     private let stripeSpacing: CGFloat = 3
     private let mean: Float
     private let deviation: Float
-    
+
     private let stripeColor: StripeColor
-    
+
     public init(
         mean: Float = 20,
         deviation: Float = 6,
