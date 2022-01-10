@@ -35,6 +35,16 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func togglePlaying() {
         isPlaying ? stopPlaying() : startPlaying()
     }
+    
+    func addAudioPlayerNotificationObserver() {
+        NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(playerDidFinishPlaying),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: nil
+        )
+    }
 
     private func startPlaying() {
         let session = AVAudioSession.sharedInstance()
@@ -49,6 +59,8 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
         let playerItem = AVPlayerItem(url: url)
         audioPlayer = AVPlayer(playerItem: playerItem)
+        
+        addAudioPlayerNotificationObserver()
 
         audioPlayer?
             .addPeriodicTimeObserver(
@@ -74,8 +86,8 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
         audioPlayer?.pause()
         isPlaying = false
     }
-
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    
+    @objc func playerDidFinishPlaying() {
         isPlaying = false
     }
 }
