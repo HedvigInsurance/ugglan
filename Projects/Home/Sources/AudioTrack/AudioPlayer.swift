@@ -35,7 +35,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func togglePlaying() {
         isPlaying ? stopPlaying() : startPlaying()
     }
-    
+
     func addAudioPlayerNotificationObserver() {
         NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
         NotificationCenter.default.addObserver(
@@ -59,7 +59,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
         let playerItem = AVPlayerItem(url: url)
         audioPlayer = AVPlayer(playerItem: playerItem)
-        
+
         addAudioPlayerNotificationObserver()
 
         audioPlayer?
@@ -86,7 +86,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
         audioPlayer?.pause()
         isPlaying = false
     }
-    
+
     @objc func playerDidFinishPlaying() {
         isPlaying = false
     }
