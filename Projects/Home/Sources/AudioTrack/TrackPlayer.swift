@@ -16,9 +16,6 @@ struct TrackPlayer: View {
 
             WaveformView()
                 .frame(maxWidth: .infinity)
-                .overlay(
-                    OverlayView(audioPlayer: audioPlayer)
-                )
         }
         .padding(.horizontal, 16)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -26,6 +23,9 @@ struct TrackPlayer: View {
             RoundedRectangle(cornerRadius: .defaultCornerRadius)
                 .fill(hColorScheme(light: hTintColor.lavenderTwo, dark: hTintColor.lavenderOne))
                 .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        )
+        .overlay(
+            OverlayView(audioPlayer: audioPlayer)
         )
         .onTapGesture {
             withAnimation(.spring()) {

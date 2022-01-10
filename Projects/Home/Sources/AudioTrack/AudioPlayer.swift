@@ -64,7 +64,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
         audioPlayer?
             .addPeriodicTimeObserver(
-                forInterval: CMTime(value: 1, timescale: 1),
+                forInterval: CMTime(value: 1, timescale: 10),
                 queue: .main,
                 using: { [weak self] time in
                     guard let self = self else { return }
@@ -72,7 +72,6 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
                         let duration = CMTimeGetSeconds(item.duration)
                         let timeInFloat = CMTimeGetSeconds(time)
                         self.progress = timeInFloat / duration
-
                     }
                 }
             )
@@ -89,5 +88,6 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     @objc func playerDidFinishPlaying() {
         isPlaying = false
+        self.progress = 0
     }
 }
