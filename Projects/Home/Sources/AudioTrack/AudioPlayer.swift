@@ -2,7 +2,7 @@ import AVFoundation
 import Combine
 import Foundation
 
-class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
+class AudioPlayer: NSObject, ObservableObject {
     internal init(
         url: URL,
         isPlaying: Bool = false
@@ -64,7 +64,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
         audioPlayer?
             .addPeriodicTimeObserver(
-                forInterval: CMTime(value: 1, timescale: 10),
+                forInterval: CMTime(value: 1, timescale: 50),
                 queue: .main,
                 using: { [weak self] time in
                     guard let self = self else { return }
