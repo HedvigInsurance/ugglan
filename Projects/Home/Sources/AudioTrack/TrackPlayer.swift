@@ -11,7 +11,7 @@ struct TrackPlayer: View {
     }
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(alignment: .center, spacing: 16) {
             image
 
             WaveformView(stripeColor: hLabelColor.link)

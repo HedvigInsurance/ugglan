@@ -9,7 +9,7 @@ struct OverlayView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
-                Rectangle()
+                RoundedRectangle(cornerRadius: .defaultCornerRadius)
                     .fill(staplesMaskColor)
                     .frame(width: geometry.size.width * audioPlayer.progress)
             }
