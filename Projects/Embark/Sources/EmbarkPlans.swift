@@ -8,6 +8,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 public typealias EmbarkStory = GraphQL.ChoosePlanQuery.Data.EmbarkStory
 
@@ -161,7 +162,10 @@ extension EmbarkPlans: Presentable {
 
                 bag += continueButton.onTapSignal.withLatestFrom(selectedPlan.atOnce().plain())
                     .compactMap { _, story in story }
-                    .onValue { story in callback(.value(.story(value: story))) }
+                    .onValue { story in
+                        hAnalyticsEvent.onboardingChooseEmbarkFlow(embarkStoryId: story.name).send()
+                        callback(.value(.story(value: story)))
+                    }
 
                 return bag
             }

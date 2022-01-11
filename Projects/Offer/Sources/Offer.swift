@@ -7,6 +7,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 public enum OfferOption {
     case menuToTrailing
@@ -95,6 +96,10 @@ extension Offer: Presentable {
                     break
                 }
             }
+        
+        bag += store.stateSignal.filter(predicate: { !$0.ids.isEmpty }).onFirstValue({ state in
+            hAnalyticsEvent.screenViewOffer(offerIds: state.ids).send()
+        })
 
         let optionsOrCloseButton = UIBarButtonItem(
             image: hCoreUIAssets.menuIcon.image,
