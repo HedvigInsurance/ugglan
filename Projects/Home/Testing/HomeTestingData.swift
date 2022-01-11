@@ -187,7 +187,7 @@ extension JSONObject {
                 .jsonObject, makeCommonClaims(),
         ])
     }
-    
+
     public static func makeTerminated() -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery
