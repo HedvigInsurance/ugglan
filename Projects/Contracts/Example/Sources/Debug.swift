@@ -68,7 +68,7 @@ extension Debug {
                         options: [.embedInNavigationController]
                     )
                     .withDismissButton
-                    .scrollEdgeBarButtonItemHandler
+                    .scrollEdgeNavigationItemHandler
             }
         }
     }
