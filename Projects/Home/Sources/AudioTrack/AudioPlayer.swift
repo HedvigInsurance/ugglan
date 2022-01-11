@@ -12,12 +12,7 @@ class AudioPlayer: NSObject, ObservableObject {
     }
 
     let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
-
     var audioPlayer: AVPlayer?
-
-    let playerTimer = Timer.publish(every: 1 / 30, on: .main, in: .common)
-        .autoconnect()
-
     let url: URL
 
     private(set) var isPlaying: Bool = false {
@@ -33,7 +28,15 @@ class AudioPlayer: NSObject, ObservableObject {
     }
 
     func togglePlaying() {
-        isPlaying ? stopPlaying() : startPlaying()
+        if audioPlayer == nil {
+            startPlaying()
+        } else if audioPlayer?.timeControlStatus == .paused {
+            audioPlayer?.play()
+            isPlaying = true
+        } else if audioPlayer?.timeControlStatus == .playing {
+            audioPlayer?.pause()
+            isPlaying = false
+        }
     }
 
     func addAudioPlayerNotificationObserver() {
@@ -88,6 +91,6 @@ class AudioPlayer: NSObject, ObservableObject {
 
     @objc func playerDidFinishPlaying() {
         isPlaying = false
-        self.progress = 0
+        audioPlayer = nil
     }
 }
