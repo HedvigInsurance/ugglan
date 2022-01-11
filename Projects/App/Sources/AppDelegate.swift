@@ -240,7 +240,7 @@ let log = Logger.builder
                     )
             }
         }
-        
+
         setupHAnalytics()
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
