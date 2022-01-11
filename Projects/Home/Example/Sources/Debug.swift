@@ -77,6 +77,10 @@ extension Debug: Presentable {
         bag += section.appendRow(title: "Renewals - Multiple separate dates")
             .append(hCoreUIAssets.chevronRight.image)
             .onValue { presentHome(.makeActiveWithMultipleRenewalsOnSeparateDates()) }
+        
+        bag += section.appendRow(title: "Home - Terminated")
+            .append(hCoreUIAssets.chevronRight.image)
+            .onValue { presentHome(.makeTerminatedInTheFuture()) }
 
         bag += viewController.install(form)
 
