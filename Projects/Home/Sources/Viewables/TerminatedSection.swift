@@ -33,7 +33,7 @@ extension TerminatedSection: Presentable {
         bag += section.append(subtitleLabel)
 
         section.appendSpacing(.top)
-        
+
         let store: HomeStore = self.get()
 
         let claimButton = Button(
@@ -48,7 +48,7 @@ extension TerminatedSection: Presentable {
         bag += claimButton.onTapSignal.onValue {
             store.send(.openClaims)
         }
-        
+
         return (section, bag)
     }
 }
