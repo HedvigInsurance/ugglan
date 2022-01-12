@@ -26,7 +26,7 @@ extension AppJourney {
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
             case .openConnectPayments:
-                AppJourney.paymentSetup
+                PaymentSetup(setupType: .initial).journeyThenDismiss
             }
         }
         .configureTabBarItem
@@ -137,6 +137,7 @@ extension AppJourney {
                     profileTab
                 }
             )
+            .sendActionImmediately(ContractStore.self, .fetch)
             .syncTabIndex()
             .onAction(UgglanStore.self) { action in
                 if action == .openChat {

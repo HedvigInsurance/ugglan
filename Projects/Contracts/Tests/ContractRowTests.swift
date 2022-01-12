@@ -23,13 +23,13 @@ final class ContractRowTests: XCTestCase {
         assertSnapshot(
             matching: row,
             as: .image(layout: .fixed(width: 375, height: 200)),
-            named: "\(contract.displayName)_\(contract.currentAgreement.status!)"
+            named: "\(contract.displayName)_\(contract.currentAgreement!.status!)"
         )
 
         assertSnapshot(
             matching: row.colorScheme(.dark),
             as: .image(layout: .fixed(width: 375, height: 200)),
-            named: "\(contract.displayName)_\(contract.currentAgreement.status!)_dark"
+            named: "\(contract.displayName)_\(contract.currentAgreement!.status!)_dark"
         )
     }
 

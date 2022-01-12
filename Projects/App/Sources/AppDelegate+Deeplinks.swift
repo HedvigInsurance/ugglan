@@ -18,11 +18,13 @@ extension AppDelegate {
         Analytics.track(path.trackingName, properties: ["type": path.rawValue])
 
         if path == .directDebit {
-            bag += rootViewController.present(
-                PaymentSetup(setupType: .initial, urlScheme: Bundle.main.urlScheme ?? ""),
-                style: .modal,
-                options: [.defaults]
+            rootViewController.present(
+                PaymentSetup(setupType: .initial)
+                    .journeyThenDismiss
             )
+            .onValue { _ in
+
+            }
         } else {
             bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { _ in
