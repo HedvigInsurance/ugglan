@@ -13,6 +13,9 @@ runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v2
+    - name: Remove lock
+      shell: bash
+      run: rm -rf .git/shallow.lock
     - name: Get changed files
       id: changed-files
       uses: tj-actions/changed-files@v11.7
