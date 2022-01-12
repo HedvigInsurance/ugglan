@@ -25,7 +25,7 @@ struct ContactChatView: View {
                     .fill(hBackgroundColor.primary)
                     .frame(width: 40, height: 40)
 
-                hCoreUIAssets.chatSolid.view
+                hCoreUIAssets.chat.view
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 23, height: 19)
