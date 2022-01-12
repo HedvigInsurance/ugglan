@@ -2,8 +2,6 @@ import Adyen
 import AdyenActions
 import Apollo
 import CoreDependencies
-import Datadog
-import DatadogCrashReporting
 import Disk
 import Firebase
 import FirebaseDynamicLinks
@@ -12,17 +10,17 @@ import Flow
 import Form
 import Foundation
 import Hero
-import Mixpanel
 import Offer
 import Payment
 import Presentation
-import Shake
 import SwiftUI
 import UIKit
 import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
+import Datadog
+import DatadogCrashReporting
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -184,62 +182,9 @@ let log = Logger.builder
 
         setupPresentableStoreLogger()
 
-        Datadog.initialize(
-            appContext: .init(),
-            trackingConsent: .granted,
-            configuration: Datadog.Configuration
-                .builderUsing(
-                    rumApplicationID: "416e8fc0-c96a-4485-8c74-84412960a479",
-                    clientToken: "pub4306832bdc5f2b8b980c492ec2c11ef3",
-                    environment: Environment.current.datadogName
-                )
-                .set(serviceName: "ios")
-                .set(endpoint: .eu1)
-                .enableLogging(true)
-                .enableTracing(true)
-                .enableCrashReporting(using: DDCrashReportingPlugin())
-                .enableRUM(true)
-                .trackUIKitRUMActions(using: RUMUserActionsPredicate())
-                .trackUIKitRUMViews(using: RUMViewsPredicate())
-                .trackURLSession(firstPartyHosts: [
-                    Environment.production.endpointURL.host ?? "",
-                    Environment.staging.endpointURL.host ?? "",
-                ])
-                .build()
-        )
-
-        Global.rum = RUMMonitor.initialize()
-        Global.sharedTracer = Tracer.initialize(
-            configuration: .init(
-                serviceName: "ios",
-                sendNetworkInfo: true,
-                bundleWithRUM: true,
-                globalTags: [:]
-            )
-        )
-
+        setupAnalyticsAndTracking()
+        
         log.info("Starting app")
-
-        if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
-            Shake.setup()
-            Datadog.verbosityLevel = .debug
-        }
-
-        if let mixpanelToken = mixpanelToken {
-            Mixpanel.initialize(token: mixpanelToken)
-            AnalyticsSender.sendEvent = { event, properties in
-                log.info("Sending analytics event: \(event) \(properties)")
-
-                Firebase.Analytics.logEvent(event, parameters: properties)
-                Mixpanel.mainInstance()
-                    .track(
-                        event: event,
-                        properties: properties.mapValues({ property in
-                            property.mixpanelType
-                        })
-                    )
-            }
-        }
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
 
