@@ -29,13 +29,21 @@ extension AdyenMethodsList {
     }
 }
 
-struct AdyenPayIn: Presentable {
+public struct AdyenPayIn: Presentable {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
-    func materialize() -> (UIViewController, Future<Void>) {
+    public init(
+        adyenOptions: AdyenOptions,
+        urlScheme: String
+    ) {
+        self.adyenOptions = adyenOptions
+        self.urlScheme = urlScheme
+    }
+
+    public func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let (viewController, result) = AdyenMethodsList(adyenOptions: adyenOptions) { data, _, onResult in
             guard let jsonData = try? JSONEncoder().encode(data.paymentMethod.encodable),
                 let json = String(data: jsonData, encoding: .utf8)
@@ -54,7 +62,7 @@ struct AdyenPayIn: Presentable {
                                 query: GraphQL.ActivePaymentMethodsQuery(),
                                 cachePolicy: .fetchIgnoringCacheData
                             )
-                            .onValue { _ in }
+                            .sink()
                         }
                         onResult(.success(.make(())))
                     } else if let data = data.tokenizePaymentDetails?.asTokenizationResponseAction {
@@ -80,12 +88,22 @@ struct AdyenPayIn: Presentable {
             // refetch to refresh UI
             Future().delay(by: 0.5)
                 .flatMapResult { _ in client.fetch(query: GraphQL.ActivePaymentMethodsQuery()) }
-                .onValue { _ in }
+                .sink()
         }
         .materialize()
 
         viewController.title = L10n.adyenPayinTitle
 
         return (viewController, result)
+    }
+}
+
+extension AdyenPayIn {
+    public func journey<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping (_ success: Bool) -> Next
+    ) -> some JourneyPresentation {
+        Journey(self) { success in
+            next(success)
+        }
     }
 }

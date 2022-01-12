@@ -55,6 +55,8 @@ extension AppJourney {
                                 .withCompletedToast
                         }
                         .hidesBackButton.withJourneyDismissButton
+                    case .openCheckout:
+                        offerCheckout
                     }
                 }
             }

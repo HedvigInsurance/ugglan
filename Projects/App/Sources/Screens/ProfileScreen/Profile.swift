@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Form
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI

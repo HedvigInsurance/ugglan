@@ -26,7 +26,7 @@ extension AppJourney {
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
             case .openConnectPayments:
-                AppJourney.paymentSetup
+                PaymentSetup(setupType: .initial).journeyThenDismiss
             case let .openClaimDetails(claim):
                 AppJourney.claimDetailJourney(claim: claim)
             }

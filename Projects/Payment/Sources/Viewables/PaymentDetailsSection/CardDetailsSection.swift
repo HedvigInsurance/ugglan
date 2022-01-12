@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Presentation
 import UIKit
 import hCore
 import hCoreUI
@@ -28,10 +29,17 @@ extension CardDetailsSection: Viewable {
         func presentPayIn(_ viewController: UIViewController) {
             payInOptions.onValue { options in
                 viewController.present(
-                    AdyenPayIn(adyenOptions: options, urlScheme: urlScheme).wrappedInCloseButton(),
-                    style: .detented(.scrollViewContentSize),
-                    options: [.defaults, .allowSwipeDismissAlways]
+                    AdyenPayIn(adyenOptions: options, urlScheme: urlScheme)
+                        .journey({ _ in
+                            DismissJourney()
+                        })
+                        .withJourneyDismissButton
+                        .setStyle(.detented(.scrollViewContentSize))
+                        .setOptions([.defaults, .allowSwipeDismissAlways])
                 )
+                .onValue { _ in
+
+                }
             }
         }
 

@@ -33,17 +33,29 @@ struct ViewIntrospector<ViewType: UIView>: UIViewRepresentable {
         return nil
     }
 
+    func traverseUp(from view: UIView, levels: Int = 0) -> ViewType? {
+        if levels > 5 {
+            return nil
+        }
+
+        guard let superview = view.superview else {
+            return nil
+        }
+
+        if let view = findView(from: superview) {
+            return view
+        }
+
+        return traverseUp(from: superview, levels: levels + 1)
+    }
+
     func updateUIView(_ uiView: UIViewType, context: Context) {
         guard context.coordinator.view == nil else {
             return
         }
 
         DispatchQueue.main.async {
-            guard let superview = uiView.superview?.superview else {
-                return
-            }
-
-            let view = findView(from: superview)
+            let view = traverseUp(from: uiView)
             context.coordinator.view = view
 
             if let view = view {

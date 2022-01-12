@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Presentation
 import UIKit
 import hCore
 import hCoreUI
@@ -29,10 +30,15 @@ extension PayoutDetailsSection: Viewable {
         func presentPayOut(_ viewController: UIViewController) {
             payOutOptions.onValue { options in
                 viewController.present(
-                    AdyenPayOut(adyenOptions: options, urlScheme: urlScheme).wrappedInCloseButton(),
-                    style: .detented(.scrollViewContentSize),
-                    options: [.defaults, .allowSwipeDismissAlways]
+                    AdyenPayOut(adyenOptions: options, urlScheme: urlScheme)
+                        .journey({ _ in
+                            DismissJourney()
+                        })
+                        .setStyle(.detented(.scrollViewContentSize))
+                        .setOptions([.defaults, .allowSwipeDismissAlways])
+                        .withJourneyDismissButton
                 )
+                .sink()
             }
         }
 

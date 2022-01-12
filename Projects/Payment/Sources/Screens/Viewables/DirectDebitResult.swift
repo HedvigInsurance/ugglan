@@ -52,7 +52,7 @@ struct DirectDebitResult {
 }
 
 extension DirectDebitResult: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Future<Void>) {
+    func materialize(events: ViewableEvents) -> (UIView, Future<Bool>) {
         let containerView = UIView()
         containerView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
         containerView.alpha = 0
@@ -121,7 +121,7 @@ extension DirectDebitResult: Viewable {
                         )
                     )
 
-                    bag += continueButton.onTapSignal.onValue { _ in completion(.success) }
+                    bag += continueButton.onTapSignal.onValue { _ in completion(.success(true)) }
 
                     bag += buttonsContainer.addArranged(continueButton)
                 } else {
@@ -157,7 +157,7 @@ extension DirectDebitResult: Viewable {
                         )
                     )
 
-                    bag += skipButton.onTapSignal.onValue { _ in completion(.success) }
+                    bag += skipButton.onTapSignal.onValue { _ in completion(.success(false)) }
 
                     bag += buttonsContainer.addArranged(skipButton)
                 }

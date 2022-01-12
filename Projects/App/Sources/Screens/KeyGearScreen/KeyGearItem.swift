@@ -259,7 +259,7 @@ extension KeyGearItem: Presentable {
                     .perform(
                         mutation: GraphQL.UpdateKeyGearItemNameMutation(id: self.id, name: name)
                     )
-                    .onValue { _ in }
+                    .sink()
             }
 
         bag += dataSignal.onValue { data in viewController.navigationItem.title = data.name

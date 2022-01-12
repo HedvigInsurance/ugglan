@@ -148,7 +148,7 @@ public class ForeverServiceGraphQL: ForeverService {
     }
 
     public func refetch() {
-        client.fetch(query: GraphQL.ForeverQuery(), cachePolicy: .fetchIgnoringCacheData).onValue { _ in }
+        client.fetch(query: GraphQL.ForeverQuery(), cachePolicy: .fetchIgnoringCacheData).sink()
     }
 
     public init() {}

@@ -79,7 +79,7 @@ public struct JourneyPreviewer<Journey: JourneyPresentation>: UIViewControllerRe
         navigationController.present(
             previewJourney
         )
-        .onValue { _ in }
+        .sink()
 
         return navigationController
     }

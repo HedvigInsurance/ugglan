@@ -61,12 +61,13 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         self.window.rootViewController?
                             .present(
                                 PaymentSetup(
-                                    setupType: .initial,
-                                    urlScheme: Bundle.main.urlScheme ?? ""
-                                ),
-                                style: .modal,
-                                options: [.defaults]
+                                    setupType: .initial
+                                )
+                                .journeyThenDismiss
                             )
+                            .onValue({ _ in
+
+                            })
                     }
             } else if notificationType == "PAYMENT_FAILED" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
@@ -74,12 +75,13 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         self.window.rootViewController?
                             .present(
                                 PaymentSetup(
-                                    setupType: .replacement,
-                                    urlScheme: Bundle.main.urlScheme ?? ""
-                                ),
-                                style: .modal,
-                                options: [.defaults]
+                                    setupType: .replacement
+                                )
+                                .journeyThenDismiss
                             )
+                            .onValue({ _ in
+
+                            })
                     }
             } else if notificationType == "OPEN_INSURANCE_TAB" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }

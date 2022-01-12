@@ -58,6 +58,8 @@ enum ChatResult {
                         AppJourney.postOnboarding
                     case let .menu(action):
                         action.journey
+                    case .openCheckout:
+                        AppJourney.offerCheckout
                     }
                 }
                 .hidesBackButton
