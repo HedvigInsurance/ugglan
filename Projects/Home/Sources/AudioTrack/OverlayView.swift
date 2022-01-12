@@ -4,7 +4,10 @@ import hCoreUI
 struct OverlayView: View {
     @ObservedObject var audioPlayer: AudioPlayer
 
-    let staplesMaskColor: some hColor = hTintColor.lavenderOne.opacity(0.5)
+    let staplesMaskColor: some hColor = hColorScheme(
+        light: hLabelColor.link.inverted,
+        dark: hLabelColor.primary
+    )
 
     var body: some View {
         GeometryReader { geometry in
