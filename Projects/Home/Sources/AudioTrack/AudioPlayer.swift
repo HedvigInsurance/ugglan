@@ -14,25 +14,25 @@ class AudioPlayer: NSObject, ObservableObject {
     let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
     var audioPlayer: AVPlayer?
     let url: URL
-    
+
     private(set) var isLoading: Bool = false {
         didSet {
             objectWillChange.send(self)
         }
     }
-    
+
     private(set) var isPlaying: Bool = false {
         didSet {
             objectWillChange.send(self)
         }
     }
-    
+
     private(set) var hasError: Bool = false {
         didSet {
             objectWillChange.send(self)
         }
     }
-    
+
     private(set) var progress: Double = 0 {
         didSet {
             objectWillChange.send(self)
@@ -59,7 +59,7 @@ class AudioPlayer: NSObject, ObservableObject {
             name: .AVPlayerItemDidPlayToEndTime,
             object: nil
         )
-        
+
         audioPlayer?.addObserver(self, forKeyPath: "timeControlStatus", options: [.old, .new], context: nil)
     }
 
@@ -85,7 +85,7 @@ class AudioPlayer: NSObject, ObservableObject {
                 queue: .main,
                 using: { [weak self] time in
                     guard let self = self, let item = self.audioPlayer?.currentItem else { return }
-                    
+
                     if item.status == .readyToPlay {
                         let duration = CMTimeGetSeconds(item.duration)
                         let timeInFloat = CMTimeGetSeconds(time)
@@ -93,27 +93,28 @@ class AudioPlayer: NSObject, ObservableObject {
                     }
                 }
             )
-        
+
         audioPlayer?.actionAtItemEnd = .pause
         audioPlayer?.play()
         isPlaying = true
     }
-    
+
     private func stopPlaying() {
         audioPlayer?.pause()
         isPlaying = false
     }
-    
+
     override public func observeValue(
         forKeyPath keyPath: String?,
         of object: Any?,
-        change: [NSKeyValueChangeKey : Any]?,
+        change: [NSKeyValueChangeKey: Any]?,
         context: UnsafeMutableRawPointer?
     ) {
         if keyPath == "timeControlStatus",
-           let change = change,
-           let newValue = change[NSKeyValueChangeKey.newKey] as? Int,
-           let oldValue = change[NSKeyValueChangeKey.oldKey] as? Int {
+            let change = change,
+            let newValue = change[NSKeyValueChangeKey.newKey] as? Int,
+            let oldValue = change[NSKeyValueChangeKey.oldKey] as? Int
+        {
             let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
             let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
             if newStatus != oldStatus {
@@ -123,7 +124,7 @@ class AudioPlayer: NSObject, ObservableObject {
             }
         }
     }
-    
+
     @objc func playerDidFinishPlaying() {
         isPlaying = false
         audioPlayer = nil

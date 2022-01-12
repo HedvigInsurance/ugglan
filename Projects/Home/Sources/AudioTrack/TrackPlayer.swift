@@ -9,7 +9,7 @@ struct TrackPlayer: View {
         light: hTintColor.lavenderOne,
         dark: hLabelColor.tertiary
     )
-    
+
     let loadingColor: some hColor = hColorScheme(
         light: hLabelColor.link,
         dark: hLabelColor.primary
