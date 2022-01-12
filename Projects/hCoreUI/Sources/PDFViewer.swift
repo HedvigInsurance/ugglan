@@ -37,7 +37,7 @@ extension PDFViewer: Viewable {
         pdfView.autoScales = true
 
         // for some reason layouting works with this...
-        bag += pdfView.didLayoutSignal.onValue { _ in }
+        bag += pdfView.didLayoutSignal.nil()
 
         bag += dataFetchSignal.onValue { pdfData in guard let pdfData = pdfData else { return }
             pdfView.document = PDFDocument(data: pdfData)

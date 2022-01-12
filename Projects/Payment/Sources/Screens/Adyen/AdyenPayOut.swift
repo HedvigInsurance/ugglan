@@ -35,7 +35,7 @@ struct AdyenPayOut: Presentable {
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let (viewController, result) = AdyenMethodsList(adyenOptions: adyenOptions) { data, _, onResult in
             guard let jsonData = try? JSONEncoder().encode(data.paymentMethod.encodable),
                 let json = String(data: jsonData, encoding: .utf8)
@@ -73,5 +73,15 @@ struct AdyenPayOut: Presentable {
         viewController.title = L10n.adyenPayoutTitle
 
         return (viewController, result)
+    }
+}
+
+extension AdyenPayOut {
+    public func journey<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping (_ success: Bool) -> Next
+    ) -> some JourneyPresentation {
+        Journey(self) { success in
+            next(success)
+        }
     }
 }

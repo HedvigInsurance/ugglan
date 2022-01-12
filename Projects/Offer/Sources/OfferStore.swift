@@ -60,6 +60,7 @@ public enum OfferAction: ActionProtocol {
     case setSwedishBankID(statusCode: String)
     case startSign
     case openChat
+    case openCheckout
     case setIds(ids: [String], selectedIds: [String])
     case setSelectedIds(ids: [String])
     case query

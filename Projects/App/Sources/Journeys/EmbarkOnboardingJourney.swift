@@ -42,6 +42,8 @@ struct EmbarkOnboardingJourney {
                         ContinueJourney()
                     case let .menu(action):
                         action.journey
+                    case .openCheckout:
+                        AppJourney.offerCheckout
                     }
                 }
             }

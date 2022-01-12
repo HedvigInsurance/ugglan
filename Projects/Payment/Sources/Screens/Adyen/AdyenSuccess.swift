@@ -9,7 +9,7 @@ import hCoreUI
 struct AdyenSuccess { let paymentMethod: PaymentMethod }
 
 extension AdyenSuccess: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Void>) {
         let continueButton = Button(
             title: L10n.PayInConfirmation.continueButton,
             type: .standard(
@@ -38,9 +38,12 @@ extension AdyenSuccess: Presentable {
 
         return (
             viewController,
-            Future { completion in let bag = DisposeBag()
+            FiniteSignal { callback in
+                let bag = DisposeBag()
 
-                bag += signal.onValue { completion(.success) }
+                bag += signal.onValue {
+                    callback(.value(()))
+                }
 
                 return DelayedDisposer(bag, delay: 2)
             }

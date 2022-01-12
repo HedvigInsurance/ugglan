@@ -9,6 +9,7 @@ import UIKit
 
 class AdyenPresentationDelegate: NSObject, PresentationDelegate {
     let viewController: UIViewController
+    var presentedViewControllers: [UIViewController] = []
 
     init(
         viewController: UIViewController
@@ -16,8 +17,15 @@ class AdyenPresentationDelegate: NSObject, PresentationDelegate {
         self.viewController = viewController
     }
 
+    func dismissAll() {
+        presentedViewControllers.forEach { viewController in
+            viewController.dismiss(animated: true, completion: nil)
+        }
+    }
+
     func present(component: PresentableComponent) {
         viewController.present(component.viewController, animated: true)
+        presentedViewControllers.append(component.viewController)
     }
 }
 
@@ -26,31 +34,40 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
     let paymentMethod: PaymentMethod
     let didSubmitHandler: AdyenMethodsList.DidSubmit
     let onCompletion: () -> Void
+    let onEnd: () -> Void
     let onRetry: () -> Void
     let onSuccess: () -> Void
     let bag = DisposeBag()
+
+    var presentationDelegates: [AdyenPresentationDelegate] = []
 
     init(
         viewController: UIViewController,
         paymentMethod: PaymentMethod,
         didSubmitHandler: @escaping AdyenMethodsList.DidSubmit,
         onCompletion: @escaping () -> Void,
+        onEnd: @escaping () -> Void,
         onRetry: @escaping () -> Void,
         onSuccess: @escaping () -> Void
     ) {
         self.viewController = viewController
         self.paymentMethod = paymentMethod
         self.didSubmitHandler = didSubmitHandler
+        self.onEnd = onEnd
         self.onCompletion = onCompletion
         self.onRetry = onRetry
         self.onSuccess = onSuccess
     }
 
     func stopLoading(withSuccess success: Bool, in component: PaymentComponent) {
-        if let component = component as? ApplePayComponent {
-            component.stopLoadingIfNeeded()
-        } else if let component = component as? PresentableComponent {
-            component.stopLoadingIfNeeded()
+        component.stopLoadingIfNeeded()
+        component.finalizeIfNeeded(with: success)
+
+        self.presentationDelegates.forEach { presentationDelegate in
+            presentationDelegate.dismissAll()
+        }
+
+        if let component = component as? PresentableComponent {
             component.viewController.dismiss(animated: true, completion: nil)
         }
     }
@@ -59,14 +76,25 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         if success {
             onSuccess()
 
-            viewController.present(
-                AdyenSuccess(paymentMethod: paymentMethod),
-                style: .detented(.large, modally: false)
-            )
-            .onValue { _ in self.onCompletion() }
+            bag +=
+                viewController.present(
+                    AdyenSuccess(paymentMethod: paymentMethod),
+                    style: .detented(.large, modally: false),
+                    options: [.defaults, .autoPop]
+                )
+                .atEnd {
+                    self.onEnd()
+                }
+                .onValue { _ in self.onCompletion() }
         } else {
-            viewController.present(AdyenError.failed, style: .detented(.large, modally: false))
-                .onValue { _ in self.onRetry() }.onError { _ in self.onCompletion() }
+            bag +=
+                viewController.present(
+                    AdyenError.failed,
+                    style: .detented(.large, modally: false),
+                    options: [.defaults, .autoPop]
+                )
+                .atEnd { self.onEnd() }
+                .onValue { _ in self.onRetry() }
         }
     }
 
@@ -94,8 +122,15 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
 
         bag.hold(delegate)
 
-        let presentationDelegate = AdyenPresentationDelegate(viewController: viewController)
-        bag.hold(presentationDelegate)
+        let presentationDelegate: AdyenPresentationDelegate
+
+        if let component = component as? PresentableComponent {
+            presentationDelegate = AdyenPresentationDelegate(viewController: component.viewController)
+        } else {
+            presentationDelegate = AdyenPresentationDelegate(viewController: viewController)
+        }
+
+        presentationDelegates.append(presentationDelegate)
 
         switch action {
         case let .redirect(redirectAction):
@@ -107,6 +142,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         case let .await(awaitAction):
             let awaitComponent = AwaitComponent(apiContext: HedvigAdyenAPIContext().apiContext, style: nil)
             awaitComponent.delegate = delegate
+            awaitComponent.presentationDelegate = presentationDelegate
             awaitComponent.handle(awaitAction)
             bag.hold(awaitComponent)
         case .sdk: fatalError("Not implemented")

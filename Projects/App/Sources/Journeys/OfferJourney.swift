@@ -1,5 +1,6 @@
 import Foundation
 import Offer
+import Payment
 import Presentation
 import hCore
 
@@ -31,7 +32,32 @@ extension AppJourney {
                 ContinueJourney()
             case let .menu(action):
                 action.journey
+            case .openCheckout:
+                offerCheckout
             }
         }
+    }
+
+    static var offerCheckout: some JourneyPresentation {
+        PaymentSetup(setupType: .initial)
+            .journey { success in
+                Journey(
+                    Checkout(),
+                    style: .default,
+                    options: [
+                        .defaults,
+                        .autoPop,
+                        .prefersLargeTitles(true),
+                        .largeTitleDisplayMode(.always),
+                        .allowSwipeDismissAlways,
+                    ]
+                ) { _ in
+                    DismissJourney()
+                }
+                .withJourneyDismissButton
+                .hidesBackButton
+            }
+            .setOptions([.defaults, .allowSwipeDismissAlways])
+            .mapJourneyDismissToCancel
     }
 }
