@@ -1,16 +1,15 @@
 import Datadog
 import DatadogCrashReporting
-import hGraphQL
-import Shake
-import Mixpanel
 import Firebase
 import FirebaseAnalytics
+import Mixpanel
+import Shake
 import hCore
-
+import hGraphQL
 
 extension AppDelegate {
     func setupAnalyticsAndTracking() {
-        
+
         Datadog.initialize(
             appContext: .init(),
             trackingConsent: .granted,
@@ -34,7 +33,7 @@ extension AppDelegate {
                 ])
                 .build()
         )
-        
+
         Global.rum = RUMMonitor.initialize()
         Global.sharedTracer = Tracer.initialize(
             configuration: .init(
@@ -44,7 +43,7 @@ extension AppDelegate {
                 globalTags: [:]
             )
         )
-        
+
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Shake.setup()
             Datadog.verbosityLevel = .debug
