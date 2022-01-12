@@ -4,9 +4,9 @@ import hCoreUI
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
-    
+
     let playbackTint: some hColor = hColorScheme(light: hTintColor.lavenderOne, dark: hTintColor.lavenderTwo.inverted)
-    
+
     @ViewBuilder var image: some View {
         Image(uiImage: audioPlayer.isPlaying ? hCoreUIAssets.pause.image : hCoreUIAssets.play.image)
             .foregroundColor(playbackTint)
@@ -15,7 +15,7 @@ struct TrackPlayer: View {
     var body: some View {
         HStack(alignment: .center, spacing: 16) {
             image
-            
+
             let waveform = WaveformView(stripeColor: playbackTint)
                 .frame(maxWidth: .infinity)
             waveform
