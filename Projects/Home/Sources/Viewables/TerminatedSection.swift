@@ -34,19 +34,19 @@ extension TerminatedSection: Presentable {
 
         section.appendSpacing(.top)
 
-        let button = Button(
-            title: L10n.HomeTab.claimButtonText,
-            type: .standardOutline(
-                borderColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonBackgroundColor)
-            )
-        )
-        bag += section.append(button)
-
         let store: HomeStore = self.get()
 
-        bag += button.onTapSignal.onValue {
-            store.send(.openFreeTextChat)
+        let claimButton = Button(
+            title: L10n.HomeTab.claimButtonText,
+            type: .standard(
+                backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonTextColor)
+            )
+        )
+        bag += section.append(claimButton)
+
+        bag += claimButton.onTapSignal.onValue {
+            store.send(.openClaims)
         }
 
         return (section, bag)
