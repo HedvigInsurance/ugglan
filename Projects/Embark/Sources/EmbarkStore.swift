@@ -74,11 +74,13 @@ class EmbarkStore {
             }
 
             if !filteredStore.isEmpty {
-                return filteredStore.sorted { lhs, rhs in
-                    lhs.key.digits < rhs.key.digits
-                }.map { key, value in
-                    value
-                }
+                return
+                    filteredStore.sorted { lhs, rhs in
+                        lhs.key.digits < rhs.key.digits
+                    }
+                    .map { key, value in
+                        value
+                    }
             }
 
             if let value = storeWithQueue[key] {
