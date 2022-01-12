@@ -5,6 +5,13 @@ import hGraphQL
 
 extension String { var floatValue: Float { Float(self) ?? 0 } }
 
+extension String {
+    var digits: String {
+        return components(separatedBy: CharacterSet.decimalDigits.inverted)
+            .joined()
+    }
+}
+
 class EmbarkStore {
     var prefill: [String: String] = [:]
     var revisions: [[String: String]] = [[:]]
@@ -67,7 +74,11 @@ class EmbarkStore {
             }
 
             if !filteredStore.isEmpty {
-                return Array(filteredStore.values)
+                return filteredStore.sorted { lhs, rhs in
+                    lhs.key.digits < rhs.key.digits
+                }.map { key, value in
+                    value
+                }
             }
 
             if let value = storeWithQueue[key] {
