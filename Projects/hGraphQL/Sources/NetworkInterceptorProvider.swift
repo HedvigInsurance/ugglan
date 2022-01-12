@@ -10,16 +10,19 @@ public class NetworkInterceptorProvider: DefaultInterceptorProvider {
     let token: String
     let acceptLanguageHeader: String
     let userAgent: String
+    let deviceIdentifier: String
 
     init(
         store: ApolloStore,
         token: String,
         acceptLanguageHeader: String,
-        userAgent: String
+        userAgent: String,
+        deviceIdentifier: String
     ) {
         self.token = token
         self.acceptLanguageHeader = acceptLanguageHeader
         self.userAgent = userAgent
+        self.deviceIdentifier = deviceIdentifier
         super.init(client: urlSessionClientProvider(), store: store)
     }
 
@@ -29,7 +32,8 @@ public class NetworkInterceptorProvider: DefaultInterceptorProvider {
             HeadersInterceptor(
                 token: token,
                 acceptLanguageHeader: acceptLanguageHeader,
-                userAgent: userAgent
+                userAgent: userAgent,
+                deviceIdentifier: deviceIdentifier
             ),
             at: 0
         )
