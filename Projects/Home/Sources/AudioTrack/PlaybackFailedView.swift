@@ -4,7 +4,7 @@ import hCoreUI
 
 struct PlaybackFailedView: View {
     let buttonAction: () -> Void
-    
+
     var body: some View {
         VStack {
             HStack {
