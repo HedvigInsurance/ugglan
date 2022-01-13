@@ -2,6 +2,8 @@ import Adyen
 import AdyenActions
 import Apollo
 import CoreDependencies
+import Datadog
+import DatadogCrashReporting
 import Disk
 import Firebase
 import FirebaseDynamicLinks
@@ -19,8 +21,6 @@ import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
-import Datadog
-import DatadogCrashReporting
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -183,7 +183,7 @@ let log = Logger.builder
         setupPresentableStoreLogger()
 
         setupAnalyticsAndTracking()
-        
+
         log.info("Starting app")
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
