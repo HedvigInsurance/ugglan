@@ -8,7 +8,9 @@ struct ClaimDetailFilesView: View {
     var body: some View {
         switch audioPlayer.playbackState {
         case .error:
-            PlaybackFailedView()
+            PlaybackFailedView {
+                audioPlayer.togglePlaying()
+            }
         default:
             TrackPlayer(
                 audioPlayer: audioPlayer

@@ -3,6 +3,8 @@ import hCore
 import hCoreUI
 
 struct PlaybackFailedView: View {
+    let buttonAction: () -> Void
+    
     var body: some View {
         VStack {
             HStack {
@@ -20,7 +22,7 @@ struct PlaybackFailedView: View {
                 .frame(height: 24)
 
             Button {
-                print("Toggle playing here")
+                buttonAction()
             } label: {
                 hText(L10n.ClaimStatusDetail.InfoError.button, style: .subheadline)
                     .foregroundColor(hLabelColor.primary)
