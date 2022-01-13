@@ -36,7 +36,7 @@ struct TrackPlayer: View {
                     ActivityIndicator(style: .large)
                         .foregroundColor(loadingColor)
                 }
-                
+
                 hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
                     .foregroundColor(hLabelColor.secondary)
             }
@@ -57,7 +57,7 @@ struct TrackPlayer: View {
                         audioPlayer.togglePlaying()
                     }
                 }
-                
+
                 hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
                     .foregroundColor(hLabelColor.secondary)
             }

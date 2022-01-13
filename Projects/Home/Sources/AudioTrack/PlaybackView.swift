@@ -9,7 +9,7 @@ struct PlaybackView<Content: View>: View {
     ) {
         self.content = content()
     }
-    
+
     var body: some View {
         HStack(alignment: .center, spacing: 16) {
             content

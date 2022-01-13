@@ -1,6 +1,6 @@
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 
 struct PlaybackFailedView: View {
     var body: some View {
@@ -10,15 +10,15 @@ struct PlaybackFailedView: View {
                 hText(L10n.ClaimStatusDetail.InfoError.title, style: .headline)
             }
             .padding(.vertical, 18)
-            
+
             hText(L10n.ClaimStatusDetail.InfoError.body, style: .subheadline)
                 .foregroundColor(hLabelColor.secondary)
                 .fixedSize(horizontal: false, vertical: true)
                 .multilineTextAlignment(.leading)
-            
+
             Spacer()
                 .frame(height: 24)
-            
+
             Button {
                 print("Toggle playing here")
             } label: {
@@ -31,7 +31,7 @@ struct PlaybackFailedView: View {
             .cornerRadius(6)
             .background(hTintColor.yellowOne)
             .padding(.bottom, 16)
-            
+
         }
         .padding(.horizontal, 24)
         .background(hTintColor.yellowTwo)
