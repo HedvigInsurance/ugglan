@@ -3,21 +3,16 @@ import hCore
 import hCoreUI
 
 struct ClaimDetailFilesView: View {
-    let signedAudioURL: String
+    @ObservedObject var audioPlayer: AudioPlayer
 
     var body: some View {
-        if let url = URL(string: signedAudioURL) {
+        switch audioPlayer.playbackState {
+        case .error:
+            PlaybackFailedView()
+        default:
             TrackPlayer(
-                audioPlayer: AudioPlayer(url: url)
+                audioPlayer: audioPlayer
             )
         }
-    }
-}
-
-struct ClaimDetailFilesView_Previews: PreviewProvider {
-    static var previews: some View {
-        ClaimDetailFilesView(
-            signedAudioURL: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3"
-        )
     }
 }

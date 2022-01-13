@@ -71,10 +71,12 @@ public struct ClaimDetailView: View {
                 .frame(height: 52)
 
             // Section to show attachments for the claim
-            ClaimDetailFilesView(
-                signedAudioURL: claim.claimDetailData.signedAudioURL
-            )
-            .padding(.horizontal, 16)
+            if let url = URL(string: claim.claimDetailData.signedAudioURL) {
+                ClaimDetailFilesView(
+                    audioPlayer: AudioPlayer(url: url)
+                )
+                .padding(.horizontal, 16)
+            }
 
             Spacer()
         }

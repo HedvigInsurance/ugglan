@@ -27,22 +27,12 @@ struct TrackPlayer: View {
     }
 
     var body: some View {
-        switch audioPlayer.playbackState {
-        case .error:
-            PlaybackFailedView()
-        case .loading:
-            VStack(alignment: .leading, spacing: 8) {
-                PlaybackView {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 16) {
+                if audioPlayer.playbackState == .loading {
                     ActivityIndicator(style: .large)
                         .foregroundColor(loadingColor)
-                }
-
-                hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
-                    .foregroundColor(hLabelColor.secondary)
-            }
-        default:
-            VStack(alignment: .leading, spacing: 8) {
-                PlaybackView {
+                } else {
                     image
 
                     let waveform = WaveformView(stripeColor: playbackTint)
@@ -52,15 +42,23 @@ struct TrackPlayer: View {
                             OverlayView(audioPlayer: audioPlayer).mask(waveform)
                         )
                 }
-                .onTapGesture {
-                    withAnimation(.spring()) {
-                        audioPlayer.togglePlaying()
-                    }
-                }
-
-                hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
-                    .foregroundColor(hLabelColor.secondary)
             }
+            .padding(.horizontal, 16)
+            .frame(height: 64)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                    .fill(hColorScheme(light: hTintColor.lavenderTwo, dark: hTintColor.lavenderOne))
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+            )
+            .onTapGesture {
+                withAnimation(.spring()) {
+                    audioPlayer.togglePlaying()
+                }
+            }
+
+            hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
+                .foregroundColor(hLabelColor.secondary)
         }
     }
 }
