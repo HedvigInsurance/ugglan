@@ -4,30 +4,23 @@ import Foundation
 
 class AudioPlayer: NSObject, ObservableObject {
     internal init(
-        url: URL,
-        isPlaying: Bool = false
+        url: URL
     ) {
         self.url = url
-        self.isPlaying = isPlaying
     }
 
     let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
     var audioPlayer: AVPlayer?
     let url: URL
-
-    private(set) var isLoading: Bool = false {
-        didSet {
-            objectWillChange.send(self)
-        }
+    
+    enum PlaybackState: Equatable {
+        case idle
+        case playing(paused: Bool)
+        case error(message: String)
+        case loading
     }
-
-    private(set) var isPlaying: Bool = false {
-        didSet {
-            objectWillChange.send(self)
-        }
-    }
-
-    private(set) var hasError: Bool = false {
+    
+    private(set) var playbackState: PlaybackState = .idle {
         didSet {
             objectWillChange.send(self)
         }
@@ -40,14 +33,19 @@ class AudioPlayer: NSObject, ObservableObject {
     }
 
     func togglePlaying() {
-        if audioPlayer == nil {
+        switch playbackState {
+        case .idle:
             startPlaying()
-        } else if audioPlayer?.timeControlStatus == .paused {
-            audioPlayer?.play()
-            isPlaying = true
-        } else if audioPlayer?.timeControlStatus == .playing {
-            audioPlayer?.pause()
-            isPlaying = false
+        case let .playing(paused):
+            if paused {
+                audioPlayer?.play()
+            } else {
+                audioPlayer?.pause()
+            }
+        case let .error(message):
+            print(message)
+        case .loading:
+            break
         }
     }
 
@@ -71,7 +69,7 @@ class AudioPlayer: NSObject, ObservableObject {
             try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
             try session.setActive(true)
         } catch {
-            print("Playing over the device's speakers failed")
+            self.playbackState = .error(message: "Playing over the device's speakers failed")
         }
 
         let playerItem = AVPlayerItem(url: url)
@@ -85,23 +83,20 @@ class AudioPlayer: NSObject, ObservableObject {
                 queue: .main,
                 using: { [weak self] time in
                     guard let self = self, let item = self.audioPlayer?.currentItem else { return }
-
-                    if item.status == .readyToPlay {
+                    
+                    switch item.status {
+                    case .readyToPlay:
                         let duration = CMTimeGetSeconds(item.duration)
                         let timeInFloat = CMTimeGetSeconds(time)
                         self.progress = timeInFloat / duration
+                    default:
+                        self.playbackState = .error(message: "Unknown playback error")
                     }
                 }
             )
 
         audioPlayer?.actionAtItemEnd = .pause
         audioPlayer?.play()
-        isPlaying = true
-    }
-
-    private func stopPlaying() {
-        audioPlayer?.pause()
-        isPlaying = false
     }
 
     override public func observeValue(
@@ -117,16 +112,23 @@ class AudioPlayer: NSObject, ObservableObject {
         {
             let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
             let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
-            if newStatus != oldStatus {
+            
+            if newStatus == .playing {
+                self.playbackState = .playing(paused: false)
+            } else if newStatus == .paused && playbackState != .idle {
+                self.playbackState = .playing(paused: true)
+            }
+            
+            if newStatus != oldStatus, newStatus != .playing && newStatus != .paused {
                 DispatchQueue.main.async { [weak self] in
-                    self?.isLoading = newStatus != .playing && newStatus != .paused
+                    self?.playbackState = .loading
                 }
             }
         }
     }
 
     @objc func playerDidFinishPlaying() {
-        isPlaying = false
+        self.playbackState = .idle
         audioPlayer = nil
     }
 }

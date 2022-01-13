@@ -16,16 +16,23 @@ struct TrackPlayer: View {
     )
 
     @ViewBuilder var image: some View {
-        Image(uiImage: audioPlayer.isPlaying ? hCoreUIAssets.pause.image : hCoreUIAssets.play.image)
-            .foregroundColor(playbackTint)
+        switch audioPlayer.playbackState {
+        case let .playing(paused):
+            Image(uiImage: paused ? hCoreUIAssets.play.image : hCoreUIAssets.pause.image)
+                .foregroundColor(playbackTint)
+        default:
+            Image(uiImage: hCoreUIAssets.play.image)
+                .foregroundColor(playbackTint)
+        }
     }
 
     var body: some View {
         HStack(alignment: .center, spacing: 16) {
-            if audioPlayer.isLoading {
+            switch audioPlayer.playbackState {
+            case .loading:
                 ActivityIndicator(style: .large)
                     .foregroundColor(loadingColor)
-            } else {
+            default:
                 image
 
                 let waveform = WaveformView(stripeColor: playbackTint)
@@ -50,3 +57,23 @@ struct TrackPlayer: View {
         }
     }
 }
+
+/**
+ Card(
+     titleIcon: hCoreUIAssets.warningTriangle.image,
+     title: L10n.InfoCardMissingPayment.title,
+     body: L10n.InfoCardMissingPayment.body,
+     buttonText: L10n.InfoCardMissingPayment.buttonText,
+     backgroundColor: .tint(.yellowOne),
+     buttonType: .standardSmall(
+         backgroundColor: .tint(.yellowTwo),
+         textColor: .typographyColor(
+             .primary(
+                 state: .matching(
+                     .tint(.yellowTwo)
+                 )
+             )
+         )
+     )
+ )
+ */
