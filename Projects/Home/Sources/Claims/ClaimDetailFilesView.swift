@@ -6,15 +6,10 @@ struct ClaimDetailFilesView: View {
     let signedAudioURL: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if let url = URL(string: signedAudioURL) {
-                TrackPlayer(
-                    audioPlayer: AudioPlayer(url: url)
-                )
-                .frame(height: 64)
-            }
-            hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
-                .foregroundColor(hLabelColor.secondary)
+        if let url = URL(string: signedAudioURL) {
+            TrackPlayer(
+                audioPlayer: AudioPlayer(url: url)
+            )
         }
     }
 }

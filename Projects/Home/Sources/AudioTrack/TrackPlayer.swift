@@ -27,53 +27,40 @@ struct TrackPlayer: View {
     }
 
     var body: some View {
-        HStack(alignment: .center, spacing: 16) {
-            switch audioPlayer.playbackState {
-            case .loading:
-                ActivityIndicator(style: .large)
-                    .foregroundColor(loadingColor)
-            default:
-                image
-
-                let waveform = WaveformView(stripeColor: playbackTint)
-                    .frame(maxWidth: .infinity)
-                waveform
-                    .overlay(
-                        OverlayView(audioPlayer: audioPlayer).mask(waveform)
-                    )
+        switch audioPlayer.playbackState {
+        case .error:
+            PlaybackFailedView()
+        case .loading:
+            VStack(alignment: .leading, spacing: 8) {
+                PlaybackView {
+                    ActivityIndicator(style: .large)
+                        .foregroundColor(loadingColor)
+                }
+                
+                hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
+                    .foregroundColor(hLabelColor.secondary)
             }
-        }
-        .padding(.horizontal, 16)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                .fill(hColorScheme(light: hTintColor.lavenderTwo, dark: hTintColor.lavenderOne))
-                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-        )
-        .onTapGesture {
-            withAnimation(.spring()) {
-                audioPlayer.togglePlaying()
+        default:
+            VStack(alignment: .leading, spacing: 8) {
+                PlaybackView {
+                    image
+
+                    let waveform = WaveformView(stripeColor: playbackTint)
+                        .frame(maxWidth: .infinity)
+                    waveform
+                        .overlay(
+                            OverlayView(audioPlayer: audioPlayer).mask(waveform)
+                        )
+                }
+                .onTapGesture {
+                    withAnimation(.spring()) {
+                        audioPlayer.togglePlaying()
+                    }
+                }
+                
+                hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
+                    .foregroundColor(hLabelColor.secondary)
             }
         }
     }
 }
-
-/**
- Card(
-     titleIcon: hCoreUIAssets.warningTriangle.image,
-     title: L10n.InfoCardMissingPayment.title,
-     body: L10n.InfoCardMissingPayment.body,
-     buttonText: L10n.InfoCardMissingPayment.buttonText,
-     backgroundColor: .tint(.yellowOne),
-     buttonType: .standardSmall(
-         backgroundColor: .tint(.yellowTwo),
-         textColor: .typographyColor(
-             .primary(
-                 state: .matching(
-                     .tint(.yellowTwo)
-                 )
-             )
-         )
-     )
- )
- */

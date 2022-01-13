@@ -12,14 +12,14 @@ class AudioPlayer: NSObject, ObservableObject {
     let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
     var audioPlayer: AVPlayer?
     let url: URL
-    
+
     enum PlaybackState: Equatable {
         case idle
         case playing(paused: Bool)
         case error(message: String)
         case loading
     }
-    
+
     private(set) var playbackState: PlaybackState = .idle {
         didSet {
             objectWillChange.send(self)
@@ -34,16 +34,10 @@ class AudioPlayer: NSObject, ObservableObject {
 
     func togglePlaying() {
         switch playbackState {
-        case .idle:
+        case .idle, .error:
             startPlaying()
         case let .playing(paused):
-            if paused {
-                audioPlayer?.play()
-            } else {
-                audioPlayer?.pause()
-            }
-        case let .error(message):
-            print(message)
+            paused ? audioPlayer?.play() : audioPlayer?.pause()
         case .loading:
             break
         }
@@ -83,7 +77,7 @@ class AudioPlayer: NSObject, ObservableObject {
                 queue: .main,
                 using: { [weak self] time in
                     guard let self = self, let item = self.audioPlayer?.currentItem else { return }
-                    
+
                     switch item.status {
                     case .readyToPlay:
                         let duration = CMTimeGetSeconds(item.duration)
@@ -112,13 +106,13 @@ class AudioPlayer: NSObject, ObservableObject {
         {
             let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
             let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
-            
+
             if newStatus == .playing {
                 self.playbackState = .playing(paused: false)
             } else if newStatus == .paused && playbackState != .idle {
                 self.playbackState = .playing(paused: true)
             }
-            
+
             if newStatus != oldStatus, newStatus != .playing && newStatus != .paused {
                 DispatchQueue.main.async { [weak self] in
                     self?.playbackState = .loading
@@ -129,6 +123,5 @@ class AudioPlayer: NSObject, ObservableObject {
 
     @objc func playerDidFinishPlaying() {
         self.playbackState = .idle
-        audioPlayer = nil
     }
 }
