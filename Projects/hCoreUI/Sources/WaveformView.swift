@@ -4,41 +4,18 @@ import SwiftUI
 public struct WaveformView<StripeColor: hColor>: View {
     private let stripeWidth: CGFloat = 2
     private let stripeSpacing: CGFloat = 3
-    private let mean: Float
-    private let deviation: Float
-
+    private let maxStripeHeight: CGFloat
     private let stripeColor: StripeColor
+    private let sampleHeights: [Int]
 
     public init(
-        mean: Float = 20,
-        deviation: Float = 6,
-        stripeColor: StripeColor
+        maxStripeHeight: CGFloat = 40,
+        stripeColor: StripeColor,
+        sampleHeights: [Int]
     ) {
-        self.mean = mean
-        self.deviation = deviation
+        self.maxStripeHeight = maxStripeHeight
         self.stripeColor = stripeColor
-    }
-
-    private var maxStripeHeight: CGFloat {
-        // The possible range of values in a guassian distribution is
-        // mean - 3*deviation   to   mean + 3*deviation
-        CGFloat(mean + 3 * deviation)
-    }
-
-    private func getHeights(count: Int = 60) -> [Int] {
-        let random = GKRandomSource()
-        let dist = GKGaussianDistribution(
-            randomSource: random,
-            mean: mean,
-            deviation: deviation
-        )
-        var numbers: [Int] = []
-
-        for _ in 1...count {
-            let diceRoll = dist.nextInt()
-            numbers.append(diceRoll)
-        }
-        return numbers
+        self.sampleHeights = sampleHeights
     }
 
     public var body: some View {
@@ -54,7 +31,7 @@ public struct WaveformView<StripeColor: hColor>: View {
         // Get the number of stripes by dividing width with individual stripe width
         // Individual stripe width = stripeWidth + stripeSpacing
         let count = geometry.size.width / (stripeWidth + stripeSpacing)
-        let heights = getHeights(count: Int(count))
+        let heights = sampleHeights.prefix(Int(count))
 
         return HStack(spacing: stripeSpacing) {
             ForEach(heights, id: \.self) { height in
@@ -63,13 +40,5 @@ public struct WaveformView<StripeColor: hColor>: View {
                     .frame(width: stripeWidth, height: abs(CGFloat(height)))
             }
         }
-    }
-}
-
-struct WaveformView_Previews: PreviewProvider {
-    static var previews: some View {
-        WaveformView(
-            stripeColor: hLabelColor.link
-        )
     }
 }

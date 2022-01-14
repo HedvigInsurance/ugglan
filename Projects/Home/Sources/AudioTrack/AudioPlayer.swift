@@ -1,17 +1,20 @@
 import AVFoundation
 import Combine
 import Foundation
+import hCore
 
 class AudioPlayer: NSObject, ObservableObject {
     internal init(
         url: URL
     ) {
         self.url = url
+        self.sampleHeights = generateGaussianHeights()
     }
 
     let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
     var audioPlayer: AVPlayer?
     let url: URL
+    let sampleHeights: [Int]
 
     enum PlaybackState: Equatable {
         case idle

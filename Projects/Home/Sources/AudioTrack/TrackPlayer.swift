@@ -35,8 +35,10 @@ struct TrackPlayer: View {
                 } else {
                     image
 
-                    let waveform = WaveformView(stripeColor: playbackTint)
-                        .frame(maxWidth: .infinity)
+                    let waveform = WaveformView(
+                        stripeColor: playbackTint,
+                        sampleHeights: audioPlayer.sampleHeights
+                    ).frame(maxWidth: .infinity)
                     waveform
                         .overlay(
                             OverlayView(audioPlayer: audioPlayer).mask(waveform)

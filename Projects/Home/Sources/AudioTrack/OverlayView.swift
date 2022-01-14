@@ -11,11 +11,9 @@ struct OverlayView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                    .fill(staplesMaskColor)
-                    .frame(width: geometry.size.width * audioPlayer.progress)
-            }
+            RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                .fill(staplesMaskColor)
+                .frame(width: geometry.size.width * audioPlayer.progress)
         }
     }
 }

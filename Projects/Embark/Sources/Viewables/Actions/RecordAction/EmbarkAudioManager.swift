@@ -2,6 +2,7 @@ import AVFAudio
 import Combine
 import UIKit
 import hCoreUI
+import hCore
 
 struct Recording {
     var url: URL
@@ -23,6 +24,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     ) {
         self.recording = recording
         self.isPlaying = isPlaying
+        self.audioSampleHeights = generateGaussianHeights(mean: 40, deviation: 10)
     }
 
     let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
@@ -33,6 +35,9 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
         .autoconnect()
 
     let recording: Recording
+    
+    /// A sample array of heights for visualising a waveform
+    let audioSampleHeights: [Int]
 
     private(set) var isPlaying: Bool = false {
         didSet {

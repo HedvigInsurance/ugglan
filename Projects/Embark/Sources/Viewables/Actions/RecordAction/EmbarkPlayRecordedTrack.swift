@@ -21,9 +21,9 @@ struct TrackPlayer: View {
         HStack(alignment: .center) {
             image.tint(hLabelColor.primary)
             let waveform = WaveformView(
-                mean: 40,
-                deviation: 10,
-                stripeColor: hColorScheme.init(light: hGrayscaleColor.one, dark: hGrayscaleColor.two)
+                maxStripeHeight: 70,
+                stripeColor: hColorScheme.init(light: hGrayscaleColor.one, dark: hGrayscaleColor.two),
+                sampleHeights: audioPlayer.audioSampleHeights
             )
             .frame(height: 100)
             .clipped()
