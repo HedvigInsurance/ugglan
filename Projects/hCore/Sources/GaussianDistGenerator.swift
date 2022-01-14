@@ -17,12 +17,12 @@ public func generateGaussianHeights(
         mean: mean,
         deviation: deviation
     )
-    
+
     var numbers: [Int] = []
     for _ in 1...count {
         let diceRoll = distribution.nextInt()
         numbers.append(diceRoll)
     }
-    
+
     return numbers
 }

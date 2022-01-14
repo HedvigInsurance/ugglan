@@ -38,7 +38,8 @@ struct TrackPlayer: View {
                     let waveform = WaveformView(
                         stripeColor: playbackTint,
                         sampleHeights: audioPlayer.sampleHeights
-                    ).frame(maxWidth: .infinity)
+                    )
+                    .frame(maxWidth: .infinity)
                     waveform
                         .overlay(
                             OverlayView(audioPlayer: audioPlayer).mask(waveform)

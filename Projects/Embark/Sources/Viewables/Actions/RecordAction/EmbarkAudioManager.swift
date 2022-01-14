@@ -1,8 +1,8 @@
 import AVFAudio
 import Combine
 import UIKit
-import hCoreUI
 import hCore
+import hCoreUI
 
 struct Recording {
     var url: URL
@@ -35,7 +35,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
         .autoconnect()
 
     let recording: Recording
-    
+
     /// A sample array of heights for visualising a waveform
     let audioSampleHeights: [Int]
 
