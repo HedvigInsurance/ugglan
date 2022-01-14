@@ -260,7 +260,7 @@ let log = Logger.builder
                                     pickedLocale: locale.asGraphQLLocale()
                                 )
                             )
-                            .onValue { _ in }
+                            .sink()
                     }
             }
 

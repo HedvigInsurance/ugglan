@@ -4,7 +4,7 @@ import Presentation
 import UIKit
 import hCore
 
-enum CloseButtonError: Error { case cancelled }
+public enum CloseButtonError: Error { case cancelled }
 
 extension Presentable where Matter: UIViewController, Result == Disposable {
     public var withCloseButton: AnyPresentable<Self.Matter, Future<Void>> {

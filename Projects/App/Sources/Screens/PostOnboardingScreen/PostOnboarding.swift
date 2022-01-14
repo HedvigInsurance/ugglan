@@ -71,9 +71,13 @@ struct PostOnboarding {
             showLogo: false
         )
 
-        let table = Table(rows: [
-            ReusableSignalViewable(viewable: payment), ReusableSignalViewable(viewable: pushNotifications),
-        ])
+        let table = Table(
+            rows: [
+                Localization.Locale.currentLocale.market == .se ? ReusableSignalViewable(viewable: payment) : nil,
+                ReusableSignalViewable(viewable: pushNotifications),
+            ]
+            .compactMap { $0 }
+        )
 
         return (table, bag)
     }
@@ -114,14 +118,13 @@ extension PostOnboarding: Presentable {
                                 PaymentSetup(
                                     setupType: .postOnboarding,
                                     urlScheme: Bundle.main.urlScheme ?? ""
-                                ),
-                                style: .modally(
-                                    presentationStyle: .formSheet,
-                                    transitionStyle: nil,
-                                    capturesStatusBarAppearance: true
                                 )
+                                .journeyThenDismiss
+                                .onDismiss {
+                                    collectionKit.scrollToNextItem()
+                                }
                             )
-                            .onResult { _ in collectionKit.scrollToNextItem() }
+                            .sink()
                         case .push:
                             UIApplication.shared.appDelegate.registerForPushNotifications()
                                 .onValue { _ in callback(()) }

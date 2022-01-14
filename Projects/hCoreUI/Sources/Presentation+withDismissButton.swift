@@ -1,4 +1,5 @@
 import Flow
+import Form
 import Foundation
 import Presentation
 import UIKit
@@ -28,7 +29,7 @@ extension JourneyPresentation {
         }
     }
 
-    public var scrollEdgeBarButtonItemHandler: Self {
+    public var scrollEdgeNavigationItemHandler: Self {
         addConfiguration { presenter in
             let viewController = presenter.viewController
 
@@ -47,14 +48,24 @@ extension JourneyPresentation {
 
                                 let fraction = (offset.y + scrollView.adjustedContentInset.top) / 5
 
-                                viewController.navigationItem.rightBarButtonItem?.tintColor = .white.interpolateColorTo(
+                                let interpolatedColor: UIColor = .white.interpolateColorTo(
                                     end: endColor,
                                     fraction: fraction
                                 )
-                                viewController.navigationItem.leftBarButtonItem?.tintColor = .white.interpolateColorTo(
-                                    end: endColor,
-                                    fraction: fraction
-                                )
+
+                                viewController.navigationItem.rightBarButtonItem?.tintColor = interpolatedColor
+                                viewController.navigationItem.leftBarButtonItem?.tintColor = interpolatedColor
+
+                                let scrollEdgeAppearance = DefaultStyling.scrollEdgeNavigationBarAppearance()
+                                scrollEdgeAppearance.titleTextAttributes = scrollEdgeAppearance.titleTextAttributes
+                                    .merging(
+                                        [
+                                            NSAttributedString.Key.foregroundColor: interpolatedColor
+                                        ],
+                                        uniquingKeysWith: { _, rhs in rhs }
+                                    )
+
+                                viewController.navigationItem.scrollEdgeAppearance = scrollEdgeAppearance
                             }
                     }
 

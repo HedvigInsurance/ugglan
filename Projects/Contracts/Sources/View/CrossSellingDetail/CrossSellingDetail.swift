@@ -78,6 +78,6 @@ extension CrossSellingDetail {
         }
         .configureTitle(L10n.CrossSellingCardSeAccident.title)
         .withDismissButton
-        .scrollEdgeBarButtonItemHandler
+        .scrollEdgeNavigationItemHandler
     }
 }

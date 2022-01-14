@@ -57,7 +57,7 @@ extension MarketRow: Viewable {
                 viewController.present(
                     PickMarket(currentMarket: store.state.market, availableLocales: availableLocales).journey
                 )
-                .onValue { _ in }
+                .sink()
             }
 
         return (row, bag)

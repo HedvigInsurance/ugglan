@@ -82,7 +82,7 @@ extension PriceRow: Presentable {
         )
         view.addArrangedSubview(perMonthLabel)
 
-        bag += store.stateSignal.map { $0.currentVariant?.bundle }
+        bag += store.stateSignal.atOnce().map { $0.currentVariant?.bundle }
             .onValue { quoteBundle in
                 guard let quoteBundle = quoteBundle else { return }
 

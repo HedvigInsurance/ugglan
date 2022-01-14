@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Presentation
 import UIKit
 import hCore
 import hCoreUI
@@ -58,11 +59,12 @@ extension BankDetailsSection: Viewable {
                         setupType: hasAlreadyConnected ? .replacement : .initial,
                         urlScheme: self.urlScheme
                     )
+                    .journeyThenDismiss
+
                     viewController.present(
-                        setup,
-                        style: .modally(),
-                        options: [.defaults, .allowSwipeDismissAlways]
+                        setup
                     )
+                    .sink()
                 }
 
             bag += { section.remove(paymentSetupRow) }

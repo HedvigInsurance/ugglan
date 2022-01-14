@@ -26,7 +26,7 @@ struct AdyenMethodsList {
 }
 
 extension AdyenMethodsList: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let viewController = UIViewController()
         viewController.navigationItem.hidesBackButton = true
 
@@ -40,7 +40,7 @@ extension AdyenMethodsList: Presentable {
 
         return (
             viewController,
-            Future { completion in
+            FiniteSignal { callback in
                 bag += adyenOptions.paymentMethods.regular.map { method in
                     let row = RowView(title: method.displayInformation.title)
 
@@ -73,16 +73,21 @@ extension AdyenMethodsList: Presentable {
                                 paymentMethod: method,
                                 didSubmitHandler: didSubmit
                             ) {
-                                completion(.success)
+                                callback(.value(true))
+                            } onEnd: {
+                                callback(.end)
                             } onRetry: {
-                                viewController.present(
-                                    self.wrappedInCloseButton(),
-                                    configure: { vc, _ in
-                                        vc.title = viewController.title
+                                bag +=
+                                    viewController.present(
+                                        self.wrappedInCloseButton(),
+                                        configure: { vc, _ in
+                                            vc.title = viewController.title
+                                        }
+                                    )
+                                    .atEnd {
+                                        callback(.end)
                                     }
-                                )
-                                .onValue { completion(.success) }
-                                .onError { error in completion(.failure(error)) }
+                                    .onValue { success in callback(.value(success)) }
                             } onSuccess: {
                                 self.onSuccess()
                             }
@@ -103,9 +108,20 @@ extension AdyenMethodsList: Presentable {
                                         animated: true
                                     )
                                 } else {
+                                    let componentViewController = component.viewController
+
+                                    let closeButton = CloseButton()
+                                    let closeButtonItem = UIBarButtonItem(viewable: closeButton)
+
+                                    componentViewController.navigationItem.rightBarButtonItem = closeButtonItem
+
+                                    bag += closeButton.onTapSignal.onValue { _ in
+                                        componentViewController.dismiss(animated: true, completion: nil)
+                                    }
+
                                     viewController.present(
-                                        component.viewController,
-                                        style: .detented(.large, modally: false)
+                                        componentViewController.embededInNavigationController([.defaults]),
+                                        animated: true
                                     )
                                 }
                             case let component as EmptyPaymentComponent:

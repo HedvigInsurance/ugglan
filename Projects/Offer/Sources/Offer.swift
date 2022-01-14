@@ -46,6 +46,7 @@ public enum OfferResult {
     case close
     case chat
     case menu(_ action: MenuChildAction)
+    case openCheckout
 }
 
 extension Offer: Presentable {
@@ -174,6 +175,10 @@ extension Offer: Presentable {
 
                 bag += store.onAction(.openChat) {
                     callback(.value(.chat))
+                }
+
+                bag += store.onAction(.openCheckout) {
+                    callback(.value(.openCheckout))
                 }
 
                 bag += store.onAction(.sign(event: .done)) {

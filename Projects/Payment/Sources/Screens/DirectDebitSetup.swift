@@ -32,7 +32,7 @@ struct DirectDebitSetup {
 }
 
 extension DirectDebitSetup: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.hidesBottomBarWhenPushed = true
@@ -119,7 +119,7 @@ extension DirectDebitSetup: Presentable {
 
         return (
             viewController,
-            Future { completion in
+            FiniteSignal { callback in
                 bag += dismissButton.onValue {
                     var alert: Alert<Bool>
 
@@ -155,7 +155,7 @@ extension DirectDebitSetup: Presentable {
                             ]
                         )
                     case .replacement:
-                        completion(.success)
+                        callback(.value(true))
                         return
                     }
 
@@ -168,8 +168,8 @@ extension DirectDebitSetup: Presentable {
                                             GraphQL
                                             .CancelDirectDebitRequestMutation()
                                     )
-                                    .onValue { _ in }
-                                completion(.success)
+                                    .sink()
+                                callback(.value(true))
                             }
                         }
                 }
@@ -202,7 +202,7 @@ extension DirectDebitSetup: Presentable {
                                 make.edges.equalToSuperview()
                             }
                         }
-                        .onValue { completion(.success) }
+                        .onValue { success in callback(.value(success)) }
                         .onError { _ in
                             bag += Signal(after: 0.5).onValue { _ in startRegistration() }
                         }
@@ -231,7 +231,7 @@ extension DirectDebitSetup: Presentable {
                     .onValue { _ in
                         self.client
                             .perform(mutation: GraphQL.CancelDirectDebitRequestMutation())
-                            .onValue { _ in }
+                            .sink()
                     }
 
                 return DelayedDisposer(bag, delay: 1)
