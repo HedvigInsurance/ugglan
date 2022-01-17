@@ -41,10 +41,10 @@ struct TrackPlayer: View {
                     )
                     .frame(maxWidth: .infinity)
                     waveform
-                        .padding(.top, 8)
+                        .padding(.top, 6)
                         .overlay(
                             OverlayView(audioPlayer: audioPlayer).mask(waveform)
-                                .padding(.top, 8)
+                                .padding(.top, 6)
                         )
                 }
             }
