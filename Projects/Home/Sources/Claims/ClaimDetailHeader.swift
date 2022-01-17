@@ -69,7 +69,7 @@ struct ClaimDetailHeader: View {
                 .frame(width: 18, height: 22)
 
             hText(title, style: .headline)
-            
+
             Spacer()
                 .frame(height: 4)
 
