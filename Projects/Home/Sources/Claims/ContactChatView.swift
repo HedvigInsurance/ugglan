@@ -34,6 +34,7 @@ struct ContactChatView: View {
                 store.send(.openFreeTextChat)
             }
         }
-        .padding(16)
+        .padding(.top, 12)
+        .padding([.bottom, .horizontal], 16)
     }
 }

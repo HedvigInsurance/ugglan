@@ -80,7 +80,6 @@ public struct ClaimDetailView: View {
 
             Spacer()
         }
-        .background(hBackgroundColor.primary)
         .navigationBarTitle(Text(L10n.ClaimStatus.title), displayMode: .inline)
     }
 }
