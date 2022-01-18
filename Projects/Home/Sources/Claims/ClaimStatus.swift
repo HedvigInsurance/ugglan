@@ -14,6 +14,7 @@ struct ClaimStatus: View {
             HStack(alignment: .top) {
                 ClaimPills(claim: claim)
                 Spacer()
+                hCoreUIAssets.chevronRight.view
             }
             .padding([.leading, .trailing], 16)
             Spacer().frame(height: 20)

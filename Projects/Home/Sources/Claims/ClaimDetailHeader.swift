@@ -23,25 +23,17 @@ struct ClaimDetailHeader: View {
     let submitted: String?
     let closed: String?
     let payout: MonetaryAmount?
-
-    private var submittedDate: String {
-        guard let submitted = submitted,
-            let date = submitted.localDateToIso8601Date(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
-        else {
-            return "-"
-        }
-        return readableDateString(from: date)
-    }
-
-    private var closedDate: String {
-        guard let closed = closed,
-            let date = closed.localDateToIso8601Date(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
-        else { return "-" }
-        return readableDateString(from: date)
-    }
+    @State private var refreshControl: Int = 1
+    
+    let timer = Timer.publish(every: 60, on: .current, in: .common).autoconnect()
 
     /// Converts date into a readable friendly string
-    private func readableDateString(from date: Date) -> String {
+    private func readableDateString(from string: String?) -> String {
+        guard let str = string,
+              let date = str.localDateToIso8601Date(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ") else {
+            return "-"
+        }
+
         let formatter = RelativeDateTimeFormatter()
         formatter.locale = Localization.Locale.currentLocale.foundation
 
@@ -107,8 +99,13 @@ struct ClaimDetailHeader: View {
                 VStack(spacing: 4) {
                     hText(L10n.ClaimStatusDetail.submitted, style: .caption2)
                         .foregroundColor(hLabelColor.secondary)
-
-                    hText(submittedDate, style: .caption1)
+                    
+                    if self.refreshControl >= 1 {
+                        hText(readableDateString(from: self.submitted), style: .caption1)
+                            .onReceive(timer) { _ in
+                                self.refreshControl += 1
+                            }
+                    }
                 }
                 .frame(maxWidth: .infinity)
 
@@ -118,8 +115,13 @@ struct ClaimDetailHeader: View {
                 VStack(spacing: 4) {
                     hText(L10n.ClaimStatusDetail.closed, style: .caption2)
                         .foregroundColor(hLabelColor.secondary)
-
-                    hText(closedDate, style: .caption1)
+                    
+                    if self.refreshControl >= 1 {
+                        hText(readableDateString(from: self.closed), style: .caption1)
+                            .onReceive(timer) { _ in
+                                self.refreshControl += 1
+                            }
+                    }
                 }
                 .frame(maxWidth: .infinity)
             }
