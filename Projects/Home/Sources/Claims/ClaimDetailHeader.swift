@@ -24,13 +24,14 @@ struct ClaimDetailHeader: View {
     let closed: String?
     let payout: MonetaryAmount?
     @State private var refreshControl: Int = 1
-    
+
     let timer = Timer.publish(every: 60, on: .current, in: .common).autoconnect()
 
     /// Converts date into a readable friendly string
     private func readableDateString(from string: String?) -> String {
         guard let str = string,
-              let date = str.localDateToIso8601Date(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ") else {
+            let date = str.localDateToIso8601Date(format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
+        else {
             return "-"
         }
 
@@ -99,7 +100,7 @@ struct ClaimDetailHeader: View {
                 VStack(spacing: 4) {
                     hText(L10n.ClaimStatusDetail.submitted, style: .caption2)
                         .foregroundColor(hLabelColor.secondary)
-                    
+
                     if self.refreshControl >= 1 {
                         hText(readableDateString(from: self.submitted), style: .caption1)
                             .onReceive(timer) { _ in
@@ -115,7 +116,7 @@ struct ClaimDetailHeader: View {
                 VStack(spacing: 4) {
                     hText(L10n.ClaimStatusDetail.closed, style: .caption2)
                         .foregroundColor(hLabelColor.secondary)
-                    
+
                     if self.refreshControl >= 1 {
                         hText(readableDateString(from: self.closed), style: .caption1)
                             .onReceive(timer) { _ in

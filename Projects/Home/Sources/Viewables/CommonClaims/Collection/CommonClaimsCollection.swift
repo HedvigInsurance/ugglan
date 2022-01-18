@@ -58,7 +58,7 @@ extension CommonClaimsCollection: Viewable {
 
         let stackView = UIStackView()
         stackView.axis = .vertical
-        
+
         let spacer = Spacing(height: 52)
         bag += stackView.addArranged(spacer)
 
