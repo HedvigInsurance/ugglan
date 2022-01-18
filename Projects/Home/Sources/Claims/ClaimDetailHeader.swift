@@ -76,6 +76,10 @@ struct ClaimDetailHeader: View {
                 HStack(alignment: .firstTextBaseline) {
                     hPillFill(
                         text: L10n.Claim.Decision.paid.uppercased(),
+                        textColor: hColorScheme(
+                            light: hLabelColor.primary,
+                            dark: hLabelColor.primary.inverted
+                        ),
                         backgroundColor: hColorScheme(
                             light: hTintColor.lavenderTwo,
                             dark: hTintColor.lavenderOne

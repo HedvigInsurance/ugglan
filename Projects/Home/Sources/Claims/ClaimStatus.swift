@@ -67,16 +67,22 @@ extension Claim.ClaimPill {
         case .closed:
             hPillFill(
                 text: text,
+                textColor: hLabelColor.primary,
                 backgroundColor: hBackgroundColor.primary.inverted
             )
             .invertColorScheme
         case .payment:
             hPillFill(
                 text: self.text,
+                textColor: hColorScheme(light: hLabelColor.primary, dark: hLabelColor.primary.inverted),
                 backgroundColor: hColorScheme(light: hTintColor.lavenderTwo, dark: hTintColor.lavenderOne)
             )
         case .reopened:
-            hPillFill(text: self.text, backgroundColor: hTintColor.orangeTwo)
+            hPillFill(
+                text: self.text,
+                textColor: hColorScheme(light: hLabelColor.primary, dark: hLabelColor.primary.inverted),
+                backgroundColor: hTintColor.orangeTwo
+            )
         case .none:
             EmptyView()
         }
