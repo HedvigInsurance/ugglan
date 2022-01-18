@@ -8,6 +8,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Market
 
 public typealias EmbarkStory = GraphQL.ChoosePlanQuery.Data.EmbarkStory
 

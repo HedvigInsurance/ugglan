@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 
 struct EmbarkOnboardingJourney {
-    public static var journey: some JourneyPresentation {
+    public static func journey(cartId: String?) -> some JourneyPresentation {
         let menuChildren: [MenuChildable] = [
             MenuChild.appInformation,
             MenuChild.appSettings,
@@ -29,7 +29,8 @@ struct EmbarkOnboardingJourney {
                         menu: Menu(
                             title: nil,
                             children: menuChildren
-                        )
+                        ),
+                        cartId: cartId
                     ),
                     storeOffer: true
                 ) { offerResult in

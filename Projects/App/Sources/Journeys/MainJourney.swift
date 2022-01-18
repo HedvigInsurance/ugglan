@@ -12,7 +12,7 @@ extension AppJourney {
         GroupJourney {
             switch ApplicationState.currentState {
             case .onboardingChat, .onboarding:
-                AppJourney.onboarding
+                AppJourney.onboarding(cartId: nil)
             case .offer:
                 AppJourney.storedOnboardingOffer
             case .loggedIn:

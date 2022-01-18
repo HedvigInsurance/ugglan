@@ -14,15 +14,18 @@ public struct Embark {
     let name: String
     public let menu: Menu?
     let state = EmbarkState()
+    let cartId: String?
 
     public func goBack() { state.goBack() }
 
     public init(
         name: String,
-        menu: Menu? = nil
+        menu: Menu? = nil,
+        cartId: String? = nil
     ) {
         self.name = name
         self.menu = menu
+        self.cartId = cartId
     }
 }
 
