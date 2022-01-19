@@ -86,9 +86,11 @@ public struct ClaimDetailView: View {
                 .distinct()
                 .publisher
         ) { state in
-            if let first = state.claims?.first(where: { claim in
-                claim.id == self.claim.id
-            }) {
+            if let first = state.claims?
+                .first(where: { claim in
+                    claim.id == self.claim.id
+                })
+            {
                 self.claim = first
             }
         }
