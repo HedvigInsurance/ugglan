@@ -6,6 +6,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 public indirect enum ContractFilter {
     var displaysActiveContracts: Bool {
@@ -65,6 +66,7 @@ extension Contracts: View {
         .onAppear {
             fetch()
         }
+        .trackOnAppear(hAnalyticsEvent.screenViewInsurances())
     }
 }
 

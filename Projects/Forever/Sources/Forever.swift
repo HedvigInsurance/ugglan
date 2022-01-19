@@ -5,6 +5,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hAnalytics
 
 public struct Forever {
     let service: ForeverService
@@ -121,6 +122,8 @@ extension Forever: Presentable {
                     shareButton.loadableButton.stopLoading()
                 }
             }
+        
+        bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewForever())
 
         return (viewController, bag)
     }
