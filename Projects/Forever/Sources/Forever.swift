@@ -3,9 +3,9 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 public struct Forever {
     let service: ForeverService
@@ -122,7 +122,7 @@ extension Forever: Presentable {
                     shareButton.loadableButton.stopLoading()
                 }
             }
-        
+
         bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewForever())
 
         return (viewController, bag)

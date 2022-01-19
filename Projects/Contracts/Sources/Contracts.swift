@@ -3,10 +3,10 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 public indirect enum ContractFilter {
     var displaysActiveContracts: Bool {

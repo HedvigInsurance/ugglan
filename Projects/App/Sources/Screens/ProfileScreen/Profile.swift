@@ -4,10 +4,10 @@ import Form
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 struct Profile { @Inject var client: ApolloClient }
 
@@ -43,7 +43,7 @@ extension Profile: Presentable {
             scrollView.refreshControl = refreshControl
             bag += scrollView.chainAllControlResponders(shouldLoop: true, returnKey: .next)
         }
-        
+
         bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewProfile())
 
         return (viewController, bag)

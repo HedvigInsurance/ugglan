@@ -1,13 +1,5 @@
-//
-//  hAnalytics+Flow.swift
-//  hCore
-//
-//  Created by Sam Pettersson on 2022-01-17.
-//  Copyright © 2022 Hedvig AB. All rights reserved.
-//
-
-import Foundation
 import Flow
+import Foundation
 import UIKit
 import hAnalytics
 
