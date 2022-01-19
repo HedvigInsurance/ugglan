@@ -1,7 +1,6 @@
 import Apollo
 import Firebase
 import Foundation
-import Mixpanel
 import hAnalytics
 import hCore
 import hGraphQL
