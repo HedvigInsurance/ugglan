@@ -9,7 +9,7 @@ import hGraphQL
 extension AppDelegate {
     func setupHAnalytics() {
         hAnalyticsProviders.sendEvent = { event in
-            log.info("Sending analytics event: \(event) \(event.properties)")
+            log.info("Sending hAnalytics event: \(event) \(event.properties)")
 
             Firebase.Analytics.logEvent(
                 event.name,
@@ -17,13 +17,6 @@ extension AppDelegate {
                     any
                 })
             )
-            Mixpanel.mainInstance()
-                .track(
-                    event: event.name,
-                    properties: event.properties.compactMapValues({ property in
-                        self as? MixpanelType
-                    })
-                )
         }
 
         hAnalyticsProviders.performGraphQLQuery = { query, variables, onComplete in
