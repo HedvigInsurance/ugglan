@@ -5,8 +5,7 @@ import hCoreUI
 import hGraphQL
 
 public struct ClaimDetailView: View {
-    let claim: Claim
-
+    @State var claim: Claim
     var store: HomeStore
 
     public init(
@@ -81,5 +80,17 @@ public struct ClaimDetailView: View {
             Spacer()
         }
         .navigationBarTitle(Text(L10n.ClaimStatus.title), displayMode: .inline)
+        .onReceive(
+            store.stateSignal
+                .plain()
+                .distinct()
+                .publisher
+        ) { state in
+            if let first = state.claims?.first(where: { claim in
+                claim.id == self.claim.id
+            }) {
+                self.claim = first
+            }
+        }
     }
 }
