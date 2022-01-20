@@ -79,19 +79,19 @@ public struct ClaimDetailView: View {
 
             Spacer()
         }
-        .navigationBarTitle(Text(L10n.ClaimStatus.title), displayMode: .inline)
         .onReceive(
-            store.stateSignal
-                .plain()
-                .distinct()
+            store
+                .actionSignal
                 .publisher
-        ) { state in
-            if let first = state.claims?
-                .first(where: { claim in
-                    claim.id == self.claim.id
-                })
-            {
-                self.claim = first
+        ) { action in
+            switch action {
+            case let .setClaims(claims):
+                if let newClaim = claims.first(where: { $0 == self.claim }),
+                   newClaim.isUpdated(oldClaim: self.claim) {
+                    self.claim = newClaim
+                }
+            default:
+                break
             }
         }
     }
