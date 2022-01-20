@@ -5,9 +5,9 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 import hGraphQL
 
 public struct Home {
@@ -179,7 +179,7 @@ extension Home: Presentable {
                 self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
             }
             .nil()
-        
+
         bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewHome())
 
         return (
