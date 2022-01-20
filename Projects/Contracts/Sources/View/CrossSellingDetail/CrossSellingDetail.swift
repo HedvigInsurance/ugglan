@@ -5,6 +5,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 public struct CrossSellingDetail: View {
     @PresentableStore var store: ContractStore
@@ -46,6 +47,7 @@ public struct CrossSellingDetail: View {
         .hFormAttachToBottom {
             ContinueButton(crossSell: crossSell)
         }
+        .trackOnAppear(hAnalyticsEvent.screenViewCrossSellDetail(typeOfContract: crossSell.typeOfContract))
     }
 }
 
