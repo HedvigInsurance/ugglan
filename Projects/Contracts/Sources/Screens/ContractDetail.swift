@@ -5,10 +5,10 @@ import Hero
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 enum ContractDetailsViews: String, CaseIterable, Identifiable {
     case information
@@ -138,7 +138,8 @@ struct ContractDetail: View {
                     }
                 }
             }
-        }.trackOnAppear(hAnalyticsEvent.screenViewInsuranceDetail(contractId: id))
+        }
+        .trackOnAppear(hAnalyticsEvent.screenViewInsuranceDetail(contractId: id))
     }
 }
 
