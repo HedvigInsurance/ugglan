@@ -5,6 +5,7 @@ import Presentation
 import StoreKit
 import hCore
 import hGraphQL
+import hAnalytics
 
 public struct OfferState: StateProtocol {
     var isLoading = true
@@ -117,12 +118,9 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         switch action {
         case let .sign(event):
             if event == .done {
-                Analytics.track(
-                    "QUOTES_SIGNED",
-                    properties: [
-                        "quoteIds": getState().selectedIds
-                    ]
-                )
+                hAnalyticsEvent.quotesSigned(
+                    quoteIds: getState().selectedIds
+                ).send()
             }
         case .startSign:
             return signQuotesEffect()
