@@ -5,6 +5,7 @@ import Foundation
 import Presentation
 import SnapKit
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -161,7 +162,10 @@ extension EmbarkPlans: Presentable {
 
                 bag += continueButton.onTapSignal.withLatestFrom(selectedPlan.atOnce().plain())
                     .compactMap { _, story in story }
-                    .onValue { story in callback(.value(.story(value: story))) }
+                    .onValue { story in
+                        hAnalyticsEvent.onboardingChooseEmbarkFlow(embarkStoryId: story.name).send()
+                        callback(.value(.story(value: story)))
+                    }
 
                 return bag
             }

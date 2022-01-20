@@ -3,6 +3,7 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -65,6 +66,7 @@ extension Contracts: View {
         .onAppear {
             fetch()
         }
+        .trackOnAppear(hAnalyticsEvent.screenViewInsurances())
     }
 }
 

@@ -20,6 +20,7 @@ public enum ExternalDependencies: CaseIterable {
     case shake
     case reveal
     case datadog
+    case hAnalytics
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -98,6 +99,10 @@ public enum ExternalDependencies: CaseIterable {
         case .reveal: return []
         case .datadog:
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.7.1"))]
+        case .hAnalytics:
+            return [
+                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.2.0"))
+            ]
         }
     }
 
@@ -157,6 +162,10 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(product: "DatadogStatic"),
                 .package(product: "DatadogCrashReporting"),
+            ]
+        case .hAnalytics:
+            return [
+                .package(product: "hAnalytics")
             ]
         }
     }
