@@ -4,10 +4,10 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 public struct MovingFlowIntro {
     @Inject var client: ApolloClient
@@ -158,7 +158,7 @@ extension MovingFlowIntro: Presentable {
                     }
                 }
             }
-        
+
         bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewMovingFlowIntro())
 
         return (
