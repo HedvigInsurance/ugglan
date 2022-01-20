@@ -3,9 +3,9 @@ import Flow
 import Foundation
 import Presentation
 import StoreKit
+import hAnalytics
 import hCore
 import hGraphQL
-import hAnalytics
 
 public struct OfferState: StateProtocol {
     var isLoading = true
@@ -120,7 +120,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             if event == .done {
                 hAnalyticsEvent.quotesSigned(
                     quoteIds: getState().selectedIds
-                ).send()
+                )
+                .send()
             }
         case .startSign:
             return signQuotesEffect()
