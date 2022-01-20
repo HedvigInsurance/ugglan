@@ -241,6 +241,8 @@ let log = Logger.builder
             }
         }
 
+        setupHAnalytics()
+
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
 
         bag += Localization.Locale.$currentLocale.distinct()

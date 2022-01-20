@@ -4,6 +4,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -95,6 +96,11 @@ extension Offer: Presentable {
                 case .unknown:
                     break
                 }
+            }
+
+        bag += store.stateSignal.filter(predicate: { !$0.ids.isEmpty })
+            .onValueDisposePrevious { state in
+                viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewOffer(offerIds: state.ids))
             }
 
         let optionsOrCloseButton = UIBarButtonItem(
