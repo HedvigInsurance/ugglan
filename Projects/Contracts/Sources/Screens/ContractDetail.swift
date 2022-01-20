@@ -8,6 +8,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 enum ContractDetailsViews: String, CaseIterable, Identifiable {
     case information
@@ -137,7 +138,7 @@ struct ContractDetail: View {
                     }
                 }
             }
-        }
+        }.trackOnAppear(hAnalyticsEvent.screenViewInsuranceDetail(contractId: id))
     }
 }
 
