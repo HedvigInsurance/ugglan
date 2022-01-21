@@ -11,7 +11,11 @@ struct ClaimSection: View {
         state = ClaimSectionState(claims: claims)
     }
 
-    @ObservedObject var state: ClaimSectionState
+    @ObservedObject
+    var state: ClaimSectionState
+
+    @PresentableStore
+    var store: HomeStore
 
     var body: some View {
         VStack {
@@ -40,11 +44,5 @@ struct ClaimSection: View {
             hPagerDots(currentIndex: state.currentIndex, totalCount: state.claims.count)
                 .padding(.bottom, 5)
         }
-    }
-}
-
-struct ClaimSectionPreview: PreviewProvider {
-    static var previews: some View {
-        ClaimSection(claims: [.mock, .mock]).preferredColorScheme(.light).previewAsComponent()
     }
 }

@@ -59,6 +59,9 @@ extension CommonClaimsCollection: Viewable {
         let stackView = UIStackView()
         stackView.axis = .vertical
 
+        let spacer = Spacing(height: 52)
+        bag += stackView.addArranged(spacer)
+
         let titleLabel = MultilineLabel(
             value: L10n.claimsQuickChoiceHeader,
             style: .brand(.title3(color: .primary))
