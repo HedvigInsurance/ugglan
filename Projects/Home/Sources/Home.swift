@@ -21,6 +21,7 @@ public enum HomeResult {
     case openClaims
     case openFreeTextChat
     case openConnectPayments
+    case openClaimDetails(claim: Claim)
 }
 
 extension Future {
@@ -202,6 +203,8 @@ extension Home: Presentable {
                         callback(.openClaims)
                     case .connectPayments:
                         callback(.openConnectPayments)
+                    case let .openClaimDetails(claim):
+                        callback(.openClaimDetails(claim: claim))
                     default:
                         break
                     }

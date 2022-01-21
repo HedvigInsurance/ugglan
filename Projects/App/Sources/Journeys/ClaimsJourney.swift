@@ -6,6 +6,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 extension AppJourney {
     static var claimJourney: some JourneyPresentation {
@@ -83,5 +84,19 @@ extension JourneyPresentation {
 
             store.send(action)
         }
+    }
+}
+
+extension AppJourney {
+    static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
+        HostingJourney(
+            UgglanStore.self,
+            rootView: ClaimDetailView(claim: claim),
+            options: [.embedInNavigationController]
+        ) { action in
+            DismissJourney()
+        }
+        .inlineTitle()
+        .configureTitle(L10n.ClaimStatus.title)
     }
 }
