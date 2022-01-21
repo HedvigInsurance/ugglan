@@ -27,6 +27,7 @@ public enum HomeAction: ActionProtocol {
     case setClaims(claims: [Claim])
     case startPollingClaims
     case stopPollingClaims
+    case openClaimDetails(claim: Claim)
 }
 
 public final class HomeStore: StateStore<HomeState, HomeAction> {
@@ -56,7 +57,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                     cachePolicy: .fetchIgnoringCacheData
                 )
                 .compactMap {
-                    ClaimStatusCards(cardData: $0)
+                    ClaimData(cardData: $0)
                 }
                 .map { claimData in
                     return .setClaims(claims: claimData.claims)
@@ -96,6 +97,8 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         case .startPollingClaims:
             break
         case .stopPollingClaims:
+            break
+        case .openClaimDetails:
             break
         }
 

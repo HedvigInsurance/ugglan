@@ -6,11 +6,15 @@ import hGraphQL
 struct ClaimStatus: View {
     var claim: Claim
 
+    @PresentableStore
+    var store: HomeStore
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top) {
                 ClaimPills(claim: claim)
                 Spacer()
+                hCoreUIAssets.chevronRight.view
             }
             .padding([.leading, .trailing], 16)
             Spacer().frame(height: 20)
@@ -36,6 +40,9 @@ struct ClaimStatus: View {
                 .fill(hBackgroundColor.tertiary)
                 .hShadow()
         )
+        .onTapGesture {
+            store.send(.openClaimDetails(claim: claim))
+        }
     }
 }
 
@@ -60,34 +67,24 @@ extension Claim.ClaimPill {
         case .closed:
             hPillFill(
                 text: text,
+                textColor: hLabelColor.primary,
                 backgroundColor: hBackgroundColor.primary.inverted
             )
             .invertColorScheme
         case .payment:
             hPillFill(
                 text: self.text,
+                textColor: hColorScheme(light: hLabelColor.primary, dark: hLabelColor.primary.inverted),
                 backgroundColor: hColorScheme(light: hTintColor.lavenderTwo, dark: hTintColor.lavenderOne)
             )
         case .reopened:
-            hPillFill(text: self.text, backgroundColor: hTintColor.orangeTwo)
+            hPillFill(
+                text: self.text,
+                textColor: hColorScheme(light: hLabelColor.primary, dark: hLabelColor.primary.inverted),
+                backgroundColor: hTintColor.orangeTwo
+            )
         case .none:
             EmptyView()
         }
-    }
-}
-
-extension Claim {
-    public static var mock = Claim(
-        id: "123",
-        pills: [.init(text: "abc", type: .payment)],
-        segments: [],
-        title: "Blah",
-        subtitle: "Blah"
-    )
-}
-
-struct ClaimsPreview: PreviewProvider {
-    static var previews: some View {
-        ClaimStatus(claim: .mock).preferredColorScheme(.light).previewAsComponent()
     }
 }

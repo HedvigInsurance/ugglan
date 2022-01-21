@@ -44,20 +44,24 @@ public struct hPillOutline: View {
     }
 }
 
-public struct hPillFill<T: hColor>: View {
+public struct hPillFill<T: hColor, L: hColor>: View {
     public init(
         text: String,
+        textColor: L,
         backgroundColor: T
     ) {
         self.text = text
+        self.textColor = textColor
         self.backgroundColor = backgroundColor
     }
 
     public let text: String
+    public let textColor: L
     public let backgroundColor: T
 
     public var body: some View {
         hText(text, style: .caption2)
+            .foregroundColor(textColor)
             .modifier(PillModifier(backgroundColor: backgroundColor))
     }
 
