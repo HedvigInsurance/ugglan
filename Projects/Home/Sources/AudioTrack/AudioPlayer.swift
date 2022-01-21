@@ -1,8 +1,8 @@
 import AVFoundation
 import Combine
 import Foundation
-import hCore
 import hAnalytics
+import hCore
 
 class AudioPlayer: NSObject, ObservableObject {
     internal init(

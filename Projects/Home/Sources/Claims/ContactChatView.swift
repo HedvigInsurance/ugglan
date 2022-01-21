@@ -1,7 +1,7 @@
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 struct ContactChatView: View {
     let store: HomeStore

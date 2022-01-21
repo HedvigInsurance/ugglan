@@ -44,6 +44,6 @@ struct ClaimSection: View {
             hPagerDots(currentIndex: state.currentIndex, totalCount: state.claims.count)
                 .padding(.bottom, 5)
         }
-//        .trackOnAppear(state.onAppearAnalyticsClosure)
+        //        .trackOnAppear(state.onAppearAnalyticsClosure)
     }
 }

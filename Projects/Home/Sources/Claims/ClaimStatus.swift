@@ -1,8 +1,8 @@
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 struct ClaimStatus: View {
     var claim: Claim
@@ -14,7 +14,7 @@ struct ClaimStatus: View {
         Button {
             store.send(.openClaimDetails(claim: claim))
         } label: {
-            
+
         }
         .buttonStyle(ClaimStatusButtonStyle(claim: claim))
         .trackOnAppear(
@@ -34,7 +34,7 @@ struct ClaimStatus: View {
 
 struct ClaimStatusButtonStyle: ButtonStyle {
     let claim: Claim
-    
+
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top) {

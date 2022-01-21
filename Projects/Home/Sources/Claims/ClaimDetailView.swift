@@ -1,9 +1,9 @@
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 public struct ClaimDetailView: View {
     @State var claim: Claim
