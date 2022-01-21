@@ -2,7 +2,7 @@ import Foundation
 
 typealias ClaimStatusCard = GraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
 
-public struct Claim: Codable {
+public struct Claim: Codable, Equatable {
     public init(
         id: String,
         pills: [Claim.ClaimPill],
@@ -198,22 +198,5 @@ public struct ClaimData {
         cardData: GraphQL.ClaimStatusCardsQuery.Data
     ) {
         claims = cardData.claimsStatusCards.map { .init(cardData: $0) }
-    }
-}
-
-extension Claim: Equatable {
-    public static func ==(lhs: Claim, rhs: Claim) -> Bool {
-        return lhs.id == rhs.id
-    }
-}
-
-extension Claim {
-    public func isUpdated(oldClaim: Claim) -> Bool {
-        return oldClaim.id == self.id && (
-            oldClaim.segments != self.segments ||
-            oldClaim.pills != self.pills ||
-            oldClaim.claimDetailData.statusParagraph != self.claimDetailData.statusParagraph ||
-            oldClaim.claimDetailData.payout != self.claimDetailData.payout
-        )
     }
 }
