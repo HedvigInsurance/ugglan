@@ -202,18 +202,16 @@ public struct ClaimData {
 }
 
 extension Claim: Equatable {
-    public static func ==(lhs: Claim, rhs: Claim) -> Bool {
+    public static func == (lhs: Claim, rhs: Claim) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
 extension Claim {
     public func isUpdated(oldClaim: Claim) -> Bool {
-        return oldClaim.id == self.id && (
-            oldClaim.segments != self.segments ||
-            oldClaim.pills != self.pills ||
-            oldClaim.claimDetailData.statusParagraph != self.claimDetailData.statusParagraph ||
-            oldClaim.claimDetailData.payout != self.claimDetailData.payout
-        )
+        return oldClaim.id == self.id
+            && (oldClaim.segments != self.segments || oldClaim.pills != self.pills
+                || oldClaim.claimDetailData.statusParagraph != self.claimDetailData.statusParagraph
+                || oldClaim.claimDetailData.payout != self.claimDetailData.payout)
     }
 }
