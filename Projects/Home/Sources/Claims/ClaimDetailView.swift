@@ -78,16 +78,17 @@ public struct ClaimDetailView: View {
                 ClaimDetailFilesView(
                     audioPlayer: audioPlayer
                 )
-                    .onReceive(
-                        audioPlayer.objectWillChange
-                            .filter { $0.playbackState == .finished },
-                        perform: { player in
-                            hAnalyticsEvent.claimsDetailRecordingPlayed(
-                                claimId: self.claim.id
-                            ).send()
-                        }
-                    )
-                    .padding(.horizontal, 16)
+                .onReceive(
+                    audioPlayer.objectWillChange
+                        .filter { $0.playbackState == .finished },
+                    perform: { player in
+                        hAnalyticsEvent.claimsDetailRecordingPlayed(
+                            claimId: self.claim.id
+                        )
+                        .send()
+                    }
+                )
+                .padding(.horizontal, 16)
             }
 
             Spacer()
