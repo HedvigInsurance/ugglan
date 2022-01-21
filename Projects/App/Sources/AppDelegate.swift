@@ -266,39 +266,15 @@ let log = Logger.builder
 
             switch presentationEvent {
             case let .willEnqueue(presentableId, context):
-                Analytics.track(
-                    "PRESENTABLE_WILL_ENQUEUE",
-                    properties: [
-                        "presentableId": presentableId.value
-                    ]
-                )
                 message = "\(context) will enqueue modal presentation of \(presentableId)"
                 log.info(message)
             case let .willDequeue(presentableId, context):
-                Analytics.track(
-                    "PRESENTABLE_WILL_DEQUEUE",
-                    properties: [
-                        "presentableId": presentableId.value
-                    ]
-                )
                 message = "\(context) will dequeue modal presentation of \(presentableId)"
                 log.info(message)
             case let .willPresent(presentableId, context, styleName):
-                Analytics.track(
-                    "PRESENTABLE_WILL_PRESENT",
-                    properties: [
-                        "presentableId": presentableId.value
-                    ]
-                )
                 message = "\(context) will '\(styleName)' present: \(presentableId)"
                 log.info(message)
             case let .didCancel(presentableId, context):
-                Analytics.track(
-                    "PRESENTABLE_DID_CANCEL",
-                    properties: [
-                        "presentableId": presentableId.value
-                    ]
-                )
                 message = "\(context) did cancel presentation of: \(presentableId)"
                 log.info(message)
             case let .didDismiss(presentableId, context, result):
