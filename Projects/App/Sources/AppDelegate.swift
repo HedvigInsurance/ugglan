@@ -12,7 +12,6 @@ import Flow
 import Form
 import Foundation
 import Hero
-import Mixpanel
 import Offer
 import Payment
 import Presentation
@@ -166,8 +165,6 @@ let log = Logger.builder
         }
     }
 
-    var mixpanelToken: String? { Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String }
-
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
@@ -225,20 +222,10 @@ let log = Logger.builder
             Datadog.verbosityLevel = .debug
         }
 
-        if let mixpanelToken = mixpanelToken {
-            Mixpanel.initialize(token: mixpanelToken)
-            AnalyticsSender.sendEvent = { event, properties in
-                log.info("Sending analytics event: \(event) \(properties)")
+        AnalyticsSender.sendEvent = { event, properties in
+            log.info("Sending analytics event: \(event) \(properties)")
 
-                Firebase.Analytics.logEvent(event, parameters: properties)
-                Mixpanel.mainInstance()
-                    .track(
-                        event: event,
-                        properties: properties.mapValues({ property in
-                            property.mixpanelType
-                        })
-                    )
-            }
+            Firebase.Analytics.logEvent(event, parameters: properties)
         }
 
         setupHAnalytics()
