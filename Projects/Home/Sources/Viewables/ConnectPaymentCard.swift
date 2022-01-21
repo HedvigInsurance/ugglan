@@ -7,6 +7,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 struct ConnectPaymentCard { @Inject var client: ApolloClient }
 
@@ -29,6 +30,8 @@ extension ConnectPaymentCard: Presentable {
 
                 if status == .needsSetup {
                     let store: HomeStore = self.get()
+                    
+                    bag += stackView.trackDidMoveToWindow(hAnalyticsEvent.homePaymentCardVisible())
 
                     bag += stackView.addArranged(Spacing(height: 56), onCreate: animateIn)
                     bag +=

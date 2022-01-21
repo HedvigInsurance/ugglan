@@ -5,6 +5,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hAnalytics
 
 struct AdyenSuccess { let paymentMethod: PaymentMethod }
 
@@ -35,12 +36,14 @@ extension AdyenSuccess: Presentable {
             viewController.navigationItem.hidesBackButton = true
         }
         .materialize()
-
+        
         return (
             viewController,
             FiniteSignal { callback in
                 let bag = DisposeBag()
 
+                bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewConnectPaymentSuccess())
+                
                 bag += signal.onValue {
                     callback(.value(()))
                 }

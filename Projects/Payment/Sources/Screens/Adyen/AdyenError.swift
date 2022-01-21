@@ -4,6 +4,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hAnalytics
 
 enum AdyenError: Error { case cancelled, tokenization, action, failed }
 
@@ -48,6 +49,8 @@ extension AdyenError: Presentable {
             viewController,
             FiniteSignal { callback in
                 let bag = DisposeBag()
+                
+                bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewConnectPaymentFailed())
 
                 bag += signal.onValue { shouldRetry in
                     if shouldRetry {

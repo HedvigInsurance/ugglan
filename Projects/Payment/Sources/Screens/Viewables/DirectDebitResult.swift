@@ -4,6 +4,7 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import hAnalytics
 
 enum DirectDebitResultType {
     case success(setupType: PaymentSetup.SetupType)
@@ -41,6 +42,13 @@ enum DirectDebitResultType {
         switch self {
         case .success: return L10n.PayInConfirmation.continueButton
         case .failure: return L10n.PayInError.retryButton
+        }
+    }
+    
+    var analyticsEvent: AnalyticsClosure {
+        switch self {
+        case .success: return hAnalyticsEvent.screenViewConnectPaymentSuccess()
+        case .failure: return hAnalyticsEvent.screenViewConnectPaymentFailed()
         }
     }
 }
@@ -108,6 +116,8 @@ extension DirectDebitResult: Viewable {
             }
 
         bag += events.removeAfter.set { _ in 1 }
+        
+        bag += containerView.trackDidMoveToWindow(type.analyticsEvent)
 
         return (
             containerView,

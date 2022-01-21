@@ -7,6 +7,7 @@ import UIKit
 import WebKit
 import hCore
 import hGraphQL
+import hAnalytics
 
 struct DirectDebitSetup {
     @Inject var client: ApolloClient
@@ -107,6 +108,8 @@ extension DirectDebitSetup: Presentable {
         func startRegistration() {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
+            
+            bag += webView.trackDidMoveToWindow(hAnalyticsEvent.screenViewConnectPaymentTrustly())
 
             bag += client.perform(mutation: GraphQL.StartDirectDebitRegistrationMutation()).valueSignal
                 .compactMap { $0.startDirectDebitRegistration }
