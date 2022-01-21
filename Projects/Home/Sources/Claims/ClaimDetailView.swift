@@ -79,20 +79,5 @@ public struct ClaimDetailView: View {
 
             Spacer()
         }
-        .onReceive(
-            store
-                .actionSignal
-                .publisher
-        ) { action in
-            switch action {
-            case let .setClaims(claims):
-                if let newClaim = claims.first(where: { $0 == self.claim }),
-                   newClaim.isUpdated(oldClaim: self.claim) {
-                    self.claim = newClaim
-                }
-            default:
-                break
-            }
-        }
     }
 }

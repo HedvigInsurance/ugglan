@@ -100,7 +100,5 @@ extension AppJourney {
             presenter.viewController.navigationItem.largeTitleDisplayMode = .never
             presenter.viewController.navigationItem.title = L10n.ClaimStatus.title
         }
-        .sendActionImmediately(HomeStore.self, .startPollingClaims)
-        .sendActionOnDismiss(HomeStore.self, .stopPollingClaims)
     }
 }
