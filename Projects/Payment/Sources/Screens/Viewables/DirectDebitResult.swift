@@ -2,9 +2,9 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 enum DirectDebitResultType {
     case success(setupType: PaymentSetup.SetupType)
@@ -44,7 +44,7 @@ enum DirectDebitResultType {
         case .failure: return L10n.PayInError.retryButton
         }
     }
-    
+
     var analyticsEvent: AnalyticsClosure {
         switch self {
         case .success: return hAnalyticsEvent.screenViewConnectPaymentSuccess()
@@ -116,7 +116,7 @@ extension DirectDebitResult: Viewable {
             }
 
         bag += events.removeAfter.set { _ in 1 }
-        
+
         bag += containerView.trackDidMoveToWindow(type.analyticsEvent)
 
         return (
