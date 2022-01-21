@@ -304,21 +304,9 @@ let log = Logger.builder
             case let .didDismiss(presentableId, context, result):
                 switch result {
                 case let .success(result):
-                    Analytics.track(
-                        "PRESENTABLE_DID_DISMISS_SUCCESS",
-                        properties: [
-                            "presentableId": presentableId.value
-                        ]
-                    )
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(result)"
                 case let .failure(error):
-                    Analytics.track(
-                        "PRESENTABLE_DID_DISMISS_FAILURE",
-                        properties: [
-                            "presentableId": presentableId.value
-                        ]
-                    )
                     message = "\(context) did end presentation of: \(presentableId)"
                     data = "\(error)"
                 }
@@ -339,7 +327,6 @@ let log = Logger.builder
 
         viewControllerWasPresented = { viewController in
             if let debugPresentationTitle = viewController.debugPresentationTitle {
-                Analytics.track("SCREEN_VIEW_\(debugPresentationTitle)", properties: [:])
                 Analytics.track(
                     "SCREEN_VIEW_IOS",
                     properties: [
@@ -350,7 +337,6 @@ let log = Logger.builder
         }
         alertActionWasPressed = { _, title in
             if let localizationKey = title.derivedFromL10n?.key {
-                Analytics.track("ALERT_ACTION_TAP_\(localizationKey)", properties: [:])
                 Analytics.track(
                     "ALERT_ACTION_TAP",
                     properties: [
