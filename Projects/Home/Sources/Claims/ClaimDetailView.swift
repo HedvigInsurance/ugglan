@@ -3,6 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 public struct ClaimDetailView: View {
     @State var claim: Claim
@@ -60,7 +61,11 @@ public struct ClaimDetailView: View {
 
                 Divider()
 
-                ContactChatView(store: self.store)
+                ContactChatView(
+                    store: self.store,
+                    id: self.claim.id,
+                    status: self.claim.claimDetailData.status.rawValue
+                )
             }
             .padding(.horizontal, 16)
 
@@ -77,5 +82,11 @@ public struct ClaimDetailView: View {
 
             Spacer()
         }
+        .trackOnAppear(
+            hAnalyticsEvent.claimsStatusDetailScreenView(
+                claimId: self.claim.id,
+                claimStatus: self.claim.claimDetailData.status.rawValue
+            )
+        )
     }
 }
