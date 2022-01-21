@@ -6,14 +6,12 @@ import hGraphQL
 
 public struct ClaimDetailView: View {
     @State var claim: Claim
-    var store: HomeStore
+    @PresentableStore var store: HomeStore
 
     public init(
         claim: Claim
     ) {
         self.claim = claim
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        self.store = store
     }
 
     private var statusParagraph: String {
