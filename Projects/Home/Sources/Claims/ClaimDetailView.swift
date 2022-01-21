@@ -74,10 +74,20 @@ public struct ClaimDetailView: View {
 
             // Section to show attachments for the claim
             if let url = URL(string: claim.claimDetailData.signedAudioURL) {
+                let audioPlayer = AudioPlayer(url: url)
                 ClaimDetailFilesView(
-                    audioPlayer: AudioPlayer(url: url)
+                    audioPlayer: audioPlayer
                 )
-                .padding(.horizontal, 16)
+                    .onReceive(
+                        audioPlayer.objectWillChange
+                            .filter { $0.playbackState == .finished },
+                        perform: { player in
+                            hAnalyticsEvent.claimsDetailRecordingPlayed(
+                                claimId: self.claim.id
+                            ).send()
+                        }
+                    )
+                    .padding(.horizontal, 16)
             }
 
             Spacer()
