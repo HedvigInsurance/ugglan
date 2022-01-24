@@ -1,4 +1,5 @@
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -10,6 +11,31 @@ struct ClaimStatus: View {
     var store: HomeStore
 
     var body: some View {
+        Button {
+            store.send(.openClaimDetails(claim: claim))
+        } label: {
+
+        }
+        .buttonStyle(ClaimStatusButtonStyle(claim: claim))
+        .trackOnAppear(
+            hAnalyticsEvent.claimCardVisible(
+                claimId: self.claim.id,
+                claimStatus: self.claim.claimDetailData.status.rawValue
+            )
+        )
+        .trackOnTap(
+            hAnalyticsEvent.claimCardClick(
+                claimId: self.claim.id,
+                claimStatus: self.claim.claimDetailData.status.rawValue
+            )
+        )
+    }
+}
+
+struct ClaimStatusButtonStyle: ButtonStyle {
+    let claim: Claim
+
+    func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top) {
                 ClaimPills(claim: claim)
@@ -40,9 +66,6 @@ struct ClaimStatus: View {
                 .fill(hBackgroundColor.tertiary)
                 .hShadow()
         )
-        .onTapGesture {
-            store.send(.openClaimDetails(claim: claim))
-        }
     }
 }
 

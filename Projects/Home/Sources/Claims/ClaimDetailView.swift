@@ -1,5 +1,6 @@
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -60,7 +61,11 @@ public struct ClaimDetailView: View {
 
                 Divider()
 
-                ContactChatView(store: self.store)
+                ContactChatView(
+                    store: self.store,
+                    id: self.claim.id,
+                    status: self.claim.claimDetailData.status.rawValue
+                )
             }
             .padding(.horizontal, 16)
 
@@ -69,13 +74,30 @@ public struct ClaimDetailView: View {
 
             // Section to show attachments for the claim
             if let url = URL(string: claim.claimDetailData.signedAudioURL) {
+                let audioPlayer = AudioPlayer(url: url)
                 ClaimDetailFilesView(
-                    audioPlayer: AudioPlayer(url: url)
+                    audioPlayer: audioPlayer
+                )
+                .onReceive(
+                    audioPlayer.objectWillChange
+                        .filter { $0.playbackState == .finished },
+                    perform: { player in
+                        hAnalyticsEvent.claimsDetailRecordingPlayed(
+                            claimId: self.claim.id
+                        )
+                        .send()
+                    }
                 )
                 .padding(.horizontal, 16)
             }
 
             Spacer()
         }
+        .trackOnAppear(
+            hAnalyticsEvent.claimsStatusDetailScreenView(
+                claimId: self.claim.id,
+                claimStatus: self.claim.claimDetailData.status.rawValue
+            )
+        )
     }
 }

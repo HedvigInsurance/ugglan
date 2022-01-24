@@ -1,6 +1,7 @@
 import AVFoundation
 import Combine
 import Foundation
+import hAnalytics
 import hCore
 
 class AudioPlayer: NSObject, ObservableObject {
@@ -21,6 +22,7 @@ class AudioPlayer: NSObject, ObservableObject {
         case playing(paused: Bool)
         case error(message: String)
         case loading
+        case finished
     }
 
     private(set) var playbackState: PlaybackState = .idle {
@@ -37,7 +39,7 @@ class AudioPlayer: NSObject, ObservableObject {
 
     func togglePlaying() {
         switch playbackState {
-        case .idle, .error:
+        case .idle, .error, .finished:
             startPlaying()
         case let .playing(paused):
             paused ? audioPlayer?.play() : audioPlayer?.pause()
@@ -112,7 +114,7 @@ class AudioPlayer: NSObject, ObservableObject {
 
             if newStatus == .playing {
                 self.playbackState = .playing(paused: false)
-            } else if newStatus == .paused && playbackState != .idle {
+            } else if newStatus == .paused && playbackState != .finished {
                 self.playbackState = .playing(paused: true)
             }
 
@@ -125,6 +127,6 @@ class AudioPlayer: NSObject, ObservableObject {
     }
 
     @objc func playerDidFinishPlaying() {
-        self.playbackState = .idle
+        self.playbackState = .finished
     }
 }
