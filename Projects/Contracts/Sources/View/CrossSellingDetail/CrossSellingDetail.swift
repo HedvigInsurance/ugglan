@@ -2,6 +2,7 @@ import Combine
 import Foundation
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -46,6 +47,7 @@ public struct CrossSellingDetail: View {
         .hFormAttachToBottom {
             ContinueButton(crossSell: crossSell)
         }
+        .trackOnAppear(hAnalyticsEvent.screenViewCrossSellDetail(typeOfContract: crossSell.typeOfContract))
     }
 }
 

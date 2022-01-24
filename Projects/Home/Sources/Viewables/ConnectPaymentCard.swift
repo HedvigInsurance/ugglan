@@ -4,6 +4,7 @@ import Foundation
 import Presentation
 import SnapKit
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -29,6 +30,8 @@ extension ConnectPaymentCard: Presentable {
 
                 if status == .needsSetup {
                     let store: HomeStore = self.get()
+
+                    bag += stackView.trackDidMoveToWindow(hAnalyticsEvent.homePaymentCardVisible())
 
                     bag += stackView.addArranged(Spacing(height: 56), onCreate: animateIn)
                     bag +=

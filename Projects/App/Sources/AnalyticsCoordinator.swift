@@ -3,7 +3,6 @@ import Datadog
 import Firebase
 import Flow
 import Foundation
-import Mixpanel
 import Shake
 import hCore
 import hGraphQL
@@ -18,7 +17,6 @@ public struct AnalyticsCoordinator {
             .compactMap { $0.member.id }
             .onValue { id in
                 Shake.setMetadata(key: "memberId", value: id)
-                Mixpanel.mainInstance().identify(distinctId: id)
                 Firebase.Analytics.setUserID(id)
                 Datadog.setUserInfo(
                     id: id,

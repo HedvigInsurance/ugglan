@@ -61,8 +61,6 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>MixpanelToken</key>
-	<string>94a297abd45b862207a9ba3f11f6bd8c</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

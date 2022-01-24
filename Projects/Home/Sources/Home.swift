@@ -5,6 +5,7 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -179,6 +180,8 @@ extension Home: Presentable {
                 self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
             }
             .nil()
+
+        bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewHome())
 
         return (
             viewController,

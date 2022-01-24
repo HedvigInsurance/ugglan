@@ -5,6 +5,7 @@ import Hero
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -138,6 +139,7 @@ struct ContractDetail: View {
                 }
             }
         }
+        .trackOnAppear(hAnalyticsEvent.screenViewInsuranceDetail(contractId: id))
     }
 }
 
