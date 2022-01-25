@@ -52,7 +52,7 @@ extension CommonClaimCard: Viewable {
                 containerView.transform = CGAffineTransform.identity
             }
 
-        bag += containerView.trackedTouchUpInsideSignal.onValue {
+        bag += containerView.signal(for: .touchUpInside).onValue {
             containerView.viewController?
                 .present(
                     CommonClaimDetail(data: self.data, index: self.index).withCloseButton,

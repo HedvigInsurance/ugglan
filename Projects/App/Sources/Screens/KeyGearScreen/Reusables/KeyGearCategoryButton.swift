@@ -71,7 +71,7 @@ extension KeyGearCategoryButton: Reusable {
 
                 bag += control.signal(for: .touchDown).feedback(type: .selection)
 
-                bag += control.trackedTouchUpInsideSignal.atValue { _ in self.callbacker.callAll() }
+                bag += control.signal(for: .touchUpInside).atValue { _ in self.callbacker.callAll() }
                     .animated(style: AnimationStyle.easeOut(duration: 0.25)) {
                         self.selectedSignal.value = true
                     }

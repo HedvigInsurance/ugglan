@@ -3,6 +3,7 @@ import Foundation
 import UIKit
 import hCore
 import hGraphQL
+import hAnalytics
 
 public enum ExternalRedirect {
     case mailingList
@@ -119,12 +120,7 @@ public class EmbarkState {
             }
 
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
-                Analytics.track(
-                    "External Redirect",
-                    properties: [
-                        "location": externalRedirect.rawValue
-                    ]
-                )
+                hAnalyticsEvent.embarkExternalRedirect(location: externalRedirect.rawValue).send()
                 switch externalRedirect {
                 case .mailingList: externalRedirectSignal.value = .mailingList
                 case .offer:
@@ -142,10 +138,10 @@ public class EmbarkState {
                 case .__unknown: fatalError("Can't external redirect to location")
                 }
             } else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {
-                Analytics.track("Offer Redirect", properties: [:])
                 let ids = offerRedirectKeys.flatMap { key in
                     store.getValues(key: key) ?? []
                 }
+                hAnalyticsEvent.embarkVariantedOfferRedirect(allIds: ids, selectedIds: ids).send()
                 externalRedirectSignal.value = .offer(
                     allIds: ids,
                     selectedIds: ids
@@ -160,14 +156,8 @@ public class EmbarkState {
                 let selectedIds = passingVariantedRedirect.data.selectedKeys.flatMap { key in
                     store.getValues(key: key) ?? []
                 }
-
-                Analytics.track(
-                    "Varianted Offer Redirect",
-                    properties: [
-                        "allIds": allIds,
-                        "selectedIds": selectedIds,
-                    ]
-                )
+                
+                hAnalyticsEvent.embarkVariantedOfferRedirect(allIds: allIds, selectedIds: selectedIds).send()
                 externalRedirectSignal.value = .offer(allIds: allIds, selectedIds: selectedIds)
             } else {
                 self.isApiLoadingSignal.value = false

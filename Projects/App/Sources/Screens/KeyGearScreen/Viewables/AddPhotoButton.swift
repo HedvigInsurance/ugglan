@@ -74,6 +74,6 @@ extension AddPhotoButton: Viewable {
                 view.backgroundColor = .brand(.link)
             }
 
-        return (view, view.trackedTouchUpInsideSignal.hold(bag).map { _ -> UIControl in view })
+        return (view, view.signal(for: .touchUpInside).hold(bag).map { _ -> UIControl in view })
     }
 }

@@ -300,7 +300,6 @@ struct _hButton<Content: View>: View {
     @Environment(\.hButtonIsLoading) var isLoading
     var content: () -> Content
     var action: () -> Void
-    @State var wasTappedDate: Date? = nil
 
     public init(
         action: @escaping () -> Void,
@@ -314,11 +313,9 @@ struct _hButton<Content: View>: View {
         SwiftUI.Button(action: {
             let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
-
-            wasTappedDate = Date()
             action()
         }) {
-            content().environment(\.hButtonWasTappedDate, wasTappedDate)
+            content()
         }
         .allowsHitTesting(!isLoading)
     }
