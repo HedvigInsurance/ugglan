@@ -1,10 +1,16 @@
 import Foundation
 import hCore
 import hGraphQL
+import hAnalytics
 
 extension EmbarkPassage.Track {
     func send(storyName: String, storeValues: [String: Any]) {
         Analytics.track(eventName, properties: trackingProperties(storyName: storyName, storeValues: storeValues))
+        hAnalyticsEvent.embarkTrack(
+            storyName: storyName,
+            eventName: eventName,
+            store: trackingProperties(storyName: storyName, storeValues: storeValues)
+        ).send()
     }
 
     private func trackingProperties(storyName: String, storeValues: [String: Any]) -> [String: AnalyticsProperty] {
@@ -47,5 +53,10 @@ extension EmbarkState {
                 "originatedFromEmbarkStory": storySignal.value?.name ?? "",
             ]
         )
+        
+        hAnalyticsEvent.embarkPassageGoBack(
+            storyName: storySignal.value?.name ?? "",
+            passageName: currentPassageSignal.value?.name ?? ""
+        ).send()
     }
 }
