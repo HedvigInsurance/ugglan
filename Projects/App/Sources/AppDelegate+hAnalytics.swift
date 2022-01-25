@@ -7,7 +7,9 @@ import hGraphQL
 
 extension AppDelegate {
     func setupHAnalytics() {
-        hAnalyticsNetworking.httpAdditionalHeaders = { ApolloClient.headers(token: ApolloClient.retreiveToken()?.token) as [AnyHashable: Any] }
+        hAnalyticsNetworking.httpAdditionalHeaders = {
+            ApolloClient.headers(token: ApolloClient.retreiveToken()?.token) as [AnyHashable: Any]
+        }
         hAnalyticsNetworking.endpointURL = {
             switch Environment.current {
             case .production:
