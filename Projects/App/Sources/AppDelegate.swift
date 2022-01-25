@@ -196,6 +196,7 @@ let log = Logger.builder
 
         log.info("Starting app")
 
+        hAnalyticsEvent.identify()
         hAnalyticsEvent.appStarted().send()
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
