@@ -18,10 +18,10 @@ import Presentation
 import SwiftUI
 import UIKit
 import UserNotifications
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -65,11 +65,11 @@ let log = Logger.builder
         NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
         hAnalyticsEvent.appShutdown().send()
     }
-    
+
     func applicationWillResignActive(_ application: UIApplication) {
         hAnalyticsEvent.appBackground().send()
     }
-    
+
     func applicationDidBecomeActive(_ application: UIApplication) {
         hAnalyticsEvent.appResumed().send()
     }
@@ -195,7 +195,7 @@ let log = Logger.builder
         setupAnalyticsAndTracking()
 
         log.info("Starting app")
-        
+
         hAnalyticsEvent.appStarted().send()
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
