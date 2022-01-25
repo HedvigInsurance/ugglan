@@ -52,14 +52,15 @@ extension CommonClaimCard: Viewable {
                 containerView.transform = CGAffineTransform.identity
             }
 
-        bag += containerView.signal(for: .touchUpInside).onValue {
-            containerView.viewController?
-                .present(
-                    CommonClaimDetail(data: self.data, index: self.index).withCloseButton,
-                    style: .detented(.medium, .large),
-                    options: [.defaults]
-                )
-        }
+        bag += containerView.signal(for: .touchUpInside)
+            .onValue {
+                containerView.viewController?
+                    .present(
+                        CommonClaimDetail(data: self.data, index: self.index).withCloseButton,
+                        style: .detented(.medium, .large),
+                        options: [.defaults]
+                    )
+            }
 
         let contentView = UIStackView()
         contentView.layoutMargins = UIEdgeInsets(inset: 10)

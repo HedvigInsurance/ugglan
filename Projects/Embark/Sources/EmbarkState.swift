@@ -1,9 +1,9 @@
 import Flow
 import Foundation
 import UIKit
+import hAnalytics
 import hCore
 import hGraphQL
-import hAnalytics
 
 public enum ExternalRedirect {
     case mailingList
@@ -156,7 +156,7 @@ public class EmbarkState {
                 let selectedIds = passingVariantedRedirect.data.selectedKeys.flatMap { key in
                     store.getValues(key: key) ?? []
                 }
-                
+
                 hAnalyticsEvent.embarkVariantedOfferRedirect(allIds: allIds, selectedIds: selectedIds).send()
                 externalRedirectSignal.value = .offer(allIds: allIds, selectedIds: selectedIds)
             } else {
