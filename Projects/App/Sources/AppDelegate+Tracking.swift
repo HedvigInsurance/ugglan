@@ -9,7 +9,6 @@ import hGraphQL
 
 extension AppDelegate {
     func setupAnalyticsAndTracking() {
-
         Datadog.initialize(
             appContext: .init(),
             trackingConsent: .granted,
@@ -49,20 +48,6 @@ extension AppDelegate {
             Datadog.verbosityLevel = .debug
         }
 
-        if let mixpanelToken = mixpanelToken {
-            Mixpanel.initialize(token: mixpanelToken)
-            AnalyticsSender.sendEvent = { event, properties in
-                log.info("Sending analytics event: \(event) \(properties)")
-
-                Firebase.Analytics.logEvent(event, parameters: properties)
-                Mixpanel.mainInstance()
-                    .track(
-                        event: event,
-                        properties: properties.mapValues({ property in
-                            property.mixpanelType
-                        })
-                    )
-            }
-        }
+        setupHAnalytics()
     }
 }

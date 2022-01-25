@@ -23,7 +23,7 @@ extension ApolloClient {
         ["Authorization": token ?? "", "Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
     }
 
-    internal static func getDeviceIdentifier() -> String {
+    public static func getDeviceIdentifier() -> String {
         let userDefaults = UserDefaults.standard
 
         let deviceKey = "hedvig-device-identifier"
