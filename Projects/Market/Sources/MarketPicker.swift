@@ -6,10 +6,10 @@ import Hero
 import Kingfisher
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 public struct MarketPicker {
     @Inject var client: ApolloClient
@@ -107,7 +107,7 @@ extension MarketPicker: Presentable {
         form.alpha = 0
 
         bag += form.didMoveToWindowSignal.onValue { ContextGradient.currentOption = .none }
-        
+
         viewController.trackOnAppear(hAnalyticsEvent.screenViewMarketPicker())
 
         return (
@@ -166,11 +166,12 @@ extension MarketPicker: Presentable {
                             navigationController.hero.navigationAnimationType =
                                 .fade
                         }
-                        
+
                         hAnalyticsEvent.marketSelected(
                             locale: Localization.Locale.currentLocale.lprojCode
-                        ).send()
-                        
+                        )
+                        .send()
+
                         callback(())
                     }
 

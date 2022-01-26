@@ -4,10 +4,10 @@ import Form
 import Presentation
 import SnapKit
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 public struct Marketing {
     @Inject var client: ApolloClient
@@ -96,7 +96,7 @@ extension Marketing: Presentable {
         containerView.addSubview(contentStackView)
 
         contentStackView.snp.makeConstraints { make in make.bottom.trailing.leading.equalToSuperview() }
-        
+
         viewController.trackOnAppear(hAnalyticsEvent.screenViewMarketing())
 
         return (
@@ -119,7 +119,7 @@ extension Marketing: Presentable {
                     if !UITraitCollection.isCatalyst {
                         viewController.navigationController?.hero.isEnabled = false
                     }
-                    
+
                     hAnalyticsEvent.buttonClickMarketingOnboard().send()
 
                     callback(.onboard)
@@ -139,9 +139,9 @@ extension Marketing: Presentable {
                     if !UITraitCollection.isCatalyst {
                         viewController.navigationController?.hero.isEnabled = false
                     }
-                    
+
                     hAnalyticsEvent.buttonClickMarketingLogin().send()
-                    
+
                     callback(.login)
                 }
 

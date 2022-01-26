@@ -160,7 +160,7 @@ extension MovingFlowIntro: Presentable {
             }
 
         viewController.trackOnAppear(hAnalyticsEvent.screenViewMovingFlowIntro())
-        
+
         return (
             viewController,
             FiniteSignal { callbacker in
