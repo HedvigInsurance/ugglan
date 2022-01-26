@@ -108,8 +108,6 @@ extension MarketPicker: Presentable {
 
         bag += form.didMoveToWindowSignal.onValue { ContextGradient.currentOption = .none }
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewMarketPicker())
-
         return (
             viewController,
             Signal { callback in
@@ -184,6 +182,8 @@ extension MarketPicker: Presentable {
                                 form.transform = CGAffineTransform.identity
                                 form.alpha = 1
                                 form.layoutIfNeeded()
+                                
+                                viewController.trackOnAppear(hAnalyticsEvent.screenViewMarketPicker())
                             }
                         )
                 }

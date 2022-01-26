@@ -7,8 +7,15 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hAnalytics
 
 extension AppJourney {
+    fileprivate static var loginCompleted: some JourneyPresentation {
+        AppJourney.loggedIn.onPresent {
+            hAnalyticsEvent.loggedIn().send()
+        }
+    }
+    
     fileprivate static var bankIDSweden: some JourneyPresentation {
         Journey(
             BankIDLoginSweden(),
@@ -19,13 +26,13 @@ extension AppJourney {
                 Journey(BankIDLoginQR()) { result in
                     switch result {
                     case .loggedIn:
-                        AppJourney.loggedIn
+                        loginCompleted
                     }
                 }
                 .withJourneyDismissButton
                 .mapJourneyDismissToCancel
             case .loggedIn:
-                AppJourney.loggedIn
+                loginCompleted
             }
         }
         .withDismissButton
@@ -34,7 +41,7 @@ extension AppJourney {
     fileprivate static var simpleSign: some JourneyPresentation {
         Journey(SimpleSignLoginView(), style: .detented(.large)) { id in
             Journey(WebViewLogin(idNumber: id), style: .detented(.large)) { _ in
-                AppJourney.loggedIn
+                loginCompleted
             }
         }
         .withDismissButton
@@ -52,7 +59,7 @@ extension AppJourney {
                     switch next {
                     case let .success(accessToken):
                         Journey(ApolloClientSaveTokenLoader(accessToken: accessToken)) { _ in
-                            AppJourney.loggedIn
+                            loginCompleted
                         }
                     case .chat:
                         AppJourney.freeTextChat().withDismissButton
