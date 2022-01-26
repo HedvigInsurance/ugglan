@@ -13,7 +13,7 @@ extension EmbarkPassage.Track {
         .send()
     }
 
-    private func trackingProperties(storyName: String, storeValues: [String: Any]) -> [String: AnalyticsProperty] {
+    private func trackingProperties(storyName: String, storeValues: [String: Any]) -> [String: Any] {
         var filteredProperties = storeValues.filter { key, _ in eventKeys.contains(key) }
 
         if let customData = customData {
@@ -27,15 +27,8 @@ extension EmbarkPassage.Track {
                 }
         }
 
-        filteredProperties = filteredProperties.merging(
-            ["originatedFromEmbarkStory": storyName],
-            uniquingKeysWith: takeRight
-        )
-
         return
-            filteredProperties.mapValues { any in
-                any as? AnalyticsProperty
-            }
+            filteredProperties
             .compactMapValues { $0 }
     }
 }

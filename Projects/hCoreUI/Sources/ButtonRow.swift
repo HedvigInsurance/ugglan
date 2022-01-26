@@ -53,15 +53,6 @@ extension ButtonRow: Viewable {
 
         label.snp.makeConstraints { make in make.height.equalTo(20) }
 
-        bag += events.onSelect.onValue {
-            if let localizationKey = self.text.value.derivedFromL10n?.key {
-                Analytics
-                    .track("TAP_\(localizationKey)", properties: ["context": "ButtonRow"])
-                Analytics
-                    .track(.buttonClick, properties: ["localizationKey": localizationKey])
-            }
-        }
-
         row.append(label)
 
         return (row, bag)
