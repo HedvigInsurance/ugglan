@@ -5,6 +5,7 @@ import Form
 import Offer
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hGraphQL
 
@@ -234,6 +235,8 @@ extension Chat: Presentable {
             },
             delay: 2
         )
+
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewChat())
 
         return (
             viewController,

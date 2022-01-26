@@ -109,7 +109,7 @@ extension DirectDebitSetup: Presentable {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
 
-            bag += webView.trackDidMoveToWindow(hAnalyticsEvent.screenViewConnectPaymentTrustly())
+            webView.trackOnAppear(hAnalyticsEvent.screenViewConnectPaymentTrustly())
 
             bag += client.perform(mutation: GraphQL.StartDirectDebitRegistrationMutation()).valueSignal
                 .compactMap { $0.startDirectDebitRegistration }

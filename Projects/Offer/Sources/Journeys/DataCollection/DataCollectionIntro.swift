@@ -2,6 +2,7 @@ import Flow
 import Foundation
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -44,6 +45,11 @@ public struct DataCollectionIntro: View {
             }
             .sectionContainerStyle(.transparent)
         }
+        .trackOnAppear(
+            hAnalyticsEvent.screenViewDataCollectionIntro(
+                providerId: store.state.providerID ?? ""
+            )
+        )
     }
 }
 

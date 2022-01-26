@@ -6,6 +6,7 @@ import Hero
 import Kingfisher
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -163,6 +164,12 @@ extension MarketPicker: Presentable {
                             navigationController.hero.navigationAnimationType =
                                 .fade
                         }
+
+                        hAnalyticsEvent.marketSelected(
+                            locale: Localization.Locale.currentLocale.lprojCode
+                        )
+                        .send()
+
                         callback(())
                     }
 
@@ -175,6 +182,8 @@ extension MarketPicker: Presentable {
                                 form.transform = CGAffineTransform.identity
                                 form.alpha = 1
                                 form.layoutIfNeeded()
+
+                                viewController.trackOnAppear(hAnalyticsEvent.screenViewMarketPicker())
                             }
                         )
                 }

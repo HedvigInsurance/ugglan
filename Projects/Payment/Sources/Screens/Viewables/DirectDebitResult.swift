@@ -45,7 +45,7 @@ enum DirectDebitResultType {
         }
     }
 
-    var analyticsEvent: AnalyticsClosure {
+    var analyticsEvent: hAnalyticsParcel {
         switch self {
         case .success: return hAnalyticsEvent.screenViewConnectPaymentSuccess()
         case .failure: return hAnalyticsEvent.screenViewConnectPaymentFailed()
@@ -117,7 +117,7 @@ extension DirectDebitResult: Viewable {
 
         bag += events.removeAfter.set { _ in 1 }
 
-        bag += containerView.trackDidMoveToWindow(type.analyticsEvent)
+        containerView.trackOnAppear(type.analyticsEvent)
 
         return (
             containerView,

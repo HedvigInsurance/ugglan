@@ -123,7 +123,7 @@ extension Forever: Presentable {
                 }
             }
 
-        bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewForever())
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewForever())
 
         return (viewController, bag)
     }

@@ -2,6 +2,7 @@ import Flow
 import Foundation
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -99,6 +100,11 @@ public struct DataCollectionPersonalIdentity: View {
             }
             .sectionContainerStyle(.transparent)
         }
+        .trackOnAppear(
+            hAnalyticsEvent.screenViewDataCollectionCredentials(
+                providerId: store.state.providerID ?? ""
+            )
+        )
     }
 }
 

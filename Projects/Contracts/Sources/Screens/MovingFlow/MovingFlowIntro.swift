@@ -159,7 +159,7 @@ extension MovingFlowIntro: Presentable {
                 }
             }
 
-        bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewMovingFlowIntro())
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewMovingFlowIntro())
 
         return (
             viewController,

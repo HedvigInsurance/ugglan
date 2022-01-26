@@ -98,9 +98,13 @@ extension Offer: Presentable {
                 }
             }
 
-        bag += store.stateSignal.filter(predicate: { !$0.ids.isEmpty })
-            .onValueDisposePrevious { state in
-                viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewOffer(offerIds: state.ids))
+        bag += store.stateSignal
+            .distinct({ lhs, rhs in
+                lhs.ids == rhs.ids
+            })
+            .filter(predicate: { !$0.ids.isEmpty })
+            .onValue { state in
+                hAnalyticsEvent.screenViewOffer(offerIds: state.ids).send()
             }
 
         let optionsOrCloseButton = UIBarButtonItem(

@@ -50,7 +50,7 @@ extension AdyenError: Presentable {
             FiniteSignal { callback in
                 let bag = DisposeBag()
 
-                bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewConnectPaymentFailed())
+                viewController.trackOnAppear(hAnalyticsEvent.screenViewConnectPaymentFailed())
 
                 bag += signal.onValue { shouldRetry in
                     if shouldRetry {

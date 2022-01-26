@@ -1,5 +1,6 @@
 query CommonClaims($locale: Locale!) {
     commonClaims(locale: $locale) {
+        id
         title
         icon {
             ...IconFragment

@@ -31,7 +31,7 @@ extension ConnectPaymentCard: Presentable {
                 if status == .needsSetup {
                     let store: HomeStore = self.get()
 
-                    bag += stackView.trackDidMoveToWindow(hAnalyticsEvent.homePaymentCardVisible())
+                    stackView.trackOnAppear(hAnalyticsEvent.homePaymentCardVisible())
 
                     bag += stackView.addArranged(Spacing(height: 56), onCreate: animateIn)
                     bag +=

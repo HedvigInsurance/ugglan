@@ -3,6 +3,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -76,6 +77,8 @@ extension CommonClaimDetail: Presentable {
         }
 
         bag += viewController.install(view)
+
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewCommonClaimDetail(id: data.id))
 
         return (viewController, bag)
     }

@@ -69,7 +69,7 @@ extension DiscountCodeSection: Viewable {
                 codeLabel.value = code
             }
 
-        bag += section.append(codeRow).trackedSignal
+        bag += section.append(codeRow)
             .onValueDisposePrevious { _ in let innerBag = DisposeBag()
 
                 section.viewController?.presentConditionally(PushNotificationReminder(), style: .modal)

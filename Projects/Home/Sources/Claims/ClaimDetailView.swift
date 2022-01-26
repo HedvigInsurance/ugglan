@@ -94,7 +94,7 @@ public struct ClaimDetailView: View {
             Spacer()
         }
         .trackOnAppear(
-            hAnalyticsEvent.claimsStatusDetailScreenView(
+            hAnalyticsEvent.screenViewClaimsStatusDetail(
                 claimId: self.claim.id,
                 claimStatus: self.claim.claimDetailData.status.rawValue
             )

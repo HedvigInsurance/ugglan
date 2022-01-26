@@ -42,7 +42,7 @@ extension AdyenSuccess: Presentable {
             FiniteSignal { callback in
                 let bag = DisposeBag()
 
-                bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewConnectPaymentSuccess())
+                viewController.trackOnAppear(hAnalyticsEvent.screenViewConnectPaymentSuccess())
 
                 bag += signal.onValue {
                     callback(.value(()))
