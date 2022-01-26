@@ -181,7 +181,7 @@ extension Home: Presentable {
             }
             .nil()
 
-        bag += viewController.trackDidMoveToWindow(hAnalyticsEvent.screenViewHome())
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewHome())
 
         return (
             viewController,

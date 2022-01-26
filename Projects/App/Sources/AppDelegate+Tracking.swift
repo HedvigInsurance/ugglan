@@ -2,7 +2,6 @@ import Datadog
 import DatadogCrashReporting
 import Firebase
 import FirebaseAnalytics
-import Mixpanel
 import Shake
 import hCore
 import hGraphQL

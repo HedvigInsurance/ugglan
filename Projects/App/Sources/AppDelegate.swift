@@ -65,12 +65,12 @@ let log = Logger.builder
         NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
         hAnalyticsEvent.appShutdown().send()
     }
-
-    func applicationWillResignActive(_ application: UIApplication) {
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
         hAnalyticsEvent.appBackground().send()
     }
-
-    func applicationDidBecomeActive(_ application: UIApplication) {
+    
+    func applicationWillEnterForeground(_ application: UIApplication) {
         hAnalyticsEvent.appResumed().send()
     }
 
