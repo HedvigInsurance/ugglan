@@ -2,9 +2,9 @@ import Flow
 import Foundation
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 public enum DataCollectionIntroDecision: Codable {
     case accept
@@ -44,7 +44,8 @@ public struct DataCollectionIntro: View {
                 .padding(.top, 40)
             }
             .sectionContainerStyle(.transparent)
-        }.trackOnAppear(
+        }
+        .trackOnAppear(
             hAnalyticsEvent.screenViewDataCollectionIntro(
                 providerId: store.state.providerID ?? ""
             )

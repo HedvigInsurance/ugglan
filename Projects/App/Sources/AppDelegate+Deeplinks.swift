@@ -4,8 +4,8 @@ import Flow
 import Foundation
 import Payment
 import Presentation
-import hCore
 import hAnalytics
+import hCore
 
 extension AppDelegate {
     func handleDeepLink(_ dynamicLinkUrl: URL) {

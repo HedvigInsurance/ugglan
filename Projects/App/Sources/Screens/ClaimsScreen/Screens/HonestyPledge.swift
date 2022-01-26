@@ -4,9 +4,9 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 struct SlideTrack: View {
     var shouldAnimate: Bool
@@ -156,7 +156,8 @@ struct HonestyPledge: View {
             .padding(.bottom, 20)
             .padding(.leading, 15)
             .padding(.trailing, 15)
-        }.trackOnAppear(hAnalyticsEvent.screenViewClaimHonorPledge())
+        }
+        .trackOnAppear(hAnalyticsEvent.screenViewClaimHonorPledge())
     }
 }
 

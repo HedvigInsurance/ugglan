@@ -2,9 +2,9 @@ import Flow
 import Foundation
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 public enum DataCollectionConfirmationResult: Codable {
     case started
@@ -52,14 +52,14 @@ public struct DataCollectionConfirmation: View {
 
         return L10n.InsurelyFailure.description(store.state.providerDisplayName ?? "")
     }
-    
+
     var trackingParcel: hAnalyticsParcel {
         if wasConfirmed {
             return hAnalyticsEvent.screenViewDataCollectionSuccess(
                 providerId: store.state.providerID ?? ""
             )
         }
-        
+
         return hAnalyticsEvent.screenViewDataCollectionFail(
             providerId: store.state.providerID ?? ""
         )

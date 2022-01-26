@@ -3,10 +3,10 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 struct CommonClaimDetail {
     let data: GraphQL.CommonClaimsQuery.Data.CommonClaim
@@ -77,7 +77,7 @@ extension CommonClaimDetail: Presentable {
         }
 
         bag += viewController.install(view)
-        
+
         viewController.trackOnAppear(hAnalyticsEvent.screenViewCommonClaimDetail(id: data.id))
 
         return (viewController, bag)

@@ -4,10 +4,10 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 struct Charity { @Inject var client: ApolloClient }
 
@@ -58,7 +58,7 @@ extension Charity: Presentable {
             }
 
         bag += viewController.install(form, scrollView: scrollView)
-        
+
         viewController.trackOnAppear(hAnalyticsEvent.screenViewCharity())
 
         return (viewController, bag)

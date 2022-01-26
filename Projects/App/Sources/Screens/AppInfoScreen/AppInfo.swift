@@ -5,10 +5,10 @@ import Market
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 struct AppInfo {
     @Inject var client: ApolloClient
@@ -30,7 +30,7 @@ struct AppInfo {
             case .appSettings: return Asset.settingsIcon.image
             }
         }
-        
+
         var trackingParcel: hAnalyticsParcel {
             switch self {
             case .appInformation:
@@ -212,7 +212,7 @@ extension AppInfo: Presentable {
         }
 
         bag += viewController.install(form)
-        
+
         viewController.trackOnAppear(type.trackingParcel)
 
         return (viewController, bag)
