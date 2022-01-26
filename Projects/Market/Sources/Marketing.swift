@@ -11,13 +11,12 @@ import hGraphQL
 public struct Marketing {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
-    @ReadWriteState var id: String? = nil
 
     public init() {}
 }
 
 public enum MarketingResult {
-    case onboard(id: String?)
+    case onboard(id: String)
     case login
 }
 
@@ -86,18 +85,6 @@ extension Marketing: Presentable {
                     options: [.transition(.fade(0.25))]
                 )
             }
-        
-        bag += client.perform(
-            mutation:
-                GraphQL.CreateOnboardingQuoteCartMutation(
-                    input: .init(
-                        market: Localization.Locale.currentLocale.graphQLMarket,
-                        locale: Localization.Locale.currentLocale.rawValue
-                    )
-                )
-        ).onValue { data in
-            self.$id.value = data.onboardingQuoteCartCreate.id.displayValue
-        }
 
         let contentStackView = UIStackView()
         contentStackView.axis = .vertical
@@ -118,9 +105,11 @@ extension Marketing: Presentable {
                     type: .standard(backgroundColor: .white, textColor: .black)
                 )
                 
-                bag += $id.providedSignal.map { $0 != nil }.bindTo(onboardButton.isEnabled)
+                let store: MarketStore = self.get()
                 
-                bag += onboardButton.onTapSignal.onValue { _ in
+                let stateSignal = store.stateSignal.atOnce().map { $0.onboardingIdentifier }.plain()
+                
+                bag += onboardButton.onTapSignal.withLatestFrom(stateSignal).onValue { _, id in
                     if #available(iOS 13.0, *) {
                         viewController.navigationController?.navigationBar
                             .overrideUserInterfaceStyle =
@@ -132,7 +121,7 @@ extension Marketing: Presentable {
                         viewController.navigationController?.hero.isEnabled = false
                     }
 
-                    callback(.onboard(id: $id.value))
+                    callback(.onboard(id: id ?? ""))
                 }
 
                 bag += contentStackView.addArranged(onboardButton) { buttonView in
@@ -157,20 +146,5 @@ extension Marketing: Presentable {
                 return bag
             }
         )
-    }
-}
-
-extension Localization.Locale {
-    var graphQLMarket: GraphQL.Market {
-        switch self.market {
-        case .dk:
-            return .denmark
-        case .se:
-            return .sweden
-        case .no:
-            return .norway
-        default:
-            return .__unknown("Unknown")
-        }
     }
 }
