@@ -64,8 +64,9 @@ let log = Logger.builder
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
         hAnalyticsEvent.appShutdown().send()
+        NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
+        Thread.sleep(forTimeInterval: 3)
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
