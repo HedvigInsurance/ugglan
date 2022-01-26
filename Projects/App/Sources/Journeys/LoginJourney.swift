@@ -5,9 +5,9 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 extension AppJourney {
     fileprivate static var loginCompleted: some JourneyPresentation {
@@ -15,7 +15,7 @@ extension AppJourney {
             hAnalyticsEvent.loggedIn().send()
         }
     }
-    
+
     fileprivate static var bankIDSweden: some JourneyPresentation {
         Journey(
             BankIDLoginSweden(),

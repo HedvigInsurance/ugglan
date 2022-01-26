@@ -44,7 +44,7 @@ let log = Logger.builder
 
     func logout() {
         hAnalyticsEvent.loggedOut().send()
-        
+
         ApolloClient.cache = InMemoryNormalizedCache()
         ApolloClient.deleteToken()
 

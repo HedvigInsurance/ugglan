@@ -182,7 +182,7 @@ extension MarketPicker: Presentable {
                                 form.transform = CGAffineTransform.identity
                                 form.alpha = 1
                                 form.layoutIfNeeded()
-                                
+
                                 viewController.trackOnAppear(hAnalyticsEvent.screenViewMarketPicker())
                             }
                         )
