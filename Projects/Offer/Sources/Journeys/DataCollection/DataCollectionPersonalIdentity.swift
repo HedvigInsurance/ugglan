@@ -4,6 +4,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hAnalytics
 
 struct DataCollectionAuthOption: Identifiable, Equatable, Hashable {
     static func == (lhs: DataCollectionAuthOption, rhs: DataCollectionAuthOption) -> Bool {
@@ -98,7 +99,11 @@ public struct DataCollectionPersonalIdentity: View {
                 .disabled(!authOption.masking.isValid(text: inputtedValue))
             }
             .sectionContainerStyle(.transparent)
-        }
+        }.trackOnAppear(
+            hAnalyticsEvent.screenViewDataCollectionCredentials(
+                providerId: store.state.providerID ?? ""
+            )
+        )
     }
 }
 

@@ -5,6 +5,7 @@ import Foundation
 import Payment
 import Presentation
 import hCore
+import hAnalytics
 
 extension AppDelegate {
     func handleDeepLink(_ dynamicLinkUrl: URL) {
@@ -14,8 +15,7 @@ extension AppDelegate {
         guard ApplicationState.currentState?.isOneOf([.loggedIn]) == true else { return }
         guard let rootViewController = window.rootViewController else { return }
 
-        Analytics.track(path.deprecatedTrackingName, properties: [:])
-        Analytics.track(path.trackingName, properties: ["type": path.rawValue])
+        hAnalyticsEvent.deepLinkOpened(type: path.rawValue).send()
 
         if path == .directDebit {
             rootViewController.present(

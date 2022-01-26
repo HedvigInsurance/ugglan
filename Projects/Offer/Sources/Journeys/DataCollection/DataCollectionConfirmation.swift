@@ -4,6 +4,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hAnalytics
 
 public enum DataCollectionConfirmationResult: Codable {
     case started
@@ -51,6 +52,18 @@ public struct DataCollectionConfirmation: View {
 
         return L10n.InsurelyFailure.description(store.state.providerDisplayName ?? "")
     }
+    
+    var trackingParcel: hAnalyticsParcel {
+        if wasConfirmed {
+            return hAnalyticsEvent.screenViewDataCollectionSuccess(
+                providerId: store.state.providerID ?? ""
+            )
+        }
+        
+        return hAnalyticsEvent.screenViewDataCollectionFail(
+            providerId: store.state.providerID ?? ""
+        )
+    }
 
     public var body: some View {
         hForm {
@@ -89,6 +102,7 @@ public struct DataCollectionConfirmation: View {
                 .padding(.top, 40)
             }
             .sectionContainerStyle(.transparent)
+            .trackOnAppear(trackingParcel)
         }
     }
 }

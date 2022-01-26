@@ -5,6 +5,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 public typealias Tooltip = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Tooltip
 
@@ -25,6 +26,7 @@ extension EmbarkTooltips: View {
             }
         }
         .sectionContainerStyle(.transparent)
+        .trackOnAppear(hAnalyticsEvent.screenViewEmbarkTooltip())
     }
 }
 
