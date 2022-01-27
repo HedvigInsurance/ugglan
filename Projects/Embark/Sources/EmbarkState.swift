@@ -179,10 +179,14 @@ public class EmbarkState {
     private func handleRedirects(
         passage: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
     ) -> GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage? {
-        guard let passingRedirect = passage.redirects.first(where:{ redirect in store.shouldRedirectTo(redirect: redirect) != nil }) else {
+        guard
+            let passingRedirect = passage.redirects.first(where: { redirect in
+                store.shouldRedirectTo(redirect: redirect) != nil
+            })
+        else {
             return nil
         }
-        
+
         if let binary = passingRedirect.asEmbarkRedirectBinaryExpression {
             store.setValue(key: binary.passedExpressionKey, value: binary.passedExpressionValue)
         } else if let unary = passingRedirect.asEmbarkRedirectUnaryExpression {
@@ -190,7 +194,7 @@ public class EmbarkState {
         } else if let multiple = passingRedirect.asEmbarkRedirectMultipleExpressions {
             store.setValue(key: multiple.passedExpressionKey, value: multiple.passedExpressionValue)
         }
-        
+
         return passagesSignal.value.first(where: { passage -> Bool in
             passage.name == store.shouldRedirectTo(redirect: passingRedirect)
         })
