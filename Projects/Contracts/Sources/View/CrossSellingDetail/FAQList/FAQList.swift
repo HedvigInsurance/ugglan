@@ -80,6 +80,8 @@ extension CrossSellingFAQList {
                 .withDismissButton
             } else if case .crossSellingFAQListNavigation(action: .chat) = action {
                 next(.chat)
+            } else if case let .crossSellingDetailEmbark(name) = action {
+                next(.embark(name: name))
             }
         }
     }
