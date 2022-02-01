@@ -15,7 +15,7 @@ struct PickMarket: View {
 
     var body: some View {
         hForm {
-            hSection(Market.allCases, id: \.title) { market in
+            hSection(Market.availableMarkets(), id: \.title) { market in
                 hRow {
                     Image(uiImage: market.icon)
                     Spacer().frame(width: 16)

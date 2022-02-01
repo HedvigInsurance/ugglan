@@ -9,6 +9,10 @@ public enum Market: String, CaseIterable, Codable {
     case norway = "NO"
     case denmark = "DK"
     case france = "FR"
+    
+    public static func availableMarkets() -> [Market] {
+        return [.sweden, .norway, .denmark]
+    }
 
     var id: String {
         switch self {
