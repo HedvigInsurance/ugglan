@@ -99,7 +99,14 @@ fragment ApiMultiActionVariableFragment on EmbarkAPIGraphQLMultiActionVariable {
         ...ApiGeneratedVariableFragment
       }
     }
+    ...ApiConstantVariableFragment
   }
+}
+
+fragment ApiConstantVariableFragment on EmbarkAPIGraphQLConstantVariable {
+  key
+  value
+  as
 }
 
 fragment EmbarkNumberActionFragment on EmbarkNumberActionData {
@@ -118,6 +125,7 @@ fragment ApiVariablesFragment on EmbarkAPIGraphQLVariable {
   ...ApiSingleVariableFragment
   ...ApiGeneratedVariableFragment
   ...ApiMultiActionVariableFragment
+  ...ApiConstantVariableFragment
 }
 
 fragment ApiFragment on EmbarkApi {

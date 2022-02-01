@@ -99,6 +99,22 @@ extension GraphQL.ApiSingleVariableFragment {
     }
 }
 
+extension GraphQL.ApiConstantVariableFragment {
+    func graphQLMap(store: EmbarkStore) -> GraphQLMap {
+        var map = GraphQLMap()
+
+        switch self.as {
+        case .int: map[key] = Int(store.getValue(key: value, includeQueue: true) ?? "")
+        case .string: map[key] = store.getValue(key: value, includeQueue: true)
+        case .boolean: map[key] = store.getValue(key: value, includeQueue: true) == "true"
+        case .file: map[key] = store.getValue(key: value, includeQueue: true)
+        case .__unknown: break
+        }
+
+        return map
+    }
+}
+
 extension GraphQL.ApiGeneratedVariableFragment {
     func graphQLMap(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
@@ -144,6 +160,19 @@ extension GraphQL.ApiMultiActionVariableFragment {
                         )
                         nestedApiSingleVariableFragment.from =
                             "\(key)[\(offset)]\(apiSingleVariableFragment.key)"
+                        appendOrMerge(
+                            map: nestedApiSingleVariableFragment.graphQLMap(store: store),
+                            offset: offset
+                        )
+                    }
+            } else if let apiConstantVariableFragment = variable.fragments.apiConstantVariableFragment {
+                groupedMultiActionItems.enumerated()
+                    .forEach { offset, _ in
+                        var nestedApiSingleVariableFragment = GraphQL.ApiSingleVariableFragment(
+                            unsafeResultMap: apiConstantVariableFragment.resultMap
+                        )
+                        nestedApiSingleVariableFragment.from =
+                            "\(key)[\(offset)]\(apiConstantVariableFragment.key)"
                         appendOrMerge(
                             map: nestedApiSingleVariableFragment.graphQLMap(store: store),
                             offset: offset
