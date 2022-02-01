@@ -102,7 +102,7 @@ extension GraphQL.ApiSingleVariableFragment {
 extension GraphQL.ApiConstantVariableFragment {
     func graphQLMap(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
-        
+
         switch self.as {
         case .int: map[key] = Int(store.getValue(key: value, includeQueue: true) ?? "")
         case .string: map[key] = store.getValue(key: value, includeQueue: true)
@@ -110,7 +110,7 @@ extension GraphQL.ApiConstantVariableFragment {
         case .file: map[key] = store.getValue(key: value, includeQueue: true)
         case .__unknown: break
         }
-        
+
         return map
     }
 }
