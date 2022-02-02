@@ -9,13 +9,8 @@ import hGraphQL
 
 public struct MarketRow {
     @PresentableStore var store: MarketStore
-    var availableLocales: [GraphQL.Locale]
 
-    public init(
-        availableLocales: [GraphQL.Locale]
-    ) {
-        self.availableLocales = availableLocales
-    }
+    public init() {}
 }
 
 extension MarketRow: Viewable {
@@ -55,7 +50,7 @@ extension MarketRow: Viewable {
         bag += events.onSelect.compactMap { row.viewController }
             .onValue { viewController in
                 viewController.present(
-                    PickMarket(currentMarket: store.state.market, availableLocales: availableLocales).journey
+                    PickMarket(currentMarket: store.state.market).journey
                 )
                 .sink()
             }

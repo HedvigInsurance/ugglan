@@ -11,9 +11,7 @@ import hGraphQL
 
     @State private var availableLocales: [GraphQL.Locale] = [] {
         didSet {
-            store.update(query: GraphQL.MarketQuery()) { (data: inout GraphQL.MarketQuery.Data) in
-                data.availableLocales = availableLocales
-            }
+            
         }
     }
 
@@ -34,8 +32,9 @@ import hGraphQL
             Toggle(isOn: bindingFor(locale)) { Text(locale.rawValue) }.toggleStyle(CheckmarkToggleStyle())
         }
         .onAppear(perform: {
-            client.fetch(query: GraphQL.MarketQuery())
-                .onValue { data in availableLocales = data.availableLocales }
+            self.availableLocales = Market.activatedMarkets.flatMap { market in
+                market.languages.map { language in language.asGraphQLLocale() }
+            }
         })
     }
 }

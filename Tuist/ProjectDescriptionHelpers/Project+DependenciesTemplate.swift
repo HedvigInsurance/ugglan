@@ -93,7 +93,7 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.7.1"))]
         case .hAnalytics:
             return [
-                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.63.0"))
+                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.75.0"))
             ]
         }
     }

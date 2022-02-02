@@ -58,7 +58,9 @@ let log = Logger.builder
         setupPresentableStoreLogger()
 
         bag += ApolloClient.initAndRegisterClient()
-            .onValue { _ in ChatState.shared = ChatState()
+            .onValue { _ in
+                self.setupHAnalyticsExperiments()
+                ChatState.shared = ChatState()
                 self.bag += self.window.present(AppJourney.main)
             }
     }
@@ -196,7 +198,7 @@ let log = Logger.builder
         setupAnalyticsAndTracking()
 
         log.info("Starting app")
-
+        
         hAnalyticsEvent.identify()
         hAnalyticsEvent.appStarted().send()
 
@@ -254,13 +256,17 @@ let log = Logger.builder
                 Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
                 AnalyticsCoordinator().setUserId()
-
-                self.bag += self.window.present(AppJourney.main)
-
-                launch.completeAnimationCallbacker.callAll()
+                self.setupHAnalyticsExperiments()
+                
+                self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
+                    .filter(predicate: { hasLoaded in hasLoaded })
+                    .onValue { _ in
+                        self.bag += self.window.present(AppJourney.main)
+                        launch.completeAnimationCallbacker.callAll()
+                    }
             }
 
-        bag += launchFuture.onValue { _ in launchView.removeFromSuperview()
+        bag += launchFuture.valueSignal.onValue { _ in launchView.removeFromSuperview()
             ApplicationContext.shared.hasFinishedBootstrapping = true
 
             if Environment.hasOverridenDefault {

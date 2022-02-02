@@ -180,7 +180,7 @@ class ChatState {
     }
 
     func sendChatFileResponseMutation(key: String, mimeType: String) {
-        hAnalyticsEvent.chatRichMessageSent()
+        hAnalyticsEvent.chatRichMessageSent().send()
 
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
             .onValue { globalId in

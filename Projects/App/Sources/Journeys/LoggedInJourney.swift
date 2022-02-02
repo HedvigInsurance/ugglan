@@ -10,6 +10,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hAnalytics
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
@@ -117,7 +118,7 @@ extension AppJourney {
     }
 
     static var loggedIn: some JourneyPresentation {
-        Journey(FeaturesLoader(), options: []) { features in
+        Journey(ExperimentsLoader(), options: []) { _ in
             TabbedJourney(
                 {
                     homeTab
@@ -126,14 +127,12 @@ extension AppJourney {
                     contractsTab
                 },
                 {
-                    if features.contains(.keyGear) {
+                    if hAnalyticsExperiment.keyGear {
                         keyGearTab
                     }
                 },
                 {
-                    if features.contains(.referrals) {
-                        foreverTab
-                    }
+                    foreverTab
                 },
                 {
                     profileTab
