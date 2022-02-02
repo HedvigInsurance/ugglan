@@ -1,16 +1,8 @@
-//
-//  CampaignDetail.swift
-//  Forever
-//
-//  Created by Sam Pettersson on 2022-01-28.
-//  Copyright © 2022 Hedvig AB. All rights reserved.
-//
-
 import Foundation
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import Presentation
 
 struct TemporaryCampaignDetail: View {
     var body: some View {

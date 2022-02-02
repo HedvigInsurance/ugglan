@@ -8,9 +8,9 @@ import Home
 import Payment
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {

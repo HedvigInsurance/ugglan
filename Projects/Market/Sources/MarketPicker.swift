@@ -188,11 +188,13 @@ extension MarketPicker: Presentable {
 
                 bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal
                     .atValue { data in
-                        if let bestMatchedLocale = Market.activatedMarkets.flatMap({ market in market.languages }).first(where: {
-                            locale -> Bool in
-                            locale.rawValue.lowercased()
-                                .contains(data.geo.countryIsoCode.lowercased())
-                        }) {
+                        if let bestMatchedLocale = Market.activatedMarkets.flatMap({ market in market.languages })
+                            .first(where: {
+                                locale -> Bool in
+                                locale.rawValue.lowercased()
+                                    .contains(data.geo.countryIsoCode.lowercased())
+                            })
+                        {
                             let locale = Localization.Locale(
                                 rawValue: bestMatchedLocale.rawValue
                             )!

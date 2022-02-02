@@ -1,9 +1,9 @@
 import Foundation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 public enum Market: String, CaseIterable, Codable {
     case sweden = "SE"
@@ -37,14 +37,14 @@ public enum Market: String, CaseIterable, Codable {
         case .france: return hCoreUIAssets.flagFR.image
         }
     }
-    
+
     static var activatedMarkets: [Market] {
         var activatedMarkets: [Market] = [.denmark, .sweden, .norway]
-        
+
         if hAnalyticsExperiment.frenchMarket {
             activatedMarkets.append(.france)
         }
-        
+
         return activatedMarkets
     }
 

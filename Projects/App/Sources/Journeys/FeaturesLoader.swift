@@ -3,8 +3,8 @@ import Form
 import Foundation
 import Presentation
 import UIKit
-import hCoreUI
 import hAnalytics
+import hCoreUI
 
 struct ExperimentsLoader: Presentable {
     func materialize() -> (UIViewController, Signal<Void>) {

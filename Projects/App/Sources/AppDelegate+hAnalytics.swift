@@ -18,13 +18,13 @@ extension AppDelegate {
                 return "https://hanalytics-staging.herokuapp.com"
             }
         }
-        hAnalyticsNetworking.trackingId = { ApolloClient.getDeviceIdentifier() }        
+        hAnalyticsNetworking.trackingId = { ApolloClient.getDeviceIdentifier() }
     }
-    
+
     func setupHAnalyticsExperiments() {
         log.info("Started loading hAnlyticsExperiments")
         hAnalyticsExperiment.load { success in
-            if (success) {
+            if success {
                 log.info("Successfully loaded hAnlyticsExperiments")
                 ApplicationContext.shared.hasLoadedExperiments = true
             } else {

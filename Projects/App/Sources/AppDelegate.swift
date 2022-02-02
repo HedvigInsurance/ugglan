@@ -198,7 +198,7 @@ let log = Logger.builder
         setupAnalyticsAndTracking()
 
         log.info("Starting app")
-        
+
         hAnalyticsEvent.identify()
         hAnalyticsEvent.appStarted().send()
 
@@ -257,7 +257,7 @@ let log = Logger.builder
 
                 AnalyticsCoordinator().setUserId()
                 self.setupHAnalyticsExperiments()
-                
+
                 self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
                     .filter(predicate: { hasLoaded in hasLoaded })
                     .onValue { _ in

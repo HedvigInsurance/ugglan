@@ -1,16 +1,8 @@
-//
-//  CampaignBanner.swift
-//  Forever
-//
-//  Created by Sam Pettersson on 2022-01-28.
-//  Copyright © 2022 Hedvig AB. All rights reserved.
-//
-
 import Foundation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 struct LavenderButtonStyle: ButtonStyle {
     @hColorBuilder func backgroundColor(configuration: Configuration) -> some hColor {
@@ -20,7 +12,7 @@ struct LavenderButtonStyle: ButtonStyle {
             hTintColor.lavenderTwo
         }
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
         HStack {
             VStack {
@@ -46,14 +38,17 @@ struct LavenderButtonStyle: ButtonStyle {
 
 struct TemporaryCampaignBanner: View {
     var onTap: () -> Void
-    
+
     var body: some View {
         if hAnalyticsExperiment.foreverFebruaryCampaign {
-            SwiftUI.Button(action: {
-                onTap()
-            }, label: {
-                
-            })
+            SwiftUI.Button(
+                action: {
+                    onTap()
+                },
+                label: {
+
+                }
+            )
             .buttonStyle(LavenderButtonStyle())
             .padding(.top, 5)
             .padding(.bottom, 40)

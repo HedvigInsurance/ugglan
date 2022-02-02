@@ -14,10 +14,12 @@ extension Header: Viewable {
         stackView.axis = .vertical
 
         let bag = DisposeBag()
-        
-        let temporaryCampaignBannerView = HostingView(rootView: TemporaryCampaignBanner {
-            stackView.viewController?.present(TemporaryCampaignDetail().journey).onValue {}
-        })
+
+        let temporaryCampaignBannerView = HostingView(
+            rootView: TemporaryCampaignBanner {
+                stackView.viewController?.present(TemporaryCampaignDetail().journey).onValue {}
+            }
+        )
         stackView.addArrangedSubview(temporaryCampaignBannerView)
 
         bag += stackView.traitCollectionSignal.atOnce()

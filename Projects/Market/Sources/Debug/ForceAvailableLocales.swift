@@ -11,7 +11,7 @@ import hGraphQL
 
     @State private var availableLocales: [GraphQL.Locale] = [] {
         didSet {
-            
+
         }
     }
 
