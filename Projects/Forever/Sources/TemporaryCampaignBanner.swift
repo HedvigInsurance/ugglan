@@ -12,7 +12,7 @@ struct LavenderButtonStyle: ButtonStyle {
             hTintColor.lavenderTwo
         }
     }
-    
+
     @hColorBuilder func foregroundColor(configuration: Configuration) -> some hColor {
         if configuration.isPressed {
             hLabelColor.primary
