@@ -27,7 +27,7 @@ struct LavenderButtonStyle: ButtonStyle {
                 hText(L10n.referralCampaignBannerTitle, style: .callout)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            Spacer()
+            Spacer(minLength: 20)
             hCoreUIAssets.chevronRight.view
                 .frame(width: 15, height: 15)
         }
@@ -44,6 +44,7 @@ struct LavenderButtonStyle: ButtonStyle {
 }
 
 struct TemporaryCampaignBanner: View {
+    @PresentableStore var store: ForeverStore
     var onTap: () -> Void
 
     var body: some View {
@@ -59,6 +60,9 @@ struct TemporaryCampaignBanner: View {
             .buttonStyle(LavenderButtonStyle())
             .padding(.top, 5)
             .padding(.bottom, 40)
+            .onDisappear {
+                store.send(.hasSeenFebruaryCampaign(value: true))
+            }
         }
     }
 }

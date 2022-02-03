@@ -86,7 +86,6 @@ extension AppJourney {
             Forever(service: ForeverServiceGraphQL()),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         )
-        .configureTabBarItem
         .onTabSelected {
             ContextGradient.currentOption = .forever
         }
@@ -97,6 +96,7 @@ extension AppJourney {
                 return false
             }
         }
+        .configureForeverTabBarItem
     }
 
     fileprivate static var profileTab: some JourneyPresentation {
