@@ -10,7 +10,6 @@ import hGraphQL
 
 struct PickMarket: View {
     let currentMarket: Market
-    let availableLocales: [GraphQL.Locale]
     @PresentableStore var store: MarketStore
 
     var body: some View {

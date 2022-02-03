@@ -111,15 +111,13 @@ extension MarketPicker: Presentable {
         return (
             viewController,
             Signal { callback in
-                func renderMarketPicker(availableLocales: [GraphQL.Locale]) {
+                func renderMarketPicker() {
                     let section = form.appendSection()
                     if #available(iOS 13.0, *) {
                         section.overrideUserInterfaceStyle = .dark
                     }
 
-                    let marketRow = MarketRow(
-                        availableLocales: availableLocales
-                    )
+                    let marketRow = MarketRow()
                     bag += section.append(marketRow)
 
                     let languageRow = LanguageRow()
@@ -188,13 +186,15 @@ extension MarketPicker: Presentable {
                         )
                 }
 
-                bag += client.fetch(query: GraphQL.MarketQuery()).valueSignal
+                bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal
                     .atValue { data in
-                        if let bestMatchedLocale = data.availableLocales.first(where: {
-                            locale -> Bool in
-                            locale.rawValue.lowercased()
-                                .contains(data.geo.countryIsoCode.lowercased())
-                        }) {
+                        if let bestMatchedLocale = Market.activatedMarkets.flatMap({ market in market.languages })
+                            .first(where: {
+                                locale -> Bool in
+                                locale.rawValue.lowercased()
+                                    .contains(data.geo.countryIsoCode.lowercased())
+                            })
+                        {
                             let locale = Localization.Locale(
                                 rawValue: bestMatchedLocale.rawValue
                             )!
@@ -204,11 +204,11 @@ extension MarketPicker: Presentable {
                             store.send(.selectMarket(market: .sweden))
                         }
 
-                        renderMarketPicker(availableLocales: data.availableLocales)
+                        renderMarketPicker()
                     }
                     .onError { _ in
                         store.send(.selectMarket(market: .sweden))
-                        renderMarketPicker(availableLocales: [.svSe, .daDk, .nbNo])
+                        renderMarketPicker()
                     }
 
                 return bag
