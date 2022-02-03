@@ -26,6 +26,7 @@ struct CrossSellHightlights: View {
                             highlight.description,
                             style: .subheadline
                         )
+                        .fixedSize(horizontal: false, vertical: true)
                         .foregroundColor(hLabelColor.secondary)
                     }
                 }
