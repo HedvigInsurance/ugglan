@@ -186,11 +186,7 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        if Environment.current == .staging {
-            var newArguments = ProcessInfo.processInfo.arguments
-            newArguments.append("-FIRDebugEnabled")
-            ProcessInfo.processInfo.setValue(newArguments, forKey: "arguments")
-        }
+        Analytics.setAnalyticsCollectionEnabled(false)
 
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
@@ -233,6 +229,7 @@ let log = Logger.builder
         CrossFrameworkCoordinator.setup()
 
         FirebaseApp.configure()
+        
         let launch = Launch()
 
         let (launchView, launchFuture) = launch.materialize()

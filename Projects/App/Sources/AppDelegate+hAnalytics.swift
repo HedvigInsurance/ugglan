@@ -1,5 +1,4 @@
 import Apollo
-import Firebase
 import Foundation
 import hAnalytics
 import hCore
