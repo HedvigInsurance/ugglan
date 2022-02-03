@@ -36,7 +36,7 @@ extension Debug {
             rootView: Debug()
         )
         .configureTitle("Contracts debug")
-        .onAction(DebugStore.self) { action, _ in
+        .onAction(DebugStore.self) { action in
             switch action {
             case .openCrossSellingSigned:
                 HostingJourney(
@@ -64,6 +64,9 @@ extension Debug {
             case .openCrossSellingDetail:
                 CrossSellingCoverageDetail(crossSell: .mock())
                     .journey(
+                        { _ in
+                            ContinueJourney()
+                        },
                         style: .detented(.large, modally: true),
                         options: [.embedInNavigationController]
                     )
