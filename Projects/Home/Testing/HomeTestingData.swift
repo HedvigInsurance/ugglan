@@ -22,6 +22,7 @@ extension JSONObject {
         GraphQL.CommonClaimsQuery
             .Data(commonClaims: [
                 .init(
+                    id: "mock",
                     title: "Mock",
                     icon: .init(variants: .init(dark: .init(pdfUrl: ""), light: .init(pdfUrl: ""))),
                     layout: .makeTitleAndBulletPoints(
