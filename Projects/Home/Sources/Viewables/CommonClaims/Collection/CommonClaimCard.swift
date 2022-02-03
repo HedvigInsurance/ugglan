@@ -59,7 +59,7 @@ extension CommonClaimCard: Viewable {
                         Self.journey(data: self.data, index: self.index)
                     )
                     .onValue { _ in
-                        
+
                     }
             }
 
@@ -119,7 +119,7 @@ extension CommonClaimCard {
             style: .detented(.medium, .large),
             options: .defaults
         )
-        .onAction(HomeStore.self) { action  in
+        .onAction(HomeStore.self) { action in
             if case .openClaims = action {
                 DismissJourney()
             }
