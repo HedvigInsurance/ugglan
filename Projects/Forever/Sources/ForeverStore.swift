@@ -1,7 +1,6 @@
 import Apollo
 import Flow
 import Foundation
-import Offer
 import Presentation
 import UIKit
 import hCore

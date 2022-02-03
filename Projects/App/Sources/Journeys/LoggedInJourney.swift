@@ -142,7 +142,7 @@ extension AppJourney {
             .syncTabIndex()
             .onAction(UgglanStore.self) { action in
                 if action == .openChat {
-                    AppJourney.freeTextChat()
+                    AppJourney.freeTextChat().withDismissButton
                 } else if action == .openClaims {
                     AppJourney.claimJourney
                 }

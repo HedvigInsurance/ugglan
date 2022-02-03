@@ -9,6 +9,8 @@ import Presentation
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
+import UIKit
 
 extension AppDelegate: MessagingDelegate {
     func registerFCMToken(_ token: String) {
@@ -42,6 +44,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = response.notification.request.content.userInfo
         guard let notificationType = userInfo["TYPE"] as? String else { return }
 
+        hAnalyticsEvent.notificationOpened(type: notificationType).send()
+        
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             if notificationType == "NEW_MESSAGE" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
@@ -83,6 +87,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
                             })
                     }
+            } else if notificationType == "OPEN_FOREVER_TAB" {
+                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                    .onValue { _ in
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        store.send(.makeTabActive(deeplink: .forever))
+                    }
             } else if notificationType == "OPEN_INSURANCE_TAB" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                     .onValue { _ in
@@ -113,7 +123,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
         completionHandler()
     }
-
+    
     func userNotificationCenter(
         _: UNUserNotificationCenter,
         willPresent notification: UNNotification,
