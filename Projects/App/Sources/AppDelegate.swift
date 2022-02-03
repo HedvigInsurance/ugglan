@@ -12,14 +12,13 @@ import Flow
 import Form
 import Foundation
 import Hero
-import Mixpanel
 import Offer
 import Payment
 import Presentation
-import Shake
 import SwiftUI
 import UIKit
 import UserNotifications
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -44,6 +43,8 @@ let log = Logger.builder
     }()
 
     func logout() {
+        hAnalyticsEvent.loggedOut().send()
+
         ApolloClient.cache = InMemoryNormalizedCache()
         ApolloClient.deleteToken()
 
@@ -62,8 +63,18 @@ let log = Logger.builder
             }
     }
 
-    func applicationWillTerminate(_: UIApplication) {
+    func applicationWillTerminate(_ application: UIApplication) {
+        hAnalyticsEvent.appShutdown().send()
         NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
+        Thread.sleep(forTimeInterval: 3)
+    }
+
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        hAnalyticsEvent.appBackground().send()
+    }
+
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        hAnalyticsEvent.appResumed().send()
     }
 
     func application(
@@ -166,8 +177,6 @@ let log = Logger.builder
         }
     }
 
-    var mixpanelToken: String? { Bundle.main.object(forInfoDictionaryKey: "MixpanelToken") as? String }
-
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
@@ -184,64 +193,12 @@ let log = Logger.builder
 
         setupPresentableStoreLogger()
 
-        Datadog.initialize(
-            appContext: .init(),
-            trackingConsent: .granted,
-            configuration: Datadog.Configuration
-                .builderUsing(
-                    rumApplicationID: "416e8fc0-c96a-4485-8c74-84412960a479",
-                    clientToken: "pub4306832bdc5f2b8b980c492ec2c11ef3",
-                    environment: Environment.current.datadogName
-                )
-                .set(serviceName: "ios")
-                .set(endpoint: .eu1)
-                .enableLogging(true)
-                .enableTracing(true)
-                .enableCrashReporting(using: DDCrashReportingPlugin())
-                .enableRUM(true)
-                .trackUIKitRUMActions(using: RUMUserActionsPredicate())
-                .trackUIKitRUMViews(using: RUMViewsPredicate())
-                .trackURLSession(firstPartyHosts: [
-                    Environment.production.endpointURL.host ?? "",
-                    Environment.staging.endpointURL.host ?? "",
-                ])
-                .build()
-        )
-
-        Global.rum = RUMMonitor.initialize()
-        Global.sharedTracer = Tracer.initialize(
-            configuration: .init(
-                serviceName: "ios",
-                sendNetworkInfo: true,
-                bundleWithRUM: true,
-                globalTags: [:]
-            )
-        )
+        setupAnalyticsAndTracking()
 
         log.info("Starting app")
 
-        if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
-            Shake.setup()
-            Datadog.verbosityLevel = .debug
-        }
-
-        if let mixpanelToken = mixpanelToken {
-            Mixpanel.initialize(token: mixpanelToken)
-            AnalyticsSender.sendEvent = { event, properties in
-                log.info("Sending analytics event: \(event) \(properties)")
-
-                Firebase.Analytics.logEvent(event, parameters: properties)
-                Mixpanel.mainInstance()
-                    .track(
-                        event: event,
-                        properties: properties.mapValues({ property in
-                            property.mixpanelType
-                        })
-                    )
-            }
-        }
-
-        setupHAnalytics()
+        hAnalyticsEvent.identify()
+        hAnalyticsEvent.appStarted().send()
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
 
@@ -271,107 +228,6 @@ let log = Logger.builder
         CrossFrameworkCoordinator.setup()
 
         FirebaseApp.configure()
-
-        presentablePresentationEventHandler = { (event: () -> PresentationEvent, file, function, line) in
-            let presentationEvent = event()
-            let message: String
-            var data: String?
-
-            switch presentationEvent {
-            case let .willEnqueue(presentableId, context):
-                Analytics.track(
-                    "PRESENTABLE_WILL_ENQUEUE",
-                    properties: [
-                        "presentableId": presentableId.value
-                    ]
-                )
-                message = "\(context) will enqueue modal presentation of \(presentableId)"
-                log.info(message)
-            case let .willDequeue(presentableId, context):
-                Analytics.track(
-                    "PRESENTABLE_WILL_DEQUEUE",
-                    properties: [
-                        "presentableId": presentableId.value
-                    ]
-                )
-                message = "\(context) will dequeue modal presentation of \(presentableId)"
-                log.info(message)
-            case let .willPresent(presentableId, context, styleName):
-                Analytics.track(
-                    "PRESENTABLE_WILL_PRESENT",
-                    properties: [
-                        "presentableId": presentableId.value
-                    ]
-                )
-                message = "\(context) will '\(styleName)' present: \(presentableId)"
-                log.info(message)
-            case let .didCancel(presentableId, context):
-                Analytics.track(
-                    "PRESENTABLE_DID_CANCEL",
-                    properties: [
-                        "presentableId": presentableId.value
-                    ]
-                )
-                message = "\(context) did cancel presentation of: \(presentableId)"
-                log.info(message)
-            case let .didDismiss(presentableId, context, result):
-                switch result {
-                case let .success(result):
-                    Analytics.track(
-                        "PRESENTABLE_DID_DISMISS_SUCCESS",
-                        properties: [
-                            "presentableId": presentableId.value
-                        ]
-                    )
-                    message = "\(context) did end presentation of: \(presentableId)"
-                    data = "\(result)"
-                case let .failure(error):
-                    Analytics.track(
-                        "PRESENTABLE_DID_DISMISS_FAILURE",
-                        properties: [
-                            "presentableId": presentableId.value
-                        ]
-                    )
-                    message = "\(context) did end presentation of: \(presentableId)"
-                    data = "\(error)"
-                }
-                log.info(message)
-            #if DEBUG
-                case let .didDeallocate(presentableId, from: context):
-                    message = "\(presentableId) was deallocated after presentation from \(context)"
-                    log.info(message)
-                case let .didLeak(presentableId, from: context):
-                    message =
-                        "WARNING \(presentableId) was NOT deallocated after presentation from \(context)"
-                    log.info(message)
-            #endif
-            }
-
-            presentableLogPresentation(message, data, file, function, line)
-        }
-
-        viewControllerWasPresented = { viewController in
-            if let debugPresentationTitle = viewController.debugPresentationTitle {
-                Analytics.track("SCREEN_VIEW_\(debugPresentationTitle)", properties: [:])
-                Analytics.track(
-                    "SCREEN_VIEW_IOS",
-                    properties: [
-                        "screenName": debugPresentationTitle
-                    ]
-                )
-            }
-        }
-        alertActionWasPressed = { _, title in
-            if let localizationKey = title.derivedFromL10n?.key {
-                Analytics.track("ALERT_ACTION_TAP_\(localizationKey)", properties: [:])
-                Analytics.track(
-                    "ALERT_ACTION_TAP",
-                    properties: [
-                        "action": localizationKey
-                    ]
-                )
-            }
-        }
         let launch = Launch()
 
         let (launchView, launchFuture) = launch.materialize()

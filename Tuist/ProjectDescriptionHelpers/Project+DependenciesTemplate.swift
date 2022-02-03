@@ -13,7 +13,6 @@ public enum ExternalDependencies: CaseIterable {
     case disk
     case snapkit
     case markdownkit
-    case mixpanel
     case runtime
     case hero
     case snapshottesting
@@ -26,7 +25,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public var isDevDependency: Bool { false }
 
-    public var isResourceBundledDependency: Bool { self == .mixpanel || self == .adyen }
+    public var isResourceBundledDependency: Bool { self == .adyen }
 
     public var isAppDependency: Bool { self == .firebase || self == .datadog }
 
@@ -80,13 +79,6 @@ public enum ExternalDependencies: CaseIterable {
                     .upToNextMajor(from: "1.7.1")
                 )
             ]
-        case .mixpanel:
-            return [
-                .package(
-                    url: "https://github.com/mixpanel/mixpanel-swift",
-                    .upToNextMajor(from: "2.8.1")
-                )
-            ]
         case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .exact("1.5.0"))]
         case .snapshottesting:
             return [
@@ -101,7 +93,7 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.7.1"))]
         case .hAnalytics:
             return [
-                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.26.0"))
+                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.63.0"))
             ]
         }
     }
@@ -129,7 +121,6 @@ public enum ExternalDependencies: CaseIterable {
         case .disk: return [.package(product: "Disk")]
         case .snapkit: return [.package(product: "SnapKit")]
         case .markdownkit: return [.package(product: "MarkdownKit")]
-        case .mixpanel: return [.package(product: "Mixpanel")]
         case .runtime: return [.package(product: "Runtime")]
         case .hero: return [.package(product: "Hero")]
         case .snapshottesting: return [.package(product: "SnapshotTesting")]

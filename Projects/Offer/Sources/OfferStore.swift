@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import Presentation
 import StoreKit
+import hAnalytics
 import hCore
 import hGraphQL
 
@@ -117,12 +118,10 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         switch action {
         case let .sign(event):
             if event == .done {
-                Analytics.track(
-                    "QUOTES_SIGNED",
-                    properties: [
-                        "quoteIds": getState().selectedIds
-                    ]
+                hAnalyticsEvent.quotesSigned(
+                    quoteIds: getState().selectedIds
                 )
+                .send()
             }
         case .startSign:
             return signQuotesEffect()

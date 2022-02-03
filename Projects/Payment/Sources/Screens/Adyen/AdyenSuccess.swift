@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -40,6 +41,8 @@ extension AdyenSuccess: Presentable {
             viewController,
             FiniteSignal { callback in
                 let bag = DisposeBag()
+
+                viewController.trackOnAppear(hAnalyticsEvent.screenViewConnectPaymentSuccess())
 
                 bag += signal.onValue {
                     callback(.value(()))

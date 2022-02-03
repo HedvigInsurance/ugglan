@@ -47,6 +47,7 @@ extension GraphQL.QuoteBundleQuery.Data {
                         id: "123+1234",
                         tag: nil,
                         bundle: .init(
+                            displayName: "Norwegian bundle",
                             quotes: [
                                 .init(
                                     id: "123",
@@ -95,7 +96,6 @@ extension GraphQL.QuoteBundleQuery.Data {
                                     ]
                                 ),
                             ],
-                            displayName: "Danish bundle",
                             bundleCost: .init(
                                 monthlyDiscount: .init(amount: "100", currency: "SEK"),
                                 monthlyGross: .init(amount: "100", currency: "SEK"),

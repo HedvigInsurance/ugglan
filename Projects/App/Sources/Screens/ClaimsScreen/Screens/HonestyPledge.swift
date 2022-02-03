@@ -4,6 +4,7 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -156,6 +157,7 @@ struct HonestyPledge: View {
             .padding(.leading, 15)
             .padding(.trailing, 15)
         }
+        .trackOnAppear(hAnalyticsEvent.screenViewClaimHonorPledge())
     }
 }
 

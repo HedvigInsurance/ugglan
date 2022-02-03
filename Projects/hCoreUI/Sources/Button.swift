@@ -525,18 +525,6 @@ extension Button: Viewable {
                 \.style
             )
 
-        bag += touchUpInside.onValue { _ in
-            if let localizationKey = title.value.displayValue.derivedFromL10n?.key {
-                Analytics.track(localizationKey, properties: [:])
-                Analytics.track(
-                    .buttonClick,
-                    properties: [
-                        "localizationKey": localizationKey
-                    ]
-                )
-            }
-        }
-
         bag += merge(
             button.signal(for: .touchUpOutside),
             button.signal(for: .touchCancel)

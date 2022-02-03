@@ -23,6 +23,22 @@ extension ApolloClient {
         ["Authorization": token ?? "", "Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
     }
 
+    public static func getDeviceIdentifier() -> String {
+        let userDefaults = UserDefaults.standard
+
+        let deviceKey = "hedvig-device-identifier"
+
+        if let identifier = userDefaults.value(forKey: deviceKey) as? String {
+            return identifier
+        } else {
+            let newIdentifier = UUID().uuidString
+
+            userDefaults.set(newIdentifier, forKey: deviceKey)
+
+            return newIdentifier
+        }
+    }
+
     internal static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
         let environment = Environment.current
 
@@ -34,7 +50,8 @@ extension ApolloClient {
             store: store,
             token: token ?? "",
             acceptLanguageHeader: acceptLanguageHeader,
-            userAgent: userAgent
+            userAgent: userAgent,
+            deviceIdentifier: getDeviceIdentifier()
         )
 
         let requestChainTransport = RequestChainNetworkTransport(

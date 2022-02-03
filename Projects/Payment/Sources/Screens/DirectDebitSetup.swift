@@ -5,6 +5,7 @@ import Presentation
 import SafariServices
 import UIKit
 import WebKit
+import hAnalytics
 import hCore
 import hGraphQL
 
@@ -107,6 +108,8 @@ extension DirectDebitSetup: Presentable {
         func startRegistration() {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
+
+            webView.trackOnAppear(hAnalyticsEvent.screenViewConnectPaymentTrustly())
 
             bag += client.perform(mutation: GraphQL.StartDirectDebitRegistrationMutation()).valueSignal
                 .compactMap { $0.startDirectDebitRegistration }

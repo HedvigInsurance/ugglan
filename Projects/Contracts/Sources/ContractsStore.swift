@@ -97,9 +97,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             return
                 client.fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                 .valueThenEndSignal
-                .filter { activeContractBundles in
-                    activeContractBundles != getState().contractBundles
-                }
                 .map { activeContractBundles in
                     ContractAction.setContractBundles(activeContractBundles: activeContractBundles)
                 }
@@ -140,6 +137,9 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         switch action {
         case .setContractBundles(let activeContractBundles):
             newState.hasLoadedContractBundlesOnce = true
+            // Prevent infinite spinner if there are no active contracts
+            guard activeContractBundles != state.contractBundles else { return newState }
+
             newState.contractBundles = activeContractBundles
         case .setContracts(let contracts):
             newState.contracts = contracts

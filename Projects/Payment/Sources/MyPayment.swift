@@ -5,6 +5,7 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -76,6 +77,8 @@ extension MyPayment: Presentable {
         }
 
         bag += form.append(Spacing(height: 20))
+
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewPayments())
 
         return (viewController, bag)
     }
