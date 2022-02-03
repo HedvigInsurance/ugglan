@@ -36,7 +36,7 @@ extension Debug {
             rootView: Debug()
         )
         .configureTitle("Contracts debug")
-        .onAction(DebugStore.self) { action in
+        .onAction(DebugStore.self) { action, _ in
             switch action {
             case .openCrossSellingSigned:
                 HostingJourney(
