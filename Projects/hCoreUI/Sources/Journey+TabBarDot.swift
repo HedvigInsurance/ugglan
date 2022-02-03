@@ -1,7 +1,7 @@
+import Flow
 import Foundation
 import Presentation
 import UIKit
-import Flow
 import hCore
 
 extension JourneyPresentation {

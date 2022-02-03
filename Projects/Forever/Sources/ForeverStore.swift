@@ -18,7 +18,7 @@ public struct ForeverState: StateProtocol {
     fileprivate static var hasSeenFebruaryCampaignKey: String {
         "ForeverFebruaryCampaign-hasBeenSeen"
     }
-    
+
     public init() {
         self.hasSeenFebruaryCampaign = false
     }

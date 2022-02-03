@@ -12,8 +12,9 @@ extension JourneyPresentation {
                 title: L10n.InsurancesTab.title,
                 image: Asset.tab.image,
                 selectedImage: Asset.tabActive.image
-            )) { state in
-                state.hasUnseenCrossSell
-            }
+            )
+        ) { state in
+            state.hasUnseenCrossSell
+        }
     }
 }
