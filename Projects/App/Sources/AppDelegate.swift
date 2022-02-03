@@ -229,7 +229,7 @@ let log = Logger.builder
         CrossFrameworkCoordinator.setup()
 
         FirebaseApp.configure()
-        
+
         let launch = Launch()
 
         let (launchView, launchFuture) = launch.materialize()
