@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -35,6 +36,16 @@ public enum Market: String, CaseIterable, Codable {
         case .denmark: return hCoreUIAssets.flagDK.image
         case .france: return hCoreUIAssets.flagFR.image
         }
+    }
+
+    static var activatedMarkets: [Market] {
+        var activatedMarkets: [Market] = [.denmark, .sweden, .norway]
+
+        if hAnalyticsExperiment.frenchMarket {
+            activatedMarkets.append(.france)
+        }
+
+        return activatedMarkets
     }
 
     var languages: [Localization.Locale] {

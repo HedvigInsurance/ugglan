@@ -8,6 +8,7 @@ import Home
 import Payment
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -85,7 +86,6 @@ extension AppJourney {
             Forever(service: ForeverServiceGraphQL()),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         )
-        .configureTabBarItem
         .onTabSelected {
             ContextGradient.currentOption = .forever
         }
@@ -96,6 +96,7 @@ extension AppJourney {
                 return false
             }
         }
+        .configureForeverTabBarItem
     }
 
     fileprivate static var profileTab: some JourneyPresentation {
@@ -117,7 +118,7 @@ extension AppJourney {
     }
 
     static var loggedIn: some JourneyPresentation {
-        Journey(FeaturesLoader(), options: []) { features in
+        Journey(ExperimentsLoader(), options: []) { _ in
             TabbedJourney(
                 {
                     homeTab
@@ -126,14 +127,12 @@ extension AppJourney {
                     contractsTab
                 },
                 {
-                    if features.contains(.keyGear) {
+                    if hAnalyticsExperiment.keyGear {
                         keyGearTab
                     }
                 },
                 {
-                    if features.contains(.referrals) {
-                        foreverTab
-                    }
+                    foreverTab
                 },
                 {
                     profileTab
@@ -143,7 +142,7 @@ extension AppJourney {
             .syncTabIndex()
             .onAction(UgglanStore.self) { action in
                 if action == .openChat {
-                    AppJourney.freeTextChat()
+                    AppJourney.freeTextChat().withDismissButton
                 } else if action == .openClaims {
                     AppJourney.claimJourney
                 }

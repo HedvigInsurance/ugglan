@@ -1,20 +1,21 @@
 import Flow
+import Foundation
 import Presentation
 import UIKit
 import hCore
 import hCoreUI
 
 extension JourneyPresentation {
-    var configureContractsTabBarItem: some JourneyPresentation {
+    public var configureForeverTabBarItem: some JourneyPresentation {
         configureTabBarItemWithDot(
-            ContractStore.self,
+            ForeverStore.self,
             tabBarItem: UITabBarItem(
-                title: L10n.InsurancesTab.title,
+                title: L10n.tabReferralsTitle,
                 image: Asset.tab.image,
                 selectedImage: Asset.tabActive.image
             )
         ) { state in
-            state.hasUnseenCrossSell
+            !state.hasSeenFebruaryCampaign
         }
     }
 }
