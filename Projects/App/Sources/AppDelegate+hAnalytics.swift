@@ -27,7 +27,7 @@ extension AppDelegate {
             if success {
                 log.info("Successfully loaded hAnlyticsExperiments")
                 ApplicationContext.shared.hasLoadedExperiments = true
-            } else {                
+            } else {
                 log.info("Failed loading hAnlyticsExperiments, retries in \(numberOfTries * 100) ms")
                 DispatchQueue.main.asyncAfter(deadline: .now() + (Double(numberOfTries) * 0.1)) {
                     self.setupHAnalyticsExperiments()
