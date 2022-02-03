@@ -58,7 +58,9 @@ let log = Logger.builder
         setupPresentableStoreLogger()
 
         bag += ApolloClient.initAndRegisterClient()
-            .onValue { _ in ChatState.shared = ChatState()
+            .onValue { _ in
+                self.setupHAnalyticsExperiments()
+                ChatState.shared = ChatState()
                 self.bag += self.window.present(AppJourney.main)
             }
     }
@@ -129,7 +131,10 @@ let log = Logger.builder
             UNUserNotificationCenter.current()
                 .requestAuthorization(
                     options: authOptions,
-                    completionHandler: { _, _ in completion(.success)
+                    completionHandler: { granted, _ in
+                        completion(.success)
+
+                        hAnalyticsEvent.notificationPermission(granted: granted).send()
 
                         DispatchQueue.main.async {
                             UIApplication.shared.registerForRemoteNotifications()
@@ -244,6 +249,18 @@ let log = Logger.builder
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
 
+        UNUserNotificationCenter.current()
+            .getNotificationSettings { settings in
+                switch settings.authorizationStatus {
+                case .authorized:
+                    hAnalyticsEvent.notificationPermission(granted: true).send()
+                case .denied:
+                    hAnalyticsEvent.notificationPermission(granted: false).send()
+                default:
+                    return
+                }
+            }
+
         // treat an empty token as a newly downloaded app and setLastNewsSeen
         if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
 
@@ -254,13 +271,17 @@ let log = Logger.builder
                 Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
                 AnalyticsCoordinator().setUserId()
+                self.setupHAnalyticsExperiments()
 
-                self.bag += self.window.present(AppJourney.main)
-
-                launch.completeAnimationCallbacker.callAll()
+                self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
+                    .filter(predicate: { hasLoaded in hasLoaded })
+                    .onValue { _ in
+                        self.bag += self.window.present(AppJourney.main)
+                        launch.completeAnimationCallbacker.callAll()
+                    }
             }
 
-        bag += launchFuture.onValue { _ in launchView.removeFromSuperview()
+        bag += launchFuture.valueSignal.onValue { _ in launchView.removeFromSuperview()
             ApplicationContext.shared.hasFinishedBootstrapping = true
 
             if Environment.hasOverridenDefault {

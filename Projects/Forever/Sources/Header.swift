@@ -15,6 +15,13 @@ extension Header: Viewable {
 
         let bag = DisposeBag()
 
+        let temporaryCampaignBannerView = HostingView(
+            rootView: TemporaryCampaignBanner {
+                stackView.viewController?.present(TemporaryCampaignDetail().journey).onValue {}
+            }
+        )
+        stackView.addArrangedSubview(temporaryCampaignBannerView)
+
         bag += stackView.traitCollectionSignal.atOnce()
             .onValue { trait in let style = DynamicFormStyle.brandInset.style(from: trait)
                 let insets = style.insets

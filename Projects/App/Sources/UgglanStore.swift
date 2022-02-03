@@ -9,22 +9,12 @@ import hGraphQL
 
 public struct UgglanState: StateProtocol {
     var selectedTabIndex: Int = 0
-
-    public enum Feature: String, Codable {
-        case referrals
-        case keyGear
-    }
-
-    var features: [Feature]?
-
     public init() {}
 }
 
 public enum UgglanAction: ActionProtocol {
     case setSelectedTabIndex(index: Int)
     case makeTabActive(deeplink: DeepLink)
-    case fetchFeatures
-    case setFeatures(features: [UgglanState.Feature]?)
     case showLoggedIn
     case openClaims
     case exchangePaymentLink(link: String)
@@ -41,26 +31,6 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
         _ action: UgglanAction
     ) -> FiniteSignal<UgglanAction>? {
         switch action {
-        case .fetchFeatures:
-            return
-                client.fetch(
-                    query: GraphQL.FeaturesQuery(),
-                    cachePolicy: .fetchIgnoringCacheData
-                )
-                .mapError({ error in
-                    .init(member: .init(features: []))
-                })
-                .compactMap { $0.member.features }
-                .map { features in
-                    .setFeatures(
-                        features: [
-                            features.contains(.referrals) ? .referrals : nil,
-                            features.contains(.keyGear) ? .keyGear : nil,
-                        ]
-                        .compactMap { $0 }
-                    )
-                }
-                .valueThenEndSignal
         case let .exchangePaymentLink(link):
             let afterHashbang = link.split(separator: "#").last
             let exchangeToken =
@@ -101,8 +71,6 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
         switch action {
         case let .setSelectedTabIndex(tabIndex):
             newState.selectedTabIndex = tabIndex
-        case let .setFeatures(features):
-            newState.features = features
         case .openClaims:
             break
         default:

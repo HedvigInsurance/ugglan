@@ -3,10 +3,11 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCoreUI
 
-struct FeaturesLoader: Presentable {
-    func materialize() -> (UIViewController, Signal<[UgglanState.Feature]>) {
+struct ExperimentsLoader: Presentable {
+    func materialize() -> (UIViewController, Signal<Void>) {
         let viewController = PlaceholderViewController()
 
         let bag = DisposeBag()
@@ -14,13 +15,9 @@ struct FeaturesLoader: Presentable {
         return (
             viewController,
             Signal { callback in
-                let store: UgglanStore = get()
-                store.send(.fetchFeatures)
-
-                bag += store.stateSignal.atOnce().compactMap { $0.features }
-                    .onFirstValue { value in
-                        callback(value)
-                    }
+                hAnalyticsExperiment.load { _ in
+                    callback(())
+                }
 
                 return bag
             }
