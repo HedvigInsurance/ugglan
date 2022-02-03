@@ -4,6 +4,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hAnalytics
 
 extension JourneyPresentation {
     public var configureForeverTabBarItem: some JourneyPresentation {
@@ -15,7 +16,7 @@ extension JourneyPresentation {
                 selectedImage: Asset.tabActive.image
             )
         ) { state in
-            !state.hasSeenFebruaryCampaign
+            hAnalyticsExperiment.foreverFebruaryCampaign && !state.hasSeenFebruaryCampaign
         }
     }
 }
