@@ -161,7 +161,7 @@ extension Home: Presentable {
 
                     innerBag += form.append(section)
                 }
-                
+
                 innerBag += form.appendSpacingAndDumpOnDispose(.custom(30))
 
             case .future:
