@@ -133,7 +133,7 @@ let log = Logger.builder
                     options: authOptions,
                     completionHandler: { granted, _ in
                         completion(.success)
-                        
+
                         hAnalyticsEvent.notificationPermission(granted: granted).send()
 
                         DispatchQueue.main.async {
@@ -204,8 +204,6 @@ let log = Logger.builder
 
         hAnalyticsEvent.identify()
         hAnalyticsEvent.appStarted().send()
-        
-        
 
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
 
@@ -250,17 +248,18 @@ let log = Logger.builder
 
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
-        
-        UNUserNotificationCenter.current().getNotificationSettings { settings in
-            switch settings.authorizationStatus {
-            case .authorized:
-                hAnalyticsEvent.notificationPermission(granted: true).send()
-            case .denied:
-                hAnalyticsEvent.notificationPermission(granted: false).send()
-            default:
-                return
+
+        UNUserNotificationCenter.current()
+            .getNotificationSettings { settings in
+                switch settings.authorizationStatus {
+                case .authorized:
+                    hAnalyticsEvent.notificationPermission(granted: true).send()
+                case .denied:
+                    hAnalyticsEvent.notificationPermission(granted: false).send()
+                default:
+                    return
+                }
             }
-        }
 
         // treat an empty token as a newly downloaded app and setLastNewsSeen
         if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }

@@ -6,11 +6,11 @@ import Flow
 import Foundation
 import Payment
 import Presentation
+import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
-import UIKit
 
 extension AppDelegate: MessagingDelegate {
     func registerFCMToken(_ token: String) {
@@ -45,7 +45,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         guard let notificationType = userInfo["TYPE"] as? String else { return }
 
         hAnalyticsEvent.notificationOpened(type: notificationType).send()
-        
+
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             if notificationType == "NEW_MESSAGE" {
                 bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
@@ -123,7 +123,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
         completionHandler()
     }
-    
+
     func userNotificationCenter(
         _: UNUserNotificationCenter,
         willPresent notification: UNNotification,
