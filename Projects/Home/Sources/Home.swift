@@ -142,23 +142,26 @@ extension Home: Presentable {
 
                 innerBag += form.append(ActiveSection())
 
-                let section = HomeVerticalSection(
-                    section: .init(
-                        title: L10n.HomeTab.editingSectionTitle,
-                        style: .vertical,
-                        children: [
-                            .init(
-                                title: L10n.HomeTab.editingSectionChangeAddressLabel,
-                                icon: hCoreUIAssets.apartment.image,
-                                handler: {
-                                    store.send(.openMovingFlow)
-                                }
-                            )
-                        ]
+                if hAnalyticsExperiment.movingFlow {
+                    let section = HomeVerticalSection(
+                        section: .init(
+                            title: L10n.HomeTab.editingSectionTitle,
+                            style: .vertical,
+                            children: [
+                                .init(
+                                    title: L10n.HomeTab.editingSectionChangeAddressLabel,
+                                    icon: hCoreUIAssets.apartment.image,
+                                    handler: {
+                                        store.send(.openMovingFlow)
+                                    }
+                                )
+                            ]
+                        )
                     )
-                )
 
-                innerBag += form.append(section)
+                    innerBag += form.append(section)
+                }
+                
                 innerBag += form.appendSpacingAndDumpOnDispose(.custom(30))
 
             case .future:

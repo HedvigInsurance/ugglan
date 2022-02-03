@@ -7,6 +7,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
@@ -63,7 +64,7 @@ struct ContractInformationView: View {
                         }
                     }
                     if contract.currentAgreement?.status != .terminated {
-                        if contract.showsMovingFlowButton {
+                        if hAnalyticsExperiment.movingFlow, contract.showsMovingFlowButton {
                             hSection {
                                 hButton.LargeButtonOutlined {
                                     store.send(.goToMovingFlow)
