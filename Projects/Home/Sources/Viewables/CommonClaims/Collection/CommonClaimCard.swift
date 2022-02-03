@@ -56,10 +56,11 @@ extension CommonClaimCard: Viewable {
             .onValue {
                 containerView.viewController?
                     .present(
-                        CommonClaimDetail(data: self.data, index: self.index).withCloseButton,
-                        style: .detented(.medium, .large),
-                        options: [.defaults]
+                        Self.journey(data: self.data, index: self.index)
                     )
+                    .onValue { _ in
+                        
+                    }
             }
 
         let contentView = UIStackView()
@@ -105,5 +106,24 @@ extension CommonClaimCard: Reusable {
                 return bag
             }
         )
+    }
+}
+
+extension CommonClaimCard {
+    static func journey(
+        data: GraphQL.CommonClaimsQuery.Data.CommonClaim,
+        index: TableIndex
+    ) -> some JourneyPresentation {
+        Journey(
+            CommonClaimDetail(data: data, index: index),
+            style: .detented(.medium, .large),
+            options: .defaults
+        )
+        .onAction(HomeStore.self) { action  in
+            if case .openClaims = action {
+                DismissJourney()
+            }
+        }
+        .withJourneyDismissButton
     }
 }
