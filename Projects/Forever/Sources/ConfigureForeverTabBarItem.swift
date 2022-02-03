@@ -2,9 +2,9 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 extension JourneyPresentation {
     public var configureForeverTabBarItem: some JourneyPresentation {
