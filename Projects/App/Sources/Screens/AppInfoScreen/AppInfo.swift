@@ -45,6 +45,7 @@ struct AppInfo {
             case market
             case version
             case memberId
+            case deviceId
 
             var title: String {
                 switch self {
@@ -52,6 +53,7 @@ struct AppInfo {
                 case .market: return L10n.MarketLanguageScreen.marketLabel
                 case .version: return L10n.EmbarkOnboardingMoreOptions.versionLabel
                 case .memberId: return L10n.EmbarkOnboardingMoreOptions.userIdLabel
+                case .deviceId: return L10n.AppInfo.deviceIdLabel
                 }
             }
 
@@ -61,13 +63,14 @@ struct AppInfo {
                 case .market: return Localization.Locale.currentLocale.market.icon
                 case .version: return hCoreUIAssets.infoLarge.image
                 case .memberId: return hCoreUIAssets.memberCard.image
+                case .deviceId: return hCoreUIAssets.profileCircleIcon.image
                 }
             }
 
             var isTappable: Bool {
                 switch self {
                 case .language: return true
-                case .version, .memberId, .market: return false
+                case .version, .memberId, .market, .deviceId: return false
                 }
             }
         }
@@ -131,6 +134,8 @@ extension AppInfo: Presentable {
                     innerBag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal
                         .compactMap { $0.member.id }
                         .onValue { memberId in completion(.success(memberId)) }
+                case .deviceId:
+                    completion(.success(ApolloClient.getDeviceIdentifier()))
                 }
 
                 return innerBag
@@ -193,7 +198,7 @@ extension AppInfo: Presentable {
         }
 
         func setupAppInfo() {
-            [AppInfoType.InfoRows.memberId, AppInfoType.InfoRows.version]
+            [AppInfoType.InfoRows.memberId, AppInfoType.InfoRows.version, AppInfoType.InfoRows.deviceId]
                 .forEach { row in
                     bag += bodySection.append(
                         AppInfoRow(
