@@ -1,5 +1,4 @@
 import CoreDependencies
-import FirebaseAnalytics
 import Flow
 import Foundation
 import Payment

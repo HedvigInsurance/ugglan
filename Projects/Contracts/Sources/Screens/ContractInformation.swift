@@ -4,6 +4,7 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -63,18 +64,16 @@ struct ContractInformationView: View {
                         }
                     }
                     if contract.currentAgreement?.status != .terminated {
-                        if [.se, .no].contains(Localization.Locale.currentLocale.market) {
-                            if contract.showsMovingFlowButton {
-                                hSection {
-                                    hButton.LargeButtonOutlined {
-                                        store.send(.goToMovingFlow)
-                                    } content: {
-                                        hText(L10n.HomeTab.editingSectionChangeAddressLabel)
-                                    }
+                        if hAnalyticsExperiment.movingFlow, contract.showsMovingFlowButton {
+                            hSection {
+                                hButton.LargeButtonOutlined {
+                                    store.send(.goToMovingFlow)
+                                } content: {
+                                    hText(L10n.HomeTab.editingSectionChangeAddressLabel)
                                 }
-                                .sectionContainerStyle(.transparent)
-                                ChangePeopleView()
                             }
+                            .sectionContainerStyle(.transparent)
+                            ChangePeopleView()
                         } else {
                             hSection {
                                 hButton.LargeButtonText {

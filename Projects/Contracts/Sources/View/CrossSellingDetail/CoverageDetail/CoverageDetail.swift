@@ -57,7 +57,8 @@ public struct CrossSellingCoverageDetail: View {
 }
 
 extension CrossSellingCoverageDetail {
-    public func journey(
+    public func journey<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping (_ result: CrossSellingDetailResult) -> Next,
         style: PresentationStyle = .default,
         options: PresentationOptions = [.defaults]
     ) -> some JourneyPresentation {
@@ -82,6 +83,8 @@ extension CrossSellingCoverageDetail {
                 )
                 .setScrollEdgeNavigationBarAppearanceToStandard
                 .withDismissButton
+            } else if case let .crossSellingDetailEmbark(name) = action {
+                next(.embark(name: name))
             }
         }
         .configureTitle(L10n.CrossSell.Info.fullCoverageRow)

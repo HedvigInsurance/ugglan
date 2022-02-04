@@ -24,9 +24,14 @@ struct CrossSellingStack: View {
                     }
                 ) {
                     ForEach(crossSells, id: \.title) { crossSell in
-                        CrossSellingItem(crossSell: crossSell).transition(.slide)
+                        VStack {
+                            CrossSellingItem(crossSell: crossSell)
+                        }
+                        .padding(.bottom, 15)
+                        .transition(.slide)
                     }
                 }
+                .sectionContainerStyle(.transparent)
                 .transition(.slide)
             }
         }
