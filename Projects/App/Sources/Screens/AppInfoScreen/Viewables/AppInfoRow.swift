@@ -40,9 +40,10 @@ extension AppInfoRow: Viewable {
             subtitle: "",
             style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
                 style.title = .brand(.headline(color: .primary))
-                style.subtitle = .brand(.subHeadline(color: .secondary)).restyled { (style: inout TextStyle) in
-                    style.minimumScaleFactor = 0.3
-                }
+                style.subtitle = .brand(.subHeadline(color: .secondary))
+                    .restyled { (style: inout TextStyle) in
+                        style.minimumScaleFactor = 0.3
+                    }
             }
         )
 
