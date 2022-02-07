@@ -123,6 +123,12 @@ extension StartDate: Presentable {
             Future { completion in
                 bag += loadableSaveButton.onTapSignal.onValue { _ in
                     loadableSaveButton.isLoadingSignal.value = true
+                    
+                    guard !selectedDatesMap.isEmpty else {
+                        loadableSaveButton.isLoadingSignal.value = false
+                        completion(.success)
+                        return
+                    }
 
                     selectedDatesMap.forEach { quoteId, date in
                         store.send(.updateStartDate(id: quoteId, startDate: date))
