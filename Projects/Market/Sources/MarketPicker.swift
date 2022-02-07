@@ -167,7 +167,7 @@ extension MarketPicker: Presentable {
                             locale: Localization.Locale.currentLocale.lprojCode
                         )
                         .send()
-                        
+
                         hAnalyticsExperiment.load { _ in
                             callback(())
                         }

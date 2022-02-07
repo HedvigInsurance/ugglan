@@ -46,7 +46,7 @@ extension AppJourney {
         }
         .withDismissButton
     }
-    
+
     fileprivate static var otp: some JourneyPresentation {
         OTPAuthJourney.login { next in
             switch next {
