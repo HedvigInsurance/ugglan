@@ -22,6 +22,7 @@ struct CrossSellHightlights: View {
                     )
                     VStack(alignment: .leading, spacing: 4) {
                         hText(highlight.title, style: .body)
+                            .fixedSize(horizontal: false, vertical: true)
                         hText(
                             highlight.description,
                             style: .subheadline
