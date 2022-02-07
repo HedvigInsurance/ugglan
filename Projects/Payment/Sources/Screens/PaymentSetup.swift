@@ -2,8 +2,8 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
-import hCore
 import hAnalytics
+import hCore
 
 public struct PaymentSetup {
     let setupType: SetupType

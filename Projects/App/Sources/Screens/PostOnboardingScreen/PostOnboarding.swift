@@ -5,9 +5,9 @@ import Foundation
 import Payment
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 struct PostOnboarding {
     @Inject var client: ApolloClient
