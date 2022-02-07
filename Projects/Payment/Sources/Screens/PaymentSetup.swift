@@ -3,6 +3,7 @@ import Foundation
 import Presentation
 import UIKit
 import hCore
+import hAnalytics
 
 public struct PaymentSetup {
     let setupType: SetupType
@@ -21,11 +22,11 @@ public struct PaymentSetup {
 
 extension PaymentSetup: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<Either<Bool, AdyenOptions>>) {
-        switch Localization.Locale.currentLocale.market {
-        case .se:
+        switch hAnalyticsExperiment.paymentType {
+        case .trustly:
             let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
             return (viewController, result.map { .left($0) })
-        case .no, .dk, .fr:
+        case .adyen:
             let (viewController, result) = AdyenPayInSync(setupType: setupType, urlScheme: urlScheme).materialize()
             return (
                 viewController,

@@ -38,9 +38,9 @@ extension AppJourney {
         .withDismissButton
     }
 
-    fileprivate static var simpleSign: some JourneyPresentation {
+    fileprivate static func simpleSign(type: WebViewLoginType) -> some JourneyPresentation {
         Journey(SimpleSignLoginView(), style: .detented(.large)) { id in
-            Journey(WebViewLogin(idNumber: id), style: .detented(.large)) { _ in
+            Journey(WebViewLogin(idNumber: id, type: type), style: .detented(.large)) { _ in
                 loginCompleted
             }
         }
@@ -65,12 +65,12 @@ extension AppJourney {
         switch hAnalyticsExperiment.loginMethod {
         case .bankIdSweden:
             bankIDSweden
-        case .simpleSign:
-            simpleSign
+        case .bankIdNorway:
+            simpleSign(type: .bankIdNorway)
+        case .nemId:
+            simpleSign(type: .nemId)
         case .otp:
             otp
-        case .disabled:
-            ContinueJourney()
         }
     }
 }

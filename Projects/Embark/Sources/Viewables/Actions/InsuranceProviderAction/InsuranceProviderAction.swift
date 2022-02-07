@@ -7,6 +7,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 enum InsuranceWrapper {
     case external(EmbarkPassage.Action.AsEmbarkExternalInsuranceProviderAction)
@@ -29,7 +30,7 @@ enum InsuranceWrapper {
     var isExternal: Bool {
         switch self {
         case .external:
-            return Localization.Locale.currentLocale.market == .se
+            return hAnalyticsExperiment.allowExternalDataCollection
         case .previous:
             return false
         }
