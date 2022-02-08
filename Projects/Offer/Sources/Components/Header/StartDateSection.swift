@@ -43,7 +43,7 @@ extension QuoteBundle {
     var displayableStartDate: String {
         switch inception {
         case .concurrent(let concurrentInception):
-            return concurrentInception.startDate?.localDateToDate?.localDateStringWithToday ?? ""
+            return concurrentInception.startDate?.localDateToDate?.localDateStringWithToday ?? fallbackDisplayValue
         case .independent(let independentInceptions):
             let startDates = independentInceptions.map { $0.startDate }
             let allStartDatesEqual = startDates.dropFirst().allSatisfy({ $0 == startDates.first })

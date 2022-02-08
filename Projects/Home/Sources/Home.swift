@@ -142,7 +142,7 @@ extension Home: Presentable {
 
                 innerBag += form.append(ActiveSection())
 
-                if [.se, .no].contains(Localization.Locale.currentLocale.market) {
+                if hAnalyticsExperiment.movingFlow {
                     let section = HomeVerticalSection(
                         section: .init(
                             title: L10n.HomeTab.editingSectionTitle,

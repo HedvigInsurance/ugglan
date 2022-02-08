@@ -1,7 +1,5 @@
 import Datadog
 import DatadogCrashReporting
-import Firebase
-import FirebaseAnalytics
 import Shake
 import hCore
 import hGraphQL
