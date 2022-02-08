@@ -160,10 +160,10 @@ extension hRow {
     public func onTap(_ onTap: @escaping () -> Void) -> some View {
         self.wrapInButton(onTap)
     }
-    
+
     /// Attaches onTap handler only if passed boolean is true
     @ViewBuilder public func onTap(if: Bool, _ onTap: @escaping () -> Void) -> some View {
-        if (`if`) {
+        if `if` {
             self.wrapInButton(onTap)
         } else {
             self
