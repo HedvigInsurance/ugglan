@@ -87,7 +87,7 @@ extension StartDate: View {
             }
         }
         .hFormAttachToBottom {
-            hSection {
+            hFormBottomAttachedBackground {
                 hButton.LargeButtonFilled {
                     isSaving = true
                     selectedDatesMap.forEach { quoteId, date in
@@ -97,7 +97,6 @@ extension StartDate: View {
                     hText(L10n.generalSaveButton)
                 }
             }
-            .padding(.bottom, 25)
             .slideUpAppearAnimation()
             .hButtonIsLoading(isSaving)
         }

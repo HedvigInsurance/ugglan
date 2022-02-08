@@ -38,7 +38,8 @@ struct SingleStartDateSection {
 
     @ViewBuilder private var header: some View {
         if let title = title {
-            hText(title)
+            hText(title, style: .headline)
+                .foregroundColor(hLabelColor.secondary)
         }
     }
 }
