@@ -33,7 +33,7 @@ extension StartDate: View {
             switch quoteBundle.inception {
             case let .concurrent(inception):
                 SingleStartDateSection(
-                    date: .init(
+                    date: Binding(
                         get: {
                             let ids = inception.correspondingQuotes.compactMap({ $0.id })
 
@@ -59,7 +59,7 @@ extension StartDate: View {
             case let .independent(inceptions):
                 ForEach(inceptions, id: \.correspondingQuote.id) { inception in
                     SingleStartDateSection(
-                        date: .init(
+                        date: Binding(
                             get: {
                                 guard let id = inception.correspondingQuote.id else {
                                     return nil
