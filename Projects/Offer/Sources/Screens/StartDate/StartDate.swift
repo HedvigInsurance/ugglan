@@ -2,11 +2,11 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 struct StartDate {
     @PresentableStore var store: OfferStore
@@ -14,7 +14,7 @@ struct StartDate {
     @State var isSaving: Bool = false
 
     let quoteBundle: QuoteBundle
-    
+
     var title: String {
         switch quoteBundle.appConfiguration.startDateTerminology {
         case .accessDate:
@@ -33,53 +33,60 @@ extension StartDate: View {
             switch quoteBundle.inception {
             case let .concurrent(inception):
                 SingleStartDateSection(
-                    date: .init(get: {
-                        let ids = inception.correspondingQuotes.compactMap({ $0.id })
-                        
-                        guard let firstId = ids.first else {
-                            return nil
+                    date: .init(
+                        get: {
+                            let ids = inception.correspondingQuotes.compactMap({ $0.id })
+
+                            guard let firstId = ids.first else {
+                                return nil
+                            }
+
+                            return selectedDatesMap[firstId] ?? inception.startDate?.localDateToDate
+                        },
+                        set: { newDate in
+                            let ids = inception.correspondingQuotes.compactMap({ $0.id })
+
+                            ids.forEach { id in
+                                selectedDatesMap[id] = newDate
+                            }
                         }
-                        
-                        return selectedDatesMap[firstId] ?? inception.startDate?.localDateToDate
-                    }, set: { newDate in
-                        let ids = inception.correspondingQuotes.compactMap({ $0.id })
-                        
-                        ids.forEach { id in
-                            selectedDatesMap[id] = newDate
-                        }
-                    }),
+                    ),
                     title: nil,
                     switchingActivated: inception.currentInsurer?.switchable
-                    ?? false,
+                        ?? false,
                     initiallyCollapsed: inception.startDate?.localDateToDate == nil
                 )
             case let .independent(inceptions):
                 ForEach(inceptions, id: \.correspondingQuote.id) { inception in
                     SingleStartDateSection(
-                        date: .init(get: {
-                            guard let id = inception.correspondingQuote.id else {
-                                return nil
+                        date: .init(
+                            get: {
+                                guard let id = inception.correspondingQuote.id else {
+                                    return nil
+                                }
+                                return selectedDatesMap[id] ?? inception.startDate?.localDateToDate
+                            },
+                            set: { newDate in
+                                guard let id = inception.correspondingQuote.id else {
+                                    return
+                                }
+                                selectedDatesMap[id] = newDate
                             }
-                            return selectedDatesMap[id] ?? inception.startDate?.localDateToDate
-                        }, set: { newDate in
-                            guard let id = inception.correspondingQuote.id else {
-                                return
-                            }
-                            selectedDatesMap[id] = newDate
-                        }),
+                        ),
                         title: quoteBundle.quoteFor(
                             id: inception.correspondingQuote.id
                         )?
                         .displayName,
                         switchingActivated: inception.currentInsurer?.switchable
-                        ?? false,
+                            ?? false,
                         initiallyCollapsed: inceptions.count > 1
                     )
                 }
             case .unknown:
                 EmptyView()
             }
-        }.hFormAttachToBottom {
+        }
+        .hFormAttachToBottom {
             hSection {
                 hButton.LargeButtonFilled {
                     isSaving = true

@@ -142,8 +142,9 @@ extension StartDateSection: Presentable {
                     .onValue { viewController, quoteBundle in
                         viewController.present(
                             StartDate(quoteBundle: quoteBundle).journey
-                        ).onValue { _ in
-                            
+                        )
+                        .onValue { _ in
+
                         }
                     }
                 innerBag += { section.remove(row) }

@@ -1,12 +1,12 @@
+import Combine
 import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
-import SwiftUI
-import Combine
 
 struct SingleStartDateSection {
     @State var isExpanded: Bool
@@ -15,7 +15,7 @@ struct SingleStartDateSection {
 
     let title: String?
     let switchingActivated: Bool
-    
+
     init(
         date: Binding<Date?>,
         title: String?,
@@ -28,14 +28,14 @@ struct SingleStartDateSection {
         self._datePickerDate = State(initialValue: date.wrappedValue ?? Date())
         self._isExpanded = State(initialValue: !initiallyCollapsed)
     }
-    
+
     @ViewBuilder var footer: some View {
         if switchingActivated {
             hText(L10n.offerSwitcherExplanationFooter)
                 .foregroundColor(hLabelColor.secondary)
         }
     }
-    
+
     @ViewBuilder private var header: some View {
         if let title = title {
             hText(title)
@@ -55,11 +55,13 @@ extension SingleStartDateSection: View {
                         .padding(.trailing, 5)
                     hText(L10n.offerStartDate, style: .body)
                 }
-            }.withCustomAccessory {
+            }
+            .withCustomAccessory {
                 Spacer()
                 hText(date?.localDateStringWithToday ?? "")
                     .foregroundColor(hLabelColor.link)
-            }.onTap {
+            }
+            .onTap {
                 if date != nil {
                     withAnimation(.interpolatingSpring(stiffness: 250, damping: 100)) {
                         isExpanded.toggle()
@@ -73,7 +75,8 @@ extension SingleStartDateSection: View {
                     maximumDate: Calendar.current.date(byAdding: .year, value: 1, to: Date()),
                     calendar: Calendar.current,
                     datePickerMode: .date
-                ).onReceive(Just(datePickerDate)) { _ in
+                )
+                .onReceive(Just(datePickerDate)) { _ in
                     if isExpanded {
                         date = datePickerDate
                     }
@@ -89,26 +92,33 @@ extension SingleStartDateSection: View {
                             .padding(.trailing, 5)
                         hText(L10n.offerSwitcherNoDate, style: .body)
                     }
-                }.withCustomAccessory {
+                }
+                .withCustomAccessory {
                     Spacer()
-                    Switch(on: .init(get: {
-                        date == nil
-                    }, set: { on in
-                        if on {
-                            withAnimation(.interpolatingSpring(stiffness: 250, damping: 100)) {
-                                isExpanded = false
-                                date = nil
+                    Switch(
+                        on: .init(
+                            get: {
+                                date == nil
+                            },
+                            set: { on in
+                                if on {
+                                    withAnimation(.interpolatingSpring(stiffness: 250, damping: 100)) {
+                                        isExpanded = false
+                                        date = nil
+                                    }
+                                } else {
+                                    withAnimation(.interpolatingSpring(stiffness: 250, damping: 100)) {
+                                        isExpanded = true
+                                        date = Date()
+                                    }
+                                }
                             }
-                        } else {
-                            withAnimation(.interpolatingSpring(stiffness: 250, damping: 100)) {
-                                isExpanded = true
-                                date = Date()
-                            }
-                        }
-                    }))
+                        )
+                    )
                 }
             }
-        }.onAppear {
+        }
+        .onAppear {
             // if date is before today, reset date
             if let date = date, date < Date() {
                 self.date = Date()
