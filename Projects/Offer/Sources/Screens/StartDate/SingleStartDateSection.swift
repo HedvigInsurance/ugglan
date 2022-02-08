@@ -67,21 +67,25 @@ extension SingleStartDateSection: View {
                     isExpanded.toggle()
                 }
             }
+            
             StartDateCollapser(expanded: self.isExpanded) {
-                DatePicker(
-                    date: $datePickerDate,
-                    minimumDate: Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date()),
-                    maximumDate: Calendar.current.date(byAdding: .year, value: 1, to: Date()),
-                    calendar: Calendar.current,
-                    datePickerMode: .date
-                )
-                .onReceive(Just(datePickerDate)) { _ in
-                    if isExpanded {
-                        date = datePickerDate
-                    }
+                hRow {
+                    DatePicker(
+                        date: $datePickerDate,
+                        minimumDate: Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date()),
+                        maximumDate: Calendar.current.date(byAdding: .year, value: 1, to: Date()),
+                        calendar: Calendar.current,
+                        datePickerMode: .date
+                    )
+                }
+                .noSpacing()
+                .padding(.bottom, 5)
+            }.onReceive(Just(datePickerDate)) { _ in
+                if isExpanded {
+                    date = datePickerDate
                 }
             }
-
+            
             if switchingActivated {
                 hRow {
                     HStack {
