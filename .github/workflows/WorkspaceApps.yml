@@ -24,7 +24,7 @@ jobs:
       - name: Post checkout
         run: sh scripts/post-checkout.sh
       - name: Upload generated
-        run: rsync -rav --exclude=".git/" --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}
+        run: rsync -rav --exclude=".git/" --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:~/Cache/generated/${{ github.sha }}
       - id: set-matrix
         uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
         with:          
