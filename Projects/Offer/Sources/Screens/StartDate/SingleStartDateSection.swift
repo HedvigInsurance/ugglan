@@ -83,7 +83,7 @@ extension SingleStartDateSection: View {
                     }
                 }
             }
-            
+
             if switchingActivated {
                 hRow {
                     HStack {
