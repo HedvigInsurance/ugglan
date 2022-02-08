@@ -48,7 +48,7 @@ public struct hRow<Content: View, Accessory: View>: View {
         self.content = builder()
         self.accessory = accessory
     }
-    
+
     /// Removes spacing from hRow
     public func noSpacing() -> Self {
         var new = self

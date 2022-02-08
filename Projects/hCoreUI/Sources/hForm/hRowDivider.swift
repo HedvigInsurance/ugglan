@@ -18,7 +18,7 @@ extension EnvironmentValues {
 
 public struct hRowDivider: View {
     @SwiftUI.Environment(\.hRowDividerSettings) var settings: hRowDividerSettings
-    
+
     public init() {}
 
     public var body: some View {

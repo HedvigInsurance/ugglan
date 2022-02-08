@@ -67,7 +67,7 @@ extension SingleStartDateSection: View {
                     isExpanded.toggle()
                 }
             }
-            
+
             StartDateCollapser(expanded: self.isExpanded) {
                 hRow {
                     DatePicker(
@@ -80,12 +80,13 @@ extension SingleStartDateSection: View {
                 }
                 .noSpacing()
                 .padding(.bottom, 5)
-            }.onReceive(Just(datePickerDate)) { _ in
+            }
+            .onReceive(Just(datePickerDate)) { _ in
                 if isExpanded {
                     date = datePickerDate
                 }
             }
-            
+
             if switchingActivated {
                 hRow {
                     HStack {
