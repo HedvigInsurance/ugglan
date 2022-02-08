@@ -62,11 +62,9 @@ extension SingleStartDateSection: View {
                 hText(date?.localDateStringWithToday ?? "")
                     .foregroundColor(hLabelColor.link)
             }
-            .onTap {
-                if date != nil {
-                    withAnimation(.interpolatingSpring(stiffness: 250, damping: 100)) {
-                        isExpanded.toggle()
-                    }
+            .onTap(if: date != nil) {
+                withAnimation(.interpolatingSpring(stiffness: 250, damping: 100)) {
+                    isExpanded.toggle()
                 }
             }
             StartDateCollapser(expanded: self.isExpanded) {
