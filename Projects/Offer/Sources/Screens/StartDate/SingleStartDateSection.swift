@@ -83,6 +83,7 @@ extension SingleStartDateSection: View {
                     }
                 }
             }
+            
             if switchingActivated {
                 hRow {
                     HStack {
@@ -124,6 +125,8 @@ extension SingleStartDateSection: View {
             if let date = date, date < Date() {
                 self.date = Date()
                 self.datePickerDate = Date()
+            } else if !switchingActivated && date == nil {
+                self.date = Date()
             } else {
                 self.date = self.date
             }
