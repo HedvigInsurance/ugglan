@@ -124,6 +124,8 @@ extension SingleStartDateSection: View {
             if let date = date, date < Date() {
                 self.date = Date()
                 self.datePickerDate = Date()
+            } else {
+                self.date = self.date
             }
         }
     }
