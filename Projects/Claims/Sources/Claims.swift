@@ -13,7 +13,7 @@ public struct Claims {
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     public init() {
-        
+
     }
 }
 
@@ -21,7 +21,7 @@ extension Claims: View {
     func fetch() {
         store.send(.fetchClaims)
     }
-    
+
     public var body: some View {
         ClaimSectionLoading()
             .onReceive(pollTimer) { _ in

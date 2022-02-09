@@ -85,5 +85,3 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         return newState
     }
 }
-
-
