@@ -44,7 +44,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                     .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))
                 }
                 .valueThenEndSignal
-            
+
         case .fetchClaims:
             //TODO: Initiate the claims framework to fetch the claims
             return nil

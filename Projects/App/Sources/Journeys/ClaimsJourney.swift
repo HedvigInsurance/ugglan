@@ -1,8 +1,8 @@
+import Claims
 import Embark
 import Flow
 import Foundation
 import Home
-import Claims
 import Presentation
 import UIKit
 import hCore
