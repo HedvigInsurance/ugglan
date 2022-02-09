@@ -192,7 +192,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.swedishBankIDAutoStartToken = autoStartToken
         case let .setStartDates(dateMap):
             newState.isUpdatingStartDates = false
-            
+
             guard var newOfferData = newState.offerData else { return newState }
 
             newOfferData.possibleVariations = newOfferData.possibleVariations.map { variant in
@@ -203,13 +203,13 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     let newInceptions = independentInceptions.map {
                         inception -> QuoteBundle.Inception.IndependentInception in
                         var copy = inception
-                       
+
                         dateMap.forEach { quoteId, startDate in
                             if inception.correspondingQuote.id == quoteId {
                                 copy.startDate = startDate?.localDateString
                             }
                         }
-                        
+
                         return copy
                     }
                     newVariant.bundle.inception = .independent(inceptions: newInceptions)
@@ -315,7 +315,7 @@ extension OfferStore {
                     }
                     .valueSignal
             }
-            
+
             return self.client
                 .perform(
                     mutation: GraphQL.ChangeStartDateMutation(
@@ -335,21 +335,22 @@ extension OfferStore {
                 }
                 .valueSignal
         }
-        
-        return combineLatest(signals).map { results in
-            var didStrikeError = false
-            var map: [String: Date?] = [:]
-            
-            results.forEach { result in
-                if let (quoteId, date) = try? result.get() {
-                    map[quoteId] = date
-                } else {
-                    didStrikeError = true
+
+        return combineLatest(signals)
+            .map { results in
+                var didStrikeError = false
+                var map: [String: Date?] = [:]
+
+                results.forEach { result in
+                    if let (quoteId, date) = try? result.get() {
+                        map[quoteId] = date
+                    } else {
+                        didStrikeError = true
+                    }
                 }
+
+                return didStrikeError ? .failed(event: .updateStartDate) : .setStartDates(dateMap: map)
             }
-            
-            return didStrikeError ? .failed(event: .updateStartDate) : .setStartDates(dateMap: map)
-        }
     }
 
     private func signQuotesEffect() -> FiniteSignal<Action> {

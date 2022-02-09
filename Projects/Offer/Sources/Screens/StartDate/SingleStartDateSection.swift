@@ -28,15 +28,15 @@ struct SingleStartDateSection {
         self._datePickerDate = State(initialValue: date.wrappedValue ?? Date())
         self._isExpanded = State(initialValue: !initiallyCollapsed)
     }
-    
+
     var calendar: Calendar {
         Calendar(identifier: .gregorian)
     }
-    
+
     var minimumDate: Date? {
         calendar.date(bySettingHour: 0, minute: 0, second: 0, of: Date())
     }
-    
+
     var maximumDate: Date? {
         calendar.date(byAdding: .year, value: 1, to: Date())
     }
