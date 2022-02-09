@@ -5,7 +5,7 @@ struct StartDateCollapser<Content: View>: View {
     @State var hasAppeared = false
     var expanded: Bool
     @ViewBuilder var expandedContent: () -> Content
-    
+
     var shouldExpand: Bool {
         expanded && hasAppeared
     }

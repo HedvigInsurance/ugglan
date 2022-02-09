@@ -40,9 +40,9 @@ struct SingleStartDateSection {
     var maximumDate: Date {
         calendar.date(byAdding: .year, value: 1, to: Date()) ?? Date()
     }
-    
+
     var dateRange: ClosedRange<Date> {
-        return minimumDate ... maximumDate
+        return minimumDate...maximumDate
     }
 
     @ViewBuilder var footer: some View {
