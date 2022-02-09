@@ -4,6 +4,12 @@ import Presentation
 import hCore
 import hGraphQL
 
+public enum ClaimsResult {
+    case submitClaims
+    case openFreeTextChat
+    case openClaimDetails(claim: Claim)
+}
+
 public struct ClaimsState: StateProtocol {
     var claims: [Claim]? = nil
 
@@ -79,3 +85,5 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         return newState
     }
 }
+
+

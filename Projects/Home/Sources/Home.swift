@@ -79,7 +79,6 @@ extension Home: Presentable {
 
         func fetch() {
             store.send(.fetchMemberState)
-            store.send(.fetchClaims)
         }
 
         let form = FormView()
@@ -93,8 +92,8 @@ extension Home: Presentable {
                 store,
                 send: {
                     [
-                        .fetchMemberState,
-                        .fetchClaims,
+                        .fetchMemberState
+                        //TODO: Refresh the claims
                     ]
                 },
                 endOn: { action in

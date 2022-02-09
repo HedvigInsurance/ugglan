@@ -22,7 +22,6 @@ public enum HomeAction: ActionProtocol {
     case connectPayments
     case setMemberContractState(state: MemberStateData)
     case submitClaims
-    case fetchClaims
 }
 
 public final class HomeStore: StateStore<HomeState, HomeAction> {
@@ -44,10 +43,6 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                     .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))
                 }
                 .valueThenEndSignal
-
-        case .fetchClaims:
-            //TODO: Initiate the claims framework to fetch the claims
-            return nil
         default:
             return nil
         }
@@ -68,8 +63,6 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         case .openMovingFlow:
             break
         case .submitClaims:
-            break
-        case .fetchClaims:
             break
         }
 

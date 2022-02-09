@@ -17,6 +17,8 @@ public struct ClaimSectionLoading: View {
     public init() {
         let store: ClaimsStore = globalPresentableStoreContainer.get()
         self.store = store
+        
+        store.send(.fetchClaims)
     }
 
     @ViewBuilder
