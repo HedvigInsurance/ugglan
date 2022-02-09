@@ -28,6 +28,18 @@ struct SingleStartDateSection {
         self._datePickerDate = State(initialValue: date.wrappedValue ?? Date())
         self._isExpanded = State(initialValue: !initiallyCollapsed)
     }
+    
+    var calendar: Calendar {
+        Calendar(identifier: .gregorian)
+    }
+    
+    var minimumDate: Date? {
+        calendar.date(bySettingHour: 0, minute: 0, second: 0, of: Date())
+    }
+    
+    var maximumDate: Date? {
+        calendar.date(byAdding: .year, value: 1, to: Date())
+    }
 
     @ViewBuilder var footer: some View {
         if switchingActivated {
@@ -72,14 +84,14 @@ extension SingleStartDateSection: View {
                 hRow {
                     DatePicker(
                         date: $datePickerDate,
-                        minimumDate: Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date()),
-                        maximumDate: Calendar.current.date(byAdding: .year, value: 1, to: Date()),
-                        calendar: Calendar.current,
+                        minimumDate: minimumDate,
+                        maximumDate: maximumDate,
+                        calendar: calendar,
                         datePickerMode: .date
                     )
                 }
                 .noSpacing()
-                .padding(.bottom, 5)
+                .padding(.bottom, 2)
             }
             .onReceive(Just(datePickerDate)) { _ in
                 if isExpanded {
@@ -125,7 +137,7 @@ extension SingleStartDateSection: View {
         }
         .onAppear {
             // if date is before today, reset date
-            if let date = date, date < Date() {
+            if let date = date, let minimumDate = minimumDate, date < minimumDate {
                 self.date = Date()
                 self.datePickerDate = Date()
             } else if !switchingActivated && date == nil {

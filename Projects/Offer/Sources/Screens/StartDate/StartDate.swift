@@ -11,7 +11,6 @@ import hGraphQL
 struct StartDate {
     @PresentableStore var store: OfferStore
     @State var selectedDatesMap: [String: Date?] = [:]
-    @State var isSaving: Bool = false
 
     let quoteBundle: QuoteBundle
 
@@ -89,16 +88,13 @@ extension StartDate: View {
         .hFormAttachToBottom {
             hFormBottomAttachedBackground {
                 hButton.LargeButtonFilled {
-                    isSaving = true
-                    selectedDatesMap.forEach { quoteId, date in
-                        store.send(.updateStartDate(id: quoteId, startDate: date))
-                    }
+                    store.send(.updateStartDates(dateMap: selectedDatesMap))
                 } content: {
                     hText(L10n.generalSaveButton)
                 }
             }
             .slideUpAppearAnimation()
-            .hButtonIsLoading(isSaving)
+            .modifier(StartDateLoading())
         }
     }
 }
@@ -111,7 +107,7 @@ extension StartDate {
             .withDismissButton
             .startDateErrorAlert
             .onAction(OfferStore.self) { action in
-                if case .setStartDate = action {
+                if case .setStartDates = action {
                     DismissJourney()
                 }
             }
