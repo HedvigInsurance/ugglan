@@ -33,12 +33,16 @@ struct SingleStartDateSection {
         Calendar(identifier: .gregorian)
     }
 
-    var minimumDate: Date? {
-        calendar.date(bySettingHour: 0, minute: 0, second: 0, of: Date())
+    var minimumDate: Date {
+        calendar.date(bySettingHour: 0, minute: 0, second: 0, of: Date()) ?? Date()
     }
 
-    var maximumDate: Date? {
-        calendar.date(byAdding: .year, value: 1, to: Date())
+    var maximumDate: Date {
+        calendar.date(byAdding: .year, value: 1, to: Date()) ?? Date()
+    }
+    
+    var dateRange: ClosedRange<Date> {
+        return minimumDate ... maximumDate
     }
 
     @ViewBuilder var footer: some View {
@@ -52,6 +56,16 @@ struct SingleStartDateSection {
         if let title = title {
             hText(title, style: .headline)
                 .foregroundColor(hLabelColor.secondary)
+        }
+    }
+}
+
+struct DatePickerStyleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 14, *) {
+            content.datePickerStyle(.graphical)
+        } else {
+            content.datePickerStyle(.wheel)
         }
     }
 }
@@ -83,12 +97,14 @@ extension SingleStartDateSection: View {
             StartDateCollapser(expanded: self.isExpanded) {
                 hRow {
                     DatePicker(
-                        date: $datePickerDate,
-                        minimumDate: minimumDate,
-                        maximumDate: maximumDate,
-                        calendar: calendar,
-                        datePickerMode: .date
+                        L10n.offerStartDate,
+                        selection: $datePickerDate,
+                        in: dateRange,
+                        displayedComponents: .date
                     )
+                    .tint(hTintColor.lavenderOne)
+                    .modifier(DatePickerStyleModifier())
+                    .padding(.horizontal, 15)
                 }
                 .noSpacing()
                 .padding(.bottom, 2)
@@ -137,7 +153,7 @@ extension SingleStartDateSection: View {
         }
         .onAppear {
             // if date is before today, reset date
-            if let date = date, let minimumDate = minimumDate, date < minimumDate {
+            if let date = date, date < minimumDate {
                 self.date = Date()
                 self.datePickerDate = Date()
             } else if !switchingActivated && date == nil {
