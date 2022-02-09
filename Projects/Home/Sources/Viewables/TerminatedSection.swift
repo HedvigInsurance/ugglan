@@ -46,7 +46,7 @@ extension TerminatedSection: Presentable {
         bag += section.append(claimButton)
 
         bag += claimButton.onTapSignal.onValue {
-            store.send(.openClaims)
+            store.send(.submitClaims)
         }
 
         return (section, bag)

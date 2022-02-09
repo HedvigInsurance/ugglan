@@ -18,7 +18,7 @@ public struct Home {
 
 public enum HomeResult {
     case startMovingFlow
-    case openClaims
+    case submitClaims
     case openFreeTextChat
     case openConnectPayments
     case openClaimDetails(claim: Claim)
@@ -199,12 +199,10 @@ extension Home: Presentable {
                         callback(.openFreeTextChat)
                     case .openMovingFlow:
                         callback(.startMovingFlow)
-                    case .openClaims:
-                        callback(.openClaims)
+                    case .submitClaims:
+                        callback(.submitClaims)
                     case .connectPayments:
                         callback(.openConnectPayments)
-                    case let .openClaimDetails(claim):
-                        callback(.openClaimDetails(claim: claim))
                     default:
                         break
                     }

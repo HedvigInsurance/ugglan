@@ -2,6 +2,7 @@ import Embark
 import Flow
 import Foundation
 import Home
+import Claims
 import Presentation
 import UIKit
 import hCore
@@ -28,8 +29,8 @@ extension AppJourney {
                 ContinueJourney()
             }
         }
-        .sendActionImmediately(HomeStore.self, .startPollingClaims)
-        .sendActionOnDismiss(HomeStore.self, .stopPollingClaims)
+        .sendActionImmediately(ClaimsStore.self, .startPollingClaims)
+        .sendActionOnDismiss(ClaimsStore.self, .stopPollingClaims)
     }
 
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(

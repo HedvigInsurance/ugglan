@@ -7,20 +7,20 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ClaimSectionLoading: View {
+public struct ClaimSectionLoading: View {
 
     @State
     var shouldPoll = false
 
     var store: ClaimsStore
 
-    init() {
+    public init() {
         let store: ClaimsStore = globalPresentableStoreContainer.get()
         self.store = store
     }
 
     @ViewBuilder
-    func claimsSection(_ claims: [Claim]) -> some View {
+    public func claimsSection(_ claims: [Claim]) -> some View {
         if claims.isEmpty {
             Spacer().frame(height: 40)
         } else if claims.count == 1, let claim = claims.first {
@@ -32,7 +32,7 @@ struct ClaimSectionLoading: View {
         }
     }
 
-    var body: some View {
+    public var body: some View {
 
         PresentableStoreLens(
             ClaimsStore.self,
