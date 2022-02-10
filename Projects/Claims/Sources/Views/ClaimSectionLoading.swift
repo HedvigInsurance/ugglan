@@ -7,19 +7,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct ClaimSectionLoading: View {
-
-    @State
-    var shouldPoll = false
-
-    var store: ClaimsStore
-
-    public init() {
-        let store: ClaimsStore = globalPresentableStoreContainer.get()
-        self.store = store
-
-        store.send(.fetchClaims)
-    }
+struct ClaimSectionLoading: View {
 
     @ViewBuilder
     public func claimsSection(_ claims: [Claim]) -> some View {
@@ -34,7 +22,7 @@ public struct ClaimSectionLoading: View {
         }
     }
 
-    public var body: some View {
+    var body: some View {
 
         PresentableStoreLens(
             ClaimsStore.self,

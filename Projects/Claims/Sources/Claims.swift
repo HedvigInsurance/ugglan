@@ -32,3 +32,29 @@ extension Claims: View {
             }
     }
 }
+
+public enum ClaimsResult {
+    case submitClaims
+    case openFreeTextChat
+    case openClaimDetails(claim: Claim)
+}
+
+extension Claims {
+    public static func journey<ResultJourney: JourneyPresentation>(
+        @JourneyBuilder resultJourney: @escaping (_ result: ClaimsResult) -> ResultJourney
+    ) -> some JourneyPresentation {
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: Claims(),
+            options: .defaults
+        ) { action in
+            if case let .openClaimDetails(claim) = action {
+                resultJourney(.openClaimDetails(claim: claim))
+            } else if case .submitClaims = action {
+                resultJourney(.submitClaims)
+            } else if case .openFreeTextChat = action {
+                resultJourney(.openFreeTextChat)
+            }
+        }
+    }
+}

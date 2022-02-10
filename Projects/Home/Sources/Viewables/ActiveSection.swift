@@ -23,7 +23,7 @@ extension ActiveSection: Presentable {
             separatorType: .none
         )
 
-        let claims = ClaimSectionLoading()
+        let claims = Claims()
         let hostingView = HostingView(rootView: claims)
 
         section.append(hostingView)

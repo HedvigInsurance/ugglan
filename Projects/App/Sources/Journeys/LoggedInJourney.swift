@@ -1,3 +1,4 @@
+import Claims
 import Contracts
 import Embark
 import Flow
@@ -21,15 +22,10 @@ extension AppJourney {
             switch result {
             case .startMovingFlow:
                 AppJourney.movingFlow
-            case .submitClaims:
-                AppJourney
-                    .claimJourney
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
             case .openConnectPayments:
                 PaymentSetup(setupType: .initial).journeyThenDismiss
-            case let .openClaimDetails(claim):
-                AppJourney.claimDetailJourney(claim: claim)
             }
         }
         .configureTabBarItem
@@ -43,6 +39,7 @@ extension AppJourney {
                 return false
             }
         }
+        .configureClaimsNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -68,6 +65,7 @@ extension AppJourney {
                 return false
             }
         }
+        .configureClaimsNavigation
     }
 
     fileprivate static var keyGearTab: some JourneyPresentation {
@@ -168,6 +166,20 @@ extension JourneyPresentation {
         return self.onPresent {
             let store: S = self.presentable.get()
             store.send(action)
+        }
+    }
+}
+
+extension JourneyPresentation {
+    public var configureClaimsNavigation: some JourneyPresentation {
+        onAction(ClaimsStore.self) { action in
+            if case let .openClaimDetails(claim) = action {
+                AppJourney.claimDetailJourney(claim: claim)
+            } else if case .submitClaims = action {
+                AppJourney.claimJourney
+            } else if case .openFreeTextChat = action {
+                AppJourney.freeTextChat()
+            }
         }
     }
 }

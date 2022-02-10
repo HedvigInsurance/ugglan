@@ -18,10 +18,8 @@ public struct Home {
 
 public enum HomeResult {
     case startMovingFlow
-    case submitClaims
     case openFreeTextChat
     case openConnectPayments
-    case openClaimDetails(claim: Claim)
 }
 
 extension Future {
@@ -198,8 +196,6 @@ extension Home: Presentable {
                         callback(.openFreeTextChat)
                     case .openMovingFlow:
                         callback(.startMovingFlow)
-                    case .submitClaims:
-                        callback(.submitClaims)
                     case .connectPayments:
                         callback(.openConnectPayments)
                     default:
