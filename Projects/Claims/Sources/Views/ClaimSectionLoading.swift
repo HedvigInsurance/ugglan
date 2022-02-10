@@ -22,12 +22,12 @@ struct ClaimSectionLoading: View {
                 ClaimSection(claims: claims)
                     .padding([.bottom, .top])
             }
-            
+
             startClaimsButton(claims)
                 .padding(.bottom, 16)
         }
     }
-    
+
     @ViewBuilder
     public func startClaimsButton(_ claims: [Claim]) -> some View {
         if claims.count > 0 {
