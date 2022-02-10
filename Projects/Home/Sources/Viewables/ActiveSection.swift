@@ -32,21 +32,6 @@ extension ActiveSection: Presentable {
             hostingView.removeFromSuperview()
         }
 
-        let claimButton = Button(
-            title: L10n.HomeTab.claimButtonText,
-            type: .standard(
-                backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonTextColor)
-            )
-        )
-        bag += section.append(claimButton)
-
-        bag += claimButton.onTapSignal.onValue {
-            store.send(.submitClaims)
-        }
-
-        bag += section.appendSpacingAndDumpOnDispose(.inbetween)
-
         let howClaimsWorkButton = Button(
             title: L10n.ClaimsExplainer.title,
             type: .iconTransparent(
@@ -55,23 +40,6 @@ extension ActiveSection: Presentable {
             )
         )
         bag += section.append(howClaimsWorkButton.alignedTo(alignment: .center))
-
-        //        bag += store.stateSignal.atOnce().map { ($0.claims?.count ?? 0) > 0 }
-        //            .onValue { hasClaims in
-        //
-        //                claimButton.title.value =
-        //                    hasClaims ? L10n.Home.OpenClaim.startNewClaimButton : L10n.HomeTab.claimButtonText
-        //                claimButton.type.value =
-        //                    hasClaims
-        //                    ? .standardOutline(
-        //                        borderColor: .brand(.primaryText()),
-        //                        textColor: .brand(.primaryText())
-        //                    )
-        //                    : .standard(
-        //                        backgroundColor: .brand(.secondaryButtonBackgroundColor),
-        //                        textColor: .brand(.secondaryButtonTextColor)
-        //                    )
-        //            }
 
         bag += howClaimsWorkButton.onTapSignal.compactMap { section.viewController }
             .onValue { viewController in

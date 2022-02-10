@@ -8,17 +8,40 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimSectionLoading: View {
+    @PresentableStore var store: ClaimsStore
 
     @ViewBuilder
     public func claimsSection(_ claims: [Claim]) -> some View {
-        if claims.isEmpty {
-            Spacer().frame(height: 40)
-        } else if claims.count == 1, let claim = claims.first {
-            ClaimStatus(claim: claim)
-                .padding([.bottom, .top])
+        VStack {
+            if claims.isEmpty {
+                Spacer().frame(height: 40)
+            } else if claims.count == 1, let claim = claims.first {
+                ClaimStatus(claim: claim)
+                    .padding([.bottom, .top])
+            } else {
+                ClaimSection(claims: claims)
+                    .padding([.bottom, .top])
+            }
+            
+            startClaimsButton(claims)
+                .padding(.bottom, 16)
+        }
+    }
+    
+    @ViewBuilder
+    public func startClaimsButton(_ claims: [Claim]) -> some View {
+        if claims.count > 0 {
+            hButton.LargeButtonOutlined {
+                store.send(.submitClaims)
+            } content: {
+                L10n.Home.OpenClaim.startNewClaimButton.hText()
+            }
         } else {
-            ClaimSection(claims: claims)
-                .padding([.bottom, .top])
+            hButton.LargeButtonFilled {
+                store.send(.submitClaims)
+            } content: {
+                hText(L10n.HomeTab.claimButtonText)
+            }
         }
     }
 
