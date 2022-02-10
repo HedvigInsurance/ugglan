@@ -19,7 +19,7 @@ extension AppDelegate {
         }
         hAnalyticsNetworking.trackingId = { ApolloClient.getDeviceIdentifier() }
     }
-    
+
     func trackNotificationPermission() {
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in

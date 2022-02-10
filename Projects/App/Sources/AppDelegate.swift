@@ -245,7 +245,7 @@ let log = Logger.builder
 
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
-        
+
         self.trackNotificationPermission()
 
         // treat an empty token as a newly downloaded app and setLastNewsSeen
