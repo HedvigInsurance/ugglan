@@ -3,6 +3,7 @@ import Foundation
 import hAnalytics
 import hCore
 import hGraphQL
+import NotificationCenter
 
 extension AppDelegate {
     func setupHAnalytics() {
