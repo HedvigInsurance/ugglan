@@ -31,6 +31,8 @@ extension AppDelegate {
                     hAnalyticsEvent.notificationPermission(granted: false).send()
                 case .notDetermined, .ephemeral, .provisional:
                     hAnalyticsEvent.notificationPermission(granted: nil).send()
+                @unknown default:
+                    hAnalyticsEvent.notificationPermission(granted: nil).send()
                 }
             }
     }
