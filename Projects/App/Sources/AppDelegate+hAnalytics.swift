@@ -1,9 +1,9 @@
 import Apollo
 import Foundation
+import NotificationCenter
 import hAnalytics
 import hCore
 import hGraphQL
-import NotificationCenter
 
 extension AppDelegate {
     func setupHAnalytics() {
