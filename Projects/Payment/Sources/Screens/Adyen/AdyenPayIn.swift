@@ -5,10 +5,10 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 extension AdyenMethodsList {
     static var payInOptions: Future<AdyenOptions> {
