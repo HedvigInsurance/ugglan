@@ -30,7 +30,7 @@ extension AppDelegate {
                 case .denied:
                     hAnalyticsEvent.notificationPermission(granted: false).send()
                 case .notDetermined, .ephemeral, .provisional:
-                    hAnalyticsEvent.notificationPermission(granted: nil).send()                    
+                    hAnalyticsEvent.notificationPermission(granted: nil).send()
                 }
             }
     }
