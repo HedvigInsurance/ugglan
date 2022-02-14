@@ -91,7 +91,8 @@ public enum Environment: Hashable {
 
     public var endpointURL: URL {
         switch self {
-        case .staging: return URL(string: "https://graphql.dev.hedvigit.com/graphql")!
+        case .staging: return URL(string: "https://7510-128-179-163-219.ngrok.io/graphql")!
+        //case .staging: return URL(string: "https://graphql.dev.hedvigit.com/graphql")!
         case .production: return URL(string: "https://giraffe.hedvig.com/graphql")!
         case let .custom(endpointUrl, _, _, _): return endpointUrl
         }

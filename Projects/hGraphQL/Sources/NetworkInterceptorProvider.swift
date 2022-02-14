@@ -37,7 +37,40 @@ public class NetworkInterceptorProvider: DefaultInterceptorProvider {
             ),
             at: 0
         )
+        
+        //interceptors.append(JSONResponseParsingInterceptor())
+        interceptors.append(VersionErrorInterceptor())
 
         return interceptors
+    }
+}
+
+extension ApolloClient {
+    public static func 
+}
+
+class VersionErrorInterceptor: ApolloInterceptor {
+    enum VersionError: Error {
+        case notYetReceived
+    }
+    
+    func interceptAsync<Operation: GraphQLOperation>(
+        chain: RequestChain,
+        request: HTTPRequest<Operation>,
+        response: HTTPResponse<Operation>?,
+        completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void) {
+            defer {
+                chain.proceedAsync(request: request, response: response, completion: completion)
+            }
+            guard let res = response?.parsedResponse else {
+                chain.handleErrorAsync(VersionError.notYetReceived, request: request, response: response, completion: completion)
+                return
+            }
+            
+            if let versionError = VersionErrorHandler().getVersionError(from: res.errors) {
+                chain.handleErrorAsync(versionError, request: request, response: response, completion: completion)
+                print("BOOMERROR:", versionError)
+            }
+            
     }
 }
