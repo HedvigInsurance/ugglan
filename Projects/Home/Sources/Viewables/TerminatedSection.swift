@@ -7,6 +7,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import Claims
 
 struct TerminatedSection { @Inject var client: ApolloClient }
 
@@ -34,7 +35,7 @@ extension TerminatedSection: Presentable {
 
         section.appendSpacing(.top)
 
-        let store: HomeStore = self.get()
+        let store: ClaimsStore = self.get()
 
         let claimButton = Button(
             title: L10n.HomeTab.claimButtonText,
