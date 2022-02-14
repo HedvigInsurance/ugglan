@@ -10,9 +10,9 @@ import hGraphQL
 public struct ClaimsInfoPager {
     @Inject var client: ApolloClient
     @PresentableStore var store: ClaimsStore
-    
+
     public init() {
-        
+
     }
 }
 
@@ -27,30 +27,28 @@ extension ClaimsInfoPager: Presentable {
             store.send(.submitClaims)
             return Future(.forever)
         }
-        
+
         let (viewController, future) = pager.materialize()
-        
+
         client.fetch(
             query: GraphQL.HowClaimsWorkQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             )
         )
-            .onValue { data in
-                pager.pages = data.howClaimsWork.map {
-                    ContentIconPagerItem(
-                        title: nil,
-                        paragraph: $0.body,
-                        icon: $0.illustration.fragments.iconFragment
-                    )
-                        .pagerItem
-                }
+        .onValue { data in
+            pager.pages = data.howClaimsWork.map {
+                ContentIconPagerItem(
+                    title: nil,
+                    paragraph: $0.body,
+                    icon: $0.illustration.fragments.iconFragment
+                )
+                .pagerItem
             }
-        
+        }
+
         return (
             viewController,
             future
         )
     }
 }
-
-

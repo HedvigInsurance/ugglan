@@ -25,7 +25,7 @@ struct ClaimSectionLoading: View {
 
             startClaimsButton(claims)
                 .padding(.bottom, 16)
-            
+
             HowClaimsWorkButton()
         }
     }
