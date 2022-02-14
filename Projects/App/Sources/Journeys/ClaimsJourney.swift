@@ -100,7 +100,7 @@ extension AppJourney {
         .inlineTitle()
         .configureTitle(L10n.ClaimStatus.title)
     }
-    
+
     static func claimsInfoJourney() -> some JourneyPresentation {
         Journey(ClaimsInfoPager())
             .onAction(ClaimsStore.self) { action in
