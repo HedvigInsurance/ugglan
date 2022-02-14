@@ -91,7 +91,6 @@ extension Home: Presentable {
                 send: {
                     [
                         .fetchMemberState
-                        //TODO: Refresh the claims
                     ]
                 },
                 endOn: { action in

@@ -3,7 +3,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.framework(
     name: "Claims",
-    targets: Set([.framework, .frameworkResources, .tests, .example, .testing]),
+    targets: Set([.framework, .frameworkResources, .example]),
     projects: ["hCore", "hCoreUI"],
     sdks: [],
     includesGraphQL: true
