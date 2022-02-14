@@ -8,6 +8,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 extension AdyenMethodsList {
     static var payInOptions: Future<AdyenOptions> {
@@ -93,6 +94,7 @@ public struct AdyenPayIn: Presentable {
         .materialize()
 
         viewController.title = L10n.adyenPayinTitle
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewConnectPaymentAdyen())
 
         return (viewController, result)
     }
