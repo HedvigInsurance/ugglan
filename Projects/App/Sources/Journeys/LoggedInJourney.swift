@@ -179,6 +179,8 @@ extension JourneyPresentation {
                 AppJourney.claimJourney
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat()
+            } else if case .openHowClaimsWork = action {
+                AppJourney.claimsInfoJourney()
             }
         }
     }

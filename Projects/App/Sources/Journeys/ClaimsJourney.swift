@@ -101,3 +101,9 @@ extension AppJourney {
         .configureTitle(L10n.ClaimStatus.title)
     }
 }
+
+extension AppJourney {
+    static func claimsInfoJourney() -> some JourneyPresentation {
+        Journey(ClaimsInfoPager())
+    }
+}

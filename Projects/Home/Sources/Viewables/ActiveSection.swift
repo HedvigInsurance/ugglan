@@ -16,8 +16,6 @@ extension ActiveSection: Presentable {
         let bag = DisposeBag()
         let section = SectionView()
 
-        let store: HomeStore = self.get()
-
         section.dynamicStyle = .brandGrouped(
             insets: .init(top: 0, left: 14, bottom: 0, right: 14),
             separatorType: .none
@@ -31,45 +29,6 @@ extension ActiveSection: Presentable {
         bag += {
             hostingView.removeFromSuperview()
         }
-
-        let howClaimsWorkButton = Button(
-            title: L10n.ClaimsExplainer.title,
-            type: .iconTransparent(
-                textColor: .brand(.primaryTintColor),
-                icon: .left(image: hCoreUIAssets.infoSmall.image, width: .smallIconWidth)
-            )
-        )
-        bag += section.append(howClaimsWorkButton.alignedTo(alignment: .center))
-
-        bag += howClaimsWorkButton.onTapSignal.compactMap { section.viewController }
-            .onValue { viewController in
-                var pager = Pager(
-                    title: L10n.ClaimsExplainer.title,
-                    buttonContinueTitle: L10n.ClaimsExplainer.buttonNext,
-                    buttonDoneTitle: L10n.ClaimsExplainer.buttonStartClaim,
-                    pages: []
-                ) { viewController in
-                    store.send(.submitClaims)
-                    return Future(.forever)
-                }
-                viewController.present(pager)
-
-                client.fetch(
-                    query: GraphQL.HowClaimsWorkQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    )
-                )
-                .onValue { data in
-                    pager.pages = data.howClaimsWork.map {
-                        ContentIconPagerItem(
-                            title: nil,
-                            paragraph: $0.body,
-                            icon: $0.illustration.fragments.iconFragment
-                        )
-                        .pagerItem
-                    }
-                }
-            }
 
         bag += section.append(ConnectPaymentCard())
         bag += section.append(RenewalCard())

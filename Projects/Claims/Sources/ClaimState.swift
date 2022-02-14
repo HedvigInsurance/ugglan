@@ -15,6 +15,7 @@ public enum ClaimsAction: ActionProtocol {
     case submitClaims
     case fetchClaims
     case setClaims(claims: [Claim])
+    case openHowClaimsWork
     case startPollingClaims
     case stopPollingClaims
     case openClaimDetails(claim: Claim)
@@ -63,6 +64,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case .openFreeTextChat:
             break
         case .fetchClaims:
+            break
+        case .openHowClaimsWork:
             break
         case let .setClaims(claims):
             newState.claims = claims
