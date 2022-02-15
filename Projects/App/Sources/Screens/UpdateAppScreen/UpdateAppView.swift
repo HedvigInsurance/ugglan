@@ -16,19 +16,19 @@ struct UpdateAppView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
-                "Update necessary".hText(.title2)
-                "It seems like you are using an app version that is not supported anymore. To use Hedvig, update to the latest version on the App Store."
+                L10n.AppUpdateNeeded.title.hText(.title2)
+                L10n.AppUpdateNeeded.body
                     .hText(.body)
                     .foregroundColor(hLabelColor.secondary)
                     .multilineTextAlignment(.center)
                 hButton.SmallButtonOutlined {
-                    if let url = URL(string: "itms-apps://apple.com/app/id1303668531") {
+                    if let url = URL(string: L10n.AppUpdateNeeded.hedvigAppStoreLink) {
                         UIApplication.shared.open(url)
                     }
                 } content: {
                     HStack {
+                        L10n.AppUpdateNeeded.appStoreButton.hText()
                         Image(uiImage: hCoreUIAssets.external.image)
-                        "Open App Store".hText()
                     }
                 }
             }
