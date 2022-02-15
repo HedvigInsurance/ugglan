@@ -1,9 +1,12 @@
-//
-//  JSONObject+PrettyPrinted.swift
-//  hCore
-//
-//  Created by Tarik Stafford on 2022-02-04.
-//  Copyright © 2022 Hedvig AB. All rights reserved.
-//
-
 import Foundation
+import Apollo
+
+extension JSONObject {
+    public var prettyPrinted: String? {
+        if let data = try? JSONSerialization.data(withJSONObject: self, options: .prettyPrinted) {
+            return String(data: data, encoding: .utf8 )
+        } else {
+            return nil
+        }
+    }
+}
