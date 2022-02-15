@@ -116,87 +116,67 @@ extension GraphQLMap {
         }
     }
     
-//    func isKey(_ path: String) -> Bool {
-//        switch path {
-//        case let value where value is [JSONEncodable]:
-//            return false
-//        case let value where value is String:
-//            return true
-//        case let value where value is Int:
-//            return true
-//        case let value where value is Float:
-//            return true
-//        case let value where value is Bool:
-//            return true
-//        default:
-//            return false
-//        }
-//    }
+    enum PathType {
+        case normal(path: String)
+        case array(index: Int, path: String)
+        case last(path: String)
+    }
     
-    static func deepMerge(_ result: GraphQLMap, _ map: GraphQLMap) -> GraphQLMap {
-        var resultCopy = result
-        for (key, value) in map {
-            // Check for path key
-            let paths = key.split(separator: ".")
-            
-            // Check if key should be split out
-            if paths.count > 1 {
-                if  let firstPath = paths.first,
-                    let range = Range(
-                        NSRange(
-                            location: firstPath.startIndex.utf16Offset(in: key),
-                            length: firstPath.endIndex.utf16Offset(in: key)
-                        ),
-                        in: key
-                    )
-                {
-                    let currentPath = String(firstPath)
-                    let nextPath = String(key.replacingCharacters(in: range, with: "").dropFirst())
-                    
-                    var newMap = GraphQLMap()
-                    newMap[nextPath] = value
-                    
-                    // Self has current path, proceed to evaluate next path
-                    if let currentValue = result[currentPath] {
-                        
-                        // Is Array
-                        if let (path, index) = nextPath.getArrayPathAndIndex() {
-                            if var currentMapArray = result[path] as? [GraphQLMap], let index = Int(index) {
-                                if currentMapArray.count >= index {
-                                    var currentValue = currentMapArray[index]
-                                        //currentMapArray[index] = deepMerge(newMap)
-                                } else {
-                                   //currentMapArray.append(deepMerge(newMap))
-                                }
-                            }
-                        }
-                        
-                        // Is dictionary
-                        if let value = result[nextPath] as? GraphQLMap {
-                            resultCopy[currentPath] = deepMerge(value, newMap)
-                        }
-                    } else {
-                        // Self does not have a value so now we need to unwrap the map
-                        return result.merging(deepMerge(result, newMap)) { (_, new) in new }
-                    }
-                }
+    func castedPath(_ path: String) -> [PathType] {
+        let paths = path.components(separatedBy: ".")
+        var newArray = [PathType]()
+        paths.enumerated().forEach { pathIndex, path in
+            if let (path, index) = path.getArrayPathAndIndex(), let intValue = Int(index) {
+                newArray.append(.array(index: intValue, path: path))
+            } else if pathIndex == (paths.count - 1) {
+                newArray.append(.last(path: path))
             } else {
-                //Key matches
-                if let aValue = result[key] {
-                    //Both values are dictionaries
-                    if let aValDict = aValue as? GraphQLMap, let bValDict = value as? GraphQLMap {
-                        resultCopy[key] = deepMerge(aValDict, bValDict)
-                    } else if let aValArray = aValue as? [Any], let bValArray = value as? [Any] {
-                        //One/both values aren't dictionaries
-                        resultCopy[key] = (aValArray + bValArray).compactMap { $0 }
-                    }
-                } else {
-                    //Different keys
-                    return result.merging(map) { (_, new) in new }
-                }
+                newArray.append(.normal(path: path))
             }
         }
-        return result
+        return newArray
+    }
+    
+    func lodash_set(path: String, value: JSONEncodable) -> GraphQLMap {
+        var castPath = castedPath(path)
+        var accumulatedMap = GraphQLMap()
+        let returnMap = setMap(originalMap: self, accumulatedMap: &accumulatedMap, paths: &castPath, value: value)
+        
+        return returnMap
+    }
+    
+    func setMap(originalMap: GraphQLMap?, accumulatedMap: inout GraphQLMap, paths: inout [PathType], value: JSONEncodable) -> GraphQLMap {
+        let path = paths.removeFirst()
+        
+        switch path {
+        case .normal(let path):
+            if var hasValue = originalMap?[path] as? GraphQLMap {
+                accumulatedMap[path] = setMap(originalMap: hasValue, accumulatedMap: &hasValue, paths: &paths, value: value)
+            } else {
+                var newMap = GraphQLMap()
+                accumulatedMap[path] = setMap(originalMap: nil, accumulatedMap: &newMap, paths: &paths, value: value)
+            }
+        case .array(index: let index, path: let path):
+            if var hasValue = originalMap?[path] as? [GraphQLMap] {
+                if (hasValue.count - 1) >= index {
+                    hasValue[index] = setMap(originalMap: hasValue[index], accumulatedMap: &hasValue[index], paths: &paths, value: value)
+                    accumulatedMap[path] = hasValue
+                } else {
+                    var newMap = GraphQLMap()
+                    hasValue.append(setMap(originalMap: nil, accumulatedMap: &newMap, paths: &paths, value: value))
+                    accumulatedMap[path] = hasValue
+                }
+            } else {
+                var newValue = GraphQLMap()
+                let newArray = [setMap(originalMap: nil, accumulatedMap: &newValue, paths: &paths, value: value)]
+                accumulatedMap[path] = newArray
+            }
+        case .last(let path):
+            accumulatedMap[path] = value
+            return accumulatedMap
+        }
+        
+        return accumulatedMap
     }
     
     func arrayOfKeyValues() -> [GraphQLMap] {

@@ -30,13 +30,12 @@ final class ResultMapTests: XCTestCase {
         XCTAssertEqual(map.deepFind("thirdArray[120]") as? String, nil)
     }
     
-    func testLodash() {
-        var map = GraphQLMap()
-        map["input.payload[1].lastName"] = "Hedvigsen"
+    func testLodash_Basic() {
+        let map = GraphQLMap()
+
+        let newMap = map.lodash_set(path: "input.payload[0].lastName", value: "Hedvigsen")
         
-        let newMap = map.nest()
-        
-        let expectedMap: ResultMap = [
+        let expectedMap: GraphQLMap = [
             "input" :
                 ["payload":
                     [
@@ -50,25 +49,28 @@ final class ResultMapTests: XCTestCase {
         XCTAssertEqual(newMap.jsonObject.prettyPrinted, expectedMap.jsonObject.prettyPrinted)
     }
     
-    func testLodash_MultipleKeyValuePairs() {
-        var map = [String:Any]()
-//        map["input.payload[0].data.type"] = "House"
-//        map["input.payload[0].data.lastName"] = "Hedvig"
-//        map["input.payload[1].data.type"] = "Bloop"
+    func testLodash_DeepArrayAppend() {
+        var map = GraphQLMap()
+        map["input"] =
+            ["payload" :
+                [
+                    [
+                        "data":
+                        [
+                            "type":"House",
+                            "lastName": "Hedvigsen"
+                        ]
+                    ]
+            ]
+        ]
         
-        //        let sorted = map.arrayOfKeyValues()
-        //        var resultMap = GraphQLMap()
-        //
-        //        let mapped = GraphQLMap.deepMerge(resultMap, map)
-        map["a"] = ["b": [["c":0]]]
-        
-        let expectedMap: ResultMap = [
+        let expectedMap: GraphQLMap = [
             "input" :
                 ["payload":
                     [
                         ["data" : [
                             "type" : "House",
-                            "laseName": "Hedvigsen"
+                            "lastName": "Hedvigsen"
                         ]],
                         ["data" : [
                             "type" : "Bloop"
@@ -77,101 +79,9 @@ final class ResultMapTests: XCTestCase {
                 ]
         ]
         
-        let paths = "a.b[1].c"
-        let expectedCasted = ["a","b","0","c"]
-        
-        var test = lodash_set(map: map, path: paths, value: 1)
-        
-        func castedPath(_ path: String) -> [PathType] {
-            let paths = path.components(separatedBy: ".")
-            var newArray = [PathType]()
-            paths.enumerated().forEach { pathIndex, path in
-                if let (path, index) = path.getArrayPathAndIndex(), let intValue = Int(index) {
-                    newArray.append(.array(index: intValue, path: path))
-                } else if pathIndex == (paths.count - 1) {
-                    newArray.append(.last(path: path))
-                } else {
-                    newArray.append(.normal(path: path))
-                }
-            }
-            return newArray
-        }
-        
-        enum LodashSet {
-            case array(Int)
-            case nestedValues([String:Any])
-            case newMap
-            case assignValue(Any)
-        }
-        
-        enum PathType {
-            case normal(path: String)
-            case array(index: Int, path: String)
-            case last(path: String)
-        }
-        
-        func lodash_set(map: [String:Any], path: String, value: Any) -> [String:Any] {
-            var castPath = castedPath(path)
-            
-            let lastIndex = castPath.count - 1
-            var nested = map
-            var currentValue = [String:Any]()
-            
-            let returnMap = setMap(originalMap: nested, accumulatedMap: &currentValue, paths: &castPath, value: value)
-            
-            return returnMap
-        }
-        
-        func setMap(originalMap: [String:Any]?, accumulatedMap: inout [String:Any], paths: inout [PathType], value: Any) -> [String:Any] {
-            let path = paths.removeFirst()
-            
-            switch path {
-            case .normal(let path):
-                if var hasValue = originalMap?[path] as? [String:Any] {
-                    accumulatedMap[path] = setMap(originalMap: hasValue, accumulatedMap: &hasValue, paths: &paths, value: value)
-                } else {
-                    var newMap = [String:Any]()
-                    accumulatedMap[path] = setMap(originalMap: nil, accumulatedMap: &newMap, paths: &paths, value: value)
-                }
-            case .array(index: let index, path: let path):
-                if var hasValue = originalMap?[path] as? [[String:Any]] {
-                    if (hasValue.count - 1) >= index {
-                        hasValue[index] = setMap(originalMap: hasValue[index], accumulatedMap: &hasValue[index], paths: &paths, value: value)
-                        accumulatedMap[path] = hasValue
-                    } else {
-                        var newMap = [String:Any]()
-                        hasValue.append(setMap(originalMap: nil, accumulatedMap: &newMap, paths: &paths, value: value))
-                        accumulatedMap[path] = hasValue
-                    }
-                } else {
-                    accumulatedMap[path] = [[String:Any]]()
-                }
-            case .last(let path):
-                accumulatedMap[path] = value
-                return accumulatedMap
-            }
-            
-            return accumulatedMap
-        }
-        
-        func assignMapValue(_ map: [String:Any?], _ key: String, _ lodashSet: LodashSet) -> [String:Any] {
-            var newMap = [String:Any]()
-            switch lodashSet {
-            case .array(let index):
-                if let valueArray = map[key] as? [GraphQLMap] {
-                    newMap[key] = valueArray[index]
-                }
-            case .nestedValues(let graphQLMap):
-                newMap[key] = graphQLMap
-            case .newMap:
-                newMap[key] = [String:Any]()
-            case .assignValue(let value):
-                newMap[key] = value
-            }
-            return newMap
-        }
-        
-        XCTAssertEqual(paths, "expectedCasted")
+        let newMap = map.lodash_set(path: "input.payload[1].data.type", value: "Bloop")
+    
+        XCTAssertEqual(newMap.jsonObject.prettyPrinted, expectedMap.jsonObject.prettyPrinted)
     }
 }
 
