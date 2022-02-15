@@ -49,6 +49,39 @@ final class ResultMapTests: XCTestCase {
         XCTAssertEqual(newMap.jsonObject.prettyPrinted, expectedMap.jsonObject.prettyPrinted)
     }
     
+    func testLodash_AddToBaseLevelOfMap() {
+        var map = GraphQLMap()
+        map["input"] =
+            ["payload" :
+                [
+                    [
+                        "data":
+                        [
+                            "type":"House",
+                            "lastName": "Hedvigsen"
+                        ]
+                    ]
+            ]
+        ]
+        
+        let expectedMap: GraphQLMap = [
+            "quoteCartId" : "abcdefghijklmnop",
+            "input" :
+                ["payload":
+                    [
+                        ["data" : [
+                            "type" : "House",
+                            "lastName": "Hedvigsen"
+                        ]]
+                    ]
+                ]
+        ]
+        
+        let newMap = map.lodash_set(path: "quoteCartId", value: "abcdefghijklmnop")
+        
+        XCTAssertEqual(newMap.jsonObject.prettyPrinted, expectedMap.jsonObject.prettyPrinted)
+    }
+    
     func testLodash_DeepArrayAppend() {
         var map = GraphQLMap()
         map["input"] =
@@ -82,31 +115,5 @@ final class ResultMapTests: XCTestCase {
         let newMap = map.lodash_set(path: "input.payload[1].data.type", value: "Bloop")
     
         XCTAssertEqual(newMap.jsonObject.prettyPrinted, expectedMap.jsonObject.prettyPrinted)
-    }
-}
-
-private extension String {
-    func getArrayPathAndIndex() -> (String, String)? {
-        let arrayRegex = "\\[[0-9]+\\]$"
-        
-        if range(of: ".*\(arrayRegex)", options: .regularExpression) != nil,
-           let rangeOfIndex = range(of: arrayRegex, options: .regularExpression)
-        {
-            let index = String(self[rangeOfIndex].dropFirst().dropLast())
-            
-            let pathWithoutIndex = String(self.replacingCharacters(in: rangeOfIndex, with: ""))
-            
-            return (pathWithoutIndex, index)
-        }
-        
-        return nil
-    }
-    
-    func isIndex() -> Bool {
-        if let index = Int(self), index > -1 {
-            return true
-        } else {
-            return false
-        }
     }
 }

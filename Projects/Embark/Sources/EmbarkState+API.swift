@@ -103,26 +103,14 @@ private extension String {
 }
 
 extension GraphQLMap {
-    func nest() -> GraphQLMap {
-        guard var keys = self.keys.first?.components(separatedBy: ".")
-        else { return self }
-        
-        if let key = keys.popLast(), !keys.isEmpty {
-            var map = GraphQLMap()
-            map[keys.joined(separator: ".")] = buildMap(key, self.values.first)
-            return map.nest()
-        } else {
-            return self
-        }
-    }
     
-    enum PathType {
+    private enum PathType {
         case normal(path: String)
         case array(index: Int, path: String)
         case last(path: String)
     }
     
-    func castedPath(_ path: String) -> [PathType] {
+    private func castedPath(_ path: String) -> [PathType] {
         let paths = path.components(separatedBy: ".")
         var newArray = [PathType]()
         paths.enumerated().forEach { pathIndex, path in
@@ -142,10 +130,10 @@ extension GraphQLMap {
         var accumulatedMap = GraphQLMap()
         let returnMap = setMap(originalMap: self, accumulatedMap: &accumulatedMap, paths: &castPath, value: value)
         
-        return returnMap
+        return returnMap.merging(self, uniquingKeysWith: { lhs, _ in lhs })
     }
     
-    func setMap(originalMap: GraphQLMap?, accumulatedMap: inout GraphQLMap, paths: inout [PathType], value: JSONEncodable) -> GraphQLMap {
+    private func setMap(originalMap: GraphQLMap?, accumulatedMap: inout GraphQLMap, paths: inout [PathType], value: JSONEncodable) -> GraphQLMap {
         let path = paths.removeFirst()
         
         switch path {
@@ -207,14 +195,14 @@ extension GraphQLMap {
 }
 
 extension GraphQL.ApiSingleVariableFragment {
-    func graphQLMap(store: EmbarkStore) -> GraphQLMap {
+    func graphQLMap(currentMap: GraphQLMap, store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
         
         switch self.as {
-        case .int: map[key] = Int(store.getValue(key: from, includeQueue: true) ?? "")
-        case .string: map[key] = store.getValue(key: from, includeQueue: true)
-        case .boolean: map[key] = store.getValue(key: from, includeQueue: true) == "true"
-        case .file: map[key] = store.getValue(key: from, includeQueue: true)
+        case .int: map = currentMap.lodash_set(path: key, value: Int(store.getValue(key: from, includeQueue: true) ?? ""))
+        case .string: map = currentMap.lodash_set(path: key, value: store.getValue(key: from, includeQueue: true))
+        case .boolean: map = currentMap.lodash_set(path: key, value: (store.getValue(key: from, includeQueue: true) == "true"))
+        case .file: map = currentMap.lodash_set(path: key, value: store.getValue(key: from, includeQueue: true))
         case .__unknown: break
         }
         
@@ -223,14 +211,14 @@ extension GraphQL.ApiSingleVariableFragment {
 }
 
 extension GraphQL.ApiGeneratedVariableFragment {
-    func graphQLMap(store: EmbarkStore) -> GraphQLMap {
+    func graphQLMap(currentMap: GraphQLMap, store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
         
         switch type {
             
         case .uuid:
             let uuid = UUID().uuidString
-            map[key] = uuid
+            map = currentMap.lodash_set(path: key, value: uuid)
             store.setValue(key: storeAs, value: uuid)
         case .__unknown: break
         }
@@ -268,7 +256,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
                         nestedApiSingleVariableFragment.from =
                         "\(key)[\(offset)]\(apiSingleVariableFragment.key)"
                         appendOrMerge(
-                            map: nestedApiSingleVariableFragment.graphQLMap(store: store),
+                            map: nestedApiSingleVariableFragment.graphQLMap(currentMap: GraphQLMap(), store: store),
                             offset: offset
                         )
                     }
@@ -281,7 +269,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
                         nestedApiSingleVariableFragment.from =
                         "\(key)[\(offset)]\(apiConstantVariableFragment.key)"
                         appendOrMerge(
-                            map: nestedApiSingleVariableFragment.graphQLMap(store: store),
+                            map: nestedApiSingleVariableFragment.graphQLMap(currentMap: GraphQLMap(), store: store),
                             offset: offset
                         )
                     }
@@ -289,7 +277,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
                 groupedMultiActionItems.enumerated()
                     .forEach { offset, _ in
                         appendOrMerge(
-                            map: apiGeneratedVariableFragment.graphQLMap(store: store),
+                            map: apiGeneratedVariableFragment.graphQLMap(currentMap: GraphQLMap(), store: store),
                             offset: offset
                         )
                     }
@@ -303,25 +291,20 @@ extension GraphQL.ApiMultiActionVariableFragment {
 }
 
 extension GraphQL.ApiVariablesFragment {
-    func graphQLMap(store: EmbarkStore) -> GraphQLMap {
+    func graphQLMap(accumulatedMap: GraphQLMap, store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
         
         if let apiSingleVariableFragment = fragments.apiSingleVariableFragment {
-            map = map.merging(
-                apiSingleVariableFragment.graphQLMap(store: store),
-                uniquingKeysWith: { lhs, _ in lhs }
-            )
+            map = apiSingleVariableFragment.graphQLMap(currentMap: accumulatedMap, store: store)
         } else if let apiGeneratedVariableFragment = fragments.apiGeneratedVariableFragment {
-            map = map.merging(
-                apiGeneratedVariableFragment.graphQLMap(store: store),
-                uniquingKeysWith: { lhs, _ in lhs }
-            )
+            map = apiGeneratedVariableFragment.graphQLMap(currentMap: accumulatedMap, store: store)
         } else if let apiMultiActionVariableFragment = fragments.apiMultiActionVariableFragment {
             map[apiMultiActionVariableFragment.key] = apiMultiActionVariableFragment.graphQLMapArray(
                 store: store
             )
         } else if let apiConstantVariableFragment = fragments.apiConstantVariableFragment {
-            map[apiConstantVariableFragment.key] = apiConstantVariableFragment.value
+            let newMap = accumulatedMap.lodash_set(path: apiConstantVariableFragment.key, value: apiConstantVariableFragment.value)
+            map = newMap
         }
         
         return map
@@ -332,11 +315,10 @@ extension GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery.Datum {
     func graphQLVariables(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
         
-        variables.forEach { variable in
-            map = map.merging(
-                variable.fragments.apiVariablesFragment.graphQLMap(store: store),
-                uniquingKeysWith: { lhs, _ in lhs }
-            )
+        let sortedVariables = variables.map { $0.fragments.apiVariablesFragment }.sorted(by: <)
+            
+        sortedVariables.forEach { variable in
+            map = variable.graphQLMap(accumulatedMap: map, store: store)
         }
         
         return map
@@ -347,14 +329,27 @@ extension GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
     func graphQLVariables(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
         
-        variables.forEach { variable in
-            map = map.merging(
-                variable.fragments.apiVariablesFragment.graphQLMap(store: store),
-                uniquingKeysWith: { lhs, _ in lhs }
-            )
+        let sortedVariables = variables.map { $0.fragments.apiVariablesFragment }.sorted(by: <)
+            
+        sortedVariables.forEach { variable in
+            map = variable.graphQLMap(accumulatedMap: map, store: store)
         }
         
         return map
+    }
+}
+
+extension GraphQL.ApiVariablesFragment: Comparable {
+    var key: String {
+        return self.asEmbarkApiGraphQlConstantVariable?.key ?? self.asEmbarkApiGraphQlSingleVariable?.key ?? self.asEmbarkApiGraphQlGeneratedVariable?.key ?? self.asEmbarkApiGraphQlMultiActionVariable?.key ?? ""
+    }
+    
+    public static func < (lhs: GraphQL.ApiVariablesFragment, rhs: GraphQL.ApiVariablesFragment) -> Bool {
+        return lhs.key < rhs.key
+    }
+    
+    public static func == (lhs: GraphQL.ApiVariablesFragment, rhs: GraphQL.ApiVariablesFragment) -> Bool {
+        return lhs.key == rhs.key
     }
 }
 
