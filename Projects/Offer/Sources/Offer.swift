@@ -97,7 +97,7 @@ extension Offer: Presentable {
                     break
                 }
             }
-        
+
         viewController.trackOnAppear(hAnalyticsEvent.screenViewOffer(offerIds: store.state.ids))
 
         let optionsOrCloseButton = UIBarButtonItem(
