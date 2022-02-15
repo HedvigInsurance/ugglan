@@ -31,7 +31,8 @@ struct UpdateAppView: View {
                         "Open App Store".hText()
                     }
                 }
-            }.padding()
+            }
+            .padding()
         }
     }
 }
@@ -43,5 +44,3 @@ extension AppJourney {
         )
     }
 }
-
-

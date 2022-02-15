@@ -4,9 +4,9 @@ import Market
 import Offer
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 extension AppJourney {
     static var main: some JourneyPresentation {
