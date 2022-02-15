@@ -29,8 +29,6 @@ extension AppJourney {
                 ContinueJourney()
             }
         }
-        .sendActionImmediately(ClaimsStore.self, .startPollingClaims)
-        .sendActionOnDismiss(ClaimsStore.self, .stopPollingClaims)
     }
 
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(

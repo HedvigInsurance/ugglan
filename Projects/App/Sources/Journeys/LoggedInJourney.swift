@@ -65,7 +65,6 @@ extension AppJourney {
                 return false
             }
         }
-        .configureClaimsNavigation
     }
 
     fileprivate static var keyGearTab: some JourneyPresentation {

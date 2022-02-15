@@ -16,8 +16,6 @@ public enum ClaimsAction: ActionProtocol {
     case fetchClaims
     case setClaims(claims: [Claim])
     case openHowClaimsWork
-    case startPollingClaims
-    case stopPollingClaims
     case openClaimDetails(claim: Claim)
 }
 
@@ -46,15 +44,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     return .setClaims(claims: claimData.claims)
                 }
                 .valueThenEndSignal
-        case .startPollingClaims:
-            return Signal(every: 2).map { .fetchClaims }
-        case .stopPollingClaims:
-            cancelEffect(.startPollingClaims)
         default:
             return nil
         }
-
-        return nil
     }
 
     public override func reduce(_ state: ClaimsState, _ action: ClaimsAction) -> ClaimsState {
@@ -69,10 +61,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             break
         case let .setClaims(claims):
             newState.claims = claims
-        case .startPollingClaims:
-            break
-        case .stopPollingClaims:
-            break
         case .openClaimDetails:
             break
         case .submitClaims:

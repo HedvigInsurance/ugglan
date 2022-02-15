@@ -10,7 +10,7 @@ import hGraphQL
 
 public struct Claims {
     @PresentableStore var store: ClaimsStore
-    let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    let pollTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
     public init() {}
 }
