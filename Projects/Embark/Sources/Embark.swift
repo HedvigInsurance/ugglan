@@ -13,8 +13,7 @@ public struct Embark {
     @Inject var client: ApolloClient
     let name: String
     public let menu: Menu?
-    let state = EmbarkState()
-    let cartId: String?
+    let state: EmbarkState
 
     public func goBack() { state.goBack() }
 
@@ -25,7 +24,7 @@ public struct Embark {
     ) {
         self.name = name
         self.menu = menu
-        self.cartId = cartId
+        self.state = EmbarkState(cartId: cartId)
     }
 }
 
