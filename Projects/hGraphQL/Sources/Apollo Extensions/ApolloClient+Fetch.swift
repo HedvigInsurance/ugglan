@@ -4,44 +4,7 @@ import Foundation
 import Presentation
 import UIKit
 
-struct GraphQLStandardError: Error { var errors: [Error] }
-
-enum ErrorCode: String {
-    case invalidVersion = "invalid_version"
-}
-
-struct InvalidVersionError: Error {
-    let errorCode: ErrorCode
-    let message: String
-    let supportPhoneNumber: String?
-    let supportEmail: String?
-    let errorMessage: String
-    
-    init(from extensions: [String: String], _ message: String) {
-        self.errorCode = ErrorCode(rawValue: extensions["errorCode"] ?? "") ?? .invalidVersion
-        self.message = message
-        self.supportPhoneNumber = extensions["supportPhoneNumber"]
-        self.supportEmail = extensions["supportEmail"]
-        self.errorMessage = extensions["errorMessage"] ?? ""
-    }
-}
-
-struct VersionErrorHandler {
-    func getVersionError(from errors: [GraphQLError]?) -> InvalidVersionError? {
-        guard let errors = errors else { return nil }
-        
-        guard let validError = errors.first(where: { error in
-            if let extensions = error.extensions, let errorCode = extensions["errorCode"] as? String {
-                return errorCode == ErrorCode.invalidVersion.rawValue
-            } else { return false }
-        }) else { return nil }
-        
-        guard let extensions = validError.extensions as? [String: String] else { return nil }
-        guard let message = validError.message else { return nil }
-        let versionError = InvalidVersionError(from: extensions, message)
-        return versionError
-    }
-}
+struct GraphQLError: Error { var errors: [Error] }
 
 extension ApolloClient {
     public func fetch<Query: GraphQLQuery>(
@@ -61,11 +24,7 @@ extension ApolloClient {
                     if let data = result.data {
                         completion(.success(data))
                     } else if let errors = result.errors {
-                        /*if let versionError = VersionErrorHandler().getVersionError(from: errors) {
-                            
-                        }*/
-                        //print("GERROR 1:", VersionErrorHandler().getVersionError(from: errors))
-                        completion(.failure(GraphQLStandardError(errors: errors)))
+                        completion(.failure(GraphQLError(errors: errors)))
                     }
                 case let .failure(error): completion(.failure(error))
                 }
@@ -100,7 +59,7 @@ extension ApolloClient {
                         if let data = result.data {
                             completion(.success(data))
                         } else if let errors = result.errors {
-                            completion(.failure(GraphQLStandardError(errors: errors)))
+                            completion(.failure(GraphQLError(errors: errors)))
                         }
                     case let .failure(error): completion(.failure(error))
                     }
@@ -125,9 +84,7 @@ extension ApolloClient {
                     if let data = result.data {
                         callbacker(data)
                     } else if let errors = result.errors {
-                        let errs = errors.first!
-                        print("GERROR 2:", errs["supportEmail"])
-                        onError(GraphQLStandardError(errors: errors))
+                        onError(GraphQLError(errors: errors))
                     }
                 case let .failure(error): onError(error)
                 }
@@ -152,7 +109,7 @@ extension ApolloClient {
                     if let data = result.data {
                         completion(.success(data))
                     } else if let errors = result.errors {
-                        completion(.failure(GraphQLStandardError(errors: errors)))
+                        completion(.failure(GraphQLError(errors: errors)))
                     }
                 case let .failure(error): completion(.failure(error))
                 }
@@ -181,7 +138,7 @@ extension ApolloClient {
                         if let data = result.data {
                             callbacker(data)
                         } else if let errors = result.errors {
-                            onError(GraphQLStandardError(errors: errors))
+                            onError(GraphQLError(errors: errors))
                         }
                     case let .failure(error): onError(error)
                     }
