@@ -102,7 +102,7 @@ extension AppJourney {
     static func claimsInfoJourney() -> some JourneyPresentation {
         Journey(ClaimsInfoPager())
             .onAction(ClaimsStore.self) { action in
-                if case .submitClaims = action {
+                if case .submitNewClaim = action {
                     DismissJourney()
                 }
             }

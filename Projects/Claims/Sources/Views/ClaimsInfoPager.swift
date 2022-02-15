@@ -24,7 +24,7 @@ extension ClaimsInfoPager: Presentable {
             buttonDoneTitle: L10n.ClaimsExplainer.buttonStartClaim,
             pages: []
         ) { viewController in
-            store.send(.submitClaims)
+            store.send(.submitNewClaim)
             return Future(.forever)
         }
 

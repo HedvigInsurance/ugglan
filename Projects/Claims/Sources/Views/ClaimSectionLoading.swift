@@ -34,13 +34,13 @@ struct ClaimSectionLoading: View {
     public func startClaimsButton(_ claims: [Claim]) -> some View {
         if claims.count > 0 {
             hButton.LargeButtonOutlined {
-                store.send(.submitClaims)
+                store.send(.submitNewClaim)
             } content: {
                 L10n.Home.OpenClaim.startNewClaimButton.hText()
             }
         } else {
             hButton.LargeButtonFilled {
-                store.send(.submitClaims)
+                store.send(.submitNewClaim)
             } content: {
                 hText(L10n.HomeTab.claimButtonText)
             }

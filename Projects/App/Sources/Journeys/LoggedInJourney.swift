@@ -174,7 +174,7 @@ extension JourneyPresentation {
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {
                 AppJourney.claimDetailJourney(claim: claim)
-            } else if case .submitClaims = action {
+            } else if case .submitNewClaim = action {
                 AppJourney.claimJourney
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat()

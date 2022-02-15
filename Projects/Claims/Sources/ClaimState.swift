@@ -12,7 +12,7 @@ public struct ClaimsState: StateProtocol {
 
 public enum ClaimsAction: ActionProtocol {
     case openFreeTextChat
-    case submitClaims
+    case submitNewClaim
     case fetchClaims
     case setClaims(claims: [Claim])
     case openHowClaimsWork
@@ -63,7 +63,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.claims = claims
         case .openClaimDetails:
             break
-        case .submitClaims:
+        case .submitNewClaim:
             break
         }
 
