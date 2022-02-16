@@ -151,6 +151,7 @@ extension Pager: Presentable {
 
                 bag += scrolledToEndCallbacker.providedSignal.onValue {
                     self.onEnd(viewController).onResult(completion)
+                    completion(.success)
                 }
 
                 return DelayedDisposer(bag, delay: 2)
