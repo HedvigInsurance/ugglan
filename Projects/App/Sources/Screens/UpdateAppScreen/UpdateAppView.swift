@@ -10,12 +10,13 @@ import hGraphQL
 
 struct UpdateAppView: View {
     var body: some View {
-        ZStack {
+        hForm {
             VStack(spacing: 24) {
                 Image(uiImage: hCoreUIAssets.warningTriangle.image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
+                    .padding(.top)
                 L10n.AppUpdateNeeded.title.hText(.title2)
                 L10n.AppUpdateNeeded.body
                     .hText(.body)
@@ -32,7 +33,6 @@ struct UpdateAppView: View {
                     }
                 }
             }
-            .padding()
         }
     }
 }
