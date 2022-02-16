@@ -15,7 +15,7 @@ extension HowClaimsWorkButton: Presentable {
         let bag = DisposeBag()
         let stackView = UIStackView()
         let store: HomeStore = self.get()
-        
+
         let howClaimsWorkButton = Button(
             title: L10n.ClaimsExplainer.title,
             type: .iconTransparent(
@@ -55,7 +55,7 @@ extension HowClaimsWorkButton: Presentable {
                     }
                 }
             }
-        
+
         return (stackView, bag)
     }
 }

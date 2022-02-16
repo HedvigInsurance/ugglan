@@ -45,7 +45,7 @@ extension ActiveSection: Presentable {
         }
 
         bag += section.appendSpacingAndDumpOnDispose(.inbetween)
-        
+
         let howClaimsWorkButton = HowClaimsWorkButton()
         bag += section.append(howClaimsWorkButton)
 

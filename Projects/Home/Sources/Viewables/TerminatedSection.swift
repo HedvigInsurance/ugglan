@@ -48,9 +48,9 @@ extension TerminatedSection: Presentable {
         bag += claimButton.onTapSignal.onValue {
             store.send(.openClaims)
         }
-        
+
         bag += section.appendSpacingAndDumpOnDispose(.inbetween)
-        
+
         let howClaimsWorkButton = HowClaimsWorkButton()
         bag += section.append(howClaimsWorkButton)
 
