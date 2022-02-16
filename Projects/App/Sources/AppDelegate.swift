@@ -131,10 +131,10 @@ let log = Logger.builder
             UNUserNotificationCenter.current()
                 .requestAuthorization(
                     options: authOptions,
-                    completionHandler: { granted, _ in
+                    completionHandler: { _, _ in
                         completion(.success)
 
-                        hAnalyticsEvent.notificationPermission(granted: granted).send()
+                        self.trackNotificationPermission()
 
                         DispatchQueue.main.async {
                             UIApplication.shared.registerForRemoteNotifications()
@@ -246,17 +246,7 @@ let log = Logger.builder
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
 
-        UNUserNotificationCenter.current()
-            .getNotificationSettings { settings in
-                switch settings.authorizationStatus {
-                case .authorized:
-                    hAnalyticsEvent.notificationPermission(granted: true).send()
-                case .denied:
-                    hAnalyticsEvent.notificationPermission(granted: false).send()
-                default:
-                    return
-                }
-            }
+        self.trackNotificationPermission()
 
         // treat an empty token as a newly downloaded app and setLastNewsSeen
         if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
