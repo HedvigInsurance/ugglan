@@ -9,7 +9,10 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ActiveSection { @Inject var client: ApolloClient }
+struct ActiveSection<ClaimsContent: UIView> {
+    @Inject var client: ApolloClient
+    var claimsContent: ClaimsContent
+}
 
 extension ActiveSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
@@ -21,13 +24,10 @@ extension ActiveSection: Presentable {
             separatorType: .none
         )
 
-        let claims = Claims()
-        let hostingView = HostingView(rootView: claims)
-
-        section.append(hostingView)
+        section.append(claimsContent)
 
         bag += {
-            hostingView.removeFromSuperview()
+            claimsContent.removeFromSuperview()
         }
 
         bag += section.append(ConnectPaymentCard())

@@ -10,10 +10,15 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct Home {
+public struct Home<ClaimsContent: UIView> {
     @Inject var client: ApolloClient
+    var claimsContent: ClaimsContent
 
-    public init() {}
+    public init(
+        claimsContent: ClaimsContent
+    ) {
+        self.claimsContent = claimsContent
+    }
 }
 
 public enum HomeResult {
@@ -136,7 +141,9 @@ extension Home: Presentable {
                     innerBag += titleSection.append(label)
                 }
 
-                innerBag += form.append(ActiveSection())
+                innerBag += form.append(
+                    ActiveSection(claimsContent: self.claimsContent)
+                )
 
                 if hAnalyticsExperiment.movingFlow {
                     let section = HomeVerticalSection(
