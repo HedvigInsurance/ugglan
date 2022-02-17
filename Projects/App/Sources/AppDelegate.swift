@@ -150,7 +150,7 @@ let log = Logger.builder
         let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
 
         if adyenRedirect { return adyenRedirect }
-        
+
         let impersonate = Impersonate()
         if impersonate.canImpersonate(with: url) {
             impersonate.impersonate(with: url)
