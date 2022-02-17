@@ -26,28 +26,29 @@ public enum UgglanAction: ActionProtocol {
 
 public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
     @Inject var client: ApolloClient
-    
+
     private func performTokenExchange(with token: String) -> FiniteSignal<UgglanAction> {
-        return client.perform(
-            mutation: GraphQL.ExchangeTokenMutation(
-                exchangeToken: token.removingPercentEncoding ?? ""
+        return
+            client.perform(
+                mutation: GraphQL.ExchangeTokenMutation(
+                    exchangeToken: token.removingPercentEncoding ?? ""
+                )
             )
-        )
-        .map(on: .main) { response in
-            guard
-                let token = response.exchangeToken
-                    .asExchangeTokenSuccessResponse?
-                    .token
-            else { return .exchangeFailed }
+            .map(on: .main) { response in
+                guard
+                    let token = response.exchangeToken
+                        .asExchangeTokenSuccessResponse?
+                        .token
+                else { return .exchangeFailed }
 
-            globalPresentableStoreContainer.deletePersistanceContainer()
-            globalPresentableStoreContainer = PresentableStoreContainer()
+                globalPresentableStoreContainer.deletePersistanceContainer()
+                globalPresentableStoreContainer = PresentableStoreContainer()
 
-            UIApplication.shared.appDelegate.setToken(token)
+                UIApplication.shared.appDelegate.setToken(token)
 
-            return .showLoggedIn
-        }
-        .valueThenEndSignal
+                return .showLoggedIn
+            }
+            .valueThenEndSignal
     }
 
     public override func effects(
@@ -60,7 +61,7 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             let exchangeToken =
                 afterHashbang?.replacingOccurrences(of: "exchange-token=", with: "")
                 ?? ""
-            
+
             return performTokenExchange(with: exchangeToken)
         case let .exchangePaymentToken(token):
             return performTokenExchange(with: token)
