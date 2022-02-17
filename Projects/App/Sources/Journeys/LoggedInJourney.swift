@@ -17,7 +17,7 @@ extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
         let hostingView = HostingView(rootView: claims)
-        
+
         return Journey(
             Home(claimsContent: hostingView),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
