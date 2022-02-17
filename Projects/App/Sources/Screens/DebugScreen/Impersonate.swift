@@ -7,6 +7,7 @@ import hGraphQL
 
 struct Impersonate {
     @Inject var client: ApolloClient
+    @PresentableStore var store: UgglanStore
 
     private func getToken(from url: URL) -> String? {
         let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
@@ -30,27 +31,6 @@ struct Impersonate {
     func impersonate(with url: URL) {
         guard let exchangeToken = getToken(from: url) else { return }
 
-        client.perform(
-            mutation: GraphQL.ExchangeTokenMutation(
-                exchangeToken: exchangeToken.removingPercentEncoding ?? ""
-            )
-        )
-        .onValue { response in
-            guard
-                let token = response.exchangeToken
-                    .asExchangeTokenSuccessResponse?
-                    .token
-            else { return }
-
-            ApolloClient.cache = InMemoryNormalizedCache()
-            ApolloClient.saveToken(token: token)
-            ApolloClient.initAndRegisterClient()
-                .always {
-                    ChatState.shared = ChatState()
-                    UIApplication.shared.appDelegate.bag +=
-                        UIApplication.shared.appDelegate
-                        .window.present(AppJourney.loggedIn)
-                }
-        }
+        store.send(.exchangePaymentToken(token: exchangeToken))
     }
 }

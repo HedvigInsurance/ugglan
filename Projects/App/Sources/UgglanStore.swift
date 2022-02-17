@@ -18,6 +18,7 @@ public enum UgglanAction: ActionProtocol {
     case showLoggedIn
     case openClaims
     case exchangePaymentLink(link: String)
+    case exchangePaymentToken(token: String)
     case exchangeFailed
     case didAcceptHonestyPledge
     case openChat
@@ -25,6 +26,29 @@ public enum UgglanAction: ActionProtocol {
 
 public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
     @Inject var client: ApolloClient
+    
+    private func performTokenExchange(with token: String) -> FiniteSignal<UgglanAction> {
+        return client.perform(
+            mutation: GraphQL.ExchangeTokenMutation(
+                exchangeToken: token.removingPercentEncoding ?? ""
+            )
+        )
+        .map(on: .main) { response in
+            guard
+                let token = response.exchangeToken
+                    .asExchangeTokenSuccessResponse?
+                    .token
+            else { return .exchangeFailed }
+
+            globalPresentableStoreContainer.deletePersistanceContainer()
+            globalPresentableStoreContainer = PresentableStoreContainer()
+
+            UIApplication.shared.appDelegate.setToken(token)
+
+            return .showLoggedIn
+        }
+        .valueThenEndSignal
+    }
 
     public override func effects(
         _ getState: @escaping () -> UgglanState,
@@ -36,28 +60,10 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             let exchangeToken =
                 afterHashbang?.replacingOccurrences(of: "exchange-token=", with: "")
                 ?? ""
-
-            return
-                client.perform(
-                    mutation: GraphQL.ExchangeTokenMutation(
-                        exchangeToken: exchangeToken.removingPercentEncoding ?? ""
-                    )
-                )
-                .map(on: .main) { response in
-                    guard
-                        let token = response.exchangeToken
-                            .asExchangeTokenSuccessResponse?
-                            .token
-                    else { return .exchangeFailed }
-
-                    globalPresentableStoreContainer.deletePersistanceContainer()
-                    globalPresentableStoreContainer = PresentableStoreContainer()
-
-                    UIApplication.shared.appDelegate.setToken(token)
-
-                    return .showLoggedIn
-                }
-                .valueThenEndSignal
+            
+            return performTokenExchange(with: exchangeToken)
+        case let .exchangePaymentToken(token):
+            return performTokenExchange(with: token)
         default:
             break
         }
