@@ -151,6 +151,11 @@ let log = Logger.builder
 
         if adyenRedirect { return adyenRedirect }
 
+        let impersonate = Impersonate()
+        if impersonate.canImpersonate(with: url) {
+            impersonate.impersonate(with: url)
+        }
+
         return false
     }
 
