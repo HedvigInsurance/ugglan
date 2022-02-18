@@ -8,11 +8,10 @@ struct ClaimSection: View {
     internal init(
         claims: [Claim]
     ) {
-        state = ClaimSectionState(claims: claims)
+        self.claims = claims
     }
 
-    @ObservedObject
-    var state: ClaimSectionState
+    var claims: [Claim]
 
     @PresentableStore
     var store: ClaimsStore
@@ -26,7 +25,7 @@ struct ClaimSection: View {
     var body: some View {
         hCarousel(
             spacing: 16,
-            items: state.claims,
+            items: claims,
             tapAction: tapAction
         ) { claim in
             VStack {
