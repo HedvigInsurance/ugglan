@@ -5,6 +5,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -93,6 +94,7 @@ public struct AdyenPayIn: Presentable {
         .materialize()
 
         viewController.title = L10n.adyenPayinTitle
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewConnectPaymentAdyen())
 
         return (viewController, result)
     }

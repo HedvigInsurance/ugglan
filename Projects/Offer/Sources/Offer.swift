@@ -98,14 +98,7 @@ extension Offer: Presentable {
                 }
             }
 
-        bag += store.stateSignal
-            .distinct({ lhs, rhs in
-                lhs.ids == rhs.ids
-            })
-            .filter(predicate: { !$0.ids.isEmpty })
-            .onValue { state in
-                hAnalyticsEvent.screenViewOffer(offerIds: state.ids).send()
-            }
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewOffer(offerIds: store.state.ids))
 
         let optionsOrCloseButton = UIBarButtonItem(
             image: hCoreUIAssets.menuIcon.image,
