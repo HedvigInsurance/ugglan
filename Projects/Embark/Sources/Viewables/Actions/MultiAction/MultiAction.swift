@@ -96,9 +96,10 @@ extension MultiAction: Viewable {
             return innerBag
         }
 
-        bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in let height = 0.55 * maxCellWidth
-
-            return CGSize(width: maxCellWidth, height: height)
+        bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
+            let width = collectionKit.view.frame.size.width / 2 - 8
+            let height = 0.55 * width
+            return CGSize(width: width, height: height)
         }
 
         bag += view.didMoveToWindowSignal.onValue {

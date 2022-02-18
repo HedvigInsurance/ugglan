@@ -51,7 +51,7 @@ extension FutureSection: Viewable {
                     titleLabel.value = L10n.HomeTab.pendingSwitchableWelcomeTitle(
                         homeData.member.firstName ?? ""
                     )
-                    subtitleLabel.value = L10n.HomeTab.pendingNonswitchableBody
+                    subtitleLabel.value = L10n.HomeTab.pendingSwitchableBody
                 } else {
                     titleLabel.value = L10n.HomeTab.pendingNonswitchableWelcomeTitle(
                         homeData.member.firstName ?? ""
