@@ -7,19 +7,19 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
     private let spacing: CGFloat
     /// Item to pass to iterator content
     let items: [hCarouselItem]
-    
+
     private let tapAction: (hCarouselItem) -> Void
-    
+
     @State private var screenDrag: Float = 0.0
     @State private var activeCard = 0
     @State private var calcOffset: CGFloat
-    
+
     private let cardWidth: CGFloat
     private let numberOfItems: CGFloat
     private let screenWidth = UIScreen.main.bounds.width
     private let cardWithSpacing: CGFloat
     private let xOffsetToShift: CGFloat
-    
+
     public init(
         spacing: CGFloat,
         items: [hCarouselItem],
@@ -37,7 +37,7 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
         self.content = content
         self.tapAction = tapAction
     }
-    
+
     var dragOverTap: some Gesture {
         TapGesture()
             .onEnded { _ in
@@ -53,9 +53,10 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
                     }
                     .onEnded { value in
                         self.handleDragEnd(value.translation.width)
-                    })
+                    }
+            )
     }
-    
+
     public var body: some View {
         VStack {
             HStack(spacing: spacing) {
@@ -72,11 +73,11 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
                 .easeInOut(duration: 0.15)
             )
             .gesture(dragOverTap, including: .gesture)
-            
+
             hPagerDots(currentIndex: activeCard, totalCount: items.count)
         }
     }
-    
+
     func calculateOffset(_ screenDrag: Float) {
         let activeOffset = xOffsetToShift - (cardWithSpacing * CGFloat(activeCard))
         let nextOffset = xOffsetToShift - (cardWithSpacing * CGFloat(activeCard + 1))
@@ -85,7 +86,7 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
             calcOffset = activeOffset + CGFloat(screenDrag)
         }
     }
-    
+
     func handleDragEnd(_ translationWidth: CGFloat) {
         if translationWidth < -50 && CGFloat(activeCard) < numberOfItems - 1 {
             activeCard += 1
@@ -100,7 +101,7 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
 struct hCarouselCard<Content: View, hCarouselItem: Identifiable>: View {
     private let content: Content
     private let width: CGFloat
-    
+
     init(
         _ item: hCarouselItem,
         width: CGFloat,
@@ -109,7 +110,7 @@ struct hCarouselCard<Content: View, hCarouselItem: Identifiable>: View {
         self.width = width
         self.content = content(item)
     }
-    
+
     var body: some View {
         VStack {
             self.content

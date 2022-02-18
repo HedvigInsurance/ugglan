@@ -16,13 +16,13 @@ struct ClaimSection: View {
 
     @PresentableStore
     var store: ClaimsStore
-    
+
     var tapAction: (Claim) -> Void {
         return { claim in
             store.send(.openClaimDetails(claim: claim))
         }
     }
-    
+
     var body: some View {
         hCarousel(
             spacing: 16,
