@@ -10,8 +10,9 @@ struct Impersonate {
     @PresentableStore var store: UgglanStore
 
     private func getToken(from url: URL) -> String? {
-        let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        let items = (urlComponents?.queryItems)! as [NSURLQueryItem]
+        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
+        guard let queryItems = urlComponents.queryItems else { return nil }
+        let items = queryItems as [NSURLQueryItem]
         if url.scheme == "hedvigengineering",
             let token = items.first,
             token.name == "token",
