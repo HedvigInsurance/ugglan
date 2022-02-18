@@ -16,33 +16,24 @@ struct ClaimSection: View {
 
     @PresentableStore
     var store: ClaimsStore
-
+    
+    var tapAction: (Claim) -> Void {
+        return { claim in
+            store.send(.openClaimDetails(claim: claim))
+        }
+    }
+    
     var body: some View {
-        VStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(state.claims, id: \.id) { claim in
-                        ClaimStatus(claim: claim)
-                            .frame(width: state.frameWidth * 0.9)
-                            .padding(.top)
-                            .padding(.bottom, 5)
-                    }
-                }
-                .padding([.leading, .trailing], 14)
+        hCarousel(
+            spacing: 16,
+            items: state.claims,
+            tapAction: tapAction
+        ) { claim in
+            VStack {
+                ClaimStatus(claim: claim)
+                    .padding(.top)
+                    .padding(.bottom, 5)
             }
-            .padding([.leading, .trailing], -14)
-            .background(
-                GeometryReader { geo in
-                    Color.clear.onReceive(Just(geo.size.width)) { width in
-                        state.updateFrameWidth(width: width)
-                    }
-                }
-            )
-            .introspectScrollView { scrollView in
-                state.scrollView = scrollView
-            }
-            hPagerDots(currentIndex: state.currentIndex, totalCount: state.claims.count)
-                .padding(.bottom, 5)
         }
     }
 }
