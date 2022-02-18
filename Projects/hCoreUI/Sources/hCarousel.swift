@@ -1,11 +1,8 @@
 import SwiftUI
 
 public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
-    /// iterator content property
     private let content: (hCarouselItem) -> Content
-    /// spacing is required to calculate proper offset
     private let spacing: CGFloat
-    /// Item to pass to iterator content
     let items: [hCarouselItem]
 
     private let tapAction: (hCarouselItem) -> Void
