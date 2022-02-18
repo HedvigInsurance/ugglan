@@ -5,12 +5,6 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimSection: View {
-    internal init(
-        claims: [Claim]
-    ) {
-        self.claims = claims
-    }
-
     var claims: [Claim]
 
     @PresentableStore
@@ -28,11 +22,9 @@ struct ClaimSection: View {
             items: claims,
             tapAction: tapAction
         ) { claim in
-            VStack {
-                ClaimStatus(claim: claim)
-                    .padding(.top)
-                    .padding(.bottom, 5)
-            }
+            ClaimStatus(claim: claim)
+                .padding(.top)
+                .padding(.bottom, 5)
         }
     }
 }
