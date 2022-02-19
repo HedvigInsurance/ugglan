@@ -38,6 +38,24 @@ public indirect enum ContractFilter {
     case none
 }
 
+extension ContractFilter {
+    func nonemptyFilter(state: ContractState) -> ContractFilter {
+        switch self {
+        case .active:
+            let activeContracts = state
+                .contractBundles
+                .flatMap { $0.contracts }
+            return activeContracts.isEmpty ? self.emptyFilter : self
+        case .terminated:
+            let terminatedContracts = state.contracts.filter { contract in
+                contract.currentAgreement?.status == .terminated
+            }
+            return terminatedContracts.isEmpty ? self.emptyFilter : self
+        case .none: return self
+        }
+    }
+}
+
 public struct Contracts {
     @PresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()

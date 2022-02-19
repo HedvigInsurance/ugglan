@@ -35,7 +35,7 @@ extension ContractTable: View {
             PresentableStoreLens(
                 ContractStore.self,
                 getter: { state in
-                    getContractsToShow(for: state, filter: filter)
+                    getContractsToShow(for: state, filter: filter.nonemptyFilter(state: state))
                 }
             ) { contracts in
                 ForEach(contracts, id: \.id) { contract in
@@ -49,35 +49,42 @@ extension ContractTable: View {
         .presentableStoreLensAnimation(.spring())
         .sectionContainerStyle(.transparent)
 
-        if self.filter.displaysActiveContracts {
-            CrossSellingStack()
-
-            PresentableStoreLens(
-                ContractStore.self,
-                getter: { state in
-                    getContractsToShow(for: state, filter: .terminated(ifEmpty: .none))
-                }
-            ) { terminatedContracts in
-                if !terminatedContracts.isEmpty {
-                    hSection(header: hText(L10n.InsurancesTab.moreTitle)) {
-                        hRow {
-                            hText(L10n.InsurancesTab.terminatedInsurancesLabel)
-                        }
-                        .withCustomAccessory({
-                            Spacer()
-                            hText(String(terminatedContracts.count), style: .body)
-                                .foregroundColor(hLabelColor.secondary)
-                                .padding(.trailing, 8)
-                            StandaloneChevronAccessory()
-                        })
-                        .onTap {
-                            store.send(.openTerminatedContracts)
-                        }
-                    }
-                    .transition(.slide)
-                }
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: { state in
+                return self.filter.nonemptyFilter(state: state).displaysActiveContracts
             }
-            .presentableStoreLensAnimation(.spring())
+        ) { displaysActiveContracts in
+            if displaysActiveContracts {
+                CrossSellingStack()
+
+                PresentableStoreLens(
+                    ContractStore.self,
+                    getter: { state in
+                        getContractsToShow(for: state, filter: .terminated(ifEmpty: .none))
+                    }
+                ) { terminatedContracts in
+                    if !terminatedContracts.isEmpty {
+                        hSection(header: hText(L10n.InsurancesTab.moreTitle)) {
+                            hRow {
+                                hText(L10n.InsurancesTab.terminatedInsurancesLabel)
+                            }
+                            .withCustomAccessory({
+                                Spacer()
+                                hText(String(terminatedContracts.count), style: .body)
+                                    .foregroundColor(hLabelColor.secondary)
+                                    .padding(.trailing, 8)
+                                StandaloneChevronAccessory()
+                            })
+                            .onTap {
+                                store.send(.openTerminatedContracts)
+                            }
+                        }
+                        .transition(.slide)
+                    }
+                }
+                .presentableStoreLensAnimation(.spring())
+            }
         }
     }
 }
