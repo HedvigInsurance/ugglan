@@ -2,6 +2,7 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -57,6 +58,7 @@ extension MyInfo: Presentable {
         }
 
         bag += viewController.install(form)
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewContactInfo())
 
         return (
             viewController,
