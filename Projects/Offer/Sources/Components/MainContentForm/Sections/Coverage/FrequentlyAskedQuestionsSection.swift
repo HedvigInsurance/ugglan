@@ -90,6 +90,9 @@ extension FrequentlyAskedQuestionsSection: Presentable {
                     imageView.setContentHuggingPriority(.required, for: .horizontal)
 
                     row.append(imageView)
+                    imageView.snp.makeConstraints { make in
+                        make.width.equalTo(16)
+                    }
 
                     return innerBag
                 }
