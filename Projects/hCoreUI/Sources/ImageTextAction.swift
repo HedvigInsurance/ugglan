@@ -38,19 +38,22 @@ public struct ImageTextAction<ActionResult> {
     @ReadWriteState public var body: String
     public let actions: [(ActionResult, Button)]
     public let showLogo: Bool
+    public let alignment: NSTextAlignment
 
     public init(
         image: ImageWithOptions,
         title: String,
         body: String,
         actions: [(ActionResult, Button)],
-        showLogo: Bool
+        showLogo: Bool,
+        alignment: NSTextAlignment = .center
     ) {
         self.image = image
         self.title = title
         self.body = body
         self.actions = actions
         self.showLogo = showLogo
+        self.alignment = alignment
     }
 }
 
@@ -70,7 +73,7 @@ extension ImageTextAction: Viewable {
         let view = UIStackView()
         view.spacing = 24
         view.axis = .vertical
-        view.alignment = .center
+        view.alignment = alignment == .left ? .leading : .center
 
         if showLogo {
             let logoImageContainer = UIStackView()
@@ -115,14 +118,14 @@ extension ImageTextAction: Viewable {
 
         var titleLabel = MultilineLabel(
             value: title,
-            style: TextStyle.brand(.title2(color: .primary)).aligned(to: .center)
+            style: TextStyle.brand(.title2(color: .primary)).aligned(to: alignment)
         )
         bag += view.addArranged(titleLabel)
         bag += $title.onValue { value in titleLabel.value = value }
 
         var bodyLabel = MultilineLabel(
             value: body,
-            style: TextStyle.brand(.body(color: .secondary)).aligned(to: .center)
+            style: TextStyle.brand(.body(color: .secondary)).aligned(to: alignment)
         )
         bag += view.addArranged(bodyLabel)
         bag += $body.onValue { value in bodyLabel.value = value }
