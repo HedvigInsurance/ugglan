@@ -10,7 +10,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct Home<ClaimsContent: UIView> {
+public struct Home<ClaimsContent: View> {
     @Inject var client: ApolloClient
     var claimsContent: ClaimsContent
 

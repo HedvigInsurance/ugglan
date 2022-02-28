@@ -4,12 +4,13 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
 
-struct ActiveSection<ClaimsContent: UIView> {
+struct ActiveSection<ClaimsContent: View> {
     @Inject var client: ApolloClient
     var claimsContent: ClaimsContent
 }
@@ -23,11 +24,13 @@ extension ActiveSection: Presentable {
             insets: .init(top: 0, left: 14, bottom: 0, right: 14),
             separatorType: .none
         )
-
-        section.append(claimsContent)
+        
+        let hostingView = HostingView(rootView: claimsContent)
+        
+        section.append(hostingView)
 
         bag += {
-            claimsContent.removeFromSuperview()
+            hostingView.removeFromSuperview()
         }
 
         bag += section.append(ConnectPaymentCard())
