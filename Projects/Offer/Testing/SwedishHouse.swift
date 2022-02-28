@@ -59,7 +59,8 @@ extension GraphQL.QuoteBundleQuery.Data {
                             frequentlyAskedQuestions: generateFrequentlyAskedQuestions(),
                             inception: .makeIndependentInceptions(inceptions: [
                                 .init(
-                                    startDate: "2020-05-10",
+                                    startDate: "2022-05-10",
+                                    currentInsurer: .init(id: "Hedvig", displayName: "Hedvig", switchable: true),
                                     correspondingQuote: .makeCompleteQuote(id: "123")
                                 )
                             ]),

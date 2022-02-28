@@ -16,10 +16,12 @@ extension EnvironmentValues {
     }
 }
 
-struct hRowDivider: View {
+public struct hRowDivider: View {
     @SwiftUI.Environment(\.hRowDividerSettings) var settings: hRowDividerSettings
 
-    var body: some View {
+    public init() {}
+
+    public var body: some View {
         SwiftUI.Divider().padding(settings.insets)
     }
 }

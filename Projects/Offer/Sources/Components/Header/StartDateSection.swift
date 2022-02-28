@@ -141,9 +141,11 @@ extension StartDateSection: Presentable {
                     .withLatestFrom(store.stateSignal.atOnce().compactMap { $0.currentVariant?.bundle })
                     .onValue { viewController, quoteBundle in
                         viewController.present(
-                            StartDate(quoteBundle: quoteBundle).wrappedInCloseButton(),
-                            style: .detented(.large)
+                            StartDate(quoteBundle: quoteBundle).journey
                         )
+                        .onValue { _ in
+
+                        }
                     }
                 innerBag += { section.remove(row) }
 

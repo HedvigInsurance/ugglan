@@ -30,6 +30,7 @@ public struct OfferState: StateProtocol {
     var swedishBankIDStatusCode: String? = nil
     var offerData: OfferBundle? = nil
     var hasCheckedOutId: String? = nil
+    var isUpdatingStartDates: Bool = false
 
     var dataCollectionEnabled: Bool {
         offerData?.possibleVariations
@@ -69,8 +70,8 @@ public enum OfferAction: ActionProtocol {
     case refetch
 
     /// Start date events
-    case setStartDate(id: String, startDate: Date?)
-    case updateStartDate(id: String, startDate: Date?)
+    case setStartDates(dateMap: [String: Date?])
+    case updateStartDates(dateMap: [String: Date?])
     case removeStartDate(id: String)
 
     /// Campaign events
@@ -135,21 +136,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     return .setOfferBundle(bundle: $0)
                 }
                 .valueThenEndSignal
-        case let .removeStartDate(id):
-            return self.client
-                .perform(
-                    mutation: GraphQL.RemoveStartDateMutation(id: id)
-                )
-                .map { data in
-                    if data.removeStartDate.asCompleteQuote?.startDate == nil {
-                        return OfferAction.setStartDate(id: id, startDate: nil)
-                    } else {
-                        return .failed(event: .updateStartDate)
-                    }
-                }
-                .valueThenEndSignal
-        case let .updateStartDate(id, startDate):
-            return self.updateStartDate(quoteId: id, date: startDate)
+        case let .updateStartDates(dateMap):
+            return self.updateStartDates(dateMap: dateMap)
         case .removeRedeemedCampaigns:
             return removeRedeemedCampaigns()
         case let .updateRedeemedCampaigns(discountCode):
@@ -185,6 +173,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case .query:
             newState.isLoading = true
             newState.offerData = nil
+            newState.isUpdatingStartDates = false
         case let .setIds(ids, selectedIds):
             newState.ids = ids
             newState.selectedIds = selectedIds
@@ -201,7 +190,9 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             }
         case let .startSwedishBankIDSign(autoStartToken):
             newState.swedishBankIDAutoStartToken = autoStartToken
-        case let .setStartDate(id, startDate):
+        case let .setStartDates(dateMap):
+            newState.isUpdatingStartDates = false
+
             guard var newOfferData = newState.offerData else { return newState }
 
             newOfferData.possibleVariations = newOfferData.possibleVariations.map { variant in
@@ -211,21 +202,26 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 case let .independent(independentInceptions):
                     let newInceptions = independentInceptions.map {
                         inception -> QuoteBundle.Inception.IndependentInception in
-                        if inception.correspondingQuote.id == id {
-                            var copy = inception
-                            copy.startDate = startDate?.localDateString
-                            return copy
+                        var copy = inception
+
+                        dateMap.forEach { quoteId, startDate in
+                            if inception.correspondingQuote.id == quoteId {
+                                copy.startDate = startDate?.localDateString
+                            }
                         }
-                        return inception
+
+                        return copy
                     }
                     newVariant.bundle.inception = .independent(inceptions: newInceptions)
                 case .unknown:
                     break
                 case .concurrent(let inception):
-                    if inception.correspondingQuotes.contains(where: { $0.id == id }) {
-                        var newInception = inception
-                        newInception.startDate = startDate?.localDateString
-                        newVariant.bundle.inception = .concurrent(inception: newInception)
+                    dateMap.forEach { quoteId, startDate in
+                        if inception.correspondingQuotes.contains(where: { $0.id == quoteId }) {
+                            var newInception = inception
+                            newInception.startDate = startDate?.localDateString
+                            newVariant.bundle.inception = .concurrent(inception: newInception)
+                        }
                     }
                 }
 
@@ -237,6 +233,10 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.offerData = bundle
         case let .setLoading(isLoading):
             newState.isLoading = isLoading
+        case .updateStartDates:
+            newState.isUpdatingStartDates = true
+        case .failed(event: .updateStartDate):
+            newState.isUpdatingStartDates = false
         default:
             break
         }
@@ -299,34 +299,58 @@ extension OfferStore {
             }
     }
 
-    private func updateStartDate(quoteId: String, date: Date?) -> FiniteSignal<OfferAction>? {
-        guard let date = date else {
-            return self.client.perform(mutation: GraphQL.RemoveStartDateMutation(id: quoteId))
+    private func updateStartDates(dateMap: [String: Date?]) -> FiniteSignal<OfferAction>? {
+        let signals = dateMap.map { quoteId, date -> FiniteSignal<Result<(String, Date?)>> in
+            guard let date = date else {
+                return self.client.perform(mutation: GraphQL.RemoveStartDateMutation(id: quoteId))
+                    .map { data in
+                        guard data.removeStartDate.asCompleteQuote?.startDate == nil else {
+                            return .failure(OfferAction.OfferStoreError.updateStartDate)
+                        }
+
+                        return .success((quoteId, date))
+                    }
+                    .mapError { _ in
+                        .failure(OfferAction.OfferStoreError.updateStartDate)
+                    }
+                    .valueSignal
+            }
+
+            return self.client
+                .perform(
+                    mutation: GraphQL.ChangeStartDateMutation(
+                        id: quoteId,
+                        startDate: date.localDateString ?? ""
+                    )
+                )
                 .map { data in
-                    guard data.removeStartDate.asCompleteQuote?.startDate == nil else {
-                        return .failed(event: .updateStartDate)
+                    guard let date = data.editQuote.asCompleteQuote?.startDate?.localDateToDate else {
+                        return .failure(OfferAction.OfferStoreError.updateStartDate)
                     }
 
-                    return .setStartDate(id: quoteId, startDate: date)
+                    return .success((quoteId, date))
                 }
-                .valueThenEndSignal
+                .mapError { _ in
+                    .failure(OfferAction.OfferStoreError.updateStartDate)
+                }
+                .valueSignal
         }
 
-        return self.client
-            .perform(
-                mutation: GraphQL.ChangeStartDateMutation(
-                    id: quoteId,
-                    startDate: date.localDateString ?? ""
-                )
-            )
-            .map { data in
-                guard let date = data.editQuote.asCompleteQuote?.startDate?.localDateToDate else {
-                    return .failed(event: .updateStartDate)
+        return combineLatest(signals)
+            .map { results in
+                var didStrikeError = false
+                var map: [String: Date?] = [:]
+
+                results.forEach { result in
+                    if let (quoteId, date) = try? result.get() {
+                        map[quoteId] = date
+                    } else {
+                        didStrikeError = true
+                    }
                 }
 
-                return .setStartDate(id: quoteId, startDate: date)
+                return didStrikeError ? .failed(event: .updateStartDate) : .setStartDates(dateMap: map)
             }
-            .valueThenEndSignal
     }
 
     private func signQuotesEffect() -> FiniteSignal<Action> {
