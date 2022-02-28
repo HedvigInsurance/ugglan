@@ -24,9 +24,9 @@ extension ActiveSection: Presentable {
             insets: .init(top: 0, left: 14, bottom: 0, right: 14),
             separatorType: .none
         )
-        
+
         let hostingView = HostingView(rootView: claimsContent)
-        
+
         section.append(hostingView)
 
         bag += {
