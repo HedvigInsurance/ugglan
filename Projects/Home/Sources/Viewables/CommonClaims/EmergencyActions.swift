@@ -24,7 +24,10 @@ struct EmergencyAction: Reusable, SignalProvider {
         cardContainer.backgroundColor = .brand(.primaryBackground())
         cardContainer.layer.cornerRadius = 8
 
+        let fillView = UIView()
+
         view.addArrangedSubview(cardContainer)
+        view.addArrangedSubview(fillView)
 
         let contentView = UIStackView()
         contentView.axis = .vertical
@@ -68,6 +71,7 @@ struct EmergencyAction: Reusable, SignalProvider {
                     )
                 )
                 bag += contentView.addArranged(button)
+                view.layoutIfNeeded()
 
                 bag += button.onTapSignal.onValue { _ in action.onClickButtonCallbacker.callAll() }
 
