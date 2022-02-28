@@ -5,6 +5,7 @@ import Foundation
 import Payment
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -73,7 +74,7 @@ struct PostOnboarding {
 
         let table = Table(
             rows: [
-                Localization.Locale.currentLocale.market == .se ? ReusableSignalViewable(viewable: payment) : nil,
+                hAnalyticsExperiment.postOnboardingShowPaymentStep ? ReusableSignalViewable(viewable: payment) : nil,
                 ReusableSignalViewable(viewable: pushNotifications),
             ]
             .compactMap { $0 }
