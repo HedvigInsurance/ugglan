@@ -29,7 +29,8 @@ extension AdyenSuccess: Presentable {
             title: L10n.AdyenConfirmation.headline(paymentMethod.name),
             body: "",
             actions: [((), continueButton)],
-            showLogo: false
+            showLogo: false,
+            alignment: .left
         )
 
         let (viewController, signal) = PresentableViewable(viewable: continueAction) { viewController in

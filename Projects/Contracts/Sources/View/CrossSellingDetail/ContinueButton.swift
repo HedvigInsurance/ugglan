@@ -9,9 +9,7 @@ struct ContinueButton: View {
     var crossSell: CrossSell
 
     var body: some View {
-        VStack {
-            hSeparatorColor.separator.frame(height: .hairlineWidth)
-                .edgesIgnoringSafeArea(.horizontal)
+        hFormBottomAttachedBackground {
             hButton.LargeButtonFilled {
                 if let embarkStoryName = crossSell.embarkStoryName {
                     store.send(.crossSellingDetailEmbark(name: embarkStoryName))
@@ -19,8 +17,6 @@ struct ContinueButton: View {
             } content: {
                 hText(L10n.CrossSellingCardSeAccident.cta)
             }
-            .padding(16)
         }
-        .background(hBackgroundColor.secondary.edgesIgnoringSafeArea([.bottom, .horizontal]))
     }
 }

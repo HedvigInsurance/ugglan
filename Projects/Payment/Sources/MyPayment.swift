@@ -64,11 +64,11 @@ extension MyPayment: Presentable {
         let paymentDetailsSection = PaymentDetailsSection(presentingViewController: viewController)
         bag += form.append(paymentDetailsSection)
 
-        switch Localization.Locale.currentLocale.market {
-        case .se:
+        switch hAnalyticsExperiment.paymentType {
+        case .trustly:
             let bankDetailsSection = BankDetailsSection(urlScheme: urlScheme)
             bag += form.append(bankDetailsSection)
-        case .no, .dk, .fr:
+        case .adyen:
             let cardDetailsSection = CardDetailsSection(urlScheme: urlScheme)
             bag += form.append(cardDetailsSection)
 

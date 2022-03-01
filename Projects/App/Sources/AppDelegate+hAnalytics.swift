@@ -1,6 +1,6 @@
 import Apollo
-import Firebase
 import Foundation
+import NotificationCenter
 import hAnalytics
 import hCore
 import hGraphQL
@@ -21,16 +21,32 @@ extension AppDelegate {
         hAnalyticsNetworking.trackingId = { ApolloClient.getDeviceIdentifier() }
     }
 
-    func setupHAnalyticsExperiments() {
+    func trackNotificationPermission() {
+        UNUserNotificationCenter.current()
+            .getNotificationSettings { settings in
+                switch settings.authorizationStatus {
+                case .authorized:
+                    hAnalyticsEvent.notificationPermission(granted: true).send()
+                case .denied:
+                    hAnalyticsEvent.notificationPermission(granted: false).send()
+                case .notDetermined, .ephemeral, .provisional:
+                    hAnalyticsEvent.notificationPermission(granted: nil).send()
+                @unknown default:
+                    hAnalyticsEvent.notificationPermission(granted: nil).send()
+                }
+            }
+    }
+
+    func setupHAnalyticsExperiments(numberOfTries: Int = 0) {
         log.info("Started loading hAnlyticsExperiments")
         hAnalyticsExperiment.load { success in
             if success {
                 log.info("Successfully loaded hAnlyticsExperiments")
                 ApplicationContext.shared.hasLoadedExperiments = true
             } else {
-                log.info("Failed loading hAnlyticsExperiments, retries in 100 ms")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.setupHAnalyticsExperiments()
+                log.info("Failed loading hAnlyticsExperiments, retries in \(numberOfTries * 100) ms")
+                DispatchQueue.main.asyncAfter(deadline: .now() + (Double(numberOfTries) * 0.1)) {
+                    self.setupHAnalyticsExperiments(numberOfTries: numberOfTries + 1)
                 }
             }
         }

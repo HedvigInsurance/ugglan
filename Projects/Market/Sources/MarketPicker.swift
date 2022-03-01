@@ -168,7 +168,9 @@ extension MarketPicker: Presentable {
                         )
                         .send()
 
-                        callback(())
+                        hAnalyticsExperiment.load { _ in
+                            callback(())
+                        }
                     }
 
                     bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()

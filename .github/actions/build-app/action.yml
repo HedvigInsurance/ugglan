@@ -40,7 +40,7 @@ runs:
   steps:
     - uses: actions/checkout@v2
     - name: Download generated
-      run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
+      run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:~/Cache/generated/${{ github.sha }}/ .
       shell: bash
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install

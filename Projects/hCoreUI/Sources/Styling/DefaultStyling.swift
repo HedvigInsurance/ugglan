@@ -218,6 +218,7 @@ extension DefaultStyling {
         )
 
         UIImageView.appearance().tintColor = .brand(.primaryTintColor)
+        UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(.link)
 
         current = .custom
     }

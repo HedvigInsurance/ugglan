@@ -1,6 +1,5 @@
 import Apollo
 import Datadog
-import Firebase
 import Flow
 import Foundation
 import Shake
@@ -17,7 +16,6 @@ public struct AnalyticsCoordinator {
             .compactMap { $0.member.id }
             .onValue { id in
                 Shake.setMetadata(key: "memberId", value: id)
-                Firebase.Analytics.setUserID(id)
                 Datadog.setUserInfo(
                     id: id,
                     extraInfo: [

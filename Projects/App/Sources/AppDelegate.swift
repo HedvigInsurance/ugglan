@@ -131,10 +131,10 @@ let log = Logger.builder
             UNUserNotificationCenter.current()
                 .requestAuthorization(
                     options: authOptions,
-                    completionHandler: { granted, _ in
+                    completionHandler: { _, _ in
                         completion(.success)
 
-                        hAnalyticsEvent.notificationPermission(granted: granted).send()
+                        self.trackNotificationPermission()
 
                         DispatchQueue.main.async {
                             UIApplication.shared.registerForRemoteNotifications()
@@ -150,6 +150,11 @@ let log = Logger.builder
         let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
 
         if adyenRedirect { return adyenRedirect }
+
+        let impersonate = Impersonate()
+        if impersonate.canImpersonate(with: url) {
+            impersonate.impersonate(with: url)
+        }
 
         return false
     }
@@ -186,11 +191,7 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        if Environment.current == .staging {
-            var newArguments = ProcessInfo.processInfo.arguments
-            newArguments.append("-FIRDebugEnabled")
-            ProcessInfo.processInfo.setValue(newArguments, forKey: "arguments")
-        }
+        Analytics.setAnalyticsCollectionEnabled(false)
 
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
@@ -233,6 +234,7 @@ let log = Logger.builder
         CrossFrameworkCoordinator.setup()
 
         FirebaseApp.configure()
+
         let launch = Launch()
 
         let (launchView, launchFuture) = launch.materialize()
@@ -249,17 +251,7 @@ let log = Logger.builder
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
 
-        UNUserNotificationCenter.current()
-            .getNotificationSettings { settings in
-                switch settings.authorizationStatus {
-                case .authorized:
-                    hAnalyticsEvent.notificationPermission(granted: true).send()
-                case .denied:
-                    hAnalyticsEvent.notificationPermission(granted: false).send()
-                default:
-                    return
-                }
-            }
+        self.trackNotificationPermission()
 
         // treat an empty token as a newly downloaded app and setLastNewsSeen
         if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
