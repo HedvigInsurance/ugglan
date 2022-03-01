@@ -26,8 +26,6 @@ extension MultiAction: Viewable {
         view.axis = .vertical
         view.spacing = 10
 
-        let maxCellWidth = UIScreen.main.bounds.width / 2 - 28
-
         let dataSource = MultiActionDataSource(
             maxCount: Int(data.maxAmount) ?? 1,
             addLabelTitle: data.addLabel ?? ""
@@ -96,9 +94,10 @@ extension MultiAction: Viewable {
             return innerBag
         }
 
-        bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in let height = 0.55 * maxCellWidth
-
-            return CGSize(width: maxCellWidth, height: height)
+        bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
+            let width = collectionKit.view.frame.size.width / 2 - 8
+            let height = 0.55 * width
+            return CGSize(width: width, height: height)
         }
 
         bag += view.didMoveToWindowSignal.onValue {
@@ -128,7 +127,8 @@ extension MultiAction: Viewable {
                 bag += collectionKit.view.signal(for: \.contentSize)
                     .onValue { size in
                         collectionKit.view.snp.remakeConstraints { make in
-                            let maxHeight = maxCellWidth * 0.55 * 2 + 8
+                            let width = collectionKit.view.frame.size.width / 2 - 8
+                            let maxHeight = width * 0.55 * 2 + 8
                             if maxHeight < size.height {
                                 make.height.equalTo(maxHeight)
                             } else {

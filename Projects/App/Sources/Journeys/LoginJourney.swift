@@ -38,35 +38,39 @@ extension AppJourney {
         .withDismissButton
     }
 
-    fileprivate static var simpleSign: some JourneyPresentation {
+    fileprivate static func simpleSign(type: WebViewLoginType) -> some JourneyPresentation {
         Journey(SimpleSignLoginView(), style: .detented(.large)) { id in
-            Journey(WebViewLogin(idNumber: id), style: .detented(.large)) { _ in
+            Journey(WebViewLogin(idNumber: id, type: type), style: .detented(.large)) { _ in
                 loginCompleted
             }
         }
         .withDismissButton
     }
 
-    static var login: some JourneyPresentation {
-        MarketGroupJourney { market in
-            switch market {
-            case .se:
-                bankIDSweden
-            case .no, .dk:
-                simpleSign
-            case .fr:
-                OTPAuthJourney.login { next in
-                    switch next {
-                    case let .success(accessToken):
-                        Journey(ApolloClientSaveTokenLoader(accessToken: accessToken)) { _ in
-                            loginCompleted
-                        }
-                    case .chat:
-                        AppJourney.freeTextChat().withDismissButton
-                    }
+    fileprivate static var otp: some JourneyPresentation {
+        OTPAuthJourney.login { next in
+            switch next {
+            case let .success(accessToken):
+                Journey(ApolloClientSaveTokenLoader(accessToken: accessToken)) { _ in
+                    loginCompleted
                 }
-                .setStyle(.detented(.large)).withDismissButton
+            case .chat:
+                AppJourney.freeTextChat().withDismissButton
             }
+        }
+        .setStyle(.detented(.large)).withDismissButton
+    }
+
+    @JourneyBuilder static var login: some JourneyPresentation {
+        switch hAnalyticsExperiment.loginMethod {
+        case .bankIdSweden:
+            bankIDSweden
+        case .bankIdNorway:
+            simpleSign(type: .bankIdNorway)
+        case .nemId:
+            simpleSign(type: .nemId)
+        case .otp:
+            otp
         }
     }
 }
