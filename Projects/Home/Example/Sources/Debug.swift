@@ -41,9 +41,12 @@ extension Debug: Presentable {
             bag += viewController.view.window?
                 .present(
                     Journey(
-                        Home(claimsContent: ClaimSectionDebug(), {
-                            
-                        }),
+                        Home(
+                            claimsContent: ClaimSectionDebug(),
+                            {
+
+                            }
+                        ),
                         options: [
                             .defaults, .prefersLargeTitles(true),
                             .largeTitleDisplayMode(.always),
