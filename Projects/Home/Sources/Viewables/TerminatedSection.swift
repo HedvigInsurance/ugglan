@@ -11,7 +11,7 @@ import hGraphQL
 struct TerminatedSection {
     @Inject var client: ApolloClient
     var claimSubmitHandler: () -> Void
-    
+
     init(
         _ claimSubmitHandler: @escaping () -> Void
     ) {

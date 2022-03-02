@@ -11,7 +11,7 @@ import hGraphQL
 public struct Claims {
     @PresentableStore var store: ClaimsStore
     let pollTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
-    
+
     public func claimSubmission() {
         store.send(.submitNewClaim)
     }

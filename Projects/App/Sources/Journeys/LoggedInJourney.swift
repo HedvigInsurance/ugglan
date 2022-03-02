@@ -16,7 +16,7 @@ import hCoreUI
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
-        
+
         return Journey(
             Home(claimsContent: claims, claims.claimSubmission),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
