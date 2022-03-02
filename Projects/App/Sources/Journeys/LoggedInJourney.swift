@@ -34,6 +34,7 @@ extension AppJourney {
         .onTabSelected {
             ContextGradient.currentOption = .home
         }
+        .claimStoreRedirectFromHome
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
                 return deepLink == .home
@@ -172,6 +173,14 @@ extension JourneyPresentation {
 }
 
 extension JourneyPresentation {
+    public var claimStoreRedirectFromHome: some JourneyPresentation {
+        onAction(HomeStore.self) { action in
+            if case .openClaim = action {
+                AppJourney.claimJourney
+            }
+        }
+    }
+    
     public var configureClaimsNavigation: some JourneyPresentation {
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {

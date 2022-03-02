@@ -69,7 +69,7 @@ extension CommonClaimDetail: Presentable {
             let store: HomeStore = self.get()
 
             bag += claimButton.onTapSignal.onValue {
-                store.send(.openFreeTextChat)
+                store.send(.openClaim)
             }
 
             bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))

@@ -19,6 +19,7 @@ public enum HomeAction: ActionProtocol {
     case openFreeTextChat
     case fetchMemberState
     case openMovingFlow
+    case openClaim
     case connectPayments
     case setMemberContractState(state: MemberStateData)
 }
@@ -60,6 +61,8 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         case .connectPayments:
             break
         case .openMovingFlow:
+            break
+        case .openClaim:
             break
         }
 

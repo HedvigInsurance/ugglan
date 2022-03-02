@@ -120,7 +120,7 @@ extension CommonClaimCard {
             options: .defaults
         )
         .onAction(HomeStore.self) { action in
-            if case .openFreeTextChat = action {
+            if case .openClaim = action {
                 DismissJourney()
             }
         }
