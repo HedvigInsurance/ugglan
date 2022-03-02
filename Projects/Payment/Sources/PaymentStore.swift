@@ -26,15 +26,18 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
     ) -> FiniteSignal<PaymentAction>? {
         switch action {
         case .load:
-            return client.fetch(
-                query: GraphQL.MyPaymentQuery()
-            ).compactMap { data in
-                if let fragment = data.insuranceCost?.monthlyNet.fragments.monetaryAmountFragment {
-                    return .setMonthlyNetCost(cost: MonetaryAmount(fragment: fragment))
+            return
+                client.fetch(
+                    query: GraphQL.MyPaymentQuery()
+                )
+                .compactMap { data in
+                    if let fragment = data.insuranceCost?.monthlyNet.fragments.monetaryAmountFragment {
+                        return .setMonthlyNetCost(cost: MonetaryAmount(fragment: fragment))
+                    }
+
+                    return nil
                 }
-                
-                return nil
-            }.valueThenEndSignal
+                .valueThenEndSignal
         default:
             return nil
         }

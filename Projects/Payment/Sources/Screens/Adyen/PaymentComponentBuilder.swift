@@ -2,10 +2,10 @@ import Adyen
 import AdyenCard
 import AdyenComponents
 import Foundation
+import PassKit
 import hCore
 import hCoreUI
 import hGraphQL
-import PassKit
 
 class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
     @PresentableStore var store: PaymentStore
@@ -26,9 +26,10 @@ class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
         formComponent.hintLabel.font = Fonts.fontFor(style: .footnote)
         return formComponent
     }
-    
+
     var cost: MonetaryAmount {
-        store.state.monthlyNetCost ?? MonetaryAmount(amount: 0, currency: Localization.Locale.currentLocale.market.currencyCode)
+        store.state.monthlyNetCost
+            ?? MonetaryAmount(amount: 0, currency: Localization.Locale.currentLocale.market.currencyCode)
     }
 
     var payment: Adyen.Payment {
@@ -87,23 +88,27 @@ class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
             }
 
             var configuration: ApplePayComponent.Configuration
-            
+
             if #available(iOS 15.0, *) {
                 configuration = ApplePayComponent.Configuration(
-                    summaryItems: [PKRecurringPaymentSummaryItem(
-                        label: "Hedvig",
-                        amount: NSDecimalNumber(value: cost.floatAmount),
-                        type: .final
-                    )],
+                    summaryItems: [
+                        PKRecurringPaymentSummaryItem(
+                            label: "Hedvig",
+                            amount: NSDecimalNumber(value: cost.floatAmount),
+                            type: .final
+                        )
+                    ],
                     merchantIdentifier: merchantIdentifier
                 )
             } else {
                 configuration = ApplePayComponent.Configuration(
-                    summaryItems: [.init(
-                        label: "Hedvig",
-                        amount: NSDecimalNumber(value: cost.floatAmount),
-                        type: .final
-                    )],
+                    summaryItems: [
+                        .init(
+                            label: "Hedvig",
+                            amount: NSDecimalNumber(value: cost.floatAmount),
+                            type: .final
+                        )
+                    ],
                     merchantIdentifier: merchantIdentifier
                 )
             }

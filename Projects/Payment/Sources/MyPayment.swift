@@ -21,7 +21,7 @@ public struct MyPayment {
 extension MyPayment: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
-        
+
         store.send(.load)
 
         let dataSignal = client.watch(query: GraphQL.MyPaymentQuery())

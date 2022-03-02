@@ -53,14 +53,14 @@ extension CardDetailsSection: Viewable {
                     } else if let thirdParty = activeMethod.asStoredThirdPartyDetails {
                         return thirdParty.type
                     }
-                    
+
                     return ""
                 }
-                
+
                 let valueRow = RowView(
                     title: valueRowTitle
                 )
-                
+
                 var valueLabelTitle: String {
                     if let card = activeMethod.asStoredCardDetails {
                         return L10n.PaymentScreen.creditCardMasking(
@@ -69,7 +69,7 @@ extension CardDetailsSection: Viewable {
                     } else if let thirdParty = activeMethod.asStoredThirdPartyDetails {
                         return thirdParty.name
                     }
-                    
+
                     return ""
                 }
 
