@@ -6,6 +6,7 @@ import Foundation
 import Home
 import HomeTesting
 import Presentation
+import SwiftUI
 import TestingUtil
 import UIKit
 import hCore
@@ -40,7 +41,9 @@ extension Debug: Presentable {
             bag += viewController.view.window?
                 .present(
                     Journey(
-                        Home(),
+                        Home(claimsContent: ClaimSectionDebug(), {
+                            
+                        }),
                         options: [
                             .defaults, .prefersLargeTitles(true),
                             .largeTitleDisplayMode(.always),
@@ -85,5 +88,13 @@ extension Debug: Presentable {
         bag += viewController.install(form)
 
         return (viewController, bag)
+    }
+}
+
+struct ClaimSectionDebug: View {
+    var body: some View {
+        VStack {
+            Text("Claims card")
+        }
     }
 }
