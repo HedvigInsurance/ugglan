@@ -180,7 +180,7 @@ extension JourneyPresentation {
             }
         }
     }
-    
+
     public var configureClaimsNavigation: some JourneyPresentation {
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {
