@@ -94,8 +94,10 @@ extension Debug: Presentable {
     }
 }
 
-struct ClaimSectionDebug: View {
-    var body: some View {
+public struct ClaimSectionDebug: View {
+    public init() {}
+
+    public var body: some View {
         VStack {
             Text("Claims card")
         }
