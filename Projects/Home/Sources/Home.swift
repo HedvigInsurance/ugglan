@@ -13,11 +13,14 @@ import hGraphQL
 public struct Home<ClaimsContent: View> {
     @Inject var client: ApolloClient
     var claimsContent: ClaimsContent
+    var claimSubmitHandler: () -> Void
 
     public init(
-        claimsContent: ClaimsContent
+        claimsContent: ClaimsContent,
+        _ claimSubmitHandler: @escaping () -> Void
     ) {
         self.claimsContent = claimsContent
+        self.claimSubmitHandler = claimSubmitHandler
     }
 }
 
@@ -170,7 +173,7 @@ extension Home: Presentable {
             case .future:
                 innerBag += titleSection.append(FutureSection())
             case .terminated:
-                innerBag += titleSection.append(TerminatedSection())
+                innerBag += titleSection.append(TerminatedSection(claimSubmitHandler))
             case .loading:
                 break
             }

@@ -1,5 +1,4 @@
 import Apollo
-import Claims
 import Flow
 import Form
 import Foundation
