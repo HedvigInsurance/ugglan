@@ -1,10 +1,10 @@
 import Apollo
+import Form
 import Foundation
 import NotificationCenter
 import hAnalytics
 import hCore
 import hGraphQL
-import Form
 
 extension AppDelegate {
     func setupHAnalytics() {
