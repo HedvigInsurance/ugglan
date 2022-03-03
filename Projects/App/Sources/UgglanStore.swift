@@ -36,7 +36,7 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             )
             .valueThenEndSignal
             .atValue(on: .main) { _ in
-                
+
             }
             .delay(by: 0.25)
             .compactMap(on: .main) { response in
@@ -45,7 +45,7 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
                         .asExchangeTokenSuccessResponse?
                         .token
                 else { return .exchangeFailed }
-                
+
                 ApplicationState.preserveState(.impersonation)
                 UIApplication.shared.appDelegate.logout(token: token)
                 return nil

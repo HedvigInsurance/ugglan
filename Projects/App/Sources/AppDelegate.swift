@@ -57,11 +57,11 @@ let log = Logger.builder
 
         setupDebugger()
         setupPresentableStoreLogger()
-        
+
         if let token = token {
             ApolloClient.saveToken(token: token)
         }
-        
+
         bag += ApolloClient.initAndRegisterClient()
             .onValue { _ in
                 self.setupHAnalyticsExperiments()
