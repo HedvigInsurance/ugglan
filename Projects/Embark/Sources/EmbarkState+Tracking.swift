@@ -19,9 +19,10 @@ extension EmbarkPassage.Track {
         if let customData = customData {
             filteredProperties =
                 filteredProperties.merging(
-                    (customData.toJSONDictionary() ?? [:]).mapValues({ any in
-                        any as? String
-                    }),
+                    (customData.toJSONDictionary() ?? [:])
+                        .mapValues({ any in
+                            any as? String
+                        }),
                     uniquingKeysWith: takeRight
                 )
         }
