@@ -10,16 +10,19 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct Home<ClaimsContent: View> {
+public struct Home<ClaimsContent: View, CommonClaims: View> {
     @Inject var client: ApolloClient
     var claimsContent: ClaimsContent
+    var commonClaims: CommonClaims
     var claimSubmitHandler: () -> Void
 
     public init(
         claimsContent: ClaimsContent,
+        commonClaims: CommonClaims,
         _ claimSubmitHandler: @escaping () -> Void
     ) {
         self.claimsContent = claimsContent
+        self.commonClaims = commonClaims
         self.claimSubmitHandler = claimSubmitHandler
     }
 }
@@ -145,7 +148,10 @@ extension Home: Presentable {
                 }
 
                 innerBag += form.append(
-                    ActiveSection(claimsContent: self.claimsContent)
+                    ActiveSection(
+                        claimsContent: self.claimsContent,
+                        commonClaims: self.commonClaims
+                    )
                 )
 
                 if hAnalyticsExperiment.movingFlow {

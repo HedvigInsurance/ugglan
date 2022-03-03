@@ -16,9 +16,12 @@ import hCoreUI
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
-
+        let commonClaims = CommonClaimsView().frame(minHeight: 340)
         return Journey(
-            Home(claimsContent: claims, claims.claimSubmission),
+            Home(
+                claimsContent: claims,
+                commonClaims: commonClaims,
+                claims.claimSubmission),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         ) { result in
             switch result {

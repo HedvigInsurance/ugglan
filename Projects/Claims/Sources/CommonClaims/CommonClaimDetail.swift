@@ -66,10 +66,10 @@ extension CommonClaimDetail: Presentable {
             )
             bag += topCardContentView.addArranged(claimButton)
 
-            let store: HomeStore = self.get()
+            let store: ClaimsStore = self.get()
 
             bag += claimButton.onTapSignal.onValue {
-                store.send(.openClaim)
+                store.send(.submitNewClaim)
             }
 
             bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))

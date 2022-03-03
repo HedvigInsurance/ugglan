@@ -9,9 +9,10 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ActiveSection<ClaimsContent: View> {
+struct ActiveSection<ClaimsContent: View, CommonClaims: View> {
     @Inject var client: ApolloClient
     var claimsContent: ClaimsContent
+    var commonClaims: CommonClaims
 }
 
 extension ActiveSection: Presentable {
@@ -34,7 +35,9 @@ extension ActiveSection: Presentable {
 
         bag += section.append(ConnectPaymentCard())
         bag += section.append(RenewalCard())
-        bag += section.append(CommonClaimsCollection())
+        
+        let commonClaimsView = HostingView(rootView: commonClaims)
+        section.append(commonClaimsView)
 
         return (section, bag)
     }
