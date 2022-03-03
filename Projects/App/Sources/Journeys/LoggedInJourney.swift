@@ -145,6 +145,8 @@ extension AppJourney {
                     AppJourney.freeTextChat().withDismissButton
                 } else if action == .openClaims {
                     AppJourney.claimJourney
+                } else if action == .showImpersonationSettings {
+                    AppJourney.impersonationSettings
                 }
             }
         }

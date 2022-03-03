@@ -16,6 +16,7 @@ public enum UgglanAction: ActionProtocol {
     case setSelectedTabIndex(index: Int)
     case makeTabActive(deeplink: DeepLink)
     case showLoggedIn
+    case showImpersonationSettings
     case openClaims
     case exchangePaymentLink(link: String)
     case exchangePaymentToken(token: String)
@@ -46,7 +47,7 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
 
                 UIApplication.shared.appDelegate.setToken(token)
 
-                return .showLoggedIn
+                return .showImpersonationSettings
             }
             .valueThenEndSignal
     }

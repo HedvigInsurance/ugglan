@@ -29,6 +29,8 @@ extension AppJourney {
         .onAction(UgglanStore.self) { action in
             if action == .showLoggedIn {
                 AppJourney.loggedIn
+            } else if action == .showImpersonationSettings {
+                AppJourney.impersonationSettings
             }
         }
     }
