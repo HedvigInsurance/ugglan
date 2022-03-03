@@ -43,6 +43,7 @@ extension Debug: Presentable {
                     Journey(
                         Home(
                             claimsContent: ClaimSectionDebug(),
+                            commonClaims: CommonClaimsDebug(),
                             {
 
                             }
@@ -100,6 +101,16 @@ public struct ClaimSectionDebug: View {
     public var body: some View {
         VStack {
             Text("Claims card")
+        }
+    }
+}
+
+public struct CommonClaimsDebug: View {
+    public init() {}
+
+    public var body: some View {
+        VStack {
+            Text("Common Claims")
         }
     }
 }
