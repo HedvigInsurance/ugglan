@@ -3,8 +3,8 @@ import Flow
 import Form
 import Foundation
 import Presentation
-import UIKit
 import SwiftUI
+import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
@@ -91,9 +91,9 @@ extension CommonClaimsCollection: Viewable {
 
 public struct CommonClaimsView: UIViewRepresentable {
     public init() {
-        
+
     }
-    
+
     public class Coordinator {
         let bag = DisposeBag()
         let commonClaims: CommonClaimsCollection
@@ -116,6 +116,6 @@ public struct CommonClaimsView: UIViewRepresentable {
     }
 
     public func updateUIView(_ uiView: UIViewType, context: Context) {
-        
+
     }
 }

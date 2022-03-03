@@ -21,7 +21,8 @@ extension AppJourney {
             Home(
                 claimsContent: claims,
                 commonClaims: commonClaims,
-                claims.claimSubmission),
+                claims.claimSubmission
+            ),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         ) { result in
             switch result {

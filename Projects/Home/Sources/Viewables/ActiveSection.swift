@@ -35,7 +35,7 @@ extension ActiveSection: Presentable {
 
         bag += section.append(ConnectPaymentCard())
         bag += section.append(RenewalCard())
-        
+
         let commonClaimsView = HostingView(rootView: commonClaims)
         section.append(commonClaimsView)
 
