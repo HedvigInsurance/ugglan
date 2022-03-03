@@ -7,7 +7,7 @@ import hGraphQL
 
 public struct ClaimDetailView: View {
     @State var claim: Claim
-    @PresentableStore var store: HomeStore
+    @PresentableStore var store: ClaimsStore
 
     public init(
         claim: Claim

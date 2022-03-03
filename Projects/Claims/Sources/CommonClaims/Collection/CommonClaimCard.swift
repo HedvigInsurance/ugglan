@@ -119,8 +119,8 @@ extension CommonClaimCard {
             style: .detented(.medium, .large),
             options: .defaults
         )
-        .onAction(HomeStore.self) { action in
-            if case .openClaims = action {
+        .onAction(ClaimsStore.self) { action in
+            if case .submitNewClaim = action {
                 DismissJourney()
             }
         }

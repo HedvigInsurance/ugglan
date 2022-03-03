@@ -29,8 +29,16 @@ class HomeTests: XCTestCase {
 
         bag += window.present(
             Journey(
-                Home(),
-                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+                Home(
+                    claimsContent: ClaimSectionDebug(),
+                    {
+
+                    }
+                ),
+                options: [
+                    .defaults, .prefersLargeTitles(true),
+                    .largeTitleDisplayMode(.always),
+                ]
             ) { result in
                 return DismissJourney()
             }

@@ -3,6 +3,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
@@ -85,5 +86,36 @@ extension CommonClaimsCollection: Viewable {
             }
 
         return (stackView, bag)
+    }
+}
+
+public struct CommonClaimsView: UIViewRepresentable {
+    public init() {
+
+    }
+
+    public class Coordinator {
+        let bag = DisposeBag()
+        let commonClaims: CommonClaimsCollection
+
+        init() {
+            self.commonClaims = CommonClaimsCollection()
+        }
+    }
+
+    public func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    public func makeUIView(context: Context) -> some UIView {
+        let (view, disposable) = context.coordinator.commonClaims.materialize(
+            events: ViewableEvents(wasAddedCallbacker: .init())
+        )
+        context.coordinator.bag += disposable
+        return view
+    }
+
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
+
     }
 }

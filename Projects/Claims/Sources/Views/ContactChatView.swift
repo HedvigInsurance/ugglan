@@ -4,12 +4,12 @@ import hCore
 import hCoreUI
 
 struct ContactChatView: View {
-    let store: HomeStore
+    let store: ClaimsStore
     let id: String
     let status: String
 
     init(
-        store: HomeStore,
+        store: ClaimsStore,
         id: String,
         status: String
     ) {
