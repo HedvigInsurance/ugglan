@@ -7,9 +7,12 @@ import hCoreUI
 
 extension AppJourney {
     static var impersonationSettings: some JourneyPresentation {
-        HostingJourney(UgglanStore.self, rootView: ImpersonationSettings()) { action in
+        HostingJourney(
+            UgglanStore.self,
+            rootView: ImpersonationSettings()
+        ) { action in
             if action == .showLoggedIn {
-                DismissJourney()
+                AppJourney.loggedIn
             }
         }
         .setOptions([.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])

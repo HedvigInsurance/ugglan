@@ -42,7 +42,7 @@ let log = Logger.builder
         return window
     }()
 
-    func logout() {
+    func logout(token: String?) {
         hAnalyticsEvent.loggedOut().send()
         bag.dispose()
 
@@ -57,7 +57,11 @@ let log = Logger.builder
 
         setupDebugger()
         setupPresentableStoreLogger()
-
+        
+        if let token = token {
+            ApolloClient.saveToken(token: token)
+        }
+        
         bag += ApolloClient.initAndRegisterClient()
             .onValue { _ in
                 self.setupHAnalyticsExperiments()

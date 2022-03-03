@@ -16,8 +16,7 @@ struct ImpersonationSettings: View {
                     }
                     .onTap {
                         Localization.Locale.currentLocale = locale
-                        ApplicationState.preserveState(.loggedIn)
-                        UIApplication.shared.appDelegate.logout()
+                        store.send(.showLoggedIn)
                     }
                 }
             }

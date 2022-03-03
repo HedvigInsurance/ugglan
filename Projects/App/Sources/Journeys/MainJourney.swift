@@ -21,6 +21,8 @@ extension AppJourney {
                     AppJourney.storedOnboardingOffer
                 case .loggedIn:
                     AppJourney.loggedIn
+                case .impersonation:
+                    AppJourney.impersonationSettings
                 default:
                     AppJourney.marketPicker
                 }
@@ -29,8 +31,6 @@ extension AppJourney {
         .onAction(UgglanStore.self) { action in
             if action == .showLoggedIn {
                 AppJourney.loggedIn
-            } else if action == .showImpersonationSettings {
-                AppJourney.impersonationSettings
             }
         }
     }

@@ -162,7 +162,7 @@ extension AppInfo: Presentable {
                 .onValue { shouldLogout in
                     if shouldLogout {
                         ApplicationState.preserveState(.marketPicker)
-                        UIApplication.shared.appDelegate.logout()
+                        UIApplication.shared.appDelegate.logout(token: nil)
                     }
                 }
         }

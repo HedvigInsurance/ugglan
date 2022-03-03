@@ -130,7 +130,7 @@ struct Debug: View {
                         "Logout",
                         action: {
                             ApplicationState.preserveState(.marketPicker)
-                            UIApplication.shared.appDelegate.logout()
+                            UIApplication.shared.appDelegate.logout(token: nil)
                         }
                     )
                 }
