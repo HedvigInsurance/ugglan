@@ -4,6 +4,7 @@ import NotificationCenter
 import hAnalytics
 import hCore
 import hGraphQL
+import Form
 
 extension AppDelegate {
     func setupHAnalytics() {
@@ -41,6 +42,7 @@ extension AppDelegate {
         log.info("Started loading hAnlyticsExperiments")
         hAnalyticsExperiment.load { success in
             if success {
+                DefaultStyling.installCustom()
                 log.info("Successfully loaded hAnlyticsExperiments")
                 ApplicationContext.shared.hasLoadedExperiments = true
             } else {
