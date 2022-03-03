@@ -164,7 +164,8 @@ extension JSONObject {
                         )
                     ]
                 )
-                .jsonObject,        ])
+                .jsonObject
+        ])
     }
 
     public static func makeTerminated() -> JSONObject {
@@ -180,7 +181,7 @@ extension JSONObject {
                         )
                     ]
                 )
-                .jsonObject,
+                .jsonObject
         ])
     }
 }
