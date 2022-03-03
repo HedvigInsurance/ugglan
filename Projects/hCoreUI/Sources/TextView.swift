@@ -73,7 +73,7 @@ extension TextView: Viewable {
 
         let textView = UITextView()
         textView.tintColor = .brand(.primaryTintColor)
-        textView.font = Fonts.favoritStdBook.withSize(14)
+        textView.font = Fonts.hedvigLettersStandard.withSize(14)
         textView.backgroundColor = .clear
 
         bag += combineLatest(textContentTypeSignal.atOnce(), keyboardTypeSignal.atOnce())
