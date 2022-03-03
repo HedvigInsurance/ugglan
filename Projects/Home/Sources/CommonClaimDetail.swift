@@ -80,7 +80,7 @@ extension CommonClaimDetail: Presentable {
 
         bag += viewController.install(view)
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewCommonClaimDetail(id: data.id))
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .commonClaimDetail))
 
         return (viewController, bag)
     }

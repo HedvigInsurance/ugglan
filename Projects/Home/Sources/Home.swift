@@ -181,7 +181,7 @@ extension Home: Presentable {
             }
             .nil()
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewHome())
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .home))
 
         return (
             viewController,

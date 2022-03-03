@@ -78,7 +78,7 @@ extension MyPayment: Presentable {
 
         bag += form.append(Spacing(height: 20))
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewPayments())
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .payments))
 
         return (viewController, bag)
     }

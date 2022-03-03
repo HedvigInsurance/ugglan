@@ -4,7 +4,7 @@ import hCore
 import hGraphQL
 
 extension EmbarkPassage.Track {
-    func send(storyName: String, storeValues: [String: Any]) {
+    func send(storyName: String, storeValues: [String: String?]) {
         hAnalyticsEvent.embarkTrack(
             storyName: storyName,
             eventName: eventName,
@@ -13,23 +13,20 @@ extension EmbarkPassage.Track {
         .send()
     }
 
-    private func trackingProperties(storyName: String, storeValues: [String: Any]) -> [String: Any] {
+    private func trackingProperties(storyName: String, storeValues: [String: String?]) -> [String: String?] {
         var filteredProperties = storeValues.filter { key, _ in eventKeys.contains(key) }
 
         if let customData = customData {
             filteredProperties =
                 filteredProperties.merging(
-                    customData.toJSONDictionary() ?? [:],
+                    (customData.toJSONDictionary() ?? [:]).mapValues({ any in
+                        any as? String
+                    }),
                     uniquingKeysWith: takeRight
                 )
-                .compactMapValues { value in
-                    value as? String
-                }
         }
 
-        return
-            filteredProperties
-            .compactMapValues { $0 }
+        return filteredProperties
     }
 }
 

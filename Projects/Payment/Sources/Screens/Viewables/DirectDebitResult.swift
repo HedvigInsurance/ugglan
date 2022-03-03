@@ -47,8 +47,8 @@ enum DirectDebitResultType {
 
     var analyticsEvent: hAnalyticsParcel {
         switch self {
-        case .success: return hAnalyticsEvent.screenViewConnectPaymentSuccess()
-        case .failure: return hAnalyticsEvent.screenViewConnectPaymentFailed()
+        case .success: return hAnalyticsEvent.screenView(screen: .connectPaymentSuccess)
+        case .failure: return hAnalyticsEvent.screenView(screen: .connectPaymentFailed)
         }
     }
 }

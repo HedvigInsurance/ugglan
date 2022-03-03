@@ -58,7 +58,7 @@ extension MyInfo: Presentable {
         }
 
         bag += viewController.install(form)
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewContactInfo())
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .contactInfo))
 
         return (
             viewController,
