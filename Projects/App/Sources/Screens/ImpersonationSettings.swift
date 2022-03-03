@@ -1,20 +1,12 @@
-//
-//  ImpersonationSettings.swift
-//  Ugglan
-//
-//  Created by Sam Pettersson on 2022-03-03.
-//  Copyright © 2022 Hedvig AB. All rights reserved.
-//
-
 import Foundation
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import Presentation
 
 struct ImpersonationSettings: View {
     @PresentableStore var store: UgglanStore
-    
+
     var body: some View {
         hForm {
             hSection(header: hText("Select locale")) {
@@ -28,8 +20,11 @@ struct ImpersonationSettings: View {
                         UIApplication.shared.appDelegate.logout()
                     }
                 }
-            }.withFooter {
-                hText("BEWARE: if you select a locale that doesn't match the market of the user weird things will happen.")
+            }
+            .withFooter {
+                hText(
+                    "BEWARE: if you select a locale that doesn't match the market of the user weird things will happen."
+                )
             }
         }
     }
