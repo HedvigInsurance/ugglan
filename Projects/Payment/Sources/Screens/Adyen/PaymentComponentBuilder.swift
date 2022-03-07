@@ -34,7 +34,7 @@ class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
 
     var payment: Adyen.Payment {
         Adyen.Payment(
-            amount: .init(value: Int(cost.floatAmount), currencyCode: cost.currency),
+            amount: .init(value: Int(cost.floatAmount * 100), currencyCode: cost.currency),
             countryCode: Localization.Locale.currentLocale.market.rawValue
         )
     }

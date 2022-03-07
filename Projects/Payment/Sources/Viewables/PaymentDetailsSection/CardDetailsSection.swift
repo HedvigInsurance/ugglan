@@ -51,7 +51,7 @@ extension CardDetailsSection: Viewable {
                     if let card = activeMethod.asStoredCardDetails {
                         return card.brand?.capitalized ?? ""
                     } else if let thirdParty = activeMethod.asStoredThirdPartyDetails {
-                        return thirdParty.type
+                        return thirdParty.type.capitalized
                     }
 
                     return ""
