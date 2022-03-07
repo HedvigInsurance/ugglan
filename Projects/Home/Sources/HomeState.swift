@@ -11,7 +11,6 @@ public struct MemberStateData: Codable, Equatable {
 
 public struct HomeState: StateProtocol {
     var memberStateData: MemberStateData = .init(state: .loading, name: nil)
-    var claims: [Claim]? = nil
 
     public init() {}
 }
@@ -20,14 +19,9 @@ public enum HomeAction: ActionProtocol {
     case openFreeTextChat
     case fetchMemberState
     case openMovingFlow
-    case openClaims
+    case openClaim
     case connectPayments
     case setMemberContractState(state: MemberStateData)
-    case fetchClaims
-    case setClaims(claims: [Claim])
-    case startPollingClaims
-    case stopPollingClaims
-    case openClaimDetails(claim: Claim)
 }
 
 public final class HomeStore: StateStore<HomeState, HomeAction> {
@@ -49,29 +43,9 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                     .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))
                 }
                 .valueThenEndSignal
-        case .fetchClaims:
-            return
-                client
-                .fetch(
-                    query: GraphQL.ClaimStatusCardsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
-                    cachePolicy: .fetchIgnoringCacheData
-                )
-                .compactMap {
-                    ClaimData(cardData: $0)
-                }
-                .map { claimData in
-                    return .setClaims(claims: claimData.claims)
-                }
-                .valueThenEndSignal
-        case .startPollingClaims:
-            return Signal(every: 2).map { .fetchClaims }
-        case .stopPollingClaims:
-            cancelEffect(.startPollingClaims)
         default:
             return nil
         }
-
-        return nil
     }
 
     public override func reduce(_ state: HomeState, _ action: HomeAction) -> HomeState {
@@ -84,21 +58,11 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
             break
         case .fetchMemberState:
             break
-        case .openClaims:
-            break
         case .connectPayments:
             break
         case .openMovingFlow:
             break
-        case .fetchClaims:
-            break
-        case let .setClaims(claims):
-            newState.claims = claims
-        case .startPollingClaims:
-            break
-        case .stopPollingClaims:
-            break
-        case .openClaimDetails:
+        case .openClaim:
             break
         }
 

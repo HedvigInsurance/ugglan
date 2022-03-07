@@ -1,3 +1,4 @@
+import Claims
 import Contracts
 import Embark
 import Flow
@@ -14,28 +15,30 @@ import hCoreUI
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
-        Journey(
-            Home(),
+        let claims = Claims()
+        let commonClaims = CommonClaimsView().frame(minHeight: 340)
+        return Journey(
+            Home(
+                claimsContent: claims,
+                commonClaims: commonClaims,
+                claims.claimSubmission
+            ),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         ) { result in
             switch result {
             case .startMovingFlow:
                 AppJourney.movingFlow
-            case .openClaims:
-                AppJourney
-                    .claimJourney
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
             case .openConnectPayments:
                 PaymentSetup(setupType: .initial).journeyThenDismiss
-            case let .openClaimDetails(claim):
-                AppJourney.claimDetailJourney(claim: claim)
             }
         }
         .configureTabBarItem
         .onTabSelected {
             ContextGradient.currentOption = .home
         }
+        .claimStoreRedirectFromHome
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
                 return deepLink == .home
@@ -43,6 +46,7 @@ extension AppJourney {
                 return false
             }
         }
+        .configureClaimsNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -168,6 +172,30 @@ extension JourneyPresentation {
         return self.onPresent {
             let store: S = self.presentable.get()
             store.send(action)
+        }
+    }
+}
+
+extension JourneyPresentation {
+    public var claimStoreRedirectFromHome: some JourneyPresentation {
+        onAction(HomeStore.self) { action in
+            if case .openClaim = action {
+                AppJourney.claimJourney
+            }
+        }
+    }
+
+    public var configureClaimsNavigation: some JourneyPresentation {
+        onAction(ClaimsStore.self) { action in
+            if case let .openClaimDetails(claim) = action {
+                AppJourney.claimDetailJourney(claim: claim)
+            } else if case .submitNewClaim = action {
+                AppJourney.claimJourney
+            } else if case .openFreeTextChat = action {
+                AppJourney.freeTextChat()
+            } else if case .openHowClaimsWork = action {
+                AppJourney.claimsInfoJourney()
+            }
         }
     }
 }

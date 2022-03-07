@@ -1,3 +1,4 @@
+import Claims
 import Embark
 import Flow
 import Foundation
@@ -28,8 +29,6 @@ extension AppJourney {
                 ContinueJourney()
             }
         }
-        .sendActionImmediately(HomeStore.self, .startPollingClaims)
-        .sendActionOnDismiss(HomeStore.self, .stopPollingClaims)
     }
 
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
@@ -98,5 +97,14 @@ extension AppJourney {
         }
         .inlineTitle()
         .configureTitle(L10n.ClaimStatus.title)
+    }
+
+    static func claimsInfoJourney() -> some JourneyPresentation {
+        Journey(ClaimsInfoPager())
+            .onAction(ClaimsStore.self) { action in
+                if case .submitNewClaim = action {
+                    DismissJourney()
+                }
+            }
     }
 }

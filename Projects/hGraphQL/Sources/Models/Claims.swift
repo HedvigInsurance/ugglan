@@ -2,7 +2,7 @@ import Foundation
 
 typealias ClaimStatusCard = GraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
 
-public struct Claim: Codable, Equatable {
+public struct Claim: Codable, Equatable, Identifiable {
     public init(
         id: String,
         pills: [Claim.ClaimPill],

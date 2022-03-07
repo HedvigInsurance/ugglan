@@ -8,7 +8,7 @@ struct ClaimStatus: View {
     var claim: Claim
 
     @PresentableStore
-    var store: HomeStore
+    var store: ClaimsStore
 
     var body: some View {
         Button {
