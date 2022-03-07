@@ -55,16 +55,14 @@ let log = Logger.builder
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()
 
-        setupDebugger()
-        setupPresentableStoreLogger()
-
         if let token = token {
             ApolloClient.saveToken(token: token)
         }
+        
+        setupSession()
 
         bag += ApolloClient.initAndRegisterClient()
             .onValue { _ in
-                self.setupHAnalyticsExperiments()
                 ChatState.shared = ChatState()
                 self.bag += self.window.present(AppJourney.main)
             }
@@ -191,11 +189,8 @@ let log = Logger.builder
             log.info(message)
         }
     }
-
-    func application(
-        _: UIApplication,
-        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
-    ) -> Bool {
+    
+    func setupSession() {
         Analytics.setAnalyticsCollectionEnabled(false)
 
         urlSessionClientProvider = {
@@ -203,16 +198,8 @@ let log = Logger.builder
         }
 
         setupPresentableStoreLogger()
-
         setupAnalyticsAndTracking()
-
-        log.info("Starting app")
-
-        hAnalyticsEvent.identify()
-        hAnalyticsEvent.appStarted().send()
-
-        Localization.Locale.currentLocale = ApplicationState.preferredLocale
-
+        
         bag += Localization.Locale.$currentLocale.distinct()
             .onValue { locale in ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
@@ -237,6 +224,21 @@ let log = Logger.builder
 
         AskForRating().registerSession()
         CrossFrameworkCoordinator.setup()
+        
+        setupDebugger()
+    }
+
+    func application(
+        _: UIApplication,
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        Localization.Locale.currentLocale = ApplicationState.preferredLocale
+        setupSession()
+
+        log.info("Starting app")
+
+        hAnalyticsEvent.identify()
+        hAnalyticsEvent.appStarted().send()
 
         FirebaseApp.configure()
 
@@ -256,12 +258,10 @@ let log = Logger.builder
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
 
-        self.trackNotificationPermission()
+        trackNotificationPermission()
 
         // treat an empty token as a newly downloaded app and setLastNewsSeen
         if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
-
-        setupDebugger()
 
         bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
             .atValue { _ in

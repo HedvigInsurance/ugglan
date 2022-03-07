@@ -133,11 +133,11 @@ extension Home: Presentable {
             case .active:
 
                 if let name = state.memberStateData.name {
-                    let label = MultilineLabel(
-                        value: L10n.HomeTab.welcomeTitle(name),
-                        style: .brand(.largeTitle(color: .primary))
-                    )
-                    innerBag += titleSection.append(label)
+                    let label = makeHost {
+                        hText(L10n.HomeTab.welcomeTitle(name), style: .largeTitle)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    innerBag += titleSection.appendRemovable(label)
                 }
 
                 innerBag += form.append(ActiveSection())
