@@ -1,15 +1,7 @@
-//
-//  Form+Append.swift
-//  hCore
-//
-//  Created by Sam Pettersson on 2022-03-07.
-//  Copyright © 2022 Hedvig AB. All rights reserved.
-//
-
-import Foundation
-import Form
-import UIKit
 import Flow
+import Form
+import Foundation
+import UIKit
 
 extension SubviewOrderable {
     /// appends view and removes from superview on disposal

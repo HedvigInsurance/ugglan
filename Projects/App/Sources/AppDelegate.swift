@@ -58,7 +58,7 @@ let log = Logger.builder
         if let token = token {
             ApolloClient.saveToken(token: token)
         }
-        
+
         setupSession()
 
         bag += ApolloClient.initAndRegisterClient()
@@ -189,7 +189,7 @@ let log = Logger.builder
             log.info(message)
         }
     }
-    
+
     func setupSession() {
         Analytics.setAnalyticsCollectionEnabled(false)
 
@@ -199,7 +199,7 @@ let log = Logger.builder
 
         setupPresentableStoreLogger()
         setupAnalyticsAndTracking()
-        
+
         bag += Localization.Locale.$currentLocale.distinct()
             .onValue { locale in ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
@@ -224,7 +224,7 @@ let log = Logger.builder
 
         AskForRating().registerSession()
         CrossFrameworkCoordinator.setup()
-        
+
         setupDebugger()
     }
 
