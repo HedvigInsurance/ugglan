@@ -28,11 +28,13 @@ public class EmbarkState {
     let passageHistorySignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
     let bag = DisposeBag()
-    
+
     @Cached(key: "quoteCartId")
     var quoteCartId: String?
 
-    public init(cartId: String?) {
+    public init(
+        cartId: String?
+    ) {
         self.quoteCartId = cartId
         defer {
             startTracking()
@@ -61,7 +63,7 @@ public class EmbarkState {
         })
         passageHistorySignal.value = []
         store = EmbarkStore()
-        
+
         if let quoteCartId = quoteCartId {
             store.setValue(key: "quoteCartId", value: quoteCartId)
             store.createRevision()

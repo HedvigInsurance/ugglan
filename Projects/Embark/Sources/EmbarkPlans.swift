@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Market
 import Presentation
 import SnapKit
 import UIKit
@@ -9,7 +10,6 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import Market
 
 public typealias EmbarkStory = GraphQL.ChoosePlanQuery.Data.EmbarkStory
 
@@ -27,7 +27,9 @@ public struct EmbarkPlans {
             }
     }
 
-    public init(menu: Menu? = nil) {
+    public init(
+        menu: Menu? = nil
+    ) {
         self.menu = menu
     }
 }
@@ -110,10 +112,10 @@ extension EmbarkPlans: Presentable {
         }
 
         bag += client.fetch(query: GraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue))
-            .valueSignal.compactMap
-        {
-            $0.embarkStories
-        }
+            .valueSignal
+            .compactMap {
+                $0.embarkStories
+            }
             .map { $0.filter { story in story.type == .appOnboardingQuoteCart } }
             .onValue {
                 activityIndicator.removeFromSuperview()

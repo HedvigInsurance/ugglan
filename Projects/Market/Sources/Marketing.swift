@@ -107,27 +107,28 @@ extension Marketing: Presentable {
                     title: L10n.marketingGetHedvig,
                     type: .standard(backgroundColor: .white, textColor: .black)
                 )
-                
+
                 let store: MarketStore = self.get()
-                
+
                 let stateSignal = store.stateSignal.atOnce().map { $0.onboardingIdentifier }.plain()
-                
-                bag += onboardButton.onTapSignal.withLatestFrom(stateSignal).onValue { _, id in
-                    if #available(iOS 13.0, *) {
-                        viewController.navigationController?.navigationBar
-                            .overrideUserInterfaceStyle =
-                            .unspecified
-                    } else {
-                        viewController.navigationController?.navigationBar.barStyle = .default
-                    }
-                    if !UITraitCollection.isCatalyst {
-                        viewController.navigationController?.hero.isEnabled = false
-                    }
 
-                    hAnalyticsEvent.buttonClickMarketingOnboard().send()
+                bag += onboardButton.onTapSignal.withLatestFrom(stateSignal)
+                    .onValue { _, id in
+                        if #available(iOS 13.0, *) {
+                            viewController.navigationController?.navigationBar
+                                .overrideUserInterfaceStyle =
+                                .unspecified
+                        } else {
+                            viewController.navigationController?.navigationBar.barStyle = .default
+                        }
+                        if !UITraitCollection.isCatalyst {
+                            viewController.navigationController?.hero.isEnabled = false
+                        }
 
-                    callback(.onboard)
-                }
+                        hAnalyticsEvent.buttonClickMarketingOnboard().send()
+
+                        callback(.onboard)
+                    }
 
                 bag += contentStackView.addArranged(onboardButton) { buttonView in
                     buttonView.hero.id = "ContinueButton"
