@@ -53,11 +53,7 @@ public struct AdyenPayIn: Presentable {
             self.client
                 .perform(
                     mutation: GraphQL.AdyenTokenizePaymentDetailsMutation(
-                        request: GraphQL.TokenizationRequest(
-                            paymentMethodDetails: json,
-                            channel: .ios,
-                            returnUrl: "\(urlScheme)://adyen"
-                        )
+                        request: GraphQL.TokenizationRequest(json: json, urlScheme: urlScheme)
                     )
                 )
                 .onValue { data in
