@@ -20,10 +20,18 @@ extension CommonClaimsCollection: Viewable {
         layout.minimumInteritemSpacing = 8
 
         let collectionKit = CollectionKit<EmptySection, CommonClaimCard>(layout: layout, holdIn: bag)
+        collectionKit.view.clipsToBounds = false
         collectionKit.view.backgroundColor = .clear
 
         bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
             CGSize(width: min(190, (collectionKit.view.frame.width / 2) - 5), height: 140)
+        }
+
+        bag += collectionKit.view.signal(for: \.bounds).delay(by: 0.25)
+            .onValue { _ in collectionKit.view.reloadData() }
+
+        bag += collectionKit.delegate.willDisplayCell.onValue { cell, indexPath in
+            cell.layer.zPosition = CGFloat(indexPath.row)
         }
 
         func fetchData() {
