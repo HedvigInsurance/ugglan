@@ -11,6 +11,7 @@ import hCoreUI
 import hGraphQL
 
 @testable import Home
+import SwiftUI
 
 class HomeTests: XCTestCase {
     let bag = DisposeBag()
@@ -30,7 +31,7 @@ class HomeTests: XCTestCase {
         bag += window.present(
             Journey(
                 Home(
-                    claimsContent: ClaimSectionDebug(),
+                    claimsContent: EmptyView(),
                     {
 
                     }
