@@ -40,10 +40,7 @@ runs:
   steps:
     - uses: actions/checkout@v2
     - name: Download generated
-      run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/generated/${{ github.sha }}/ .
-      shell: bash
-    - name: Fetch cache
-      run: rsync -raWPop ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache/DerivedData /Users/app/Library/Developer/Xcode/ || true
+      run: rsync -ra ${{ inputs.SSH_CACHE_CREDENTIALS }}:~/Cache/generated/${{ github.sha }}/ .
       shell: bash
     - name: Bundle install
       run: arch -arm64 sudo --preserve-env bundle install
@@ -63,9 +60,6 @@ runs:
       shell: bash
     - name: Delete build artifacts
       run: sudo rm -rf /Users/app/Library/Developer/Xcode/Archives && sudo rm -rf /Users/app/Library/Developer/Xcode/DerivedData/TestResults
-      shell: bash
-    - name: Upload cache
-      run: rsync -raWPop /Users/app/Library/Developer/Xcode/DerivedData ${{ inputs.SSH_CACHE_CREDENTIALS }}:/Volumes/Cache || true
       shell: bash
     - name: Upload app
       uses: actions/upload-artifact@v2

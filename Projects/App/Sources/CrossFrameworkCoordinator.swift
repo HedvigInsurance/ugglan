@@ -5,7 +5,6 @@ import Flow
 import Foundation
 import Home
 import Market
-import Mixpanel
 import Payment
 import UIKit
 import hCore

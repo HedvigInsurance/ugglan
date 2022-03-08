@@ -5,19 +5,30 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
 
-public struct Home {
+public struct Home<ClaimsContent: View, CommonClaims: View> {
     @Inject var client: ApolloClient
+    var claimsContent: ClaimsContent
+    var commonClaims: CommonClaims
+    var claimSubmitHandler: () -> Void
 
-    public init() {}
+    public init(
+        claimsContent: ClaimsContent,
+        commonClaims: CommonClaims,
+        _ claimSubmitHandler: @escaping () -> Void
+    ) {
+        self.claimsContent = claimsContent
+        self.commonClaims = commonClaims
+        self.claimSubmitHandler = claimSubmitHandler
+    }
 }
 
 public enum HomeResult {
     case startMovingFlow
-    case openClaims
     case openFreeTextChat
     case openConnectPayments
 }
@@ -77,7 +88,6 @@ extension Home: Presentable {
 
         func fetch() {
             store.send(.fetchMemberState)
-            store.send(.fetchClaims)
         }
 
         let form = FormView()
@@ -91,8 +101,7 @@ extension Home: Presentable {
                 store,
                 send: {
                     [
-                        .fetchMemberState,
-                        .fetchClaims,
+                        .fetchMemberState
                     ]
                 },
                 endOn: { action in
@@ -138,9 +147,14 @@ extension Home: Presentable {
                     innerBag += titleSection.append(label)
                 }
 
-                innerBag += form.append(ActiveSection())
+                innerBag += form.append(
+                    ActiveSection(
+                        claimsContent: self.claimsContent,
+                        commonClaims: self.commonClaims
+                    )
+                )
 
-                if [.se, .no].contains(Localization.Locale.currentLocale.market) {
+                if hAnalyticsExperiment.movingFlow {
                     let section = HomeVerticalSection(
                         section: .init(
                             title: L10n.HomeTab.editingSectionTitle,
@@ -165,7 +179,7 @@ extension Home: Presentable {
             case .future:
                 innerBag += titleSection.append(FutureSection())
             case .terminated:
-                innerBag += titleSection.append(TerminatedSection())
+                innerBag += titleSection.append(TerminatedSection(claimSubmitHandler))
             case .loading:
                 break
             }
@@ -178,6 +192,8 @@ extension Home: Presentable {
                 self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
             }
             .nil()
+
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewHome())
 
         return (
             viewController,
@@ -195,8 +211,6 @@ extension Home: Presentable {
                         callback(.openFreeTextChat)
                     case .openMovingFlow:
                         callback(.startMovingFlow)
-                    case .openClaims:
-                        callback(.openClaims)
                     case .connectPayments:
                         callback(.openConnectPayments)
                     default:

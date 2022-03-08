@@ -1,3 +1,4 @@
+import Claims
 import Contracts
 import Embark
 import Flow
@@ -8,21 +9,25 @@ import Home
 import Payment
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
-        Journey(
-            Home(),
+        let claims = Claims()
+        let commonClaims = CommonClaimsView().frame(minHeight: 340)
+        return Journey(
+            Home(
+                claimsContent: claims,
+                commonClaims: commonClaims,
+                claims.claimSubmission
+            ),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         ) { result in
             switch result {
             case .startMovingFlow:
                 AppJourney.movingFlow
-            case .openClaims:
-                AppJourney
-                    .claimJourney
             case .openFreeTextChat:
                 AppJourney.freeTextChat()
             case .openConnectPayments:
@@ -33,6 +38,7 @@ extension AppJourney {
         .onTabSelected {
             ContextGradient.currentOption = .home
         }
+        .claimStoreRedirectFromHome
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
                 return deepLink == .home
@@ -40,6 +46,7 @@ extension AppJourney {
                 return false
             }
         }
+        .configureClaimsNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -83,7 +90,6 @@ extension AppJourney {
             Forever(service: ForeverServiceGraphQL()),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         )
-        .configureTabBarItem
         .onTabSelected {
             ContextGradient.currentOption = .forever
         }
@@ -94,6 +100,7 @@ extension AppJourney {
                 return false
             }
         }
+        .configureForeverTabBarItem
     }
 
     fileprivate static var profileTab: some JourneyPresentation {
@@ -115,7 +122,7 @@ extension AppJourney {
     }
 
     static var loggedIn: some JourneyPresentation {
-        Journey(FeaturesLoader(), options: []) { features in
+        Journey(ExperimentsLoader(), options: []) { _ in
             TabbedJourney(
                 {
                     homeTab
@@ -124,14 +131,12 @@ extension AppJourney {
                     contractsTab
                 },
                 {
-                    if features.contains(.keyGear) {
+                    if hAnalyticsExperiment.keyGear {
                         keyGearTab
                     }
                 },
                 {
-                    if features.contains(.referrals) {
-                        foreverTab
-                    }
+                    foreverTab
                 },
                 {
                     profileTab
@@ -141,7 +146,7 @@ extension AppJourney {
             .syncTabIndex()
             .onAction(UgglanStore.self) { action in
                 if action == .openChat {
-                    AppJourney.freeTextChat()
+                    AppJourney.freeTextChat().withDismissButton
                 } else if action == .openClaims {
                     AppJourney.claimJourney
                 }
@@ -167,6 +172,30 @@ extension JourneyPresentation {
         return self.onPresent {
             let store: S = self.presentable.get()
             store.send(action)
+        }
+    }
+}
+
+extension JourneyPresentation {
+    public var claimStoreRedirectFromHome: some JourneyPresentation {
+        onAction(HomeStore.self) { action in
+            if case .openClaim = action {
+                AppJourney.claimJourney
+            }
+        }
+    }
+
+    public var configureClaimsNavigation: some JourneyPresentation {
+        onAction(ClaimsStore.self) { action in
+            if case let .openClaimDetails(claim) = action {
+                AppJourney.claimDetailJourney(claim: claim)
+            } else if case .submitNewClaim = action {
+                AppJourney.claimJourney
+            } else if case .openFreeTextChat = action {
+                AppJourney.freeTextChat()
+            } else if case .openHowClaimsWork = action {
+                AppJourney.claimsInfoJourney()
+            }
         }
     }
 }

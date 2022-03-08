@@ -380,6 +380,13 @@ public struct hLabelColor {
             dark: Color(hexString: "FAFAFA").opacity(0.18)
         )
     }
+
+    public static var link: some hColor {
+        hColorScheme(
+            light: Color(hexString: "BE9BF3"),
+            dark: Color(hexString: "BE9BF3")
+        )
+    }
 }
 
 public struct hTintColor {

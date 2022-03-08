@@ -14,7 +14,7 @@ let ugglanConfigurations: [Configuration] = [
     .debug(
         name: "Debug",
         settings: [
-            "PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.test.app",
+            "CODE_SIGN_STYLE": "automatic",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
@@ -29,7 +29,7 @@ let ugglanConfigurations: [Configuration] = [
 let hedvigConfigurations: [Configuration] = [
     .debug(
         name: "Debug",
-        settings: ["PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.app"],
+        settings: ["CODE_SIGN_STYLE": "automatic"],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
     ),
     .release(
@@ -60,6 +60,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Forever", path: .relativeToRoot("Projects/Forever")),
         .project(target: "Contracts", path: .relativeToRoot("Projects/Contracts")),
         .project(target: "Home", path: .relativeToRoot("Projects/Home")),
+        .project(target: "Claims", path: .relativeToRoot("Projects/Claims")),
         .project(target: "Offer", path: .relativeToRoot("Projects/Offer")),
         .project(target: "Market", path: .relativeToRoot("Projects/Market")),
         .project(target: "Payment", path: .relativeToRoot("Projects/Payment")),

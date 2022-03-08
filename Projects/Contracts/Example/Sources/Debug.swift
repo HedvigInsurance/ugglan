@@ -64,6 +64,9 @@ extension Debug {
             case .openCrossSellingDetail:
                 CrossSellingCoverageDetail(crossSell: .mock())
                     .journey(
+                        { _ in
+                            ContinueJourney()
+                        },
                         style: .detented(.large, modally: true),
                         options: [.embedInNavigationController]
                     )

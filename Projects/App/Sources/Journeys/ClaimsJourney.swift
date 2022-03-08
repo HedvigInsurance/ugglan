@@ -1,3 +1,4 @@
+import Claims
 import Embark
 import Flow
 import Foundation
@@ -6,6 +7,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 extension AppJourney {
     static var claimJourney: some JourneyPresentation {
@@ -27,8 +29,6 @@ extension AppJourney {
                 ContinueJourney()
             }
         }
-        .sendActionImmediately(HomeStore.self, .startPollingClaims)
-        .sendActionOnDismiss(HomeStore.self, .stopPollingClaims)
     }
 
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
@@ -86,3 +86,28 @@ extension JourneyPresentation {
     }
 }
 
+<<<<<<< HEAD
+=======
+extension AppJourney {
+    static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
+        HostingJourney(
+            UgglanStore.self,
+            rootView: ClaimDetailView(claim: claim),
+            options: [.embedInNavigationController]
+        ) { action in
+            DismissJourney()
+        }
+        .inlineTitle()
+        .configureTitle(L10n.ClaimStatus.title)
+    }
+
+    static func claimsInfoJourney() -> some JourneyPresentation {
+        Journey(ClaimsInfoPager())
+            .onAction(ClaimsStore.self) { action in
+                if case .submitNewClaim = action {
+                    DismissJourney()
+                }
+            }
+    }
+}
+>>>>>>> main

@@ -4,6 +4,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -96,6 +97,8 @@ extension Offer: Presentable {
                     break
                 }
             }
+
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewOffer(offerIds: store.state.ids))
 
         let optionsOrCloseButton = UIBarButtonItem(
             image: hCoreUIAssets.menuIcon.image,

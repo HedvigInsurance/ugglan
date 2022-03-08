@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import Presentation
 import SnapshotTesting
+import SwiftUI
 import Testing
 import TestingUtil
 import XCTest
@@ -29,8 +30,16 @@ class HomeTests: XCTestCase {
 
         bag += window.present(
             Journey(
-                Home(),
-                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+                Home(
+                    claimsContent: EmptyView(),
+                    {
+
+                    }
+                ),
+                options: [
+                    .defaults, .prefersLargeTitles(true),
+                    .largeTitleDisplayMode(.always),
+                ]
             ) { result in
                 return DismissJourney()
             }

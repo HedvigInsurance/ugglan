@@ -2,6 +2,7 @@ import Combine
 import Foundation
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -46,6 +47,7 @@ public struct CrossSellingDetail: View {
         .hFormAttachToBottom {
             ContinueButton(crossSell: crossSell)
         }
+        .trackOnAppear(hAnalyticsEvent.screenViewCrossSellDetail(typeOfContract: crossSell.typeOfContract))
     }
 }
 
@@ -71,12 +73,12 @@ extension CrossSellingDetail {
             } else if case .openCrossSellingChat = action {
                 next(.chat)
             } else if case .crossSellingCoverageDetailNavigation(action: .detail) = action {
-                CrossSellingCoverageDetail(crossSell: self.crossSell).journey()
+                CrossSellingCoverageDetail(crossSell: self.crossSell).journey(next)
             } else if case .crossSellingFAQListNavigation(action: .list) = action {
                 CrossSellingFAQList(crossSell: self.crossSell).journey(next)
             }
         }
-        .configureTitle(L10n.CrossSellingCardSeAccident.title)
+        .configureTitle(crossSell.title)
         .withDismissButton
         .scrollEdgeNavigationItemHandler
     }

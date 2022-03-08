@@ -2,6 +2,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -48,6 +49,8 @@ extension AdyenError: Presentable {
             viewController,
             FiniteSignal { callback in
                 let bag = DisposeBag()
+
+                viewController.trackOnAppear(hAnalyticsEvent.screenViewConnectPaymentFailed())
 
                 bag += signal.onValue { shouldRetry in
                     if shouldRetry {

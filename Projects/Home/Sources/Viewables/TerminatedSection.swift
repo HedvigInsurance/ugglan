@@ -8,7 +8,16 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct TerminatedSection { @Inject var client: ApolloClient }
+struct TerminatedSection {
+    @Inject var client: ApolloClient
+    var claimSubmitHandler: () -> Void
+
+    init(
+        _ claimSubmitHandler: @escaping () -> Void
+    ) {
+        self.claimSubmitHandler = claimSubmitHandler
+    }
+}
 
 extension TerminatedSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
@@ -34,8 +43,6 @@ extension TerminatedSection: Presentable {
 
         section.appendSpacing(.top)
 
-        let store: HomeStore = self.get()
-
         let claimButton = Button(
             title: L10n.HomeTab.claimButtonText,
             type: .standard(
@@ -46,7 +53,7 @@ extension TerminatedSection: Presentable {
         bag += section.append(claimButton)
 
         bag += claimButton.onTapSignal.onValue {
-            store.send(.openClaims)
+            claimSubmitHandler()
         }
 
         return (section, bag)

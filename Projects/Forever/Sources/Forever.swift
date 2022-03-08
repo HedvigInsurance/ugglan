@@ -3,6 +3,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -122,12 +123,8 @@ extension Forever: Presentable {
                 }
             }
 
-        return (viewController, bag)
-    }
-}
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewForever())
 
-extension Forever: Tabable {
-    public func tabBarItem() -> UITabBarItem {
-        UITabBarItem(title: L10n.tabReferralsTitle, image: Asset.tab.image, selectedImage: Asset.tab.image)
+        return (viewController, bag)
     }
 }

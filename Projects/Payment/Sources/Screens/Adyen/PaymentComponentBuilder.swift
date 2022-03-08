@@ -2,17 +2,17 @@ import Adyen
 import AdyenCard
 import AdyenComponents
 import Foundation
+import PassKit
 import hCore
 import hCoreUI
 import hGraphQL
 
 class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
+    @PresentableStore var store: PaymentStore
     var apiContext: APIContext { HedvigAdyenAPIContext().apiContext }
 
     var formComponentStyle: FormComponentStyle {
         var formComponent = FormComponentStyle()
-        //formComponent.header.title.font = Fonts.fontFor(style: .title1)
-        //formComponent.header.title.color = .clear
         formComponent.mainButtonItem.button.backgroundColor = .brand(.secondaryButtonBackgroundColor)
         formComponent.mainButtonItem.button.title.color = .brand(.secondaryButtonTextColor)
         formComponent.mainButtonItem.button.title.font = Fonts.fontFor(style: .title3)
@@ -21,17 +21,20 @@ class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
         formComponent.textField.text.font = Fonts.fontFor(style: .body)
         formComponent.textField.tintColor = .brand(.primaryTintColor)
         formComponent.textField.errorColor = .brand(.destructive)
-        //formComponent.switch.title.font = Fonts.fontFor(style: .footnote)
         formComponent.backgroundColor = .brand(.secondaryBackground())
         formComponent.textField.backgroundColor = .brand(.secondaryBackground())
-        //formComponent.header.backgroundColor = .brand(.secondaryBackground())
         formComponent.hintLabel.font = Fonts.fontFor(style: .footnote)
         return formComponent
     }
 
+    var cost: MonetaryAmount {
+        store.state.monthlyNetCost
+            ?? MonetaryAmount(amount: 0, currency: Localization.Locale.currentLocale.market.currencyCode)
+    }
+
     var payment: Adyen.Payment {
         Adyen.Payment(
-            amount: .init(value: 0, currencyCode: Localization.Locale.currentLocale.market.currencyCode),
+            amount: .init(value: Int(cost.floatAmount * 100), currencyCode: cost.currency),
             countryCode: Localization.Locale.currentLocale.market.rawValue
         )
     }
@@ -84,10 +87,31 @@ class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
             case .custom: merchantIdentifier = "merchant.com.hedvig.test.app"
             }
 
-            let configuration = ApplePayComponent.Configuration(
-                summaryItems: [.init(label: "Hedvig", amount: 0, type: .pending)],
-                merchantIdentifier: merchantIdentifier
-            )
+            var configuration: ApplePayComponent.Configuration
+
+            if #available(iOS 15.0, *) {
+                configuration = ApplePayComponent.Configuration(
+                    summaryItems: [
+                        PKRecurringPaymentSummaryItem(
+                            label: "Hedvig",
+                            amount: NSDecimalNumber(value: cost.floatAmount),
+                            type: .final
+                        )
+                    ],
+                    merchantIdentifier: merchantIdentifier
+                )
+            } else {
+                configuration = ApplePayComponent.Configuration(
+                    summaryItems: [
+                        .init(
+                            label: "Hedvig",
+                            amount: NSDecimalNumber(value: cost.floatAmount),
+                            type: .final
+                        )
+                    ],
+                    merchantIdentifier: merchantIdentifier
+                )
+            }
 
             return try ApplePayComponent(
                 paymentMethod: paymentMethod,

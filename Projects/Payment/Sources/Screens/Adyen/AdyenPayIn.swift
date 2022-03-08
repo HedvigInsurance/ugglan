@@ -5,6 +5,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -52,7 +53,11 @@ public struct AdyenPayIn: Presentable {
             self.client
                 .perform(
                     mutation: GraphQL.AdyenTokenizePaymentDetailsMutation(
-                        request: GraphQL.TokenizationRequest(json: json, urlScheme: urlScheme)
+                        request: GraphQL.TokenizationRequest(
+                            paymentMethodDetails: json,
+                            channel: .ios,
+                            returnUrl: "\(urlScheme)://adyen"
+                        )
                     )
                 )
                 .onValue { data in
@@ -93,6 +98,7 @@ public struct AdyenPayIn: Presentable {
         .materialize()
 
         viewController.title = L10n.adyenPayinTitle
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewConnectPaymentAdyen())
 
         return (viewController, result)
     }

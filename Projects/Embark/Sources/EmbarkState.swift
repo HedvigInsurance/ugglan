@@ -1,6 +1,7 @@
 import Flow
 import Foundation
 import UIKit
+import hAnalytics
 import hCore
 import hGraphQL
 
@@ -128,12 +129,7 @@ public class EmbarkState {
             }
 
             if let externalRedirect = resultingPassage.externalRedirect?.data.location {
-                Analytics.track(
-                    "External Redirect",
-                    properties: [
-                        "location": externalRedirect.rawValue
-                    ]
-                )
+                hAnalyticsEvent.embarkExternalRedirect(location: externalRedirect.rawValue).send()
                 switch externalRedirect {
                 case .mailingList: externalRedirectSignal.value = .mailingList
                 case .offer:
@@ -151,10 +147,10 @@ public class EmbarkState {
                 case .__unknown: fatalError("Can't external redirect to location")
                 }
             } else if let offerRedirectKeys = resultingPassage.offerRedirect?.data.keys.compactMap({ $0 }) {
-                Analytics.track("Offer Redirect", properties: [:])
                 let ids = offerRedirectKeys.flatMap { key in
                     store.getValues(key: key) ?? []
                 }
+                hAnalyticsEvent.embarkVariantedOfferRedirect(allIds: ids, selectedIds: ids).send()
                 externalRedirectSignal.value = .offer(
                     allIds: ids,
                     selectedIds: ids
@@ -170,13 +166,7 @@ public class EmbarkState {
                     store.getValues(key: key) ?? []
                 }
 
-                Analytics.track(
-                    "Varianted Offer Redirect",
-                    properties: [
-                        "allIds": allIds,
-                        "selectedIds": selectedIds,
-                    ]
-                )
+                hAnalyticsEvent.embarkVariantedOfferRedirect(allIds: allIds, selectedIds: selectedIds).send()
                 externalRedirectSignal.value = .offer(allIds: allIds, selectedIds: selectedIds)
             } else {
                 self.isApiLoadingSignal.value = false
@@ -188,11 +178,25 @@ public class EmbarkState {
     private func handleRedirects(
         passage: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
     ) -> GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage? {
-        passage.redirects.map { redirect in store.shouldRedirectTo(redirect: redirect) }
-            .map { redirectTo in
-                passagesSignal.value.first(where: { passage -> Bool in passage.name == redirectTo })
-            }
-            .compactMap { $0 }.first
+        guard
+            let passingRedirect = passage.redirects.first(where: { redirect in
+                store.shouldRedirectTo(redirect: redirect) != nil
+            })
+        else {
+            return nil
+        }
+
+        if let binary = passingRedirect.asEmbarkRedirectBinaryExpression {
+            store.setValue(key: binary.passedExpressionKey, value: binary.passedExpressionValue)
+        } else if let unary = passingRedirect.asEmbarkRedirectUnaryExpression {
+            store.setValue(key: unary.passedExpressionKey, value: unary.passedExpressionValue)
+        } else if let multiple = passingRedirect.asEmbarkRedirectMultipleExpressions {
+            store.setValue(key: multiple.passedExpressionKey, value: multiple.passedExpressionValue)
+        }
+
+        return passagesSignal.value.first(where: { passage -> Bool in
+            passage.name == store.shouldRedirectTo(redirect: passingRedirect)
+        })
     }
 
     private var totalStepsSignal = ReadWriteSignal<Int?>(nil)

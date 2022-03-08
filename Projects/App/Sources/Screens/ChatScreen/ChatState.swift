@@ -3,6 +3,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -154,7 +155,10 @@ class ChatState {
     }
 
     func sendChatFreeTextResponse(text: String) -> Signal<Void> {
-        Signal { callback in let innerBag = DisposeBag()
+        Signal { callback in
+            let innerBag = DisposeBag()
+
+            hAnalyticsEvent.chatTextMessageSent().send()
 
             innerBag += self.currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
                 .take(first: 1)
@@ -176,6 +180,8 @@ class ChatState {
     }
 
     func sendChatFileResponseMutation(key: String, mimeType: String) {
+        hAnalyticsEvent.chatRichMessageSent().send()
+
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
             .onValue { globalId in
                 self.bag += self.client

@@ -1,3 +1,7 @@
+fragment ProgressSegmentFragment on ClaimStatusProgressSegment {
+  text
+  type
+}
 query ClaimStatusCards($locale: Locale!) {
       claims_statusCards(locale: $locale) {
         id
@@ -8,8 +12,22 @@ query ClaimStatusCards($locale: Locale!) {
         title
         subtitle
         progressSegments{
-          text
-          type
+          ... ProgressSegmentFragment
         }
+    claim {
+      id
+      outcome
+      submittedAt
+      closedAt
+      signedAudioURL
+      progressSegments {
+        ... ProgressSegmentFragment
+      }
+      statusParagraph
+      payout {
+        ... MonetaryAmountFragment
+      }
+      type
+    }
   }
 }

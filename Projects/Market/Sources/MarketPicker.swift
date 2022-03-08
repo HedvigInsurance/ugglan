@@ -6,6 +6,7 @@ import Hero
 import Kingfisher
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -114,15 +115,13 @@ extension MarketPicker: Presentable {
         return (
             viewController,
             Signal { callback in
-                func renderMarketPicker(availableLocales: [GraphQL.Locale]) {
+                func renderMarketPicker() {
                     let section = form.appendSection()
                     if #available(iOS 13.0, *) {
                         section.overrideUserInterfaceStyle = .dark
                     }
 
-                    let marketRow = MarketRow(
-                        availableLocales: availableLocales
-                    )
+                    let marketRow = MarketRow()
                     bag += section.append(marketRow)
 
                     let languageRow = LanguageRow()
@@ -167,7 +166,15 @@ extension MarketPicker: Presentable {
                             navigationController.hero.navigationAnimationType =
                                 .fade
                         }
-                        callback(())
+
+                        hAnalyticsEvent.marketSelected(
+                            locale: Localization.Locale.currentLocale.lprojCode
+                        )
+                        .send()
+
+                        hAnalyticsExperiment.load { _ in
+                            callback(())
+                        }
                     }
 
                     bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
@@ -179,17 +186,21 @@ extension MarketPicker: Presentable {
                                 form.transform = CGAffineTransform.identity
                                 form.alpha = 1
                                 form.layoutIfNeeded()
+
+                                viewController.trackOnAppear(hAnalyticsEvent.screenViewMarketPicker())
                             }
                         )
                 }
 
-                bag += client.fetch(query: GraphQL.MarketQuery()).valueSignal
+                bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal
                     .atValue { data in
-                        if let bestMatchedLocale = data.availableLocales.first(where: {
-                            locale -> Bool in
-                            locale.rawValue.lowercased()
-                                .contains(data.geo.countryIsoCode.lowercased())
-                        }) {
+                        if let bestMatchedLocale = Market.activatedMarkets.flatMap({ market in market.languages })
+                            .first(where: {
+                                locale -> Bool in
+                                locale.rawValue.lowercased()
+                                    .contains(data.geo.countryIsoCode.lowercased())
+                            })
+                        {
                             let locale = Localization.Locale(
                                 rawValue: bestMatchedLocale.rawValue
                             )!
@@ -199,11 +210,11 @@ extension MarketPicker: Presentable {
                             store.send(.selectMarket(market: .sweden))
                         }
 
-                        renderMarketPicker(availableLocales: data.availableLocales)
+                        renderMarketPicker()
                     }
                     .onError { _ in
                         store.send(.selectMarket(market: .sweden))
-                        renderMarketPicker(availableLocales: [.svSe, .daDk, .nbNo])
+                        renderMarketPicker()
                     }
 
                 return bag

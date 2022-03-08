@@ -5,11 +5,13 @@ import Flow
 import Form
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
 
 public struct MyPayment {
+    @PresentableStore var store: PaymentStore
     @Inject var client: ApolloClient
     let urlScheme: String
 
@@ -19,6 +21,8 @@ public struct MyPayment {
 extension MyPayment: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
+
+        store.send(.load)
 
         let dataSignal = client.watch(query: GraphQL.MyPaymentQuery())
         let failedChargesSignalData = dataSignal.map { $0.balance.failedCharges }
@@ -63,11 +67,11 @@ extension MyPayment: Presentable {
         let paymentDetailsSection = PaymentDetailsSection(presentingViewController: viewController)
         bag += form.append(paymentDetailsSection)
 
-        switch Localization.Locale.currentLocale.market {
-        case .se:
+        switch hAnalyticsExperiment.paymentType {
+        case .trustly:
             let bankDetailsSection = BankDetailsSection(urlScheme: urlScheme)
             bag += form.append(bankDetailsSection)
-        case .no, .dk, .fr:
+        case .adyen:
             let cardDetailsSection = CardDetailsSection(urlScheme: urlScheme)
             bag += form.append(cardDetailsSection)
 
@@ -76,6 +80,8 @@ extension MyPayment: Presentable {
         }
 
         bag += form.append(Spacing(height: 20))
+
+        viewController.trackOnAppear(hAnalyticsEvent.screenViewPayments())
 
         return (viewController, bag)
     }
