@@ -1,9 +1,14 @@
 query ActivePaymentMethods {
-    activePaymentMethods {
-        storedPaymentMethodsDetails {
-            lastFourDigits
-            holderName
+    activePaymentMethodsV2 {
+        ... on StoredCardDetails {
             brand
+            lastFourDigits
+            expiryMonth
+            expiryYear
+        }
+        ... on StoredThirdPartyDetails {
+            name
+            type
         }
     }
 }

@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import Presentation
 import SnapshotTesting
+import SwiftUI
 import Testing
 import TestingUtil
 import XCTest
@@ -30,7 +31,7 @@ class HomeTests: XCTestCase {
         bag += window.present(
             Journey(
                 Home(
-                    claimsContent: ClaimSectionDebug(),
+                    claimsContent: EmptyView(),
                     {
 
                     }
