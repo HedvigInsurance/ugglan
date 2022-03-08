@@ -11,6 +11,7 @@ import hCoreUI
 import hGraphQL
 
 public struct MyPayment {
+    @PresentableStore var store: PaymentStore
     @Inject var client: ApolloClient
     let urlScheme: String
 
@@ -20,6 +21,8 @@ public struct MyPayment {
 extension MyPayment: Presentable {
     public func materialize() -> (UIViewController, Disposable) {
         let bag = DisposeBag()
+
+        store.send(.load)
 
         let dataSignal = client.watch(query: GraphQL.MyPaymentQuery())
         let failedChargesSignalData = dataSignal.map { $0.balance.failedCharges }
