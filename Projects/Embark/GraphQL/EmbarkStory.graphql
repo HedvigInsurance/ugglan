@@ -221,6 +221,14 @@ query EmbarkStory($name: String!, $locale: String!) {
           location
         }
       }
+      quoteCartOfferRedirects {
+        data {
+          id
+          expression {
+            ...ExpressionFragment
+          }
+        }
+      }
       offerRedirect {
         component
         data {

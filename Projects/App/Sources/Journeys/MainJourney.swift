@@ -16,7 +16,7 @@ extension AppJourney {
             } else {
                 switch ApplicationState.currentState {
                 case .onboardingChat, .onboarding:
-                    AppJourney.onboarding
+                    AppJourney.onboarding()
                 case .offer:
                     AppJourney.storedOnboardingOffer
                 case .loggedIn:

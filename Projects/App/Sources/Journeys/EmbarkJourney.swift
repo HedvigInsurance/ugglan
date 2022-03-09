@@ -53,6 +53,19 @@ extension AppJourney {
                 .mapJourneyDismissToCancel
             case let .menu(action):
                 action.journey
+            case let .quoteCartOffer(id):
+                Journey(
+                    Offer(
+                        menu: embark.menu,
+                        options: offerOptions
+                    )
+                    .setQuoteCart(id)
+                ) { offerResult in
+                    offerResultJourney(offerResult)
+                }
+                .onDismiss {
+                    embark.goBack()
+                }
             }
         }
     }

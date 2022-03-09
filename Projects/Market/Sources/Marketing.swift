@@ -17,7 +17,7 @@ public struct Marketing {
 }
 
 public enum MarketingResult {
-    case onboard(id: String)
+    case onboard
     case login
 }
 
@@ -108,12 +108,8 @@ extension Marketing: Presentable {
                     type: .standard(backgroundColor: .white, textColor: .black)
                 )
 
-                let store: MarketStore = self.get()
-
-                let stateSignal = store.stateSignal.atOnce().map { $0.onboardingIdentifier }.plain()
-
-                bag += onboardButton.onTapSignal.withLatestFrom(stateSignal)
-                    .onValue { _, id in
+                bag += onboardButton.onTapSignal
+                    .onValue { _ in
                         if #available(iOS 13.0, *) {
                             viewController.navigationController?.navigationBar
                                 .overrideUserInterfaceStyle =

@@ -39,6 +39,11 @@ extension Offer {
         store.send(.setIds(ids: ids, selectedIds: selectedIds))
         return self
     }
+    
+    public func setQuoteCart(_ id: String) -> Self {
+        let store: OfferStore = globalPresentableStoreContainer.get()
+        return self
+    }
 }
 
 public enum OfferResult {

@@ -6,15 +6,34 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hAnalytics
 
 struct EmbarkOnboardingJourney {
-    public static func journey(cartId: String?) -> some JourneyPresentation {
+    public static var quoteCartLoaderJourney: some JourneyPresentation {
+        Journey(
+            StoreLoadingPresentable<UgglanStore>(
+                action: UgglanAction.createOnboardingQuoteCart,
+                endOn: { action in
+                    switch action {
+                    case .setOnboardingIdentifier:
+                        return true
+                    default:
+                        return false
+                    }
+                }
+            )
+        ) { ugglanState in
+            EmbarkOnboardingJourney.journey(cartId: ugglanState.onboardingIdentifier)
+        }
+    }
+    
+    private static func journey(cartId: String?) -> some JourneyPresentation {
         let menuChildren: [MenuChildable] = [
             MenuChild.appInformation,
             MenuChild.appSettings,
             MenuChild.login,
         ]
-
+        
         return Journey(
             EmbarkPlans(menu: Menu(title: nil, children: menuChildren)),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]

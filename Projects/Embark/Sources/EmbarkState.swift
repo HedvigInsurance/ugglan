@@ -10,6 +10,7 @@ public enum ExternalRedirect {
     case offer(allIds: [String], selectedIds: [String])
     case close
     case chat
+    case quoteCartOffer(id: String)
     case dataCollection(
         providerID: String,
         providerDisplayName: String,
@@ -29,7 +30,6 @@ public class EmbarkState {
     let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
     let bag = DisposeBag()
 
-    @Cached(key: "quoteCartId")
     var quoteCartId: String?
 
     public init(
@@ -170,6 +170,13 @@ public class EmbarkState {
 
                 hAnalyticsEvent.embarkVariantedOfferRedirect(allIds: allIds, selectedIds: selectedIds).send()
                 externalRedirectSignal.value = .offer(allIds: allIds, selectedIds: selectedIds)
+            } else if let quoteCartOfferRedirects = resultingPassage.quoteCartOfferRedirects.first(where: { store.passes(expression: $0.data.expression.fragments.expressionFragment)}) {
+                
+                let id = quoteCartOfferRedirects.data.id
+                
+                let quoteCartId = store.getValue(key: id) ?? ""
+                
+                externalRedirectSignal.value = .quoteCartOffer(id: quoteCartId)
             } else {
                 self.isApiLoadingSignal.value = false
                 currentPassageSignal.value = resultingPassage

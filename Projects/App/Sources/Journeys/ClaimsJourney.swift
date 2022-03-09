@@ -10,6 +10,27 @@ import hCoreUI
 import hGraphQL
 
 extension AppJourney {
+    static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
+        HostingJourney(
+            UgglanStore.self,
+            rootView: ClaimDetailView(claim: claim),
+            options: [.embedInNavigationController]
+        ) { action in
+            DismissJourney()
+        }
+        .inlineTitle()
+        .configureTitle(L10n.ClaimStatus.title)
+    }
+
+    static func claimsInfoJourney() -> some JourneyPresentation {
+        Journey(ClaimsInfoPager())
+            .onAction(ClaimsStore.self) { action in
+                if case .submitNewClaim = action {
+                    DismissJourney()
+                }
+            }
+    }
+    
     static var claimJourney: some JourneyPresentation {
         AppJourney.claimsJourneyPledgeAndNotificationWrapper { redirect in
             switch redirect {
@@ -27,6 +48,8 @@ extension AppJourney {
                 DismissJourney()
             case .dataCollection:
                 ContinueJourney()
+            case .quoteCartOffer:
+                DismissJourney()
             }
         }
     }
@@ -85,29 +108,3 @@ extension JourneyPresentation {
         }
     }
 }
-
-<<<<<<< HEAD
-=======
-extension AppJourney {
-    static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
-        HostingJourney(
-            UgglanStore.self,
-            rootView: ClaimDetailView(claim: claim),
-            options: [.embedInNavigationController]
-        ) { action in
-            DismissJourney()
-        }
-        .inlineTitle()
-        .configureTitle(L10n.ClaimStatus.title)
-    }
-
-    static func claimsInfoJourney() -> some JourneyPresentation {
-        Journey(ClaimsInfoPager())
-            .onAction(ClaimsStore.self) { action in
-                if case .submitNewClaim = action {
-                    DismissJourney()
-                }
-            }
-    }
-}
->>>>>>> main

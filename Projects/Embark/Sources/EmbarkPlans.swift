@@ -11,6 +11,9 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+#warning("switch to feature flag")
+public let shouldUseQuoteCart = true
+
 public typealias EmbarkStory = GraphQL.ChoosePlanQuery.Data.EmbarkStory
 
 public struct EmbarkPlans {
@@ -110,7 +113,7 @@ extension EmbarkPlans: Presentable {
                 tableKit.view.scrollIndicatorInsets = inset
             }
         }
-
+        
         bag += client.fetch(query: GraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue))
             .valueSignal
             .compactMap {
