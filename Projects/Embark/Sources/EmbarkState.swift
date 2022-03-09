@@ -170,12 +170,14 @@ public class EmbarkState {
 
                 hAnalyticsEvent.embarkVariantedOfferRedirect(allIds: allIds, selectedIds: selectedIds).send()
                 externalRedirectSignal.value = .offer(allIds: allIds, selectedIds: selectedIds)
-            } else if let quoteCartOfferRedirects = resultingPassage.quoteCartOfferRedirects.first(where: { store.passes(expression: $0.data.expression.fragments.expressionFragment)}) {
-                
+            } else if let quoteCartOfferRedirects = resultingPassage.quoteCartOfferRedirects.first(where: {
+                store.passes(expression: $0.data.expression.fragments.expressionFragment)
+            }) {
+
                 let id = quoteCartOfferRedirects.data.id
-                
+
                 let quoteCartId = store.getValue(key: id) ?? ""
-                
+
                 externalRedirectSignal.value = .quoteCartOffer(id: quoteCartId)
             } else {
                 self.isApiLoadingSignal.value = false

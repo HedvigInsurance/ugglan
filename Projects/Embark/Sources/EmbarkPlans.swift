@@ -113,7 +113,7 @@ extension EmbarkPlans: Presentable {
                 tableKit.view.scrollIndicatorInsets = inset
             }
         }
-        
+
         bag += client.fetch(query: GraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue))
             .valueSignal
             .compactMap {

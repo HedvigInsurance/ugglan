@@ -30,7 +30,7 @@ extension AppJourney {
                 }
             }
     }
-    
+
     static var claimJourney: some JourneyPresentation {
         AppJourney.claimsJourneyPledgeAndNotificationWrapper { redirect in
             switch redirect {

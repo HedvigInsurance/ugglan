@@ -53,17 +53,21 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             }
             .valueThenEndSignal
     }
-    
+
     private func getOnboardingQuoteCart() -> FiniteSignal<UgglanAction> {
         let locale = Localization.Locale.currentLocale
         return self.client
             .perform(
-                mutation: GraphQL.CreateOnboardingQuoteCartMutation(input: .init(market: locale.market.graphQL, locale: locale.rawValue))
-            ).map { data in
+                mutation: GraphQL.CreateOnboardingQuoteCartMutation(
+                    input: .init(market: locale.market.graphQL, locale: locale.rawValue)
+                )
+            )
+            .map { data in
                 return .setOnboardingIdentifier(id: data.onboardingQuoteCartCreate.id.displayValue)
-            }.valueThenEndSignal
+            }
+            .valueThenEndSignal
     }
-    
+
     public override func effects(
         _ getState: @escaping () -> UgglanState,
         _ action: UgglanAction

@@ -4,9 +4,9 @@ import Foundation
 import Offer
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 struct EmbarkOnboardingJourney {
     public static var quoteCartLoaderJourney: some JourneyPresentation {
@@ -26,14 +26,14 @@ struct EmbarkOnboardingJourney {
             EmbarkOnboardingJourney.journey(cartId: ugglanState.onboardingIdentifier)
         }
     }
-    
+
     private static func journey(cartId: String?) -> some JourneyPresentation {
         let menuChildren: [MenuChildable] = [
             MenuChild.appInformation,
             MenuChild.appSettings,
             MenuChild.login,
         ]
-        
+
         return Journey(
             EmbarkPlans(menu: Menu(title: nil, children: menuChildren)),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
