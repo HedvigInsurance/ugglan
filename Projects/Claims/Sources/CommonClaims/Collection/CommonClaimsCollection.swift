@@ -7,13 +7,13 @@ import hGraphQL
 struct CommonClaimsCollection: View {
     @PresentableStore var store: ClaimsStore
     var commonClaims: [CommonClaim]
-    
+
     init(
         commonClaims: [CommonClaim]
     ) {
         self.commonClaims = commonClaims
     }
-    
+
     var body: some View {
         ForEach(commonClaims.chunked(into: 2), id: \.id) { claimsRow in
             HStack {
@@ -21,11 +21,11 @@ struct CommonClaimsCollection: View {
                     Button {
                         store.send(.openCommonClaimDetail(commonClaim: claim))
                     } label: {
-                        
+
                     }
                     .buttonStyle(CommonClaimButtonStyle(claim: claim))
                 }
-                
+
                 if claimsRow.count == 1 {
                     Spacer().frame(maxWidth: .infinity)
                 }
@@ -43,7 +43,7 @@ extension Array where Element == CommonClaim {
 
 struct CommonClaimButtonStyle: ButtonStyle {
     var claim: CommonClaim
-    
+
     func makeBody(configuration: Configuration) -> some View {
         VStack {
             HStack {
@@ -51,13 +51,13 @@ struct CommonClaimButtonStyle: ButtonStyle {
                     RemoteVectorIconView(icon: icon, backgroundFetch: true)
                         .frame(width: 24, height: 24)
                 }
-                
+
                 Spacer()
             }
             .padding(16)
-            
+
             Spacer()
-            
+
             hText(claim.displayTitle, style: .body)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .lineLimit(1)
@@ -77,7 +77,7 @@ struct CommonClaimButtonStyle: ButtonStyle {
 
 public struct CommonClaimsView: View {
     @PresentableStore var store: ClaimsStore
-    
+
     public init() {}
     public var body: some View {
         VStack {
@@ -85,7 +85,7 @@ public struct CommonClaimsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 52)
                 .padding(.bottom, 16)
-            
+
             PresentableStoreLens(
                 ClaimsStore.self,
                 getter: { state in

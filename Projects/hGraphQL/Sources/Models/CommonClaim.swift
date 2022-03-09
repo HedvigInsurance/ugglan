@@ -5,7 +5,7 @@ public struct CommonClaim: Codable, Equatable {
     public let icon: IconEnvelope?
     public let displayTitle: String
     public let layout: Layout
-    
+
     public init(
         claim: GraphQL.CommonClaimsQuery.Data.CommonClaim
     ) {
@@ -14,11 +14,11 @@ public struct CommonClaim: Codable, Equatable {
         self.icon = IconEnvelope(fragment: claim.icon.fragments.iconFragment)
         self.layout = Layout(layout: claim.layout)
     }
-    
+
     public struct Layout: Codable, Equatable {
         public var titleAndBulletPoint: TitleAndBulletPoints?
         public var emergency: Emergency?
-        
+
         public init(
             layout: GraphQL.CommonClaimsQuery.Data.CommonClaim.Layout
         ) {
@@ -32,7 +32,7 @@ public struct CommonClaim: Codable, Equatable {
                         icon: IconEnvelope(fragment: $0.icon.fragments.iconFragment)
                     )
                 }
-                
+
                 self.titleAndBulletPoint = TitleAndBulletPoints(
                     color: content.color.rawValue,
                     buttonTitle: content.buttonTitle,
@@ -41,20 +41,20 @@ public struct CommonClaim: Codable, Equatable {
                 )
             }
         }
-        
+
         public struct TitleAndBulletPoints: Codable, Equatable {
             public let color: String
             public var buttonTitle: String?
             public var title: String?
             public var bulletPoints: [BulletPoint]
-            
+
             public struct BulletPoint: Codable, Hashable, Equatable {
                 public let title: String
                 public let description: String
                 public let icon: IconEnvelope?
             }
         }
-        
+
         public struct Emergency: Codable, Hashable, Equatable {
             public let title: String
             public let color: String

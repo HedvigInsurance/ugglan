@@ -49,15 +49,17 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 }
                 .valueThenEndSignal
         case .fetchCommonClaims:
-            return client.fetch(
-                query: GraphQL.CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
-            ).map { data in
-                let commonClaims = data.commonClaims.map {
-                    CommonClaim(claim: $0)
+            return
+                client.fetch(
+                    query: GraphQL.CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                )
+                .map { data in
+                    let commonClaims = data.commonClaims.map {
+                        CommonClaim(claim: $0)
+                    }
+                    return .setCommonClaims(commonClaims: commonClaims)
                 }
-                return .setCommonClaims(commonClaims: commonClaims)
-            }
-            .valueThenEndSignal
+                .valueThenEndSignal
         default:
             return nil
         }
