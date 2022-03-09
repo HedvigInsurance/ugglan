@@ -10,7 +10,7 @@ import hGraphQL
 
 public struct CommonClaimDetail {
     let claim: CommonClaim
-    
+
     public init(
         claim: CommonClaim
     ) {

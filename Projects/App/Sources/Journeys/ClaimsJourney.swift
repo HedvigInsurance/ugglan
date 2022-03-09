@@ -107,7 +107,7 @@ extension AppJourney {
                 }
             }
     }
-    
+
     static func commonClaimDetailJourney(claim: CommonClaim) -> some JourneyPresentation {
         Journey(
             CommonClaimDetail(claim: claim),
