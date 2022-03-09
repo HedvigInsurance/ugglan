@@ -1,5 +1,5 @@
-name: 'BuildApp'
-description: 'Build an app'
+name: "BuildApp"
+description: "Build an app"
 inputs:
   lane:
     required: true
@@ -34,6 +34,12 @@ inputs:
   SSH_CACHE_CREDENTIALS:
     required: true
     type: string
+  BROWSERSTACK_USERNAME:
+    required: true
+    type: string
+  BROWSERSTACK_ACCESS_KEY:
+    required: true
+    type: string
 
 runs:
   using: "composite"
@@ -53,8 +59,10 @@ runs:
         HEDVIG_GITHUB_APP_PRIVATE_KEY: ${{ inputs.HEDVIG_GITHUB_APP_PRIVATE_KEY }}
         S3_ACCESS_KEY: ${{ inputs.S3_ACCESS_KEY }}
         S3_SECRET_ACCESS_KEY: ${{ inputs.S3_SECRET_ACCESS_KEY }}
-        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
-        FASTLANE_XCODE_LIST_TIMEOUT: '180'
+        BROWSERSTACK_USERNAME: ${{ inputs.BROWSERSTACK_USERNAME }}
+        BROWSERSTACK_ACCESS_KEY: ${{ inputs.BROWSERSTACK_ACCESS_KEY }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "180"
+        FASTLANE_XCODE_LIST_TIMEOUT: "180"
         BUILD_NAME: build_${{ inputs.name }}
       run: arch -arm64 bundle exec fastlane ${{ inputs.lane }}
       shell: bash

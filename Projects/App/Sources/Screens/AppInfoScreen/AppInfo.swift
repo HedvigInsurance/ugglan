@@ -34,9 +34,9 @@ struct AppInfo {
         var trackingParcel: hAnalyticsParcel {
             switch self {
             case .appInformation:
-                return hAnalyticsEvent.screenViewAppInformation()
+                return hAnalyticsEvent.screenView(screen: .app_information)
             case .appSettings:
-                return hAnalyticsEvent.screenViewAppSettings()
+                return hAnalyticsEvent.screenView(screen: .app_settings)
             }
         }
 
@@ -162,7 +162,7 @@ extension AppInfo: Presentable {
                 .onValue { shouldLogout in
                     if shouldLogout {
                         ApplicationState.preserveState(.marketPicker)
-                        UIApplication.shared.appDelegate.logout()
+                        UIApplication.shared.appDelegate.logout(token: nil)
                     }
                 }
         }

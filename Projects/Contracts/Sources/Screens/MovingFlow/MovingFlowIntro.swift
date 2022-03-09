@@ -159,7 +159,7 @@ extension MovingFlowIntro: Presentable {
                 }
             }
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewMovingFlowIntro())
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .movingFlowIntro))
 
         return (
             viewController,

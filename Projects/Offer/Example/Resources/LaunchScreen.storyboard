@@ -9,8 +9,8 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="FavoritStd-Book.otf">
-            <string>FavoritStd-Book</string>
+        <array key="HedvigLetters-Standard.otf">
+            <string>HedvigLetters-Standard</string>
         </array>
     </customFonts>
     <scenes>

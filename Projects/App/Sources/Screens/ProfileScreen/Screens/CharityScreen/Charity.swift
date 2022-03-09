@@ -59,7 +59,7 @@ extension Charity: Presentable {
 
         bag += viewController.install(form, scrollView: scrollView)
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewCharity())
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .charity))
 
         return (viewController, bag)
     }

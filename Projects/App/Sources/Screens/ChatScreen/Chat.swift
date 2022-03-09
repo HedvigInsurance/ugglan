@@ -236,7 +236,7 @@ extension Chat: Presentable {
             delay: 2
         )
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewChat())
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .chat))
 
         return (
             viewController,

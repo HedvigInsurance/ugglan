@@ -44,7 +44,7 @@ extension Profile: Presentable {
             bag += scrollView.chainAllControlResponders(shouldLoop: true, returnKey: .next)
         }
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewProfile())
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .profile))
 
         return (viewController, bag)
     }

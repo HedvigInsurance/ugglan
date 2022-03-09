@@ -440,6 +440,7 @@ platform :ios do
                 configuration: "Release",
                 scheme: scheme,
                 output_directory: "fastlane/build_output",
+                output_name: "#{ENV["BUILD_NAME"]}_#{git_branch}.ipa",
                 codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
                 include_bitcode: false,
                 catalyst_platform: "ios",
@@ -454,6 +455,12 @@ platform :ios do
                     thinning: "<none>"
                 }
             )
+
+            upload_to_browserstack_app_live(
+                browserstack_username: ENV["BROWSERSTACK_USERNAME"],
+                browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
+            )
+
             handle_build_result(scheme: scheme)
         rescue => ex
             handle_build_result

@@ -1,4 +1,5 @@
 import Apollo
+import Form
 import Foundation
 import NotificationCenter
 import hAnalytics
@@ -41,6 +42,7 @@ extension AppDelegate {
         log.info("Started loading hAnlyticsExperiments")
         hAnalyticsExperiment.load { success in
             if success {
+                DefaultStyling.installCustom()
                 log.info("Successfully loaded hAnlyticsExperiments")
                 ApplicationContext.shared.hasLoadedExperiments = true
             } else {
