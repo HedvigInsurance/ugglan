@@ -84,7 +84,7 @@ extension Contracts: View {
         .onAppear {
             fetch()
         }
-        .trackOnAppear(hAnalyticsEvent.screenViewInsurances())
+        .trackOnAppear(hAnalyticsEvent.screenView(screen: .insurances))
     }
 }
 

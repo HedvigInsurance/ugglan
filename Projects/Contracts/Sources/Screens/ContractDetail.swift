@@ -139,7 +139,7 @@ struct ContractDetail: View {
                 }
             }
         }
-        .trackOnAppear(hAnalyticsEvent.screenViewInsuranceDetail(contractId: id))
+        .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
     }
 }
 

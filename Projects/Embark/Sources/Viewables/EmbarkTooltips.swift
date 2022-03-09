@@ -26,7 +26,7 @@ extension EmbarkTooltips: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        .trackOnAppear(hAnalyticsEvent.screenViewEmbarkTooltip())
+        .trackOnAppear(hAnalyticsEvent.screenView(screen: .embarkTooltip))
     }
 }
 

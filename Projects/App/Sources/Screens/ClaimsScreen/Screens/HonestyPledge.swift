@@ -157,7 +157,7 @@ struct HonestyPledge: View {
             .padding(.leading, 15)
             .padding(.trailing, 15)
         }
-        .trackOnAppear(hAnalyticsEvent.screenViewClaimHonorPledge())
+        .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
     }
 }
 

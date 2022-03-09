@@ -46,9 +46,7 @@ public struct DataCollectionIntro: View {
             .sectionContainerStyle(.transparent)
         }
         .trackOnAppear(
-            hAnalyticsEvent.screenViewDataCollectionIntro(
-                providerId: store.state.providerID ?? ""
-            )
+            hAnalyticsEvent.screenView(screen: .dataCollectionIntro)
         )
     }
 }

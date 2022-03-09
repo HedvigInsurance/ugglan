@@ -22,6 +22,6 @@ struct CrossFrameworkCoordinator {
                 }
         }
 
-        CrossFramework.onRequestLogout = { UIApplication.shared.appDelegate.logout() }
+        CrossFramework.onRequestLogout = { UIApplication.shared.appDelegate.logout(token: nil) }
     }
 }
