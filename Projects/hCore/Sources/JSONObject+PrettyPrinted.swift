@@ -1,5 +1,5 @@
-import Foundation
 import Apollo
+import Foundation
 
 extension JSONObject {
     public var prettyPrinted: NSString? {
