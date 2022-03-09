@@ -30,12 +30,9 @@ class HomeTests: XCTestCase {
 
         bag += window.present(
             Journey(
-                Home(
-                    claimsContent: EmptyView(),
-                    {
-
-                    }
-                ),
+                Home(claimsContent: EmptyView(), commonClaims: EmptyView(), {
+                    
+                }),
                 options: [
                     .defaults, .prefersLargeTitles(true),
                     .largeTitleDisplayMode(.always),
