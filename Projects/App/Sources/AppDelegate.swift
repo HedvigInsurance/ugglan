@@ -199,23 +199,17 @@ let log = Logger.builder
 
         setupPresentableStoreLogger()
         setupAnalyticsAndTracking()
-
-        bag += Localization.Locale.$currentLocale.distinct()
-            .onValue { locale in ApplicationState.setPreferredLocale(locale)
+        
+        bag += Localization.Locale.$currentLocale
+            .atOnce()
+            .onValue { locale in
+                ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
 
                 ApolloClient.initAndRegisterClient()
                     .always {
                         ChatState.shared = ChatState()
-                        let client: ApolloClient = Dependencies.shared.resolve()
-                        self.bag +=
-                            client.perform(
-                                mutation: GraphQL.UpdateLanguageMutation(
-                                    language: locale.code,
-                                    pickedLocale: locale.asGraphQLLocale()
-                                )
-                            )
-                            .sink()
+                        updateLanguageMutation()
                     }
             }
 
