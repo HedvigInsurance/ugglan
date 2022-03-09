@@ -195,6 +195,8 @@ extension JourneyPresentation {
                 AppJourney.freeTextChat()
             } else if case .openHowClaimsWork = action {
                 AppJourney.claimsInfoJourney()
+            } else if case let .openCommonClaimDetail(commonClaim) = action {
+                AppJourney.commonClaimDetailJourney(claim: commonClaim)
             }
         }
     }
