@@ -491,7 +491,8 @@ platform :ios do
             )
             
             app_results.append({
-                url: lane_context[SharedValues::S3_HTML_OUTPUT_PATH],
+                html_url: lane_context[SharedValues::S3_HTML_OUTPUT_PATH],
+                ipa_url: lane_context[SharedValues::S3_IPA_OUTPUT_PATH],
                 scheme: scheme
             })
         end
@@ -530,6 +531,21 @@ platform :ios do
             "type": "divider"
           },
           {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "IPA links",
+                    "emoji": true
+                }
+          },
+          {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Use these to install the app on Browserstack, etc"
+            }
+          },
+          {
             "type": "actions",
             "elements": app_results.map { |app_result|
                 {
@@ -538,7 +554,39 @@ platform :ios do
                         "type": "plain_text",
                         "text": app_result[:scheme]
                     },
-                    "url": app_result[:url],
+                    "url": app_result[:ipa_url],
+                    "value": app_result[:scheme]
+                }
+            }
+          },
+          {
+            "type": "divider"
+          },
+          {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Install links",
+                    "emoji": true
+                }
+          },
+          {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Use these to install the app on an iPhone, iPad or Mac"
+            }
+          },
+          {
+            "type": "actions",
+            "elements": app_results.map { |app_result|
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "text": app_result[:scheme]
+                    },
+                    "url": app_result[:html_url],
                     "value": app_result[:scheme]
                 }
             }
