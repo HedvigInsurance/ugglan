@@ -4,4 +4,3 @@
 
 gem 'fastlane-plugin-xchtmlreport'
 gem 'fastlane-plugin-aws_s3'
-gem 'fastlane-plugin-browserstack'

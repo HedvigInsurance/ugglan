@@ -455,12 +455,6 @@ platform :ios do
                     thinning: "<none>"
                 }
             )
-
-            upload_to_browserstack_app_live(
-                browserstack_username: ENV["BROWSERSTACK_USERNAME"],
-                browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
-            )
-
             handle_build_result(scheme: scheme)
         rescue => ex
             handle_build_result
