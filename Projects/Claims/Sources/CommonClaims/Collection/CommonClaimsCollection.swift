@@ -16,7 +16,7 @@ struct CommonClaimsCollection: View {
 
     var body: some View {
         ForEach(commonClaims.chunked(into: 2), id: \.id) { claimsRow in
-            HStack {
+            HStack(spacing: 8) {
                 ForEach(claimsRow, id: \.id) { claim in
                     Button {
                         store.send(.openCommonClaimDetail(commonClaim: claim))
@@ -30,7 +30,6 @@ struct CommonClaimsCollection: View {
                     Spacer().frame(maxWidth: .infinity)
                 }
             }
-            .padding(.bottom, 8)
         }
     }
 }
