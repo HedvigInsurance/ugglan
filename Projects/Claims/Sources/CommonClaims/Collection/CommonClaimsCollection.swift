@@ -1,113 +1,105 @@
-import Apollo
-import Flow
-import Form
-import Foundation
 import Presentation
 import SwiftUI
-import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
 
-struct CommonClaimsCollection { @Inject var client: ApolloClient }
-
-extension CommonClaimsCollection: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
-        let bag = DisposeBag()
-
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 8
-
-        let collectionKit = CollectionKit<EmptySection, CommonClaimCard>(layout: layout, holdIn: bag)
-        collectionKit.view.backgroundColor = .clear
-
-        bag += collectionKit.delegate.sizeForItemAt.set { _ -> CGSize in
-            CGSize(width: min(190, (collectionKit.view.frame.width / 2) - 5), height: 140)
-        }
-
-        func fetchData() {
-            bag +=
-                client.fetch(
-                    query: GraphQL.CommonClaimsQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    )
-                )
-                .valueSignal
-                .onValue { data in
-                    let rows = data.commonClaims.enumerated()
-                        .map {
-                            CommonClaimCard(
-                                data: $0.element,
-                                index: TableIndex(section: 0, row: $0.offset)
-                            )
-                        }
-
-                    collectionKit.set(Table(rows: rows), rowIdentifier: { $0.data.title })
+struct CommonClaimsCollection: View {
+    @PresentableStore var store: ClaimsStore
+    var commonClaims: [CommonClaim]
+    
+    init(
+        commonClaims: [CommonClaim]
+    ) {
+        self.commonClaims = commonClaims
+    }
+    
+    var body: some View {
+        ForEach(commonClaims.chunked(into: 2), id: \.id) { claimsRow in
+            HStack {
+                ForEach(claimsRow, id: \.id) { claim in
+                    Button {
+                        store.send(.openCommonClaimDetail(commonClaim: claim))
+                    } label: {
+                        
+                    }
+                    .buttonStyle(CommonClaimButtonStyle(claim: claim))
                 }
-        }
-
-        fetchData()
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-
-        let spacer = Spacing(height: 52)
-        bag += stackView.addArranged(spacer)
-
-        let titleLabel = MultilineLabel(
-            value: L10n.claimsQuickChoiceHeader,
-            style: .brand(.title3(color: .primary))
-        )
-        bag += stackView.addArranged(titleLabel.wrappedIn(UIStackView())) { containerStackView in
-            containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 0, verticalInset: 8)
-            containerStackView.isLayoutMarginsRelativeArrangement = true
-        }
-
-        stackView.addArrangedSubview(collectionKit.view)
-
-        collectionKit.view.snp.updateConstraints { make in make.height.equalTo(140) }
-
-        bag += collectionKit.view.signal(for: \.contentSize)
-            .onValue { _ in
-                collectionKit.view.snp.updateConstraints { make in
-                    make.height.equalTo(
-                        collectionKit.view.collectionViewLayout.collectionViewContentSize.height
-                    )
+                
+                if claimsRow.count == 1 {
+                    Spacer().frame(maxWidth: .infinity)
                 }
             }
-
-        return (stackView, bag)
+            .padding(.bottom, 8)
+        }
     }
 }
 
-public struct CommonClaimsView: UIViewRepresentable {
-    public init() {
-
+extension Array where Element == CommonClaim {
+    var id: String {
+        self.map { claim in claim.displayTitle }.joined(separator: "")
     }
+}
 
-    public class Coordinator {
-        let bag = DisposeBag()
-        let commonClaims: CommonClaimsCollection
-
-        init() {
-            self.commonClaims = CommonClaimsCollection()
+struct CommonClaimButtonStyle: ButtonStyle {
+    var claim: CommonClaim
+    
+    func makeBody(configuration: Configuration) -> some View {
+        VStack {
+            HStack {
+                if let icon = claim.icon {
+                    RemoteVectorIconView(icon: icon, backgroundFetch: true)
+                        .frame(width: 24, height: 24)
+                }
+                
+                Spacer()
+            }
+            .padding(16)
+            
+            Spacer()
+            
+            hText(claim.displayTitle, style: .body)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineLimit(1)
+                .padding(12)
         }
-    }
-
-    public func makeCoordinator() -> Coordinator {
-        Coordinator()
-    }
-
-    public func makeUIView(context: Context) -> some UIView {
-        let (view, disposable) = context.coordinator.commonClaims.materialize(
-            events: ViewableEvents(wasAddedCallbacker: .init())
+        .frame(maxWidth: .infinity)
+        .background(hBackgroundColor.secondary)
+        .cornerRadius(.defaultCornerRadius)
+        .shadow(
+            color: .black.opacity(0.1),
+            radius: 2,
+            x: 0,
+            y: 1
         )
-        context.coordinator.bag += disposable
-        return view
     }
+}
 
-    public func updateUIView(_ uiView: UIViewType, context: Context) {
-
+public struct CommonClaimsView: View {
+    @PresentableStore var store: ClaimsStore
+    
+    public init() {}
+    public var body: some View {
+        VStack {
+            hText(L10n.claimsQuickChoiceHeader, style: .title2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 52)
+                .padding(.bottom, 16)
+            
+            PresentableStoreLens(
+                ClaimsStore.self,
+                getter: { state in
+                    return state.commonClaims ?? []
+                },
+                setter: { _ in
+                    .fetchCommonClaims
+                }
+            ) { commonClaims, _ in
+                CommonClaimsCollection(commonClaims: commonClaims)
+            }
+        }
+        .onAppear {
+            store.send(.fetchCommonClaims)
+        }
     }
 }

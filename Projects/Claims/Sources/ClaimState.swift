@@ -6,6 +6,7 @@ import hGraphQL
 
 public struct ClaimsState: StateProtocol {
     var claims: [Claim]? = nil
+    var commonClaims: [CommonClaim]? = nil
 
     public init() {}
 }
@@ -15,6 +16,9 @@ public enum ClaimsAction: ActionProtocol {
     case submitNewClaim
     case fetchClaims
     case setClaims(claims: [Claim])
+    case fetchCommonClaims
+    case setCommonClaims(commonClaims: [CommonClaim])
+    case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
 }
@@ -44,6 +48,16 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     return .setClaims(claims: claimData.claims)
                 }
                 .valueThenEndSignal
+        case .fetchCommonClaims:
+            return client.fetch(
+                query: GraphQL.CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+            ).map { data in
+                let commonClaims = data.commonClaims.map {
+                    CommonClaim(claim: $0)
+                }
+                return .setCommonClaims(commonClaims: commonClaims)
+            }
+            .valueThenEndSignal
         default:
             return nil
         }
@@ -57,10 +71,16 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             break
         case .fetchClaims:
             break
+        case .fetchCommonClaims:
+            break
         case .openHowClaimsWork:
+            break
+        case .openCommonClaimDetail:
             break
         case let .setClaims(claims):
             newState.claims = claims
+        case let .setCommonClaims(commonClaims):
+            newState.commonClaims = commonClaims
         case .openClaimDetails:
             break
         case .submitNewClaim:

@@ -56,7 +56,7 @@ extension CommonClaimDetail: Presentable {
         let layoutTitle = MultilineLabel(value: self.layoutTitle, style: .brand(.title2(color: .primary)))
         bag += topCardContentView.addArranged(layoutTitle)
 
-        if let bulletPoints = data.layout.asTitleAndBulletPoints?.bulletPoints {
+         if let bulletPoints = data.layout.asTitleAndBulletPoints?.bulletPoints {
             let claimButton = Button(
                 title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
                 type: .standard(

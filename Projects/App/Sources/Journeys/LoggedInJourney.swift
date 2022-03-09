@@ -16,7 +16,7 @@ import hCoreUI
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
-        let commonClaims = CommonClaimsView().frame(minHeight: 340)
+        let commonClaims = CommonClaimsView()
         return Journey(
             Home(
                 claimsContent: claims,
