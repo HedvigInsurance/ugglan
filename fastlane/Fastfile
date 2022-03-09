@@ -440,7 +440,6 @@ platform :ios do
                 configuration: "Release",
                 scheme: scheme,
                 output_directory: "fastlane/build_output",
-                output_name: "#{ENV["BUILD_NAME"]}_#{git_branch}.ipa",
                 codesigning_identity: "Apple Distribution: Hedvig AB (AW656G5PFM)",
                 include_bitcode: false,
                 catalyst_platform: "ios",
