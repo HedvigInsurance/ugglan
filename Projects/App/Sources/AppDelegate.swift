@@ -199,7 +199,7 @@ let log = Logger.builder
 
         setupPresentableStoreLogger()
         setupAnalyticsAndTracking()
-        
+
         bag += Localization.Locale.$currentLocale
             .atOnce()
             .onValue { locale in
