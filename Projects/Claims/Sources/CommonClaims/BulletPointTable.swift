@@ -7,7 +7,7 @@ import hCoreUI
 import hGraphQL
 
 struct BulletPointTable {
-    let bulletPoints: [GraphQL.CommonClaimsQuery.Data.CommonClaim.Layout.AsTitleAndBulletPoints.BulletPoint]
+    let bulletPoints: [CommonClaim.Layout.TitleAndBulletPoints.BulletPoint]
 }
 
 extension BulletPointTable: Viewable {
@@ -36,7 +36,7 @@ extension BulletPointTable: Viewable {
         let rows = bulletPoints.map {
             BulletPointCard(
                 title: $0.title,
-                icon: RemoteVectorIcon($0.icon.fragments.iconFragment),
+                icon: RemoteVectorIcon($0.icon),
                 description: $0.description
             )
         }
