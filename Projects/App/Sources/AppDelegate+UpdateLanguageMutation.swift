@@ -1,8 +1,8 @@
-import Foundation
 import Apollo
+import Flow
+import Foundation
 import hCore
 import hGraphQL
-import Flow
 
 extension AppDelegate {
     func updateLanguageMutation(numberOfRetries: Int = 0) {
@@ -19,10 +19,11 @@ extension AppDelegate {
         }
         .onError { error in
             log.info("Failed updating language, retries in \(numberOfRetries * 100) ms")
-                        
-            Signal(after: Double(numberOfRetries) * 0.1).future.onValue { _ in
-                self.updateLanguageMutation(numberOfRetries: numberOfRetries + 1)
-            }
+
+            Signal(after: Double(numberOfRetries) * 0.1).future
+                .onValue { _ in
+                    self.updateLanguageMutation(numberOfRetries: numberOfRetries + 1)
+                }
         }
     }
 }
