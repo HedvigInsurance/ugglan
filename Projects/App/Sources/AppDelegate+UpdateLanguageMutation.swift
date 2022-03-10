@@ -1,7 +1,12 @@
 import Foundation
+import Apollo
+import hCore
+import hGraphQL
+import Flow
 
 extension AppDelegate {
     func updateLanguageMutation(numberOfRetries: Int = 0) {
+        let locale = Localization.Locale.currentLocale
         let client: ApolloClient = Dependencies.shared.resolve()
         client.perform(
             mutation: GraphQL.UpdateLanguageMutation(
@@ -13,9 +18,10 @@ extension AppDelegate {
             log.info("Updated language successfully")
         }
         .onError { error in
-            log.info("Failed updating language, retries in \(numberOfTries * 100) ms")
-            DispatchQueue.main.asyncAfter(deadline: .now() + (Double(numberOfTries) * 0.1)) {
-                updateLanguageMutation(numberOfRetries: numberOfRetries + 1)
+            log.info("Failed updating language, retries in \(numberOfRetries * 100) ms")
+                        
+            Signal(after: Double(numberOfRetries) * 0.1).future.onValue { _ in
+                self.updateLanguageMutation(numberOfRetries: numberOfRetries + 1)
             }
         }
     }
