@@ -17,8 +17,13 @@ public struct OfferBundle: Codable, Equatable {
         case approveOnly = "APPROVE_ONLY"
         case unknown
     }
-    
-    public init(possibleVariations: [QuoteVariant], redeemedCampaigns: [RedeemedCampaign], signMethodForQuotes: OfferBundle.SignMethodForQuotes, id: UUID = UUID()) {
+
+    public init(
+        possibleVariations: [QuoteVariant],
+        redeemedCampaigns: [RedeemedCampaign],
+        signMethodForQuotes: OfferBundle.SignMethodForQuotes,
+        id: UUID = UUID()
+    ) {
         self.possibleVariations = possibleVariations
         self.redeemedCampaigns = redeemedCampaigns
         self.signMethodForQuotes = signMethodForQuotes
@@ -37,12 +42,16 @@ public struct OfferBundle: Codable, Equatable {
 }
 
 public struct QuoteVariant: Codable, Equatable {
-    public init(bundle: QuoteBundle, tag: String?, id: String) {
+    public init(
+        bundle: QuoteBundle,
+        tag: String?,
+        id: String
+    ) {
         self.bundle = bundle
         self.tag = tag
         self.id = id
     }
-    
+
     public var bundle: QuoteBundle
     public let tag: String?
     public let id: String
