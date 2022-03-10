@@ -51,6 +51,8 @@ public struct OfferState: StateProtocol {
                 variant.id == selectedIds.joined(separator: "+").lowercased()
             })
     }
+    
+    var quoteCartId: String? = nil
 
     public init() {}
 }
@@ -79,6 +81,9 @@ public enum OfferAction: ActionProtocol {
     case updateRedeemedCampaigns(discountCode: String)
     case didRedeemCampaigns
     case didRemoveCampaigns
+    
+    /// Quote Cart Events
+    case setQuoteCart(id: String)
 
     case failed(event: OfferStoreError)
 
@@ -105,6 +110,13 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         GraphQL.QuoteBundleQuery(
             ids: ids,
             locale: Localization.Locale.currentLocale.asGraphQLLocale()
+        )
+    }
+    
+    func query(for quoteCart: String) -> GraphQL.QuoteCartQuery {
+        GraphQL.QuoteCartQuery(
+            locale: Localization.Locale.currentLocale.asGraphQLLocale(),
+            id: quoteCart
         )
     }
 
@@ -159,6 +171,22 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             }
         case .setOfferBundle:
             return Signal(after: 0.5).map { .setLoading(isLoading: false) }
+        case let .setQuoteCart(id):
+            return client
+                .fetch(query: query(for: id))
+                .compactMap { data in
+                    return data.quoteCart
+                }
+                .map { quoteCart in
+                    return OfferBundle(
+                        possibleVariations: [QuoteVariant(bundle: QuoteBundle(bundle: quoteCart.bundle!.fragments.quoteBundleFragment), tag: nil, id: id)],
+                            redeemedCampaigns: [],
+                        signMethodForQuotes: (.init(rawValue: quoteCart.checkoutMethods.first?.rawValue ?? "") ?? .unknown)
+                            )
+                }.map {
+                    return .setOfferBundle(bundle: $0)
+                }
+                .valueThenEndSignal
         default:
             return nil
         }
@@ -237,6 +265,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.isUpdatingStartDates = true
         case .failed(event: .updateStartDate):
             newState.isUpdatingStartDates = false
+        case let .setQuoteCart(id):
+            newState.quoteCartId = id
         default:
             break
         }

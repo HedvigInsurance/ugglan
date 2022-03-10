@@ -42,6 +42,7 @@ extension Offer {
 
     public func setQuoteCart(_ id: String) -> Self {
         let store: OfferStore = globalPresentableStoreContainer.get()
+        store.send(.setQuoteCart(id: id))
         return self
     }
 }
