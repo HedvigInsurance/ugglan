@@ -3,7 +3,7 @@ import ProjectDescription
 
 let dependencies = Dependencies(
     carthage: [
-        .github(path: "Adyen/adyen-ios", requirement: .exact("4.2.0"))
+        .github(path: "Adyen/adyen-ios", requirement: .exact("4.7.1"))
     ],
     swiftPackageManager: .init(
         [
