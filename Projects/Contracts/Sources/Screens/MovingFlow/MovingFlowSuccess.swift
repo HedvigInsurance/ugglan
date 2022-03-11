@@ -9,7 +9,13 @@ import hCoreUI
 import hGraphQL
 
 public struct MovingFlowSuccess {
-    public init() {}
+    var startDate: Date?
+
+    public init(
+        startDate: Date?
+    ) {
+        self.startDate = startDate
+    }
 }
 
 extension MovingFlowSuccess: Presentable {
@@ -20,15 +26,15 @@ extension MovingFlowSuccess: Presentable {
         let button = Button(
             title: L10n.MovingConfirmation.Success.buttonText,
             type: .standardOutline(
-                borderColor: .brand(.primaryBorderColor),
-                textColor: .brand(.primaryButtonTextColor)
+                borderColor: .brand(.primaryText()),
+                textColor: .brand(.primaryText())
             )
         )
 
         let imageTextAction = ImageTextAction(
             image: .init(image: hCoreUIAssets.welcome.image, size: nil, contentMode: .scaleAspectFit),
             title: L10n.MovingConfirmation.Success.title,
-            body: L10n.MovingConfirmation.SuccessNoDate.paragraphCopy(""),
+            body: L10n.MovingConfirmation.SuccessNoDate.paragraphCopy(startDate?.localDateString ?? ""),
             actions: [((), button)],
             showLogo: false
         )

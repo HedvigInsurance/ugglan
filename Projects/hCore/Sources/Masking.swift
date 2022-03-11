@@ -1,5 +1,6 @@
 import Flow
 import Foundation
+import SwiftUI
 import UIKit
 
 public enum MaskType: String {
@@ -92,6 +93,12 @@ public struct Masking {
         unmask(text: text).replacingOccurrences(of: "\u{00a0}", with: " ")
     }
 
+    public func equalUnmasked(lhs: String, rhs: String) -> Bool {
+        let cleanedLhs = unmask(text: lhs).replacingOccurrences(of: "\u{00a0}", with: " ")
+        let cleanedRhs = unmask(text: rhs).replacingOccurrences(of: "\u{00a0}", with: " ")
+        return cleanedLhs == cleanedRhs
+    }
+
     public func calculateAge(from text: String) -> Int? {
         func calculate(_ format: String, value: String) -> Int? {
             if value.isEmpty { return nil }
@@ -161,7 +168,7 @@ public struct Masking {
         case .none:
             return nil
         case .personalNumber:
-            return nil
+            return L10n.InsurelySeSsn.assistiveText
         case .norwegianPersonalNumber:
             return L10n.SimpleSignLogin.TextField.helperText
         case .danishPersonalNumber:
@@ -262,5 +269,15 @@ public struct Masking {
             return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
         case .none: return text
         }
+    }
+}
+
+extension Masking: ViewModifier {
+    public func body(content: Content) -> some View {
+        content
+            .keyboardType(keyboardType)
+            .textContentType(textContentType)
+            .autocapitalization(autocapitalizationType)
+            .disableAutocorrection(type != .none)
     }
 }

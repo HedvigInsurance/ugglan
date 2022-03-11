@@ -7,7 +7,7 @@ extension Signal where Kind == Plain, Value == () {
     public static func animatedDelay(after delay: TimeInterval) -> Signal<Void> {
         Signal { callback in let dummyView = UIView()
             dummyView.alpha = 0
-            UIApplication.shared.keyWindow?.rootView.addSubview(dummyView)
+            UIApplication.shared.windows.first?.rootView.addSubview(dummyView)
 
             let animator = UIViewPropertyAnimator(duration: delay, curve: .linear) { dummyView.alpha = 1 }
 

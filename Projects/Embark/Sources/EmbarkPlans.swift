@@ -5,6 +5,7 @@ import Foundation
 import Presentation
 import SnapKit
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -161,7 +162,10 @@ extension EmbarkPlans: Presentable {
 
                 bag += continueButton.onTapSignal.withLatestFrom(selectedPlan.atOnce().plain())
                     .compactMap { _, story in story }
-                    .onValue { story in callback(.value(.story(value: story))) }
+                    .onValue { story in
+                        hAnalyticsEvent.onboardingChooseEmbarkFlow(embarkStoryId: story.name).send()
+                        callback(.value(.story(value: story)))
+                    }
 
                 return bag
             }
@@ -172,16 +176,15 @@ extension EmbarkPlans: Presentable {
 extension GraphQL.ChoosePlanQuery.Data.EmbarkStory {
     fileprivate var discount: String? { metadata.compactMap { $0.asEmbarkStoryMetadataEntryPill }.first?.pill }
 
-    fileprivate var gradientViewPreset: GradientView.Preset {
+    fileprivate var gradientViewPreset: GradientView.Preset? {
         let background =
             metadata.compactMap { $0.asEmbarkStoryMetadataEntryBackground?.background }.first
-            ?? .gradientOne
 
         switch background {
         case .gradientOne: return .insuranceOne
         case .gradientTwo: return .insuranceTwo
         case .gradientThree: return .insuranceThree
-        case .__unknown: return .insuranceOne
+        case .__unknown, .none: return nil
         }
     }
 }

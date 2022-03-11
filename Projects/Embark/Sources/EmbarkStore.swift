@@ -5,6 +5,13 @@ import hGraphQL
 
 extension String { var floatValue: Float { Float(self) ?? 0 } }
 
+extension String {
+    var digits: String {
+        return components(separatedBy: CharacterSet.decimalDigits.inverted)
+            .joined()
+    }
+}
+
 class EmbarkStore {
     var prefill: [String: String] = [:]
     var revisions: [[String: String]] = [[:]]
@@ -67,7 +74,13 @@ class EmbarkStore {
             }
 
             if !filteredStore.isEmpty {
-                return Array(filteredStore.values)
+                return
+                    filteredStore.sorted { lhs, rhs in
+                        lhs.key.digits < rhs.key.digits
+                    }
+                    .map { key, value in
+                        value
+                    }
             }
 
             if let value = storeWithQueue[key] {
@@ -112,7 +125,7 @@ class EmbarkStore {
     func passes(expression: GraphQL.BasicExpressionFragment) -> Bool {
         if let binaryExpression = expression.asEmbarkExpressionBinary {
             switch binaryExpression.expressionBinaryType {
-            case .equals: return getValue(key: binaryExpression.key) == binaryExpression.value
+            case .equals: return getValueWithNull(key: binaryExpression.key) == binaryExpression.value
             case .lessThan:
                 if let storeFloat = getValue(key: binaryExpression.key)?.floatValue {
                     return storeFloat < binaryExpression.value.floatValue
@@ -157,13 +170,13 @@ class EmbarkStore {
         if let multiple = expression.asEmbarkExpressionMultiple {
             switch multiple.expressionMultipleType {
             case .and:
-                return !multiple.subExpressions
-                    .map { subExpression -> Bool in
+                return multiple.subExpressions
+                    .map({ subExpression -> Bool in
                         self.passes(expression: subExpression.fragments.basicExpressionFragment)
-                    }
-                    .contains(false)
+                    })
+                    .allSatisfy({ passes in passes })
             case .or:
-                return !multiple.subExpressions
+                return multiple.subExpressions
                     .map { subExpression -> Bool in
                         self.passes(expression: subExpression.fragments.basicExpressionFragment)
                     }

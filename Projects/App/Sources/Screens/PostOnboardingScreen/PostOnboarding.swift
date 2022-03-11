@@ -5,6 +5,7 @@ import Foundation
 import Payment
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -31,7 +32,11 @@ struct PostOnboarding {
         bag += paymentButton.onTapSignal.onValue { _ in onAction(.payment) }
 
         let payment = ImageTextAction<TableAction>(
-            image: .init(image: Asset.paymentSetupIllustration.image),
+            image: .init(
+                image: Asset.paymentSetupIllustration.image,
+                size: CGSize(width: CGFloat.infinity, height: 200),
+                contentMode: .scaleAspectFit
+            ),
             title: L10n.PayInExplainer.headline,
             body: isSwitching ? L10n.onboardingConnectDdBodySwitchers : L10n.PayInExplainer.body,
             actions: [(.payment, paymentButton)],
@@ -56,16 +61,24 @@ struct PostOnboarding {
         bag += pushNotificationsSkipButton.onTapSignal.onValue { _ in onAction(.pushSkip) }
 
         let pushNotifications = ImageTextAction<TableAction>(
-            image: .init(image: Asset.activatePushNotificationsIllustration.image),
+            image: .init(
+                image: Asset.activatePushNotificationsIllustration.image,
+                size: CGSize(width: CGFloat.infinity, height: 200),
+                contentMode: .scaleAspectFit
+            ),
             title: L10n.onboardingActivateNotificationsHeadline,
             body: L10n.onboardingActivateNotificationsBody,
             actions: [(.push, pushNotificationsDoButton), (.pushSkip, pushNotificationsSkipButton)],
             showLogo: false
         )
 
-        let table = Table(rows: [
-            ReusableSignalViewable(viewable: payment), ReusableSignalViewable(viewable: pushNotifications),
-        ])
+        let table = Table(
+            rows: [
+                hAnalyticsExperiment.postOnboardingShowPaymentStep ? ReusableSignalViewable(viewable: payment) : nil,
+                ReusableSignalViewable(viewable: pushNotifications),
+            ]
+            .compactMap { $0 }
+        )
 
         return (table, bag)
     }
@@ -106,14 +119,13 @@ extension PostOnboarding: Presentable {
                                 PaymentSetup(
                                     setupType: .postOnboarding,
                                     urlScheme: Bundle.main.urlScheme ?? ""
-                                ),
-                                style: .modally(
-                                    presentationStyle: .formSheet,
-                                    transitionStyle: nil,
-                                    capturesStatusBarAppearance: true
                                 )
+                                .journeyThenDismiss
+                                .onDismiss {
+                                    collectionKit.scrollToNextItem()
+                                }
                             )
-                            .onResult { _ in collectionKit.scrollToNextItem() }
+                            .sink()
                         case .push:
                             UIApplication.shared.appDelegate.registerForPushNotifications()
                                 .onValue { _ in callback(()) }

@@ -8,30 +8,13 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct PickMarket: PresentableView {
-    typealias Result = Future<Market>
-
+struct PickMarket: View {
     let currentMarket: Market
-    let availableLocales: [GraphQL.Locale]
     @PresentableStore var store: MarketStore
-
-    var result: Future<Market> {
-        Future { completion in
-            let bag = DisposeBag()
-
-            bag += store.actionSignal.onValue { action in
-                if case let .selectMarket(market) = action {
-                    completion(.success(market))
-                }
-            }
-
-            return bag
-        }
-    }
 
     var body: some View {
         hForm {
-            hSection(Market.allCases, id: \.title) { market in
+            hSection(Market.activatedMarkets, id: \.title) { market in
                 hRow {
                     Image(uiImage: market.icon)
                     Spacer().frame(width: 16)
@@ -44,6 +27,22 @@ struct PickMarket: PresentableView {
             }
             .dividerInsets(.leading, 50)
         }
-        .presentableTitle(L10n.MarketLanguageScreen.marketLabel)
+    }
+}
+
+extension PickMarket {
+    var journey: some JourneyPresentation {
+        HostingJourney(
+            MarketStore.self,
+            rootView: self,
+            style: .detented(.scrollViewContentSize),
+            options: [.defaults, .prefersLargeTitles(true)]
+        ) { action in
+            if case .selectMarket = action {
+                PopJourney()
+            }
+        }
+        .configureTitle(L10n.MarketLanguageScreen.marketLabel)
+        .withDismissButton
     }
 }

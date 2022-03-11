@@ -4,6 +4,7 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -138,40 +139,46 @@ struct SlideToConfirm: View {
     }
 }
 
-struct HonestyPledge: PresentableView {
-    typealias Result = Signal<Void>
+struct HonestyPledge: View {
     @PresentableStore var store: UgglanStore
-
-    var result: Signal<Void> {
-        Signal { callback in
-            let bag = DisposeBag()
-
-            bag += store.onAction(
-                .didAcceptHonestyPledge,
-                {
-                    callback(())
-                }
-            )
-
-            return bag
-        }
-    }
 
     var body: some View {
         hForm {
             VStack {
                 HStack {
                     L10n.honestyPledgeDescription.hText(.body)
-                        .fixedSize(horizontal: false, vertical: true)
                         .foregroundColor(hLabelColor.secondary)
                 }
                 .padding(.bottom, 20)
                 SlideToConfirm()
+                    .frame(maxHeight: 50)
             }
             .padding(.bottom, 20)
             .padding(.leading, 15)
             .padding(.trailing, 15)
         }
-        .presentableTitle(L10n.honestyPledgeTitle)
+        .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
+    }
+}
+
+extension HonestyPledge {
+    static func journey<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping () -> Next
+    ) -> some JourneyPresentation {
+        HostingJourney(
+            UgglanStore.self,
+            rootView: HonestyPledge(),
+            style: .detented(.scrollViewContentSize),
+            options: [
+                .defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
+                .allowSwipeDismissAlways,
+            ]
+        ) { action in
+            if case .didAcceptHonestyPledge = action {
+                next()
+            }
+        }
+        .configureTitle(L10n.honestyPledgeTitle)
+        .withDismissButton
     }
 }

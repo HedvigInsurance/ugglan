@@ -1,39 +1,74 @@
 import Adyen
+import Adyen3DS2
+import AdyenActions
 import AdyenCard
+import AdyenComponents
 import Flow
 import Foundation
 import UIKit
+
+class AdyenPresentationDelegate: NSObject, PresentationDelegate {
+    let viewController: UIViewController
+    var presentedViewControllers: [UIViewController] = []
+
+    init(
+        viewController: UIViewController
+    ) {
+        self.viewController = viewController
+    }
+
+    func dismissAll() {
+        presentedViewControllers.forEach { viewController in
+            viewController.dismiss(animated: true, completion: nil)
+        }
+    }
+
+    func present(component: PresentableComponent) {
+        viewController.present(component.viewController, animated: true)
+        presentedViewControllers.append(component.viewController)
+    }
+}
 
 class PaymentDelegate: NSObject, PaymentComponentDelegate {
     let viewController: UIViewController
     let paymentMethod: PaymentMethod
     let didSubmitHandler: AdyenMethodsList.DidSubmit
     let onCompletion: () -> Void
+    let onEnd: () -> Void
     let onRetry: () -> Void
     let onSuccess: () -> Void
     let bag = DisposeBag()
+
+    var presentationDelegates: [AdyenPresentationDelegate] = []
 
     init(
         viewController: UIViewController,
         paymentMethod: PaymentMethod,
         didSubmitHandler: @escaping AdyenMethodsList.DidSubmit,
         onCompletion: @escaping () -> Void,
+        onEnd: @escaping () -> Void,
         onRetry: @escaping () -> Void,
         onSuccess: @escaping () -> Void
     ) {
         self.viewController = viewController
         self.paymentMethod = paymentMethod
         self.didSubmitHandler = didSubmitHandler
+        self.onEnd = onEnd
         self.onCompletion = onCompletion
         self.onRetry = onRetry
         self.onSuccess = onSuccess
     }
 
     func stopLoading(withSuccess success: Bool, in component: PaymentComponent) {
-        if let component = component as? ApplePayComponent {
-            component.stopLoading(withSuccess: success)
-        } else if let component = component as? PresentableComponent {
-            component.stopLoading(withSuccess: success)
+        component.stopLoadingIfNeeded()
+        component.finalizeIfNeeded(with: success)
+
+        self.presentationDelegates.forEach { presentationDelegate in
+            presentationDelegate.dismissAll()
+        }
+
+        if let component = component as? PresentableComponent {
+            component.viewController.dismiss(animated: true, completion: nil)
         }
     }
 
@@ -41,25 +76,35 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
         if success {
             onSuccess()
 
-            viewController.present(
-                AdyenSuccess(paymentMethod: paymentMethod),
-                style: .detented(.large, modally: false)
-            )
-            .onValue { _ in self.onCompletion() }
+            bag +=
+                viewController.present(
+                    AdyenSuccess(paymentMethod: paymentMethod),
+                    style: .detented(.large, modally: false),
+                    options: [.defaults, .autoPop]
+                )
+                .atEnd {
+                    self.onEnd()
+                }
+                .onValue { _ in self.onCompletion() }
         } else {
-            viewController.present(AdyenError.failed, style: .detented(.large, modally: false))
-                .onValue { _ in self.onRetry() }.onError { _ in self.onCompletion() }
+            bag +=
+                viewController.present(
+                    AdyenError.failed,
+                    style: .detented(.large, modally: false),
+                    options: [.defaults, .autoPop]
+                )
+                .atEnd { self.onEnd() }
+                .onValue { _ in self.onRetry() }
         }
     }
 
     lazy var threeDS2Component: ThreeDS2Component = {
-        let threeDS2Component = ThreeDS2Component()
-        threeDS2Component.environment = AdyenPaymentBuilder.environment
+        let threeDS2Component = ThreeDS2Component(apiContext: HedvigAdyenAPIContext().apiContext)
         bag.hold(threeDS2Component)
         return threeDS2Component
     }()
 
-    func handleAction(_ action: Adyen.Action, from component: PaymentComponent) {
+    func handleAction(_ action: AdyenActions.Action, from component: PaymentComponent) {
         let delegate = ActionDelegate { result in
             switch result {
             case let .success(response):
@@ -77,26 +122,44 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
 
         bag.hold(delegate)
 
+        let presentationDelegate: AdyenPresentationDelegate
+
+        if let component = component as? PresentableComponent {
+            presentationDelegate = AdyenPresentationDelegate(viewController: component.viewController)
+        } else {
+            presentationDelegate = AdyenPresentationDelegate(viewController: viewController)
+        }
+
+        presentationDelegates.append(presentationDelegate)
+
         switch action {
         case let .redirect(redirectAction):
-            let redirectComponent = RedirectComponent()
+            let redirectComponent = RedirectComponent(apiContext: HedvigAdyenAPIContext().apiContext)
             redirectComponent.delegate = delegate
-            redirectComponent.environment = AdyenPaymentBuilder.environment
+            redirectComponent.presentationDelegate = presentationDelegate
             redirectComponent.handle(redirectAction)
             bag.hold(redirectComponent)
         case let .await(awaitAction):
-            let awaitComponent = AwaitComponent(style: nil)
+            let awaitComponent = AwaitComponent(apiContext: HedvigAdyenAPIContext().apiContext, style: nil)
             awaitComponent.delegate = delegate
-            awaitComponent.environment = AdyenPaymentBuilder.environment
+            awaitComponent.presentationDelegate = presentationDelegate
             awaitComponent.handle(awaitAction)
             bag.hold(awaitComponent)
         case .sdk: fatalError("Not implemented")
         case let .threeDS2Fingerprint(fingerprintAction):
             threeDS2Component.delegate = delegate
+            threeDS2Component.presentationDelegate = presentationDelegate
             threeDS2Component.handle(fingerprintAction)
         case let .threeDS2Challenge(challengeAction):
             threeDS2Component.delegate = delegate
+            threeDS2Component.presentationDelegate = presentationDelegate
             threeDS2Component.handle(challengeAction)
+        case let .threeDS2(action):
+            threeDS2Component.delegate = delegate
+            threeDS2Component.presentationDelegate = presentationDelegate
+            threeDS2Component.handle(action)
+        case .voucher(_): break
+        case .qrCode(_): break
         }
     }
 

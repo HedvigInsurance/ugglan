@@ -7,13 +7,13 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct FrequentlyAskedQuestionsSection {
-    @Inject var state: OldOfferState
-}
+struct FrequentlyAskedQuestionsSection {}
 
 extension FrequentlyAskedQuestionsSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
         let bag = DisposeBag()
+
+        let store: OfferStore = self.get()
 
         let section = SectionView(
             headerView: UILabel(value: L10n.Offer.faqTitle, style: .default),
@@ -51,7 +51,12 @@ extension FrequentlyAskedQuestionsSection: Presentable {
         )
         section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
 
-        bag += state.dataSignal.compactMap { $0.quoteBundle.frequentlyAskedQuestions }
+        bag += store.stateSignal.map { $0.currentVariant?.bundle.appConfiguration.showFaq ?? false }
+            .onValue { shouldShowFaq in
+                section.isHidden = !shouldShowFaq
+            }
+
+        bag += store.stateSignal.compactMap { $0.currentVariant?.bundle.frequentlyAskedQuestions }
             .onValueDisposePrevious { frequentlyAskedQuestions in
                 let innerBag = DisposeBag()
 
@@ -68,12 +73,11 @@ extension FrequentlyAskedQuestionsSection: Presentable {
 
                     innerBag += section.append(row).compactMap { _ in row.viewController }
                         .onValue { viewController in
-                            viewController.present(
+                            innerBag += viewController.present(
                                 FrequentlyAskedQuestionDetail(
                                     frequentlyAskedQuestion: frequentlyAskedQuestion
                                 )
-                                .withCloseButton,
-                                style: .detented(.preferredContentSize)
+                                .journey
                             )
                         }
 
@@ -86,6 +90,9 @@ extension FrequentlyAskedQuestionsSection: Presentable {
                     imageView.setContentHuggingPriority(.required, for: .horizontal)
 
                     row.append(imageView)
+                    imageView.snp.makeConstraints { make in
+                        make.width.equalTo(16)
+                    }
 
                     return innerBag
                 }

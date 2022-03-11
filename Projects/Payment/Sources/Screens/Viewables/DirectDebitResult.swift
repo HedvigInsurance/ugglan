@@ -2,6 +2,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -43,6 +44,13 @@ enum DirectDebitResultType {
         case .failure: return L10n.PayInError.retryButton
         }
     }
+
+    var analyticsEvent: hAnalyticsParcel {
+        switch self {
+        case .success: return hAnalyticsEvent.screenView(screen: .connectPaymentSuccess)
+        case .failure: return hAnalyticsEvent.screenView(screen: .connectPaymentFailed)
+        }
+    }
 }
 
 struct DirectDebitResult {
@@ -52,7 +60,7 @@ struct DirectDebitResult {
 }
 
 extension DirectDebitResult: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Future<Void>) {
+    func materialize(events: ViewableEvents) -> (UIView, Future<Bool>) {
         let containerView = UIView()
         containerView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
         containerView.alpha = 0
@@ -109,6 +117,8 @@ extension DirectDebitResult: Viewable {
 
         bag += events.removeAfter.set { _ in 1 }
 
+        containerView.trackOnAppear(type.analyticsEvent)
+
         return (
             containerView,
             Future { completion in
@@ -121,7 +131,7 @@ extension DirectDebitResult: Viewable {
                         )
                     )
 
-                    bag += continueButton.onTapSignal.onValue { _ in completion(.success) }
+                    bag += continueButton.onTapSignal.onValue { _ in completion(.success(true)) }
 
                     bag += buttonsContainer.addArranged(continueButton)
                 } else {
@@ -157,7 +167,7 @@ extension DirectDebitResult: Viewable {
                         )
                     )
 
-                    bag += skipButton.onTapSignal.onValue { _ in completion(.success) }
+                    bag += skipButton.onTapSignal.onValue { _ in completion(.success(false)) }
 
                     bag += buttonsContainer.addArranged(skipButton)
                 }

@@ -107,7 +107,7 @@ extension KeyGearListItem: Reusable {
 
                 addedAutomaticallyTag.isHidden = !self.wasAddedAutomatically
 
-                let touchUpInsideSignal = view.trackedTouchUpInsideSignal
+                let touchUpInsideSignal = view.signal(for: .touchUpInside)
 
                 bag += touchUpInsideSignal.feedback(type: .impactLight)
 

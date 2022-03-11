@@ -3,26 +3,34 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
 
-public struct Home {
-    public static var openClaimsHandler: (_ viewController: UIViewController) -> Void = { _ in }
-    public static var openMovingFlowHandler: (_ viewController: UIViewController) -> Void = { _ in }
-    public static var openFreeTextChatHandler: (_ viewController: UIViewController) -> Void = { _ in }
-    public static var openConnectPaymentHandler: (_ viewController: UIViewController) -> Void = { _ in }
-
+public struct Home<ClaimsContent: View, CommonClaims: View> {
     @Inject var client: ApolloClient
+    var claimsContent: ClaimsContent
+    var commonClaims: CommonClaims
+    var claimSubmitHandler: () -> Void
 
     public init(
-        sections: [HomeSection]
+        claimsContent: ClaimsContent,
+        commonClaims: CommonClaims,
+        _ claimSubmitHandler: @escaping () -> Void
     ) {
-        self.sections = sections
+        self.claimsContent = claimsContent
+        self.commonClaims = commonClaims
+        self.claimSubmitHandler = claimSubmitHandler
     }
+}
 
-    public let sections: [HomeSection]
+public enum HomeResult {
+    case startMovingFlow
+    case openFreeTextChat
+    case openConnectPayments
 }
 
 extension Future {
@@ -45,14 +53,10 @@ extension Future {
     }
 }
 
-enum HomeState {
-    case terminated
-    case future
-    case active
-}
-
 extension Home: Presentable {
-    public func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, Signal<HomeResult>) {
+        let store: HomeStore = self.get()
+
         let viewController = UIViewController()
         viewController.title = L10n.HomeTab.title
         viewController.installChatButton(allowsChatHint: true)
@@ -74,18 +78,48 @@ extension Home: Presentable {
 
         let bag = DisposeBag()
 
+        store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
+
+        let onAppearProxy = SwiftUI.Color.clear.onAppear {
+            fetch()
+        }
+
+        let hostingProxy = HostingView(rootView: onAppearProxy)
+
+        func fetch() {
+            store.send(.fetchMemberState)
+        }
+
         let form = FormView()
         bag += viewController.install(form) { scrollView in
             let refreshControl = UIRefreshControl()
             scrollView.refreshControl = refreshControl
-            bag += self.client.refetchOnRefresh(query: GraphQL.HomeQuery(), refreshControl: refreshControl)
+
+            scrollView.addSubview(hostingProxy)
+
+            bag += refreshControl.store(
+                store,
+                send: {
+                    [
+                        .fetchMemberState
+                    ]
+                },
+                endOn: { action in
+                    switch action {
+                    case .setMemberContractState:
+                        return true
+                    default:
+                        return false
+                    }
+                }
+            )
+
+            let future = store.stateSignal.atOnce()
+                .filter(predicate: { $0.memberStateData.state != .loading }).future
 
             bag += scrollView.performEntryAnimation(
                 contentView: form,
-                onLoad: self.client
-                    .fetch(query: GraphQL.HomeQuery())
-                    .wait(until: scrollView.safeToPerformEntryAnimationSignal)
-                    .delay(by: 0.1)
+                onLoad: future
             ) { error in
                 print(error)
             }
@@ -93,43 +127,64 @@ extension Home: Presentable {
 
         bag += form.append(ImportantMessagesSection())
 
-        let rowInsets = UIEdgeInsets(
-            top: 0,
-            left: 25,
-            bottom: 0,
-            right: 25
+        let titleSection = form.appendSection()
+        titleSection.dynamicStyle = .brandGrouped(
+            insets: .init(top: 14, left: 14, bottom: 14, right: 14),
+            separatorType: .none
         )
 
-        let titleSection = form.appendSection()
-        let titleRow = RowView()
-        titleRow.isLayoutMarginsRelativeArrangement = true
-        titleRow.layoutMargins = rowInsets
-        titleSection.append(titleRow)
+        func buildSections(state: HomeState) -> Disposable {
+            let innerBag = DisposeBag()
 
-        func buildSections(functionBag: DisposeBag, state: HomeState) {
-            switch state {
+            switch state.memberStateData.state {
             case .active:
-                functionBag += titleRow.append(ActiveSection())
-            case .future:
-                functionBag += titleRow.append(FutureSection())
-            case .terminated:
-                functionBag += titleRow.append(TerminatedSection())
-            }
 
-            sections.forEach { homeSection in
-                switch homeSection.style {
-                case .horizontal:
-                    break
-                case .vertical:
-                    guard state == .active else { return }
-                    let section = HomeVerticalSection(section: homeSection)
-                    functionBag += form.append(section)
-                case .header:
-                    break
+                if let name = state.memberStateData.name {
+                    let label = makeHost {
+                        hText(L10n.HomeTab.welcomeTitle(name), style: .largeTitle)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    innerBag += titleSection.appendRemovable(label)
                 }
 
-                form.appendSpacing(.custom(30))
+                innerBag += form.append(
+                    ActiveSection(
+                        claimsContent: self.claimsContent,
+                        commonClaims: self.commonClaims
+                    )
+                )
+
+                if hAnalyticsExperiment.movingFlow {
+                    let section = HomeVerticalSection(
+                        section: .init(
+                            title: L10n.HomeTab.editingSectionTitle,
+                            style: .vertical,
+                            children: [
+                                .init(
+                                    title: L10n.HomeTab.editingSectionChangeAddressLabel,
+                                    icon: hCoreUIAssets.apartment.image,
+                                    handler: {
+                                        store.send(.openMovingFlow)
+                                    }
+                                )
+                            ]
+                        )
+                    )
+
+                    innerBag += form.append(section)
+                }
+
+                innerBag += form.appendSpacingAndDumpOnDispose(.custom(30))
+
+            case .future:
+                innerBag += titleSection.append(FutureSection())
+            case .terminated:
+                innerBag += titleSection.append(TerminatedSection(claimSubmitHandler))
+            case .loading:
+                break
             }
+
+            return innerBag
         }
 
         bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
@@ -138,21 +193,34 @@ extension Home: Presentable {
             }
             .nil()
 
-        bag +=
-            client
-            .watch(query: GraphQL.HomeQuery())
-            .map { data in
-                data.homeState
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .home))
+
+        return (
+            viewController,
+            Signal { callback in
+                bag += store.stateSignal
+                    .atOnce()
+                    .distinct()
+                    .onValueDisposePrevious { state in
+                        buildSections(state: state)
+                    }
+
+                bag += store.actionSignal.onValue { action in
+                    switch action {
+                    case .openFreeTextChat:
+                        callback(.openFreeTextChat)
+                    case .openMovingFlow:
+                        callback(.startMovingFlow)
+                    case .connectPayments:
+                        callback(.openConnectPayments)
+                    default:
+                        break
+                    }
+                }
+
+                return bag
             }
-            .onValueDisposePrevious { homeState in
-                let innerBag = DisposeBag()
-
-                buildSections(functionBag: innerBag, state: homeState)
-
-                return innerBag
-            }
-
-        return (viewController, bag)
+        )
     }
 }
 
@@ -163,30 +231,5 @@ extension Home: Tabable {
             image: Asset.tab.image,
             selectedImage: Asset.tabSelected.image
         )
-    }
-}
-
-extension GraphQL.HomeQuery.Data {
-    fileprivate var homeState: HomeState {
-        if isTerminated {
-            return .terminated
-        } else if isFuture {
-            return .future
-        } else {
-            return .active
-        }
-    }
-
-    private var isTerminated: Bool {
-        contracts.allSatisfy({ (contract) -> Bool in
-            contract.status.asActiveInFutureStatus != nil || contract.status.asTerminatedStatus != nil
-                || contract.status.asTerminatedTodayStatus != nil
-        })
-    }
-
-    private var isFuture: Bool {
-        contracts.allSatisfy { (contract) -> Bool in
-            contract.status.asActiveInFutureStatus != nil || contract.status.asPendingStatus != nil
-        }
     }
 }

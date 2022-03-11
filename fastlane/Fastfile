@@ -29,25 +29,12 @@ platform :ios do
     end
     
     lane :setup do
-        sh("cd ..; tuist up")
-        sh("cd ..; tuist generate")
         ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
     end
 
     lane :provision do
-      register_devices(
-        devices_file: "./devices.txt"
-      )
-
       match(
         type: "appstore",
-        app_identifier: "com.hedvig.app",
-        force: true
-      )
-
-      match(
-        type: "appstore",
-        platform: "catalyst",
         app_identifier: "com.hedvig.app",
         force: true
       )
@@ -59,21 +46,7 @@ platform :ios do
       )
 
       match(
-        type: "development",
-        platform: "catalyst",
-        app_identifier: "com.hedvig.app",
-        force: true
-      )
-
-      match(
         type: "adhoc",
-        app_identifier: "com.hedvig.test.app",
-        force: true
-      )
-
-      match(
-        type: "development",
-        platform: "catalyst",
         app_identifier: "com.hedvig.test.app",
         force: true
       )
@@ -92,69 +65,67 @@ platform :ios do
 
       match(
         type: "development",
-        platform: "catalyst",
-        app_identifier: "com.hedvig.app",
-        force: true
-      )
-
-      match(
-        type: "development",
         app_identifier: "com.hedvig.test.app",
         force: true
       )
 
       match(
         type: "development",
-        platform: "catalyst",
-        app_identifier: "com.hedvig.test.app",
-        force: true
-      )
-
-      match(
-        type: "development",
-        app_identifier: "com.hedvig.example.*",
-        force: true
-      )
-
-      match(
-        type: "development",
-        platform: "catalyst",
         app_identifier: "com.hedvig.example.*",
         force: true
       )
     end
 
     lane :upload_dsyms do
+        load_api
         download_dsyms
-        sentry_upload_dsym
+        lane_context[SharedValues::DSYM_PATHS].each do |file|
+            sh("DATADOG_SITE=datadoghq.eu datadog-ci dsyms upload #{file}")
+        end
         clean_build_artifacts
     end
 
     private_lane :setup_keychain do
         if is_ci
             if File.exist? File.expand_path("~/Library/Keychains/CI-db")
-                unlock_keychain(
-                    path: "CI",
-                    password: ENV["MATCH_PASSWORD"]
-                )
-            else
-                create_keychain(
+                delete_keychain(
                     name: "CI",
-                    password: ENV["MATCH_PASSWORD"],
-                    unlock: true,
-                    timeout: false,
-                    lock_when_sleeps: false
                 )
             end
+
+            create_keychain(
+                name: "CI",
+                password: ENV["MATCH_PASSWORD"],
+                unlock: true,
+                timeout: 0,
+                lock_when_sleeps: false
+            )
+
+            unlock_keychain(
+                path: "CI",
+                password: ENV["MATCH_PASSWORD"]
+            )
         end
     end
 
     private_lane :allow_keychain do
         if is_ci
-            sh("security list-keychains -d user")
-            sh("security default-keychain -d user")
-            sh("security find-identity -v -p codesigning CI")
-            sh("security set-key-partition-list -S apple-tool:,apple: -s -k #{ENV["MATCH_PASSWORD"]} ~/Library/Keychains/CI-db")
+            sh(
+                command: "security default-keychain -d user",
+                log: false
+            )
+            sh(
+                command: "security list-keychains -d user",
+                log: false
+            )
+            sh(
+                command: "security find-identity -v -p codesigning CI",
+                log: false
+            )
+            sh(
+                command: "security set-key-partition-list -S apple-tool:,apple: -s -k #{ENV["MATCH_PASSWORD"]} ~/Library/Keychains/CI-db",
+                log: false
+            )
         end
     end
     
@@ -280,8 +251,8 @@ platform :ios do
             
         file_path = "../build/reports/errors.json"
 
-        name = ENV["GITHUB_JOB"]
-        title = "#{ENV["GITHUB_JOB"]}"
+        name = ENV["BUILD_NAME"]
+        title = "#{ENV["BUILD_NAME"]}"
         summary = "Build succeeded without any remarks"
         conclusion = "success" 
         annotations = []
@@ -296,11 +267,11 @@ platform :ios do
                 error_definition = error["file_path"].split(":")
                 file = error_definition[0]
 
-                name = ENV["GITHUB_JOB"]
-                summary = "There where some warnings"
-                conclusion = "neutral"
-
                 if Find.find(main_dir).include?(file)
+                    name = ENV["BUILD_NAME"]
+                    summary = "There where some warnings"
+                    conclusion = "neutral"
+                    
                     annotations.append({
                         path: file.sub!(main_dir + "/", ""),
                         start_line: error_definition[1].to_i,
@@ -316,7 +287,7 @@ platform :ios do
                 error_definition = error["file_path"].split(":")
                 file = error_definition[0]
 
-                name = ENV["GITHUB_JOB"]
+                name = ENV["BUILD_NAME"]
                 summary = "There where some errors"
                 conclusion = "failure"
 
@@ -335,29 +306,12 @@ platform :ios do
 
         scheme = options[:scheme]
 
-        if scheme
-            aws_s3(
-                access_key: ENV['S3_ACCESS_KEY'],
-                secret_access_key: ENV['S3_SECRET_ACCESS_KEY'],
-                bucket: "hedvig-ios-builds",
-                region: "eu-central-1",
-                ipa: "fastlane/build_output/" + scheme + ".ipa",
-                app_directory: "#{scheme}_#{SecureRandom.uuid}",
-                path: 'v{CFBundleShortVersionString}_b{CFBundleVersion}/',
-                upload_metadata: true,
-            )
-            summary = summary + "\n\n [Install app](#{lane_context[SharedValues::S3_HTML_OUTPUT_PATH]})"
-            url_encoded_link = ERB::Util.url_encode(lane_context[SharedValues::S3_HTML_OUTPUT_PATH])
-            summary = summary + "\n\n ![Install app](https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=#{url_encoded_link})"
-        end
-
         update_annotations(
             name: name,
             title: title,
             summary: summary,
             conclusion: conclusion,
-            annotations: annotations,
-            details_url: lane_context[SharedValues::S3_HTML_OUTPUT_PATH]
+            annotations: annotations
         )
     end
 
@@ -393,7 +347,7 @@ platform :ios do
                     })
                 end
 
-                name = ENV["GITHUB_JOB"]
+                name = ENV["BUILD_NAME"]
                 summary = "There where some warnings"
                 conclusion = "neutral"
             end
@@ -416,7 +370,7 @@ platform :ios do
                 })
             end
 
-            name = ENV["GITHUB_JOB"]
+            name = ENV["BUILD_NAME"]
             conclusion = "Some tests failed"
             conclusion = "failure"
         }
@@ -434,7 +388,7 @@ platform :ios do
         if !annotations.empty?
             update_annotations(
                 name: name,
-                title: "#{ENV["GITHUB_JOB"]}",
+                title: "#{ENV["BUILD_NAME"]}",
                 summary: summary,
                 conclusion: conclusion,
                 annotations: annotations,
@@ -442,8 +396,8 @@ platform :ios do
             )
         else
             update_annotations(
-                name: ENV["GITHUB_JOB"],
-                title: "#{ENV["GITHUB_JOB"]}",
+                name: ENV["BUILD_NAME"],
+                title: "#{ENV["BUILD_NAME"]}",
                 summary: "Tests passed.",
                 conclusion: "success",
                 annotations: annotations,
@@ -491,7 +445,6 @@ platform :ios do
                 catalyst_platform: "ios",
                 skip_package_dependencies_resolution: false,
                 xcpretty_formatter: ENV["GEM_HOME"] + "/gems/xcpretty-json-formatter-0.1.1/lib/json_formatter.rb",
-                derived_data_path: is_ci ? "../../../DerivedData" : nil,
                 archive_path: is_ci ? "build" : nil,
                 export_options: {
                     compileBitcode: false,
@@ -531,7 +484,8 @@ platform :ios do
             )
             
             app_results.append({
-                url: lane_context[SharedValues::S3_HTML_OUTPUT_PATH],
+                html_url: lane_context[SharedValues::S3_HTML_OUTPUT_PATH],
+                ipa_url: lane_context[SharedValues::S3_IPA_OUTPUT_PATH],
                 scheme: scheme
             })
         end
@@ -570,6 +524,21 @@ platform :ios do
             "type": "divider"
           },
           {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "IPA links",
+                    "emoji": true
+                }
+          },
+          {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Use these to install the app on Browserstack, etc"
+            }
+          },
+          {
             "type": "actions",
             "elements": app_results.map { |app_result|
                 {
@@ -578,7 +547,39 @@ platform :ios do
                         "type": "plain_text",
                         "text": app_result[:scheme]
                     },
-                    "url": app_result[:url],
+                    "url": app_result[:ipa_url],
+                    "value": app_result[:scheme]
+                }
+            }
+          },
+          {
+            "type": "divider"
+          },
+          {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Install links",
+                    "emoji": true
+                }
+          },
+          {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Use these to install the app on an iPhone, iPad or Mac"
+            }
+          },
+          {
+            "type": "actions",
+            "elements": app_results.map { |app_result|
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "text": app_result[:scheme]
+                    },
+                    "url": app_result[:html_url],
                     "value": app_result[:scheme]
                 }
             }
@@ -659,7 +660,7 @@ platform :ios do
         setup
         scheme = options[:scheme]
         
-        device = "iPhone 11 Pro (14.5)"
+        device = "iPhone 12 Pro (15.0)"
 
 
         config_path = File.join(File.expand_path("~"), "Library", "Preferences", "com.apple.iphonesimulator.plist")
@@ -683,15 +684,17 @@ platform :ios do
                 formatter: ENV["GEM_HOME"] + "/gems/xcpretty-json-formatter-0.1.1/lib/json_formatter.rb",
                 output_style: "rspec",
                 skip_package_dependencies_resolution: true,
-                derived_data_path: is_ci ? "../../../DerivedData" : nil,
+                number_of_retries: 5
             )
             xchtmlreport(
+                binary_path: "/opt/homebrew/bin/xchtmlreport",
                 result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"],
                 enable_junit: true
             )
             handle_xcresult_result(scheme: scheme)
         rescue => ex
             xchtmlreport(
+                binary_path: "/opt/homebrew/bin/xchtmlreport",
                 result_bundle_paths: ["fastlane/test_output/#{scheme}.xcresult"],
                 enable_junit: true
             )
@@ -711,7 +714,9 @@ platform :ios do
             "hCoreUI",
             "Forever",
             "Contracts",
-            "Home"
+            "Embark",
+            "Home",
+            "Payment"
         ]
 
         if ENV["SCHEME_FILTER"]
@@ -720,11 +725,12 @@ platform :ios do
         
         def report(schemes)
             xchtmlreport(
+                binary_path: "/opt/homebrew/bin/xchtmlreport",
                 result_bundle_paths: schemes.map { |scheme| "fastlane/test_output/#{scheme}.xcresult" }.filter { |path| File.directory?(path) }
             )
         end
         
-        device = "iPhone 11 Pro (14.5)"
+        device = "iPhone 12 Pro (15.0)"
         
         schemes.each { |scheme|
             begin
@@ -733,7 +739,6 @@ platform :ios do
                         workspace: "Ugglan.xcworkspace",
                         devices: [device],
                         scheme: scheme,
-                        derived_data_path: is_ci ? "../../../DerivedData" : nil,
                         skip_package_dependencies_resolution: true,
                         xcargs: "OTHER_SWIFT_FLAGS='$(inherited) -D RECORD'"
                     )
@@ -742,8 +747,8 @@ platform :ios do
                         workspace: "Ugglan.xcworkspace",
                         devices: [device],
                         scheme: scheme,
-                        derived_data_path: is_ci ? "../../../DerivedData" : nil,
-                        skip_package_dependencies_resolution: true
+                        skip_package_dependencies_resolution: true,
+                        number_of_retries: 3
                     )
                 end
             rescue => ex

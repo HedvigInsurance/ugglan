@@ -9,8 +9,6 @@ import hCoreUI
 import hGraphQL
 
 struct SwedishBankIdSign {
-    @Inject var state: OldOfferState
-
     func presentFailedAlert(
         _ viewController: UIViewController,
         completion: @escaping (_ result: Flow.Result<Void>) -> Void

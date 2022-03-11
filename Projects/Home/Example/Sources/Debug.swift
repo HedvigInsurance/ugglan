@@ -6,6 +6,7 @@ import Foundation
 import Home
 import HomeTesting
 import Presentation
+import SwiftUI
 import TestingUtil
 import UIKit
 import hCore
@@ -37,12 +38,23 @@ extension Debug: Presentable {
 
             Dependencies.shared.add(module: Module { () -> ApolloClient in apolloClient })
 
-            bag += UIApplication.shared.keyWindow?
+            bag += viewController.view.window?
                 .present(
-                    Home(sections: []),
-                    options: [
-                        .defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
-                    ]
+                    Journey(
+                        Home(
+                            claimsContent: ClaimSectionDebug(),
+                            commonClaims: CommonClaimsDebug(),
+                            {
+
+                            }
+                        ),
+                        options: [
+                            .defaults, .prefersLargeTitles(true),
+                            .largeTitleDisplayMode(.always),
+                        ]
+                    ) { result in
+                        return DismissJourney()
+                    }
                 )
         }
 
@@ -73,8 +85,32 @@ extension Debug: Presentable {
             .append(hCoreUIAssets.chevronRight.image)
             .onValue { presentHome(.makeActiveWithMultipleRenewalsOnSeparateDates()) }
 
+        bag += section.appendRow(title: "Home - Terminated")
+            .append(hCoreUIAssets.chevronRight.image)
+            .onValue { presentHome(.makeTerminatedInTheFuture()) }
+
         bag += viewController.install(form)
 
         return (viewController, bag)
+    }
+}
+
+public struct ClaimSectionDebug: View {
+    public init() {}
+
+    public var body: some View {
+        VStack {
+            Text("Claims card")
+        }
+    }
+}
+
+public struct CommonClaimsDebug: View {
+    public init() {}
+
+    public var body: some View {
+        VStack {
+            Text("Common Claims")
+        }
     }
 }

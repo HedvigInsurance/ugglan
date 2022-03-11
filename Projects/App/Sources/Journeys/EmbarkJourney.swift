@@ -7,6 +7,7 @@ extension AppJourney {
     static func embark<OfferResultJourney: JourneyPresentation>(
         _ embark: Embark,
         storeOffer: Bool,
+        style: PresentationStyle = .default,
         @JourneyBuilder offerResultJourney: @escaping (_ result: OfferResult) -> OfferResultJourney
     ) -> some JourneyPresentation {
         var offerOptions: Set<OfferOption> = [
@@ -17,33 +18,39 @@ extension AppJourney {
             offerOptions.insert(.shouldPreserveState)
         }
 
-        return Journey(embark) { externalRedirect in
+        return Journey(embark, style: style) { externalRedirect in
             switch externalRedirect {
             case .mailingList:
                 ContinueJourney()
             case .chat:
-                Journey(FreeTextChat(), style: .detented(.large)).withDismissButton
+                AppJourney
+                    .freeTextChat()
+                    .onDismiss {
+                        embark.goBack()
+                    }
+                    .withDismissButton
             case .close:
                 DismissJourney()
-            case let .offer(ids):
+            case let .offer(allIds, selectedIds):
                 Journey(
                     Offer(
-                        offerIDContainer:
-                            .exact(
-                                ids:
-                                    ids,
-                                shouldStore:
-                                    storeOffer
-                            ),
                         menu: embark.menu,
                         options: offerOptions
                     )
+                    .setIds(allIds, selectedIds: selectedIds)
                 ) { offerResult in
                     offerResultJourney(offerResult)
                 }
                 .onDismiss {
                     embark.goBack()
                 }
+            case let .dataCollection(providerID, providerDisplayName, onComplete):
+                DataCollection.journey(
+                    providerID: providerID,
+                    providerDisplayName: providerDisplayName,
+                    onComplete: onComplete
+                )
+                .mapJourneyDismissToCancel
             case let .menu(action):
                 action.journey
             }

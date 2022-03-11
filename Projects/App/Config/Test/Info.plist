@@ -18,13 +18,14 @@
 		<string>en</string>
 		<string>da</string>
 		<string>nb</string>
+		<string>fr</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>5.2.1</string>
+	<string>7.8.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -36,11 +37,12 @@
 			<array>
 				<string>hedvigtest</string>
 				<string>fb295996994493099</string>
+				<string>hedvigengineering</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>5582</string>
+	<string>5605</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<true/>
 	<key>FacebookAppID</key>
@@ -53,12 +55,13 @@
 	<string>public.app-category.finance</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>message</string>
+		<string>googlegmail</string>
+		<string>ms-outlook</string>
 		<string>bankid</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>MixpanelToken</key>
-	<string>94a297abd45b862207a9ba3f11f6bd8c</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -73,9 +76,7 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Hedvig använder kamerabiblioteket för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
 	<key>UIAppFonts</key>
-	<array>
-		<string>FavoritStd-Book.otf</string>
-	</array>
+	<array/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

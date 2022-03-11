@@ -5,6 +5,7 @@ import SafariServices
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct InfoAndTerms {
     let potentialDiscountAmountSignal: ReadSignal<MonetaryAmount?>

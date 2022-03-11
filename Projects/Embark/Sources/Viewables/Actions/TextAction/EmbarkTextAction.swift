@@ -107,10 +107,11 @@ extension EmbarkTextAction: Viewable {
 
                     if let apiFragment = self.data.textActionData.api?.fragments.apiFragment {
                         bag += animator.setState(.loading).filter(predicate: { $0 })
-                            .mapLatestToFuture { _ in
-                                self.state.handleApi(apiFragment: apiFragment)
+                            .flatMapLatest { _ in
+                                self.state.handleApi(apiFragment: apiFragment).valueSignal
                             }
-                            .onValue { link in guard let link = link else { return }
+                            .onValue { link in
+                                guard let link = link else { return }
                                 callback(link)
                             }
                     } else {

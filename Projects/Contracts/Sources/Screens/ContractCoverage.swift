@@ -2,46 +2,46 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
 
-struct ContractCoverage {
-    let perilFragments: [GraphQL.PerilFragment]
-    let insurableLimitFragments: [GraphQL.InsurableLimitFragment]
-}
+struct ContractCoverageView: View {
+    @PresentableStore var store: ContractStore
+    let id: String
 
-extension ContractCoverage: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
-        let bag = DisposeBag()
-        let viewController = UIViewController()
-        viewController.title = L10n.contractCoverageMainTitle
-
-        let form = FormView()
-
-        let insets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
-
-        let perilCollection = PerilCollection(
-            perilFragmentsSignal: ReadWriteSignal(perilFragments).readOnly()
-        )
-
-        bag += form.append(perilCollection.insetted(insets))
-
-        bag += form.append(Spacing(height: 20))
-
-        bag += form.append(Divider(backgroundColor: .brand(.primaryBorderColor)))
-
-        bag += form.append(Spacing(height: 20))
-
-        let insurableLimits = InsurableLimits(
-            insurableLimitFragmentsSignal: ReadWriteSignal(insurableLimitFragments).readOnly()
-        )
-
-        bag += form.append(insurableLimits)
-
-        bag += viewController.install(form, options: [])
-
-        return (viewController, bag)
+    var body: some View {
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: { state in
+                state.contractForId(id)
+            }
+        ) { contract in
+            if let contract = contract {
+                VStack {
+                    hSection {
+                        PerilCollection(perils: contract.contractPerils) { peril in
+                            store.send(.contractDetailNavigationAction(action: .peril(peril: peril)))
+                        }
+                    }
+                    .sectionContainerStyle(.transparent)
+                    Spacer()
+                    SwiftUI.Divider()
+                    Spacer()
+                    InsurableLimitsSectionView(
+                        header: hText(
+                            L10n.contractCoverageMoreInfo,
+                            style: .headline
+                        )
+                        .foregroundColor(hLabelColor.secondary),
+                        limits: contract.insurableLimits
+                    ) { limit in
+                        store.send(.contractDetailNavigationAction(action: .insurableLimit(insurableLimit: limit)))
+                    }
+                }
+            }
+        }
     }
 }

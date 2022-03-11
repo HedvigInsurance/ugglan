@@ -3,6 +3,7 @@ import Form
 import Foundation
 import UIKit
 import hCore
+import hCoreUI
 
 struct CircleLabel {
     let labelText: DynamicString
@@ -30,7 +31,7 @@ extension CircleLabel: Viewable {
 
         label.clipsToBounds = true
         label.textAlignment = .center
-        label.font = HedvigFonts.favoritStdBook?.withSize(30)
+        label.font = Fonts.fontFor(style: .title1)
         label.textColor = textColor
         label.numberOfLines = 3
         label.adjustsFontSizeToFitWidth = true

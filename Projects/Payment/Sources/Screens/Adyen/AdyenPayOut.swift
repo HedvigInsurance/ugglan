@@ -1,4 +1,5 @@
 import Adyen
+import AdyenActions
 import Apollo
 import Flow
 import Foundation
@@ -34,7 +35,7 @@ struct AdyenPayOut: Presentable {
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let (viewController, result) = AdyenMethodsList(adyenOptions: adyenOptions) { data, _, onResult in
             guard let jsonData = try? JSONEncoder().encode(data.paymentMethod.encodable),
                 let json = String(data: jsonData, encoding: .utf8)
@@ -43,7 +44,11 @@ struct AdyenPayOut: Presentable {
             self.client
                 .perform(
                     mutation: GraphQL.AdyenTokenizePayoutDetailsMutation(
-                        request: GraphQL.TokenizationRequest(json: json, urlScheme: urlScheme)
+                        request: GraphQL.TokenizationRequest(
+                            paymentMethodDetails: json,
+                            channel: .ios,
+                            returnUrl: "\(urlScheme)://adyen"
+                        )
                     )
                 )
                 .onValue { data in
@@ -53,7 +58,7 @@ struct AdyenPayOut: Presentable {
                         guard let jsonData = data.action.data(using: .utf8) else { return }
                         guard
                             let action = try? JSONDecoder()
-                                .decode(Adyen.Action.self, from: jsonData)
+                                .decode(AdyenActions.Action.self, from: jsonData)
                         else { return }
 
                         onResult(.success(.make(action)))
@@ -72,5 +77,15 @@ struct AdyenPayOut: Presentable {
         viewController.title = L10n.adyenPayoutTitle
 
         return (viewController, result)
+    }
+}
+
+extension AdyenPayOut {
+    public func journey<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping (_ success: Bool) -> Next
+    ) -> some JourneyPresentation {
+        Journey(self) { success in
+            next(success)
+        }
     }
 }

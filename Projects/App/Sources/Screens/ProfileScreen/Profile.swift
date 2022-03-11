@@ -2,7 +2,9 @@ import Apollo
 import Flow
 import Form
 import Presentation
+import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -41,6 +43,8 @@ extension Profile: Presentable {
             scrollView.refreshControl = refreshControl
             bag += scrollView.chainAllControlResponders(shouldLoop: true, returnKey: .next)
         }
+
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .profile))
 
         return (viewController, bag)
     }

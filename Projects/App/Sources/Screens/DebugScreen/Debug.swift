@@ -6,7 +6,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-@available(iOS 13, *) struct Debug: View {
+struct Debug: View {
     enum EnvironmentOption: String, CaseIterable {
         case production = "Production"
         case staging = "Staging"
@@ -44,6 +44,7 @@ import hGraphQL
         NavigationView {
             Form {
                 Section {
+                    Color.clear.frame(height: 100)
                     Text("Which environment do you want to use?")
                     Picker(
                         selection: $pickedEnvironment,
@@ -129,7 +130,7 @@ import hGraphQL
                         "Logout",
                         action: {
                             ApplicationState.preserveState(.marketPicker)
-                            UIApplication.shared.appDelegate.logout()
+                            UIApplication.shared.appDelegate.logout(token: nil)
                         }
                     )
                 }

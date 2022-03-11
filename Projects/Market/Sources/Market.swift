@@ -1,18 +1,22 @@
 import Foundation
 import UIKit
+import hAnalytics
 import hCore
+import hCoreUI
 import hGraphQL
 
 public enum Market: String, CaseIterable, Codable {
     case sweden = "SE"
     case norway = "NO"
     case denmark = "DK"
+    case france = "FR"
 
     var id: String {
         switch self {
         case .norway: return "no"
         case .sweden: return "se"
         case .denmark: return "dk"
+        case .france: return "fr"
         }
     }
 
@@ -21,15 +25,27 @@ public enum Market: String, CaseIterable, Codable {
         case .norway: return "Norge"
         case .sweden: return "Sverige"
         case .denmark: return "Danmark"
+        case .france: return "France"
         }
     }
 
     public var icon: UIImage {
         switch self {
-        case .norway: return Asset.flagNO.image
-        case .sweden: return Asset.flagSE.image
-        case .denmark: return Asset.flagDK.image
+        case .norway: return hCoreUIAssets.flagNO.image
+        case .sweden: return hCoreUIAssets.flagSE.image
+        case .denmark: return hCoreUIAssets.flagDK.image
+        case .france: return hCoreUIAssets.flagFR.image
         }
+    }
+
+    static var activatedMarkets: [Market] {
+        var activatedMarkets: [Market] = [.denmark, .sweden, .norway]
+
+        if hAnalyticsExperiment.frenchMarket {
+            activatedMarkets.append(.france)
+        }
+
+        return activatedMarkets
     }
 
     var languages: [Localization.Locale] {
@@ -37,6 +53,7 @@ public enum Market: String, CaseIterable, Codable {
         case .norway: return [.nb_NO, .en_NO]
         case .sweden: return [.sv_SE, .en_SE]
         case .denmark: return [.da_DK, .en_DK]
+        case .france: return [.fr_FR, .en_FR]
         }
     }
 
@@ -57,6 +74,7 @@ public enum Market: String, CaseIterable, Codable {
         case .dk: return .denmark
         case .se: return .sweden
         case .no: return .norway
+        case .fr: return .france
         }
     }
 }

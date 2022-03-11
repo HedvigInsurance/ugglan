@@ -6,8 +6,8 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct Checkout {
-    @Inject var state: OldOfferState
+public struct Checkout {
+    public init() {}
 }
 
 enum CheckoutError: Error {
@@ -35,36 +35,30 @@ extension Checkout: Presentable {
         viewController.present(alert)
     }
 
-    func materialize() -> (UIViewController, Future<Void>) {
+    public func materialize() -> (UIViewController, FiniteSignal<Void>) {
         let checkoutButton = CheckoutButton()
         let viewController = AccessoryViewController(accessoryView: checkoutButton)
         viewController.title = L10n.checkoutTitle
         let bag = DisposeBag()
 
+        let store: OfferStore = self.get()
+
         let form = FormView()
         bag += viewController.install(form)
 
-        bag += state.dataSignal.compactMap { $0.quoteBundle }
+        bag += store.stateSignal.atOnce().compactMap { $0.currentVariant?.bundle }
             .onFirstValue({ quoteBundle in
                 let header = UIStackView()
                 header.spacing = 16
                 header.axis = .vertical
 
-                let titleLabel = MultilineLabel(
-                    value: quoteBundle.quotes.reduce(
-                        "",
-                        { previousString, quote in
-                            return previousString.isEmpty
-                                ? quote.displayName
-                                : "\(previousString) + \n\(quote.displayName)"
-                        }
-                    ),
-                    style: TextStyle.brand(.title1(color: .secondary))
-                        .restyled({ (style: inout TextStyle) in
-                            style.lineHeight = quoteBundle.quotes.count > 1 ? 45 : 0
-                        })
+                header.addArrangedSubview(
+                    HostingView(
+                        rootView: hText(quoteBundle.displayName, style: .title1)
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    )
                 )
-                bag += header.addArranged(titleLabel)
 
                 bag += header.addArrangedSubview(PriceRow(placement: .checkout))
 
@@ -116,9 +110,6 @@ extension Checkout: Presentable {
 
                 bag += ssnMasking.applyMasking(ssnTextField)
 
-                let shouldHideEmailField = quoteBundle.quotes.allSatisfy { $0.email != nil }
-                emailRow.isHidden = shouldHideEmailField
-
                 bag += form.chainAllControlResponders()
 
                 let isValidSignal = combineLatest(
@@ -133,7 +124,7 @@ extension Checkout: Presentable {
 
                         join(
                             quoteBundle.quotes.map { quote in
-                                state.checkoutUpdate(
+                                store.checkoutUpdate(
                                     quoteId: quote.id,
                                     email: emailMasking.unmaskedValue(
                                         text: emailTextField.value
@@ -163,7 +154,7 @@ extension Checkout: Presentable {
 
         return (
             viewController,
-            Future { completion in
+            FiniteSignal { callback in
 
                 func toggleAllowDismissal() {
                     if #available(iOS 13.0, *) {
@@ -198,7 +189,7 @@ extension Checkout: Presentable {
                     }
 
                     bag += store.onAction(.sign(event: .done)) {
-                        completion(.success)
+                        callback(.value(()))
                     }
                 }
 
@@ -214,6 +205,7 @@ extension Localization.Locale.Market {
         case .no: return .init(type: .norwegianPersonalNumber)
         case .se: return .init(type: .personalNumber)
         case .dk: return .init(type: .danishPersonalNumber)
+        case .fr: return .init(type: .email)
         }
     }
 }

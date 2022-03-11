@@ -35,18 +35,15 @@ struct EmbarkOnboardingJourney {
                 ) { offerResult in
                     switch offerResult {
                     case .chat:
-                        Journey(
-                            FreeTextChat(),
-                            style: .detented(.large),
-                            options: [.defaults]
-                        )
-                        .withDismissButton
+                        AppJourney.freeTextChat()
                     case .signed:
                         AppJourney.postOnboarding
                     case .close:
                         ContinueJourney()
                     case let .menu(action):
                         action.journey
+                    case .openCheckout:
+                        AppJourney.offerCheckout
                     }
                 }
             }

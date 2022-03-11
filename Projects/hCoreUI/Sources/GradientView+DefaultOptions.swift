@@ -1,6 +1,7 @@
 import CoreGraphics
 import Flow
 import UIKit
+import hGraphQL
 
 extension GradientView {
     public struct GradientOption: Equatable {
@@ -10,6 +11,16 @@ extension GradientView {
             shouldAnimate: Bool = true
         ) {
             self.preset = preset
+            self.shouldShimmer = shouldShimmer
+            self.shouldAnimate = shouldAnimate
+        }
+
+        public init(
+            gradientOption: Contract.GradientOption,
+            shouldShimmer: Bool = true,
+            shouldAnimate: Bool = true
+        ) {
+            self.preset = gradientOption.preset
             self.shouldShimmer = shouldShimmer
             self.shouldAnimate = shouldAnimate
         }
@@ -111,6 +122,19 @@ extension GradientView {
 
         public static var random: Self {
             Self.allCases.shuffled().randomElement()!
+        }
+    }
+}
+
+extension Contract.GradientOption {
+    var preset: GradientView.Preset {
+        switch self {
+        case .one:
+            return .insuranceOne
+        case .two:
+            return .insuranceTwo
+        case .three:
+            return .insuranceThree
         }
     }
 }

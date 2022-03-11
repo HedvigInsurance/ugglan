@@ -59,13 +59,21 @@ extension Shape {
     }
 }
 
+extension InsettableShape {
+    public func strokeBorder<S>(_ content: S, lineWidth: CGFloat = 1) -> some View where S: hColor {
+        ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
+            self.strokeBorder(content.colorFor(colorScheme, userInterfaceLevel).color, lineWidth: lineWidth)
+        }
+    }
+}
+
 public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: hColor {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.userInterfaceLevel) var userInterfaceLevel
     private var light: LightInnerHColor
     private var dark: DarkInnerHColor
 
-    init(
+    public init(
         light: Color,
         dark: Color
     ) where LightInnerHColor == hColorBase, DarkInnerHColor == hColorBase {
@@ -73,7 +81,7 @@ public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: h
         self.dark = hColorBase(dark)
     }
 
-    init(
+    public init(
         light: LightInnerHColor,
         dark: DarkInnerHColor
     ) {
@@ -81,7 +89,7 @@ public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: h
         self.dark = dark
     }
 
-    init(
+    public init(
         _ always: Color
     ) where LightInnerHColor == hColorBase, DarkInnerHColor == hColorBase {
         self.light = hColorBase(always)
@@ -128,6 +136,7 @@ struct hColorViewModifier<Color: hColor>: ViewModifier {
     enum ColorType {
         case tintColor
         case foregroundColor
+        case border(width: CGFloat)
     }
 
     func body(content: Content) -> some View {
@@ -137,6 +146,11 @@ struct hColorViewModifier<Color: hColor>: ViewModifier {
                 content.accentColor(color?.colorFor(colorScheme, userInterfaceLevel).color)
             case .foregroundColor:
                 content.foregroundColor(color?.colorFor(colorScheme, userInterfaceLevel).color)
+            case let .border(width):
+                content.border(
+                    color?.colorFor(colorScheme, userInterfaceLevel).color ?? SwiftUI.Color.clear,
+                    width: width
+                )
             }
         }
     }
@@ -145,6 +159,10 @@ struct hColorViewModifier<Color: hColor>: ViewModifier {
 extension View {
     public func foregroundColor<Color: hColor>(_ color: Color?) -> some View {
         self.modifier(hColorViewModifier(color: color, colorType: .foregroundColor))
+    }
+
+    public func border<Color: hColor>(_ color: Color?, width: CGFloat = 0) -> some View {
+        self.modifier(hColorViewModifier(color: color, colorType: .border(width: width)))
     }
 }
 
@@ -361,6 +379,13 @@ public struct hLabelColor {
             dark: Color(hexString: "FAFAFA").opacity(0.18)
         )
     }
+
+    public static var link: some hColor {
+        hColorScheme(
+            light: Color(hexString: "BE9BF3"),
+            dark: Color(hexString: "BE9BF3")
+        )
+    }
 }
 
 public struct hTintColor {
@@ -368,6 +393,64 @@ public struct hTintColor {
         hColorScheme(
             light: Color(hexString: "C9ABF5"),
             dark: Color(hexString: "BE9BF3")
+        )
+    }
+
+    public static var lavenderTwo: some hColor {
+        hColorScheme(
+            light: Color(hexString: "E7D6FF"),
+            dark: Color(hexString: "2B203B")
+        )
+    }
+
+    public static var yellowOne: some hColor {
+        hColorScheme(
+            light: Color(hexString: "F2C852"),
+            dark: Color(hexString: "CCA42E")
+        )
+    }
+
+    public static var yellowTwo: some hColor {
+        hColorScheme(
+            light: Color(hexString: "FAE098"),
+            dark: Color(hexString: "E3B945")
+        )
+    }
+
+    public static var red: some hColor {
+        hColorScheme(
+            light: Color(hexString: "DD2727"),
+            dark: Color(hexString: "E24646")
+        )
+    }
+
+    public static var orangeOne: some hColor {
+        hColorScheme(
+            light: Color(hexString: "FE9650"),
+            dark: Color(hexString: "FE9650")
+        )
+    }
+
+    public static var orangeTwo: some hColor {
+        hColorScheme(
+            light: Color(hexString: "FCBA8D"),
+            dark: Color(hexString: "FCBA8D")
+        )
+    }
+
+    public static var clear: some hColor {
+        hColorScheme(
+            light: Color.clear,
+            dark: Color.clear
+        )
+    }
+}
+
+public struct hSeparatorColor {
+    public static var separator: some hColor {
+        hColorScheme(
+            light: Color(hexString: "3C3C43").opacity(0.29),
+            dark: Color(hexString: "545458").opacity(0.65)
         )
     }
 }

@@ -7,9 +7,15 @@ import WebKit
 import hCore
 import hGraphQL
 
+enum WebViewLoginType {
+    case nemId
+    case bankIdNorway
+}
+
 struct WebViewLogin {
     @Inject var client: ApolloClient
     let idNumber: String
+    let type: WebViewLoginType
 }
 
 extension WebViewLogin: Presentable {
@@ -27,7 +33,7 @@ extension WebViewLogin: Presentable {
         webView.backgroundColor = .brand(.secondaryBackground())
 
         let activityIndicator = UIActivityIndicatorView()
-        activityIndicator.style = .whiteLarge
+        activityIndicator.style = .large
         activityIndicator.color = .brand(.primaryTintColor)
         activityIndicator.hidesWhenStopped = true
 
@@ -81,16 +87,15 @@ extension WebViewLogin {
 
     func redirectUrl(bag: DisposeBag, text: String) -> Future<URL> {
         Future { completion in
-            switch Localization.Locale.currentLocale.market {
-            case .dk:
+            switch type {
+            case .nemId:
                 client.perform(mutation: GraphQL.NemIdAuthMutation(personalNumber: text))
                     .compactMap { $0.danishBankIdAuth.redirectUrl }.compactMap { URL(string: $0) }
                     .onValue { url in completion(.success(url)) }
-            case .no:
+            case .bankIdNorway:
                 client.perform(mutation: GraphQL.BankIdNorwayAuthMutation(personalNumber: text))
                     .compactMap { $0.norwegianBankIdAuth.redirectUrl }
                     .compactMap { URL(string: $0) }.onValue { url in completion(.success(url)) }
-            case .se: completion(.failure(BankIDLoginError.invalidMarket))
             }
 
             return bag

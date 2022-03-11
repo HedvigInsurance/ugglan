@@ -4,6 +4,7 @@ import Foundation
 import Photos
 import UIKit
 import hCore
+import hCoreUI
 
 struct FilePickerHeader { var uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>() }
 
@@ -21,7 +22,7 @@ extension FilePickerHeader: Reusable {
                             make.width.height.equalToSuperview()
                         }
                     }
-                    .onValue { _ in }
+                    .nil()
 
                 return bag
             }
@@ -44,7 +45,7 @@ extension FilePickerHeader: Viewable {
             if let asset = result.left {
                 asset.fileUpload
                     .onValue { fileUpload in
-                        self.uploadFileDelegate.call(fileUpload)?.onValue { _ in }
+                        self.uploadFileDelegate.call(fileUpload)?.sink()
                     }
                     .onError { error in log.error(error.localizedDescription) }
             } else if let image = result.right {
@@ -59,7 +60,7 @@ extension FilePickerHeader: Viewable {
                     fileName: "image.jpg"
                 )
 
-                uploadFileDelegate.call(fileUpload)?.onValue { _ in }
+                uploadFileDelegate.call(fileUpload)?.sink()
             }
 
             return innerBag
@@ -115,7 +116,7 @@ extension FilePickerHeader: Viewable {
                             .map { fileUploads -> [Disposable] in
                                 fileUploads.compactMap {
                                     self.uploadFileDelegate.call($0)?.valueSignal
-                                        .onValue { _ in }
+                                        .nil()
                                 }
                             }
                             .onValueDisposePrevious { list -> Disposable? in

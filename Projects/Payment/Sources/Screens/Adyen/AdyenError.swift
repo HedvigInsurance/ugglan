@@ -2,13 +2,14 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
 enum AdyenError: Error { case cancelled, tokenization, action, failed }
 
 extension AdyenError: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Void>) {
         let tryAgainButton = Button(
             title: L10n.PayInError.retryButton,
             type: .standard(
@@ -31,7 +32,11 @@ extension AdyenError: Presentable {
             ),
             title: L10n.PayInError.headline,
             body: L10n.PayInError.body,
-            actions: [(true, tryAgainButton), (false, cancelButton)],
+            actions: [
+                (true, tryAgainButton),
+                ApplicationState.currentState == .loggedIn ? (false, cancelButton) : nil,
+            ]
+            .compactMap { $0 },
             showLogo: false
         )
 
@@ -42,13 +47,16 @@ extension AdyenError: Presentable {
 
         return (
             viewController,
-            Future { completion in let bag = DisposeBag()
+            FiniteSignal { callback in
+                let bag = DisposeBag()
+
+                viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .connectPaymentFailed))
 
                 bag += signal.onValue { shouldRetry in
                     if shouldRetry {
-                        completion(.success)
+                        callback(.value(()))
                     } else {
-                        completion(.failure(AdyenError.cancelled))
+                        callback(.end)
                     }
                 }
 

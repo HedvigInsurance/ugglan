@@ -5,9 +5,9 @@ set -x
 tuist generate --path Projects/Codegen
 
 buildDir=$(xcodebuild \
--project Projects/Codegen/Codegen.xcodeproj \
--scheme "Apollo Codegen" \
-build | grep 'TARGET_BUILD_DIR')
+    -project Projects/Codegen/Codegen.xcodeproj \
+    -scheme "Apollo Codegen" \
+    build | grep 'TARGET_BUILD_DIR')
 
 eval $buildDir
 

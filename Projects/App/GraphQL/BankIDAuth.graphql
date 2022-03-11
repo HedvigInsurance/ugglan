@@ -1,5 +1,5 @@
 mutation BankIDAuth {
-    bankIdAuth {
+    swedishBankIdAuth {
         autoStartToken
     }
 }

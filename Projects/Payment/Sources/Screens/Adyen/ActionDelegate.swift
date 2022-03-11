@@ -1,4 +1,6 @@
 import Adyen
+import AdyenActions
+import AdyenComponents
 import Apollo
 import Flow
 import Foundation
@@ -11,7 +13,7 @@ struct AdditionalDetailsRequest: Encodable {
 }
 
 class ActionDelegate: NSObject, ActionComponentDelegate {
-    typealias ResultHandler = (_ result: Flow.Result<Either<Void, Adyen.Action>>) -> Void
+    typealias ResultHandler = (_ result: Flow.Result<Either<Void, AdyenActions.Action>>) -> Void
 
     @Inject var client: ApolloClient
     let onResult: ResultHandler
@@ -30,19 +32,20 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
 
         client.perform(mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(req: detailsJson))
             .onValue { data in
-                if let component = component as? DismissableComponent {
-                    component.dismiss(true, completion: nil)
-                }
-
-                if data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished
-                    != nil
+                if [.pending, .completed]
+                    .contains(
+                        data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished?
+                            .tokenizationResult
+                    )
                 {
                     self.onResult(.success(.make(())))
                 } else if let data = data.submitAdditionalPaymentDetails
                     .asAdditionalPaymentsDetailsResponseAction
                 {
                     guard let jsonData = data.action.data(using: .utf8) else { return }
-                    guard let action = try? JSONDecoder().decode(Adyen.Action.self, from: jsonData)
+                    guard
+                        let action = try? JSONDecoder()
+                            .decode(AdyenActions.Action.self, from: jsonData)
                     else { return }
 
                     self.onResult(.success(.make(action)))
@@ -53,12 +56,11 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
     }
 
     func didFail(with error: Error, from component: ActionComponent) {
-        if let component = component as? DismissableComponent { component.dismiss(true, completion: nil) }
-
         if let error = error as? Adyen.ComponentError, error == .cancelled {
             // no op
         } else {
             onResult(.failure(error))
         }
     }
+    func didComplete(from component: ActionComponent) {}
 }

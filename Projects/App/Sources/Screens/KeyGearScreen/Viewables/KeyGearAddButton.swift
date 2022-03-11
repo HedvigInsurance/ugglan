@@ -34,7 +34,7 @@ extension KeyGearAddButton: Viewable {
         let label = MultilineLabel(value: L10n.keyGearAddButton, style: TextStyle.brand(.body(color: .primary)))
         bag += contentContainer.addArranged(label)
 
-        let touchUpInsideSignal = view.trackedTouchUpInsideSignal
+        let touchUpInsideSignal = view.signal(for: .touchUpInside)
 
         bag += touchUpInsideSignal.feedback(type: .impactLight)
 

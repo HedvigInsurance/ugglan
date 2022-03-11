@@ -91,6 +91,7 @@ extension GraphQL.ApiSingleVariableFragment {
         case .int: map[key] = Int(store.getValue(key: from, includeQueue: true) ?? "")
         case .string: map[key] = store.getValue(key: from, includeQueue: true)
         case .boolean: map[key] = store.getValue(key: from, includeQueue: true) == "true"
+        case .file: map[key] = store.getValue(key: from, includeQueue: true)
         case .__unknown: break
         }
 
@@ -103,6 +104,7 @@ extension GraphQL.ApiGeneratedVariableFragment {
         var map = GraphQLMap()
 
         switch type {
+
         case .uuid:
             let uuid = UUID().uuidString
             map[key] = uuid
@@ -263,6 +265,29 @@ extension ResultMap {
     }
 }
 
+extension GraphQLMap {
+    func findFiles() -> (files: [GraphQLFile], result: GraphQLMap) {
+        var files: [GraphQLFile] = []
+
+        let mappedResult = map { item -> (key: String, value: JSONEncodable?) in
+            if let stringValue = item.value as? String {
+                if stringValue.contains("file://") {
+                    files.append(
+                        try! .init(fieldName: item.key, originalName: "file", fileURL: URL(string: stringValue)!)
+                    )
+                    return (item.key, nil)
+                }
+            }
+
+            return item
+        }
+
+        let result = Dictionary(uniqueKeysWithValues: mappedResult)
+
+        return (files: files, result: result)
+    }
+}
+
 extension EmbarkState {
     func handleApi(apiFragment: GraphQL.ApiFragment) -> Future<GraphQL.EmbarkLinkFragment?> {
         handleApiRequest(apiFragment: apiFragment)
@@ -295,14 +320,67 @@ extension EmbarkState {
     }
 
     private func handleApiRequest(apiFragment: GraphQL.ApiFragment) -> Future<ResultMap?> {
-        func performHTTPCall(_ query: String, variables: ResultMap) -> Future<ResultMap?> {
+        func performHTTPCall(_ query: String, variables: GraphQLMap) -> Future<ResultMap?> {
             var urlRequest = URLRequest(url: Environment.current.endpointURL)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            urlRequest.httpBody = try? JSONSerialization.data(
-                withJSONObject: ["query": query, "variables": variables],
-                options: []
-            )
+
+            let (files, variablesWithNilFiles) = variables.findFiles()
+
+            if files.isEmpty {
+                let JSONData = try! JSONSerialization.data(
+                    withJSONObject: ["query": query, "variables": variables],
+                    options: []
+                )
+                urlRequest.httpBody = JSONData
+            } else {
+                let JSONData = try! JSONSerialization.data(
+                    withJSONObject: ["query": query, "variables": variablesWithNilFiles],
+                    options: []
+                )
+
+                let formData = MultipartFormData()
+                urlRequest.setValue(
+                    "multipart/form-data; boundary=\(formData.boundary)",
+                    forHTTPHeaderField: "Content-Type"
+                )
+
+                try? formData.appendPart(string: String(data: JSONData, encoding: .utf8)!, name: "operations")
+
+                var map: [String: [String]] = [:]
+
+                files.enumerated()
+                    .forEach { item in
+                        map[String(item.offset)] = ["variables.\(item.element.fieldName)"]
+                    }
+
+                let JSONMapData = try! JSONSerialization.data(
+                    withJSONObject: map,
+                    options: []
+                )
+
+                try? formData.appendPart(string: String(data: JSONMapData, encoding: .utf8)!, name: "map")
+
+                files.enumerated()
+                    .forEach { item in
+                        let url = item.element.fileURL!
+                        let file = try! GraphQLFile(
+                            fieldName: "file",
+                            originalName: String(item.offset),
+                            fileURL: url
+                        )
+
+                        formData.appendPart(
+                            inputStream: try! file.generateInputStream(),
+                            contentLength: file.contentLength,
+                            name: String(item.offset),
+                            contentType: url.mimeType,
+                            filename: file.originalName
+                        )
+                    }
+
+                urlRequest.httpBody = try! formData.encode()
+            }
 
             let configuration = URLSessionConfiguration.default
             configuration.httpAdditionalHeaders =
@@ -371,8 +449,8 @@ extension EmbarkState {
                 mutationApi.data.mutation,
                 variables: mutationApi.data.graphQLVariables(store: store)
             )
-            .onValue { resultMap in guard let resultMap = resultMap else { return }
-
+            .onValue { resultMap in
+                guard let resultMap = resultMap else { return }
                 resultMap.insertInto(store: self.store, basedOn: mutationApi)
             }
         }
@@ -392,17 +470,5 @@ extension EmbarkState {
             case .unknown: return "Unknown"
             }
         }
-    }
-
-    var apiResponseSignal: ReadSignal<GraphQL.EmbarkLinkFragment?> {
-        currentPassageSignal.compactMap { $0 }
-            .mapLatestToFuture { passage -> Future<GraphQL.EmbarkLinkFragment?> in
-                guard let apiFragment = passage.api?.fragments.apiFragment else {
-                    return Future(error: ApiError.noApi)
-                }
-
-                return self.handleApi(apiFragment: apiFragment)
-            }
-            .providedSignal.plain().readable(initial: nil)
     }
 }

@@ -1,8 +1,7 @@
 import Apollo
-import Firebase
+import Datadog
 import Flow
 import Foundation
-import Mixpanel
 import Shake
 import hCore
 import hGraphQL
@@ -15,8 +14,14 @@ public struct AnalyticsCoordinator {
     func setUserId() {
         client.fetch(query: GraphQL.MemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
             .compactMap { $0.member.id }
-            .onValue { id in Shake.setMetadata(key: "memberId", value: id)
-                Mixpanel.mainInstance().identify(distinctId: id)
+            .onValue { id in
+                Shake.setMetadata(key: "memberId", value: id)
+                Datadog.setUserInfo(
+                    id: id,
+                    extraInfo: [
+                        "member_id": id
+                    ]
+                )
             }
     }
 }

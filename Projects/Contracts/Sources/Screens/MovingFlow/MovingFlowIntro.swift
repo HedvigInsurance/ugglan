@@ -4,6 +4,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -14,12 +15,9 @@ public struct MovingFlowIntro {
     public init() {}
 }
 
-typealias Contract = GraphQL.UpcomingAgreementQuery.Data.Contract
-internal typealias UpcomingAgreementDetailsTable = Contract.UpcomingAgreementDetailsTable
-
 enum MovingFlowIntroState {
     case manual
-    case existing(UpcomingAgreementDetailsTable)
+    case existing(DetailAgreementsTable?)
     case normal(String)
     case none
 
@@ -74,11 +72,19 @@ extension MovingFlowIntro: Presentable {
         let form = FormView()
         bag += viewController.install(form, scrollView: scrollView)
 
+        let store: ContractStore = get()
+
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
 
-        form.append(imageView)
+        let infoContainerView = UIStackView()
+        infoContainerView.axis = .vertical
+        infoContainerView.addArrangedSubview(imageView)
+        infoContainerView.spacing = 16
+
+        infoContainerView.layoutMargins = UIEdgeInsets(horizontalInset: 14, verticalInset: 0)
+        infoContainerView.isLayoutMarginsRelativeArrangement = true
 
         let titleLabel = MultilineLabel(value: "", style: .brand(.title2(color: .primary)).aligned(to: .center))
         let descriptionLabel = MultilineLabel(
@@ -88,9 +94,21 @@ extension MovingFlowIntro: Presentable {
 
         form.appendSpacing(.top)
 
-        bag += form.append(titleLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
-        form.appendSpacing(.inbetween)
-        bag += form.append(descriptionLabel.insetted(UIEdgeInsets(horizontalInset: 14, verticalInset: 0)))
+        bag += infoContainerView.addArranged(titleLabel)
+        bag += infoContainerView.addArranged(descriptionLabel)
+        form.append(infoContainerView)
+
+        bag += scrollView.didLayoutSignal.readable().withLatestFrom($section)
+            .onValue { _, state in
+                switch state {
+                case .normal, .manual:
+                    infoContainerView.snp.remakeConstraints { make in
+                        make.top.equalTo((viewController.view.frame.height / 2) - (infoContainerView.frame.height))
+                    }
+                default:
+                    break
+                }
+            }
 
         bag += $section.onValueDisposePrevious { state in
             let innerBag = DisposeBag()
@@ -105,8 +123,9 @@ extension MovingFlowIntro: Presentable {
                 descriptionLabel.$value.value = L10n.MovingIntro.existingMoveDescription
                 imageView.image = nil
 
-                let section = table.fragments.detailsTableFragment
-                bag += form.append(section)
+                if let table = table {
+                    innerBag += form.append(table)
+                }
             case .normal:
                 titleLabel.$value.value = L10n.MovingIntro.title
                 descriptionLabel.$value.value = L10n.MovingIntro.description
@@ -118,41 +137,29 @@ extension MovingFlowIntro: Presentable {
             return innerBag
         }
 
-        let activeContractBundles: Future<[GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle]> =
-            client.fetch(
-                query: GraphQL.ActiveContractBundlesQuery(),
-                cachePolicy: .fetchIgnoringCacheData
-            )
-            .map { data in
-                data.activeContractBundles
-            }
-
-        bag +=
-            client.fetch(
-                query: GraphQL.UpcomingAgreementQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                ),
-                cachePolicy: .fetchIgnoringCacheData
-            )
-            .onValue { data in
-                if let contract = data.contracts.first(where: {
-                    $0.status.asActiveStatus?.upcomingAgreementChange != nil
-                }) {
-                    $section.value = .existing(contract.upcomingAgreementDetailsTable)
+        bag += store.stateSignal.atOnce()
+            .onValue { state in
+                if let upcomingAgreementTable = state.contractBundles.flatMap({ $0.contracts })
+                    .first(where: {
+                        !$0.upcomingAgreementsTable.sections.isEmpty
+                    })?
+                    .upcomingAgreementsTable
+                {
+                    $section.value = .existing(upcomingAgreementTable)
                 } else {
-                    bag += activeContractBundles.onValue { bundles in
-                        if let bundle = bundles.first(where: {
-                            $0.angelStories.addressChange != nil
-                        }) {
-                            $section.value = .normal(
-                                bundle.angelStories.addressChange?.displayValue ?? ""
-                            )
-                        } else {
-                            $section.value = .manual
-                        }
+                    if let bundle = state.contractBundles.first(where: { bundle in
+                        bundle.movingFlowEmbarkId != nil
+                    }) {
+                        $section.value = .normal(
+                            bundle.movingFlowEmbarkId ?? ""
+                        )
+                    } else {
+                        $section.value = .manual
                     }
                 }
             }
+
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .movingFlowIntro))
 
         return (
             viewController,

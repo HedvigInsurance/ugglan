@@ -3,13 +3,14 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
 struct AdyenSuccess { let paymentMethod: PaymentMethod }
 
 extension AdyenSuccess: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Void>) {
         let continueButton = Button(
             title: L10n.PayInConfirmation.continueButton,
             type: .standard(
@@ -28,7 +29,8 @@ extension AdyenSuccess: Presentable {
             title: L10n.AdyenConfirmation.headline(paymentMethod.name),
             body: "",
             actions: [((), continueButton)],
-            showLogo: false
+            showLogo: false,
+            alignment: .left
         )
 
         let (viewController, signal) = PresentableViewable(viewable: continueAction) { viewController in
@@ -38,9 +40,14 @@ extension AdyenSuccess: Presentable {
 
         return (
             viewController,
-            Future { completion in let bag = DisposeBag()
+            FiniteSignal { callback in
+                let bag = DisposeBag()
 
-                bag += signal.onValue { completion(.success) }
+                viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .connectPaymentSuccess))
+
+                bag += signal.onValue {
+                    callback(.value(()))
+                }
 
                 return DelayedDisposer(bag, delay: 2)
             }

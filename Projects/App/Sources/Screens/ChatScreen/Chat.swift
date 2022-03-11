@@ -5,6 +5,7 @@ import Form
 import Offer
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hGraphQL
 
@@ -24,14 +25,6 @@ enum NavigationEvent {
     case dashboard, offer, login
 }
 
-extension JourneyPresentation {
-    public var hidesBackButton: Self {
-        addConfiguration { presenter in
-            presenter.viewController.navigationItem.hidesBackButton = true
-        }
-    }
-}
-
 enum ChatResult {
     case offer(ids: [String])
     case loggedIn
@@ -43,7 +36,6 @@ enum ChatResult {
             case let .offer(ids):
                 Journey(
                     Offer(
-                        offerIDContainer: .exact(ids: ids, shouldStore: true),
                         menu: Menu(
                             title: nil,
                             children: [
@@ -54,21 +46,21 @@ enum ChatResult {
                         ),
                         options: [.shouldPreserveState]
                     )
+                    .setIds(ids)
                 ) { offerResult in
                     switch offerResult {
                     case .chat:
-                        Journey(
-                            FreeTextChat(),
-                            style: .detented(.large),
-                            options: [.defaults]
-                        )
-                        .withDismissButton
+                        AppJourney
+                            .freeTextChat()
+                            .withDismissButton
                     case .close:
                         DismissJourney()
                     case .signed:
                         AppJourney.postOnboarding
                     case let .menu(action):
                         action.journey
+                    case .openCheckout:
+                        AppJourney.offerCheckout
                     }
                 }
                 .hidesBackButton
@@ -243,6 +235,8 @@ extension Chat: Presentable {
             },
             delay: 2
         )
+
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .chat))
 
         return (
             viewController,

@@ -1,0 +1,41 @@
+query Contracts($locale: Locale!) {
+  contracts {
+    id
+    displayName
+    switchedFromInsuranceProvider
+    gradientOption
+    upcomingRenewal {
+      renewalDate
+      draftCertificateUrl
+    }
+    contractPerils(locale: $locale) {
+      ...PerilFragment
+    }
+    statusPills(locale: $locale)
+    detailPills(locale: $locale)
+    insurableLimits(locale: $locale) {
+      ...InsurableLimitFragment
+    }
+    currentAgreementDetailsTable(locale: $locale) {
+      ...DetailsTableFragment
+    }
+    upcomingAgreementDetailsTable(locale: $locale) {
+      ...DetailsTableFragment
+    }
+    termsAndConditions(locale: $locale) {
+      displayName
+      url
+    }
+    currentAgreement {
+      ... on AgreementCore {
+        certificateUrl
+        activeFrom
+        activeTo
+        status
+        premium {
+          ...MonetaryAmountFragment
+        }
+      }
+    }
+  }
+}

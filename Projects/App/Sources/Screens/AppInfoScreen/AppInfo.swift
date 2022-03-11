@@ -5,6 +5,7 @@ import Market
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -30,11 +31,21 @@ struct AppInfo {
             }
         }
 
+        var trackingParcel: hAnalyticsParcel {
+            switch self {
+            case .appInformation:
+                return hAnalyticsEvent.screenView(screen: .app_information)
+            case .appSettings:
+                return hAnalyticsEvent.screenView(screen: .app_settings)
+            }
+        }
+
         enum InfoRows: CaseIterable {
             case language
             case market
             case version
             case memberId
+            case deviceId
 
             var title: String {
                 switch self {
@@ -42,6 +53,7 @@ struct AppInfo {
                 case .market: return L10n.MarketLanguageScreen.marketLabel
                 case .version: return L10n.EmbarkOnboardingMoreOptions.versionLabel
                 case .memberId: return L10n.EmbarkOnboardingMoreOptions.userIdLabel
+                case .deviceId: return L10n.AppInfo.deviceIdLabel
                 }
             }
 
@@ -51,13 +63,14 @@ struct AppInfo {
                 case .market: return Localization.Locale.currentLocale.market.icon
                 case .version: return hCoreUIAssets.infoLarge.image
                 case .memberId: return hCoreUIAssets.memberCard.image
+                case .deviceId: return hCoreUIAssets.profileCircleIcon.image
                 }
             }
 
             var isTappable: Bool {
                 switch self {
                 case .language: return true
-                case .version, .memberId, .market: return false
+                case .version, .memberId, .market, .deviceId: return false
                 }
             }
         }
@@ -121,6 +134,8 @@ extension AppInfo: Presentable {
                     innerBag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal
                         .compactMap { $0.member.id }
                         .onValue { memberId in completion(.success(memberId)) }
+                case .deviceId:
+                    completion(.success(ApolloClient.getDeviceIdentifier()))
                 }
 
                 return innerBag
@@ -147,7 +162,7 @@ extension AppInfo: Presentable {
                 .onValue { shouldLogout in
                     if shouldLogout {
                         ApplicationState.preserveState(.marketPicker)
-                        UIApplication.shared.appDelegate.logout()
+                        UIApplication.shared.appDelegate.logout(token: nil)
                     }
                 }
         }
@@ -171,6 +186,7 @@ extension AppInfo: Presentable {
                 title: language.title,
                 icon: language.icon,
                 trailingIcon: hCoreUIAssets.external.image,
+                trailingIconTintColor: UIColor.typographyColor(.secondary),
                 value: value(row: language)
             )
 
@@ -182,7 +198,7 @@ extension AppInfo: Presentable {
         }
 
         func setupAppInfo() {
-            [AppInfoType.InfoRows.memberId, AppInfoType.InfoRows.version]
+            [AppInfoType.InfoRows.memberId, AppInfoType.InfoRows.version, AppInfoType.InfoRows.deviceId]
                 .forEach { row in
                     bag += bodySection.append(
                         AppInfoRow(
@@ -201,6 +217,8 @@ extension AppInfo: Presentable {
         }
 
         bag += viewController.install(form)
+
+        viewController.trackOnAppear(type.trackingParcel)
 
         return (viewController, bag)
     }

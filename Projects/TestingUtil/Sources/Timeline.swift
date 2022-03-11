@@ -11,7 +11,7 @@ public struct Timeline<T>: SignalProvider {
             entry.after == 0
         }
 
-        let signal = ReadWriteSignal(initialEntry!.data)
+        let signal = ReadWriteSignal(initialEntry?.data)
 
         let bag = DisposeBag()
 
@@ -27,7 +27,7 @@ public struct Timeline<T>: SignalProvider {
                     .bindTo(signal)
             }
 
-        return signal.atOnce().hold(bag).plain()
+        return signal.atOnce().hold(bag).compactMap { $0 }
     }
 
     init(
@@ -50,7 +50,7 @@ public struct TimelineEntry<T> {
     }
 }
 
-@_functionBuilder public struct TimelineBuilder<T> {
+@resultBuilder public struct TimelineBuilder<T> {
     public static func buildBlock(_ partialResults: TimelineEntry<T>...) -> Timeline<T> {
         Timeline(entries: partialResults)
     }

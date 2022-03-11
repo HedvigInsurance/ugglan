@@ -1,8 +1,21 @@
 import Flow
 import Form
 import Foundation
+import Presentation
 import StoreKit
 import UIKit
+
+public class hNavigationController: UINavigationController {
+    public init() {
+        super.init(navigationBarClass: UINavigationBar.self, toolbarClass: UIToolbar.self)
+    }
+
+    required init?(
+        coder aDecoder: NSCoder
+    ) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
 
 extension BarButtonStyle {
     public static var destructive = BarButtonStyle(text: .brand(.headline(color: .destructive)))
@@ -15,6 +28,10 @@ extension DefaultStyling {
         }
 
         return UIColor.white
+    })
+
+    public static let navigationBarBackgroundColor = UIColor(dynamic: { trait -> UIColor in
+        return .brand(.primaryBackground())
     })
 
     @available(iOS 13, *)
@@ -37,104 +54,50 @@ extension DefaultStyling {
         ]
     }
 
-    @available(iOS 13, *)
+    public static func scrollEdgeNavigationBarAppearance() -> UINavigationBarAppearance {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.shadowImage = UIColor.clear.asImage()
+
+        applyCommonNavigationBarStyling(appearance)
+
+        return appearance
+    }
+
+    public static func standardNavigationBarAppearance() -> UINavigationBarAppearance {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithDefaultBackground()
+        appearance.backgroundColor = navigationBarBackgroundColor
+        appearance.shadowImage = UIColor.clear.asImage()
+
+        applyCommonNavigationBarStyling(appearance)
+
+        return appearance
+    }
+
+    public static func compactNavigationBarAppearance() -> UINavigationBarAppearance {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithDefaultBackground()
+        appearance.backgroundColor = navigationBarBackgroundColor
+        appearance.shadowImage = UIColor.clear.asImage()
+
+        applyCommonNavigationBarStyling(appearance)
+
+        return appearance
+    }
+
     public static func setNavigationBarAppearance() {
-        func scrollEdgeAppearance() -> UINavigationBarAppearance {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithTransparentBackground()
-            appearance.shadowImage = UIColor.clear.asImage()
-
-            applyCommonNavigationBarStyling(appearance)
-
-            return appearance
-        }
-
-        func shadowImage(for traitCollection: UITraitCollection) -> UIImage? {
-            if traitCollection.userInterfaceLevel == .elevated {
-                return UIColor.clear.asImage()
-            }
-
-            return UIColor.brand(.primaryBorderColor).resolvedColor(with: traitCollection).asImage()
-        }
-
-        func standardAppearance(for traitCollection: UITraitCollection) -> UINavigationBarAppearance {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithDefaultBackground()
-            appearance.backgroundColor = tabBarBackgroundColor
-            appearance.shadowImage = shadowImage(for: traitCollection)
-
-            applyCommonNavigationBarStyling(appearance)
-
-            return appearance
-        }
-
-        func compactAppearance(for traitCollection: UITraitCollection) -> UINavigationBarAppearance {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithDefaultBackground()
-            appearance.backgroundColor = tabBarBackgroundColor
-            appearance.shadowImage = shadowImage(for: traitCollection)
-
-            applyCommonNavigationBarStyling(appearance)
-
-            return appearance
-        }
-
-        let lightAndBaseTrait = UITraitCollection(traitsFrom: [
-            UITraitCollection(userInterfaceStyle: .light),
-            UITraitCollection(userInterfaceLevel: .base),
-        ])
-        UINavigationBar.appearance(
-            for: lightAndBaseTrait
-        )
-        .standardAppearance = standardAppearance(for: lightAndBaseTrait)
-        UINavigationBar.appearance(
-            for: lightAndBaseTrait
-        )
-        .compactAppearance = compactAppearance(for: lightAndBaseTrait)
-
-        let darkAndBaseTrait = UITraitCollection(traitsFrom: [
-            UITraitCollection(userInterfaceStyle: .dark),
-            UITraitCollection(userInterfaceLevel: .base),
-        ])
-        UINavigationBar.appearance(
-            for: darkAndBaseTrait
-        )
-        .standardAppearance = standardAppearance(for: darkAndBaseTrait)
-        UINavigationBar.appearance(
-            for: darkAndBaseTrait
-        )
-        .compactAppearance = compactAppearance(for: darkAndBaseTrait)
-
-        let lightAndElevatedTrait = UITraitCollection(traitsFrom: [
-            UITraitCollection(userInterfaceStyle: .light),
-            UITraitCollection(userInterfaceLevel: .elevated),
-        ])
-        UINavigationBar.appearance(
-            for: lightAndElevatedTrait
-        )
-        .standardAppearance = standardAppearance(for: lightAndElevatedTrait)
-        UINavigationBar.appearance(
-            for: lightAndElevatedTrait
-        )
-        .compactAppearance = compactAppearance(for: lightAndElevatedTrait)
-
-        let darkAndElevatedTrait = UITraitCollection(traitsFrom: [
-            UITraitCollection(userInterfaceStyle: .dark),
-            UITraitCollection(userInterfaceLevel: .elevated),
-        ])
-        UINavigationBar.appearance(
-            for: darkAndElevatedTrait
-        )
-        .standardAppearance = standardAppearance(for: darkAndElevatedTrait)
-        UINavigationBar.appearance(
-            for: darkAndElevatedTrait
-        )
-        .compactAppearance = compactAppearance(for: darkAndElevatedTrait)
-
-        UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).scrollEdgeAppearance =
+            scrollEdgeNavigationBarAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).standardAppearance =
+            standardNavigationBarAppearance()
+        UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).compactAppearance =
+            compactNavigationBarAppearance()
     }
 
     public static func installCustom() {
+        customNavigationController = { _ in hNavigationController() }
+
         ListTableView.appearance().backgroundColor = .brand(.primaryBackground())
 
         for view in [FormScrollView.self, FormTableView.self] {
@@ -155,15 +118,18 @@ extension DefaultStyling {
         if #available(iOS 13.0, *) {
             setNavigationBarAppearance()
         } else {
-            UINavigationBar.appearance().shadowImage = UIColor.clear.asImage()
-            UINavigationBar.appearance().titleTextAttributes = [
+            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).shadowImage = UIColor
+                .clear
+                .asImage()
+            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).titleTextAttributes = [
                 NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
                 NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
             ]
-            UINavigationBar.appearance().largeTitleTextAttributes = [
-                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
-            ]
+            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self])
+                .largeTitleTextAttributes = [
+                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
+                ]
         }
 
         UITabBar.appearance().backgroundColor = tabBarBackgroundColor
@@ -220,7 +186,7 @@ extension DefaultStyling {
             .primaryTintColor
         )
 
-        UIBarButtonItem.appearance()
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationController.self])
             .setTitleTextAttributes(
                 [
                     NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
@@ -228,7 +194,7 @@ extension DefaultStyling {
                 for: .normal
             )
 
-        UIBarButtonItem.appearance()
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationController.self])
             .setTitleTextAttributes(
                 [
                     NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
@@ -238,7 +204,10 @@ extension DefaultStyling {
 
         UIBarButtonItem.appearance().tintColor = .brand(.primaryTintColor)
 
-        let barButtonItemAppearance = UIBarButtonItem.appearance()
+        let barButtonItemAppearance = UIBarButtonItem.appearance(whenContainedInInstancesOf: [
+            hNavigationController.self
+        ])
+
         barButtonItemAppearance.setTitleTextAttributes(
             [NSAttributedString.Key.foregroundColor: UIColor.clear],
             for: .normal
@@ -249,6 +218,7 @@ extension DefaultStyling {
         )
 
         UIImageView.appearance().tintColor = .brand(.primaryTintColor)
+        UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(.link)
 
         current = .custom
     }
@@ -432,6 +402,7 @@ extension DynamicSectionStyle {
     }
 
     public static func brandGrouped(
+        insets: UIEdgeInsets = .zero,
         separatorType: SeparatorType,
         borderColor: UIColor = .clear,
         backgroundColor: UIColor = .clear,
@@ -444,7 +415,7 @@ extension DynamicSectionStyle {
             let selectedBackgroundColor = UIColor.brand(.primaryBackground(true)).withAlphaComponent(0.1)
 
             return Style(
-                insets: .zero,
+                insets: insets,
                 rowInsets: .init(inset: 15),
                 itemSpacing: 10,
                 minRowHeight: 0,
@@ -669,6 +640,7 @@ extension DynamicTableViewFormStyle {
 final class ListTableView: UITableView {}
 
 extension CGFloat {
+    public static var smallCornerRadius: CGFloat = 4
     public static var defaultCornerRadius: CGFloat = 8
     public static var smallIconWidth: CGFloat = 16
 }

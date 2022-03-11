@@ -154,7 +154,9 @@ extension Embark: Presentable {
 
         bag += state.progressSignal.animated(
             style: .lightBounce(),
-            animations: { progress in progressView.setProgress(progress, animated: false)
+            animations: { progress in
+                progressView.animationSafeIsHidden = progress == 0
+                progressView.setProgress(progress, animated: false)
                 progressView.setNeedsLayout()
                 progressView.layoutIfNeeded()
             }
@@ -172,7 +174,8 @@ extension Embark: Presentable {
                 query: GraphQL.EmbarkStoryQuery(
                     name: name,
                     locale: Localization.Locale.currentLocale.code
-                )
+                ),
+                cachePolicy: .fetchIgnoringCacheData
             )
             .valueSignal.compactMap { $0.embarkStory }
             .onValue { embarkStory in
@@ -247,7 +250,14 @@ extension Embark: Presentable {
                         .bindTo(backButton, \.menu)
                 }
 
-                viewController.navigationItem.leftBarButtonItem = backButton
+                bag += state.canGoBackSignal.atOnce()
+                    .onValue { canGoBack in
+                        if !canGoBack {
+                            viewController.navigationItem.leftBarButtonItem = nil
+                        } else {
+                            viewController.navigationItem.leftBarButtonItem = backButton
+                        }
+                    }
 
                 func presentRestartAlert(_ viewController: UIViewController) {
                     let alert = Alert(
@@ -321,10 +331,8 @@ extension Embark: Presentable {
                 bag += didTapTooltip.onValue {
                     let embarkTooltips = EmbarkTooltips(tooltips: state.passageTooltipsSignal.value)
 
-                    viewController.present(
-                        embarkTooltips.wrappedInCloseButton(),
-                        style: .detented(.preferredContentSize),
-                        options: [.defaults, .prefersLargeTitles(true)]
+                    bag += viewController.present(
+                        embarkTooltips.journey
                     )
                 }
 

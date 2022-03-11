@@ -2,90 +2,163 @@ import Apollo
 import Flow
 import Foundation
 import Presentation
+import StoreKit
+import hAnalytics
 import hCore
 import hGraphQL
 
 public struct OfferState: StateProtocol {
+    var isLoading = true
     var hasSignedQuotes = false
     var ids: [String] = []
+    var selectedIds: [String] = []
+    var startDates: [String: Date?] {
+        switch currentVariant?.bundle.inception {
+        case let .concurrent(concurrentInception):
+            return concurrentInception.correspondingQuotes.reduce(into: [:]) { partialResult, quote in
+                partialResult[quote.id ?? ""] = concurrentInception.startDate?.localDateToDate ?? Date()
+            }
+        case let .independent(inceptions):
+            return inceptions.reduce(into: [:]) { partialResult, inception in
+                partialResult[inception.correspondingQuote.id ?? ""] = inception.startDate?.localDateToDate ?? Date()
+            }
+        default:
+            return [:]
+        }
+    }
     var swedishBankIDAutoStartToken: String? = nil
     var swedishBankIDStatusCode: String? = nil
+    var offerData: OfferBundle? = nil
+    var hasCheckedOutId: String? = nil
+    var isUpdatingStartDates: Bool = false
+
+    var dataCollectionEnabled: Bool {
+        offerData?.possibleVariations
+            .first(where: { variant in
+                variant.bundle.quotes.first { quote in
+                    quote.dataCollectionID != nil
+                } != nil
+            }) != nil
+    }
+
+    var currentVariant: QuoteVariant? {
+        if offerData?.possibleVariations.count == 1 {
+            return offerData?.possibleVariations.first
+        }
+
+        return offerData?.possibleVariations
+            .first(where: { variant in
+                variant.id == selectedIds.joined(separator: "+").lowercased()
+            })
+    }
 
     public init() {}
 }
 
 public enum OfferAction: ActionProtocol {
+    case setLoading(isLoading: Bool)
     case sign(event: SignEvent)
     case startSwedishBankIDSign(autoStartToken: String)
     case setSwedishBankID(statusCode: String)
     case startSign
-    case set(ids: [String])
     case openChat
+    case openCheckout
+    case setIds(ids: [String], selectedIds: [String])
+    case setSelectedIds(ids: [String])
     case query
+    case setOfferBundle(bundle: OfferBundle)
+    case refetch
+
+    /// Start date events
+    case setStartDates(dateMap: [String: Date?])
+    case updateStartDates(dateMap: [String: Date?])
+    case removeStartDate(id: String)
+
+    /// Campaign events
+    case removeRedeemedCampaigns
+    case updateRedeemedCampaigns(discountCode: String)
+    case didRedeemCampaigns
+    case didRemoveCampaigns
+
+    case failed(event: OfferStoreError)
 
     public enum SignEvent: Codable {
         case swedishBankId
         case simpleSign
         case done
         case failed
-
-        #if compiler(<5.5)
-            public func encode(to encoder: Encoder) throws {
-                #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-                fatalError()
-            }
-
-            public init(
-                from decoder: Decoder
-            ) throws {
-                #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-                fatalError()
-            }
-        #endif
     }
 
-    #if compiler(<5.5)
-        public func encode(to encoder: Encoder) throws {
-            #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-            fatalError()
-        }
-
-        public init(
-            from decoder: Decoder
-        ) throws {
-            #warning("Waiting for automatic codable conformance from Swift 5.5, remove this when we have upgraded XCode")
-            fatalError()
-        }
-    #endif
+    public enum OfferStoreError: Error, Codable {
+        case checkoutUpdate
+        case updateStartDate
+        case updateRedeemedCampaigns
+        case removeCampaigns
+    }
 }
 
 public final class OfferStore: StateStore<OfferState, OfferAction> {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
 
-    func query(for state: State) -> GraphQL.QuoteBundleQuery {
+    func query(for ids: [String]) -> GraphQL.QuoteBundleQuery {
         GraphQL.QuoteBundleQuery(
-            ids: state.ids,
+            ids: ids,
             locale: Localization.Locale.currentLocale.asGraphQLLocale()
         )
     }
 
+    internal var isLoadingSignal: CoreSignal<Read, Bool> {
+        stateSignal.map { $0.offerData == nil }
+    }
+
     public override func effects(
-        _ getState: () -> OfferState,
+        _ getState: @escaping () -> OfferState,
         _ action: OfferAction
     ) -> FiniteSignal<OfferAction>? {
         switch action {
         case let .sign(event):
             if event == .done {
-                Analytics.track(
-                    "QUOTES_SIGNED",
-                    properties: [
-                        "quoteIds": getState().ids
-                    ]
+                hAnalyticsEvent.quotesSigned(
+                    quoteIds: getState().selectedIds
                 )
+                .send()
             }
         case .startSign:
             return signQuotesEffect()
+        case .query:
+            let query = self.query(for: getState().ids)
+            return client.fetch(query: query)
+                .compactMap { data in
+                    return OfferBundle(data: data)
+                }
+                .map {
+                    return .setOfferBundle(bundle: $0)
+                }
+                .valueThenEndSignal
+        case let .updateStartDates(dateMap):
+            return self.updateStartDates(dateMap: dateMap)
+        case .removeRedeemedCampaigns:
+            return removeRedeemedCampaigns()
+        case let .updateRedeemedCampaigns(discountCode):
+            return updateRedeemedCampaigns(discountCode: discountCode)
+        case .refetch:
+            let query = query(for: state.ids)
+            return client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData)
+                .compactMap { data in
+                    return OfferBundle(data: data)
+                }
+                .map {
+                    return .setOfferBundle(bundle: $0)
+                }
+                .valueThenEndSignal
+        case .didRedeemCampaigns, .didRemoveCampaigns:
+            return FiniteSignal { callback in
+                callback(.value(.refetch))
+                return NilDisposer()
+            }
+        case .setOfferBundle:
+            return Signal(after: 0.5).map { .setLoading(isLoading: false) }
         default:
             return nil
         }
@@ -97,8 +170,15 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         var newState = state
 
         switch action {
-        case let .set(ids):
+        case .query:
+            newState.isLoading = true
+            newState.offerData = nil
+            newState.isUpdatingStartDates = false
+        case let .setIds(ids, selectedIds):
             newState.ids = ids
+            newState.selectedIds = selectedIds
+        case let .setSelectedIds(selectedIds):
+            newState.selectedIds = selectedIds
         case let .sign(event):
             if event == .done {
                 newState.hasSignedQuotes = true
@@ -110,6 +190,53 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             }
         case let .startSwedishBankIDSign(autoStartToken):
             newState.swedishBankIDAutoStartToken = autoStartToken
+        case let .setStartDates(dateMap):
+            newState.isUpdatingStartDates = false
+
+            guard var newOfferData = newState.offerData else { return newState }
+
+            newOfferData.possibleVariations = newOfferData.possibleVariations.map { variant in
+                var newVariant = variant
+
+                switch newVariant.bundle.inception {
+                case let .independent(independentInceptions):
+                    let newInceptions = independentInceptions.map {
+                        inception -> QuoteBundle.Inception.IndependentInception in
+                        var copy = inception
+
+                        dateMap.forEach { quoteId, startDate in
+                            if inception.correspondingQuote.id == quoteId {
+                                copy.startDate = startDate?.localDateString
+                            }
+                        }
+
+                        return copy
+                    }
+                    newVariant.bundle.inception = .independent(inceptions: newInceptions)
+                case .unknown:
+                    break
+                case .concurrent(let inception):
+                    dateMap.forEach { quoteId, startDate in
+                        if inception.correspondingQuotes.contains(where: { $0.id == quoteId }) {
+                            var newInception = inception
+                            newInception.startDate = startDate?.localDateString
+                            newVariant.bundle.inception = .concurrent(inception: newInception)
+                        }
+                    }
+                }
+
+                return newVariant
+            }
+
+            newState.offerData = newOfferData
+        case let .setOfferBundle(bundle):
+            newState.offerData = bundle
+        case let .setLoading(isLoading):
+            newState.isLoading = isLoading
+        case .updateStartDates:
+            newState.isUpdatingStartDates = true
+        case .failed(event: .updateStartDate):
+            newState.isUpdatingStartDates = false
         default:
             break
         }
@@ -118,8 +245,115 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
     }
 }
 
+// Old offer state refactored
 extension OfferStore {
-    func signQuotesEffect() -> FiniteSignal<Action> {
+    typealias Campaign = GraphQL.QuoteBundleQuery.Data.RedeemedCampaign
+
+    private func updateRedeemedCampaigns(discountCode: String) -> FiniteSignal<OfferAction>? {
+        return self.client
+            .perform(
+                mutation: GraphQL.RedeemDiscountCodeMutation(
+                    code: discountCode,
+                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                )
+            )
+            .map { data in
+                guard data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns != nil else {
+                    return .failed(event: .updateRedeemedCampaigns)
+                }
+
+                return .didRedeemCampaigns
+            }
+            .valueThenEndSignal
+    }
+
+    private func removeRedeemedCampaigns() -> FiniteSignal<OfferAction>? {
+        return self.client.perform(mutation: GraphQL.RemoveDiscountMutation())
+            .map { data in
+                .didRemoveCampaigns
+            }
+            .mapError { _ in
+                .failed(event: .removeCampaigns)
+            }
+            .valueThenEndSignal
+    }
+
+    func checkoutUpdate(quoteId: String, email: String, ssn: String) -> Future<Void> {
+        return self.client
+            .perform(
+                mutation: GraphQL.CheckoutUpdateMutation(quoteID: quoteId, email: email, ssn: ssn)
+            )
+            .flatMap { data in
+                guard data.editQuote.asCompleteQuote?.email == email,
+                    data.editQuote.asCompleteQuote?.ssn == ssn
+                else {
+                    return Future(error: OfferAction.OfferStoreError.checkoutUpdate)
+                }
+
+                return self.client
+                    .fetch(
+                        query: self.query(for: [quoteId]),
+                        cachePolicy: .fetchIgnoringCacheData
+                    )
+                    .toVoid()
+            }
+    }
+
+    private func updateStartDates(dateMap: [String: Date?]) -> FiniteSignal<OfferAction>? {
+        let signals = dateMap.map { quoteId, date -> FiniteSignal<Result<(String, Date?)>> in
+            guard let date = date else {
+                return self.client.perform(mutation: GraphQL.RemoveStartDateMutation(id: quoteId))
+                    .map { data in
+                        guard data.removeStartDate.asCompleteQuote?.startDate == nil else {
+                            return .failure(OfferAction.OfferStoreError.updateStartDate)
+                        }
+
+                        return .success((quoteId, date))
+                    }
+                    .mapError { _ in
+                        .failure(OfferAction.OfferStoreError.updateStartDate)
+                    }
+                    .valueSignal
+            }
+
+            return self.client
+                .perform(
+                    mutation: GraphQL.ChangeStartDateMutation(
+                        id: quoteId,
+                        startDate: date.localDateString ?? ""
+                    )
+                )
+                .map { data in
+                    guard let date = data.editQuote.asCompleteQuote?.startDate?.localDateToDate else {
+                        return .failure(OfferAction.OfferStoreError.updateStartDate)
+                    }
+
+                    return .success((quoteId, date))
+                }
+                .mapError { _ in
+                    .failure(OfferAction.OfferStoreError.updateStartDate)
+                }
+                .valueSignal
+        }
+
+        return combineLatest(signals)
+            .map { results in
+                var didStrikeError = false
+                var map: [String: Date?] = [:]
+
+                results.forEach { result in
+                    if let (quoteId, date) = try? result.get() {
+                        map[quoteId] = date
+                    } else {
+                        didStrikeError = true
+                    }
+                }
+
+                return didStrikeError ? .failed(event: .updateStartDate) : .setStartDates(dateMap: map)
+            }
+    }
+
+    private func signQuotesEffect() -> FiniteSignal<Action> {
         let subscription = client.subscribe(subscription: GraphQL.SignStatusSubscription())
         let bag = DisposeBag()
 
@@ -138,7 +372,7 @@ extension OfferStore {
                     callback(.value(.setSwedishBankID(statusCode: code)))
                 })
 
-            self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.state.ids))
+            self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.state.selectedIds))
                 .onResult { result in
                     switch result {
                     case .failure:

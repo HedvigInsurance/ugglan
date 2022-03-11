@@ -1,9 +1,11 @@
 import Adyen
+import AdyenActions
 import Apollo
 import Flow
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -28,13 +30,21 @@ extension AdyenMethodsList {
     }
 }
 
-struct AdyenPayIn: Presentable {
+public struct AdyenPayIn: Presentable {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
-    func materialize() -> (UIViewController, Future<Void>) {
+    public init(
+        adyenOptions: AdyenOptions,
+        urlScheme: String
+    ) {
+        self.adyenOptions = adyenOptions
+        self.urlScheme = urlScheme
+    }
+
+    public func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let (viewController, result) = AdyenMethodsList(adyenOptions: adyenOptions) { data, _, onResult in
             guard let jsonData = try? JSONEncoder().encode(data.paymentMethod.encodable),
                 let json = String(data: jsonData, encoding: .utf8)
@@ -43,7 +53,11 @@ struct AdyenPayIn: Presentable {
             self.client
                 .perform(
                     mutation: GraphQL.AdyenTokenizePaymentDetailsMutation(
-                        request: GraphQL.TokenizationRequest(json: json, urlScheme: urlScheme)
+                        request: GraphQL.TokenizationRequest(
+                            paymentMethodDetails: json,
+                            channel: .ios,
+                            returnUrl: "\(urlScheme)://adyen"
+                        )
                     )
                 )
                 .onValue { data in
@@ -53,14 +67,14 @@ struct AdyenPayIn: Presentable {
                                 query: GraphQL.ActivePaymentMethodsQuery(),
                                 cachePolicy: .fetchIgnoringCacheData
                             )
-                            .onValue { _ in }
+                            .sink()
                         }
                         onResult(.success(.make(())))
                     } else if let data = data.tokenizePaymentDetails?.asTokenizationResponseAction {
                         guard let jsonData = data.action.data(using: .utf8) else { return }
                         guard
                             let action = try? JSONDecoder()
-                                .decode(Adyen.Action.self, from: jsonData)
+                                .decode(AdyenActions.Action.self, from: jsonData)
                         else { return }
 
                         onResult(.success(.make(action)))
@@ -79,12 +93,23 @@ struct AdyenPayIn: Presentable {
             // refetch to refresh UI
             Future().delay(by: 0.5)
                 .flatMapResult { _ in client.fetch(query: GraphQL.ActivePaymentMethodsQuery()) }
-                .onValue { _ in }
+                .sink()
         }
         .materialize()
 
         viewController.title = L10n.adyenPayinTitle
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .connectPaymentAdyen))
 
         return (viewController, result)
+    }
+}
+
+extension AdyenPayIn {
+    public func journey<Next: JourneyPresentation>(
+        @JourneyBuilder _ next: @escaping (_ success: Bool) -> Next
+    ) -> some JourneyPresentation {
+        Journey(self) { success in
+            next(success)
+        }
     }
 }

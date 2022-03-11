@@ -8,13 +8,13 @@ import hCoreUI
 import hGraphQL
 
 struct QuoteCoverage {
-    let quote: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote
+    let quote: QuoteBundle.Quote
 }
 
 extension QuoteCoverage: Presentable {
     func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = "Coverage"
+        viewController.title = L10n.offerScreenCoverageTitle
         let bag = DisposeBag()
 
         let form = FormView()

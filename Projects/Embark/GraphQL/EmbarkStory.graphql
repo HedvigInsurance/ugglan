@@ -61,8 +61,8 @@ fragment ResponseFragment on EmbarkResponse {
       key
       content {
         ...MessageFragment
-            }
-        }
+      }
+    }
     title {
       text
     }
@@ -219,6 +219,16 @@ query EmbarkStory($name: String!, $locale: String!) {
           keys
         }
       }
+      variantedOfferRedirects {
+        component
+        data {
+          expression {
+            ...ExpressionFragment
+          }
+          allKeys
+          selectedKeys
+        }
+      }
       tooltips {
         description
         title
@@ -260,7 +270,7 @@ query EmbarkStory($name: String!, $locale: String!) {
                   key
                   label
                   unit
-                  }
+                }
               }
               ... on EmbarkDropdownAction {
                 dropDownActionData: data {
@@ -279,6 +289,16 @@ query EmbarkStory($name: String!, $locale: String!) {
                   defaultValue
                 }
               }
+            }
+          }
+        }
+        ... on EmbarkAudioRecorderAction {
+          component
+          audioRecorderData: data {
+            storeKey
+            label
+            next {
+                ...EmbarkLinkFragment
             }
           }
         }
@@ -305,13 +325,26 @@ query EmbarkStory($name: String!, $locale: String!) {
             ...EmbarkNumberActionFragment
           }
         }
+        ... on EmbarkAddressAutocompleteAction {
+          component
+          addressAutocompleteActionData: data {
+            placeholder
+            key
+            link {
+              ...EmbarkLinkFragment
+            }
+            api {
+              ...ApiFragment
+            }
+          }
+        }
         ... on EmbarkTextActionSet {
           textActionSetData: data {
             link {
               ...EmbarkLinkFragment
             }
             api {
-                ...ApiFragment
+              ...ApiFragment
             }
             textActions {
               data {
@@ -335,11 +368,12 @@ query EmbarkStory($name: String!, $locale: String!) {
               api {
                 ...ApiFragment
               }
+              badge
             }
           }
         }
         ... on EmbarkDatePickerAction {
-                    component
+          component
           next {
             ...EmbarkLinkFragment
           }
@@ -353,6 +387,7 @@ query EmbarkStory($name: String!, $locale: String!) {
         ... on EmbarkExternalInsuranceProviderAction {
           component
           externalInsuranceProviderData: data {
+            storeKey
             next {
               ...EmbarkLinkFragment
             }

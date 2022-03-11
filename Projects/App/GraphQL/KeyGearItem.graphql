@@ -32,19 +32,5 @@ query KeyGearItem($id: ID!, $languageCode: String!) {
           preSignedUrl
         }
       }
-      covered {
-         title {
-           translations(where: { language: { code: $languageCode }, project: IOS }) {
-             text
-           }
-         }
-       }
-       exceptions {
-         title {
-           translations(where: { language: { code: $languageCode }, project: IOS }) {
-             text
-           }
-         }
-       }
     }
 }

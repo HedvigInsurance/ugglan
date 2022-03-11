@@ -3,6 +3,7 @@ import Form
 import Foundation
 import UIKit
 import hCore
+import hGraphQL
 
 struct PriceSection {
     let grossAmountSignal: ReadSignal<MonetaryAmount?>

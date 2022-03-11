@@ -1,4 +1,5 @@
 import Flow
+import SwiftUI
 import UIKit
 import hCore
 
@@ -222,5 +223,56 @@ extension GradientView: Viewable {
         }
 
         return (gradientView, bag)
+    }
+}
+
+public struct hGradientView: UIViewRepresentable {
+    public var gradientOption: GradientView.GradientOption?
+    public var shouldShowGradient = false
+
+    public init(
+        gradientOption: GradientView.GradientOption?,
+        shouldShowGradient: Bool
+    ) {
+        self.gradientOption = gradientOption
+        self.shouldShowGradient = shouldShowGradient
+    }
+
+    public class Coordinator {
+        let bag = DisposeBag()
+        let gradientView: GradientView
+
+        init(
+            gradientView: GradientView
+        ) {
+            self.gradientView = gradientView
+        }
+    }
+
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(
+            gradientView: GradientView(
+                gradientOption: self.gradientOption,
+                shouldShowGradientSignal: .init(self.shouldShowGradient)
+            )
+        )
+    }
+
+    func update(context: Context) {
+        context.coordinator.gradientView.$shouldShowGradient.value = self.shouldShowGradient
+        context.coordinator.gradientView.$gradientOption.value = self.gradientOption
+    }
+
+    public func makeUIView(context: Context) -> some UIView {
+        let (view, disposable) = context.coordinator.gradientView.materialize(
+            events: ViewableEvents(wasAddedCallbacker: .init())
+        )
+        update(context: context)
+        context.coordinator.bag += disposable
+        return view
+    }
+
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
+        update(context: context)
     }
 }

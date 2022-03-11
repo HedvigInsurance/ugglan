@@ -43,7 +43,8 @@ struct KeyGearItem {
         navigationBar.isTranslucent = true
         navigationBar.shadowImage = UIImage()
         navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-        navigationBar.barStyle = .blackTranslucent
+        navigationBar.barStyle = .black
+        navigationBar.isTranslucent = true
         navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationBar.setBackgroundImage(UIImage(), for: .compact)
 
@@ -210,53 +211,16 @@ extension KeyGearItem: Presentable {
         let claimsRow = RowView(title: L10n.keyGearReportClaimRow, style: .brand(.headline(color: .primary)))
         claimsRow.append(hCoreUIAssets.chevronRight.image)
 
+        let store: UgglanStore = self.get()
+
         bag += claimsSection.append(claimsRow)
             .onValue { _ in
-                viewController.present(
-                    HonestyPledge(),
-                    style: .detented(.preferredContentSize),
-                    options: [.defaults]
-                )
+                store.send(.openClaims)
             }
 
         bag += innerForm.append(Spacing(height: 10))
 
-        let coveragesSection = innerForm.appendSection(header: L10n.keyGearItemViewCoverageTableTitle)
-
-        bag += dataSignal.map { $0.covered }
-            .onValueDisposePrevious { covered -> Disposable? in let bag = DisposeBag()
-
-                bag += covered.map { coveredItem in
-                    coveragesSection.append(
-                        KeyGearCoverage(
-                            type: .included,
-                            title: coveredItem.title?.translations.first?.text ?? ""
-                        )
-                    )
-                }
-
-                return bag
-            }
-
         bag += innerForm.append(Spacing(height: 15))
-
-        let nonCoveragesSection = innerForm.appendSection(header: L10n.keyGearItemViewNonCoverageTableTitle)
-
-        bag += dataSignal.map { $0.exceptions }
-            .onValueDisposePrevious { exceptions -> Disposable? in let bag = DisposeBag()
-
-                bag += exceptions.map { exceptionItem in
-                    nonCoveragesSection.append(
-                        KeyGearCoverage(
-                            type: .excluded,
-                            title: exceptionItem.title?.translations.first?.text ?? ""
-                        )
-                    )
-                }
-
-                return bag
-            }
-
         bag += innerForm.append(Spacing(height: 30))
 
         let receiptFooter = UIStackView()
@@ -295,7 +259,7 @@ extension KeyGearItem: Presentable {
                     .perform(
                         mutation: GraphQL.UpdateKeyGearItemNameMutation(id: self.id, name: name)
                     )
-                    .onValue { _ in }
+                    .sink()
             }
 
         bag += dataSignal.onValue { data in viewController.navigationItem.title = data.name

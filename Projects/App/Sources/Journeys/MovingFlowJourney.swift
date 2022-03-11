@@ -38,26 +38,25 @@ extension AppJourney {
         ) { introRoute in
             switch introRoute {
             case .chat:
-                Journey(FreeTextChat()).withJourneyDismissButton
+                AppJourney.freeTextChat(style: .default).withJourneyDismissButton
             case let .embark(name):
                 AppJourney.embark(Embark(name: name), storeOffer: false) { offerResult in
                     switch offerResult {
                     case .chat:
-                        Journey(
-                            FreeTextChat(),
-                            style: .detented(.large),
-                            options: [.defaults]
-                        )
-                        .withDismissButton
+                        AppJourney.freeTextChat().withDismissButton
                     case .close:
                         DismissJourney()
                     case .menu:
                         ContinueJourney()
-                    case .signed:
-                        Journey(MovingFlowSuccess()) { _ in
-                            DismissJourney().withCompletedToast
+                    case let .signed(_, startDates):
+                        Journey(MovingFlowSuccess(startDate: startDates.first?.value)) { _ in
+                            DismissJourney()
+                                .sendActionImmediately(ContractStore.self, .fetch)
+                                .withCompletedToast
                         }
                         .hidesBackButton.withJourneyDismissButton
+                    case .openCheckout:
+                        offerCheckout
                     }
                 }
             }

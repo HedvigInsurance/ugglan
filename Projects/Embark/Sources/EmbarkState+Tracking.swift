@@ -1,29 +1,30 @@
 import Foundation
+import hAnalytics
 import hCore
 import hGraphQL
 
-public struct EmbarkTrackingEvent {
-    public var title: String
-    public var properties: [String: Any]
-
-    func send() { Self.trackingHandler(self) }
-}
-
-extension EmbarkTrackingEvent { public static var trackingHandler: (_ Event: EmbarkTrackingEvent) -> Void = { _ in } }
-
 extension EmbarkPassage.Track {
-    func trackingEvent(storeValues: [String: Any]) -> EmbarkTrackingEvent {
-        .init(title: eventName, properties: trackingProperties(storeValues: storeValues))
+    func send(storyName: String, storeValues: [String: String?]) {
+        hAnalyticsEvent.embarkTrack(
+            storyName: storyName,
+            eventName: eventName,
+            store: trackingProperties(storyName: storyName, storeValues: storeValues)
+        )
+        .send()
     }
 
-    private func trackingProperties(storeValues: [String: Any]) -> [String: Any] {
+    private func trackingProperties(storyName: String, storeValues: [String: String?]) -> [String: String?] {
         var filteredProperties = storeValues.filter { key, _ in eventKeys.contains(key) }
 
         if let customData = customData {
-            filteredProperties = filteredProperties.merging(
-                customData.toJSONDictionary() ?? [:],
-                uniquingKeysWith: takeRight
-            )
+            filteredProperties =
+                filteredProperties.merging(
+                    (customData.toJSONDictionary() ?? [:])
+                        .mapValues({ any in
+                            any as? String
+                        }),
+                    uniquingKeysWith: takeRight
+                )
         }
 
         return filteredProperties
@@ -32,9 +33,9 @@ extension EmbarkPassage.Track {
 
 extension EmbarkState {
     func trackGoBack() {
-        EmbarkTrackingEvent(
-            title: "Passage go back - \(currentPassageSignal.value?.name ?? "")",
-            properties: [:]
+        hAnalyticsEvent.embarkPassageGoBack(
+            storyName: storySignal.value?.name ?? "",
+            passageName: currentPassageSignal.value?.name ?? ""
         )
         .send()
     }

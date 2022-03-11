@@ -2,18 +2,29 @@ import Apollo
 import Disk
 import Flow
 import Foundation
+import SwiftUI
 import UIKit
 import hCore
 import hGraphQL
 
 public struct RemoteVectorIcon {
-    let iconSignal = ReadWriteSignal<GraphQL.IconFragment?>(nil)
+    let iconSignal = ReadWriteSignal<IconEnvelope?>(nil)
     let finishedLoadingSignal: Signal<Void>
     let finishedLoadingCallback = Callbacker<Void>()
     let threaded: Bool
 
     public init(
         _ icon: GraphQL.IconFragment? = nil,
+        threaded: Bool? = false
+    ) {
+        let hIcon = IconEnvelope(fragment: icon)
+        iconSignal.value = hIcon
+        finishedLoadingSignal = finishedLoadingCallback.providedSignal
+        self.threaded = threaded ?? false
+    }
+
+    public init(
+        _ icon: IconEnvelope?,
         threaded: Bool? = false
     ) {
         iconSignal.value = icon
@@ -82,20 +93,28 @@ extension RemoteVectorIcon: Viewable {
             .onValue { pdfDocument in renderPdfDocument(pdfDocument: pdfDocument) }
 
         bag += combineLatest(iconSignal.atOnce(), imageView.traitCollectionSignal.atOnce())
-            .compactMap { iconFragment, traitCollection -> String? in
+            .compactMap { icon, traitCollection -> String? in
                 if traitCollection.userInterfaceStyle == .dark {
-                    return iconFragment?.variants.dark.pdfUrl
+                    return icon?.dark
                 }
 
-                return iconFragment?.variants.light.pdfUrl
+                return icon?.light
             }
             .map(on: .background) { pdfUrlString -> CFData? in
-                guard
-                    let url = URL(
+                var pdfURL: URL? {
+                    if let url = URL(
+                        string: pdfUrlString
+                    ), url.host != nil {
+                        return url
+                    }
+
+                    return URL(
                         string:
                             "\(Environment.current.assetsEndpointURL.absoluteString)\(pdfUrlString)"
                     )
-                else { return nil }
+                }
+
+                guard let url = pdfURL else { return nil }
 
                 if let data = try? Disk.retrieve(url.absoluteString, from: .caches, as: Data.self) {
                     DispatchQueue.main.async { imageView.alpha = 1 }
@@ -119,6 +138,47 @@ extension RemoteVectorIcon: Viewable {
             .compactMap { $0 }.bindTo(pdfDocumentSignal)
 
         return (imageView, bag)
+    }
+}
+
+public struct RemoteVectorIconView: UIViewRepresentable {
+    var icon: IconEnvelope
+    let backgroundFetch: Bool
+
+    public init(
+        icon: IconEnvelope,
+        backgroundFetch: Bool
+    ) {
+        self.icon = icon
+        self.backgroundFetch = backgroundFetch
+    }
+
+    public class Coordinator {
+        let remoteVectorIcon: RemoteVectorIcon
+        let bag = DisposeBag()
+
+        init(
+            icon: IconEnvelope?,
+            threaded: Bool
+        ) {
+            remoteVectorIcon = RemoteVectorIcon(icon, threaded: threaded)
+        }
+    }
+
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(icon: icon, threaded: backgroundFetch)
+    }
+
+    public func makeUIView(context: Context) -> some UIView {
+        let (view, disposable) = context.coordinator.remoteVectorIcon.materialize(
+            events: .init(wasAddedCallbacker: .init())
+        )
+        context.coordinator.bag += disposable
+        return view
+    }
+
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
+        context.coordinator.remoteVectorIcon.iconSignal.value = icon
     }
 }
 

@@ -1,4 +1,5 @@
 import Adyen
+import Apollo
 import Flow
 import Form
 import Foundation
@@ -6,11 +7,17 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
-struct AdyenPayInSync { let urlScheme: String }
+struct AdyenPayInSync {
+    @Inject var client: ApolloClient
+
+    let setupType: PaymentSetup.SetupType
+    let urlScheme: String
+}
 
 extension AdyenPayInSync: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Either<AdyenOptions, Void>>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -32,15 +39,16 @@ extension AdyenPayInSync: Presentable {
 
         return (
             viewController,
-            Future { completion in
-                AdyenMethodsList.payInOptions.onValue { options in
-                    viewController.present(
-                        AdyenPayIn(adyenOptions: options, urlScheme: urlScheme)
-                            .wrappedInCloseButton()
-                    )
-                    .onValue { _ in completion(.success) }
-                    .onError { error in completion(.failure(error)) }
-                }
+            FiniteSignal { callback in
+                client.fetch(query: GraphQL.ActivePaymentMethodsQuery())
+                    .join(with: AdyenMethodsList.payInOptions)
+                    .onValue { paymentMethods, options in
+                        if paymentMethods.activePaymentMethodsV2 == nil || setupType == .replacement {
+                            callback(.value(.left(options)))
+                        } else {
+                            callback(.value(.right(())))
+                        }
+                    }
 
                 return bag
             }

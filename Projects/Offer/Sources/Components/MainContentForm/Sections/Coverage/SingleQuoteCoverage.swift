@@ -2,13 +2,14 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct SingleQuoteCoverage {
-    let quote: GraphQL.QuoteBundleQuery.Data.QuoteBundle.Quote
+    let quote: QuoteBundle.Quote
 }
 
 extension SingleQuoteCoverage: Presentable {
@@ -21,21 +22,29 @@ extension SingleQuoteCoverage: Presentable {
 
         let bag = DisposeBag()
 
-        bag += section.append(
-            PerilCollection(
-                perilFragmentsSignal: .init(quote.perils.map { $0.fragments.perilFragment })
-            )
-            .insetted(UIEdgeInsets(top: 15, left: 15, bottom: 0, right: 15))
+        let perilCollection = PerilCollection(
+            perils: quote.perils,
+            didTapPeril: { peril in
+                section.viewController?
+                    .present(
+                        PerilDetail(peril: peril).withCloseButton,
+                        style: .detented(.preferredContentSize, .large)
+                    )
+            }
+        )
+        .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
+
+        section.append(
+            HostingView(rootView: perilCollection)
         )
 
         section.appendSpacing(.inbetween)
 
+        let insurableLimits = quote
+            .insurableLimits
+
         bag += section.append(
-            InsurableLimits(
-                insurableLimitFragmentsSignal: .init(
-                    quote.insurableLimits.map { $0.fragments.insurableLimitFragment }
-                )
-            )
+            InsurableLimitsSection(insurableLimits: insurableLimits)
         )
 
         section.appendSpacing(.inbetween)

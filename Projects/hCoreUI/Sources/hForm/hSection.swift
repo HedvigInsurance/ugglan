@@ -60,7 +60,46 @@ extension View {
     }
 }
 
+public enum hSectionContainerStyle {
+    case transparent
+    case opaque
+}
+
+private struct EnvironmentHSectionContainerStyle: EnvironmentKey {
+    static let defaultValue = hSectionContainerStyle.opaque
+}
+
+extension EnvironmentValues {
+    var hSectionContainerStyle: hSectionContainerStyle {
+        get { self[EnvironmentHSectionContainerStyle.self] }
+        set { self[EnvironmentHSectionContainerStyle.self] = newValue }
+    }
+}
+
+extension hSectionContainerStyle: ViewModifier {
+    public func body(content: Content) -> some View {
+        switch self {
+        case .transparent:
+            content
+        case .opaque:
+            content.background(
+                hBackgroundColor.tertiary
+            )
+            .cornerRadius(.defaultCornerRadius)
+            .hShadow()
+        }
+    }
+}
+
+extension View {
+    /// set section container style
+    public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
+        self.environment(\.hSectionContainerStyle, style)
+    }
+}
+
 struct hSectionContainer<Content: View>: View {
+    @Environment(\.hSectionContainerStyle) var containerStyle
     var content: Content
 
     init(
@@ -75,11 +114,7 @@ struct hSectionContainer<Content: View>: View {
                 content
             }
             .frame(maxWidth: .infinity)
-            .background(
-                hBackgroundColor.tertiary
-            )
-            .cornerRadius(.defaultCornerRadius)
-            .hShadow()
+            .modifier(containerStyle)
         }
         .frame(maxWidth: .infinity)
     }
@@ -120,7 +155,6 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                 }
                 .environment(\.defaultHTextStyle, .title3)
                 .foregroundColor(hLabelColor.primary)
-                .padding([.leading, .trailing], 15)
                 .padding(.bottom, 10)
             }
             hSectionContainer {
@@ -139,6 +173,11 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         .frame(maxWidth: .infinity)
         .padding([.leading, .trailing], horizontalSizeClass == .regular ? 60 : 15)
         .padding([.top, .bottom], 15)
+    }
+
+    /// removes hSection bottom padding
+    public var withoutBottomPadding: some View {
+        self.padding(.bottom, -15)
     }
 
     public func withHeader<Header: View>(

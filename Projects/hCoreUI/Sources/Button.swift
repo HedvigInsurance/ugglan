@@ -306,8 +306,6 @@ extension Button: Equatable {
 }
 
 extension Button: Viewable {
-    public static var trackingHandler: (_ button: Button) -> Void = { _ in }
-
     public func materialize(events _: ViewableEvents) -> (UIButton, Disposable) {
         let bag = DisposeBag()
 
@@ -526,10 +524,6 @@ extension Button: Viewable {
                 button,
                 \.style
             )
-
-        bag += touchUpInside.onValue { _ in
-            Button.trackingHandler(self)
-        }
 
         bag += merge(
             button.signal(for: .touchUpOutside),

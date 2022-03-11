@@ -1,13 +1,21 @@
 import Apollo
+import Authentication
 import Flow
 import Form
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
 extension AppJourney {
+    fileprivate static var loginCompleted: some JourneyPresentation {
+        AppJourney.loggedIn.onPresent {
+            hAnalyticsEvent.loggedIn().send()
+        }
+    }
+
     fileprivate static var bankIDSweden: some JourneyPresentation {
         Journey(
             BankIDLoginSweden(),
@@ -18,35 +26,51 @@ extension AppJourney {
                 Journey(BankIDLoginQR()) { result in
                     switch result {
                     case .loggedIn:
-                        AppJourney.loggedIn
+                        loginCompleted
                     }
                 }
                 .withJourneyDismissButton
+                .mapJourneyDismissToCancel
             case .loggedIn:
-                AppJourney.loggedIn
-            }
-        }
-        .withDismissButton
-        .mapJourneyDismissToCancel
-    }
-
-    fileprivate static var simpleSign: some JourneyPresentation {
-        Journey(SimpleSignLoginView(), style: .detented(.medium)) { id in
-            Journey(WebViewLogin(idNumber: id), style: .detented(.large)) { _ in
-                AppJourney.loggedIn
+                loginCompleted
             }
         }
         .withDismissButton
     }
 
-    static var login: some JourneyPresentation {
-        MarketGroupJourney { market in
-            switch market {
-            case .se:
-                bankIDSweden
-            case .no, .dk:
-                simpleSign
+    fileprivate static func simpleSign(type: WebViewLoginType) -> some JourneyPresentation {
+        Journey(SimpleSignLoginView(), style: .detented(.large)) { id in
+            Journey(WebViewLogin(idNumber: id, type: type), style: .detented(.large)) { _ in
+                loginCompleted
             }
+        }
+        .withDismissButton
+    }
+
+    fileprivate static var otp: some JourneyPresentation {
+        OTPAuthJourney.login { next in
+            switch next {
+            case let .success(accessToken):
+                Journey(ApolloClientSaveTokenLoader(accessToken: accessToken)) { _ in
+                    loginCompleted
+                }
+            case .chat:
+                AppJourney.freeTextChat().withDismissButton
+            }
+        }
+        .setStyle(.detented(.large)).withDismissButton
+    }
+
+    @JourneyBuilder static var login: some JourneyPresentation {
+        switch hAnalyticsExperiment.loginMethod {
+        case .bankIdSweden:
+            bankIDSweden
+        case .bankIdNorway:
+            simpleSign(type: .bankIdNorway)
+        case .nemId:
+            simpleSign(type: .nemId)
+        case .otp:
+            otp
         }
     }
 }

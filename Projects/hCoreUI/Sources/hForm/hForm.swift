@@ -5,167 +5,36 @@ import SwiftUI
 import UIKit
 import hCore
 
-/// Fix for UIHostingController always using SafeAreaInsets
-class IgnoredSafeAreaHostingController<Content: SwiftUI.View>: UIHostingController<Content> {
-    func apply() -> Self {
-        self.fixSafeAreaInsets()
-        return self
-    }
+private struct EnvironmentHFormBottomAttachedView: EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
 
-    func fixSafeAreaInsets() {
-        guard let _class = view?.classForCoder else {
-            fatalError()
-        }
-
-        let safeAreaInsets: @convention(block) (AnyObject) -> UIEdgeInsets = {
-            (sself: AnyObject!) -> UIEdgeInsets in
-            return .zero
-        }
-        guard
-            let safeAreaInsetsMethod = class_getInstanceMethod(
-                _class.self,
-                #selector(getter:UIView.safeAreaInsets)
-            )
-        else {
-            return
-        }
-        class_replaceMethod(
-            _class,
-            #selector(getter:UIView.safeAreaInsets),
-            imp_implementationWithBlock(safeAreaInsets),
-            method_getTypeEncoding(safeAreaInsetsMethod)
-        )
-
-        let safeAreaLayoutGuide: @convention(block) (AnyObject) -> UILayoutGuide? = {
-            (sself: AnyObject!) -> UILayoutGuide? in return nil
-        }
-
-        guard
-            let safeAreaLayoutGuideMethod = class_getInstanceMethod(
-                _class.self,
-                #selector(getter:UIView.safeAreaLayoutGuide)
-            )
-        else { return }
-        class_replaceMethod(
-            _class,
-            #selector(getter:UIView.safeAreaLayoutGuide),
-            imp_implementationWithBlock(safeAreaLayoutGuide),
-            method_getTypeEncoding(safeAreaLayoutGuideMethod)
-        )
-    }
-
-    override var prefersStatusBarHidden: Bool {
-        return false
+extension EnvironmentValues {
+    public var hFormBottomAttachedView: AnyView? {
+        get { self[EnvironmentHFormBottomAttachedView.self] }
+        set { self[EnvironmentHFormBottomAttachedView.self] = newValue }
     }
 }
 
-struct TransferEnvironment: ViewModifier {
-    var environment: EnvironmentValues
-
-    func body(content: Content) -> some View {
-        return Group {
-            content
-        }
-        .environment(\.self, environment)
+extension View {
+    public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hFormBottomAttachedView, AnyView(content()))
     }
 }
 
-struct UpperFormScroller<Content: View, BackgroundContent: View>: UIViewRepresentable, Equatable {
-    let hostingController: IgnoredSafeAreaHostingController<AnyView>
-    let backgroundHostingController: IgnoredSafeAreaHostingController<AnyView>
-    var content: () -> Content
-    var backgroundContent: () -> BackgroundContent
-    @SwiftUI.Environment(\.presentableViewUpperScrollView) var upperScrollView
-    @SwiftUI.Environment(\.userInterfaceLevel) var userInterfaceLevel
-    @SwiftUI.Environment(\.colorScheme) var colorScheme
-
-    init(
-        @ViewBuilder backgroundContent: @escaping () -> BackgroundContent,
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.hostingController = IgnoredSafeAreaHostingController(rootView: AnyView(EmptyView())).apply()
-        self.backgroundHostingController = IgnoredSafeAreaHostingController(rootView: AnyView(EmptyView()))
-            .apply()
-        self.backgroundContent = backgroundContent
-        self.content = content
+struct BackgroundView: UIViewRepresentable {
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        uiView.backgroundColor = .brand(.primaryBackground())
     }
 
-    func makeCoordinator() {
-        return ()
-    }
-
-    func setSize() {
-        self.hostingController.view.setNeedsLayout()
-        self.hostingController.view.layoutIfNeeded()
-
-        let width: CGFloat = (self.upperScrollView?.frame.width ?? 0)
-
-        let contentSize: CGSize = self.hostingController.view.systemLayoutSizeFitting(
-            CGSize(width: width, height: .infinity)
-        )
-        self.hostingController.view.frame.size = contentSize
-        self.hostingController.view.setNeedsLayout()
-        self.hostingController.view.layoutIfNeeded()
-
-        self.upperScrollView?.contentSize = contentSize
-        self.upperScrollView?.updateConstraintsIfNeeded()
-        self.upperScrollView?.layoutIfNeeded()
-    }
-
-    func makeUIView(context: Context) -> UIView {
-        if upperScrollView == nil {
-            fatalError("Must be used with an upper PresentableView")
-        }
-
-        setSize()
-        self.upperScrollView?.addSubview(self.backgroundHostingController.view)
-
-        if let upperScrollView = self.upperScrollView {
-            self.backgroundHostingController.view.snp.makeConstraints { make in
-                make.edges.equalTo(upperScrollView.frameLayoutGuide)
-            }
-        }
-
-        self.upperScrollView?.addSubview(self.hostingController.view)
-        self.hostingController.view.backgroundColor = .clear
-
-        return UIView()
-    }
-
-    func updateUIView(_ uiView: UIView, context: Context) {
-        backgroundHostingController.rootView = AnyView(
-            backgroundContent()
-                .modifier(TransferEnvironment(environment: context.environment))
-                .environment(\.presentableViewUpperScrollView, upperScrollView)
-        )
-        self.backgroundHostingController.view.setNeedsUpdateConstraints()
-        self.backgroundHostingController.view.setNeedsLayout()
-        self.backgroundHostingController.view.layoutIfNeeded()
-
-        self.hostingController.rootView = AnyView(
-            content()
-                .modifier(TransferEnvironment(environment: context.environment))
-                .environment(\.presentableViewUpperScrollView, upperScrollView)
-        )
-        self.hostingController.view.setNeedsLayout()
-        self.hostingController.view.layoutIfNeeded()
-        setSize()
-    }
-
-    static func == (lhs: Self, rhs: Self) -> Bool {
-        return lhs.userInterfaceLevel == rhs.userInterfaceLevel && lhs.colorScheme == rhs.colorScheme
-    }
-}
-
-struct WidthConstrainer: ViewModifier {
-    @Environment(\.presentableViewUpperScrollView) var upperScrollView
-
-    func body(content: Content) -> some View {
-        content.frame(maxWidth: upperScrollView?.frame.width ?? 0)
+    func makeUIView(context: Context) -> some UIView {
+        UIView()
     }
 }
 
 public struct hForm<Content: View>: View {
+    @State var bottomAttachedViewHeight: CGFloat = 0
+    @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     var content: Content
 
     public init(
@@ -175,14 +44,32 @@ public struct hForm<Content: View>: View {
     }
 
     public var body: some View {
-        UpperFormScroller(backgroundContent: {
-            Rectangle().fill(hBackgroundColor.primary).frame(maxWidth: .infinity, maxHeight: .infinity)
-        }) {
-            VStack {
-                content
+        ZStack {
+            BackgroundView().edgesIgnoringSafeArea(.all)
+            ScrollView {
+                VStack {
+                    content
+                }
+                .frame(maxWidth: .infinity)
+                .tint(hTintColor.lavenderOne)
+                Color.clear
+                    .frame(height: bottomAttachedViewHeight)
             }
-            .frame(maxWidth: .infinity)
-            .tint(hTintColor.lavenderOne)
+            .modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeight))
+            .introspectScrollView { scrollView in
+                if #available(iOS 15, *) {
+                    scrollView.viewController?.setContentScrollView(scrollView)
+                }
+            }
+            bottomAttachedView
+                .background(
+                    GeometryReader { geo in
+                        Color.clear.onReceive(Just(geo.size.height)) { height in
+                            self.bottomAttachedViewHeight = height
+                        }
+                    }
+                )
+                .frame(maxHeight: .infinity, alignment: .bottom)
         }
     }
 }

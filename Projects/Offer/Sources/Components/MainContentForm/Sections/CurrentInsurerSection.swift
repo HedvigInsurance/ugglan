@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct CurrentInsurerSection {
-    let quoteBundle: GraphQL.QuoteBundleQuery.Data.QuoteBundle
+    let quoteBundle: QuoteBundle
 
     func makeSwitcherCard() -> Card {
         Card(
@@ -42,8 +42,8 @@ extension CurrentInsurerSection: Presentable {
         cardContainer.edgeInsets = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
         sectionContainer.addArrangedSubview(cardContainer)
 
-        let inception = quoteBundle.inception
-        if let concurrentInception = inception.asConcurrentInception {
+        switch quoteBundle.inception {
+        case .concurrent(let concurrentInception):
             let section = SectionView(
                 headerView: UILabel(
                     value: L10n.Offer.switcherTitle(quoteBundle.quotes.count),
@@ -76,8 +76,7 @@ extension CurrentInsurerSection: Presentable {
                     makeManualCard()
                 )
             }
-        } else if let independentInceptions = inception.asIndependentInceptions {
-            let inceptions = independentInceptions.inceptions
+        case .independent(let inceptions):
             let headerText = L10n.Offer.switcherTitle(quoteBundle.quotes.count)
 
             let section = SectionView(
@@ -90,7 +89,7 @@ extension CurrentInsurerSection: Presentable {
             inceptions.enumerated()
                 .forEach { offset, inception in
                     let currentInsurer = inception.currentInsurer
-                    let correspondingQuoteID = inception.correspondingQuote.asCompleteQuote?.id
+                    let correspondingQuoteID = inception.correspondingQuote.id
                     let switchable = inception.currentInsurer?.switchable ?? false
 
                     let insuranceType = quoteBundle.quoteFor(id: correspondingQuoteID)?.displayName
@@ -122,6 +121,8 @@ extension CurrentInsurerSection: Presentable {
                     let row = RowView(title: currentInsurer?.displayName ?? "")
                     inceptionSection.append(row)
                 }
+        case .unknown:
+            break
         }
 
         return (sectionContainer, bag)

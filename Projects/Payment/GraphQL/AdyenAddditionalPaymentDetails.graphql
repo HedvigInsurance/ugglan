@@ -6,6 +6,7 @@ mutation AdyenAdditionalPaymentDetails($req: PaymentsDetailsRequest!) {
     ) {
         ... on AdditionalPaymentsDetailsResponseFinished {
             resultCode
+            tokenizationResult
         }
         ... on AdditionalPaymentsDetailsResponseAction {
             action

@@ -18,24 +18,6 @@ func addDaysToDate(_ days: Int = 30) -> Date {
 }
 
 extension JSONObject {
-    public static func makeCommonClaims() -> JSONObject {
-        GraphQL.CommonClaimsQuery
-            .Data(commonClaims: [
-                .init(
-                    title: "Mock",
-                    icon: .init(variants: .init(dark: .init(pdfUrl: ""), light: .init(pdfUrl: ""))),
-                    layout: .makeTitleAndBulletPoints(
-                        color: .black,
-                        bulletPoints: [],
-                        buttonTitle: "A button",
-                        claimFirstMessage: "Mock",
-                        title: "Mock title"
-                    )
-                )
-            ])
-            .jsonObject
-    }
-
     public static func makeActiveWithRenewal() -> JSONObject {
         combineMultiple([
             GraphQL.HomeQuery
@@ -127,7 +109,6 @@ extension JSONObject {
                 .jsonObject,
             GraphQL.HomeInsuranceProvidersQuery
                 .Data(insuranceProviders: [.init(id: "hedvig", name: "Hedvig", switchable: true)]).jsonObject,
-            makeCommonClaims(),
         ])
     }
 
@@ -148,7 +129,6 @@ extension JSONObject {
                 .jsonObject,
             GraphQL.HomeInsuranceProvidersQuery
                 .Data(insuranceProviders: [.init(id: "hedvig", name: "Hedvig", switchable: switchable)]).jsonObject,
-            makeCommonClaims(),
         ])
     }
 
@@ -168,7 +148,6 @@ extension JSONObject {
                 .jsonObject,
             GraphQL.HomeInsuranceProvidersQuery
                 .Data(insuranceProviders: [.init(id: "hedvig", name: "Hedvig", switchable: switchable)]).jsonObject,
-            makeCommonClaims(),
         ])
     }
 
@@ -185,7 +164,24 @@ extension JSONObject {
                         )
                     ]
                 )
-                .jsonObject, makeCommonClaims(),
+                .jsonObject
+        ])
+    }
+
+    public static func makeTerminated() -> JSONObject {
+        combineMultiple([
+            GraphQL.HomeQuery
+                .Data(
+                    member: .init(firstName: "Mock"),
+                    contracts: [
+                        .init(
+                            displayName: "Home insurance",
+                            switchedFromInsuranceProvider: "Hedvig",
+                            status: .makeTerminatedStatus(termination: "Over")
+                        )
+                    ]
+                )
+                .jsonObject
         ])
     }
 }

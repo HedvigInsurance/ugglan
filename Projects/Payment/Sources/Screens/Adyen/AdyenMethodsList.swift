@@ -1,5 +1,8 @@
 import Adyen
+import Adyen3DS2
+import AdyenActions
 import AdyenCard
+import AdyenComponents
 import Apollo
 import Flow
 import Form
@@ -14,7 +17,7 @@ import hGraphQL
 struct AdyenMethodsList {
     typealias DidSubmit = (
         _ data: PaymentComponentData, _ component: PaymentComponent,
-        _ onResult: @escaping (_ result: Flow.Result<Either<Void, Adyen.Action>>) -> Void
+        _ onResult: @escaping (_ result: Flow.Result<Either<Void, AdyenActions.Action>>) -> Void
     ) -> Void
 
     let adyenOptions: AdyenOptions
@@ -23,7 +26,7 @@ struct AdyenMethodsList {
 }
 
 extension AdyenMethodsList: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, FiniteSignal<Bool>) {
         let viewController = UIViewController()
         viewController.navigationItem.hidesBackButton = true
 
@@ -37,7 +40,7 @@ extension AdyenMethodsList: Presentable {
 
         return (
             viewController,
-            Future { completion in
+            FiniteSignal { callback in
                 bag += adyenOptions.paymentMethods.regular.map { method in
                     let row = RowView(title: method.displayInformation.title)
 
@@ -46,7 +49,7 @@ extension AdyenMethodsList: Presentable {
 
                     let logoURL = Adyen.LogoURLProvider.logoURL(
                         for: method,
-                        environment: AdyenPaymentBuilder.environment
+                        environment: HedvigAdyenAPIContext().environment
                     )
                     logoImageView.kf.setImage(with: logoURL)
 
@@ -61,10 +64,7 @@ extension AdyenMethodsList: Presentable {
                         .onValue {
                             guard
                                 let component = method.buildComponent(
-                                    using: AdyenPaymentBuilder(
-                                        encryptionPublicKey: adyenOptions
-                                            .clientEncrytionKey
-                                    )
+                                    using: AdyenPaymentBuilder()
                                 )
                             else { return }
 
@@ -73,16 +73,21 @@ extension AdyenMethodsList: Presentable {
                                 paymentMethod: method,
                                 didSubmitHandler: didSubmit
                             ) {
-                                completion(.success)
+                                callback(.value(true))
+                            } onEnd: {
+                                callback(.end)
                             } onRetry: {
-                                viewController.present(
-                                    self.wrappedInCloseButton(),
-                                    configure: { vc, _ in
-                                        vc.title = viewController.title
+                                bag +=
+                                    viewController.present(
+                                        self.wrappedInCloseButton(),
+                                        configure: { vc, _ in
+                                            vc.title = viewController.title
+                                        }
+                                    )
+                                    .atEnd {
+                                        callback(.end)
                                     }
-                                )
-                                .onValue { completion(.success) }
-                                .onError { error in completion(.failure(error)) }
+                                    .onValue { success in callback(.value(success)) }
                             } onSuccess: {
                                 self.onSuccess()
                             }
@@ -103,9 +108,20 @@ extension AdyenMethodsList: Presentable {
                                         animated: true
                                     )
                                 } else {
+                                    let componentViewController = component.viewController
+
+                                    let closeButton = CloseButton()
+                                    let closeButtonItem = UIBarButtonItem(viewable: closeButton)
+
+                                    componentViewController.navigationItem.rightBarButtonItem = closeButtonItem
+
+                                    bag += closeButton.onTapSignal.onValue { _ in
+                                        componentViewController.dismiss(animated: true, completion: nil)
+                                    }
+
                                     viewController.present(
-                                        component.viewController,
-                                        style: .detented(.large, modally: false)
+                                        componentViewController.embededInNavigationController([.defaults]),
+                                        animated: true
                                     )
                                 }
                             case let component as EmptyPaymentComponent:

@@ -4,6 +4,7 @@ import Form
 import Presentation
 import SnapKit
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -96,6 +97,8 @@ extension Marketing: Presentable {
 
         contentStackView.snp.makeConstraints { make in make.bottom.trailing.leading.equalToSuperview() }
 
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .marketing))
+
         return (
             viewController,
             Signal { callback in
@@ -117,6 +120,8 @@ extension Marketing: Presentable {
                         viewController.navigationController?.hero.isEnabled = false
                     }
 
+                    hAnalyticsEvent.buttonClickMarketingOnboard().send()
+
                     callback(.onboard)
                 }
 
@@ -134,6 +139,9 @@ extension Marketing: Presentable {
                     if !UITraitCollection.isCatalyst {
                         viewController.navigationController?.hero.isEnabled = false
                     }
+
+                    hAnalyticsEvent.buttonClickMarketingLogin().send()
+
                     callback(.login)
                 }
 

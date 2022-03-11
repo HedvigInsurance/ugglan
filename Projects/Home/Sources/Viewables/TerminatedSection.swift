@@ -8,10 +8,19 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct TerminatedSection { @Inject var client: ApolloClient }
+struct TerminatedSection {
+    @Inject var client: ApolloClient
+    var claimSubmitHandler: () -> Void
 
-extension TerminatedSection: Viewable {
-    func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
+    init(
+        _ claimSubmitHandler: @escaping () -> Void
+    ) {
+        self.claimSubmitHandler = claimSubmitHandler
+    }
+}
+
+extension TerminatedSection: Presentable {
+    func materialize() -> (SectionView, Disposable) {
         let bag = DisposeBag()
         let section = SectionView()
         section.dynamicStyle = .brandGrouped(separatorType: .none)
@@ -34,16 +43,18 @@ extension TerminatedSection: Viewable {
 
         section.appendSpacing(.top)
 
-        let button = Button(
+        let claimButton = Button(
             title: L10n.HomeTab.claimButtonText,
-            type: .standardOutline(
-                borderColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonBackgroundColor)
+            type: .standard(
+                backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonTextColor)
             )
         )
-        bag += section.append(button)
+        bag += section.append(claimButton)
 
-        bag += button.onTapSignal.compactMap { section.viewController }.onValue(Home.openClaimsHandler)
+        bag += claimButton.onTapSignal.onValue {
+            claimSubmitHandler()
+        }
 
         return (section, bag)
     }

@@ -1,0 +1,67 @@
+[
+    {
+        "lane": "ios build identifier:com.hedvig.test.app path:Projects/App/Ugglan.xcodeproj scheme:Ugglan",
+        "name": "Ugglan",
+        "path": "Projects/App",
+        "test_scheme": "Ugglan"
+    },
+    {
+        "lane": "ios build path:Projects/Embark/Embark.xcodeproj scheme:EmbarkExample",
+        "name": "EmbarkExample",
+        "path": "Projects/Embark",
+        "test_scheme": "Embark"
+    },
+    {
+        "lane": "ios build identifier:com.hedvig.app path:Projects/App/Ugglan.xcodeproj scheme:Hedvig",
+        "name": "Hedvig",
+        "path": "Projects/App"
+    },
+    {
+        "lane": "ios build path:Projects/Home/Home.xcodeproj scheme:HomeExample",
+        "name": "HomeExample",
+        "path": "Projects/Home",
+        "test_scheme": "Home"
+    },
+    {
+        "lane": "ios build path:Projects/Forever/Forever.xcodeproj scheme:ForeverExample",
+        "name": "ForeverExample",
+        "path": "Projects/Forever",
+        "test_scheme": "Forever"
+    },
+    {
+        "lane": "ios build path:Projects/Offer/Offer.xcodeproj scheme:OfferExample",
+        "name": "OfferExample",
+        "path": "Projects/Offer",
+        "test_scheme": "Offer"
+    },
+    {
+        "lane": "ios build path:Projects/hCoreUI/hCoreUI.xcodeproj scheme:hCoreUIExample",
+        "name": "hCoreUIExample",
+        "path": "Projects/hCoreUI",
+        "test_scheme": "hCoreUI"
+    },
+    {
+        "lane": "ios build path:Projects/Authentication/Authentication.xcodeproj scheme:AuthenticationExample",
+        "name": "AuthenticationExample",
+        "path": "Projects/Authentication",
+        "test_scheme": "Authentication"
+    },
+    {
+        "lane": "ios build path:Projects/Contracts/Contracts.xcodeproj scheme:ContractsExample",
+        "name": "ContractsExample",
+        "path": "Projects/Contracts",
+        "test_scheme": "Contracts"
+    },
+    {
+        "lane": "ios build path:Projects/Payment/Payment.xcodeproj scheme:PaymentExample",
+        "name": "PaymentExample",
+        "path": "Projects/Payment",
+        "test_scheme": "Payment"
+    },
+    {
+        "lane": "ios build path:Projects/Market/Market.xcodeproj scheme:MarketExample",
+        "name": "MarketExample",
+        "path": "Projects/Market",
+        "test_scheme": "Market"
+    }
+]

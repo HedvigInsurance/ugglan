@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Presentation
 import UIKit
 import hCore
 import hCoreUI
@@ -28,24 +29,52 @@ extension CardDetailsSection: Viewable {
         func presentPayIn(_ viewController: UIViewController) {
             payInOptions.onValue { options in
                 viewController.present(
-                    AdyenPayIn(adyenOptions: options, urlScheme: urlScheme).wrappedInCloseButton(),
-                    style: .detented(.scrollViewContentSize),
-                    options: [.defaults, .allowSwipeDismissAlways]
+                    AdyenPayIn(adyenOptions: options, urlScheme: urlScheme)
+                        .journey({ _ in
+                            DismissJourney()
+                        })
+                        .withJourneyDismissButton
+                        .setStyle(.detented(.scrollViewContentSize))
+                        .setOptions([.defaults, .allowSwipeDismissAlways])
                 )
+                .onValue { _ in
+
+                }
             }
         }
 
-        bag += dataSignal.onValueDisposePrevious { data in let bag = DisposeBag()
+        bag += dataSignal.onValueDisposePrevious { data in
+            let bag = DisposeBag()
 
-            if let activeMethod = data.activePaymentMethods {
+            if let activeMethod = data.activePaymentMethodsV2 {
+                var valueRowTitle: String {
+                    if let card = activeMethod.asStoredCardDetails {
+                        return card.brand?.capitalized ?? ""
+                    } else if let thirdParty = activeMethod.asStoredThirdPartyDetails {
+                        return thirdParty.type.capitalized
+                    }
+
+                    return ""
+                }
+
                 let valueRow = RowView(
-                    title: activeMethod.storedPaymentMethodsDetails.brand?.capitalized ?? ""
+                    title: valueRowTitle
                 )
 
+                var valueLabelTitle: String {
+                    if let card = activeMethod.asStoredCardDetails {
+                        return L10n.PaymentScreen.creditCardMasking(
+                            card.lastFourDigits
+                        )
+                    } else if let thirdParty = activeMethod.asStoredThirdPartyDetails {
+                        return thirdParty.name
+                    }
+
+                    return ""
+                }
+
                 let valueLabel = UILabel(
-                    value: L10n.PaymentScreen.creditCardMasking(
-                        activeMethod.storedPaymentMethodsDetails.lastFourDigits
-                    ),
+                    value: valueLabelTitle,
                     style: .brand(.headline(color: .tertiary))
                 )
                 valueRow.append(valueLabel)
