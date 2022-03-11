@@ -71,13 +71,18 @@ extension PaymentDetailsSection: Viewable {
         bag += applyDiscountButtonRow.onSelect.onValue { _ in let applyDiscount = ApplyDiscount()
 
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
-                self.store.update(
-                    query: GraphQL.MyPaymentQuery(),
-                    updater: { (data: inout GraphQL.MyPaymentQuery.Data) in
-                        if let costFragment = result.cost?.fragments.costFragment {
-                            data.insuranceCost?.fragments.costFragment = costFragment
+                self.store.withinReadWriteTransaction(
+                    { transaction in
+                        try transaction.update(
+                            query: GraphQL.MyPaymentQuery()
+                        ) { (data: inout GraphQL.MyPaymentQuery.Data) in
+                            if let costFragment = result.cost?.fragments.costFragment {
+                                data.insuranceCost?.fragments.costFragment = costFragment
+                            }
                         }
-                    }
+
+                    },
+                    completion: nil
                 )
 
                 if let costFragment = result.cost?.fragments.costFragment {

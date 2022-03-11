@@ -189,11 +189,18 @@ extension DirectDebitSetup: Presentable {
                     case .success:
                         client.fetch(query: GraphQL.PayInMethodStatusQuery())
                             .onValue { _ in
-                                self.store.update(
-                                    query: GraphQL.PayInMethodStatusQuery()
-                                ) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
-                                    data.payinMethodStatus = .pending
-                                }
+                                self.store.withinReadWriteTransaction(
+                                    { transaction in
+                                        try transaction.update(
+                                            query: GraphQL.PayInMethodStatusQuery()
+                                        ) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
+                                            data.payinMethodStatus = .pending
+                                        }
+
+                                    },
+                                    completion: nil
+                                )
+
                             }
                         ClearDirectDebitStatus.clear()
                     case .failure: break

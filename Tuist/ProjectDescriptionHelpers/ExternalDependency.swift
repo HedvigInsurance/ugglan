@@ -14,7 +14,6 @@ public enum ExternalDependency: CaseIterable {
     case snapkit
     case markdownkit
     case mixpanel
-    case runtime
     case sentry
     case hero
     case snapshottesting
@@ -43,7 +42,6 @@ public enum ExternalDependency: CaseIterable {
         case .snapkit: return [.external(name: "SnapKit")]
         case .markdownkit: return [.external(name: "MarkdownKit")]
         case .mixpanel: return [.external(name: "Mixpanel")]
-        case .runtime: return [.external(name: "Runtime")]
         case .hero: return [.external(name: "Hero")]
         case .snapshottesting: return [.external(name: "SnapshotTesting")]
         case .shake: return [.external(name: "Shake")]

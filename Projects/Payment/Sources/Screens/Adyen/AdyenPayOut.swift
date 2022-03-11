@@ -67,10 +67,18 @@ struct AdyenPayOut: Presentable {
                     }
                 }
         } onSuccess: {
-            store.update(query: GraphQL.ActivePayoutMethodsQuery()) {
-                (data: inout GraphQL.ActivePayoutMethodsQuery.Data) in
-                data.activePayoutMethods = .init(status: .pending)
-            }
+
+            self.store.withinReadWriteTransaction(
+                { transaction in
+                    try transaction.update(query: GraphQL.ActivePayoutMethodsQuery()) {
+                        (data: inout GraphQL.ActivePayoutMethodsQuery.Data) in
+                        data.activePayoutMethods = .init(status: .pending)
+                    }
+
+                },
+                completion: nil
+            )
+
         }
         .materialize()
 

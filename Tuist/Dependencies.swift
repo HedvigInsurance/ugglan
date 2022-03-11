@@ -2,12 +2,9 @@ import Foundation
 import ProjectDescription
 
 let dependencies = Dependencies(
-    carthage: [
-        .github(path: "Adyen/adyen-ios", requirement: .exact("4.7.1"))
-    ],
     swiftPackageManager: .init(
         [
-            .remote(url: "https://github.com/wickwirew/Runtime", requirement: .exact("2.2.2")),
+            .remote(url: "https://github.com/HedvigInsurance/adyen-ios", requirement: .exact("4.7.3")),
             .remote(
                 url: "https://github.com/firebase/firebase-ios-sdk",
                 requirement: .upToNextMajor(from: "7.3.1")
@@ -49,8 +46,6 @@ let dependencies = Dependencies(
         productTypes: [
             "Disk": .framework,
             "ApolloWebSocket": .framework,
-            "Runtime": .framework,
-            "CRuntime": .framework,
             "Flow": .framework,
             "Form": .framework,
             "hAnalytics": .framework,

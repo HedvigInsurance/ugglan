@@ -8,12 +8,6 @@ arch -x86_64 scripts/translations.sh
 scripts/swiftgen.sh
 scripts/codegen.sh
 
-if ! command -v carthage &> /dev/null
-then
-    echo "warning: Carthage is not installed, trying to install with brew"
-    arch -arm64 brew install carthage
-fi
-
 tuist fetch
 
 TUIST=/usr/local/bin/tuist
