@@ -8,21 +8,26 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct CommonClaimDetail {
-    let data: GraphQL.CommonClaimsQuery.Data.CommonClaim
-    let index: TableIndex
+public struct CommonClaimDetail {
+    let claim: CommonClaim
+
+    public init(
+        claim: CommonClaim
+    ) {
+        self.claim = claim
+    }
 
     var layoutTitle: String {
-        if let layoutTitle = data.layout.asEmergency?.title { return layoutTitle }
+        if let layoutTitle = claim.layout.emergency?.title { return layoutTitle }
 
-        return data.layout.asTitleAndBulletPoints?.title ?? ""
+        return claim.layout.titleAndBulletPoint?.title ?? ""
     }
 }
 
 extension CommonClaimDetail: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
+    public func materialize() -> (UIViewController, Disposable) {
         let viewController = UIViewController()
-        viewController.title = data.title
+        viewController.title = claim.displayTitle
 
         let bag = DisposeBag()
 
@@ -43,7 +48,7 @@ extension CommonClaimDetail: Presentable {
 
         topCardContentView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
 
-        let icon = RemoteVectorIcon(data.icon.fragments.iconFragment, threaded: true)
+        let icon = RemoteVectorIcon(claim.icon, threaded: true)
         bag += topCardContentView.addArranged(
             icon.alignedTo(
                 .leading,
@@ -56,9 +61,9 @@ extension CommonClaimDetail: Presentable {
         let layoutTitle = MultilineLabel(value: self.layoutTitle, style: .brand(.title2(color: .primary)))
         bag += topCardContentView.addArranged(layoutTitle)
 
-        if let bulletPoints = data.layout.asTitleAndBulletPoints?.bulletPoints {
+        if let bulletPoints = claim.layout.titleAndBulletPoint?.bulletPoints {
             let claimButton = Button(
-                title: data.layout.asTitleAndBulletPoints?.buttonTitle ?? "",
+                title: claim.layout.titleAndBulletPoint?.buttonTitle ?? "",
                 type: .standard(
                     backgroundColor: .brand(.primaryButtonBackgroundColor),
                     textColor: .brand(.primaryButtonTextColor)
@@ -80,7 +85,7 @@ extension CommonClaimDetail: Presentable {
 
         bag += viewController.install(view)
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewCommonClaimDetail(id: data.id))
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .commonClaimDetail))
 
         return (viewController, bag)
     }

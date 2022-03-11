@@ -55,14 +55,10 @@ public struct DataCollectionConfirmation: View {
 
     var trackingParcel: hAnalyticsParcel {
         if wasConfirmed {
-            return hAnalyticsEvent.screenViewDataCollectionSuccess(
-                providerId: store.state.providerID ?? ""
-            )
+            return hAnalyticsEvent.screenView(screen: .dataCollectionSuccess)
         }
 
-        return hAnalyticsEvent.screenViewDataCollectionFail(
-            providerId: store.state.providerID ?? ""
-        )
+        return hAnalyticsEvent.screenView(screen: .dataCollectionFail)
     }
 
     public var body: some View {

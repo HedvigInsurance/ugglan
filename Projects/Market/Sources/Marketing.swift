@@ -97,7 +97,7 @@ extension Marketing: Presentable {
 
         contentStackView.snp.makeConstraints { make in make.bottom.trailing.leading.equalToSuperview() }
 
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewMarketing())
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .marketing))
 
         return (
             viewController,

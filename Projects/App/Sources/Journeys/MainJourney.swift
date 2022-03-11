@@ -21,6 +21,8 @@ extension AppJourney {
                     AppJourney.storedOnboardingOffer
                 case .loggedIn:
                     AppJourney.loggedIn
+                case .impersonation:
+                    AppJourney.impersonationSettings
                 default:
                     AppJourney.marketPicker
                 }

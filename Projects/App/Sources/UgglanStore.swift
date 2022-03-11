@@ -37,21 +37,22 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
                     exchangeToken: token.removingPercentEncoding ?? ""
                 )
             )
-            .map(on: .main) { response in
+            .valueThenEndSignal
+            .atValue(on: .main) { _ in
+
+            }
+            .delay(by: 0.25)
+            .compactMap(on: .main) { response in
                 guard
                     let token = response.exchangeToken
                         .asExchangeTokenSuccessResponse?
                         .token
                 else { return .exchangeFailed }
 
-                globalPresentableStoreContainer.deletePersistanceContainer()
-                globalPresentableStoreContainer = PresentableStoreContainer()
-
-                UIApplication.shared.appDelegate.setToken(token)
-
-                return .showLoggedIn
+                ApplicationState.preserveState(.impersonation)
+                UIApplication.shared.appDelegate.logout(token: token)
+                return nil
             }
-            .valueThenEndSignal
     }
 
     private func getOnboardingQuoteCart() -> FiniteSignal<UgglanAction> {

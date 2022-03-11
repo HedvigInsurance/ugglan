@@ -101,9 +101,7 @@ public struct DataCollectionPersonalIdentity: View {
             .sectionContainerStyle(.transparent)
         }
         .trackOnAppear(
-            hAnalyticsEvent.screenViewDataCollectionCredentials(
-                providerId: store.state.providerID ?? ""
-            )
+            hAnalyticsEvent.screenView(screen: .dataCollectionCredentials)
         )
     }
 }

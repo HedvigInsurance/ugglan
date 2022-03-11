@@ -188,7 +188,7 @@ extension MarketPicker: Presentable {
                                 form.alpha = 1
                                 form.layoutIfNeeded()
 
-                                viewController.trackOnAppear(hAnalyticsEvent.screenViewMarketPicker())
+                                viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .marketPicker))
                             }
                         )
                 }

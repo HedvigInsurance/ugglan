@@ -107,4 +107,18 @@ extension JourneyPresentation {
             store.send(action)
         }
     }
+
+    static func commonClaimDetailJourney(claim: CommonClaim) -> some JourneyPresentation {
+        Journey(
+            CommonClaimDetail(claim: claim),
+            style: .detented(.medium, .large),
+            options: .defaults
+        )
+        .onAction(ClaimsStore.self) { action in
+            if case .submitNewClaim = action {
+                DismissJourney()
+            }
+        }
+        .withJourneyDismissButton
+    }
 }

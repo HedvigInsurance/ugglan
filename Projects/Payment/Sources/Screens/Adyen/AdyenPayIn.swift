@@ -98,7 +98,7 @@ public struct AdyenPayIn: Presentable {
         .materialize()
 
         viewController.title = L10n.adyenPayinTitle
-        viewController.trackOnAppear(hAnalyticsEvent.screenViewConnectPaymentAdyen())
+        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .connectPaymentAdyen))
 
         return (viewController, result)
     }

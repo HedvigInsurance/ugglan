@@ -47,7 +47,7 @@ public struct CrossSellingDetail: View {
         .hFormAttachToBottom {
             ContinueButton(crossSell: crossSell)
         }
-        .trackOnAppear(hAnalyticsEvent.screenViewCrossSellDetail(typeOfContract: crossSell.typeOfContract))
+        .trackOnAppear(hAnalyticsEvent.screenView(screen: .crossSellDetail))
     }
 }
 

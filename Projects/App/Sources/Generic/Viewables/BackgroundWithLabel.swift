@@ -3,6 +3,7 @@ import Form
 import Foundation
 import UIKit
 import hCore
+import hCoreUI
 
 struct BackgroundWithLabel {
     let labelText: DynamicString
@@ -47,7 +48,7 @@ extension BackgroundWithLabel: Viewable {
 
         label.clipsToBounds = true
         label.textAlignment = .center
-        label.font = HedvigFonts.favoritStdBook?.withSize(44)
+        label.font = Fonts.fontFor(style: .largeTitle)
         label.textColor = textColor
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0

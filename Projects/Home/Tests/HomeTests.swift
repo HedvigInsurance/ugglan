@@ -32,6 +32,7 @@ class HomeTests: XCTestCase {
             Journey(
                 Home(
                     claimsContent: EmptyView(),
+                    commonClaims: EmptyView(),
                     {
 
                     }

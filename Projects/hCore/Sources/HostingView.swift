@@ -117,3 +117,8 @@ public class AdjustableHostingController<Content: View>: UIHostingController<Con
         self.view.invalidateIntrinsicContentSize()
     }
 }
+
+/// Builds a view and wraps it in a hosting view
+public func makeHost<RootView: View>(@ViewBuilder _ build: () -> RootView) -> HostingView<RootView> {
+    HostingView(rootView: build())
+}
