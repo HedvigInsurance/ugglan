@@ -26,8 +26,10 @@ public enum ExternalDependency: CaseIterable {
         case .sentry: return [.external(name: "Sentry")]
         case .adyen:
             return [
-                .external(name: "Adyen"), .external(name: "AdyenCard"),
+                .external(name: "Adyen"),
+                .external(name: "AdyenCard"),
                 .external(name: "AdyenDropIn"),
+                .external(name: "AdyenNetworking"),
             ]
         case .firebase: return [.external(name: "FirebaseAnalytics"), .external(name: "FirebaseMessaging")]
         case .kingfisher: return [.external(name: "Kingfisher")]

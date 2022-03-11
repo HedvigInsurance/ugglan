@@ -2,9 +2,11 @@ import Foundation
 import ProjectDescription
 
 let dependencies = Dependencies(
+    carthage: [
+        .github(path: "Adyen/adyen-ios", requirement: .exact("4.2.0"))
+    ],
     swiftPackageManager: .init(
         [
-            .remote(url: "https://github.com/Adyen/adyen-ios", requirement: .upToNextMajor(from: "3.8.4")),
             .remote(url: "https://github.com/wickwirew/Runtime", requirement: .exact("2.2.2")),
             .remote(
                 url: "https://github.com/firebase/firebase-ios-sdk",
