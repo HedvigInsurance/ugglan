@@ -2,8 +2,6 @@
 set -e
 set -x
 
-tuist generate --path Projects/Codegen
-
 buildDir=$(xcodebuild \
     -project Projects/Codegen/Codegen.xcodeproj \
     -scheme "Apollo Codegen" \
