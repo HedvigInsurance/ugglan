@@ -81,8 +81,9 @@ extension Project {
         var targetDependencies: [TargetDependency] = projects.map {
             .project(target: $0, path: .relativeToRoot("Projects/\($0)"))
         }
-        targetDependencies.append(contentsOf: sdks.map { .sdk(name: $0) })
+        targetDependencies.append(contentsOf: sdks.map { .sdk(name: $0, type: .framework) })
         targetDependencies.append(contentsOf: externalDependenciesFor(.framework).flatMap { $0.targetDependencies() })
+        targetDependencies.append(contentsOf: ExternalDependency.hAnalytics.targetDependencies())
 
         let path = Path(
             "\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Application Support/Reveal/RevealServer/RevealServer.xcframework"
@@ -143,7 +144,6 @@ extension Project {
                             path: .relativeToRoot("Projects/TestingUtil")
                         ),
                     ],
-                    targetDependencies,
                     externalDependenciesFor(.testing).flatMap { $0.targetDependencies() },
                 ]
                 .flatMap { $0 },
@@ -226,7 +226,6 @@ extension Project {
                             path: .relativeToRoot("Projects/TestingUtil")
                         ),
                     ], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [],
-                    targetDependencies,
                     externalDependenciesFor(.example).flatMap { $0.targetDependencies() },
                 ]
                 .flatMap { $0 },

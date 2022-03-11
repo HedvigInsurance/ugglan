@@ -17,5 +17,5 @@ let project = Project.framework(
             return []
         }
     },
-    sdks: ["XCTest.framework"]
+    sdks: ["XCTest"]
 )

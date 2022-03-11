@@ -2,7 +2,7 @@
 
 Hedvig is a new approach to insurance currently available in Sweden, Norway and Denmark, we belive in transparency hence we code in the open and publish all our source code here on Github, feel free to take a peek, if you are interested in working with us check out our [jobs page](https://jobs.lever.co/hedvig).
 
-# ugglan ![WorkspaceTests](https://github.com/HedvigInsurance/ugglan/workflows/WorkspaceTests/badge.svg) ![WorkspaceApps](https://github.com/HedvigInsurance/ugglan/workflows/WorkspaceApps/badge.svg) 
+# ugglan ![WorkspaceTests](https://github.com/HedvigInsurance/ugglan/workflows/WorkspaceTests/badge.svg) ![WorkspaceApps](https://github.com/HedvigInsurance/ugglan/workflows/WorkspaceApps/badge.svg)
 
 🦉 It's just an insurance app for iOS
 
@@ -19,16 +19,20 @@ Hedvig is a new approach to insurance currently available in Sweden, Norway and 
 3. Run post-checkout
 
    `scripts/post-checkout.sh`
-   
+
 4. Install swift-format
 
    `scripts/install-swift-format.sh`
 
-5. Run tuist generate
+5. Run tuist fetch
+
+   `tuist fetch`
+
+6. Run tuist generate
 
    `tuist generate`
-   
-6. Open workspace
+
+7. Open workspace
 
    `open Ugglan.xcworkspace`
 
@@ -37,19 +41,19 @@ Hedvig is a new approach to insurance currently available in Sweden, Norway and 
 1. Add device UDID to devices.txt
 2. `fastlane ios provision`
 3. Trigger new build for latest commit on `main` by clicking `re-run` in Github Actions
-   
+
 ## Formatting
 
 We use swift-format for formatting, it's ran on all staged files automatically in a pre-commit hook.
 
 1. Install githooks
-   
+
    sh `scripts/githooks.sh`
-   
+
 2. Install swift-format
-   
+
    sh `scripts/install-swift-format.sh`
-   
+
 ## How to release
 
 Before release making sure you `Cancel` or release any pending releases on App Store Connect.
@@ -63,5 +67,3 @@ Before release making sure you `Cancel` or release any pending releases on App S
 4. Click `Run workflow`
 
 5. Wait for the build to complete and get processed by App Store Connect
-
-

@@ -15,11 +15,12 @@ let project = Project.framework(
                 ExternalDependency.dynamiccolor,
                 ExternalDependency.markdownkit,
                 ExternalDependency.disk,
+                ExternalDependency.kingfisher,
             ]
         default:
             return []
         }
     },
-    sdks: ["UIKit.framework"],
+    sdks: ["UIKit"],
     includesGraphQL: true
 )

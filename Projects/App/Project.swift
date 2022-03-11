@@ -3,14 +3,14 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let sdkFrameworks: [TargetDependency] = [
-    .sdk(name: "libc++.tbd"),
-    .sdk(name: "libz.tbd"),
-    .sdk(name: "SwiftUI.framework", status: .optional),
-    .sdk(name: "SceneKit.framework"),
-    .sdk(name: "AdSupport.framework"),
+    .sdk(name: "libc++.tbd", type: .library),
+    .sdk(name: "libz.tbd", type: .library),
+    .sdk(name: "SwiftUI", type: .framework, status: .optional),
+    .sdk(name: "SceneKit", type: .framework),
+    .sdk(name: "AdSupport", type: .framework),
 ]
 
-let ugglanConfigurations: [CustomConfiguration] = [
+let ugglanConfigurations: [Configuration] = [
     .debug(
         name: "Debug",
         settings: [
@@ -26,7 +26,7 @@ let ugglanConfigurations: [CustomConfiguration] = [
     ),
 ]
 
-let hedvigConfigurations: [CustomConfiguration] = [
+let hedvigConfigurations: [Configuration] = [
     .debug(
         name: "Debug",
         settings: ["PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.app"],
@@ -39,7 +39,7 @@ let hedvigConfigurations: [CustomConfiguration] = [
     ),
 ]
 
-let testsConfigurations: [CustomConfiguration] = [
+let testsConfigurations: [Configuration] = [
     .debug(
         name: "Debug",
         settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING"],
@@ -69,7 +69,7 @@ let appDependencies: [TargetDependency] = [
 ]
 .flatMap { $0 }
 
-let targetActions: [TargetAction] = [
+let targetScripts: [TargetScript] = [
     .post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks")
 ]
 
@@ -88,9 +88,9 @@ let project = Project(
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Test/Resources/**"],
             entitlements: "Config/Test/Ugglan.entitlements",
-            actions: targetActions,
+            scripts: targetScripts,
             dependencies: appDependencies,
-            settings: Settings(configurations: ugglanConfigurations)
+            settings: .settings(configurations: ugglanConfigurations)
         ),
         Target(
             name: "AppTests",
@@ -101,7 +101,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Tests/**"],
             resources: [],
-            actions: targetActions,
+            scripts: targetScripts,
             dependencies: [
                 [
                     .target(name: "Ugglan"),
@@ -109,7 +109,7 @@ let project = Project(
                 ]
             ]
             .flatMap { $0 },
-            settings: Settings(configurations: testsConfigurations)
+            settings: .settings(configurations: testsConfigurations)
         ),
         Target(
             name: "Hedvig",
@@ -121,9 +121,9 @@ let project = Project(
             sources: ["Sources/**"],
             resources: ["Resources/**", "Config/Production/Resources/**"],
             entitlements: "Config/Production/Hedvig.entitlements",
-            actions: targetActions,
+            scripts: targetScripts,
             dependencies: appDependencies,
-            settings: Settings(configurations: hedvigConfigurations)
+            settings: .settings(configurations: hedvigConfigurations)
         ),
     ],
     schemes: [
@@ -133,8 +133,8 @@ let project = Project(
             buildAction: BuildAction(
                 targets: ["Ugglan"]
             ),
-            testAction: TestAction(
-                targets: [
+            testAction: .targets(
+                [
                     TestableTarget(
                         target: TargetReference(stringLiteral: "AppTests"),
                         parallelizable: true
@@ -145,12 +145,12 @@ let project = Project(
                         "SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"
                     ],
                     launchArguments: [
-                        "-UIPreferredContentSizeCategoryName": true,
-                        "UICTContentSizeCategoryM": true,
+                        .init(name: "-UIPreferredContentSizeCategoryName", isEnabled: true),
+                        .init(name: "-UICTContentSizeCategoryM", isEnabled: true),
                     ]
                 )
             ),
-            runAction: RunAction(executable: "Ugglan")
+            runAction: .runAction(executable: "Ugglan")
         ),
         Scheme(
             name: "Hedvig",
@@ -158,7 +158,7 @@ let project = Project(
             buildAction: BuildAction(
                 targets: ["Hedvig"]
             ),
-            runAction: RunAction(executable: "Hedvig")
+            runAction: .runAction(executable: "Hedvig")
         ),
     ],
     additionalFiles: [

@@ -19,6 +19,7 @@ public enum ExternalDependency: CaseIterable {
     case hero
     case snapshottesting
     case shake
+    case hAnalytics
 
     public func targetDependencies() -> [TargetDependency] {
         switch self {
@@ -44,6 +45,7 @@ public enum ExternalDependency: CaseIterable {
         case .hero: return [.external(name: "Hero")]
         case .snapshottesting: return [.external(name: "SnapshotTesting")]
         case .shake: return [.external(name: "Shake")]
+        case .hAnalytics: return [.external(name: "hAnalytics")]
         }
     }
 }

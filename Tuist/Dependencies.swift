@@ -10,7 +10,7 @@ let dependencies = Dependencies(
                 url: "https://github.com/firebase/firebase-ios-sdk",
                 requirement: .upToNextMajor(from: "7.3.1")
             ),
-            .remote(url: "https://github.com/apollographql/apollo-ios", requirement: .exact("0.41.0")),
+            .remote(url: "https://github.com/apollographql/apollo-ios", requirement: .exact("0.49.0")),
             .remote(url: "https://github.com/HedvigInsurance/Flow", requirement: .upToNextMajor(from: "1.8.8")),
             .remote(
                 url: "https://github.com/HedvigInsurance/Form",
@@ -42,8 +42,22 @@ let dependencies = Dependencies(
                 requirement: .upToNextMajor(from: "1.8.2")
             ),
             .remote(url: "https://github.com/shakebugs/shake-ios", requirement: .exact("14.1.5")),
+            .remote(url: "https://github.com/HedvigInsurance/hanalytics", requirement: .exact("0.230.0")),
         ],
-        deploymentTargets: [.iOS(targetVersion: "12.0", devices: [.iphone, .ipad])]
+        productTypes: [
+            "Disk": .framework,
+            "ApolloWebSocket": .framework,
+            "Runtime": .framework,
+            "CRuntime": .framework,
+            "Flow": .framework,
+            "Form": .framework,
+            "hAnalytics": .framework,
+            "Starscream": .framework,
+            "Swifter": .framework,
+            "PresentationDebugSupport": .framework,
+            "Presentation": .framework,
+            "Kingfisher": .framework,
+        ]
     ),
     platforms: [.iOS]
 )
