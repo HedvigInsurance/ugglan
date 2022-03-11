@@ -8,7 +8,7 @@ arch -x86_64 scripts/translations.sh
 scripts/swiftgen.sh
 scripts/codegen.sh
 
-if ! command -v <the_command> &> /dev/null
+if ! command -v carthage &> /dev/null
 then
     echo "warning: Carthage is not installed, trying to install with brew"
     brew install carthage
