@@ -66,6 +66,8 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Embark", path: .relativeToRoot("Projects/Embark")),
     ],
     sdkFrameworks,
+    ExternalDependency.presentationDebugSupport.targetDependencies(),
+    ExternalDependency.datadog.targetDependencies(),
 ]
 .flatMap { $0 }
 

@@ -42,6 +42,7 @@ let dependencies = Dependencies(
             ),
             .remote(url: "https://github.com/shakebugs/shake-ios", requirement: .exact("14.1.5")),
             .remote(url: "https://github.com/HedvigInsurance/hanalytics", requirement: .exact("0.230.0")),
+            .remote(url: "https://github.com/DataDog/dd-sdk-ios.git", requirement: .exact("1.9.0")),
         ],
         productTypes: [
             "Disk": .framework,
@@ -51,9 +52,9 @@ let dependencies = Dependencies(
             "hAnalytics": .framework,
             "Starscream": .framework,
             "Swifter": .framework,
-            "PresentationDebugSupport": .framework,
             "Presentation": .framework,
             "Kingfisher": .framework,
+            "Datadog": .framework,
         ]
     ),
     platforms: [.iOS]

@@ -9,6 +9,7 @@ public enum ExternalDependency: CaseIterable {
     case flow
     case form
     case presentation
+    case presentationDebugSupport
     case dynamiccolor
     case disk
     case snapkit
@@ -18,6 +19,7 @@ public enum ExternalDependency: CaseIterable {
     case hero
     case snapshottesting
     case shake
+    case datadog
     case hAnalytics
 
     public func targetDependencies() -> [TargetDependency] {
@@ -36,7 +38,9 @@ public enum ExternalDependency: CaseIterable {
         case .flow: return [.external(name: "Flow")]
         case .form: return [.external(name: "Form")]
         case .presentation:
-            return [.external(name: "Presentation"), .external(name: "PresentationDebugSupport")]
+            return [.external(name: "Presentation")]
+        case .presentationDebugSupport:
+            return [.external(name: "PresentationDebugSupport")]
         case .dynamiccolor: return [.external(name: "DynamicColor")]
         case .disk: return [.external(name: "Disk")]
         case .snapkit: return [.external(name: "SnapKit")]
@@ -46,6 +50,10 @@ public enum ExternalDependency: CaseIterable {
         case .snapshottesting: return [.external(name: "SnapshotTesting")]
         case .shake: return [.external(name: "Shake")]
         case .hAnalytics: return [.external(name: "hAnalytics")]
+        case .datadog:
+            return [
+                .external(name: "Datadog")
+            ]
         }
     }
 }
