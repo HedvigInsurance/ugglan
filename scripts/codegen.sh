@@ -3,7 +3,7 @@ set -e
 set -x
 
 buildDir=$(xcodebuild \
-    -project Projects/Codegen/Codegen.xcodeproj \
+    -project Codegen/Codegen.xcodeproj \
     -scheme "Apollo Codegen" \
     build | grep 'TARGET_BUILD_DIR')
 

@@ -8,7 +8,7 @@ DerivedData/
 Derived/
 Carthage
 *.xcworkspace
-*.xcodeproj
+Projects/**/*.xcodeproj
 UITestsImages/FailureDiffs
 Localizable.strings
 Localizable.stringsdict
