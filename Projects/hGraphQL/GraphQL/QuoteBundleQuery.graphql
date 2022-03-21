@@ -57,6 +57,11 @@ query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
                   url
                   type
                 }
+                currentInsurer {
+                  id
+                  displayName
+                  switchable
+                }
               }
             }
             displayName(locale: $locale)
