@@ -4,7 +4,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-
 struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
     let crossSell: hGraphQL.CrossSell
