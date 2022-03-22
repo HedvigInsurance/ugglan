@@ -2,6 +2,7 @@ import Form
 import Foundation
 import UIKit
 import hCore
+import hCoreUI
 
 extension UIApplication {
     public func setup() {
