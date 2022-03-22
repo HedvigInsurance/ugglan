@@ -6,17 +6,19 @@ import hGraphQL
 
 struct CrossSellingCardButtonStyle: SwiftUI.ButtonStyle {
     let crossSell: hGraphQL.CrossSell
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration
             .label
-            .background(Group {
-                if configuration.isPressed {
-                    hOverlayColor.pressed.opacity(0.2)
-                } else {
-                    Color.clear
+            .background(
+                Group {
+                    if configuration.isPressed {
+                        hOverlayColor.pressed.opacity(0.2)
+                    } else {
+                        Color.clear
+                    }
                 }
-            })
+            )
             .background(
                 LinearGradient(
                     gradient: Gradient(
