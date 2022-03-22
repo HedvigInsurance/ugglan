@@ -209,7 +209,9 @@ let log = Logger.builder
                 ApolloClient.initAndRegisterClient()
                     .always {
                         ChatState.shared = ChatState()
-                        self.updateLanguageMutation()
+                        DispatchQueue.main.async {
+                            self.updateLanguageMutation()
+                        }
                     }
             }
 
