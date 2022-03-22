@@ -4,69 +4,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct CrossSellingCardLabel: View {
-    @PresentableStore var store: ContractStore
-    let crossSell: hGraphQL.CrossSell
-    var didTapButton: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            VStack(alignment: .leading, spacing: 4) {
-                hText(crossSell.title, style: .headline)
-                hText(crossSell.description, style: .footnote)
-            }
-            .foregroundColor(hLabelColor.primary)
-            .colorScheme(.dark)
-            Spacer()
-            hButton.SmallButtonFilled {
-                didTapButton()
-            } content: {
-                hText(crossSell.buttonText)
-                    .frame(maxWidth: .infinity)
-            }
-            .hButtonFilledStyle(.overImage)
-        }
-        .padding(16)
-        .frame(
-            maxWidth: .infinity,
-            minHeight: 200,
-            alignment: .bottom
-        )
-    }
-}
-
-struct CrossSellingCardButtonStyle: SwiftUI.ButtonStyle {
-    let crossSell: hGraphQL.CrossSell
-
-    @ViewBuilder func background(configuration: Configuration) -> some View {
-        if configuration.isPressed {
-            hOverlayColor.pressed.opacity(0.2)
-        } else {
-            Color.clear
-        }
-    }
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration
-            .label
-            .background(background(configuration: configuration))
-            .background(
-                LinearGradient(
-                    gradient: Gradient(
-                        colors: [.black.opacity(0.5), .clear]
-                    ),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
-            .backgroundImageWithBlurHashFallback(
-                imageURL: crossSell.imageURL,
-                blurHash: crossSell.blurHash
-            )
-            .cornerRadius(.defaultCornerRadius)
-            .shadow(color: .black.opacity(0.05), radius: 24, x: 0, y: 4)
-    }
-}
 
 struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
