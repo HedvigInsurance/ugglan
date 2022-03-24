@@ -36,6 +36,11 @@ fastlane ios provision
 fastlane ios upload_dsyms
 ```
 
+### ios create_release
+```
+fastlane ios create_release
+```
+
 ### ios production_upload
 ```
 fastlane ios production_upload
