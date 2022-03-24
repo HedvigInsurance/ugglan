@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: git checkout release && git rebase -X theirs main
+      - run: git fetch && git checkout release && git rebase -X theirs main
       - name: Post checkout
         run: sh scripts/post-checkout.sh
       - name: Fastlane Action
