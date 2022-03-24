@@ -13,15 +13,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: everlytic/branch-merge@1.1.2
+        with:
+          github_token: ${{ github.token }}
+          source_ref: ${{ github.ref }}
+          target_branch: "release"
+          commit_message_template: "[Automated] Merged {source_ref} into target {target_branch}"
       - name: Post checkout
         run: sh scripts/post-checkout.sh
-      - name: Merge main -> release
-        uses: devmasx/merge-branch@master
-        with:
-          type: now
-          from_branch: main
-          target_branch: release
-          github_token: ${{ github.token }}
       - name: Fastlane Action
         env:
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
