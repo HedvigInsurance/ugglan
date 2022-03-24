@@ -8,7 +8,7 @@ on:
         required: true
 
 jobs:
-  deploy:
+  create:
     runs-on: self-hosted
 
     steps:
