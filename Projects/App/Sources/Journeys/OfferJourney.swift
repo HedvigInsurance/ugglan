@@ -38,8 +38,10 @@ extension AppJourney {
         }
     }
 
-    static var offerCheckout: some JourneyPresentation {
-        PaymentSetup(setupType: .initial)
+    @JourneyBuilder static var offerCheckout: some JourneyPresentation {
+        let store: OfferStore = globalPresentableStoreContainer.get()
+        
+        PaymentSetup(setupType: .preOnboarding(monthlyNetCost: store.state.currentVariant?.bundle.bundleCost.monthlyNet))
             .journey { success in
                 Journey(
                     Checkout(),
