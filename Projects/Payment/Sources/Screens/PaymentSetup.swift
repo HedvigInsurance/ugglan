@@ -10,7 +10,11 @@ public struct PaymentSetup {
     let setupType: SetupType
     let urlScheme: String
 
-    public enum SetupType { case initial, preOnboarding(monthlyNetCost: MonetaryAmount?), replacement, postOnboarding }
+    public enum SetupType {
+        case initial
+        case preOnboarding(monthlyNetCost: MonetaryAmount?)
+        case replacement, postOnboarding
+    }
 
     public init(
         setupType: SetupType,
@@ -32,7 +36,7 @@ extension PaymentSetup: Presentable {
                 let store: PaymentStore = globalPresentableStoreContainer.get()
                 store.send(.setMonthlyNetCost(cost: monthlyNetCost))
             }
-            
+
             let (viewController, result) = AdyenPayInSync(setupType: setupType, urlScheme: urlScheme).materialize()
             return (
                 viewController,
