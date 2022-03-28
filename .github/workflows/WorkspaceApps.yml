@@ -6,7 +6,7 @@ defaults:
 
 on:
   push:
-    branches: [ main ]
+    branches: [main, release]
   pull_request:
     branches: ['*']
 
@@ -16,7 +16,7 @@ jobs:
 
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-    
+
     steps:
       - uses: actions/checkout@v2
       - name: Git clean
@@ -27,9 +27,9 @@ jobs:
         run: rsync -rav --exclude=".git/" --include="*/" --include='*.xcworkspace/**' --include='*.xcodeproj/**' --include='*.xcworkspace' --include='*.xcodeproj' --include='**/Derived/**.plist' --include='**/Resources/**.lproj' --include='**/Resources/**.lproj/**'  --include='**/Derived/**.swift' --exclude='*' . ${{ secrets.SSH_CACHE_CREDENTIALS }}:~/Cache/generated/${{ github.sha }}
       - id: set-matrix
         uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
-        with:          
-          inputFile: '.github/workflows/matrix.json'
-          filter: '[*]'
+        with:
+          inputFile: ".github/workflows/matrix.json"
+          filter: "[*]"
 
   build:
     runs-on: self-hosted
@@ -54,7 +54,7 @@ jobs:
           path: ${{ matrix.path }}
       - name: Build
         if: github.ref == 'refs/heads/main' || steps.should_run.outputs.should_run == 'true'
-        uses: ./.github/actions/build-app          
+        uses: ./.github/actions/build-app
         with:
           lane: ${{ matrix.lane }}
           path: ${{ matrix.path }}
@@ -91,7 +91,7 @@ jobs:
           path: ${{ matrix.path }}
       - name: Test
         if: (github.ref == 'refs/heads/main' || steps.should_run.outputs.should_run == 'true') && matrix.test_scheme
-        uses: ./.github/actions/test-app          
+        uses: ./.github/actions/test-app
         with:
           test_scheme: ${{ matrix.test_scheme }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
@@ -118,11 +118,11 @@ jobs:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
           S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           SLACK_IOS_BUILDS_URL: ${{ secrets.SLACK_IOS_BUILDS_URL }}
+          SLACK_IOS_RC_BUILDS_URL: ${{ secrets.SLACK_IOS_RC_BUILDS_URL }}
           SLACK_IOS_PR_BUILDS_URL: ${{ secrets.SLACK_IOS_PR_BUILDS_URL }}
           BRANCH_NAME: ${{ github.head_ref }}
           GITHUB_PR_NUMBER: ${{ github.event.number }}
-          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '180'
-          FASTLANE_XCODE_LIST_TIMEOUT: '180'
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "180"
+          FASTLANE_XCODE_LIST_TIMEOUT: "180"
         with:
           lane: ios slack_message
-
