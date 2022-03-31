@@ -130,11 +130,6 @@ platform :ios do
     end
 
     lane :create_release do |options|
-        load_api
-        setup
-        
-        app_identifier = "com.hedvig.app"
-
         increment_build_number(
             build_number: latest_testflight_build_number(app_identifier: app_identifier) + 1,
             xcodeproj: "Projects/App/Ugglan.xcodeproj"
