@@ -38,7 +38,8 @@ public enum DataCollection {
         journey(
             style: .detented(.large),
             onComplete: onComplete
-        ).onPresent {
+        )
+        .onPresent {
             let store: DataCollectionStore = globalPresentableStoreContainer.get()
             store.send(.setProvider(providerID: providerID, providerDisplayName: providerDisplayName))
         }
