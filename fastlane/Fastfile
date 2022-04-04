@@ -128,12 +128,14 @@ platform :ios do
             )
         end
     end
-
-    lane :create_release do |options|
+    
+    lane :production_upload do |options|
         load_api
         setup
         
         app_identifier = "com.hedvig.app"
+
+        setup_keychain
 
         increment_build_number(
             build_number: latest_testflight_build_number(app_identifier: app_identifier) + 1,
@@ -144,15 +146,6 @@ platform :ios do
             version_number: options[:version_number],
             xcodeproj: "Projects/App/Ugglan.xcodeproj"
         )
-    end
-
-    lane :production_upload do |options|
-        load_api
-        setup
-        
-        app_identifier = "com.hedvig.app"
-
-        setup_keychain
         
         match(
             type: "appstore",
