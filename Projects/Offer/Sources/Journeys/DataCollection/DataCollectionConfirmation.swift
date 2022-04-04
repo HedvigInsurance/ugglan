@@ -103,6 +103,7 @@ public struct DataCollectionConfirmation: View {
     }
 }
 
+
 extension DataCollectionConfirmation {
     static func journey(
         style: PresentationStyle = .default,
@@ -145,9 +146,7 @@ extension DataCollectionConfirmation {
                             )
                         }
                 case .retry:
-                    DataCollection.journey(
-                        onComplete: onComplete
-                    )
+                    DismissJourney()
                 }
             default:
                 ContinueJourney()
