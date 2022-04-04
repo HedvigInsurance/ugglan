@@ -103,7 +103,6 @@ public struct DataCollectionConfirmation: View {
     }
 }
 
-
 extension DataCollectionConfirmation {
     static func journey(
         style: PresentationStyle = .default,
