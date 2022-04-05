@@ -48,6 +48,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Git clean
         run: git add . && git reset --hard HEAD
+      - name: Ensure correct XCode version
+        run: sh scripts/install-xcode.sh
       - name: Should run
         if: github.ref != 'refs/heads/main'
         id: should_run
