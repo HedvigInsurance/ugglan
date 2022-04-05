@@ -30,7 +30,7 @@ platform :ios do
     
     lane :setup do
         ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120"
-        xcode_install(version: "13.3")
+        xcode_install(version: "13.3", username: ENV["FASTLANE_USER"])
         ensure_xcode_version(version: "13.3")
     end
 
