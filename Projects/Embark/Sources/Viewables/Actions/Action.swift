@@ -2,10 +2,10 @@ import Flow
 import Foundation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 struct Action { let state: EmbarkState }
 
@@ -255,8 +255,7 @@ extension Action: Viewable {
                                     store: self.state.store.getAllValues()
                                 ),
                                 audioRecorder: audioRecorder
-                            )
-                            { url in
+                            ) { url in
                                 self.state.store.setValue(key: recordAction.storeKey, value: url.absoluteString)
                                 performCallback(recordAction.next.fragments.embarkLinkFragment)
                             }

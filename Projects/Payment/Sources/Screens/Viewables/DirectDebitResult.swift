@@ -47,10 +47,11 @@ enum DirectDebitResultType {
 
     var analyticsEvents: [hAnalyticsParcel] {
         switch self {
-        case .success: return [
-            hAnalyticsEvent.screenView(screen: .connectPaymentSuccess),
-            hAnalyticsEvent.paymentConnected()
-        ]
+        case .success:
+            return [
+                hAnalyticsEvent.screenView(screen: .connectPaymentSuccess),
+                hAnalyticsEvent.paymentConnected(),
+            ]
         case .failure: return [hAnalyticsEvent.screenView(screen: .connectPaymentFailed)]
         }
     }
@@ -119,7 +120,7 @@ extension DirectDebitResult: Viewable {
             }
 
         bag += events.removeAfter.set { _ in 1 }
-        
+
         type.analyticsEvents.forEach { parcel in
             containerView.trackOnAppear(parcel)
         }
