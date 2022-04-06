@@ -136,6 +136,16 @@ platform :ios do
         app_identifier = "com.hedvig.app"
 
         setup_keychain
+
+        increment_build_number(
+            build_number: latest_testflight_build_number(app_identifier: app_identifier) + 1,
+            xcodeproj: "Projects/App/Ugglan.xcodeproj"
+        )
+        
+        increment_version_number(
+            version_number: options[:version_number],
+            xcodeproj: "Projects/App/Ugglan.xcodeproj"
+        )
         
         match(
             type: "appstore",
@@ -147,16 +157,6 @@ platform :ios do
         )
 
         allow_keychain
-        
-        increment_build_number(
-            build_number: latest_testflight_build_number(app_identifier: app_identifier) + 1,
-            xcodeproj: "Projects/App/Ugglan.xcodeproj"
-        )
-        
-        increment_version_number(
-            version_number: options[:version_number],
-            xcodeproj: "Projects/App/Ugglan.xcodeproj"
-        )
         
         update_project_provisioning(
             xcodeproj: "Projects/App/Ugglan.xcodeproj",
@@ -652,8 +652,12 @@ platform :ios do
             }
           },
         ].filter { |i| i != nil }
-        
-        send_slack_message(url: git_branch == "" ? ENV["SLACK_IOS_BUILDS_URL"] : ENV["SLACK_IOS_PR_BUILDS_URL"], blocks: blocks)
+
+        if git_branch == "release"
+            send_slack_message(url: ENV["SLACK_IOS_RC_BUILDS_URL"], blocks: blocks)
+        else
+            send_slack_message(url: git_branch == "" ? ENV["SLACK_IOS_BUILDS_URL"] : ENV["SLACK_IOS_PR_BUILDS_URL"], blocks: blocks)
+        end
     end
 
     lane :test do |options|

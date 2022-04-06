@@ -43,7 +43,9 @@ extension AdyenPayInSync: Presentable {
                 client.fetch(query: GraphQL.ActivePaymentMethodsQuery())
                     .join(with: AdyenMethodsList.payInOptions)
                     .onValue { paymentMethods, options in
-                        if paymentMethods.activePaymentMethodsV2 == nil || setupType == .replacement {
+                        if paymentMethods.activePaymentMethodsV2 == nil {
+                            callback(.value(.left(options)))
+                        } else if case .replacement = setupType {
                             callback(.value(.left(options)))
                         } else {
                             callback(.value(.right(())))
