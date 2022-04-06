@@ -24,6 +24,22 @@ struct EmbarkNumberAction {
     let state: EmbarkState
     let data: EmbarkNumberActionData
     let style: FieldStyle
+
+    private func isInRange(number: Int?) -> Bool {
+        guard let number = number else {
+            return false
+        }
+
+        if let minValue = data.minValue, number < minValue {
+            return false
+        }
+
+        if let maxValue = data.maxValue, number > maxValue {
+            return false
+        }
+
+        return true
+    }
 }
 
 extension EmbarkNumberAction: Viewable {
@@ -71,7 +87,10 @@ extension EmbarkNumberAction: Viewable {
                 boxStack.addArrangedSubview(textInputView)
 
                 let isValidSignal = textSignal.atOnce()
-                    .map { text in !text.isEmpty && masking.isValid(text: text) }
+                    .map { text in
+                        !text.isEmpty && masking.isValid(text: text)
+                            && self.isInRange(number: Int(masking.unmaskedValue(text: text)))
+                    }
 
                 bag += textField.shouldReturn.set { value -> Bool in
                     if isValidSignal.value { handleSubmit(textValue: value) }
