@@ -45,10 +45,13 @@ enum DirectDebitResultType {
         }
     }
 
-    var analyticsEvent: hAnalyticsParcel {
+    var analyticsEvents: [hAnalyticsParcel] {
         switch self {
-        case .success: return hAnalyticsEvent.screenView(screen: .connectPaymentSuccess)
-        case .failure: return hAnalyticsEvent.screenView(screen: .connectPaymentFailed)
+        case .success: return [
+            hAnalyticsEvent.screenView(screen: .connectPaymentSuccess),
+            hAnalyticsEvent.paymentConnected()
+        ]
+        case .failure: return [hAnalyticsEvent.screenView(screen: .connectPaymentFailed)]
         }
     }
 }
@@ -116,8 +119,10 @@ extension DirectDebitResult: Viewable {
             }
 
         bag += events.removeAfter.set { _ in 1 }
-
-        containerView.trackOnAppear(type.analyticsEvent)
+        
+        type.analyticsEvents.forEach { parcel in
+            containerView.trackOnAppear(parcel)
+        }
 
         return (
             containerView,
