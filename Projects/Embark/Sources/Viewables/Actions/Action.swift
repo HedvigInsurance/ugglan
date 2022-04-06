@@ -5,6 +5,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 struct Action { let state: EmbarkState }
 
@@ -247,7 +248,14 @@ extension Action: Viewable {
                             let audioRecorder = AudioRecorder()
                             innerBag.hold(audioRecorder)
 
-                            let recordActionView = EmbarkRecordAction(data: recordAction, audioRecorder: audioRecorder)
+                            let recordActionView = EmbarkRecordAction(
+                                data: recordAction,
+                                tracking: .init(
+                                    storyName: self.state.storySignal.value?.name ?? "",
+                                    store: self.state.store.getAllValues()
+                                ),
+                                audioRecorder: audioRecorder
+                            )
                             { url in
                                 self.state.store.setValue(key: recordAction.storeKey, value: url.absoluteString)
                                 performCallback(recordAction.next.fragments.embarkLinkFragment)
