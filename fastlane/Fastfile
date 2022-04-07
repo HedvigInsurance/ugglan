@@ -664,8 +664,7 @@ platform :ios do
         setup
         scheme = options[:scheme]
         
-        device = "iPhone 12 Pro (15.0)"
-
+        device = "iPhone 13 Pro (15.4)"
 
         config_path = File.join(File.expand_path("~"), "Library", "Preferences", "com.apple.iphonesimulator.plist")
 
