@@ -4,6 +4,7 @@ import Disk
 import Flow
 import Foundation
 import UIKit
+import hAnalytics
 
 extension ApolloClient {
     public static var acceptLanguageHeader: String = ""
@@ -119,7 +120,10 @@ extension ApolloClient {
     public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
         Future { completion in let tokenData = self.retreiveToken()
 
-            if tokenData == nil {
+            if hAnalyticsExperiment.useQuoteCart {
+                let result = self.createClient(token: nil)
+                completion(.success(result))
+            } else if tokenData == nil {
                 return self.createClientFromNewSession()
                     .onResult { result in
                         switch result {

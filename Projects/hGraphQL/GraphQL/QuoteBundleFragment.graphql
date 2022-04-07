@@ -1,5 +1,15 @@
 fragment QuoteBundleFragment on QuoteBundle {
   displayName(locale: $locale)
+  possibleVariations {
+    id
+    tag(locale: $locale)
+    bundle {
+        displayName(locale: $locale)
+        bundleCost {
+            ...CostFragment
+        }
+    }
+  }
   quotes {
     dataCollectionId
     displayName(locale: $locale)
@@ -42,12 +52,7 @@ fragment QuoteBundleFragment on QuoteBundle {
   }
   inception {
     ... on ConcurrentInception {
-      correspondingQuotes {
-        ... on CompleteQuote {
-          id
-          displayName(locale: $locale)
-        }
-      }
+      correspondingQuoteIds
       startDate
       currentInsurer {
         id
@@ -57,12 +62,7 @@ fragment QuoteBundleFragment on QuoteBundle {
     }
     ... on IndependentInceptions {
       inceptions {
-        correspondingQuote {
-          ... on CompleteQuote {
-            id
-            displayName(locale: $locale)
-          }
-        }
+        correspondingQuoteId
         startDate
         currentInsurer {
          id

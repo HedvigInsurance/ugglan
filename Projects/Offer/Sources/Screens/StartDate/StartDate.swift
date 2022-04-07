@@ -34,7 +34,7 @@ extension StartDate: View {
                 SingleStartDateSection(
                     date: Binding(
                         get: {
-                            let ids = inception.correspondingQuotes.compactMap({ $0.id })
+                            let ids = inception.correspondingQuotes
 
                             guard let firstId = ids.first else {
                                 return nil
@@ -43,7 +43,7 @@ extension StartDate: View {
                             return selectedDatesMap[firstId] ?? inception.startDate?.localDateToDate
                         },
                         set: { newDate in
-                            let ids = inception.correspondingQuotes.compactMap({ $0.id })
+                            let ids = inception.correspondingQuotes
 
                             ids.forEach { id in
                                 selectedDatesMap[id] = newDate
@@ -56,24 +56,20 @@ extension StartDate: View {
                     initiallyCollapsed: inception.startDate?.localDateToDate == nil
                 )
             case let .independent(inceptions):
-                ForEach(inceptions, id: \.correspondingQuote.id) { inception in
+                ForEach(inceptions, id: \.correspondingQuoteId) { inception in
                     SingleStartDateSection(
                         date: Binding(
                             get: {
-                                guard let id = inception.correspondingQuote.id else {
-                                    return nil
-                                }
+                                let id = inception.correspondingQuoteId
                                 return selectedDatesMap[id] ?? inception.startDate?.localDateToDate
                             },
                             set: { newDate in
-                                guard let id = inception.correspondingQuote.id else {
-                                    return
-                                }
+                                let id = inception.correspondingQuoteId
                                 selectedDatesMap[id] = newDate
                             }
                         ),
                         title: quoteBundle.quoteFor(
-                            id: inception.correspondingQuote.id
+                            id: inception.correspondingQuoteId
                         )?
                         .displayName,
                         switchingActivated: inception.currentInsurer?.switchable
@@ -108,6 +104,8 @@ extension StartDate {
             .startDateErrorAlert
             .onAction(OfferStore.self) { action in
                 if case .setStartDates = action {
+                    DismissJourney()
+                } else if case .setOfferBundle = action {
                     DismissJourney()
                 }
             }

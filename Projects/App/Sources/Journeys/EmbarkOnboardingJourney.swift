@@ -10,7 +10,17 @@ import hCoreUI
 
 struct EmbarkOnboardingJourney {
     public static var quoteCartLoaderJourney: some JourneyPresentation {
-        Journey(
+        GroupJourney {
+            if hAnalyticsExperiment.useQuoteCart {
+                createQuoteCartOnboarding()
+            } else {
+                journey(cartId: nil)
+            }
+        }
+    }
+
+    private static func createQuoteCartOnboarding() -> some JourneyPresentation {
+        return Journey(
             StoreLoadingPresentable<UgglanStore>(
                 action: UgglanAction.createOnboardingQuoteCart,
                 endOn: { action in

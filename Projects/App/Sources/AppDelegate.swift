@@ -261,20 +261,25 @@ let log = Logger.builder
         trackNotificationPermission()
 
         // treat an empty token as a newly downloaded app and setLastNewsSeen
-        if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
+        // if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
 
-        bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-            .atValue { _ in
-                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+        self.setupHAnalyticsExperiments()
 
-                AnalyticsCoordinator().setUserId()
-                self.setupHAnalyticsExperiments()
+        bag += ApplicationContext.shared.$hasLoadedExperiments.take(first: 1)
+            .onValue { isLoaded in
+                guard isLoaded else { return }
+                self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
+                    .atValue { _ in
+                        Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
-                self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
-                    .filter(predicate: { hasLoaded in hasLoaded })
-                    .onValue { _ in
-                        self.bag += self.window.present(AppJourney.main)
-                        launch.completeAnimationCallbacker.callAll()
+                        AnalyticsCoordinator().setUserId()
+
+                        self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
+                            .filter(predicate: { hasLoaded in hasLoaded })
+                            .onValue { _ in
+                                self.bag += self.window.present(AppJourney.main)
+                                launch.completeAnimationCallbacker.callAll()
+                            }
                     }
             }
 

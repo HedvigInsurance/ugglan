@@ -4,6 +4,11 @@ mutation SignQuoteCart($quoteCartId: ID!, $quoteIds: [ID!]!, $locale: Locale!) {
       message
     }
     ... on QuoteCart {
+      checkoutMethods
+      checkout {
+        status
+        statusText
+      }
       paymentConnection {
         id
       }

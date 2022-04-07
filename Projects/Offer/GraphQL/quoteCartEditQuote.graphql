@@ -7,12 +7,7 @@ mutation QuoteCartEditQuote($quoteCartId: ID!, $quoteId: ID!, $payload: JSON!, $
       message
     }
     ... on QuoteCart {
-      paymentConnection {
-        id
-      }
-      bundle {
-        ...QuoteBundleFragment
-      }
+      ...QuoteCartFragment
     }
   }
 }

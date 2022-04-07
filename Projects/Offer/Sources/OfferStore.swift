@@ -15,12 +15,12 @@ public struct OfferState: StateProtocol {
     var startDates: [String: Date?] {
         switch currentVariant?.bundle.inception {
         case let .concurrent(concurrentInception):
-            return concurrentInception.correspondingQuotes.reduce(into: [:]) { partialResult, quote in
-                partialResult[quote.id ?? ""] = concurrentInception.startDate?.localDateToDate ?? Date()
+            return concurrentInception.correspondingQuotes.reduce(into: [:]) { partialResult, id in
+                partialResult[id] = concurrentInception.startDate?.localDateToDate ?? Date()
             }
         case let .independent(inceptions):
             return inceptions.reduce(into: [:]) { partialResult, inception in
-                partialResult[inception.correspondingQuote.id ?? ""] = inception.startDate?.localDateToDate ?? Date()
+                partialResult[inception.correspondingQuoteId] = inception.startDate?.localDateToDate ?? Date()
             }
         default:
             return [:]
@@ -52,7 +52,14 @@ public struct OfferState: StateProtocol {
             })
     }
 
+    // Quote Cart
     var quoteCartId: String? = nil
+
+    var isQuoteCart: Bool {
+        quoteCartId != nil
+    }
+
+    var checkoutStatus: CheckoutStatus? = nil
 
     public init() {}
 }
@@ -83,7 +90,11 @@ public enum OfferAction: ActionProtocol {
     case didRemoveCampaigns
 
     /// Quote Cart Events
-    case setQuoteCart(id: String)
+    case setQuoteCartId(id: String)
+    case setQuoteCart(quoteCart: QuoteCart)
+    case setPaymentConnectionId(id: String)
+    case startCheckout
+    case didStartCheckout
 
     case failed(event: OfferStoreError)
 
@@ -120,6 +131,32 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         )
     }
 
+    func query(for state: OfferState) -> FiniteSignal<OfferAction>? {
+        if let quoteCartId = state.quoteCartId {
+            return self.client
+                .fetch(query: query(for: quoteCartId))
+                .compactMap { data in
+                    let fragment = data.quoteCart.fragments.quoteCartFragment
+                    guard let _ = fragment.bundle else { return nil }
+                    return fragment
+                }
+                .map { quoteCart in
+                    return .setQuoteCart(quoteCart: .init(quoteCart: quoteCart))
+                }
+                .valueThenEndSignal
+        } else {
+            let query = self.query(for: state.ids)
+            return client.fetch(query: query)
+                .compactMap { data in
+                    return OfferBundle(data: data)
+                }
+                .map {
+                    return .setOfferBundle(bundle: $0)
+                }
+                .valueThenEndSignal
+        }
+    }
+
     internal var isLoadingSignal: CoreSignal<Read, Bool> {
         stateSignal.map { $0.offerData == nil }
     }
@@ -137,18 +174,16 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 .send()
             }
         case .startSign:
-            return signQuotesEffect()
+            return signQuotesEffect(quoteCartId: getState().quoteCartId)
         case .query:
-            let query = self.query(for: getState().ids)
-            return client.fetch(query: query)
-                .compactMap { data in
-                    return OfferBundle(data: data)
-                }
-                .map {
-                    return .setOfferBundle(bundle: $0)
-                }
-                .valueThenEndSignal
+            return query(for: getState())
         case let .updateStartDates(dateMap):
+            let state = getState()
+            if let quoteCartId = state.quoteCartId, let currentVariant = state.currentVariant,
+                let date = dateMap.values.first
+            {
+                return self.updateStartDatesQuoteCart(id: quoteCartId, date: date, currentVariant: currentVariant)
+            }
             return self.updateStartDates(dateMap: dateMap)
         case .removeRedeemedCampaigns:
             return removeRedeemedCampaigns()
@@ -169,33 +204,17 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 callback(.value(.refetch))
                 return NilDisposer()
             }
-        case .setOfferBundle:
+        case .setOfferBundle, .setQuoteCart:
             return Signal(after: 0.5).map { .setLoading(isLoading: false) }
-        case let .setQuoteCart(id):
-            return
-                client
-                .fetch(query: query(for: id))
-                .compactMap { data in
-                    return data.quoteCart
-                }
-                .map { quoteCart in
-                    return OfferBundle(
-                        possibleVariations: [
-                            QuoteVariant(
-                                bundle: QuoteBundle(bundle: quoteCart.bundle!.fragments.quoteBundleFragment),
-                                tag: nil,
-                                id: id
-                            )
-                        ],
-                        redeemedCampaigns: [],
-                        signMethodForQuotes: (.init(rawValue: quoteCart.checkoutMethods.first?.rawValue ?? "")
-                            ?? .unknown)
-                    )
-                }
-                .map {
-                    return .setOfferBundle(bundle: $0)
-                }
-                .valueThenEndSignal
+        case .startCheckout:
+            let state = getState()
+            if let quoteCartId = state.quoteCartId, let quoteId = state.currentVariant?.id, state.checkoutStatus == nil
+            {
+                let ids = state.currentVariant?.bundle.quotes.compactMap { $0.id } ?? [quoteId]
+                return startCheckout(quoteCartId: quoteCartId, ids: ids)
+            } else {
+                return Signal(after: 0.1).map { .openCheckout }
+            }
         default:
             return nil
         }
@@ -242,7 +261,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                         var copy = inception
 
                         dateMap.forEach { quoteId, startDate in
-                            if inception.correspondingQuote.id == quoteId {
+                            if inception.correspondingQuoteId == quoteId {
                                 copy.startDate = startDate?.localDateString
                             }
                         }
@@ -254,7 +273,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     break
                 case .concurrent(let inception):
                     dateMap.forEach { quoteId, startDate in
-                        if inception.correspondingQuotes.contains(where: { $0.id == quoteId }) {
+                        if inception.correspondingQuotes.contains(where: { $0 == quoteId }) {
                             var newInception = inception
                             newInception.startDate = startDate?.localDateString
                             newVariant.bundle.inception = .concurrent(inception: newInception)
@@ -267,6 +286,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
             newState.offerData = newOfferData
         case let .setOfferBundle(bundle):
+            newState.isUpdatingStartDates = false
             newState.offerData = bundle
         case let .setLoading(isLoading):
             newState.isLoading = isLoading
@@ -274,8 +294,14 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.isUpdatingStartDates = true
         case .failed(event: .updateStartDate):
             newState.isUpdatingStartDates = false
-        case let .setQuoteCart(id):
+        case let .setQuoteCartId(id):
             newState.quoteCartId = id
+        case .didStartCheckout:
+            break
+        case let .setQuoteCart(quoteCart):
+            newState.offerData = quoteCart.offerBundle
+            newState.selectedIds = quoteCart.offerBundle.quotes.map { $0.id }
+            newState.checkoutStatus = quoteCart.checkoutStatus
         default:
             break
         }
@@ -392,7 +418,7 @@ extension OfferStore {
             }
     }
 
-    private func signQuotesEffect() -> FiniteSignal<Action> {
+    private func signQuotesEffect(quoteCartId: String?) -> FiniteSignal<Action> {
         let subscription = client.subscribe(subscription: GraphQL.SignStatusSubscription())
         let bag = DisposeBag()
 
@@ -411,64 +437,68 @@ extension OfferStore {
                     callback(.value(.setSwedishBankID(statusCode: code)))
                 })
 
-            self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.state.selectedIds))
-                .onResult { result in
-                    switch result {
-                    case .failure:
-                        callback(.value(.sign(event: OfferAction.SignEvent.failed)))
-                        callback(.end)
-                    case let .success(data):
-                        if let signQuoteReponse = data.signOrApproveQuotes.asSignQuoteResponse {
-                            if signQuoteReponse.signResponse.asFailedToStartSign != nil {
-                                callback(
-                                    .value(
-                                        .sign(
-                                            event: OfferAction.SignEvent
-                                                .failed
-                                        )
-                                    )
-                                )
-                                callback(.end)
-                            } else if let session = signQuoteReponse
-                                .signResponse
-                                .asSwedishBankIdSession
-                            {
-                                callback(
-                                    .value(
-                                        .startSwedishBankIDSign(
-                                            autoStartToken:
-                                                session.autoStartToken
-                                                ?? ""
-                                        )
-                                    )
-                                )
-                            } else if signQuoteReponse.signResponse.asSimpleSignSession
-                                != nil
-                            {
-                                callback(
-                                    .value(
-                                        .sign(
-                                            event: OfferAction.SignEvent
-                                                .simpleSign
-                                        )
-                                    )
-                                )
-                            }
-                        } else if let approvedResponse = data.signOrApproveQuotes
-                            .asApproveQuoteResponse
-                        {
-                            if approvedResponse.approved == true {
-                                callback(
-                                    .value(.sign(event: OfferAction.SignEvent.done))
-                                )
-                                callback(.end)
-                            }
-                        } else {
+            if let quoteCartId = quoteCartId {
+                self.startCheckout(quoteCartId: quoteCartId, ids: self.state.selectedIds)
+            } else {
+                self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.state.selectedIds))
+                    .onResult { result in
+                        switch result {
+                        case .failure:
                             callback(.value(.sign(event: OfferAction.SignEvent.failed)))
                             callback(.end)
+                        case let .success(data):
+                            if let signQuoteReponse = data.signOrApproveQuotes.asSignQuoteResponse {
+                                if signQuoteReponse.signResponse.asFailedToStartSign != nil {
+                                    callback(
+                                        .value(
+                                            .sign(
+                                                event: OfferAction.SignEvent
+                                                    .failed
+                                            )
+                                        )
+                                    )
+                                    callback(.end)
+                                } else if let session = signQuoteReponse
+                                    .signResponse
+                                    .asSwedishBankIdSession
+                                {
+                                    callback(
+                                        .value(
+                                            .startSwedishBankIDSign(
+                                                autoStartToken:
+                                                    session.autoStartToken
+                                                    ?? ""
+                                            )
+                                        )
+                                    )
+                                } else if signQuoteReponse.signResponse.asSimpleSignSession
+                                    != nil
+                                {
+                                    callback(
+                                        .value(
+                                            .sign(
+                                                event: OfferAction.SignEvent
+                                                    .simpleSign
+                                            )
+                                        )
+                                    )
+                                }
+                            } else if let approvedResponse = data.signOrApproveQuotes
+                                .asApproveQuoteResponse
+                            {
+                                if approvedResponse.approved == true {
+                                    callback(
+                                        .value(.sign(event: OfferAction.SignEvent.done))
+                                    )
+                                    callback(.end)
+                                }
+                            } else {
+                                callback(.value(.sign(event: OfferAction.SignEvent.failed)))
+                                callback(.end)
+                            }
                         }
                     }
-                }
+            }
 
             return bag
         }

@@ -1,8 +1,13 @@
 fragment QuoteCartFragment on QuoteCart {
+  id
   bundle {
     ...QuoteBundleFragment
   }
   checkoutMethods
+  checkout {
+    status
+    statusText
+  }
   campaign {
     ... CampaignFragment
   }

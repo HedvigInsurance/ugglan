@@ -77,7 +77,7 @@ extension SignSection: Presentable {
 
                     innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
                         .onValue { viewController in
-                            store.send(.openCheckout)
+                            store.send(.startCheckout)
                         }
 
                     innerBag += row.append(signButton)

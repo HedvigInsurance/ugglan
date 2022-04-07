@@ -184,6 +184,19 @@ extension SwedishBankIdSign: Presentable {
                         }
                     }
 
+                bag += store.stateSignal.atOnce().compactMap { $0.quoteCartId }.toVoid()
+                    .onValue {
+                        guard let url = URL(string: "bankid:///?redirect=hedvig://") else { return }
+
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(
+                                url,
+                                options: [:],
+                                completionHandler: nil
+                            )
+                        }
+                    }
+
                 bag += store.onAction(
                     .sign(event: .failed)
                 ) {

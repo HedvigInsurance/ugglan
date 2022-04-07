@@ -89,7 +89,7 @@ extension CurrentInsurerSection: Presentable {
             inceptions.enumerated()
                 .forEach { offset, inception in
                     let currentInsurer = inception.currentInsurer
-                    let correspondingQuoteID = inception.correspondingQuote.id
+                    let correspondingQuoteID = inception.correspondingQuoteId
                     let switchable = inception.currentInsurer?.switchable ?? false
 
                     let insuranceType = quoteBundle.quoteFor(id: correspondingQuoteID)?.displayName

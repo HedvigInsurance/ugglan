@@ -11,9 +11,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-#warning("switch to feature flag")
-public let shouldUseQuoteCart = true
-
 public typealias EmbarkStory = GraphQL.ChoosePlanQuery.Data.EmbarkStory
 
 public struct EmbarkPlans {
@@ -119,7 +116,7 @@ extension EmbarkPlans: Presentable {
             .compactMap {
                 $0.embarkStories
             }
-            .map { $0.filter { story in story.type == .appOnboardingQuoteCart } }
+            .map { $0.filter { story in story.type == hAnalyticsExperiment.embarkStoryType } }
             .onValue {
                 activityIndicator.removeFromSuperview()
                 plansSignal.value = $0
@@ -197,6 +194,16 @@ extension GraphQL.ChoosePlanQuery.Data.EmbarkStory {
         case .gradientTwo: return .insuranceTwo
         case .gradientThree: return .insuranceThree
         case .__unknown, .none: return nil
+        }
+    }
+}
+
+extension hAnalyticsExperiment {
+    public static var embarkStoryType: GraphQL.EmbarkStoryType {
+        if hAnalyticsExperiment.useQuoteCart {
+            return .appOnboardingQuoteCart
+        } else {
+            return .appOnboarding
         }
     }
 }
