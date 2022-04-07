@@ -6,6 +6,7 @@ import Presentation
 import UIKit
 import hCore
 import hGraphQL
+import hAnalytics
 
 public struct UgglanState: StateProtocol {
     var selectedTabIndex: Int = 0
@@ -66,6 +67,8 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             return performTokenExchange(with: exchangeToken)
         case let .exchangePaymentToken(token):
             return performTokenExchange(with: token)
+        case .didAcceptHonestyPledge:
+            hAnalyticsEvent.honorPledgeConfirmed().send()
         default:
             break
         }

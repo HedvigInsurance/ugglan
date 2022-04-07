@@ -86,7 +86,6 @@ struct DidAcceptPledgeNotifier: View {
                 if value && !hasNotifiedStore {
                     hasNotifiedStore = true
                     store.send(.didAcceptHonestyPledge)
-                    hAnalyticsEvent.honorPledgeConfirmed().send()
                 }
             }
         }
