@@ -4,9 +4,9 @@ import Foundation
 import Offer
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hGraphQL
-import hAnalytics
 
 public struct UgglanState: StateProtocol {
     var selectedTabIndex: Int = 0
