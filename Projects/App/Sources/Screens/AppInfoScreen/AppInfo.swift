@@ -34,9 +34,9 @@ struct AppInfo {
         var trackingParcel: hAnalyticsParcel {
             switch self {
             case .appInformation:
-                return hAnalyticsEvent.screenView(screen: .appInformation)
+                return hAnalyticsEvent.screenView(screen: .app_information)
             case .appSettings:
-                return hAnalyticsEvent.screenView(screen: .appSettings)
+                return hAnalyticsEvent.screenView(screen: .app_settings)
             }
         }
 
