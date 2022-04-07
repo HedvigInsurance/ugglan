@@ -2,10 +2,10 @@ import AVFAudio
 import Combine
 import Foundation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 struct EmbarkRecorderTracking {
     var onPlay: hAnalyticsParcel
@@ -13,8 +13,11 @@ struct EmbarkRecorderTracking {
     var onSubmit: hAnalyticsParcel
     var onStop: hAnalyticsParcel
     var onStart: hAnalyticsParcel
-    
-    init(storyName: String, store: [String: String?]) {
+
+    init(
+        storyName: String,
+        store: [String: String?]
+    ) {
         self.onPlay = hAnalyticsEvent.embarkAudioRecordingPlayback(
             storyName: storyName,
             store: store
@@ -43,7 +46,7 @@ struct EmbarkRecordAction: View {
     var tracking: EmbarkRecorderTracking
     @ObservedObject var audioRecorder: AudioRecorder
     let onSubmit: (_ url: URL) -> Void
-    
+
     var body: some View {
         ZStack(alignment: .bottom) {
             if let recording = audioRecorder.recording {
@@ -72,12 +75,12 @@ struct EmbarkRecordAction: View {
                 .transition(.move(edge: .bottom))
             } else {
                 RecordButton(isRecording: audioRecorder.isRecording) {
-                    if (audioRecorder.isRecording) {
+                    if audioRecorder.isRecording {
                         tracking.onStop.send()
                     } else {
                         tracking.onStart.send()
                     }
-                    
+
                     withAnimation(.spring()) {
                         audioRecorder.toggleRecording()
                     }

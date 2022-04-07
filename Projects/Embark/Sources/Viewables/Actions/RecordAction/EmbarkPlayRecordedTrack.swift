@@ -3,9 +3,9 @@ import Combine
 import Foundation
 import SwiftUI
 import Swifter
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
@@ -45,7 +45,7 @@ struct TrackPlayer: View {
         )
         .onTapGesture {
             onPlay()
-            
+
             withAnimation(.spring()) {
                 audioPlayer.togglePlaying()
             }
