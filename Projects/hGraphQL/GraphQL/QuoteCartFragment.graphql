@@ -9,6 +9,9 @@ fragment QuoteCartFragment on QuoteCart {
     statusText
   }
   campaign {
-    ... CampaignFragment
+  ... CampaignFragment
+  }
+  paymentConnection {
+      id
   }
 }

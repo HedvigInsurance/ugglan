@@ -20,8 +20,10 @@ extension AppJourney {
                 ContinueJourney()
             case let .signed(_, startDates):
                 CrossSellingSigned.journey(startDate: startDates.first?.value)
-            case .openCheckout:
-                offerCheckout
+            case let .openCheckout(token):
+                AppJourney.offerCheckout(with: token)
+            case let .signedQuoteCart:
+                DismissJourney()
             }
         }
     }

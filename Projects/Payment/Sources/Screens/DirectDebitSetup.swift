@@ -10,8 +10,6 @@ import hCore
 import hGraphQL
 
 struct DirectDebitSetup {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
     let setupType: PaymentSetup.SetupType
 
     private func makeDismissButton() -> UIBarButtonItem {
@@ -37,6 +35,9 @@ extension DirectDebitSetup: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.hidesBottomBarWhenPushed = true
+
+        let store: PaymentStore = self.get()
+        let client = store.getClient()
 
         if #available(iOS 13.0, *) { viewController.isModalInPresentation = true }
 
@@ -165,7 +166,7 @@ extension DirectDebitSetup: Presentable {
                     bag += viewController.present(alert)
                         .onValue { shouldDismiss in
                             if shouldDismiss {
-                                self.client
+                                client
                                     .perform(
                                         mutation:
                                             GraphQL
@@ -189,7 +190,7 @@ extension DirectDebitSetup: Presentable {
                     case .success:
                         client.fetch(query: GraphQL.PayInMethodStatusQuery())
                             .onValue { _ in
-                                self.store.update(
+                                client.store.update(
                                     query: GraphQL.PayInMethodStatusQuery()
                                 ) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
                                     data.payinMethodStatus = .pending
@@ -232,7 +233,7 @@ extension DirectDebitSetup: Presentable {
                 // if user is closing app in the middle of process make sure to inform backend
                 bag += NotificationCenter.default.signal(forName: .applicationWillTerminate)
                     .onValue { _ in
-                        self.client
+                        client
                             .perform(mutation: GraphQL.CancelDirectDebitRequestMutation())
                             .sink()
                     }

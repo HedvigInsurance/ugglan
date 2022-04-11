@@ -34,10 +34,13 @@ extension SignSection: Presentable {
 
         bag += store.stateSignal
             .map {
-                ($0.offerData?.signMethodForQuotes, $0.currentVariant?.bundle.appConfiguration.approveButtonTerminology)
+                (
+                    $0.checkoutStatus, $0.offerData?.signMethodForQuotes,
+                    $0.currentVariant?.bundle.appConfiguration.approveButtonTerminology
+                )
             }
             .distinct(==)
-            .onValueDisposePrevious { signMethodForQuotes, approveButtonTerminology in
+            .onValueDisposePrevious { checkoutStatus, signMethodForQuotes, approveButtonTerminology in
                 let innerBag = DisposeBag()
 
                 switch signMethodForQuotes {

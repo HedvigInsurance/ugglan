@@ -28,18 +28,22 @@ extension AppJourney {
                     .withDismissButton
             case .signed:
                 AppJourney.postOnboarding
+            case let .signedQuoteCart(token, _):
+                Journey(ApolloClientSaveTokenLoader(accessToken: token)) {
+                    AppJourney.postOnboarding
+                }
             case .close:
                 ContinueJourney()
             case let .menu(action):
                 action.journey
-            case .openCheckout:
-                offerCheckout
+            case let .openCheckout(token):
+                AppJourney.offerCheckout(with: token)
             }
         }
     }
 
-    static var offerCheckout: some JourneyPresentation {
-        PaymentSetup(setupType: .initial)
+    static func offerCheckout(with token: String? = nil) -> some JourneyPresentation {
+        PaymentSetup(setupType: .initial, accessToken: token)
             .journey { success in
                 Journey(
                     Checkout(),

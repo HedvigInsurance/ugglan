@@ -12,7 +12,6 @@ import hGraphQL
 
 public struct MyPayment {
     @PresentableStore var store: PaymentStore
-    @Inject var client: ApolloClient
     let urlScheme: String
 
     public init(urlScheme: String) { self.urlScheme = urlScheme }
@@ -23,6 +22,8 @@ extension MyPayment: Presentable {
         let bag = DisposeBag()
 
         store.send(.load)
+
+        let client = store.getClient()
 
         let dataSignal = client.watch(query: GraphQL.MyPaymentQuery())
         let failedChargesSignalData = dataSignal.map { $0.balance.failedCharges }
@@ -35,7 +36,7 @@ extension MyPayment: Presentable {
         bag += viewController.install(form) { scrollView in
             bag += scrollView.performEntryAnimation(
                 contentView: form,
-                onLoad: self.client.fetch(query: GraphQL.MyPaymentQuery()),
+                onLoad: client.fetch(query: GraphQL.MyPaymentQuery()),
                 onError: { _ in }
             )
         }

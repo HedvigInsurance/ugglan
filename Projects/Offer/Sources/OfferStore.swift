@@ -52,14 +52,16 @@ public struct OfferState: StateProtocol {
             })
     }
 
+    var paymentConnection: PaymentConnection?
+
     // Quote Cart
     var quoteCartId: String? = nil
+    var checkoutStatus: CheckoutStatus? = nil
+    var accessToken: String? = nil
 
     var isQuoteCart: Bool {
         quoteCartId != nil
     }
-
-    var checkoutStatus: CheckoutStatus? = nil
 
     public init() {}
 }
@@ -94,7 +96,8 @@ public enum OfferAction: ActionProtocol {
     case setQuoteCart(quoteCart: QuoteCart)
     case setPaymentConnectionId(id: String)
     case startCheckout
-    case didStartCheckout
+    case fetchAccessToken
+    case setAccessToken(id: String)
 
     case failed(event: OfferStoreError)
 
@@ -136,9 +139,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             return self.client
                 .fetch(query: query(for: quoteCartId))
                 .compactMap { data in
-                    let fragment = data.quoteCart.fragments.quoteCartFragment
-                    guard let _ = fragment.bundle else { return nil }
-                    return fragment
+                    data.quoteCart.fragments.quoteCartFragment
                 }
                 .map { quoteCart in
                     return .setQuoteCart(quoteCart: .init(quoteCart: quoteCart))
@@ -174,7 +175,17 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 .send()
             }
         case .startSign:
-            return signQuotesEffect(quoteCartId: getState().quoteCartId)
+            let status = getState().checkoutStatus
+            if status != nil {
+                return [.fetchAccessToken].emitEachThenEnd
+            } else if let quoteCartId = getState().quoteCartId {
+                return quoteCartSignQuotesEffectPoll(
+                    quoteCartId: quoteCartId,
+                    willFinish: stateSignal.map { $0.checkoutStatus != nil }.boolean()
+                )
+            } else {
+                return signQuotesEffect()
+            }
         case .query:
             return query(for: getState())
         case let .updateStartDates(dateMap):
@@ -214,6 +225,17 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 return startCheckout(quoteCartId: quoteCartId, ids: ids)
             } else {
                 return Signal(after: 0.1).map { .openCheckout }
+            }
+        case .fetchAccessToken:
+            if let quoteCartId = getState().quoteCartId {
+                return self.client.perform(mutation: GraphQL.CreateAccessTokenMutation(id: quoteCartId))
+                    .compactMap { data in
+                        data.quoteCartCreateAccessToken.accessToken
+                    }
+                    .map {
+                        .setAccessToken(id: $0)
+                    }
+                    .valueThenEndSignal
             }
         default:
             return nil
@@ -296,12 +318,13 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.isUpdatingStartDates = false
         case let .setQuoteCartId(id):
             newState.quoteCartId = id
-        case .didStartCheckout:
-            break
         case let .setQuoteCart(quoteCart):
             newState.offerData = quoteCart.offerBundle
             newState.selectedIds = quoteCart.offerBundle.quotes.map { $0.id }
             newState.checkoutStatus = quoteCart.checkoutStatus
+            newState.paymentConnection = quoteCart.paymentConnection
+        case let .setAccessToken(id):
+            newState.accessToken = id
         default:
             break
         }
@@ -418,7 +441,7 @@ extension OfferStore {
             }
     }
 
-    private func signQuotesEffect(quoteCartId: String?) -> FiniteSignal<Action> {
+    private func signQuotesEffect() -> FiniteSignal<Action> {
         let subscription = client.subscribe(subscription: GraphQL.SignStatusSubscription())
         let bag = DisposeBag()
 
@@ -437,68 +460,64 @@ extension OfferStore {
                     callback(.value(.setSwedishBankID(statusCode: code)))
                 })
 
-            if let quoteCartId = quoteCartId {
-                self.startCheckout(quoteCartId: quoteCartId, ids: self.state.selectedIds)
-            } else {
-                self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.state.selectedIds))
-                    .onResult { result in
-                        switch result {
-                        case .failure:
-                            callback(.value(.sign(event: OfferAction.SignEvent.failed)))
-                            callback(.end)
-                        case let .success(data):
-                            if let signQuoteReponse = data.signOrApproveQuotes.asSignQuoteResponse {
-                                if signQuoteReponse.signResponse.asFailedToStartSign != nil {
-                                    callback(
-                                        .value(
-                                            .sign(
-                                                event: OfferAction.SignEvent
-                                                    .failed
-                                            )
+            self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.state.selectedIds))
+                .onResult { result in
+                    switch result {
+                    case .failure:
+                        callback(.value(.sign(event: OfferAction.SignEvent.failed)))
+                        callback(.end)
+                    case let .success(data):
+                        if let signQuoteReponse = data.signOrApproveQuotes.asSignQuoteResponse {
+                            if signQuoteReponse.signResponse.asFailedToStartSign != nil {
+                                callback(
+                                    .value(
+                                        .sign(
+                                            event: OfferAction.SignEvent
+                                                .failed
                                         )
                                     )
-                                    callback(.end)
-                                } else if let session = signQuoteReponse
-                                    .signResponse
-                                    .asSwedishBankIdSession
-                                {
-                                    callback(
-                                        .value(
-                                            .startSwedishBankIDSign(
-                                                autoStartToken:
-                                                    session.autoStartToken
-                                                    ?? ""
-                                            )
-                                        )
-                                    )
-                                } else if signQuoteReponse.signResponse.asSimpleSignSession
-                                    != nil
-                                {
-                                    callback(
-                                        .value(
-                                            .sign(
-                                                event: OfferAction.SignEvent
-                                                    .simpleSign
-                                            )
-                                        )
-                                    )
-                                }
-                            } else if let approvedResponse = data.signOrApproveQuotes
-                                .asApproveQuoteResponse
+                                )
+                                callback(.end)
+                            } else if let session = signQuoteReponse
+                                .signResponse
+                                .asSwedishBankIdSession
                             {
-                                if approvedResponse.approved == true {
-                                    callback(
-                                        .value(.sign(event: OfferAction.SignEvent.done))
+                                callback(
+                                    .value(
+                                        .startSwedishBankIDSign(
+                                            autoStartToken:
+                                                session.autoStartToken
+                                                ?? ""
+                                        )
                                     )
-                                    callback(.end)
-                                }
-                            } else {
-                                callback(.value(.sign(event: OfferAction.SignEvent.failed)))
+                                )
+                            } else if signQuoteReponse.signResponse.asSimpleSignSession
+                                != nil
+                            {
+                                callback(
+                                    .value(
+                                        .sign(
+                                            event: OfferAction.SignEvent
+                                                .simpleSign
+                                        )
+                                    )
+                                )
+                            }
+                        } else if let approvedResponse = data.signOrApproveQuotes
+                            .asApproveQuoteResponse
+                        {
+                            if approvedResponse.approved == true {
+                                callback(
+                                    .value(.sign(event: OfferAction.SignEvent.done))
+                                )
                                 callback(.end)
                             }
+                        } else {
+                            callback(.value(.sign(event: OfferAction.SignEvent.failed)))
+                            callback(.end)
                         }
                     }
-            }
+                }
 
             return bag
         }

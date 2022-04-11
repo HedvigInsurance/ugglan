@@ -8,20 +8,29 @@ import hCore
 public struct PaymentSetup {
     let setupType: SetupType
     let urlScheme: String
+    let accessToken: String?
 
     public enum SetupType { case initial, replacement, postOnboarding }
 
     public init(
         setupType: SetupType,
-        urlScheme: String = Bundle.main.urlScheme ?? ""
+        urlScheme: String = Bundle.main.urlScheme ?? "",
+        accessToken: String? = nil
     ) {
         self.setupType = setupType
         self.urlScheme = urlScheme
+        self.accessToken = accessToken
     }
 }
 
 extension PaymentSetup: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<Either<Bool, AdyenOptions>>) {
+        let store: PaymentStore = self.get()
+
+        if let accessToken = accessToken {
+            store.send(.setAccessToken(token: accessToken))
+        }
+
         switch hAnalyticsExperiment.paymentType {
         case .trustly:
             let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()

@@ -49,10 +49,11 @@ extension Offer {
 
 public enum OfferResult {
     case signed(ids: [String], startDates: [String: Date?])
+    case signedQuoteCart(accessToken: String, startDates: [String: Date?])
     case close
     case chat
     case menu(_ action: MenuChildAction)
-    case openCheckout
+    case openCheckout(accessToken: String?)
 }
 
 extension Offer: Presentable {
@@ -181,8 +182,13 @@ extension Offer: Presentable {
                 }
 
                 bag += store.onAction(.openCheckout) {
-                    callback(.value(.openCheckout))
+                    callback(.value(.openCheckout(accessToken: nil)))
                 }
+
+                bag += store.stateSignal.compactMap { $0.accessToken }
+                    .onValue { token in
+                        callback(.value(.signedQuoteCart(accessToken: token, startDates: store.state.startDates)))
+                    }
 
                 bag += store.onAction(.sign(event: .done)) {
                     callback(.value(.signed(ids: store.state.ids, startDates: store.state.startDates)))

@@ -5,7 +5,7 @@ public typealias OfferData = GraphQL.QuoteBundleQuery.Data
 
 public enum CheckoutStatus: String, Codable {
     case pending = "PENDING"
-    case signing = "SIGNED"
+    case signed = "SIGNED"
     case completed = "COMPLETED"
     case failed = "FAILED"
 
@@ -24,6 +24,7 @@ public struct QuoteCart: Codable, Equatable {
     public let offerBundle: OfferBundle
     public let id: String
     public let checkoutStatus: CheckoutStatus?
+    public let paymentConnection: PaymentConnection?
 
     public init(
         quoteCart: GraphQL.QuoteCartFragment
@@ -31,7 +32,12 @@ public struct QuoteCart: Codable, Equatable {
         self.offerBundle = .init(quoteCart: quoteCart)
         self.id = quoteCart.id
         self.checkoutStatus = .init(rawValue: quoteCart.checkout?.status.rawValue ?? "")
+        self.paymentConnection = .init(id: quoteCart.paymentConnection?.id)
     }
+}
+
+public struct PaymentConnection: Codable, Equatable {
+    public let id: String?
 }
 
 public struct OfferBundle: Codable, Equatable {
@@ -85,7 +91,7 @@ public struct OfferBundle: Codable, Equatable {
         signMethodForQuotes =
             (.init(rawValue: quoteCart.checkoutMethods.first?.rawValue ?? "")
                 ?? .unknown)
-        quotes = bundle.quotes.map { QuoteBundle.Quote(quote: $0) } ?? []
+        quotes = bundle.quotes.map { QuoteBundle.Quote(quote: $0) }
         self.id = UUID()
     }
 }

@@ -59,8 +59,10 @@ enum ChatResult {
                         AppJourney.postOnboarding
                     case let .menu(action):
                         action.journey
-                    case .openCheckout:
-                        AppJourney.offerCheckout
+                    case let .openCheckout(token):
+                        AppJourney.offerCheckout(with: token)
+                    case .signedQuoteCart:
+                        DismissJourney()
                     }
                 }
                 .hidesBackButton

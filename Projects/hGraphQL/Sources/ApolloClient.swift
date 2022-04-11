@@ -40,7 +40,7 @@ extension ApolloClient {
         }
     }
 
-    internal static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
+    public static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
         let environment = Environment.current
 
         let httpAdditionalHeaders = headers(token: token)
@@ -120,8 +120,11 @@ extension ApolloClient {
     public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
         Future { completion in let tokenData = self.retreiveToken()
 
+            // If we are using quoteCart we cannot have a session token or it will
+            // corrupt the QuoteCart data (ie you will get SIMPLE_SIGN as a sign method
+            // rather than SWEDISH_BANK_ID for Sweden.
             if hAnalyticsExperiment.useQuoteCart {
-                let result = self.createClient(token: nil)
+                let result = self.createClient(token: tokenData?.token)
                 completion(.success(result))
             } else if tokenData == nil {
                 return self.createClientFromNewSession()

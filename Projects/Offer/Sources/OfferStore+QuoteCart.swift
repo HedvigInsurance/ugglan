@@ -42,12 +42,23 @@ extension OfferStore {
                 return data.quoteCartEditQuote.asQuoteCart?.fragments.quoteCartFragment
             }
             .map { quoteCart in
-                .setOfferBundle(bundle: OfferBundle(quoteCart: quoteCart))
+                .setQuoteCart(quoteCart: .init(quoteCart: quoteCart))
             }
             .mapError { error in
                 .failed(event: .updateStartDate)
             }
             .valueSignal
+    }
+
+    internal func quoteCartSignQuotesEffectPoll(
+        quoteCartId: String,
+        willFinish: ReadSignal<Bool>
+    ) -> FiniteSignal<OfferAction>? {
+        return Signal(every: 1)
+            .map { _ in
+                OfferAction.query
+            }
+            .wait(until: willFinish).finite()
     }
 }
 
