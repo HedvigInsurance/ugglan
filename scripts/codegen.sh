@@ -2,7 +2,7 @@
 set -e
 set -x
 
-tuist generate --path Projects/Codegen
+tuist generate --path Projects/Codegen --no-open
 
 buildDir=$(xcodebuild \
     -project Projects/Codegen/Codegen.xcodeproj \

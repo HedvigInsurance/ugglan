@@ -196,7 +196,7 @@ extension Project {
 
         let dependencies: [TargetDependency] = [
             externalDependencies.map { externalDependency in externalDependency.targetDependencies() }
-                .flatMap { $0 }, sdks.map { sdk in .sdk(name: sdk) },
+                .flatMap { $0 }, sdks.map { sdk in .sdk(name: sdk, type: .framework) },
         ]
         .flatMap { $0 }
 
