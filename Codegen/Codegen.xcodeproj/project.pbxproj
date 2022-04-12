@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -124,8 +124,6 @@
 			attributes = {
 				LastUpgradeCheck = 1300;
 				ORGANIZATIONNAME = "Hedvig AB";
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = 4D2BB2419D9F06054820CAD8 /* Build configuration list for PBXProject "Codegen" */;
 			compatibilityVersion = "Xcode 13.0";
@@ -371,7 +369,7 @@
 			repositoryURL = "https://github.com/apollographql/apollo-ios";
 			requirement = {
 				kind = exactVersion;
-				version = 0.49.1;
+				version = 0.51.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
