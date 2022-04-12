@@ -9,7 +9,7 @@ let dependencies = Dependencies(
                 url: "https://github.com/firebase/firebase-ios-sdk",
                 requirement: .upToNextMajor(from: "7.3.1")
             ),
-            .remote(url: "https://github.com/apollographql/apollo-ios", requirement: .exact("0.49.0")),
+            .remote(url: "https://github.com/apollographql/apollo-ios", requirement: .exact("0.51.2")),
             .remote(url: "https://github.com/HedvigInsurance/Flow", requirement: .upToNextMajor(from: "1.8.8")),
             .remote(
                 url: "https://github.com/HedvigInsurance/Form",
