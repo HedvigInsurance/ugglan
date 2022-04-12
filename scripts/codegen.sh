@@ -4,11 +4,6 @@ set -x
 
 tuist generate --path Projects/Codegen --no-open
 
-buildDir=$(xcodebuild \
-    -project Projects/Codegen/Codegen.xcodeproj \
-    -scheme "Apollo Codegen" \
-    build | grep 'TARGET_BUILD_DIR')
+x=$( xcodebuild -showBuildSettings -project Projects/Codegen/Codegen.xcodeproj | grep ' BUILD_DIR =' | sed -e 's/.*= *//' )
 
-eval $buildDir
-
-$TARGET_BUILD_DIR/Codegen.app/Contents/MacOS/Codegen
+DYLD_FRAMEWORK_PATH=$x/Debug DYLD_LIBRARY_PATH=$x/Debug $x/Debug/Codegen.app/Contents/MacOS/Codegen
