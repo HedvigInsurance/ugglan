@@ -16,7 +16,7 @@ let project = Project(
             sources: ["Sources/**"],
             resources: [],
             dependencies: [.package(product: "ApolloCodegenLib")]
-        ),
+        )
     ],
     schemes: [
         Scheme(
