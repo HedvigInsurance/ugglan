@@ -42,7 +42,7 @@ extension DirectDebitSetup: Presentable {
 
         switch setupType {
         case .replacement: viewController.title = L10n.PayInIframeInApp.connectPayment
-        case .postOnboarding, .initial: viewController.title = L10n.PayInIframePostSign.title
+        case .postOnboarding, .initial, .preOnboarding: viewController.title = L10n.PayInIframePostSign.title
         }
 
         let dismissButton = makeDismissButton()
@@ -127,7 +127,7 @@ extension DirectDebitSetup: Presentable {
                     var alert: Alert<Bool>
 
                     switch self.setupType {
-                    case .initial:
+                    case .initial, .preOnboarding:
                         alert = Alert<Bool>(
                             title: L10n.PayInIframeInAppCancelAlert.title,
                             message: L10n.PayInIframeInAppCancelAlert.body,
