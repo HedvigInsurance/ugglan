@@ -75,7 +75,9 @@ let appDependencies: [TargetDependency] = [
 ]
 .flatMap { $0 }
 
-let targetScripts: [TargetScript] = []
+let targetScripts: [TargetScript] = [
+    .post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks")
+]
 
 let project = Project(
     name: "Ugglan",

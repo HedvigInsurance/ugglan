@@ -207,7 +207,13 @@ extension Project {
                 ]),
                 sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
                 resources: "Example/Resources/**",
-                scripts: [],
+                scripts: [
+                    .post(
+                        path: "../../scripts/post-build-action.sh",
+                        arguments: [],
+                        name: "Clean frameworks"
+                    )
+                ],
                 dependencies: [
                     [
                         .target(name: "\(name)"),
