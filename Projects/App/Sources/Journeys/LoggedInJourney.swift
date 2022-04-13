@@ -131,12 +131,14 @@ extension AppJourney {
                     contractsTab
                 },
                 {
-                    if hAnalyticsExperiment.keyGear {
+                    if hAnalyticsExperiment.keyGear && hAnalyticsExperiment.isQasaEnabled {
                         keyGearTab
                     }
                 },
                 {
-                    foreverTab
+                    if hAnalyticsExperiment.isQasaEnabled {
+                        foreverTab
+                    }
                 },
                 {
                     profileTab

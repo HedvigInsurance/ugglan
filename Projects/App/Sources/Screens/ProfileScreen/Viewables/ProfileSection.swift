@@ -2,6 +2,7 @@ import Flow
 import Form
 import Foundation
 import UIKit
+import hAnalytics
 import hCore
 import hGraphQL
 
@@ -27,16 +28,19 @@ extension ProfileSection: Viewable {
             .filter { $0.firstName != nil && $0.lastName != nil }
             .map { (firstName: $0.firstName!, lastName: $0.lastName!) }.bindTo(myInfoRow.nameSignal)
 
-        let myCharityRow = MyCharityRow(presentingViewController: presentingViewController)
-        bag += section.append(myCharityRow)
+        // TODO: Invert the flag check
+        if hAnalyticsExperiment.isQasaEnabled {
+            let myCharityRow = MyCharityRow(presentingViewController: presentingViewController)
+            bag += section.append(myCharityRow)
 
-        bag += dataSignal.atOnce().map { $0?.cashback?.name }.bindTo(myCharityRow.charityNameSignal)
+            bag += dataSignal.atOnce().map { $0?.cashback?.name }.bindTo(myCharityRow.charityNameSignal)
 
-        let myPaymentRow = MyPaymentRow(presentingViewController: presentingViewController)
-        bag += section.append(myPaymentRow)
+            let myPaymentRow = MyPaymentRow(presentingViewController: presentingViewController)
+            bag += section.append(myPaymentRow)
 
-        bag += dataSignal.atOnce().map { $0?.insuranceCost?.fragments.costFragment.monthlyNet.amount }
-            .toInt().bindTo(myPaymentRow.monthlyCostSignal)
+            bag += dataSignal.atOnce().map { $0?.insuranceCost?.fragments.costFragment.monthlyNet.amount }
+                .toInt().bindTo(myPaymentRow.monthlyCostSignal)
+        }
 
         return (section, bag)
     }
