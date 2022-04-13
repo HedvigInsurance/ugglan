@@ -142,7 +142,8 @@ extension Home: Presentable {
                 if let name = state.memberStateData.name {
                     let label = makeHost {
                         hText(L10n.HomeTab.welcomeTitle(name), style: .largeTitle)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity, alignment: .center)
                     }
                     innerBag += titleSection.appendRemovable(label)
                 }
