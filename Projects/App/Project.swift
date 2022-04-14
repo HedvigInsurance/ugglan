@@ -3,11 +3,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let sdkFrameworks: [TargetDependency] = [
-    .sdk(name: "libc++.tbd"),
-    .sdk(name: "libz.tbd"),
-    .sdk(name: "SwiftUI.framework", status: .optional),
-    .sdk(name: "SceneKit.framework"),
-    .sdk(name: "AdSupport.framework"),
+    .sdk(name: "SwiftUI", type: .framework, status: .optional),
+    .sdk(name: "SceneKit", type: .framework),
+    .sdk(name: "AdSupport", type: .framework),
 ]
 
 let ugglanConfigurations: [Configuration] = [
@@ -77,7 +75,9 @@ let appDependencies: [TargetDependency] = [
 ]
 .flatMap { $0 }
 
-let targetScripts: [TargetScript] = []
+let targetScripts: [TargetScript] = [
+    .post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks")
+]
 
 let project = Project(
     name: "Ugglan",
