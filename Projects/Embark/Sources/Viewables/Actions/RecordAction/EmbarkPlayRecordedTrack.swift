@@ -3,11 +3,13 @@ import Combine
 import Foundation
 import SwiftUI
 import Swifter
+import hAnalytics
 import hCore
 import hCoreUI
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
+    var onPlay: () -> Void
 
     @ViewBuilder var image: some View {
         if audioPlayer.isPlaying {
@@ -42,6 +44,8 @@ struct TrackPlayer: View {
                 .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
         )
         .onTapGesture {
+            onPlay()
+
             withAnimation(.spring()) {
                 audioPlayer.togglePlaying()
             }
