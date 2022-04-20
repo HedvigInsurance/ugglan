@@ -58,7 +58,8 @@ extension OfferStore {
             .map { _ in
                 OfferAction.query
             }
-            .wait(until: willFinish).finite()
+            .wait(until: willFinish)
+            .finite()
     }
 }
 

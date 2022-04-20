@@ -1,3 +1,4 @@
+import Apollo
 import Embark
 import Flow
 import Foundation
@@ -7,6 +8,7 @@ import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct EmbarkOnboardingJourney {
     public static var quoteCartLoaderJourney: some JourneyPresentation {
@@ -33,7 +35,9 @@ struct EmbarkOnboardingJourney {
                 }
             )
         ) { ugglanState in
-            EmbarkOnboardingJourney.journey(cartId: ugglanState.onboardingIdentifier)
+            Journey(ApolloClientRemoveTokenLoader()) {
+                EmbarkOnboardingJourney.journey(cartId: ugglanState.onboardingIdentifier)
+            }
         }
     }
 

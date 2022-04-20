@@ -18,7 +18,13 @@ extension AppJourney {
                 case .onboardingChat, .onboarding:
                     AppJourney.onboarding()
                 case .offer:
-                    AppJourney.storedOnboardingOffer
+                    if hAnalyticsExperiment.useQuoteCart {
+                        Journey(ApolloClientRemoveTokenLoader()) {
+                            AppJourney.storedOnboardingOffer
+                        }
+                    } else {
+                        AppJourney.storedOnboardingOffer
+                    }
                 case .loggedIn:
                     AppJourney.loggedIn
                 case .impersonation:

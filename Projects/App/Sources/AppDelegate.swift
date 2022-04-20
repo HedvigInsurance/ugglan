@@ -322,4 +322,10 @@ extension ApolloClient {
             }
             .toVoid()
     }
+
+    public static func initAndRegisterClientQuoteCart() {
+        let (store, client) = Self.createClient(token: nil)
+        Dependencies.shared.add(module: Module { store })
+        Dependencies.shared.add(module: Module { client })
+    }
 }
