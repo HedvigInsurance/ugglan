@@ -1,4 +1,4 @@
-mutation QuoteCartRemoveCampaign($id: String!, $locale: Locale!) {
+mutation QuoteCartRemoveCampaign($id: ID!, $locale: Locale!) {
   quoteCart_removeCampaign(id:$id) {
     ... on BasicError {
        message
