@@ -6,9 +6,9 @@ import XCTest
 
 final class ResultMapTests: XCTestCase {
     override func setUp() { super.setUp() }
-    
+
     override func tearDown() { super.tearDown() }
-    
+
     func testThatResultMapCanFindArrays() {
         let map: ResultMap = [
             "hello": [
@@ -23,97 +23,108 @@ final class ResultMapTests: XCTestCase {
             ],
             "thirdArray": Array(repeating: "2", count: 100),
         ]
-        
+
         XCTAssertEqual(map.deepFind("hello[0].mock") as? String, "value")
         XCTAssertEqual(map.deepFind("another_array[1]") as? String, "2")
         XCTAssertEqual(map.deepFind("thirdArray[99]") as? String, "2")
         XCTAssertEqual(map.deepFind("thirdArray[120]") as? String, nil)
     }
-    
+
     func testLodash_Basic() {
         let map = GraphQLMap()
 
         let newMap = map.lodash_set(path: "input.payload[0].lastName", value: "Hedvigsen")
-        
+
         let expectedMap: GraphQLMap = [
-            "input" :
-                ["payload":
-                    [
+            "input":
+                [
+                    "payload":
                         [
-                            "lastName" : "Hedvigsen"
+                            [
+                                "lastName": "Hedvigsen"
+                            ]
                         ]
-                    ]
                 ]
         ]
-        
+
         XCTAssertEqual(newMap.jsonObject.prettyPrinted, expectedMap.jsonObject.prettyPrinted)
     }
-    
+
     func testLodash_AddToBaseLevelOfMap() {
         var map = GraphQLMap()
         map["input"] =
-            ["payload" :
-                [
+            [
+                "payload":
                     [
-                        "data":
                         [
-                            "type":"House",
-                            "lastName": "Hedvigsen"
+                            "data":
+                                [
+                                    "type": "House",
+                                    "lastName": "Hedvigsen",
+                                ]
                         ]
                     ]
             ]
-        ]
-        
+
         let expectedMap: GraphQLMap = [
-            "quoteCartId" : "abcdefghijklmnop",
-            "input" :
-                ["payload":
-                    [
-                        ["data" : [
-                            "type" : "House",
-                            "lastName": "Hedvigsen"
-                        ]]
-                    ]
-                ]
+            "quoteCartId": "abcdefghijklmnop",
+            "input":
+                [
+                    "payload":
+                        [
+                            [
+                                "data": [
+                                    "type": "House",
+                                    "lastName": "Hedvigsen",
+                                ]
+                            ]
+                        ]
+                ],
         ]
-        
+
         let newMap = map.lodash_set(path: "quoteCartId", value: "abcdefghijklmnop")
-        
+
         XCTAssertEqual(newMap.jsonObject.prettyPrinted, expectedMap.jsonObject.prettyPrinted)
     }
-    
+
     func testLodash_DeepArrayAppend() {
         var map = GraphQLMap()
         map["input"] =
-            ["payload" :
-                [
+            [
+                "payload":
                     [
-                        "data":
                         [
-                            "type":"House",
-                            "lastName": "Hedvigsen"
+                            "data":
+                                [
+                                    "type": "House",
+                                    "lastName": "Hedvigsen",
+                                ]
                         ]
                     ]
             ]
-        ]
-        
+
         let expectedMap: GraphQLMap = [
-            "input" :
-                ["payload":
-                    [
-                        ["data" : [
-                            "type" : "House",
-                            "lastName": "Hedvigsen"
-                        ]],
-                        ["data" : [
-                            "type" : "Bloop"
-                        ]]
-                    ]
+            "input":
+                [
+                    "payload":
+                        [
+                            [
+                                "data": [
+                                    "type": "House",
+                                    "lastName": "Hedvigsen",
+                                ]
+                            ],
+                            [
+                                "data": [
+                                    "type": "Bloop"
+                                ]
+                            ],
+                        ]
                 ]
         ]
-        
+
         let newMap = map.lodash_set(path: "input.payload[1].data.type", value: "Bloop")
-    
+
         XCTAssertEqual(newMap.jsonObject.prettyPrinted, expectedMap.jsonObject.prettyPrinted)
     }
 }
