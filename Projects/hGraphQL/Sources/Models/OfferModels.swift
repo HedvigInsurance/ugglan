@@ -84,12 +84,13 @@ public struct OfferBundle: Codable, Equatable {
         quoteCart: GraphQL.QuoteCartFragment
     ) {
         guard
-            let bundle = quoteCart.bundle?.fragments.quoteBundleFragment,
-            let id = quoteCart.bundle?.possibleVariations.first!.id
+            let bundle = quoteCart.bundle?.fragments.quoteBundleFragment
         else { return nil }
 
         possibleVariations = bundle.possibleVariations.map { .init(variant: $0) }
-        redeemedCampaigns = []
+        redeemedCampaigns =
+            quoteCart.campaign?.displayValue == nil
+            ? [] : [RedeemedCampaign(displayValue: quoteCart.campaign?.displayValue)]
         signMethodForQuotes =
             (.init(rawValue: quoteCart.checkoutMethods.first?.rawValue ?? "")
                 ?? .unknown)

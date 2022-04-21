@@ -1,0 +1,11 @@
+mutation QuoteCartRemoveCampaign($id: String!, $locale: Locale!) {
+  quoteCart_removeCampaign(id:$id) {
+    ... on BasicError {
+       message
+    }
+    ... on QuoteCart {
+      ...QuoteCartFragment
+    }
+  }
+}
+

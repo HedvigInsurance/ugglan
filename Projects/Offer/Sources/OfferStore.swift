@@ -200,9 +200,9 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             }
             return self.updateStartDates(dateMap: dateMap)
         case .removeRedeemedCampaigns:
-            return removeRedeemedCampaigns()
+            return removeRedeemedCampaigns(quoteCartId: getState().quoteCartId)
         case let .updateRedeemedCampaigns(discountCode):
-            return updateRedeemedCampaigns(discountCode: discountCode)
+            return updateRedeemedCampaigns(discountCode: discountCode, quoteCartId: getState().quoteCartId)
         case .refetch:
             return query(for: getState(), cachePolicy: .fetchIgnoringCacheCompletely)
         case .didRedeemCampaigns, .didRemoveCampaigns:
@@ -331,33 +331,72 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 extension OfferStore {
     typealias Campaign = GraphQL.QuoteBundleQuery.Data.RedeemedCampaign
 
-    private func updateRedeemedCampaigns(discountCode: String) -> FiniteSignal<OfferAction>? {
-        return self.client
-            .perform(
-                mutation: GraphQL.RedeemDiscountCodeMutation(
-                    code: discountCode,
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+    private func updateRedeemedCampaigns(discountCode: String, quoteCartId: String?) -> FiniteSignal<OfferAction>? {
+        if let quoteCartId = quoteCartId {
+            return self
+                .client
+                .perform(
+                    mutation: GraphQL.QuoteCartRedeemCampaignMutation(
+                        code: discountCode,
+                        id: quoteCartId,
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
                 )
-            )
-            .map { data in
-                guard data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns != nil else {
-                    return .failed(event: .updateRedeemedCampaigns)
+                .compactMap {
+                    $0.quoteCartAddCampaign.asQuoteCart?.fragments.quoteCartFragment
                 }
+                .map {
+                    .setQuoteCart(quoteCart: .init(quoteCart: $0))
+                }
+                .valueThenEndSignal
+        } else {
+            return self.client
+                .perform(
+                    mutation: GraphQL.RedeemDiscountCodeMutation(
+                        code: discountCode,
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
+                )
+                .map { data in
+                    guard data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns != nil else {
+                        return .failed(event: .updateRedeemedCampaigns)
+                    }
 
-                return .didRedeemCampaigns
-            }
-            .valueThenEndSignal
+                    return .didRedeemCampaigns
+                }
+                .valueThenEndSignal
+        }
     }
 
-    private func removeRedeemedCampaigns() -> FiniteSignal<OfferAction>? {
-        return self.client.perform(mutation: GraphQL.RemoveDiscountMutation())
-            .map { data in
-                .didRemoveCampaigns
-            }
-            .mapError { _ in
-                .failed(event: .removeCampaigns)
-            }
-            .valueThenEndSignal
+    private func removeRedeemedCampaigns(quoteCartId: String?) -> FiniteSignal<OfferAction>? {
+        if let quoteCartId = quoteCartId {
+            return self.client
+                .perform(
+                    mutation: GraphQL.QuoteCartRemoveCampaignMutation(
+                        id: quoteCartId,
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
+                )
+                .compactMap { data in
+                    data.quoteCartRemoveCampaign.asQuoteCart?.fragments.quoteCartFragment
+                }
+                .map {
+                    .setQuoteCart(quoteCart: .init(quoteCart: $0))
+                }
+                .mapError { _ in
+                    .failed(event: .removeCampaigns)
+                }
+                .valueThenEndSignal
+        } else {
+            return self.client.perform(mutation: GraphQL.RemoveDiscountMutation())
+                .map { data in
+                    .didRemoveCampaigns
+                }
+                .mapError { _ in
+                    .failed(event: .removeCampaigns)
+                }
+                .valueThenEndSignal
+        }
     }
 
     func checkoutUpdate(quoteId: String, email: String, ssn: String) -> Future<Void> {

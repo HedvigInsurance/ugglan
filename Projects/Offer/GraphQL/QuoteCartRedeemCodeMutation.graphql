@@ -1,0 +1,10 @@
+mutation QuoteCartRedeemCampaign($code: String!, $id: String!, $locale: Locale!) {
+  quoteCart_addCampaign(id:$id, code:$code) {
+    ... on BasicError {
+       message
+    }
+    ... on QuoteCart {
+      ...QuoteCartFragment
+    }
+  }
+}
