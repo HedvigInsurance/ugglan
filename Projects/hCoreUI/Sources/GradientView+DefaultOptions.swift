@@ -116,12 +116,12 @@ extension GradientView {
             case (.insuranceFour, .light):
                 return [
                     UIColor(red: 0.96, green: 0.68, blue: 0.71, alpha: 1),
-                    UIColor(red: 0.97, green: 0.98, blue: 0.87, alpha: 1)
+                    UIColor(red: 0.97, green: 0.98, blue: 0.87, alpha: 1),
                 ]
             case (.insuranceFour, .dark):
                 return [
                     UIColor(red: 0.96, green: 0.68, blue: 0.71, alpha: 1),
-                    UIColor(red: 0.97, green: 0.98, blue: 0.87, alpha: 1)
+                    UIColor(red: 0.97, green: 0.98, blue: 0.87, alpha: 1),
                 ]
             default:
                 return []
