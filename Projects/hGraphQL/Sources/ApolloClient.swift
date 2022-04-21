@@ -66,7 +66,7 @@ extension ApolloClient {
         requestChainTransport.clientVersion = appVersion
 
         let websocketNetworkTransport = WebSocketTransport(
-            websocket: WebSocket(request: URLRequest(url: environment.wsEndpointURL)),
+            websocket: WebSocket(request: URLRequest(url: environment.wsEndpointURL), protocol: .graphql_ws),
             clientName: clientName,
             clientVersion: appVersion,
             connectingPayload: httpAdditionalHeaders as GraphQLMap

@@ -41,7 +41,7 @@ public struct OfferState: StateProtocol {
             }) != nil
     }
 
-    var currentVariant: QuoteVariant? {
+    public var currentVariant: QuoteVariant? {
         if offerData?.possibleVariations.count == 1 {
             return offerData?.possibleVariations.first
         }
