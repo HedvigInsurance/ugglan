@@ -3,18 +3,6 @@ mutation SignQuoteCart($quoteCartId: ID!, $quoteIds: [ID!]!, $locale: Locale!) {
     ... on BasicError {
       message
     }
-    ... on QuoteCart {
-      checkoutMethods
-      checkout {
-        status
-        statusText
-      }
-      paymentConnection {
-        id
-      }
-      bundle {
-        ...QuoteBundleFragment
-      }
-    }
+    ...QuoteCartFragment
   }
 }
