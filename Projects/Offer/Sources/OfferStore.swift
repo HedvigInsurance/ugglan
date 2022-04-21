@@ -135,10 +135,13 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         )
     }
 
-    func query(for state: OfferState) -> FiniteSignal<OfferAction>? {
+    func query(for state: OfferState, cachePolicy: CachePolicy) -> FiniteSignal<OfferAction>? {
         if let quoteCartId = state.quoteCartId {
             return self.client
-                .fetch(query: query(for: quoteCartId))
+                .fetch(
+                    query: query(for: quoteCartId),
+                    cachePolicy: cachePolicy
+                )
                 .compactMap { data in
                     data.quoteCart.fragments.quoteCartFragment
                 }
@@ -148,7 +151,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 .valueThenEndSignal
         } else {
             let query = self.query(for: state.ids)
-            return client.fetch(query: query)
+            return client.fetch(query: query, cachePolicy: cachePolicy)
                 .compactMap { data in
                     return OfferBundle(data: data)
                 }
@@ -187,7 +190,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 return signQuotesEffect()
             }
         case .query:
-            return query(for: getState())
+            return query(for: getState(), cachePolicy: .returnCacheDataElseFetch)
         case let .updateStartDates(dateMap):
             let state = getState()
             if let quoteCartId = state.quoteCartId, let currentVariant = state.currentVariant,
@@ -201,15 +204,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case let .updateRedeemedCampaigns(discountCode):
             return updateRedeemedCampaigns(discountCode: discountCode)
         case .refetch:
-            let query = query(for: state.ids)
-            return client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData)
-                .compactMap { data in
-                    return OfferBundle(data: data)
-                }
-                .map {
-                    return .setOfferBundle(bundle: $0)
-                }
-                .valueThenEndSignal
+            return query(for: getState(), cachePolicy: .fetchIgnoringCacheCompletely)
         case .didRedeemCampaigns, .didRemoveCampaigns:
             return FiniteSignal { callback in
                 callback(.value(.refetch))

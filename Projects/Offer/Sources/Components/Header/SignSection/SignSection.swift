@@ -55,13 +55,17 @@ extension SignSection: Presentable {
                     )
 
                     if store.state.isQuoteCart {
-                        innerBag += signButton.onTapSignal.onValue {
+                        let loadableSignButton = LoadableButton(button: signButton)
+
+                        innerBag += loadableSignButton.onTapSignal.onValue {
+                            loadableSignButton.isLoadingSignal.value = true
                             store.send(.setupQuoteCartForCheckout)
                         }
 
                         innerBag += store.stateSignal.map { $0.checkoutStatus }
                             .onValue { status in
                                 guard status == .pending else { return }
+                                loadableSignButton.isLoadingSignal.value = false
                                 row.viewController?
                                     .present(
                                         SwedishBankIdSign(),
@@ -72,6 +76,8 @@ extension SignSection: Presentable {
                                         ]
                                     )
                             }
+
+                        innerBag += row.append(loadableSignButton)
                     } else {
                         innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
                             .onValue { viewController in
@@ -84,9 +90,9 @@ extension SignSection: Presentable {
                                     ]
                                 )
                             }
-                    }
 
-                    innerBag += row.append(signButton)
+                        innerBag += row.append(signButton)
+                    }
                 case .norwegianBankId, .danishBankId:
                     break
                 case .simpleSign:

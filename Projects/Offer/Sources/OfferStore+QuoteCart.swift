@@ -59,7 +59,7 @@ extension OfferStore {
     ) -> FiniteSignal<OfferAction>? {
         return Signal(every: 1, delay: 0.5)
             .map { _ in
-                OfferAction.query
+                OfferAction.refetch
             }
             .finite()
             .take(until: shouldFinish)
