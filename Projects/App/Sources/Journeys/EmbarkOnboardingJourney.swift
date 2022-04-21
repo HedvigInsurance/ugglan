@@ -35,7 +35,10 @@ struct EmbarkOnboardingJourney {
                 }
             )
         ) { ugglanState in
-            Journey(ApolloClientRemoveTokenLoader()) {
+            Journey(
+                ApolloClientRemoveTokenLoader(),
+                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+            ) {
                 EmbarkOnboardingJourney.journey(cartId: ugglanState.onboardingIdentifier)
             }
         }

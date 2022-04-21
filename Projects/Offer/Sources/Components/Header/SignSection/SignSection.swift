@@ -35,12 +35,12 @@ extension SignSection: Presentable {
         bag += store.stateSignal
             .map {
                 (
-                    $0.checkoutStatus, $0.offerData?.signMethodForQuotes,
+                    $0.offerData?.signMethodForQuotes,
                     $0.currentVariant?.bundle.appConfiguration.approveButtonTerminology
                 )
             }
             .distinct(==)
-            .onValueDisposePrevious { checkoutStatus, signMethodForQuotes, approveButtonTerminology in
+            .onValueDisposePrevious { signMethodForQuotes, approveButtonTerminology in
                 let innerBag = DisposeBag()
 
                 switch signMethodForQuotes {
@@ -54,17 +54,37 @@ extension SignSection: Presentable {
                         )
                     )
 
-                    innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
-                        .onValue { viewController in
-                            viewController.present(
-                                SwedishBankIdSign(),
-                                style: .detented(.preferredContentSize),
-                                options: [
-                                    .defaults, .prefersLargeTitles(true),
-                                    .largeTitleDisplayMode(.always),
-                                ]
-                            )
+                    if store.state.isQuoteCart {
+                        innerBag += signButton.onTapSignal.onValue {
+                            store.send(.setupQuoteCartForCheckout)
                         }
+
+                        innerBag += store.stateSignal.map { $0.checkoutStatus }
+                            .onValue { status in
+                                guard status == .pending else { return }
+                                row.viewController?
+                                    .present(
+                                        SwedishBankIdSign(),
+                                        style: .detented(.preferredContentSize),
+                                        options: [
+                                            .defaults, .prefersLargeTitles(true),
+                                            .largeTitleDisplayMode(.always),
+                                        ]
+                                    )
+                            }
+                    } else {
+                        innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
+                            .onValue { viewController in
+                                viewController.present(
+                                    SwedishBankIdSign(),
+                                    style: .detented(.preferredContentSize),
+                                    options: [
+                                        .defaults, .prefersLargeTitles(true),
+                                        .largeTitleDisplayMode(.always),
+                                    ]
+                                )
+                            }
+                    }
 
                     innerBag += row.append(signButton)
                 case .norwegianBankId, .danishBankId:

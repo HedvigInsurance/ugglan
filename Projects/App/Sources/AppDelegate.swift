@@ -256,9 +256,6 @@ let log = Logger.builder
 
         trackNotificationPermission()
 
-        // treat an empty token as a newly downloaded app and setLastNewsSeen
-        // if ApolloClient.retreiveToken() == nil { ApplicationState.setLastNewsSeen() }
-
         self.setupHAnalyticsExperiments()
 
         bag += ApplicationContext.shared.$hasLoadedExperiments.take(first: 1)

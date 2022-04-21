@@ -5,7 +5,7 @@ import hCore
 import hGraphQL
 
 extension OfferStore {
-    internal func startCheckout(quoteCartId: String, ids: [String]) -> FiniteSignal<OfferAction>? {
+    internal func readyQuoteCartForSigning(quoteCartId: String, ids: [String]) -> FiniteSignal<OfferAction>? {
         return self.client
             .perform(
                 mutation: GraphQL.SignQuoteCartMutation(
@@ -15,7 +15,10 @@ extension OfferStore {
                 )
             )
             .compactMap { data in
-                return .startSign
+                data.quoteCartStartCheckout.fragments.quoteCartFragment
+            }
+            .map {
+                .setQuoteCart(quoteCart: .init(quoteCart: $0))
             }
             .valueThenEndSignal
     }
@@ -52,14 +55,14 @@ extension OfferStore {
 
     internal func quoteCartSignQuotesEffectPoll(
         quoteCartId: String,
-        willFinish: ReadSignal<Bool>
+        shouldFinish: ReadSignal<Bool>
     ) -> FiniteSignal<OfferAction>? {
-        return Signal(every: 1)
+        return Signal(every: 1, delay: 0.5)
             .map { _ in
                 OfferAction.query
             }
-            .wait(until: willFinish)
             .finite()
+            .take(until: shouldFinish)
     }
 }
 

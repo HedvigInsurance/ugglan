@@ -96,6 +96,7 @@ public enum OfferAction: ActionProtocol {
     case setQuoteCart(quoteCart: QuoteCart)
     case setPaymentConnectionId(id: String)
     case startCheckout
+    case setupQuoteCartForCheckout
     case fetchAccessToken
     case setAccessToken(id: String)
 
@@ -175,13 +176,12 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 .send()
             }
         case .startSign:
-            let status = getState().checkoutStatus
-            if status != nil {
-                return [.fetchAccessToken].emitEachThenEnd
-            } else if let quoteCartId = getState().quoteCartId {
+            if let quoteCartId = getState().quoteCartId {
                 return quoteCartSignQuotesEffectPoll(
                     quoteCartId: quoteCartId,
-                    willFinish: stateSignal.map { $0.checkoutStatus != nil }.boolean()
+                    shouldFinish: stateSignal.map {
+                        $0.checkoutStatus == .signed || $0.checkoutStatus == .failed || $0.checkoutStatus == .completed
+                    }
                 )
             } else {
                 return signQuotesEffect()
@@ -218,13 +218,12 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case .setOfferBundle, .setQuoteCart:
             return Signal(after: 0.5).map { .setLoading(isLoading: false) }
         case .startCheckout:
+            return Signal(after: 0.1).map { .openCheckout }
+        case .setupQuoteCartForCheckout:
             let state = getState()
-            if let quoteCartId = state.quoteCartId, let quoteId = state.currentVariant?.id, state.checkoutStatus == nil
-            {
+            if let quoteCartId = state.quoteCartId, let quoteId = state.currentVariant?.id {
                 let ids = state.currentVariant?.bundle.quotes.compactMap { $0.id } ?? [quoteId]
-                return startCheckout(quoteCartId: quoteCartId, ids: ids)
-            } else {
-                return Signal(after: 0.1).map { .openCheckout }
+                return readyQuoteCartForSigning(quoteCartId: quoteCartId, ids: ids)
             }
         case .fetchAccessToken:
             if let quoteCartId = getState().quoteCartId {
@@ -320,7 +319,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.quoteCartId = id
         case let .setQuoteCart(quoteCart):
             newState.offerData = quoteCart.offerBundle
-            newState.selectedIds = quoteCart.offerBundle.quotes.map { $0.id }
+            newState.selectedIds = quoteCart.offerBundle?.quotes.map { $0.id } ?? []
             newState.checkoutStatus = quoteCart.checkoutStatus
             newState.paymentConnection = quoteCart.paymentConnection
         case let .setAccessToken(id):

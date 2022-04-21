@@ -190,8 +190,19 @@ extension Offer: Presentable {
                         callback(.value(.signedQuoteCart(accessToken: token, startDates: store.state.startDates)))
                     }
 
+                bag += store.stateSignal.compactMap { $0.checkoutStatus }
+                    .onValue { status in
+                        if status == .signed {
+                            store.send(.sign(event: .done))
+                        }
+                    }
+
                 bag += store.onAction(.sign(event: .done)) {
-                    callback(.value(.signed(ids: store.state.ids, startDates: store.state.startDates)))
+                    if store.state.isQuoteCart {
+                        store.send(.fetchAccessToken)
+                    } else {
+                        callback(.value(.signed(ids: store.state.ids, startDates: store.state.startDates)))
+                    }
                 }
 
                 if let menu = menu {
