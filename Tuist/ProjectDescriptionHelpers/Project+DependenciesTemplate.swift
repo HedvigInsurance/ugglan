@@ -45,7 +45,7 @@ public enum ExternalDependencies: CaseIterable {
                     .upToNextMajor(from: "8.8.0")
                 )
             ]
-        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.49.1"))]
+        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.51.2"))]
         case .flow:
             return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.7"))]
         case .form:
@@ -87,13 +87,13 @@ public enum ExternalDependencies: CaseIterable {
                     .upToNextMajor(from: "1.8.2")
                 )
             ]
-        case .shake: return [.package(url: "https://github.com/shakebugs/shake-ios", .exact("14.1.5"))]
+        case .shake: return [.package(url: "https://github.com/shakebugs/shake-ios", .branch("master"))]
         case .reveal: return []
         case .datadog:
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.7.1"))]
         case .hAnalytics:
             return [
-                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.230.0"))
+                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.235.0"))
             ]
         }
     }
@@ -196,7 +196,7 @@ extension Project {
 
         let dependencies: [TargetDependency] = [
             externalDependencies.map { externalDependency in externalDependency.targetDependencies() }
-                .flatMap { $0 }, sdks.map { sdk in .sdk(name: sdk) },
+                .flatMap { $0 }, sdks.map { sdk in .sdk(name: sdk, type: .framework) },
         ]
         .flatMap { $0 }
 

@@ -39,7 +39,7 @@ public enum DataCollection {
             style: .detented(.large),
             onComplete: onComplete
         )
-        .addConfiguration { presenter in
+        .onPresent {
             let store: DataCollectionStore = globalPresentableStoreContainer.get()
             store.send(.setProvider(providerID: providerID, providerDisplayName: providerDisplayName))
         }

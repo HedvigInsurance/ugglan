@@ -4,13 +4,18 @@ import Presentation
 import UIKit
 import hAnalytics
 import hCore
+import hGraphQL
 
 public struct PaymentSetup {
     let setupType: SetupType
     let urlScheme: String
     let accessToken: String?
 
-    public enum SetupType { case initial, replacement, postOnboarding }
+    public enum SetupType {
+        case initial
+        case preOnboarding(monthlyNetCost: MonetaryAmount?)
+        case replacement, postOnboarding
+    }
 
     public init(
         setupType: SetupType,
@@ -36,6 +41,11 @@ extension PaymentSetup: Presentable {
             let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
             return (viewController, result.map { .left($0) })
         case .adyen:
+            if case let .preOnboarding(monthlyNetCost) = setupType, let monthlyNetCost = monthlyNetCost {
+                let store: PaymentStore = globalPresentableStoreContainer.get()
+                store.send(.setMonthlyNetCost(cost: monthlyNetCost))
+            }
+
             let (viewController, result) = AdyenPayInSync(setupType: setupType, urlScheme: urlScheme).materialize()
             return (
                 viewController,
