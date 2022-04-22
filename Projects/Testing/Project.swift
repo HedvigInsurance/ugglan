@@ -6,5 +6,5 @@ let project = Project.framework(
     targets: Set([.framework]),
     projects: ["hCoreUI", "hCore"],
     dependencies: ["CoreDependencies", "TestDependencies"],
-    sdks: ["XCTest.framework"]
+    sdks: ["XCTest"]
 )
