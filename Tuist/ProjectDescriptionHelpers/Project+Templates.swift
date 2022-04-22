@@ -81,7 +81,7 @@ extension Project {
         var targetDependencies: [TargetDependency] = projects.map {
             .project(target: $0, path: .relativeToRoot("Projects/\($0)"))
         }
-        targetDependencies.append(contentsOf: sdks.map { .sdk(name: $0) })
+        targetDependencies.append(contentsOf: sdks.map { .sdk(name: $0, type: .framework) })
         targetDependencies.append(
             contentsOf: dependencies.map {
                 .project(target: $0, path: .relativeToRoot("Dependencies/\($0)"))

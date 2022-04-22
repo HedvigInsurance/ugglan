@@ -38,26 +38,30 @@ extension AppJourney {
         }
     }
 
-    static var offerCheckout: some JourneyPresentation {
-        PaymentSetup(setupType: .initial)
-            .journey { success in
-                Journey(
-                    Checkout(),
-                    style: .default,
-                    options: [
-                        .defaults,
-                        .autoPop,
-                        .prefersLargeTitles(true),
-                        .largeTitleDisplayMode(.always),
-                        .allowSwipeDismissAlways,
-                    ]
-                ) { _ in
-                    DismissJourney()
-                }
-                .withJourneyDismissButton
-                .hidesBackButton
+    @JourneyBuilder static var offerCheckout: some JourneyPresentation {
+        let store: OfferStore = globalPresentableStoreContainer.get()
+
+        PaymentSetup(
+            setupType: .preOnboarding(monthlyNetCost: store.state.currentVariant?.bundle.bundleCost.monthlyNet)
+        )
+        .journey { success in
+            Journey(
+                Checkout(),
+                style: .default,
+                options: [
+                    .defaults,
+                    .autoPop,
+                    .prefersLargeTitles(true),
+                    .largeTitleDisplayMode(.always),
+                    .allowSwipeDismissAlways,
+                ]
+            ) { _ in
+                DismissJourney()
             }
-            .setOptions([.defaults, .allowSwipeDismissAlways])
-            .mapJourneyDismissToCancel
+            .withJourneyDismissButton
+            .hidesBackButton
+        }
+        .setOptions([.defaults, .allowSwipeDismissAlways])
+        .mapJourneyDismissToCancel
     }
 }
