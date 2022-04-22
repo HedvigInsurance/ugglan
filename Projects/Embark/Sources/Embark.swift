@@ -202,7 +202,8 @@ extension Embark: Presentable {
                             locale: Localization.Locale.currentLocale.code
                         )
                     )
-                ).onValue { quoteCartCreate in
+                )
+                .onValue { quoteCartCreate in
                     activityIndicator.removeFromSuperview()
                     self.state.quoteCartId = quoteCartCreate.createQuoteCart.id
                     self.state.storySignal.value = embarkStory

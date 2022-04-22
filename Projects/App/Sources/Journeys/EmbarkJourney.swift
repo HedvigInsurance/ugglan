@@ -17,7 +17,7 @@ extension AppJourney {
         if storeOffer {
             offerOptions.insert(.shouldPreserveState)
         }
-        
+
         return Journey(embark, style: style) { externalRedirect in
             switch externalRedirect {
             case .mailingList:
