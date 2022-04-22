@@ -4,6 +4,7 @@ query Contracts($locale: Locale!) {
     displayName
     switchedFromInsuranceProvider
     gradientOption
+    typeOfContract
     upcomingRenewal {
       renewalDate
       draftCertificateUrl

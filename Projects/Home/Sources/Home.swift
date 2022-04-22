@@ -155,7 +155,7 @@ extension Home: Presentable {
                     )
                 )
 
-                if hAnalyticsExperiment.movingFlow && hAnalyticsExperiment.isQasaEnabled {
+                if hAnalyticsExperiment.movingFlow {
                     let section = HomeVerticalSection(
                         section: .init(
                             title: L10n.HomeTab.editingSectionTitle,
