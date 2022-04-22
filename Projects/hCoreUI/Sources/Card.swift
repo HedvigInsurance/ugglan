@@ -5,21 +5,24 @@ import SwiftUI
 import UIKit
 import hCore
 
-public struct hCard<Content: View>: View {
+public struct hCard<Content: View, BgColor: hColor>: View {
     private var titleIcon: UIImage
     private var title: String
     private var bodyText: String
     private let content: Content
+    private let backgroundColor: BgColor
 
     public init(
         titleIcon: UIImage,
         title: String,
         bodyText: String,
+        backgroundColor: BgColor,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.titleIcon = titleIcon
         self.title = title
         self.bodyText = bodyText
+        self.backgroundColor = backgroundColor
         self.content = content()
     }
 
@@ -43,9 +46,12 @@ public struct hCard<Content: View>: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(hTintColor.lavenderTwo)
-        .border(hSeparatorColor.separator, width: .hairlineWidth)
+        .background(backgroundColor)
         .cornerRadius(.defaultCornerRadius)
+        .overlay(
+            RoundedRectangle(cornerRadius: .defaultCornerRadius).stroke(lineWidth: .hairlineWidth)
+                .foregroundColor(hSeparatorColor.separator)
+        )
     }
 }
 
@@ -53,18 +59,20 @@ extension hCard where Content == EmptyView {
     init(
         titleIcon: UIImage,
         title: String,
-        bodyText: String
+        bodyText: String,
+        backgroundColor: BgColor
     ) {
         self.init(
             titleIcon: titleIcon,
             title: title,
             bodyText: bodyText,
+            backgroundColor: backgroundColor,
             content: { EmptyView() }
         )
     }
 }
 
-struct CardPreview: PreviewProvider {
+/*struct CardPreview: PreviewProvider {
     static var previews: some View {
         Group {
             hCard(
@@ -101,7 +109,7 @@ struct CardPreview: PreviewProvider {
         .padding()
         .previewDisplayName("Default preview")
     }
-}
+}*/
 
 public struct Card {
     @ReadWriteState var titleIcon: UIImage

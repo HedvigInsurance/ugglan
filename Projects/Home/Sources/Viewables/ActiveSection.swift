@@ -9,6 +9,19 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+struct ActiveSessionView<ClaimsContent: View, CommonClaims: View>: View {
+    var claimsContent: ClaimsContent
+    var commonClaims: CommonClaims
+
+    public var body: some View {
+        VStack {
+            claimsContent
+            //ConnectPaymentCardView()
+            commonClaims
+        }
+    }
+}
+
 struct ActiveSection<ClaimsContent: View, CommonClaims: View> {
     @Inject var client: ApolloClient
     var claimsContent: ClaimsContent

@@ -8,13 +8,14 @@ import Foundation
 import Home
 import Payment
 import Presentation
+import SwiftUI
 import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
 
 extension AppJourney {
-    fileprivate static var homeTab: some JourneyPresentation {
+    /*fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
         let commonClaims = CommonClaimsView()
         return Journey(
@@ -46,6 +47,35 @@ extension AppJourney {
                 return false
             }
         }
+        .configureClaimsNavigation
+    }*/
+
+    fileprivate static var homeTab: some JourneyPresentation {
+        HomeSwiftUI.journey(statusCardView: {
+            VStack {
+                ConnectPaymentCardView()
+            }
+        }) { result in
+            switch result {
+            case .startMovingFlow:
+                AppJourney.movingFlow
+            case .openFreeTextChat:
+                AppJourney.freeTextChat()
+            case .openConnectPayments:
+                PaymentSetup(setupType: .initial).journeyThenDismiss
+            }
+        }
+        .onTabSelected {
+            ContextGradient.currentOption = .home
+        }
+        .makeTabSelected(UgglanStore.self) { action in
+            if case .makeTabActive(let deepLink) = action {
+                return deepLink == .home
+            } else {
+                return false
+            }
+        }
+        .claimStoreRedirectFromHome
         .configureClaimsNavigation
     }
 

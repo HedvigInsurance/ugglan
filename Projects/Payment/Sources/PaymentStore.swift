@@ -8,13 +8,20 @@ import hGraphQL
 
 public struct PaymentState: StateProtocol {
     var monthlyNetCost: MonetaryAmount? = nil
+    var paymentStatus: PayinMethodStatus = .active
     public init() {}
 }
 
 public enum PaymentAction: ActionProtocol {
     case load
     case setMonthlyNetCost(cost: MonetaryAmount)
+    case setPayInMethodStatus(status: PayinMethodStatus)
+    case connectPayments
+    case fetchPayInMethodStatus
 }
+
+public typealias PayinMethodStatus = GraphQL.PayinMethodStatus
+extension PayinMethodStatus: Codable {}
 
 public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
     @Inject var client: ApolloClient
@@ -37,6 +44,14 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
                     return nil
                 }
                 .valueThenEndSignal
+        case .fetchPayInMethodStatus:
+            return
+                client
+                .fetch(query: GraphQL.PayInMethodStatusQuery(), cachePolicy: .fetchIgnoringCacheData)
+                .map { data in
+                    .setPayInMethodStatus(status: data.payinMethodStatus)
+                }
+                .valueThenEndSignal
         default:
             return nil
         }
@@ -48,6 +63,8 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
         switch action {
         case let .setMonthlyNetCost(cost):
             newState.monthlyNetCost = cost
+        case .setPayInMethodStatus(let paymentStatus):
+            newState.paymentStatus = paymentStatus
         default:
             break
         }
