@@ -11,40 +11,7 @@ import hCoreUI
 import hGraphQL
 
 struct EmbarkOnboardingJourney {
-    public static var quoteCartLoaderJourney: some JourneyPresentation {
-        GroupJourney {
-            if hAnalyticsExperiment.useQuoteCart {
-                createQuoteCartOnboarding()
-            } else {
-                journey(cartId: nil)
-            }
-        }
-    }
-
-    private static func createQuoteCartOnboarding() -> some JourneyPresentation {
-        return Journey(
-            StoreLoadingPresentable<UgglanStore>(
-                action: UgglanAction.createOnboardingQuoteCart,
-                endOn: { action in
-                    switch action {
-                    case .setOnboardingIdentifier:
-                        return true
-                    default:
-                        return false
-                    }
-                }
-            )
-        ) { ugglanState in
-            Journey(
-                ApolloClientRemoveTokenLoader(),
-                options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-            ) {
-                EmbarkOnboardingJourney.journey(cartId: ugglanState.onboardingIdentifier)
-            }
-        }
-    }
-
-    private static func journey(cartId: String?) -> some JourneyPresentation {
+    public static func journey() -> some JourneyPresentation {
         let menuChildren: [MenuChildable] = [
             MenuChild.appInformation,
             MenuChild.appSettings,
@@ -65,8 +32,7 @@ struct EmbarkOnboardingJourney {
                         menu: Menu(
                             title: nil,
                             children: menuChildren
-                        ),
-                        cartId: cartId
+                        )
                     ),
                     storeOffer: true
                 ) { offerResult in
