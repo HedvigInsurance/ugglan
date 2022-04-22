@@ -58,6 +58,7 @@ extension ConnectPaymentCard: Presentable {
                         .compactMap { _ in stackView.viewController }
                         .onValue { viewController in
                             store.send(.connectPayments)
+                            hAnalyticsEvent.homePaymentCardClick().send()
                         }
                 }
 
