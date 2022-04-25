@@ -28,13 +28,14 @@ extension ProfileSection: Viewable {
             .filter { $0.firstName != nil && $0.lastName != nil }
             .map { (firstName: $0.firstName!, lastName: $0.lastName!) }.bindTo(myInfoRow.nameSignal)
 
-        let myCharityRow = MyCharityRow(presentingViewController: presentingViewController)
-        bag += section.append(myCharityRow)
+        if hAnalyticsExperiment.showCharity {
+            let myCharityRow = MyCharityRow(presentingViewController: presentingViewController)
+            bag += section.append(myCharityRow)
 
-        bag += dataSignal.atOnce().map { $0?.cashback?.name }.bindTo(myCharityRow.charityNameSignal)
+            bag += dataSignal.atOnce().map { $0?.cashback?.name }.bindTo(myCharityRow.charityNameSignal)
+        }
 
-        // TODO: Invert the flag check
-        if hAnalyticsExperiment.isQasaEnabled {
+        if hAnalyticsExperiment.paymentScreen {
             let myPaymentRow = MyPaymentRow(presentingViewController: presentingViewController)
             bag += section.append(myPaymentRow)
 

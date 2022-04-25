@@ -34,14 +34,15 @@ extension ActiveSection: Presentable {
             hostingView.removeFromSuperview()
         }
 
-        // TODO: If exclusive qasa rental insured member, hide payments
-        if hAnalyticsExperiment.isQasaEnabled {
+        if hAnalyticsExperiment.connectPaymentReminder {
             bag += section.append(ConnectPaymentCard())
             bag += section.append(RenewalCard())
         }
 
-        let commonClaimsView = HostingView(rootView: commonClaims)
-        section.append(commonClaimsView)
+        if hAnalyticsExperiment.homeCommonClaim {
+            let commonClaimsView = HostingView(rootView: commonClaims)
+            section.append(commonClaimsView)
+        }
 
         return (section, bag)
     }
