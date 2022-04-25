@@ -44,7 +44,7 @@ public enum HFontTextStyle {
     case footnote
     case caption1
     case caption2
-    
+
     var uifontTextStyle: UIFont.TextStyle {
         switch self {
         case .prominentTitle:
