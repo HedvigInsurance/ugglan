@@ -150,6 +150,8 @@ extension Contract.GradientOption {
             return .insuranceTwo
         case .three:
             return .insuranceThree
+        case .four:
+            return .insuranceFour
         }
     }
 }
