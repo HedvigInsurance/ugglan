@@ -5,24 +5,24 @@ import UIKit
 import hCore
 
 private struct EnvironmentDefaultHTextStyle: EnvironmentKey {
-    static let defaultValue: UIFont.TextStyle? = nil
+    static let defaultValue: HFontTextStyle? = nil
 }
 
 extension EnvironmentValues {
-    public var defaultHTextStyle: UIFont.TextStyle? {
+    public var defaultHTextStyle: HFontTextStyle? {
         get { self[EnvironmentDefaultHTextStyle.self] }
         set { self[EnvironmentDefaultHTextStyle.self] = newValue }
     }
 }
 
 extension View {
-    public func hTextStyle(_ style: UIFont.TextStyle? = nil) -> some View {
+    public func hTextStyle(_ style: HFontTextStyle? = nil) -> some View {
         self.environment(\.defaultHTextStyle, style)
     }
 }
 
 extension String {
-    public func hText(_ style: UIFont.TextStyle? = nil) -> hText {
+    public func hText(_ style: HFontTextStyle? = nil) -> hText {
         if let style = style {
             return hCoreUI.hText(self, style: style)
         } else {
@@ -31,8 +31,52 @@ extension String {
     }
 }
 
+public enum HFontTextStyle {
+    case prominentTitle
+    case largeTitle
+    case title1
+    case title2
+    case title3
+    case headline
+    case subheadline
+    case body
+    case callout
+    case footnote
+    case caption1
+    case caption2
+    
+    var uifontTextStyle: UIFont.TextStyle {
+        switch self {
+        case .prominentTitle:
+            return .largeTitle
+        case .largeTitle:
+            return .largeTitle
+        case .title1:
+            return .title1
+        case .title2:
+            return .title2
+        case .title3:
+            return .title3
+        case .headline:
+            return .headline
+        case .subheadline:
+            return .subheadline
+        case .body:
+            return .body
+        case .callout:
+            return .callout
+        case .footnote:
+            return .footnote
+        case .caption1:
+            return .caption1
+        case .caption2:
+            return .caption2
+        }
+    }
+}
+
 struct hFontModifier: ViewModifier {
-    public var style: UIFont.TextStyle
+    public var style: HFontTextStyle
 
     var font: UIFont {
         Fonts.fontFor(style: style)
@@ -75,12 +119,12 @@ struct hFontModifier: ViewModifier {
 
 public struct hText: View {
     public var text: String
-    public var style: UIFont.TextStyle?
+    public var style: HFontTextStyle?
     @Environment(\.defaultHTextStyle) var defaultStyle
 
     public init(
         _ text: String,
-        style: UIFont.TextStyle
+        style: HFontTextStyle
     ) {
         self.text = text
         self.style = style
