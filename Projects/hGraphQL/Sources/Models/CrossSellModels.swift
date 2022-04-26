@@ -88,7 +88,7 @@ public struct CrossSell: Codable, Equatable {
         notificationType = data.type.rawValue
         imageURL = parsedImageURL
         buttonText = data.callToAction
-        embarkStoryName = data.action.asCrossSellEmbark?.embarkStory.name
+        embarkStoryName = data.action.asCrossSellEmbark?.embarkStoryV2.name
         blurHash = data.blurHash
         hasBeenSeen = UserDefaults.standard.bool(
             forKey: Self.hasBeenSeenKey(typeOfContract: data.contractType.rawValue)

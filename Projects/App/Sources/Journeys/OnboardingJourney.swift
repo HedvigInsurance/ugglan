@@ -9,7 +9,7 @@ import hCoreUI
 extension AppJourney {
     static func onboarding() -> some JourneyPresentation {
         EmbarkOnboardingJourney
-            .quoteCartLoaderJourney
+            .journey()
             .onPresent {
                 ApplicationState.preserveState(.onboarding)
             }

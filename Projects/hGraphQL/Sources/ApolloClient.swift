@@ -118,7 +118,8 @@ extension ApolloClient {
     }
 
     public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
-        Future { completion in let tokenData = self.retreiveToken()
+        Future { completion in
+            let tokenData = self.retreiveToken()
 
             if tokenData == nil {
                 return self.createClientFromNewSession()

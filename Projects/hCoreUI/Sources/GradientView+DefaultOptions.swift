@@ -62,6 +62,10 @@ extension GradientView {
                 colors.append(UIColor(red: 0.973, green: 0.726, blue: 0.574, alpha: 1))
             case (.insuranceThree, .dark):
                 colors.append(UIColor(red: 0.925, green: 0.584, blue: 0.374, alpha: 1))
+            case (.insuranceFour, .light):
+                colors.append(UIColor(red: 0.57, green: 0.85, blue: 0.94, alpha: 1))
+            case (.insuranceFour, .dark):
+                colors.append(UIColor(red: 0.57, green: 0.85, blue: 0.94, alpha: 1))
             default:
                 colors.append(.white)
             }
@@ -109,6 +113,16 @@ extension GradientView {
                     UIColor(red: 0.512, green: 0.326, blue: 0.162, alpha: 1),
                     UIColor(red: 0.796, green: 0.481, blue: 0.481, alpha: 1),
                 ]
+            case (.insuranceFour, .light):
+                return [
+                    UIColor(red: 0.96, green: 0.68, blue: 0.71, alpha: 1),
+                    UIColor(red: 0.97, green: 0.98, blue: 0.87, alpha: 1),
+                ]
+            case (.insuranceFour, .dark):
+                return [
+                    UIColor(red: 0.96, green: 0.68, blue: 0.71, alpha: 1),
+                    UIColor(red: 0.97, green: 0.98, blue: 0.87, alpha: 1),
+                ]
             default:
                 return []
             }
@@ -119,6 +133,7 @@ extension GradientView {
         case insuranceOne
         case insuranceTwo
         case insuranceThree
+        case insuranceFour
 
         public static var random: Self {
             Self.allCases.shuffled().randomElement()!
@@ -135,6 +150,8 @@ extension Contract.GradientOption {
             return .insuranceTwo
         case .three:
             return .insuranceThree
+        case .four:
+            return .insuranceFour
         }
     }
 }

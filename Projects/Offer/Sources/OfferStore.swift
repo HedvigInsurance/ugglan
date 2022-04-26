@@ -190,7 +190,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 return signQuotesEffect()
             }
         case .query:
-            return query(for: getState(), cachePolicy: .returnCacheDataElseFetch)
+            return query(for: getState(), cachePolicy: .fetchIgnoringCacheData)
         case let .updateStartDates(dateMap):
             let state = getState()
             if let quoteCartId = state.quoteCartId, let currentVariant = state.currentVariant,

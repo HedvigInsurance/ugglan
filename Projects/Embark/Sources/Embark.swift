@@ -19,18 +19,32 @@ public struct Embark {
 
     public init(
         name: String,
-        menu: Menu? = nil,
-        cartId: String? = nil
+        menu: Menu? = nil
     ) {
         self.name = name
         self.menu = menu
-        self.state = EmbarkState(cartId: cartId)
+        self.state = EmbarkState()
     }
 }
 
 extension MenuChildAction {
     static var restart: MenuChildAction {
         MenuChildAction(identifier: "embark-restart")
+    }
+}
+
+extension Localization.Locale.Market {
+    var graphQL: GraphQL.Market {
+        switch self {
+        case .dk:
+            return .denmark
+        case .se:
+            return .sweden
+        case .no:
+            return .norway
+        default:
+            return .__unknown("")
+        }
     }
 }
 
@@ -181,11 +195,22 @@ extension Embark: Presentable {
             )
             .valueSignal.compactMap { $0.embarkStory }
             .onValue { embarkStory in
-                activityIndicator.removeFromSuperview()
-                self.state.storySignal.value = embarkStory
-                self.state.passagesSignal.value = embarkStory.passages
-                self.state.startPassageIDSignal.value = embarkStory.startPassage
-                self.state.restart()
+                client.perform(
+                    mutation: GraphQL.CreateQuoteCartMutation(
+                        input: .init(
+                            market: Localization.Locale.currentLocale.market.graphQL,
+                            locale: Localization.Locale.currentLocale.code
+                        )
+                    )
+                )
+                .onValue { quoteCartCreate in
+                    activityIndicator.removeFromSuperview()
+                    self.state.quoteCartId = quoteCartCreate.createQuoteCart.id
+                    self.state.storySignal.value = embarkStory
+                    self.state.passagesSignal.value = embarkStory.passages
+                    self.state.startPassageIDSignal.value = embarkStory.startPassage
+                    self.state.restart()
+                }
             }
 
         bag += edgePanGestureRecognizer.signal(forState: .ended)

@@ -9,7 +9,6 @@ import hGraphQL
 
 public struct UgglanState: StateProtocol {
     var selectedTabIndex: Int = 0
-    var onboardingIdentifier: String? = nil
     public init() {}
 }
 
@@ -23,8 +22,6 @@ public enum UgglanAction: ActionProtocol {
     case exchangeFailed
     case didAcceptHonestyPledge
     case openChat
-    case createOnboardingQuoteCart
-    case setOnboardingIdentifier(id: String)
 }
 
 public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
@@ -55,20 +52,6 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             }
     }
 
-    private func getOnboardingQuoteCart() -> FiniteSignal<UgglanAction> {
-        let locale = Localization.Locale.currentLocale
-        return self.client
-            .perform(
-                mutation: GraphQL.CreateOnboardingQuoteCartMutation(
-                    input: .init(market: locale.market.graphQL, locale: locale.rawValue)
-                )
-            )
-            .map { data in
-                return .setOnboardingIdentifier(id: data.onboardingQuoteCartCreate.id.displayValue)
-            }
-            .valueThenEndSignal
-    }
-
     public override func effects(
         _ getState: @escaping () -> UgglanState,
         _ action: UgglanAction
@@ -83,8 +66,6 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             return performTokenExchange(with: exchangeToken)
         case let .exchangePaymentToken(token):
             return performTokenExchange(with: token)
-        case .createOnboardingQuoteCart:
-            return getOnboardingQuoteCart()
         default:
             break
         }
@@ -100,27 +81,10 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             newState.selectedTabIndex = tabIndex
         case .openClaims:
             break
-        case let .setOnboardingIdentifier(id):
-            newState.onboardingIdentifier = id
         default:
             break
         }
 
         return newState
-    }
-}
-
-extension Localization.Locale.Market {
-    var graphQL: GraphQL.Market {
-        switch self {
-        case .dk:
-            return .denmark
-        case .se:
-            return .sweden
-        case .no:
-            return .norway
-        default:
-            return .__unknown("")
-        }
     }
 }
