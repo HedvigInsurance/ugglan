@@ -22,7 +22,7 @@ extension AppJourney {
                 CrossSellingSigned.journey(startDate: startDates.first?.value)
             case let .openCheckout(token):
                 AppJourney.offerCheckout(with: token)
-            case let .signedQuoteCart:
+            case .signedQuoteCart:
                 DismissJourney()
             }
         }

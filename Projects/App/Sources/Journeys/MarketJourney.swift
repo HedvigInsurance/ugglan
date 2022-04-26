@@ -7,7 +7,7 @@ extension AppJourney {
         Journey(MarketPicker()) { _ in
             Journey(Marketing()) { marketingResult in
                 switch marketingResult {
-                case let .onboard:
+                case .onboard:
                     AppJourney.onboarding()
                 case .login:
                     AppJourney.login
