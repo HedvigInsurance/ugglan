@@ -53,7 +53,7 @@ query ActiveContractBundles($locale: Locale!) {
       }
     }
     angelStories {
-      addressChange
+      addressChangeV2
     }
     potentialCrossSells {
       contractType
@@ -91,7 +91,7 @@ query ActiveContractBundles($locale: Locale!) {
           _
         }
         ... on CrossSellEmbark {
-          embarkStory(locale: $locale) {
+          embarkStoryV2(locale: $locale) {
             name
           }
         }
