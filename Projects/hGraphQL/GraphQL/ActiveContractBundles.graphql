@@ -91,7 +91,7 @@ query ActiveContractBundles($locale: Locale!) {
           _
         }
         ... on CrossSellEmbark {
-          embarkStoryV2(locale: $locale) {
+          embarkStoryV2 {
             name
           }
         }
