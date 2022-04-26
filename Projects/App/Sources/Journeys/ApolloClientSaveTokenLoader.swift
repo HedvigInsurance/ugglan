@@ -27,21 +27,3 @@ struct ApolloClientSaveTokenLoader: Presentable {
         )
     }
 }
-
-struct ApolloClientRemoveTokenLoader: Presentable {
-    func materialize() -> (UIViewController, Signal<()>) {
-        let viewController = PlaceholderViewController()
-
-        let bag = DisposeBag()
-
-        return (
-            viewController,
-            Signal { callback in
-                ApolloClient.initAndRegisterClientQuoteCart()
-                callback(())
-
-                return bag
-            }
-        )
-    }
-}
