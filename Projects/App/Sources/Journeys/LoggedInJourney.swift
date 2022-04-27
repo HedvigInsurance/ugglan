@@ -136,7 +136,9 @@ extension AppJourney {
                     }
                 },
                 {
-                    foreverTab
+                    if hAnalyticsExperiment.forever {
+                        foreverTab
+                    }
                 },
                 {
                     profileTab
