@@ -8,10 +8,10 @@ struct ContractBundleLoadingIndicator: View {
         PresentableStoreLens(
             ContractStore.self,
             getter: { state in
-                state.hasLoadedContractBundlesOnce
+                !state.contracts.isEmpty || !state.contractBundles.isEmpty
             }
-        ) { hasLoadedContractBundlesOnce in
-            if !hasLoadedContractBundlesOnce {
+        ) { hasLoadedContracts in
+            if !hasLoadedContracts {
                 ActivityIndicator(style: .large).padding(.top, 15)
             }
         }

@@ -8,7 +8,6 @@ import hGraphQL
 public struct ContractState: StateProtocol {
     public init() {}
 
-    public var hasLoadedContractBundlesOnce = false
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
@@ -136,8 +135,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         var newState = state
         switch action {
         case .setContractBundles(let activeContractBundles):
-            newState.hasLoadedContractBundlesOnce = true
-            // Prevent infinite spinner if there are no active contracts
             guard activeContractBundles != state.contractBundles else { return newState }
 
             newState.contractBundles = activeContractBundles
