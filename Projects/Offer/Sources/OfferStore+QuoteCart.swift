@@ -5,7 +5,7 @@ import hCore
 import hGraphQL
 
 extension OfferStore {
-    internal func readyQuoteCartForSigning(quoteCartId: String, ids: [String]) -> FiniteSignal<OfferAction>? {
+    internal func requestQuoteCartSign(quoteCartId: String, ids: [String]) -> FiniteSignal<OfferAction>? {
         return self.client
             .perform(
                 mutation: GraphQL.SignQuoteCartMutation(
@@ -51,18 +51,6 @@ extension OfferStore {
                 .failed(event: .updateStartDate)
             }
             .valueSignal
-    }
-
-    internal func quoteCartSignQuotesEffectPoll(
-        quoteCartId: String,
-        shouldFinish: ReadSignal<Bool>
-    ) -> FiniteSignal<OfferAction>? {
-        return Signal(every: 1, delay: 0.5)
-            .map { _ in
-                OfferAction.refetch
-            }
-            .finite()
-            .take(until: shouldFinish)
     }
 }
 

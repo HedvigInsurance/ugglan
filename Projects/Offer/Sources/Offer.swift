@@ -199,7 +199,9 @@ extension Offer: Presentable {
 
                 bag += store.onAction(.sign(event: .done)) {
                     if store.state.isQuoteCart {
-                        store.send(.fetchAccessToken)
+                        if store.state.checkoutStatus == .signed {
+                            store.send(.fetchAccessToken)
+                        }
                     } else {
                         callback(.value(.signed(ids: store.state.ids, startDates: store.state.startDates)))
                     }
