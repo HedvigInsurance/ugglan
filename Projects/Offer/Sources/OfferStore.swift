@@ -183,19 +183,22 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             if let _ = getState().quoteCartId {
                 return FiniteSignal { callback in
                     let bag = DisposeBag()
-                    
-                    bag += Signal(every: 0.25).onValue { _ in
-                        callback(.value(.refetch))
-                    }
-                    
-                    bag += self.stateSignal.filter(predicate: {
-                        $0.checkoutStatus == .signed || $0.checkoutStatus == .completed
-                    }).onValue { _ in
-                        callback(.value(.sign(event: .done)))
-                    }
-                    
+
+                    bag += Signal(every: 0.25)
+                        .onValue { _ in
+                            callback(.value(.refetch))
+                        }
+
+                    bag += self.stateSignal
+                        .filter(predicate: {
+                            $0.checkoutStatus == .signed || $0.checkoutStatus == .completed
+                        })
+                        .onValue { _ in
+                            callback(.value(.sign(event: .done)))
+                        }
+
                     callback(.value(.requestQuoteCartSign))
-                    
+
                     return bag
                 }
             } else {
