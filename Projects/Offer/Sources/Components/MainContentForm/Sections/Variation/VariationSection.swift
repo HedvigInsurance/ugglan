@@ -11,17 +11,12 @@ struct VariationsSection: View {
         if variations.count > 1 {
             hSection(header: hText(L10n.offerBundleSelectorTitle)) {
                 VStack(alignment: .leading) {
-                    hText(
-                        L10n.offerBundleSelectorDescription,
-                        style: .body
-                    )
-                    .foregroundColor(hLabelColor.secondary)
                     ForEach(variations, id: \.id) { variant in
                         VariantSelector(variant: variant)
                             .padding(.top, 15)
                     }
                 }
-            }
+            }.sectionContainerStyle(.transparent)
         }
     }
 }

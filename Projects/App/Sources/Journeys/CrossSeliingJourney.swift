@@ -25,12 +25,6 @@ extension AppJourney {
                 AppJourney.offerCheckout(with: token)
             case .signedQuoteCart:
                 DismissJourney()
-            case let .openPerilDetail(peril):
-                Journey(
-                    PerilDetail(peril: peril),
-                    style: .detented(.preferredContentSize, .large)
-                )
-                .withDismissButton
             }
         }
     }

@@ -11,26 +11,26 @@ public struct DetailAgreementsTableView: View {
     
     public var body: some View {
         ForEach(table.sections, id: \.hashValue) { section in
-            hSection(header: hText(section.title)) {
-                ForEach(section.rows, id: \.value) { row in
-                    hRow {
-                        VStack {
-                            hText(row.title, style: .body)
-                                .foregroundColor(hLabelColor.primary)
-                            
-                            if let subtitle = row.subtitle {
-                                hText(subtitle, style: .subheadline)
-                                    .foregroundColor(hLabelColor.secondary)
-                            }
-                        }
-                    }.withCustomAccessory {
-                        Spacer()
-                        VStack {
-                            hText(row.value, style: .body)
+            hSection(section.rows, id: \.title) { row in
+                hRow {
+                    VStack {
+                        hText(row.title, style: .body)
+                            .foregroundColor(hLabelColor.primary)
+                        
+                        if let subtitle = row.subtitle {
+                            hText(subtitle, style: .subheadline)
                                 .foregroundColor(hLabelColor.secondary)
                         }
                     }
+                }.withCustomAccessory {
+                    Spacer()
+                    VStack {
+                        hText(row.value, style: .body)
+                            .foregroundColor(hLabelColor.secondary)
+                    }
                 }
+            }.withHeader {
+                hText(section.title)
             }
         }
     }

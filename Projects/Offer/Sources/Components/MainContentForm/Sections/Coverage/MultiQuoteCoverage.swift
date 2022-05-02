@@ -6,67 +6,32 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import SwiftUI
 
 struct MultiQuoteCoverage {
+    @PresentableStore var store: OfferStore
+    
     let quotes: [QuoteBundle.Quote]
 }
 
-extension MultiQuoteCoverage: Presentable {
-    func materialize() -> (SectionView, Disposable) {
-        let bag = DisposeBag()
-
-        let section = SectionView(
-            headerView: {
-                let stackView = UIStackView()
-                stackView.spacing = 10
-                stackView.axis = .vertical
-
-                bag += stackView.addArranged(
-                    MultilineLabel(
-                        value:
-                            L10n.contractCoverageMoreInfo,
-                        style: .brand(.title3(color: .primary))
-                    )
-                )
-
-                bag += stackView.addArranged(
-                    MultilineLabel(
-                        value:
-                            L10n.OfferScreenMULTIPLEINSURANCES.coverageParagraph,
-                        style: .brand(.body(color: .secondary))
-                    )
-                )
-
-                return stackView
-            }(),
-            footerView: nil
-        )
-        section.dynamicStyle = .brandGroupedInset(separatorType: .standard)
-
-        bag += quotes.map { quote -> DisposeBag in
-            let innerBag = DisposeBag()
-            let row = RowView(title: quote.displayName)
-            row.append(hCoreUIAssets.chevronRight.image)
-
-            innerBag += section.append(row)
-                .onValue {
-                    section.viewController?
-                        .present(
-                            QuoteCoverage(quote: quote).withCloseButton,
-                            style: .detented(.large),
-                            options: [
-                                .defaults, .prefersLargeTitles(true),
-                                .largeTitleDisplayMode(.always),
-                            ]
-                        )
-                }
-
-            innerBag += {
-                row.removeFromSuperview()
+extension MultiQuoteCoverage: View {
+    var body: some View {
+        hSection(quotes) { quote in
+            hRow {
+                hText(quote.displayName)
+            }.onTap {
+                store.send(.openQuoteCoverage(quote: quote))
             }
-            return innerBag
+        }.withHeader {
+            VStack(spacing: 10) {
+                L10n.contractCoverageMoreInfo
+                    .hText(.title3)
+                    .foregroundColor(hLabelColor.primary)
+                L10n.OfferScreenMULTIPLEINSURANCES.coverageParagraph
+                    .hText(.body)
+                    .foregroundColor(hLabelColor.secondary)
+            }
         }
-
-        return (section, bag)
     }
 }
+

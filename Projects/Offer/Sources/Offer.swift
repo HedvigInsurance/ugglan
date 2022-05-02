@@ -8,6 +8,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import SafariServices
 
 public enum OfferOption {
     case menuToTrailing
@@ -54,7 +55,6 @@ public enum OfferResult {
     case chat
     case menu(_ action: MenuChildAction)
     case openCheckout(accessToken: String?)
-    case openPerilDetail(peril: Perils)
 }
 
 extension Offer: Presentable {
@@ -180,7 +180,31 @@ extension Offer: Presentable {
                 
                 bag += store.actionSignal.onValue({ action in
                     if case let .openPerilDetail(peril) = action {
-                        callback(.value(.openPerilDetail(peril: peril)))
+                        viewController
+                            .present(
+                                Journey(
+                                    PerilDetail(peril: peril),
+                                    style: .detented(.preferredContentSize, .large)
+                                )
+                                .withDismissButton
+                            ).onValue { _ in
+                                
+                            }
+                    } else if case let .openQuoteCoverage(quote) = action {
+                        viewController
+                            .present(
+                                QuoteCoverage(quote: quote).journey
+                            ).onValue { _ in
+                                
+                            }
+                    } else if case let .openInsurableLimit(limit) = action {
+                        viewController.present(InsurableLimitDetail(limit: limit).journey).onValue { _ in
+                            
+                        }
+                    } else if case let .openDocument(url) = action {
+                        let safariViewController = SFSafariViewController(url: url)
+                        safariViewController.modalPresentationStyle = .formSheet
+                        viewController.present(safariViewController, animated: true)
                     }
                 })
 

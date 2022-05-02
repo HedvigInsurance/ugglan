@@ -16,70 +16,24 @@ struct SingleQuoteCoverage {
 
 extension SingleQuoteCoverage: View {
     var body: some View {
-        hSection(header: hText(L10n.offerScreenCoverageTitle, style: .title3)) {
+        VStack {
+            hText(L10n.offerScreenCoverageTitle, style: .title3)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 15)
             PerilCollection(
                 perils: quote.perils,
                 didTapPeril: { peril in
                     store.send(.openPerilDetail(peril: peril))
-                    
-                    //section.viewController?
-                     //   .present(
-                     //       PerilDetail(peril: peril).withCloseButton,
-                     //       style: .detented(.preferredContentSize, .large)
-                     //   )
                 }
             )
-            .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
+            .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
             InsurableLimitsSectionView(
-                header: EmptyView(),
+                header: L10n.contractCoverageMoreInfo.hText(),
                 limits: quote.insurableLimits
             ) { limit in
-                // did tap
+                store.send(.openInsurableLimit(limit: limit))
             }
             DocumentsSection(quote: quote)
         }
-    }
-}
-
-extension SingleQuoteCoverage: Presentable {
-    func materialize() -> (SectionView, Disposable) {
-        let section = SectionView(
-            headerView: UILabel(value: L10n.offerScreenCoverageTitle, style: .default),
-            footerView: nil
-        )
-        section.dynamicStyle = .brandGrouped(separatorType: .none)
-
-        let bag = DisposeBag()
-
-        let perilCollection = PerilCollection(
-            perils: quote.perils,
-            didTapPeril: { peril in
-                section.viewController?
-                    .present(
-                        PerilDetail(peril: peril).withCloseButton,
-                        style: .detented(.preferredContentSize, .large)
-                    )
-            }
-        )
-        .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
-
-        section.append(
-            HostingView(rootView: perilCollection)
-        )
-
-        section.appendSpacing(.inbetween)
-
-        let insurableLimits = quote
-            .insurableLimits
-
-        bag += section.append(
-            InsurableLimitsSection(insurableLimits: insurableLimits)
-        )
-
-        section.appendSpacing(.inbetween)
-
-        bag += section.append(DocumentsSection(quote: quote))
-
-        return (section, bag)
     }
 }

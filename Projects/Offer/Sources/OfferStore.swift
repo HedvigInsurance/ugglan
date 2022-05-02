@@ -80,6 +80,9 @@ public enum OfferAction: ActionProtocol {
     case setOfferBundle(bundle: OfferBundle)
     case refetch
     case openPerilDetail(peril: Perils)
+    case openInsurableLimit(limit: InsurableLimits)
+    case openQuoteCoverage(quote: QuoteBundle.Quote)
+    case openDocument(url: URL)
 
     /// Start date events
     case setStartDates(dateMap: [String: Date?])

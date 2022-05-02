@@ -34,14 +34,11 @@ extension MainContentForm: Presentable {
                 VariationSection()
                 DetailsSection()
                 CoverageSection()
-            }.presentableStoreLensAnimation(.easeInOut)
+                SwitcherSection()
+                FrequentlyAskedQuestionsSection()
+            }
         }
         formContainer.addArrangedSubview(hostView)
-
-        //bag += form.append(CoverageSection())
-        //bag += form.append(SwitcherSection())
-
-        //bag += form.append(FrequentlyAskedQuestionsSection())
 
         bag += merge(
             scrollView.didLayoutSignal,

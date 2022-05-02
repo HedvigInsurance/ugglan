@@ -39,7 +39,9 @@ struct VariantSelector: View {
         .overlay(
             VariantOverlay(variant: variant)
         )
+        .background(hBackgroundColor.tertiary)
         .cornerRadius(.defaultCornerRadius)
         .clipped()
+        .hShadow()
     }
 }

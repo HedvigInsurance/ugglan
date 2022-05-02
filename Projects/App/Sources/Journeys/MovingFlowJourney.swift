@@ -57,12 +57,6 @@ extension AppJourney {
                         .hidesBackButton.withJourneyDismissButton
                     case .openCheckout:
                         offerCheckout()
-                    case let .openPerilDetail(peril):
-                        Journey(
-                            PerilDetail(peril: peril),
-                            style: .detented(.preferredContentSize, .large)
-                        )
-                        .withDismissButton
                     }
                 }
             }

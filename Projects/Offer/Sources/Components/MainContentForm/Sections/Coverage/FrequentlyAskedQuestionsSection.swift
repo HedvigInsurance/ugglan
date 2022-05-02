@@ -6,8 +6,38 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import SwiftUI
 
 struct FrequentlyAskedQuestionsSection {}
+
+extension FrequentlyAskedQuestionsSection: UIViewRepresentable {
+    
+    class Coordinator {
+        let bag = DisposeBag()
+        
+        init() {}
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+    
+    func makeUIView(context: Context) -> some UIView {
+        let (view, disposable) = self.materialize()
+        
+        context.coordinator.bag += Disposer {
+            DispatchQueue.main.async {
+                disposable.dispose()
+            }
+        }
+        
+        return view
+    }
+    
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        
+    }
+}
 
 extension FrequentlyAskedQuestionsSection: Presentable {
     func materialize() -> (SectionView, Disposable) {
