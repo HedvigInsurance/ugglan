@@ -5,8 +5,24 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import SwiftUI
 
 struct CoverageSection {}
+
+extension CoverageSection: View {
+    var body: some View {
+        VStack {
+            PresentableStoreLens(
+                OfferStore.self,
+                getter: { $0.currentVariant?.bundle.quotes ?? [] }
+            ) { quotes in
+                ForEach(quotes) { quote in
+                    SingleQuoteCoverage(quote: quote)
+                }
+            }
+        }
+    }
+}
 
 extension CoverageSection: Presentable {
     func materialize() -> (SectionView, Disposable) {

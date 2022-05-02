@@ -173,13 +173,17 @@ public struct UpcomingRenewal: Codable, Hashable {
     }
 }
 
-public struct TermsAndConditions: Codable, Hashable {
+public struct TermsAndConditions: Identifiable, Codable, Hashable {
     public init(
         displayName: String,
         url: String
     ) {
         self.displayName = displayName
         self.url = url
+    }
+    
+    public var id: String {
+        displayName + url
     }
 
     public let displayName: String

@@ -261,7 +261,7 @@ public struct QuoteBundle: Codable, Equatable {
         }
     }
 
-    public struct Quote: Codable, Equatable {
+    public struct Quote: Codable, Equatable, Identifiable {
         public let id: String
         public let ssn: String?
         public let email: String?

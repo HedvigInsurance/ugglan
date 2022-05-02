@@ -54,6 +54,7 @@ public enum OfferResult {
     case chat
     case menu(_ action: MenuChildAction)
     case openCheckout(accessToken: String?)
+    case openPerilDetail(peril: Perils)
 }
 
 extension Offer: Presentable {
@@ -176,6 +177,12 @@ extension Offer: Presentable {
             viewController,
             FiniteSignal { callback in
                 store.send(.query)
+                
+                bag += store.actionSignal.onValue({ action in
+                    if case let .openPerilDetail(peril) = action {
+                        callback(.value(.openPerilDetail(peril: peril)))
+                    }
+                })
 
                 bag += store.onAction(.openChat) {
                     callback(.value(.chat))

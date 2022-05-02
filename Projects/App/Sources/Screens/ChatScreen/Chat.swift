@@ -8,6 +8,7 @@ import UIKit
 import hAnalytics
 import hCore
 import hGraphQL
+import hCoreUI
 
 struct Chat {
     @Inject var client: ApolloClient
@@ -63,6 +64,12 @@ enum ChatResult {
                         AppJourney.offerCheckout(with: token)
                     case .signedQuoteCart:
                         DismissJourney()
+                    case let .openPerilDetail(peril):
+                        Journey(
+                            PerilDetail(peril: peril),
+                            style: .detented(.preferredContentSize, .large)
+                        )
+                        .withDismissButton
                     }
                 }
                 .hidesBackButton

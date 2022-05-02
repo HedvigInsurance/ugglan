@@ -124,7 +124,15 @@ extension MovingFlowIntro: Presentable {
                 imageView.image = nil
 
                 if let table = table {
-                    innerBag += form.append(table)
+                    let hostView = makeHost {
+                        table.view
+                    }
+                    
+                    innerBag += {
+                        hostView.removeFromSuperview()
+                    }
+                    
+                    form.append(hostView)
                 }
             case .normal:
                 titleLabel.$value.value = L10n.MovingIntro.title

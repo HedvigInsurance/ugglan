@@ -51,6 +51,12 @@ struct EmbarkOnboardingJourney {
                         Journey(ApolloClientSaveTokenLoader(accessToken: accessToken)) {
                             AppJourney.postOnboarding
                         }
+                    case let .openPerilDetail(peril):
+                        Journey(
+                            PerilDetail(peril: peril),
+                            style: .detented(.preferredContentSize, .large)
+                        )
+                        .withDismissButton
                     }
                 }
             }

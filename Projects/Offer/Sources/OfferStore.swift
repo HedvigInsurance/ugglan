@@ -79,6 +79,7 @@ public enum OfferAction: ActionProtocol {
     case query
     case setOfferBundle(bundle: OfferBundle)
     case refetch
+    case openPerilDetail(peril: Perils)
 
     /// Start date events
     case setStartDates(dateMap: [String: Date?])

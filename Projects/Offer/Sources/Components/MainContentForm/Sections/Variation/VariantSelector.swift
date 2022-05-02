@@ -35,16 +35,6 @@ struct VariantSelector: View {
         .withEmptyAccessory
         .onTap {
             store.send(.setSelectedIds(ids: variant.bundle.quotes.map { $0.id }))
-
-            UIApplication.shared.windows.forEach { window in
-                UIView.transition(
-                    with: window,
-                    duration: 0.25,
-                    options: .transitionCrossDissolve,
-                    animations: nil,
-                    completion: nil
-                )
-            }
         }
         .overlay(
             VariantOverlay(variant: variant)

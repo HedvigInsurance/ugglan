@@ -9,7 +9,36 @@ import hCoreUI
 import hGraphQL
 
 struct SingleQuoteCoverage {
+    @PresentableStore var store: OfferStore
+    
     let quote: QuoteBundle.Quote
+}
+
+extension SingleQuoteCoverage: View {
+    var body: some View {
+        hSection(header: hText(L10n.offerScreenCoverageTitle, style: .title3)) {
+            PerilCollection(
+                perils: quote.perils,
+                didTapPeril: { peril in
+                    store.send(.openPerilDetail(peril: peril))
+                    
+                    //section.viewController?
+                     //   .present(
+                     //       PerilDetail(peril: peril).withCloseButton,
+                     //       style: .detented(.preferredContentSize, .large)
+                     //   )
+                }
+            )
+            .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
+            InsurableLimitsSectionView(
+                header: EmptyView(),
+                limits: quote.insurableLimits
+            ) { limit in
+                // did tap
+            }
+            DocumentsSection(quote: quote)
+        }
+    }
 }
 
 extension SingleQuoteCoverage: Presentable {

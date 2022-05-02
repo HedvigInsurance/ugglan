@@ -7,9 +7,22 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import SwiftUI
 
 struct DocumentsSection {
     let quote: QuoteBundle.Quote
+}
+
+extension DocumentsSection: View {
+    var body: some View {
+        hSection(header: hText(L10n.offerDocumentsSectionTitle)) {
+            ForEach(quote.insuranceTerms) { term in
+                hRow {
+                    hText(term.displayName)
+                }
+            }
+        }
+    }
 }
 
 extension DocumentsSection: Presentable {

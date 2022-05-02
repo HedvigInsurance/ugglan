@@ -5,6 +5,7 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
+import SwiftUI
 
 struct MainContentForm {
     let scrollView: UIScrollView
@@ -26,34 +27,26 @@ extension MainContentForm: Presentable {
         formContainer.edgeInsets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
         formContainer.insetsLayoutMarginsFromSafeArea = true
         container.addArrangedSubview(formContainer)
-
-        let form = FormView()
-        form.dynamicStyle = DynamicFormStyle { _ in
-            .init(insets: .zero)
+        
+        let hostView = makeHost {
+            VStack {
+                DataCollectionSection()
+                VariationSection()
+                DetailsSection()
+                CoverageSection()
+            }.presentableStoreLensAnimation(.easeInOut)
         }
-        form.layer.cornerRadius = .defaultCornerRadius
-        form.layer.masksToBounds = true
-        form.backgroundColor = .brand(.primaryBackground())
-        formContainer.addArrangedSubview(form)
+        formContainer.addArrangedSubview(hostView)
 
-        form.append(HostingView(rootView: DataCollectionSection()))
+        //bag += form.append(CoverageSection())
+        //bag += form.append(SwitcherSection())
 
-        bag += form.append(DetailsSection())
-
-        form.appendSpacing(.inbetween)
-
-        bag += form.append(CoverageSection())
-        bag += form.append(SwitcherSection())
-
-        form.appendSpacing(.inbetween)
-
-        bag += form.append(FrequentlyAskedQuestionsSection())
+        //bag += form.append(FrequentlyAskedQuestionsSection())
 
         bag += merge(
             scrollView.didLayoutSignal,
             container.didLayoutSignal,
             formContainer.didLayoutSignal,
-            form.didLayoutSignal,
             scrollView.didScrollSignal,
             store.stateSignal.compactMap { $0.offerData }.toVoid()
         )

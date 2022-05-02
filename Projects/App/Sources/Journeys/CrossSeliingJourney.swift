@@ -3,6 +3,7 @@ import Embark
 import Foundation
 import Presentation
 import hGraphQL
+import hCoreUI
 
 extension AppJourney {
     static func crossSellingEmbarkJourney(name: String, style: PresentationStyle) -> some JourneyPresentation {
@@ -24,6 +25,12 @@ extension AppJourney {
                 AppJourney.offerCheckout(with: token)
             case .signedQuoteCart:
                 DismissJourney()
+            case let .openPerilDetail(peril):
+                Journey(
+                    PerilDetail(peril: peril),
+                    style: .detented(.preferredContentSize, .large)
+                )
+                .withDismissButton
             }
         }
     }

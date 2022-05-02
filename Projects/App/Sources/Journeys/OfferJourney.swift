@@ -3,6 +3,7 @@ import Offer
 import Payment
 import Presentation
 import hCore
+import hCoreUI
 
 extension AppJourney {
     static var storedOnboardingOffer: some JourneyPresentation {
@@ -38,6 +39,12 @@ extension AppJourney {
                 action.journey
             case let .openCheckout(token):
                 AppJourney.offerCheckout(with: token)
+            case let .openPerilDetail(peril):
+                Journey(
+                    PerilDetail(peril: peril),
+                    style: .detented(.preferredContentSize, .large)
+                )
+                .withDismissButton
             }
         }
     }
