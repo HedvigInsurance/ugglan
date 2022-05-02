@@ -32,11 +32,11 @@ extension ApolloClient {
         if let identifier = userDefaults.value(forKey: deviceKey) as? String {
             return identifier
         } else {
-            let newIdentifier = UUID().uuidString
+            let identifierForVendor = UIDevice.current.identifierForVendor ?? UUID()
 
-            userDefaults.set(newIdentifier, forKey: deviceKey)
+            userDefaults.set(identifierForVendor, forKey: deviceKey)
 
-            return newIdentifier
+            return identifierForVendor.uuidString
         }
     }
 
