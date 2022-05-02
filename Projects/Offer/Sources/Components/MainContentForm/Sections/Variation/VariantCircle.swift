@@ -22,21 +22,12 @@ struct VariantCircle: View {
                 state.currentVariant
             }
         ) { currentVariant in
-            VStack {
-                if currentVariant == variant {
-                    hCoreUIAssets.checkmark.view
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .foregroundColor(hLabelColor.primary.inverted)
-                }
-            }
-            .padding(2)
+            BulletView(isSelected: variant == currentVariant)
             .frame(
                 width: 22,
                 height: 22
             )
-            .background(Circle().strokeBorder(hSeparatorColor.separator, lineWidth: 1))
-            .background(Circle().fill(backgroundColor(isSelected: currentVariant == variant)))
+            .padding(2)
         }
     }
 }

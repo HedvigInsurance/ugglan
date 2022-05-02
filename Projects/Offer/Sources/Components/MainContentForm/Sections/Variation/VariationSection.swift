@@ -31,6 +31,7 @@ struct VariationSection: View {
         ) { possibleVariations in
             VariationsSection(variations: possibleVariations)
         }
+        .presentableStoreLensAnimation(.easeInOut)
         .sectionContainerStyle(.transparent)
     }
 }
