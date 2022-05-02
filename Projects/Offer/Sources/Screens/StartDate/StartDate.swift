@@ -107,6 +107,8 @@ extension StartDate {
                     DismissJourney()
                 } else if case .setOfferBundle = action {
                     DismissJourney()
+                } else if case .setQuoteCart = action {
+                    DismissJourney()
                 }
             }
     }
