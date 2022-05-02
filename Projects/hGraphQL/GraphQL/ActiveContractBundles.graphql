@@ -7,7 +7,6 @@ query ActiveContractBundles($locale: Locale!) {
       detailPills(locale: $locale)
       displayName
       gradientOption
-      typeOfContract
       switchedFromInsuranceProvider
       upcomingRenewal {
         renewalDate
