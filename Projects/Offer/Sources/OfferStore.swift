@@ -337,9 +337,14 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.offerData = nil
             newState.hasSignedQuotes = false
             newState.accessToken = nil
+            newState.selectedIds = []
         case let .setQuoteCart(quoteCart):
             newState.offerData = quoteCart.offerBundle
-            newState.selectedIds = quoteCart.offerBundle?.quotes.map { $0.id } ?? []
+            
+            if newState.selectedIds.isEmpty {
+                newState.selectedIds = quoteCart.offerBundle?.possibleVariations.first?.bundle.quotes.map { $0.id } ?? []
+            }
+            
             newState.checkoutStatus = quoteCart.checkoutStatus
             newState.paymentConnection = quoteCart.paymentConnection
         case let .setAccessToken(id):
