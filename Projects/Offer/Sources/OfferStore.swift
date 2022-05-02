@@ -192,6 +192,10 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                         .onValue { _ in
                             callback(.value(.refetch))
                         }
+                    
+                    bag += Signal(after: 10).onValue { _ in
+                        callback(.value(.sign(event: .failed)))
+                    }
 
                     bag += self.stateSignal
                         .filter(predicate: {
