@@ -24,7 +24,8 @@ extension QuoteCoverage {
     var journey: some JourneyPresentation {
         HostingJourney(rootView: self)
             .withDismissButton
-            .setOptions([.prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+            .setStyle(.detented(.large))
+            .setOptions([.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
             .configureTitle(L10n.offerScreenCoverageTitle)
     }
 }
