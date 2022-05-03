@@ -232,6 +232,8 @@ extension Offer: Presentable {
                     if store.state.isQuoteCart {
                         if store.state.checkoutStatus == .signed {
                             store.send(.fetchAccessToken)
+                        } else {
+                            callback(.value(.signed(ids: store.state.selectedIds, startDates: store.state.startDates)))
                         }
                     } else {
                         callback(.value(.signed(ids: store.state.ids, startDates: store.state.startDates)))
