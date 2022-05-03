@@ -83,6 +83,7 @@ public enum OfferAction: ActionProtocol {
     case openInsurableLimit(limit: InsurableLimits)
     case openQuoteCoverage(quote: QuoteBundle.Quote)
     case openDocument(url: URL)
+    case openFAQ(item: QuoteBundle.FrequentlyAskedQuestion)
 
     /// Start date events
     case setStartDates(dateMap: [String: Date?])

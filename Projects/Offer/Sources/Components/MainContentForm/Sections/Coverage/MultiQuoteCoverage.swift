@@ -27,9 +27,12 @@ extension MultiQuoteCoverage: View {
                 L10n.contractCoverageMoreInfo
                     .hText(.title3)
                     .foregroundColor(hLabelColor.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 L10n.OfferScreenMULTIPLEINSURANCES.coverageParagraph
                     .hText(.body)
                     .foregroundColor(hLabelColor.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }

@@ -240,7 +240,7 @@ public struct QuoteBundle: Codable, Equatable {
         }
     }
 
-    public struct FrequentlyAskedQuestion: Codable, Equatable {
+    public struct FrequentlyAskedQuestion: Identifiable, Codable, Equatable {
         public let body: String?
         public let headline: String?
         public let id: String

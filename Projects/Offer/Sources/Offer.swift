@@ -205,6 +205,15 @@ extension Offer: Presentable {
                         let safariViewController = SFSafariViewController(url: url)
                         safariViewController.modalPresentationStyle = .formSheet
                         viewController.present(safariViewController, animated: true)
+                    } else if case let .openFAQ(item) = action {
+                        viewController.present(
+                            FrequentlyAskedQuestionDetail(
+                                frequentlyAskedQuestion: item
+                            )
+                            .journey
+                        ).onValue { _ in
+                            
+                        }
                     }
                 })
 
