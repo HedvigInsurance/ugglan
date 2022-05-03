@@ -23,11 +23,11 @@ struct VariantCircle: View {
             }
         ) { currentVariant in
             BulletView(isSelected: variant == currentVariant)
-            .frame(
-                width: 22,
-                height: 22
-            )
-            .padding(2)
+                .frame(
+                    width: 22,
+                    height: 22
+                )
+                .padding(2)
         }
     }
 }

@@ -2,10 +2,10 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct MainContentForm {
     let scrollView: UIScrollView
@@ -27,7 +27,7 @@ extension MainContentForm: Presentable {
         formContainer.edgeInsets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
         formContainer.insetsLayoutMarginsFromSafeArea = true
         container.addArrangedSubview(formContainer)
-        
+
         let hostView = makeHost {
             VStack {
                 DataCollectionSection()

@@ -2,11 +2,11 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 struct FrequentlyAskedQuestionsSection: View {
     var body: some View {
@@ -23,7 +23,7 @@ struct FrequentlyAskedQuestionsSection: View {
 
 struct FAQList: View {
     @PresentableStore var store: OfferStore
-    
+
     var body: some View {
         PresentableStoreLens(
             OfferStore.self,
@@ -32,12 +32,15 @@ struct FAQList: View {
             hSection(faqItems) { faqItem in
                 hRow {
                     faqItem.headline?.hText()
-                }.onTap {
+                }
+                .onTap {
                     store.send(.openFAQ(item: faqItem))
                 }
-            }.withHeader {
+            }
+            .withHeader {
                 L10n.Offer.faqTitle.hText()
-            }.withFooter {
+            }
+            .withFooter {
                 VStack {
                     L10n.offerFooterSubtitle.hText(.subheadline)
                     hButton.LargeButtonOutlined {

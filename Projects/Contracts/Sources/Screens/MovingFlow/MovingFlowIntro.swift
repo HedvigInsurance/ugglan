@@ -127,11 +127,11 @@ extension MovingFlowIntro: Presentable {
                     let hostView = makeHost {
                         table.view
                     }
-                    
+
                     innerBag += {
                         hostView.removeFromSuperview()
                     }
-                    
+
                     form.append(hostView)
                 }
             case .normal:
