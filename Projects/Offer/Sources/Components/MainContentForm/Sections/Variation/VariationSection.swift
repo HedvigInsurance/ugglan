@@ -16,7 +16,8 @@ struct VariationsSection: View {
                             .padding(.top, 15)
                     }
                 }
-            }.sectionContainerStyle(.transparent)
+            }
+            .sectionContainerStyle(.transparent)
         }
     }
 }

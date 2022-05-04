@@ -2,15 +2,15 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 struct MultiQuoteCoverage {
     @PresentableStore var store: OfferStore
-    
+
     let quotes: [QuoteBundle.Quote]
 }
 
@@ -19,10 +19,12 @@ extension MultiQuoteCoverage: View {
         hSection(quotes) { quote in
             hRow {
                 hText(quote.displayName)
-            }.onTap {
+            }
+            .onTap {
                 store.send(.openQuoteCoverage(quote: quote))
             }
-        }.withHeader {
+        }
+        .withHeader {
             VStack(spacing: 10) {
                 L10n.contractCoverageMoreInfo
                     .hText(.title3)
@@ -37,4 +39,3 @@ extension MultiQuoteCoverage: View {
         }
     }
 }
-

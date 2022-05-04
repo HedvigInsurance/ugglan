@@ -181,7 +181,7 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
         self.displayName = displayName
         self.url = url
     }
-    
+
     public var id: String {
         displayName + url
     }

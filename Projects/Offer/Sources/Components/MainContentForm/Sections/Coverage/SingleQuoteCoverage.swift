@@ -10,7 +10,7 @@ import hGraphQL
 
 struct SingleQuoteCoverage {
     @PresentableStore var store: OfferStore
-    
+
     let quote: QuoteBundle.Quote
 }
 
