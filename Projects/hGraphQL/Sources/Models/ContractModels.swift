@@ -43,6 +43,7 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingAgreementsTable: DetailAgreementsTable,
         currentAgreementsTable: DetailAgreementsTable?,
         gradientOption: Contract.GradientOption?,
+        logo: IconEnvelope?,
         displayName: String,
         switchedFromInsuranceProvider: String?,
         upcomingRenewal: UpcomingRenewal?,
@@ -59,6 +60,7 @@ public struct Contract: Codable, Hashable, Equatable {
         self.upcomingAgreementsTable = upcomingAgreementsTable
         self.currentAgreementsTable = currentAgreementsTable
         self.gradientOption = gradientOption
+        self.logo = logo
         self.displayName = displayName
         self.switchedFromInsuranceProvider = switchedFromInsuranceProvider
         self.upcomingRenewal = upcomingRenewal
@@ -76,6 +78,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let upcomingAgreementsTable: DetailAgreementsTable
     public let currentAgreementsTable: DetailAgreementsTable?
     public let gradientOption: GradientOption?
+    public let logo: IconEnvelope?
     public let displayName: String
     public let switchedFromInsuranceProvider: String?
     public let upcomingRenewal: UpcomingRenewal?
@@ -99,6 +102,7 @@ public struct Contract: Codable, Hashable, Equatable {
             fragment: contract.currentAgreementDetailsTable.fragments.detailsTableFragment
         )
         upcomingRenewal = .init(upcomingRenewal: contract.upcomingRenewal)
+        logo = .init(fragment: contract.logo.fragments.iconFragment)
         contractPerils = contract.contractPerils.map { .init(fragment: $0.fragments.perilFragment) }
         insurableLimits = contract.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
         termsAndConditions = .init(
@@ -131,6 +135,7 @@ public struct Contract: Codable, Hashable, Equatable {
         )
         currentAgreementsTable = .init(fragment: contract.currentAgreementDetailsTable.fragments.detailsTableFragment)
         upcomingRenewal = nil
+        logo = .init(fragment: contract.logo.fragments.iconFragment)
         contractPerils = contract.contractPerils.map { .init(fragment: $0.fragments.perilFragment) }
         insurableLimits = contract.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
         termsAndConditions = .init(
