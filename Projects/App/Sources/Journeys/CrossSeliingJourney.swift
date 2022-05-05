@@ -21,8 +21,8 @@ extension AppJourney {
                 ContinueJourney()
             case let .signed(_, startDates):
                 CrossSellingSigned.journey(startDate: startDates.first?.value)
-            case let .openCheckout(token):
-                AppJourney.offerCheckout(with: token)
+            case .openCheckout:
+                AppJourney.offerCheckout
             case .signedQuoteCart:
                 DismissJourney()
             }

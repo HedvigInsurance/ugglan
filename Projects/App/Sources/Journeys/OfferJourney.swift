@@ -4,6 +4,7 @@ import Payment
 import Presentation
 import hCore
 import hCoreUI
+import hGraphQL
 
 extension AppJourney {
     static var storedOnboardingOffer: some JourneyPresentation {
@@ -37,30 +38,38 @@ extension AppJourney {
                 ContinueJourney()
             case let .menu(action):
                 action.journey
-            case let .openCheckout(token):
-                AppJourney.offerCheckout(with: token)
+            case .openCheckout:
+                AppJourney.offerCheckout
             }
         }
     }
 
-    static func offerCheckout(with token: String? = nil) -> some JourneyPresentation {
-        PaymentSetup(setupType: .initial, accessToken: token)
-            .journey { success in
-                Journey(
-                    Checkout(),
-                    style: .default,
-                    options: [
-                        .defaults,
-                        .autoPop,
-                        .prefersLargeTitles(true),
-                        .largeTitleDisplayMode(.always),
-                        .allowSwipeDismissAlways,
-                    ]
-                ) { _ in
-                    DismissJourney()
+    @JourneyBuilder static var offerCheckout: some JourneyPresentation {
+        let store: OfferStore = globalPresentableStoreContainer.get()
+        
+        PaymentSetup(
+            setupType: .preOnboarding(
+                monthlyNetCost: store.state.currentVariant?.bundle.bundleCost.monthlyNet
+            )
+        )
+            .journey { success, paymentConnectionID in
+                if let paymentConnectionID = paymentConnectionID {
+                    Journey(
+                        Checkout(paymentConnectionID: paymentConnectionID),
+                        style: .default,
+                        options: [
+                            .defaults,
+                            .autoPop,
+                            .prefersLargeTitles(true),
+                            .largeTitleDisplayMode(.always),
+                            .allowSwipeDismissAlways,
+                        ]
+                    ) { _ in
+                        DismissJourney()
+                    }
+                    .withJourneyDismissButton
+                    .hidesBackButton
                 }
-                .withJourneyDismissButton
-                .hidesBackButton
             }
             .setOptions([.defaults, .allowSwipeDismissAlways])
             .mapJourneyDismissToCancel

@@ -10,6 +10,7 @@ import hCore
 import hGraphQL
 
 struct DirectDebitSetup {
+    @Inject var client: ApolloClient
     let setupType: PaymentSetup.SetupType
 
     private func makeDismissButton() -> UIBarButtonItem {
@@ -35,9 +36,6 @@ extension DirectDebitSetup: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.hidesBottomBarWhenPushed = true
-
-        let store: PaymentStore = self.get()
-        let client = store.getClient()
 
         if #available(iOS 13.0, *) { viewController.isModalInPresentation = true }
 

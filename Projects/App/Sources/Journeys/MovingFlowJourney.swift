@@ -56,7 +56,7 @@ extension AppJourney {
                         }
                         .hidesBackButton.withJourneyDismissButton
                     case .openCheckout:
-                        offerCheckout()
+                        offerCheckout
                     }
                 }
             }

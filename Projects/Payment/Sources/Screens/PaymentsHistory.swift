@@ -21,7 +21,9 @@ extension PaymentsHistory: Presentable {
 
         let section = form.appendSection(header: nil, footer: nil)
 
-        bag += client.watch(query: GraphQL.MyPaymentQuery())
+        bag += client.watch(query: GraphQL.MyPaymentQuery(
+            locale: Localization.Locale.currentLocale.asGraphQLLocale()
+        ))
             .onValueDisposePrevious { data -> Disposable? in let innerBag = DisposeBag()
 
                 innerBag += data.chargeHistory.map { chargeHistory -> Disposable in

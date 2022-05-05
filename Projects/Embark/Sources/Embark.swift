@@ -33,21 +33,6 @@ extension MenuChildAction {
     }
 }
 
-extension Localization.Locale.Market {
-    var graphQL: GraphQL.Market {
-        switch self {
-        case .dk:
-            return .denmark
-        case .se:
-            return .sweden
-        case .no:
-            return .norway
-        default:
-            return .__unknown("")
-        }
-    }
-}
-
 extension Embark: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<ExternalRedirect>) {
         let viewController = UIViewController()

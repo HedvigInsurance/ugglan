@@ -15,6 +15,7 @@ struct AdditionalDetailsRequest: Encodable {
 class ActionDelegate: NSObject, ActionComponentDelegate {
     typealias ResultHandler = (_ result: Flow.Result<Either<Void, AdyenActions.Action>>) -> Void
 
+    @PresentableStore var store: PaymentStore
     @Inject var client: ApolloClient
     let onResult: ResultHandler
 
@@ -30,18 +31,24 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
             let detailsJson = String(data: detailsJsonData, encoding: .utf8)
         else { return }
 
-        client.perform(mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(req: detailsJson))
+        client.perform(mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(
+            paymentConnectionID: store.state.paymentConnectionID ?? "",
+            req: detailsJson
+        ))
             .onValue { data in
-                if [.pending, .completed]
+                if [.pending, .authorised]
                     .contains(
-                        data.submitAdditionalPaymentDetails.asAdditionalPaymentsDetailsResponseFinished?
-                            .tokenizationResult
-                    )
+                        data.paymentConnectionSubmitAdditionalPaymentDetails.asConnectPaymentFinished?.status
+                    ),
+                   let paymentConnectionId = data.paymentConnectionSubmitAdditionalPaymentDetails.asConnectPaymentFinished?.paymentTokenId
                 {
+                    self.store.send(.setConnectionID(id: paymentConnectionId))
                     self.onResult(.success(.make(())))
-                } else if let data = data.submitAdditionalPaymentDetails
-                    .asAdditionalPaymentsDetailsResponseAction
+                } else if
+                    let data = data.paymentConnectionSubmitAdditionalPaymentDetails.asActionRequired
                 {
+                    self.store.send(.setConnectionID(id: data.paymentTokenId))
+
                     guard let jsonData = data.action.data(using: .utf8) else { return }
                     guard
                         let action = try? JSONDecoder()

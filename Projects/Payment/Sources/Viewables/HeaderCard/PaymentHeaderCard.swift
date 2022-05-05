@@ -56,7 +56,9 @@ extension PaymentHeaderCard: Viewable {
             UILabel(value: L10n.paymentsCardTitle, style: TextStyle.brand(.subHeadline(color: .tertiary)))
         )
 
-        let dataSignal = client.fetch(query: GraphQL.MyPaymentQuery()).valueSignal
+        let dataSignal = client.fetch(query: GraphQL.MyPaymentQuery(
+            locale: Localization.Locale.currentLocale.asGraphQLLocale()
+        )).valueSignal
 
         let grossPriceSignal =
             dataSignal.map { $0.chargeEstimation.subscription.fragments.monetaryAmountFragment.amount }

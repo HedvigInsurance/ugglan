@@ -9,7 +9,6 @@ import hGraphQL
 public struct PaymentSetup {
     let setupType: SetupType
     let urlScheme: String
-    let accessToken: String?
 
     public enum SetupType {
         case initial
@@ -19,23 +18,15 @@ public struct PaymentSetup {
 
     public init(
         setupType: SetupType,
-        urlScheme: String = Bundle.main.urlScheme ?? "",
-        accessToken: String? = nil
+        urlScheme: String = Bundle.main.urlScheme ?? ""
     ) {
         self.setupType = setupType
         self.urlScheme = urlScheme
-        self.accessToken = accessToken
     }
 }
 
 extension PaymentSetup: Presentable {
     public func materialize() -> (UIViewController, FiniteSignal<Either<Bool, AdyenOptions>>) {
-        let store: PaymentStore = self.get()
-
-        if let accessToken = accessToken {
-            store.send(.setAccessToken(token: accessToken))
-        }
-
         switch hAnalyticsExperiment.paymentType {
         case .trustly:
             let (viewController, result) = DirectDebitSetup(setupType: setupType).materialize()
@@ -63,18 +54,20 @@ extension PaymentSetup: Presentable {
 
 extension PaymentSetup {
     public func journey<Next: JourneyPresentation>(
-        @JourneyBuilder _ next: @escaping (_ success: Bool) -> Next
+        @JourneyBuilder _ next: @escaping (_ success: Bool, _ paymentConnectionID: String?) -> Next
     ) -> some JourneyPresentation {
         Journey(
             self,
             style: .detented(.large),
             options: [.defaults, .autoPopSelfAndSuccessors]
         ) { result in
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+            
             if let success = result.left {
-                next(success)
+                next(success, store.state.paymentConnectionID)
             } else if let options = result.right {
                 Journey(AdyenPayIn(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")) { success in
-                    next(success)
+                    next(success, store.state.paymentConnectionID)
                 }
                 .withJourneyDismissButton
             }
@@ -83,7 +76,7 @@ extension PaymentSetup {
 
     /// Sets up payment and then dismisses
     public var journeyThenDismiss: some JourneyPresentation {
-        journey { _ in
+        journey { _, _ in
             DismissJourney()
         }
     }

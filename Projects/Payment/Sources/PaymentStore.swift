@@ -8,38 +8,31 @@ import hGraphQL
 
 public struct PaymentState: StateProtocol {
     var monthlyNetCost: MonetaryAmount? = nil
-    var accessToken: String? = nil
+    var paymentConnectionID: String? = nil
     public init() {}
 }
 
 public enum PaymentAction: ActionProtocol {
     case load
     case setMonthlyNetCost(cost: MonetaryAmount)
-    case setAccessToken(token: String)
+    case setConnectionID(id: String)
 }
 
 public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
     @Inject var client: ApolloClient
 
-    func getClient() -> ApolloClient {
-        if let token = state.accessToken {
-            return ApolloClient.createClient(token: token).1
-        } else {
-            return client
-        }
-    }
-
     public override func effects(
         _ getState: @escaping () -> PaymentState,
         _ action: PaymentAction
     ) -> FiniteSignal<PaymentAction>? {
-
         switch action {
         case .load:
             return
-                getClient()
+                client
                 .fetch(
-                    query: GraphQL.MyPaymentQuery()
+                    query: GraphQL.MyPaymentQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
                 )
                 .compactMap { data in
                     if let fragment = data.insuranceCost?.monthlyNet.fragments.monetaryAmountFragment {
@@ -60,8 +53,8 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
         switch action {
         case let .setMonthlyNetCost(cost):
             newState.monthlyNetCost = cost
-        case let .setAccessToken(token):
-            newState.accessToken = token
+        case let .setConnectionID(id):
+            newState.paymentConnectionID = id
         default:
             break
         }

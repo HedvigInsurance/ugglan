@@ -84,6 +84,7 @@ public enum OfferAction: ActionProtocol {
     case openQuoteCoverage(quote: QuoteBundle.Quote)
     case openDocument(url: URL)
     case openFAQ(item: QuoteBundle.FrequentlyAskedQuestion)
+    case setPaymentConnectionID(id: String)
 
     /// Start date events
     case setStartDates(dateMap: [String: Date?])
@@ -252,6 +253,21 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     }
                     .map {
                         .setAccessToken(id: $0)
+                    }
+                    .valueThenEndSignal
+            }
+        case let .setPaymentConnectionID(paymentConnectionID):
+            if let quoteCartId = getState().quoteCartId {
+                return self.client.perform(mutation: GraphQL.QuoteCartSetPaymentConnectionIdMutation(
+                    id: quoteCartId,
+                    paymentConnectionID: paymentConnectionID,
+                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                ))
+                    .compactMap { data in
+                        data.quoteCartAddPaymentToken.asQuoteCart?.fragments.quoteCartFragment
+                    }
+                    .map {
+                        .setQuoteCart(quoteCart: .init(quoteCart: $0))
                     }
                     .valueThenEndSignal
             }

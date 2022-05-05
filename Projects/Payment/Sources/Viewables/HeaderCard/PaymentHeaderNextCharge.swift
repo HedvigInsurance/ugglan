@@ -25,7 +25,9 @@ extension PaymentHeaderNextCharge: Viewable {
 
         contentContainer.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
-        bag += client.watch(query: GraphQL.MyPaymentQuery()).map { $0.nextChargeDate }
+        bag += client.watch(query: GraphQL.MyPaymentQuery(
+            locale: Localization.Locale.currentLocale.asGraphQLLocale()
+        )).map { $0.nextChargeDate }
             .onValue { nextChargeDate in
                 if let nextChargeDate = nextChargeDate {
                     let dateParsingFormatter = DateFormatter()
