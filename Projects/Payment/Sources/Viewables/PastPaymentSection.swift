@@ -19,9 +19,11 @@ extension PastPaymentsSection: Viewable {
 
         let section = SectionView(header: L10n.paymentsSubtitlePaymentHistory, footer: nil)
 
-        let dataSignal = client.watch(query: GraphQL.MyPaymentQuery(
-            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-        ))
+        let dataSignal = client.watch(
+            query: GraphQL.MyPaymentQuery(
+                locale: Localization.Locale.currentLocale.asGraphQLLocale()
+            )
+        )
         bag += dataSignal.map { $0.chargeHistory.isEmpty }.bindTo(section, \.isHidden)
 
         bag += dataSignal.onValueDisposePrevious { data -> Disposable? in let innerBag = DisposeBag()

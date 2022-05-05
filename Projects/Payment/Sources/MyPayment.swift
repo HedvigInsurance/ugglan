@@ -24,8 +24,11 @@ extension MyPayment: Presentable {
 
         store.send(.load)
 
-        let dataSignal = client.watch(query: GraphQL.MyPaymentQuery(
-            locale: Localization.Locale.currentLocale.asGraphQLLocale()))
+        let dataSignal = client.watch(
+            query: GraphQL.MyPaymentQuery(
+                locale: Localization.Locale.currentLocale.asGraphQLLocale()
+            )
+        )
         let failedChargesSignalData = dataSignal.map { $0.balance.failedCharges }
         let nextPaymentSignalData = dataSignal.map { $0.nextChargeDate }
 
@@ -36,9 +39,11 @@ extension MyPayment: Presentable {
         bag += viewController.install(form) { scrollView in
             bag += scrollView.performEntryAnimation(
                 contentView: form,
-                onLoad: client.fetch(query: GraphQL.MyPaymentQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                )),
+                onLoad: client.fetch(
+                    query: GraphQL.MyPaymentQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
+                ),
                 onError: { _ in }
             )
         }

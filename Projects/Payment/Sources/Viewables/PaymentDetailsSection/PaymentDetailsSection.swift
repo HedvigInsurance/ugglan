@@ -20,9 +20,12 @@ extension PaymentDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
-        let dataSignal = client.watch(query: GraphQL.MyPaymentQuery(
-            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-        ), cachePolicy: .returnCacheDataAndFetch)
+        let dataSignal = client.watch(
+            query: GraphQL.MyPaymentQuery(
+                locale: Localization.Locale.currentLocale.asGraphQLLocale()
+            ),
+            cachePolicy: .returnCacheDataAndFetch
+        )
 
         let section = SectionView(header: L10n.myPaymentPaymentRowLabel, footer: nil)
 
