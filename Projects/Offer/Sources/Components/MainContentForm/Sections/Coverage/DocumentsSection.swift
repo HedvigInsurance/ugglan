@@ -3,11 +3,11 @@ import Form
 import Foundation
 import Presentation
 import SafariServices
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 struct DocumentsSection {
     @PresentableStore var store: OfferStore
@@ -19,13 +19,15 @@ extension DocumentsSection: View {
         hSection(quote.insuranceTerms) { term in
             hRow {
                 hText(term.displayName)
-            }.onTap {
+            }
+            .onTap {
                 guard let url = URL(string: term.url) else {
                     return
                 }
                 store.send(.openDocument(url: url))
             }
-        }.withHeader {
+        }
+        .withHeader {
             hText(L10n.offerDocumentsSectionTitle)
         }
     }

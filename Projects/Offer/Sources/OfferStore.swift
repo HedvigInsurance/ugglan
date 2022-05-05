@@ -194,10 +194,11 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                         .onValue { _ in
                             callback(.value(.refetch))
                         }
-                    
-                    bag += Signal(after: 10).onValue { _ in
-                        callback(.value(.sign(event: .failed)))
-                    }
+
+                    bag += Signal(after: 10)
+                        .onValue { _ in
+                            callback(.value(.sign(event: .failed)))
+                        }
 
                     bag += self.stateSignal
                         .filter(predicate: {
@@ -361,11 +362,12 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.selectedIds = []
         case let .setQuoteCart(quoteCart):
             newState.offerData = quoteCart.offerBundle
-            
+
             if newState.selectedIds.isEmpty {
-                newState.selectedIds = quoteCart.offerBundle?.possibleVariations.first?.bundle.quotes.map { $0.id } ?? []
+                newState.selectedIds =
+                    quoteCart.offerBundle?.possibleVariations.first?.bundle.quotes.map { $0.id } ?? []
             }
-            
+
             newState.checkoutStatus = quoteCart.checkoutStatus
             newState.paymentConnection = quoteCart.paymentConnection
         case let .setAccessToken(id):

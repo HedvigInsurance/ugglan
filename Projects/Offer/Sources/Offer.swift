@@ -3,12 +3,12 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SafariServices
 import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import SafariServices
 
 public enum OfferOption {
     case menuToTrailing
@@ -177,7 +177,7 @@ extension Offer: Presentable {
             viewController,
             FiniteSignal { callback in
                 store.send(.query)
-                
+
                 bag += store.actionSignal.onValue({ action in
                     if case let .openPerilDetail(peril) = action {
                         viewController
@@ -187,20 +187,23 @@ extension Offer: Presentable {
                                     style: .detented(.preferredContentSize, .large)
                                 )
                                 .withDismissButton
-                            ).onValue { _ in
-                                
+                            )
+                            .onValue { _ in
+
                             }
                     } else if case let .openQuoteCoverage(quote) = action {
                         viewController
                             .present(
                                 QuoteCoverage(quote: quote).journey
-                            ).onValue { _ in
-                                
+                            )
+                            .onValue { _ in
+
                             }
                     } else if case let .openInsurableLimit(limit) = action {
-                        viewController.present(InsurableLimitDetail(limit: limit).journey).onValue { _ in
-                            
-                        }
+                        viewController.present(InsurableLimitDetail(limit: limit).journey)
+                            .onValue { _ in
+
+                            }
                     } else if case let .openDocument(url) = action {
                         let safariViewController = SFSafariViewController(url: url)
                         safariViewController.modalPresentationStyle = .formSheet
@@ -211,8 +214,9 @@ extension Offer: Presentable {
                                 frequentlyAskedQuestion: item
                             )
                             .journey
-                        ).onValue { _ in
-                            
+                        )
+                        .onValue { _ in
+
                         }
                     }
                 })

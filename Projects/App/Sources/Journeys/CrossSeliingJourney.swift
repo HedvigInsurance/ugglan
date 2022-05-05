@@ -2,8 +2,8 @@ import Contracts
 import Embark
 import Foundation
 import Presentation
-import hGraphQL
 import hCoreUI
+import hGraphQL
 
 extension AppJourney {
     static func crossSellingEmbarkJourney(name: String, style: PresentationStyle) -> some JourneyPresentation {

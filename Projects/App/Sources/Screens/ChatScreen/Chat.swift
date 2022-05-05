@@ -7,8 +7,8 @@ import Presentation
 import UIKit
 import hAnalytics
 import hCore
-import hGraphQL
 import hCoreUI
+import hGraphQL
 
 struct Chat {
     @Inject var client: ApolloClient
