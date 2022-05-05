@@ -62,7 +62,7 @@ extension PaymentSetup {
             options: [.defaults, .autoPopSelfAndSuccessors]
         ) { result in
             let store: PaymentStore = globalPresentableStoreContainer.get()
-            
+
             if let success = result.left {
                 next(success, store.state.paymentConnectionID)
             } else if let options = result.right {

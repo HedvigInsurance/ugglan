@@ -23,9 +23,11 @@ extension BankDetailsSection: Viewable {
 
         bag += section.append(row)
 
-        let dataSignal = client.watch(query: GraphQL.MyPaymentQuery(
-            locale: Localization.Locale.currentLocale.asGraphQLLocale()
-        ))
+        let dataSignal = client.watch(
+            query: GraphQL.MyPaymentQuery(
+                locale: Localization.Locale.currentLocale.asGraphQLLocale()
+            )
+        )
         let noBankAccountSignal = dataSignal.filter { $0.bankAccount == nil }
 
         bag += noBankAccountSignal.map { _ in L10n.myPaymentNotConnected }.bindTo(row.keySignal)

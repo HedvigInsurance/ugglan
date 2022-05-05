@@ -259,11 +259,14 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             }
         case let .setPaymentConnectionID(paymentConnectionID):
             if let quoteCartId = getState().quoteCartId {
-                return self.client.perform(mutation: GraphQL.QuoteCartSetPaymentConnectionIdMutation(
-                    id: quoteCartId,
-                    paymentConnectionID: paymentConnectionID,
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                ))
+                return self.client
+                    .perform(
+                        mutation: GraphQL.QuoteCartSetPaymentConnectionIdMutation(
+                            id: quoteCartId,
+                            paymentConnectionID: paymentConnectionID,
+                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                        )
+                    )
                     .compactMap { data in
                         data.quoteCartAddPaymentToken.asQuoteCart?.fragments.quoteCartFragment
                     }

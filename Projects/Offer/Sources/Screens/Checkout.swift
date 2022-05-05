@@ -8,8 +8,10 @@ import hCoreUI
 
 public struct Checkout {
     public var paymentConnectionID: String
-    
-    public init(paymentConnectionID: String) {
+
+    public init(
+        paymentConnectionID: String
+    ) {
         self.paymentConnectionID = paymentConnectionID
     }
 }
