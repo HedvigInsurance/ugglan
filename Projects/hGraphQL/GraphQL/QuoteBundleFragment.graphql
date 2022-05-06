@@ -79,6 +79,7 @@ fragment QuoteBundleFragment on QuoteBundle {
           url
           type
         }
+        insuranceType
       }
     }
   }
@@ -113,6 +114,7 @@ fragment QuoteBundleFragment on QuoteBundle {
       url
       type
     }
+    insuranceType
   }
   bundleCost {
     ...CostFragment

@@ -10,7 +10,7 @@ public enum ExternalRedirect {
     case offer(allIds: [String], selectedIds: [String])
     case close
     case chat
-    case quoteCartOffer(id: String)
+    case quoteCartOffer(id: String, selectedInsuranceTypes: [String])
     case dataCollection(
         providerID: String,
         providerDisplayName: String,
@@ -168,10 +168,11 @@ public class EmbarkState {
             }) {
 
                 let id = quoteCartOfferRedirects.data.id
+                let type = quoteCartOfferRedirects.data.selectedInsuranceTypes
 
                 let quoteCartId = store.getValue(key: id) ?? ""
 
-                externalRedirectSignal.value = .quoteCartOffer(id: quoteCartId)
+                externalRedirectSignal.value = .quoteCartOffer(id: quoteCartId, selectedInsuranceTypes: type)
             } else {
                 self.isApiLoadingSignal.value = false
                 currentPassageSignal.value = resultingPassage

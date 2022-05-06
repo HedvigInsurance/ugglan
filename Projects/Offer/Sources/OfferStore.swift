@@ -42,6 +42,13 @@ public struct OfferState: StateProtocol {
     }
 
     public var currentVariant: QuoteVariant? {
+        if isQuoteCart {
+            return offerData?.possibleVariations.first(where: {
+                let variantInsuranceTypes = $0.bundle.quotes.compactMap { $0.insuranceType }.joined(separator: "+")
+                return variantInsuranceTypes == selectedInsuranceTypes.joined(separator: "+")
+            })
+        }
+        
         if offerData?.possibleVariations.count == 1 {
             return offerData?.possibleVariations.first
         }
@@ -56,6 +63,7 @@ public struct OfferState: StateProtocol {
 
     // Quote Cart
     var quoteCartId: String? = nil
+    var selectedInsuranceTypes = [String]()
     var checkoutStatus: CheckoutStatus? = nil
     var accessToken: String? = nil
 
@@ -98,7 +106,7 @@ public enum OfferAction: ActionProtocol {
     case didRemoveCampaigns
 
     /// Quote Cart Events
-    case setQuoteCartId(id: String)
+    case setQuoteCartId(id: String, insuranceTypes: [String])
     case setQuoteCart(quoteCart: QuoteCart)
     case setPaymentConnectionId(id: String)
     case startCheckout
@@ -357,8 +365,9 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.isUpdatingStartDates = true
         case .failed(event: .updateStartDate):
             newState.isUpdatingStartDates = false
-        case let .setQuoteCartId(id):
+        case let .setQuoteCartId(id, selectedInsuranceTypes):
             newState.quoteCartId = id
+            newState.selectedInsuranceTypes = selectedInsuranceTypes
             newState.offerData = nil
             newState.hasSignedQuotes = false
             newState.accessToken = nil

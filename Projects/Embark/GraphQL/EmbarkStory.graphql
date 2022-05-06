@@ -224,6 +224,7 @@ query EmbarkStory($name: String!, $locale: String!) {
       quoteCartOfferRedirects {
         data {
           id
+          selectedInsuranceTypes
           expression {
             ...ExpressionFragment
           }

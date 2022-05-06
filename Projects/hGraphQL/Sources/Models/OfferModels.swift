@@ -271,6 +271,8 @@ public struct QuoteBundle: Codable, Equatable {
         public let insurableLimits: [InsurableLimits]
         public let insuranceTerms: [TermsAndConditions]
         public var dataCollectionID: String?
+        public let typeOfContract: String
+        public let insuranceType: String?
 
         public init(
             quote: GraphQL.QuoteBundleFragment.Quote
@@ -284,6 +286,8 @@ public struct QuoteBundle: Codable, Equatable {
             insurableLimits = quote.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
             insuranceTerms = quote.insuranceTerms.map { .init(displayName: $0.displayName, url: $0.url) }
             dataCollectionID = quote.dataCollectionId
+            typeOfContract = quote.typeOfContract.rawValue
+            insuranceType = quote.insuranceType
         }
 
         public init(
@@ -298,6 +302,8 @@ public struct QuoteBundle: Codable, Equatable {
             insurableLimits = quote.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
             insuranceTerms = quote.insuranceTerms.map { .init(displayName: $0.displayName, url: $0.url) }
             dataCollectionID = quote.dataCollectionId
+            typeOfContract = quote.typeOfContract.rawValue
+            insuranceType = quote.insuranceType
         }
     }
 
