@@ -43,12 +43,13 @@ public struct OfferState: StateProtocol {
 
     public var currentVariant: QuoteVariant? {
         if isQuoteCart {
-            return offerData?.possibleVariations.first(where: {
-                let variantInsuranceTypes = $0.bundle.quotes.compactMap { $0.insuranceType }.joined(separator: "+")
-                return variantInsuranceTypes == selectedInsuranceTypes.joined(separator: "+")
-            })
+            return offerData?.possibleVariations
+                .first(where: {
+                    let variantInsuranceTypes = $0.bundle.quotes.compactMap { $0.insuranceType }.joined(separator: "+")
+                    return variantInsuranceTypes == selectedInsuranceTypes.joined(separator: "+")
+                })
         }
-        
+
         if offerData?.possibleVariations.count == 1 {
             return offerData?.possibleVariations.first
         }
@@ -228,8 +229,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case let .updateStartDates(dateMap):
             let state = getState()
             if let quoteCartId = state.quoteCartId,
-               let currentVariant = state.currentVariant,
-               let date = dateMap.values.first
+                let currentVariant = state.currentVariant,
+                let date = dateMap.values.first
             {
                 return self.updateStartDatesQuoteCart(id: quoteCartId, date: date, currentVariant: currentVariant)
             }
