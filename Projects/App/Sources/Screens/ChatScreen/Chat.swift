@@ -248,17 +248,7 @@ extension Chat: Presentable {
                 bag += navigateCallbacker.onValue { navigationEvent in
                     switch navigationEvent {
                     case .offer:
-                        client.fetch(query: GraphQL.LastQuoteOfMemberQuery())
-                            .onValue { data in
-                                guard
-                                    let id = data.lastQuoteOfMember.asCompleteQuote?
-                                        .id
-                                else {
-                                    return
-                                }
-
-                                callback(.offer(ids: [id]))
-                            }
+                        break
                     case .dashboard:
                         callback(.loggedIn)
                     case .login:
