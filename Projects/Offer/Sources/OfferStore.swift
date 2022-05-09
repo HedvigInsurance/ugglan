@@ -221,8 +221,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case let .updateStartDates(dateMap):
             let state = getState()
             if let quoteCartId = state.quoteCartId,
-               let currentVariant = state.currentVariant,
-               let date = dateMap.values.first
+                let currentVariant = state.currentVariant,
+                let date = dateMap.values.first
             {
                 return self.updateStartDatesQuoteCart(id: quoteCartId, date: date, currentVariant: currentVariant)
             }
@@ -370,14 +370,17 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.offerData = quoteCart.offerBundle
 
             if newState.selectedIds.isEmpty {
-                let allQuotes = newState.offerData?.possibleVariations.flatMap({ variant in
-                    variant.bundle.quotes
-                })
-                
-                let selectedIds = allQuotes?.filter({ quote in
-                    newState.selectedInsuranceTypes.contains(quote.insuranceType ?? "")
-                }).compactMap({ quote in quote.id })
-                    
+                let allQuotes = newState.offerData?.possibleVariations
+                    .flatMap({ variant in
+                        variant.bundle.quotes
+                    })
+
+                let selectedIds = allQuotes?
+                    .filter({ quote in
+                        newState.selectedInsuranceTypes.contains(quote.insuranceType ?? "")
+                    })
+                    .compactMap({ quote in quote.id })
+
                 newState.selectedIds = Array(Set(selectedIds ?? []))
             }
 
