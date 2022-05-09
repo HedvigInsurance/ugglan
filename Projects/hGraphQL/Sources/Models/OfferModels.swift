@@ -44,7 +44,6 @@ public struct OfferBundle: Codable, Equatable {
     public var possibleVariations: [QuoteVariant]
     public let redeemedCampaigns: [RedeemedCampaign]
     public let signMethodForQuotes: SignMethodForQuotes
-    public let quotes: [QuoteBundle.Quote]
     public let id: UUID
 
     public enum SignMethodForQuotes: String, Codable {
@@ -65,7 +64,6 @@ public struct OfferBundle: Codable, Equatable {
         self.possibleVariations = possibleVariations
         self.redeemedCampaigns = redeemedCampaigns
         self.signMethodForQuotes = signMethodForQuotes
-        self.quotes = []
         self.id = id
     }
 
@@ -76,7 +74,6 @@ public struct OfferBundle: Codable, Equatable {
         possibleVariations = data.quoteBundle.possibleVariations.map { .init(variant: $0) }
         redeemedCampaigns = data.redeemedCampaigns.map { .init(displayValue: $0.displayValue) }
         signMethodForQuotes = .init(rawValue: data.signMethodForQuotes.rawValue) ?? .unknown
-        self.quotes = []
         self.id = id
     }
 
@@ -94,7 +91,6 @@ public struct OfferBundle: Codable, Equatable {
         signMethodForQuotes =
             (.init(rawValue: quoteCart.checkoutMethods.first?.rawValue ?? "")
                 ?? .unknown)
-        quotes = bundle.quotes.map { QuoteBundle.Quote(quote: $0) }
         self.id = UUID()
     }
 }

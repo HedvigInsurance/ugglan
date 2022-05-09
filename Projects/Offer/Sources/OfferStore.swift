@@ -42,13 +42,6 @@ public struct OfferState: StateProtocol {
     }
 
     public var currentVariant: QuoteVariant? {
-        if isQuoteCart {
-            return offerData?.possibleVariations.first(where: {
-                let variantInsuranceTypes = $0.bundle.quotes.compactMap { $0.insuranceType }.joined(separator: "+")
-                return variantInsuranceTypes == selectedInsuranceTypes.joined(separator: "+")
-            })
-        }
-        
         if offerData?.possibleVariations.count == 1 {
             return offerData?.possibleVariations.first
         }
@@ -377,8 +370,15 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.offerData = quoteCart.offerBundle
 
             if newState.selectedIds.isEmpty {
-                newState.selectedIds =
-                    quoteCart.offerBundle?.possibleVariations.first?.bundle.quotes.map { $0.id } ?? []
+                let allQuotes = newState.offerData?.possibleVariations.flatMap({ variant in
+                    variant.bundle.quotes
+                })
+                
+                let selectedIds = allQuotes?.filter({ quote in
+                    newState.selectedInsuranceTypes.contains(quote.insuranceType ?? "")
+                }).compactMap({ quote in quote.id })
+                    
+                newState.selectedIds = Array(Set(selectedIds ?? []))
             }
 
             newState.checkoutStatus = quoteCart.checkoutStatus
