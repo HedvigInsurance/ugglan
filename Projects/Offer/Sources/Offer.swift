@@ -235,15 +235,14 @@ extension Offer: Presentable {
                     }
 
                 bag += store.onAction(.sign(event: .done)) {
-                    if store.state.isQuoteCart {
-                        if store.state.checkoutStatus == .signed {
-                            store.send(.fetchAccessToken)
-                        } else {
-                            callback(.value(.signed(ids: store.state.selectedIds, startDates: store.state.startDates)))
-                        }
+                    if store.state.isQuoteCart &&
+                        store.state.offerData?.signMethodForQuotes != .approveOnly {
+                        store.send(.fetchAccessToken)
                     } else {
                         callback(.value(.signed(ids: store.state.ids, startDates: store.state.startDates)))
                     }
+                    
+                    callback(.value(.signed(ids: store.state.selectedIds, startDates: store.state.startDates)))
                 }
 
                 if let menu = menu {

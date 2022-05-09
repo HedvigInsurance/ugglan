@@ -51,7 +51,7 @@ public struct OfferState: StateProtocol {
                 variant.id == selectedIds.joined(separator: "+").lowercased()
             })
     }
-
+    
     var paymentConnection: PaymentConnection?
 
     // Quote Cart
@@ -191,13 +191,13 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 return FiniteSignal { callback in
                     let bag = DisposeBag()
 
-                    bag += Signal(every: 0.25)
-                        .onValue { _ in
+                    bag += Signal(every: 0.5)
+                        .atValue { _ in
                             callback(.value(.refetch))
                         }
-
-                    bag += Signal(after: 120)
+                        .delay(by: 130)
                         .onValue { _ in
+                            bag.dispose()
                             callback(.value(.sign(event: .failed)))
                         }
 
