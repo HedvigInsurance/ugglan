@@ -261,7 +261,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
             }
         }
 
-        let multiActionItems = store.getMultiActionItems(actionKey: key)
+        let multiActionItems = store.getMultiActionItems(actionKey: from)
         let groupedMultiActionItems = Dictionary(grouping: multiActionItems, by: { $0.index }).values
 
         variables.forEach { variable in
@@ -272,7 +272,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
                             unsafeResultMap: apiSingleVariableFragment.resultMap
                         )
                         nestedApiSingleVariableFragment.from =
-                            "\(key)[\(offset)]\(apiSingleVariableFragment.key)"
+                            "\(from)[\(offset)]\(apiSingleVariableFragment.key)"
                         appendOrMerge(
                             map: nestedApiSingleVariableFragment.graphQLMap(currentMap: GraphQLMap(), store: store),
                             offset: offset
@@ -285,7 +285,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
                             unsafeResultMap: apiConstantVariableFragment.resultMap
                         )
                         nestedApiSingleVariableFragment.from =
-                            "\(key)[\(offset)]\(apiConstantVariableFragment.key)"
+                            "\(from)[\(offset)]\(apiConstantVariableFragment.key)"
                         appendOrMerge(
                             map: nestedApiSingleVariableFragment.graphQLMap(currentMap: GraphQLMap(), store: store),
                             offset: offset
@@ -317,8 +317,12 @@ extension GraphQL.ApiVariablesFragment {
         } else if let apiGeneratedVariableFragment = fragments.apiGeneratedVariableFragment {
             map = apiGeneratedVariableFragment.graphQLMap(currentMap: accumulatedMap, store: store)
         } else if let apiMultiActionVariableFragment = fragments.apiMultiActionVariableFragment {
-            map[apiMultiActionVariableFragment.key] = apiMultiActionVariableFragment.graphQLMapArray(
+            let values = apiMultiActionVariableFragment.graphQLMapArray(
                 store: store
+            )
+            map = accumulatedMap.lodash_set(
+                path: apiMultiActionVariableFragment.key,
+                value: values
             )
         } else if let apiConstantVariableFragment = fragments.apiConstantVariableFragment {
             let newMap = accumulatedMap.lodash_set(

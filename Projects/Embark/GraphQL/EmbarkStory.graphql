@@ -89,6 +89,7 @@ fragment ApiGeneratedVariableFragment on EmbarkAPIGraphQLGeneratedVariable {
 
 fragment ApiMultiActionVariableFragment on EmbarkAPIGraphQLMultiActionVariable {
   key
+  from
   variables {
     ...ApiSingleVariableFragment
     ...ApiGeneratedVariableFragment
