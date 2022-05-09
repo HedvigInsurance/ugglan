@@ -227,8 +227,9 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             return query(for: getState(), cachePolicy: .fetchIgnoringCacheData)
         case let .updateStartDates(dateMap):
             let state = getState()
-            if let quoteCartId = state.quoteCartId, let currentVariant = state.currentVariant,
-                let date = dateMap.values.first
+            if let quoteCartId = state.quoteCartId,
+               let currentVariant = state.currentVariant,
+               let date = dateMap.values.first
             {
                 return self.updateStartDatesQuoteCart(id: quoteCartId, date: date, currentVariant: currentVariant)
             }
