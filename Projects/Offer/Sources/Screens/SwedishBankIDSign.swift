@@ -155,7 +155,7 @@ extension SwedishBankIdSign: Presentable {
                     title: L10n.NavBar.cancel,
                     style: .brand(.body(color: .primary))
                 )
-                
+
                 let store: OfferStore = get()
 
                 bag += cancelButton.onValue({ _ in
