@@ -51,7 +51,7 @@ public struct OfferState: StateProtocol {
                 variant.id == selectedIds.joined(separator: "+").lowercased()
             })
     }
-    
+
     var paymentConnection: PaymentConnection?
 
     // Quote Cart
@@ -382,11 +382,11 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
                 let selectedIds = allQuotes?
                     .filter({ quote in
-                        newState.selectedInsuranceTypes.contains(quote.insuranceType ?? "") ||
-                        newState.selectedInsuranceTypes.contains(quote.typeOfContract)
+                        newState.selectedInsuranceTypes.contains(quote.insuranceType ?? "")
+                            || newState.selectedInsuranceTypes.contains(quote.typeOfContract)
                     })
                     .compactMap({ quote in quote.id })
-                
+
                 if selectedIds?.isEmpty ?? true {
                     newState.selectedIds = Array(Set(allQuotes?.compactMap { $0.id } ?? []))
                 } else {
