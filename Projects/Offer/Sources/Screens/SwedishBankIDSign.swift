@@ -155,14 +155,16 @@ extension SwedishBankIdSign: Presentable {
                     title: L10n.NavBar.cancel,
                     style: .brand(.body(color: .primary))
                 )
+                
+                let store: OfferStore = get()
 
                 bag += cancelButton.onValue({ _ in
+                    store.send(.sign(event: .cancelled))
                     completion(.failure(SwedishBankIdSignError.userCancel))
                 })
 
                 viewController.navigationItem.rightBarButtonItem = cancelButton
 
-                let store: OfferStore = get()
                 store.send(.startSign)
 
                 bag += store.stateSignal.compactMap { $0.swedishBankIDAutoStartToken }

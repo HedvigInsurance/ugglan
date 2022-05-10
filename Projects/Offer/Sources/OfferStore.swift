@@ -114,6 +114,7 @@ public enum OfferAction: ActionProtocol {
         case simpleSign
         case done
         case failed
+        case cancelled
     }
 
     public enum OfferStoreError: Error, Codable {
@@ -184,6 +185,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     quoteIds: getState().selectedIds
                 )
                 .send()
+                self.cancelEffect(.startSign)
+            } else if event == .cancelled {
                 self.cancelEffect(.startSign)
             }
         case .startSign:
@@ -298,6 +301,8 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.offerData = nil
             newState.hasSignedQuotes = false
             newState.accessToken = nil
+        case .requestQuoteCartSign:
+            newState.checkoutStatus = nil
         case let .setSelectedIds(selectedIds):
             newState.selectedIds = selectedIds
         case let .sign(event):
@@ -377,11 +382,16 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
                 let selectedIds = allQuotes?
                     .filter({ quote in
-                        newState.selectedInsuranceTypes.contains(quote.insuranceType ?? "")
+                        newState.selectedInsuranceTypes.contains(quote.insuranceType ?? "") ||
+                        newState.selectedInsuranceTypes.contains(quote.typeOfContract)
                     })
                     .compactMap({ quote in quote.id })
-
-                newState.selectedIds = Array(Set(selectedIds ?? []))
+                
+                if selectedIds?.isEmpty ?? true {
+                    newState.selectedIds = Array(Set(allQuotes?.compactMap { $0.id } ?? []))
+                } else {
+                    newState.selectedIds = Array(Set(selectedIds ?? []))
+                }
             }
 
             newState.checkoutStatus = quoteCart.checkoutStatus
