@@ -13,7 +13,7 @@ public struct DetailAgreementsTableView: View {
         ForEach(table.sections, id: \.hashValue) { section in
             hSection(section.rows, id: \.title) { row in
                 hRow {
-                    VStack {
+                    VStack(alignment: .leading) {
                         hText(row.title, style: .body)
                             .foregroundColor(hLabelColor.primary)
 
