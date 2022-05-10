@@ -35,6 +35,8 @@ extension AppJourney {
                 .mapJourneyDismissToCancel
             case .loggedIn:
                 loginCompleted
+            case .emailLogin:
+                otp
             }
         }
         .withDismissButton

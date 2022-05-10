@@ -14,6 +14,7 @@ struct BankIDLoginSweden {
 
 enum BankIDLoginSwedenResult {
     case qrCode
+    case emailLogin
     case loggedIn
 }
 
@@ -102,14 +103,17 @@ extension BankIDLoginSweden: Presentable {
         var statusLabel = MultilineLabel(value: L10n.signStartBankid, style: .brand(.headline(color: .primary)))
         bag += containerView.addArranged(statusLabel)
 
-        let bankIDOnAnotherDeviceContainer = UIStackView()
-        containerView.addArrangedSubview(bankIDOnAnotherDeviceContainer)
+        let alternativeLoginContainer = UIStackView()
+        containerView.addArrangedSubview(alternativeLoginContainer)
 
-        let bankIDOnAnotherDeviceButton = Button(
-            title: L10n.bankidOnAnotherDevice,
-            type: .standardOutline(borderColor: .brand(.primaryText()), textColor: .brand(.primaryText()))
+        let alternativeLoginButton = Button(
+            title: L10n.buttonLoginAlternativeMethod,
+            type: .standard(
+                backgroundColor: .brand(.primaryBackground(true)),
+                textColor: .brand(.primaryText(true))
+            )
         )
-        bag += bankIDOnAnotherDeviceContainer.addArranged(bankIDOnAnotherDeviceButton)
+        bag += alternativeLoginContainer.addArranged(alternativeLoginButton)
 
         let statusSignal =
             client.subscribe(
@@ -153,8 +157,34 @@ extension BankIDLoginSweden: Presentable {
                         }
                     }
 
-                bag += bankIDOnAnotherDeviceButton.onTapSignal.onValue { _ in
-                    callback(.qrCode)
+                bag += alternativeLoginButton.onTapSignal.onValue { _ in
+                    let alert = Alert<Void>(actions: [
+                        .init(
+                            title: L10n.emailRowTitle,
+                            action: {
+                                callback(.emailLogin)
+                            }
+                        ),
+                        .init(
+                            title: L10n.bankidOnAnotherDevice,
+                            action: {
+                                callback(.qrCode)
+                            }
+                        ),
+                        .init(
+                            title: L10n.alertCancel,
+                            style: .cancel,
+                            action: {}
+                        ),
+                    ])
+
+                    viewController.present(
+                        alert,
+                        style: .sheet(
+                            from: alternativeLoginContainer,
+                            rect: alternativeLoginContainer.frame
+                        )
+                    )
                 }
 
                 bag += statusSignal.distinct()

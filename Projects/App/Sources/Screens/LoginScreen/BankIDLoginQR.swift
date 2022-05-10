@@ -64,14 +64,17 @@ extension BankIDLoginQR: Presentable {
         headerContainer.addArrangedSubview(iconContainerView)
 
         let messageLabel = MultilineLabel(
-            value: L10n.bankidMissingMessage2,
+            value: L10n.bankidMissingMessageGenAuth,
             style: .brand(.headline(color: .primary))
         )
         bag += containerStackView.addArranged(messageLabel)
 
         let emailLoginButton = Button(
             title: L10n.BankidMissingLogin.emailButton,
-            type: .standardOutline(borderColor: .black, textColor: .black)
+            type: .standardOutline(
+                borderColor: .brand(.primaryText()),
+                textColor: .brand(.primaryText())
+            )
         )
         bag += containerStackView.addArranged(emailLoginButton)
 
