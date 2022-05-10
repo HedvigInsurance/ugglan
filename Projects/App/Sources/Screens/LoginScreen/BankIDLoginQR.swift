@@ -9,6 +9,7 @@ struct BankIDLoginQR {}
 
 enum BankIDLoginQRResult {
     case loggedIn
+    case emailLogin
 }
 
 extension BankIDLoginQR: Presentable {
@@ -34,30 +35,25 @@ extension BankIDLoginQR: Presentable {
         viewController.navigationItem.rightBarButtonItem = moreBarButtonItem
 
         let containerStackView = UIStackView()
+        containerStackView.spacing = 28
         containerStackView.axis = .vertical
         containerStackView.alignment = .center
+        containerStackView.layoutMargins = UIEdgeInsets(horizontalInset: 16, verticalInset: 24)
+        containerStackView.isLayoutMarginsRelativeArrangement = true
 
         view.addSubview(containerStackView)
 
         containerStackView.snp.makeConstraints { make in make.leading.trailing.top.equalToSuperview() }
 
-        let containerView = UIStackView()
-        containerView.spacing = 15
-        containerView.axis = .vertical
-        containerView.alignment = .center
-        containerView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 24)
-        containerView.isLayoutMarginsRelativeArrangement = true
-        containerStackView.addArrangedSubview(containerView)
-
         let headerContainer = UIStackView()
         headerContainer.axis = .vertical
         headerContainer.spacing = 15
 
-        containerView.addArrangedSubview(headerContainer)
+        containerStackView.addArrangedSubview(headerContainer)
 
         let iconContainerView = UIView()
 
-        iconContainerView.snp.makeConstraints { make in make.height.width.equalTo(120) }
+        iconContainerView.snp.makeConstraints { make in make.height.width.equalTo(128) }
 
         let imageView = UIImageView()
 
@@ -68,10 +64,16 @@ extension BankIDLoginQR: Presentable {
         headerContainer.addArrangedSubview(iconContainerView)
 
         let messageLabel = MultilineLabel(
-            value: L10n.bankidMissingMessage,
+            value: L10n.bankidMissingMessage2,
             style: .brand(.headline(color: .primary))
         )
-        bag += containerView.addArranged(messageLabel)
+        bag += containerStackView.addArranged(messageLabel)
+
+        let emailLoginButton = Button(
+            title: L10n.BankidMissingLogin.emailButton,
+            type: .standardOutline(borderColor: .black, textColor: .black)
+        )
+        bag += containerStackView.addArranged(emailLoginButton)
 
         func generateQRCode(_ url: URL) {
             let data = url.absoluteString.data(using: String.Encoding.ascii)
@@ -121,6 +123,10 @@ extension BankIDLoginQR: Presentable {
                             rect: moreBarButtonItem.view?.frame
                         )
                     )
+                }
+                
+                bag += emailLoginButton.onTapSignal.onValue { _ in
+                    callback(.emailLogin)
                 }
 
                 return bag

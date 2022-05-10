@@ -27,6 +27,8 @@ extension AppJourney {
                     switch result {
                     case .loggedIn:
                         loginCompleted
+                    case .emailLogin:
+                        otp
                     }
                 }
                 .withJourneyDismissButton
