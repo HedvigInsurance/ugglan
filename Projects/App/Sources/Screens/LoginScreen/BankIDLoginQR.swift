@@ -127,7 +127,7 @@ extension BankIDLoginQR: Presentable {
                         )
                     )
                 }
-                
+
                 bag += emailLoginButton.onTapSignal.onValue { _ in
                     callback(.emailLogin)
                 }
