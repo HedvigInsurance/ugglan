@@ -5,6 +5,7 @@ import Foundation
 import Presentation
 import SwiftUI
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -33,11 +34,15 @@ extension ActiveSection: Presentable {
             hostingView.removeFromSuperview()
         }
 
-        bag += section.append(ConnectPaymentCard())
-        bag += section.append(RenewalCard())
+        if hAnalyticsExperiment.connectPaymentReminder {
+            bag += section.append(ConnectPaymentCard())
+            bag += section.append(RenewalCard())
+        }
 
-        let commonClaimsView = HostingView(rootView: commonClaims)
-        section.append(commonClaimsView)
+        if hAnalyticsExperiment.homeCommonClaim {
+            let commonClaimsView = HostingView(rootView: commonClaims)
+            section.append(commonClaimsView)
+        }
 
         return (section, bag)
     }

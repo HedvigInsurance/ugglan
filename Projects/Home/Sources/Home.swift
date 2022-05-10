@@ -141,7 +141,7 @@ extension Home: Presentable {
 
                 if let name = state.memberStateData.name {
                     let label = makeHost {
-                        hText(L10n.HomeTab.welcomeTitle(name), style: .largeTitle)
+                        hText(L10n.HomeTab.welcomeTitle(name), style: .prominentTitle)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
