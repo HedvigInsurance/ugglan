@@ -8,7 +8,7 @@ query ActiveContractBundles($locale: Locale!) {
       displayName
       gradientOption
       switchedFromInsuranceProvider
-      logo {
+      logo(locale: $locale) {
         ...IconFragment
       }
       upcomingRenewal {

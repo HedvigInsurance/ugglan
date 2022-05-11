@@ -102,7 +102,6 @@ public struct Contract: Codable, Hashable, Equatable {
             fragment: contract.currentAgreementDetailsTable.fragments.detailsTableFragment
         )
         upcomingRenewal = .init(upcomingRenewal: contract.upcomingRenewal)
-        logo = .init(fragment: contract.logo.fragments.iconFragment)
         contractPerils = contract.contractPerils.map { .init(fragment: $0.fragments.perilFragment) }
         insurableLimits = contract.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
         termsAndConditions = .init(
@@ -114,6 +113,12 @@ public struct Contract: Codable, Hashable, Equatable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
+        
+        if let logo = contract.logo {
+            self.logo = .init(fragment: logo.fragments.iconFragment)
+        } else {
+            self.logo = nil
+        }
 
         if let contractGradientOption = contract.gradientOption {
             gradientOption = .init(rawValue: contractGradientOption.rawValue)
@@ -135,7 +140,6 @@ public struct Contract: Codable, Hashable, Equatable {
         )
         currentAgreementsTable = .init(fragment: contract.currentAgreementDetailsTable.fragments.detailsTableFragment)
         upcomingRenewal = nil
-        logo = .init(fragment: contract.logo.fragments.iconFragment)
         contractPerils = contract.contractPerils.map { .init(fragment: $0.fragments.perilFragment) }
         insurableLimits = contract.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
         termsAndConditions = .init(
@@ -147,6 +151,12 @@ public struct Contract: Codable, Hashable, Equatable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
+        
+        if let logo = contract.logo {
+            self.logo = .init(fragment: logo.fragments.iconFragment)
+        } else {
+            self.logo = nil
+        }
 
         if let contractGradientOption = contract.gradientOption {
             gradientOption = .init(rawValue: contractGradientOption.rawValue)
