@@ -43,6 +43,7 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingAgreementsTable: DetailAgreementsTable,
         currentAgreementsTable: DetailAgreementsTable?,
         gradientOption: Contract.GradientOption?,
+        logo: IconEnvelope?,
         displayName: String,
         switchedFromInsuranceProvider: String?,
         upcomingRenewal: UpcomingRenewal?,
@@ -59,6 +60,7 @@ public struct Contract: Codable, Hashable, Equatable {
         self.upcomingAgreementsTable = upcomingAgreementsTable
         self.currentAgreementsTable = currentAgreementsTable
         self.gradientOption = gradientOption
+        self.logo = logo
         self.displayName = displayName
         self.switchedFromInsuranceProvider = switchedFromInsuranceProvider
         self.upcomingRenewal = upcomingRenewal
@@ -76,6 +78,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let upcomingAgreementsTable: DetailAgreementsTable
     public let currentAgreementsTable: DetailAgreementsTable?
     public let gradientOption: GradientOption?
+    public let logo: IconEnvelope?
     public let displayName: String
     public let switchedFromInsuranceProvider: String?
     public let upcomingRenewal: UpcomingRenewal?
@@ -111,6 +114,12 @@ public struct Contract: Codable, Hashable, Equatable {
         statusPills = contract.statusPills
         detailPills = contract.detailPills
 
+        if let logo = contract.logo {
+            self.logo = .init(fragment: logo.fragments.iconFragment)
+        } else {
+            self.logo = nil
+        }
+
         if let contractGradientOption = contract.gradientOption {
             gradientOption = .init(rawValue: contractGradientOption.rawValue)
         } else {
@@ -142,6 +151,12 @@ public struct Contract: Codable, Hashable, Equatable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
+
+        if let logo = contract.logo {
+            self.logo = .init(fragment: logo.fragments.iconFragment)
+        } else {
+            self.logo = nil
+        }
 
         if let contractGradientOption = contract.gradientOption {
             gradientOption = .init(rawValue: contractGradientOption.rawValue)
