@@ -72,7 +72,7 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             )
         }
     }
-    
+
     @ViewBuilder var logo: some View {
         if let logo = contract.logo {
             RemoteVectorIconView(icon: logo, backgroundFetch: true)

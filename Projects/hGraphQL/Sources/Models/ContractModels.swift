@@ -113,7 +113,7 @@ public struct Contract: Codable, Hashable, Equatable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
-        
+
         if let logo = contract.logo {
             self.logo = .init(fragment: logo.fragments.iconFragment)
         } else {
@@ -151,7 +151,7 @@ public struct Contract: Codable, Hashable, Equatable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
-        
+
         if let logo = contract.logo {
             self.logo = .init(fragment: logo.fragments.iconFragment)
         } else {
