@@ -117,13 +117,15 @@ public struct QuoteVariant: Codable, Equatable {
         self.tag = variant.tag
         self.id = variant.id
     }
-    
+
     public init(
         variant: GraphQL.QuoteBundleQuery.Data.QuoteBundle.PossibleVariation
     ) {
-        self.bundle = .init(bundle: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle(
-            unsafeResultMap: variant.bundle.resultMap
-        ))
+        self.bundle = .init(
+            bundle: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle(
+                unsafeResultMap: variant.bundle.resultMap
+            )
+        )
         self.tag = variant.tag
         self.id = variant.id
     }
