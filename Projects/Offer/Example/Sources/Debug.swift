@@ -44,9 +44,7 @@ struct Debug: View {
     }
 
     var body: some View {
-        let rows: [OfferDebugRow] = [
-           
-        ]
+        let rows: [OfferDebugRow] = []
 
         hForm {
             hSection {
