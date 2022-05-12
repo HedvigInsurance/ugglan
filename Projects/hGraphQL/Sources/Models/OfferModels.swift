@@ -308,7 +308,7 @@ public struct QuoteBundle: Codable, Equatable {
             public var startDate: String?
             public let correspondingQuoteId: String
             public let currentInsurer: CurrentInsurer?
-            
+
             public var id: String {
                 correspondingQuoteId + (currentInsurer?.displayName ?? "")
             }
