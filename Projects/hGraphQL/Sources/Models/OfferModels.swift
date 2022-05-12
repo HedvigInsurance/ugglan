@@ -304,10 +304,14 @@ public struct QuoteBundle: Codable, Equatable {
             }
         }
 
-        public struct IndependentInception: Codable, Equatable {
+        public struct IndependentInception: Identifiable, Codable, Equatable {
             public var startDate: String?
             public let correspondingQuoteId: String
             public let currentInsurer: CurrentInsurer?
+            
+            public var id: String {
+                correspondingQuoteId + (currentInsurer?.displayName ?? "")
+            }
 
             public init(
                 inception: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsIndependentInceptions
