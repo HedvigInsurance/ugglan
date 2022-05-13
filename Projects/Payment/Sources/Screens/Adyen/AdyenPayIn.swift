@@ -74,7 +74,7 @@ public struct AdyenPayIn: Presentable {
                         paymentStore.send(.setConnectionID(id: data.paymentTokenId))
                         onResult(.success(.make(())))
                     } else if let data = data.paymentConnectionConnectPayment.asActionRequired {
-                        guard let jsonData = data.action.data(using: .utf8) else { return }
+                        guard let jsonData = data.actionV2.data(using: .utf8) else { return }
                         guard
                             let action = try? JSONDecoder()
                                 .decode(AdyenActions.Action.self, from: jsonData)

@@ -50,7 +50,7 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
             } else if let data = data.paymentConnectionSubmitAdditionalPaymentDetails.asActionRequired {
                 self.store.send(.setConnectionID(id: data.paymentTokenId))
 
-                guard let jsonData = data.action.data(using: .utf8) else { return }
+                guard let jsonData = data.actionV2.data(using: .utf8) else { return }
                 guard
                     let action = try? JSONDecoder()
                         .decode(AdyenActions.Action.self, from: jsonData)

@@ -11,7 +11,7 @@ mutation AdyenAdditionalPaymentDetails($paymentConnectionID: ID!, $req: PaymentD
         }
         ... on ActionRequired {
             paymentTokenId
-            action
+            actionV2
         }
     }
 }

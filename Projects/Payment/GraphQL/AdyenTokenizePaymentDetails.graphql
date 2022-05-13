@@ -6,7 +6,7 @@ mutation AdyenTokenizePaymentDetails($input: ConnectPaymentInput!) {
       }
       ... on ActionRequired {
         paymentTokenId
-        action
+        actionV2
       }
     }
 }
