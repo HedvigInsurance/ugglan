@@ -2,11 +2,11 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 struct CurrentInsurerSection {
     let quoteBundle: QuoteBundle
@@ -16,13 +16,13 @@ struct InceptionRow: View {
     var displayName: String?
     var insurer: String
     var switchable: Bool
-    
+
     func makeSwitcherCard() -> some View {
         hCard(
             titleIcon: hCoreUIAssets.restart.image,
             title: L10n.switcherAutoCardTitle,
             bodyText: L10n.switcherAutoCardDescription
-        )  { EmptyView() }
+        ) { EmptyView() }
     }
 
     func makeManualCard() -> some View {
@@ -32,7 +32,7 @@ struct InceptionRow: View {
             bodyText: L10n.switcherManualCardDescription
         ) { EmptyView() }
     }
-    
+
     var body: some View {
         hRow {
             VStack(spacing: 8) {
@@ -40,12 +40,12 @@ struct InceptionRow: View {
                     .hText(.title3)
                     .foregroundColor(hLabelColor.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                
+
                 insurer
                     .hText(.body)
                     .foregroundColor(hLabelColor.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                                
+
                 if switchable {
                     makeSwitcherCard()
                 } else {
@@ -66,7 +66,8 @@ extension CurrentInsurerSection: View {
                     insurer: concurrentInception.currentInsurer?.displayName ?? "",
                     switchable: concurrentInception.currentInsurer?.switchable ?? false
                 )
-            }.withHeader {
+            }
+            .withHeader {
                 L10n.Offer
                     .switcherTitle(quoteBundle.quotes.count)
                     .hText()
@@ -78,7 +79,8 @@ extension CurrentInsurerSection: View {
                     insurer: inception.currentInsurer?.displayName ?? "",
                     switchable: inception.currentInsurer?.switchable ?? false
                 )
-            }.withHeader {
+            }
+            .withHeader {
                 L10n.Offer
                     .switcherTitle(quoteBundle.quotes.count)
                     .hText()
