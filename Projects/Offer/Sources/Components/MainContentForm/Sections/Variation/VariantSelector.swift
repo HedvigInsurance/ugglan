@@ -15,17 +15,15 @@ struct VariantSelector: View {
 
     var body: some View {
         hRow {
-            VStack(alignment: .leading, spacing: 25) {
-                HStack(spacing: 9) {
-                    VariantCircle(variant: variant)
-                    if let tag = variant.tag {
-                        hText(tag, style: .footnote).foregroundColor(.secondary)
-                    }
-                }
-                HStack(alignment: .bottom) {
-                    VStack {
+            HStack(alignment: .top, spacing: 12) {
+                VariantCircle(variant: variant)
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 10) {
                         hText(variant.bundle.displayName, style: .title3)
                             .fixedSize(horizontal: false, vertical: true)
+                        if let tag = variant.tag {
+                            hText(tag, style: .footnote).foregroundColor(.secondary)
+                        }
                     }
                     Spacer()
                     hText(price).foregroundColor(hLabelColor.secondary)
