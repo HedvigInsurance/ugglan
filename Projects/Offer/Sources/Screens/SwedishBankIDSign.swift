@@ -229,8 +229,7 @@ extension SwedishBankIdSign: Presentable {
                         case "userCancel", "cancelled":
                             statusText = L10n.signCanceled
                         default:
-                            statusText =
-                                L10n.signFailedReasonUnknown
+                            statusText = statusCode
                         }
 
                         statusLabel.value = statusText

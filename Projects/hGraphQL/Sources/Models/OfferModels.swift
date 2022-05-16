@@ -24,6 +24,7 @@ public struct QuoteCart: Codable, Equatable {
     public let offerBundle: OfferBundle?
     public let id: String
     public let checkoutStatus: CheckoutStatus?
+    public let checkoutStatusText: String?
     public let paymentConnection: PaymentConnection?
 
     public init(
@@ -33,6 +34,7 @@ public struct QuoteCart: Codable, Equatable {
         self.id = quoteCart.id
         self.checkoutStatus = .init(rawValue: quoteCart.checkout?.status.rawValue ?? "")
         self.paymentConnection = .init(id: quoteCart.paymentConnection?.id)
+        self.checkoutStatusText = quoteCart.checkout?.statusText
     }
 }
 

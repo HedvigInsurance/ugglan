@@ -396,6 +396,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
             newState.checkoutStatus = quoteCart.checkoutStatus
             newState.paymentConnection = quoteCart.paymentConnection
+            newState.swedishBankIDStatusCode = quoteCart.checkoutStatusText
         case let .setAccessToken(id):
             newState.accessToken = id
         default:
