@@ -7,7 +7,13 @@ import hCore
 import hCoreUI
 
 public struct Checkout {
-    public init() {}
+    public var paymentConnectionID: String
+
+    public init(
+        paymentConnectionID: String
+    ) {
+        self.paymentConnectionID = paymentConnectionID
+    }
 }
 
 enum CheckoutError: Error {
@@ -42,6 +48,7 @@ extension Checkout: Presentable {
         let bag = DisposeBag()
 
         let store: OfferStore = self.get()
+        store.send(.setPaymentConnectionID(id: paymentConnectionID))
 
         let form = FormView()
         bag += viewController.install(form)

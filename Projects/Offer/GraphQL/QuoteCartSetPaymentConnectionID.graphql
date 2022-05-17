@@ -1,0 +1,10 @@
+mutation QuoteCartSetPaymentConnectionID($id: ID!, $paymentConnectionID: ID!, $locale: Locale!) {
+  quoteCart_addPaymentToken(id: $id, paymentTokenId: $paymentConnectionID) {
+    ... on BasicError {
+       message
+    }
+    ... on QuoteCart {
+      ...QuoteCartFragment
+    }
+  }
+}

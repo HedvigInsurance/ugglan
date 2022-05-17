@@ -7,6 +7,7 @@ import Presentation
 import UIKit
 import hAnalytics
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct Chat {
@@ -61,6 +62,8 @@ enum ChatResult {
                         action.journey
                     case .openCheckout:
                         AppJourney.offerCheckout
+                    case .signedQuoteCart:
+                        DismissJourney()
                     }
                 }
                 .hidesBackButton
@@ -245,17 +248,7 @@ extension Chat: Presentable {
                 bag += navigateCallbacker.onValue { navigationEvent in
                     switch navigationEvent {
                     case .offer:
-                        client.fetch(query: GraphQL.LastQuoteOfMemberQuery())
-                            .onValue { data in
-                                guard
-                                    let id = data.lastQuoteOfMember.asCompleteQuote?
-                                        .id
-                                else {
-                                    return
-                                }
-
-                                callback(.offer(ids: [id]))
-                            }
+                        break
                     case .dashboard:
                         callback(.loggedIn)
                     case .login:

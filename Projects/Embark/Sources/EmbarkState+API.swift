@@ -4,17 +4,9 @@ import Foundation
 import hGraphQL
 
 extension ResultMap {
-    private var arrayRegex: String {
-        "\\[[0-9]+\\]$"
-    }
 
     private func getArrayValue(_ path: String) -> Any? {
-        if path.range(of: ".*\(arrayRegex)", options: .regularExpression) != nil,
-            let rangeOfIndex = path.range(of: arrayRegex, options: .regularExpression)
-        {
-            let index = String(path[rangeOfIndex].dropFirst().dropLast())
-
-            let pathWithoutIndex = String(path.replacingCharacters(in: rangeOfIndex, with: ""))
+        if let (pathWithoutIndex, index) = path.getArrayPathAndIndex() {
 
             let resultMap = self[pathWithoutIndex] as? [Any]
 
@@ -83,15 +75,152 @@ extension ResultMap {
     }
 }
 
+extension String {
+    fileprivate func getArrayPathAndIndex() -> (String, String)? {
+        let arrayRegex = "\\[[0-9]+\\]$"
+
+        if range(of: ".*\(arrayRegex)", options: .regularExpression) != nil,
+            let rangeOfIndex = range(of: arrayRegex, options: .regularExpression)
+        {
+            let index = String(self[rangeOfIndex].dropFirst().dropLast())
+
+            let pathWithoutIndex = String(self.replacingCharacters(in: rangeOfIndex, with: ""))
+
+            return (pathWithoutIndex, index)
+        }
+
+        return nil
+    }
+
+    fileprivate func isIndex() -> Bool {
+        if let index = Int(self), index > -1 {
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
+extension GraphQLMap {
+
+    private enum PathType {
+        case normal(path: String)
+        case array(index: Int, path: String)
+        case last(path: String)
+    }
+
+    private func castedPath(_ path: String) -> [PathType] {
+        let paths = path.components(separatedBy: ".")
+        var newArray = [PathType]()
+        paths.enumerated()
+            .forEach { pathIndex, path in
+                if let (path, index) = path.getArrayPathAndIndex(), let intValue = Int(index) {
+                    newArray.append(.array(index: intValue, path: path))
+                } else if pathIndex == (paths.count - 1) {
+                    newArray.append(.last(path: path))
+                } else {
+                    newArray.append(.normal(path: path))
+                }
+            }
+        return newArray
+    }
+
+    func lodash_set(path: String, value: JSONEncodable) -> GraphQLMap {
+        var castPath = castedPath(path)
+        var accumulatedMap = GraphQLMap()
+        let returnMap = setMap(originalMap: self, accumulatedMap: &accumulatedMap, paths: &castPath, value: value)
+
+        return returnMap.merging(self, uniquingKeysWith: { lhs, _ in lhs })
+    }
+
+    private func setMap(
+        originalMap: GraphQLMap?,
+        accumulatedMap: inout GraphQLMap,
+        paths: inout [PathType],
+        value: JSONEncodable
+    ) -> GraphQLMap {
+        let path = paths.removeFirst()
+
+        switch path {
+        case .normal(let path):
+            if var hasValue = originalMap?[path] as? GraphQLMap {
+                accumulatedMap[path] = setMap(
+                    originalMap: hasValue,
+                    accumulatedMap: &hasValue,
+                    paths: &paths,
+                    value: value
+                )
+            } else {
+                var newMap = GraphQLMap()
+                accumulatedMap[path] = setMap(originalMap: nil, accumulatedMap: &newMap, paths: &paths, value: value)
+            }
+        case .array(let index, let path):
+            if var hasValue = originalMap?[path] as? [GraphQLMap] {
+                if (hasValue.count - 1) >= index {
+                    hasValue[index] = setMap(
+                        originalMap: hasValue[index],
+                        accumulatedMap: &hasValue[index],
+                        paths: &paths,
+                        value: value
+                    )
+                    accumulatedMap[path] = hasValue
+                } else {
+                    var newMap = GraphQLMap()
+                    hasValue.append(setMap(originalMap: nil, accumulatedMap: &newMap, paths: &paths, value: value))
+                    accumulatedMap[path] = hasValue
+                }
+            } else {
+                var newValue = GraphQLMap()
+                let newArray = [setMap(originalMap: nil, accumulatedMap: &newValue, paths: &paths, value: value)]
+                accumulatedMap[path] = newArray
+            }
+        case .last(let path):
+            accumulatedMap[path] = value
+            return accumulatedMap
+        }
+
+        return accumulatedMap
+    }
+
+    func arrayOfKeyValues() -> [GraphQLMap] {
+        let array =
+            self
+            .sorted(by: { $0.0 < $1.0 })
+            .map { (key, value) -> GraphQLMap in
+                var map = GraphQLMap()
+                map[key] = value
+                return map
+            }
+        return array
+    }
+
+    private func buildMap(_ key: String, _ value: Any?) -> ResultMap {
+        var newDictionary = ResultMap()
+        if let path = key.getArrayPathAndIndex(), let index = Int(path.1) {
+            var array = [Any?]()
+            for _ in 0...index {
+                array.append(nil)
+            }
+            array[index] = value
+            newDictionary = [path.0: array]
+        } else {
+            newDictionary = [key: value]
+        }
+        return newDictionary
+    }
+}
+
 extension GraphQL.ApiSingleVariableFragment {
-    func graphQLMap(store: EmbarkStore) -> GraphQLMap {
+    func graphQLMap(currentMap: GraphQLMap, store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
         switch self.as {
-        case .int: map[key] = Int(store.getValue(key: from, includeQueue: true) ?? "")
-        case .string: map[key] = store.getValue(key: from, includeQueue: true)
-        case .boolean: map[key] = store.getValue(key: from, includeQueue: true) == "true"
-        case .file: map[key] = store.getValue(key: from, includeQueue: true)
+        case .int:
+            map = currentMap.lodash_set(path: key, value: Int(store.getValue(key: from, includeQueue: true) ?? ""))
+        case .string: map = currentMap.lodash_set(path: key, value: store.getValue(key: from, includeQueue: true))
+        case .boolean:
+            map = currentMap.lodash_set(path: key, value: (store.getValue(key: from, includeQueue: true) == "true"))
+        case .file: map = currentMap.lodash_set(path: key, value: store.getValue(key: from, includeQueue: true))
         case .__unknown: break
         }
 
@@ -100,14 +229,14 @@ extension GraphQL.ApiSingleVariableFragment {
 }
 
 extension GraphQL.ApiGeneratedVariableFragment {
-    func graphQLMap(store: EmbarkStore) -> GraphQLMap {
+    func graphQLMap(currentMap: GraphQLMap, store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
         switch type {
 
         case .uuid:
             let uuid = UUID().uuidString
-            map[key] = uuid
+            map = currentMap.lodash_set(path: key, value: uuid)
             store.setValue(key: storeAs, value: uuid)
         case .__unknown: break
         }
@@ -132,7 +261,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
             }
         }
 
-        let multiActionItems = store.getMultiActionItems(actionKey: key)
+        let multiActionItems = store.getMultiActionItems(actionKey: from)
         let groupedMultiActionItems = Dictionary(grouping: multiActionItems, by: { $0.index }).values
 
         variables.forEach { variable in
@@ -143,9 +272,22 @@ extension GraphQL.ApiMultiActionVariableFragment {
                             unsafeResultMap: apiSingleVariableFragment.resultMap
                         )
                         nestedApiSingleVariableFragment.from =
-                            "\(key)[\(offset)]\(apiSingleVariableFragment.key)"
+                            "\(from)[\(offset)]\(apiSingleVariableFragment.key)"
                         appendOrMerge(
-                            map: nestedApiSingleVariableFragment.graphQLMap(store: store),
+                            map: nestedApiSingleVariableFragment.graphQLMap(currentMap: GraphQLMap(), store: store),
+                            offset: offset
+                        )
+                    }
+            } else if let apiConstantVariableFragment = variable.fragments.apiConstantVariableFragment {
+                groupedMultiActionItems.enumerated()
+                    .forEach { offset, _ in
+                        var nestedApiSingleVariableFragment = GraphQL.ApiSingleVariableFragment(
+                            unsafeResultMap: apiConstantVariableFragment.resultMap
+                        )
+                        nestedApiSingleVariableFragment.from =
+                            "\(from)[\(offset)]\(apiConstantVariableFragment.key)"
+                        appendOrMerge(
+                            map: nestedApiSingleVariableFragment.graphQLMap(currentMap: GraphQLMap(), store: store),
                             offset: offset
                         )
                     }
@@ -153,7 +295,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
                 groupedMultiActionItems.enumerated()
                     .forEach { offset, _ in
                         appendOrMerge(
-                            map: apiGeneratedVariableFragment.graphQLMap(store: store),
+                            map: apiGeneratedVariableFragment.graphQLMap(currentMap: GraphQLMap(), store: store),
                             offset: offset
                         )
                     }
@@ -167,23 +309,27 @@ extension GraphQL.ApiMultiActionVariableFragment {
 }
 
 extension GraphQL.ApiVariablesFragment {
-    func graphQLMap(store: EmbarkStore) -> GraphQLMap {
+    func graphQLMap(accumulatedMap: GraphQLMap, store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
         if let apiSingleVariableFragment = fragments.apiSingleVariableFragment {
-            map = map.merging(
-                apiSingleVariableFragment.graphQLMap(store: store),
-                uniquingKeysWith: { lhs, _ in lhs }
-            )
+            map = apiSingleVariableFragment.graphQLMap(currentMap: accumulatedMap, store: store)
         } else if let apiGeneratedVariableFragment = fragments.apiGeneratedVariableFragment {
-            map = map.merging(
-                apiGeneratedVariableFragment.graphQLMap(store: store),
-                uniquingKeysWith: { lhs, _ in lhs }
-            )
+            map = apiGeneratedVariableFragment.graphQLMap(currentMap: accumulatedMap, store: store)
         } else if let apiMultiActionVariableFragment = fragments.apiMultiActionVariableFragment {
-            map[apiMultiActionVariableFragment.key] = apiMultiActionVariableFragment.graphQLMapArray(
+            let values = apiMultiActionVariableFragment.graphQLMapArray(
                 store: store
             )
+            map = accumulatedMap.lodash_set(
+                path: apiMultiActionVariableFragment.key,
+                value: values
+            )
+        } else if let apiConstantVariableFragment = fragments.apiConstantVariableFragment {
+            let newMap = accumulatedMap.lodash_set(
+                path: apiConstantVariableFragment.key,
+                value: apiConstantVariableFragment.value
+            )
+            map = newMap
         }
 
         return map
@@ -194,11 +340,10 @@ extension GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery.Datum {
     func graphQLVariables(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
-        variables.forEach { variable in
-            map = map.merging(
-                variable.fragments.apiVariablesFragment.graphQLMap(store: store),
-                uniquingKeysWith: { lhs, _ in lhs }
-            )
+        let sortedVariables = variables.map { $0.fragments.apiVariablesFragment }.sorted(by: <)
+
+        sortedVariables.forEach { variable in
+            map = variable.graphQLMap(accumulatedMap: map, store: store)
         }
 
         return map
@@ -209,14 +354,28 @@ extension GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
     func graphQLVariables(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
-        variables.forEach { variable in
-            map = map.merging(
-                variable.fragments.apiVariablesFragment.graphQLMap(store: store),
-                uniquingKeysWith: { lhs, _ in lhs }
-            )
+        let sortedVariables = variables.map { $0.fragments.apiVariablesFragment }.sorted(by: <)
+
+        sortedVariables.forEach { variable in
+            map = variable.graphQLMap(accumulatedMap: map, store: store)
         }
 
         return map
+    }
+}
+
+extension GraphQL.ApiVariablesFragment: Comparable {
+    var key: String {
+        return self.asEmbarkApiGraphQlConstantVariable?.key ?? self.asEmbarkApiGraphQlSingleVariable?.key
+            ?? self.asEmbarkApiGraphQlGeneratedVariable?.key ?? self.asEmbarkApiGraphQlMultiActionVariable?.key ?? ""
+    }
+
+    public static func < (lhs: GraphQL.ApiVariablesFragment, rhs: GraphQL.ApiVariablesFragment) -> Bool {
+        return lhs.key < rhs.key
+    }
+
+    public static func == (lhs: GraphQL.ApiVariablesFragment, rhs: GraphQL.ApiVariablesFragment) -> Bool {
+        return lhs.key == rhs.key
     }
 }
 

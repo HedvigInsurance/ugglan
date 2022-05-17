@@ -108,22 +108,23 @@ extension Marketing: Presentable {
                     type: .standard(backgroundColor: .white, textColor: .black)
                 )
 
-                bag += onboardButton.onTapSignal.onValue { _ in
-                    if #available(iOS 13.0, *) {
-                        viewController.navigationController?.navigationBar
-                            .overrideUserInterfaceStyle =
-                            .unspecified
-                    } else {
-                        viewController.navigationController?.navigationBar.barStyle = .default
-                    }
-                    if !UITraitCollection.isCatalyst {
-                        viewController.navigationController?.hero.isEnabled = false
-                    }
+                bag += onboardButton.onTapSignal
+                    .onValue { _ in
+                        if #available(iOS 13.0, *) {
+                            viewController.navigationController?.navigationBar
+                                .overrideUserInterfaceStyle =
+                                .unspecified
+                        } else {
+                            viewController.navigationController?.navigationBar.barStyle = .default
+                        }
+                        if !UITraitCollection.isCatalyst {
+                            viewController.navigationController?.hero.isEnabled = false
+                        }
 
-                    hAnalyticsEvent.buttonClickMarketingOnboard().send()
+                        hAnalyticsEvent.buttonClickMarketingOnboard().send()
 
-                    callback(.onboard)
-                }
+                        callback(.onboard)
+                    }
 
                 bag += contentStackView.addArranged(onboardButton) { buttonView in
                     buttonView.hero.id = "ContinueButton"

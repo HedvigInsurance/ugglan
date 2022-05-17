@@ -104,7 +104,10 @@ extension ApplyDiscount: Presentable {
 
                         self.client
                             .perform(
-                                mutation: GraphQL.RedeemCodeMutation(code: discountCode)
+                                mutation: GraphQL.RedeemCodeMutation(
+                                    code: discountCode,
+                                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                                )
                             )
                             .delay(by: 0.5)
                             .onError { _ in

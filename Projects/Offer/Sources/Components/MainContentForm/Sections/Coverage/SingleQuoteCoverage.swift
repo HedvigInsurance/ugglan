@@ -9,48 +9,31 @@ import hCoreUI
 import hGraphQL
 
 struct SingleQuoteCoverage {
+    @PresentableStore var store: OfferStore
+
     let quote: QuoteBundle.Quote
 }
 
-extension SingleQuoteCoverage: Presentable {
-    func materialize() -> (SectionView, Disposable) {
-        let section = SectionView(
-            headerView: UILabel(value: L10n.offerScreenCoverageTitle, style: .default),
-            footerView: nil
-        )
-        section.dynamicStyle = .brandGrouped(separatorType: .none)
-
-        let bag = DisposeBag()
-
-        let perilCollection = PerilCollection(
-            perils: quote.perils,
-            didTapPeril: { peril in
-                section.viewController?
-                    .present(
-                        PerilDetail(peril: peril).withCloseButton,
-                        style: .detented(.preferredContentSize, .large)
-                    )
+extension SingleQuoteCoverage: View {
+    var body: some View {
+        VStack {
+            hText(L10n.offerScreenCoverageTitle, style: .title3)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 15)
+            PerilCollection(
+                perils: quote.perils,
+                didTapPeril: { peril in
+                    store.send(.openPerilDetail(peril: peril))
+                }
+            )
+            .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
+            InsurableLimitsSectionView(
+                header: L10n.contractCoverageMoreInfo.hText(),
+                limits: quote.insurableLimits
+            ) { limit in
+                store.send(.openInsurableLimit(limit: limit))
             }
-        )
-        .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
-
-        section.append(
-            HostingView(rootView: perilCollection)
-        )
-
-        section.appendSpacing(.inbetween)
-
-        let insurableLimits = quote
-            .insurableLimits
-
-        bag += section.append(
-            InsurableLimitsSection(insurableLimits: insurableLimits)
-        )
-
-        section.appendSpacing(.inbetween)
-
-        bag += section.append(DocumentsSection(quote: quote))
-
-        return (section, bag)
+            DocumentsSection(quote: quote)
+        }
     }
 }

@@ -173,7 +173,11 @@ public struct RemoteVectorIconView: UIViewRepresentable {
         let (view, disposable) = context.coordinator.remoteVectorIcon.materialize(
             events: .init(wasAddedCallbacker: .init())
         )
-        context.coordinator.bag += disposable
+        context.coordinator.bag += Disposer {
+            DispatchQueue.main.async {
+                disposable.dispose()
+            }
+        }
         return view
     }
 

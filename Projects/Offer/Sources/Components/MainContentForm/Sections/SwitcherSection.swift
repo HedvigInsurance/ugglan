@@ -2,39 +2,25 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct SwitcherSection {}
 
-extension SwitcherSection: Presentable {
-    func materialize() -> (SectionView, Disposable) {
-        let section = SectionView(headerView: nil, footerView: nil)
-        section.dynamicStyle = .brandGrouped(separatorType: .none)
-        section.appendSpacing(.inbetween)
-
-        let store: OfferStore = self.get()
-
-        let bag = DisposeBag()
-
-        bag += store.stateSignal
-            .compactMap { $0.currentVariant?.bundle }
-            .onValueDisposePrevious { quoteBundle in
-                let innerBag = DisposeBag()
-
-                section.isHidden = !quoteBundle.switcher
-
-                if quoteBundle.switcher {
-                    innerBag += section.append(
-                        CurrentInsurerSection(quoteBundle: quoteBundle),
-                        options: [.autoRemove]
-                    )
+extension SwitcherSection: View {
+    var body: some View {
+        VStack {
+            PresentableStoreLens(
+                OfferStore.self,
+                getter: { $0.currentVariant?.bundle ?? nil }
+            ) { quoteBundle in
+                if let quoteBundle = quoteBundle, quoteBundle.switcher {
+                    CurrentInsurerSection(quoteBundle: quoteBundle)
                 }
-
-                return innerBag
             }
-
-        return (section, bag)
+        }
     }
 }

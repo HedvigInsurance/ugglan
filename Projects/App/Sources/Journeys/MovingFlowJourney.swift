@@ -48,7 +48,7 @@ extension AppJourney {
                         DismissJourney()
                     case .menu:
                         ContinueJourney()
-                    case let .signed(_, startDates):
+                    case let .signed(_, startDates), let .signedQuoteCart(_, startDates):
                         Journey(MovingFlowSuccess(startDate: startDates.first?.value)) { _ in
                             DismissJourney()
                                 .sendActionImmediately(ContractStore.self, .fetch)

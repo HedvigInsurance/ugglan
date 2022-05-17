@@ -85,7 +85,7 @@ public struct BulletView: UIViewRepresentable {
             events: ViewableEvents(wasAddedCallbacker: .init())
         )
         context.coordinator.isSelectedSignal.value = isSelected
-        context.coordinator.bag += disposable
+        context.coordinator.bag += DisposeOnMain(disposable)
         return view
     }
 

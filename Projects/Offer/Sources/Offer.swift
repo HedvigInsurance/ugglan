@@ -3,6 +3,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SafariServices
 import UIKit
 import hAnalytics
 import hCore
@@ -39,10 +40,17 @@ extension Offer {
         store.send(.setIds(ids: ids, selectedIds: selectedIds))
         return self
     }
+
+    public func setQuoteCart(_ id: String, selectedInsuranceTypes: [String]) -> Self {
+        let store: OfferStore = globalPresentableStoreContainer.get()
+        store.send(.setQuoteCartId(id: id, insuranceTypes: selectedInsuranceTypes))
+        return self
+    }
 }
 
 public enum OfferResult {
     case signed(ids: [String], startDates: [String: Date?])
+    case signedQuoteCart(accessToken: String, startDates: [String: Date?])
     case close
     case chat
     case menu(_ action: MenuChildAction)
@@ -170,6 +178,49 @@ extension Offer: Presentable {
             FiniteSignal { callback in
                 store.send(.query)
 
+                bag += store.actionSignal.onValue({ action in
+                    if case let .openPerilDetail(peril) = action {
+                        viewController
+                            .present(
+                                Journey(
+                                    PerilDetail(peril: peril),
+                                    style: .detented(.preferredContentSize, .large)
+                                )
+                                .withDismissButton
+                            )
+                            .onValue { _ in
+
+                            }
+                    } else if case let .openQuoteCoverage(quote) = action {
+                        viewController
+                            .present(
+                                QuoteCoverage(quote: quote).journey
+                            )
+                            .onValue { _ in
+
+                            }
+                    } else if case let .openInsurableLimit(limit) = action {
+                        viewController.present(InsurableLimitDetail(limit: limit).journey)
+                            .onValue { _ in
+
+                            }
+                    } else if case let .openDocument(url) = action {
+                        let safariViewController = SFSafariViewController(url: url)
+                        safariViewController.modalPresentationStyle = .formSheet
+                        viewController.present(safariViewController, animated: true)
+                    } else if case let .openFAQ(item) = action {
+                        viewController.present(
+                            FrequentlyAskedQuestionDetail(
+                                frequentlyAskedQuestion: item
+                            )
+                            .journey
+                        )
+                        .onValue { _ in
+
+                        }
+                    }
+                })
+
                 bag += store.onAction(.openChat) {
                     callback(.value(.chat))
                 }
@@ -178,8 +229,19 @@ extension Offer: Presentable {
                     callback(.value(.openCheckout))
                 }
 
+                bag += store.stateSignal.compactMap { $0.accessToken }
+                    .onValue { token in
+                        callback(.value(.signedQuoteCart(accessToken: token, startDates: store.state.startDates)))
+                    }
+
                 bag += store.onAction(.sign(event: .done)) {
-                    callback(.value(.signed(ids: store.state.ids, startDates: store.state.startDates)))
+                    if store.state.isQuoteCart && store.state.offerData?.signMethodForQuotes != .approveOnly {
+                        store.send(.fetchAccessToken)
+                    } else {
+                        callback(.value(.signed(ids: store.state.ids, startDates: store.state.startDates)))
+                    }
+
+                    callback(.value(.signed(ids: store.state.selectedIds, startDates: store.state.startDates)))
                 }
 
                 if let menu = menu {

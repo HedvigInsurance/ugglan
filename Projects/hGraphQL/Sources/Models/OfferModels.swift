@@ -3,6 +3,45 @@ import Foundation
 
 public typealias OfferData = GraphQL.QuoteBundleQuery.Data
 
+public enum CheckoutStatus: String, Codable {
+    case pending = "PENDING"
+    case signed = "SIGNED"
+    case completed = "COMPLETED"
+    case failed = "FAILED"
+
+    init?(
+        status: GraphQL.CheckoutStatus?
+    ) {
+        guard let status = status else {
+            return nil
+        }
+
+        self.init(rawValue: status.rawValue)
+    }
+}
+
+public struct QuoteCart: Codable, Equatable {
+    public let offerBundle: OfferBundle?
+    public let id: String
+    public let checkoutStatus: CheckoutStatus?
+    public let checkoutStatusText: String?
+    public let paymentConnection: PaymentConnection?
+
+    public init(
+        quoteCart: GraphQL.QuoteCartFragment
+    ) {
+        self.offerBundle = .init(quoteCart: quoteCart)
+        self.id = quoteCart.id
+        self.checkoutStatus = .init(rawValue: quoteCart.checkout?.status.rawValue ?? "")
+        self.paymentConnection = .init(id: quoteCart.paymentConnection?.id)
+        self.checkoutStatusText = quoteCart.checkout?.statusText
+    }
+}
+
+public struct PaymentConnection: Codable, Equatable {
+    public let id: String?
+}
+
 public struct OfferBundle: Codable, Equatable {
     public var possibleVariations: [QuoteVariant]
     public let redeemedCampaigns: [RedeemedCampaign]
@@ -19,6 +58,18 @@ public struct OfferBundle: Codable, Equatable {
     }
 
     public init(
+        possibleVariations: [QuoteVariant],
+        redeemedCampaigns: [RedeemedCampaign],
+        signMethodForQuotes: OfferBundle.SignMethodForQuotes,
+        id: UUID = UUID()
+    ) {
+        self.possibleVariations = possibleVariations
+        self.redeemedCampaigns = redeemedCampaigns
+        self.signMethodForQuotes = signMethodForQuotes
+        self.id = id
+    }
+
+    public init(
         data: OfferData,
         id: UUID = UUID()
     ) {
@@ -27,40 +78,79 @@ public struct OfferBundle: Codable, Equatable {
         signMethodForQuotes = .init(rawValue: data.signMethodForQuotes.rawValue) ?? .unknown
         self.id = id
     }
+
+    public init?(
+        quoteCart: GraphQL.QuoteCartFragment
+    ) {
+        guard
+            let bundle = quoteCart.bundle?.fragments.quoteBundleFragment
+        else { return nil }
+
+        possibleVariations = bundle.possibleVariations.map { .init(variant: $0) }
+        redeemedCampaigns =
+            quoteCart.campaign?.displayValue == nil
+            ? [] : [RedeemedCampaign(displayValue: quoteCart.campaign?.displayValue)]
+        signMethodForQuotes =
+            (.init(rawValue: quoteCart.checkoutMethods.first?.rawValue ?? "")
+                ?? .unknown)
+        self.id = UUID()
+    }
 }
 
 public struct QuoteVariant: Codable, Equatable {
+    public init(
+        bundle: QuoteBundle,
+        tag: String?,
+        id: String
+    ) {
+        self.bundle = bundle
+        self.tag = tag
+        self.id = id
+    }
+
     public var bundle: QuoteBundle
     public let tag: String?
     public let id: String
 
     public init(
-        variant: OfferData.QuoteBundle.PossibleVariation
+        variant: GraphQL.QuoteBundleFragment.PossibleVariation
     ) {
-        self.bundle = QuoteBundle(bundle: variant.bundle)
+        self.bundle = .init(bundle: variant.bundle)
+        self.tag = variant.tag
+        self.id = variant.id
+    }
+
+    public init(
+        variant: GraphQL.QuoteBundleQuery.Data.QuoteBundle.PossibleVariation
+    ) {
+        self.bundle = .init(
+            bundle: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle(
+                unsafeResultMap: variant.bundle.resultMap
+            )
+        )
         self.tag = variant.tag
         self.id = variant.id
     }
 }
 
 public struct QuoteBundle: Codable, Equatable {
+    init(
+        bundle: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle
+    ) {
+        appConfiguration = .init(config: bundle.appConfiguration)
+        bundleCost = .init(cost: bundle.bundleCost.fragments.costFragment)
+        frequentlyAskedQuestions = bundle.frequentlyAskedQuestions.map { .init(question: $0) }
+        quotes = bundle.quotes.map { .init(quote: $0) }
+        inception = .init(fragment: bundle.inception)
+        displayName = bundle.displayName
+    }
+
     public let appConfiguration: AppConfiguration
     public let bundleCost: BundleCost
     public let frequentlyAskedQuestions: [FrequentlyAskedQuestion]
     public let quotes: [Quote]
     public var inception: Inception
     public var displayName: String
-
-    public init(
-        bundle: OfferData.QuoteBundle.PossibleVariation.Bundle
-    ) {
-        appConfiguration = .init(config: bundle.appConfiguration)
-        bundleCost = .init(cost: bundle.bundleCost)
-        frequentlyAskedQuestions = bundle.frequentlyAskedQuestions.map { .init(question: $0) }
-        quotes = bundle.quotes.map { .init(quote: $0) }
-        inception = .init(fragment: bundle.inception.fragments.inceptionFragment)
-        displayName = bundle.displayName
-    }
 
     public struct AppConfiguration: Codable, Equatable {
         public let showCampaignManagement: Bool
@@ -72,7 +162,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let title: AppConfigTitle
 
         public init(
-            config: OfferData.QuoteBundle.PossibleVariation.Bundle.AppConfiguration
+            config: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.AppConfiguration
         ) {
             showCampaignManagement = config.showCampaignManagement
             showFaq = config.showFaq
@@ -109,7 +199,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let monthlyNet: MonetaryAmount
 
         public init(
-            cost: OfferData.QuoteBundle.PossibleVariation.Bundle.BundleCost
+            cost: GraphQL.CostFragment
         ) {
             freeUntil = cost.freeUntil
             monthlyDiscount = .init(fragment: cost.monthlyDiscount.fragments.monetaryAmountFragment)
@@ -118,12 +208,13 @@ public struct QuoteBundle: Codable, Equatable {
         }
     }
 
-    public struct FrequentlyAskedQuestion: Codable, Equatable {
+    public struct FrequentlyAskedQuestion: Identifiable, Codable, Equatable {
         public let body: String?
         public let headline: String?
         public let id: String
+
         public init(
-            question: OfferData.QuoteBundle.PossibleVariation.Bundle.FrequentlyAskedQuestion
+            question: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.FrequentlyAskedQuestion
         ) {
             id = question.id
             body = question.body
@@ -131,7 +222,7 @@ public struct QuoteBundle: Codable, Equatable {
         }
     }
 
-    public struct Quote: Codable, Equatable {
+    public struct Quote: Codable, Equatable, Identifiable {
         public let id: String
         public let ssn: String?
         public let email: String?
@@ -141,9 +232,11 @@ public struct QuoteBundle: Codable, Equatable {
         public let insurableLimits: [InsurableLimits]
         public let insuranceTerms: [TermsAndConditions]
         public var dataCollectionID: String?
+        public let typeOfContract: String
+        public let insuranceType: String?
 
         public init(
-            quote: OfferData.QuoteBundle.PossibleVariation.Bundle.Quote
+            quote: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Quote
         ) {
             id = quote.id
             ssn = quote.ssn
@@ -154,6 +247,8 @@ public struct QuoteBundle: Codable, Equatable {
             insurableLimits = quote.insurableLimits.map { .init(fragment: $0.fragments.insurableLimitFragment) }
             insuranceTerms = quote.insuranceTerms.map { .init(displayName: $0.displayName, url: $0.url) }
             dataCollectionID = quote.dataCollectionId
+            typeOfContract = quote.typeOfContract.rawValue
+            insuranceType = quote.insuranceType
         }
     }
 
@@ -163,7 +258,7 @@ public struct QuoteBundle: Codable, Equatable {
         case unknown
 
         init(
-            fragment: GraphQL.InceptionFragment
+            fragment: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception
         ) {
             if let concurrent = fragment.asConcurrentInception {
                 self = .concurrent(inception: .init(inception: concurrent))
@@ -176,14 +271,14 @@ public struct QuoteBundle: Codable, Equatable {
 
         public struct ConcurrentInception: Codable, Equatable {
             public var startDate: String?
-            public let correspondingQuotes: [CorrespondingQuote]
+            public let correspondingQuotes: [String]
             public let currentInsurer: CurrentInsurer?
 
             public init(
-                inception: GraphQL.InceptionFragment.AsConcurrentInception
+                inception: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsConcurrentInception
             ) {
                 startDate = inception.startDate
-                correspondingQuotes = inception.correspondingQuotes.map { .init(quote: $0) }
+                correspondingQuotes = inception.correspondingQuoteIds
                 currentInsurer = .init(insurer: inception.currentInsurer)
             }
         }
@@ -191,8 +286,10 @@ public struct QuoteBundle: Codable, Equatable {
         public struct CurrentInsurer: Codable, Equatable {
             public let displayName: String?
             public let switchable: Bool?
+
             public init?(
-                insurer: GraphQL.InceptionFragment.AsConcurrentInception.CurrentInsurer?
+                insurer: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsConcurrentInception
+                    .CurrentInsurer?
             ) {
                 guard let insurer = insurer else { return nil }
                 displayName = insurer.displayName
@@ -200,7 +297,8 @@ public struct QuoteBundle: Codable, Equatable {
             }
 
             public init?(
-                insurer: GraphQL.InceptionFragment.AsIndependentInceptions.Inception.CurrentInsurer?
+                insurer: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsIndependentInceptions
+                    .Inception.CurrentInsurer?
             ) {
                 guard let insurer = insurer else { return nil }
                 displayName = insurer.displayName
@@ -208,32 +306,22 @@ public struct QuoteBundle: Codable, Equatable {
             }
         }
 
-        public struct IndependentInception: Codable, Equatable {
+        public struct IndependentInception: Identifiable, Codable, Equatable {
             public var startDate: String?
-            public let correspondingQuote: CorrespondingQuote
+            public let correspondingQuoteId: String
             public let currentInsurer: CurrentInsurer?
 
+            public var id: String {
+                correspondingQuoteId + (currentInsurer?.displayName ?? "")
+            }
+
             public init(
-                inception: GraphQL.InceptionFragment.AsIndependentInceptions.Inception
+                inception: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsIndependentInceptions
+                    .Inception
             ) {
                 startDate = inception.startDate
-                correspondingQuote = .init(quote: inception.correspondingQuote)
+                correspondingQuoteId = inception.correspondingQuoteId
                 currentInsurer = .init(insurer: inception.currentInsurer)
-            }
-        }
-
-        public struct CorrespondingQuote: Codable, Equatable {
-            public let id: String?
-
-            public init(
-                quote: GraphQL.InceptionFragment.AsConcurrentInception.CorrespondingQuote
-            ) {
-                id = quote.asCompleteQuote?.id
-            }
-            public init(
-                quote: GraphQL.InceptionFragment.AsIndependentInceptions.Inception.CorrespondingQuote
-            ) {
-                id = quote.asCompleteQuote?.id
             }
         }
     }
