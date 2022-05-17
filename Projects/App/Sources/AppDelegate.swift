@@ -191,7 +191,7 @@ let log = Logger.builder
     }
 
     func setupSession() {
-        //Analytics.setAnalyticsCollectionEnabled(false)
+        Analytics.setAnalyticsCollectionEnabled(false)
 
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
