@@ -11,7 +11,6 @@ import hGraphQL
 
 struct DirectDebitSetup {
     @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
     let setupType: PaymentSetup.SetupType
 
     private func makeDismissButton() -> UIBarButtonItem {
@@ -165,7 +164,7 @@ extension DirectDebitSetup: Presentable {
                     bag += viewController.present(alert)
                         .onValue { shouldDismiss in
                             if shouldDismiss {
-                                self.client
+                                client
                                     .perform(
                                         mutation:
                                             GraphQL
@@ -189,7 +188,7 @@ extension DirectDebitSetup: Presentable {
                     case .success:
                         client.fetch(query: GraphQL.PayInMethodStatusQuery())
                             .onValue { _ in
-                                self.store.update(
+                                client.store.update(
                                     query: GraphQL.PayInMethodStatusQuery()
                                 ) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
                                     data.payinMethodStatus = .pending
@@ -232,7 +231,7 @@ extension DirectDebitSetup: Presentable {
                 // if user is closing app in the middle of process make sure to inform backend
                 bag += NotificationCenter.default.signal(forName: .applicationWillTerminate)
                     .onValue { _ in
-                        self.client
+                        client
                             .perform(mutation: GraphQL.CancelDirectDebitRequestMutation())
                             .sink()
                     }

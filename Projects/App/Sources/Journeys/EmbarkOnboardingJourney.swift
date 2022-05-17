@@ -1,14 +1,17 @@
+import Apollo
 import Embark
 import Flow
 import Foundation
 import Offer
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct EmbarkOnboardingJourney {
-    public static var journey: some JourneyPresentation {
+    public static func journey() -> some JourneyPresentation {
         let menuChildren: [MenuChildable] = [
             MenuChild.appInformation,
             MenuChild.appSettings,
@@ -44,6 +47,10 @@ struct EmbarkOnboardingJourney {
                         action.journey
                     case .openCheckout:
                         AppJourney.offerCheckout
+                    case let .signedQuoteCart(accessToken, _):
+                        Journey(ApolloClientSaveTokenLoader(accessToken: accessToken)) {
+                            AppJourney.postOnboarding
+                        }
                     }
                 }
             }

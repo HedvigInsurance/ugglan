@@ -4,6 +4,7 @@ import Disk
 import Flow
 import Foundation
 import UIKit
+import hAnalytics
 
 extension ApolloClient {
     public static var acceptLanguageHeader: String = ""
@@ -31,15 +32,15 @@ extension ApolloClient {
         if let identifier = userDefaults.value(forKey: deviceKey) as? String {
             return identifier
         } else {
-            let newIdentifier = UUID().uuidString
+            let identifierForVendor = UIDevice.current.identifierForVendor ?? UUID()
 
-            userDefaults.set(newIdentifier, forKey: deviceKey)
+            userDefaults.set(identifierForVendor.uuidString, forKey: deviceKey)
 
-            return newIdentifier
+            return identifierForVendor.uuidString
         }
     }
 
-    internal static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
+    public static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
         let environment = Environment.current
 
         let httpAdditionalHeaders = headers(token: token)
@@ -117,7 +118,8 @@ extension ApolloClient {
     }
 
     public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
-        Future { completion in let tokenData = self.retreiveToken()
+        Future { completion in
+            let tokenData = self.retreiveToken()
 
             if tokenData == nil {
                 return self.createClientFromNewSession()

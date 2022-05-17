@@ -56,6 +56,7 @@ extension EmbarkStory {
             id: "asd123",
             name: "Enter Address",
             externalRedirect: nil,
+            quoteCartOfferRedirects: [],
             offerRedirect: nil,
             variantedOfferRedirects: [],
             tooltips: [],

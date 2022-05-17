@@ -1,4 +1,4 @@
-mutation RedeemCode($code: String!) {
+mutation RedeemCode($code: String!, $locale: Locale!) {
     redeemCodeV2(code: $code) {
         ... on SuccessfulRedeemResult {
             cost {

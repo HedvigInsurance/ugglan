@@ -108,6 +108,11 @@ extension MarketPicker: Presentable {
 
         bag += form.didMoveToWindowSignal.onValue { ContextGradient.currentOption = .none }
 
+        bag += store.stateSignal.atOnce()
+            .onValue { state in
+                print(state)
+            }
+
         return (
             viewController,
             Signal { callback in

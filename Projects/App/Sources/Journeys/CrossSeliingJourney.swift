@@ -2,6 +2,7 @@ import Contracts
 import Embark
 import Foundation
 import Presentation
+import hCoreUI
 import hGraphQL
 
 extension AppJourney {
@@ -21,7 +22,9 @@ extension AppJourney {
             case let .signed(_, startDates):
                 CrossSellingSigned.journey(startDate: startDates.first?.value)
             case .openCheckout:
-                offerCheckout
+                AppJourney.offerCheckout
+            case .signedQuoteCart:
+                DismissJourney()
             }
         }
     }

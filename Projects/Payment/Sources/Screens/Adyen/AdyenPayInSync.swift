@@ -41,11 +41,16 @@ extension AdyenPayInSync: Presentable {
             viewController,
             FiniteSignal { callback in
                 client.fetch(query: GraphQL.ActivePaymentMethodsQuery())
+                    .onError({ error in
+                        print(error)
+                    })
                     .join(with: AdyenMethodsList.payInOptions)
                     .onValue { paymentMethods, options in
                         if paymentMethods.activePaymentMethodsV2 == nil {
                             callback(.value(.left(options)))
                         } else if case .replacement = setupType {
+                            callback(.value(.left(options)))
+                        } else if case .preOnboarding = setupType {
                             callback(.value(.left(options)))
                         } else {
                             callback(.value(.right(())))

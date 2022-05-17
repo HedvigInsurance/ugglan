@@ -8,7 +8,7 @@ extension AppJourney {
             Journey(Marketing()) { marketingResult in
                 switch marketingResult {
                 case .onboard:
-                    AppJourney.onboarding
+                    AppJourney.onboarding()
                 case .login:
                     AppJourney.login
                 }

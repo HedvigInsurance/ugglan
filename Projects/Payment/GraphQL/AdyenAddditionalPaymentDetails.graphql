@@ -1,15 +1,17 @@
-mutation AdyenAdditionalPaymentDetails($req: PaymentsDetailsRequest!) {
-    submitAdditionalPaymentDetails(
-        req: {
-            paymentsDetailsRequest: $req
+mutation AdyenAdditionalPaymentDetails($paymentConnectionID: ID!, $req: PaymentDetailsInput!) {
+    paymentConnection_submitAdditionalPaymentDetails(
+        paymentTokenId: $paymentConnectionID,
+        input: {
+            paymentDetailsInput: $req
         }
     ) {
-        ... on AdditionalPaymentsDetailsResponseFinished {
-            resultCode
-            tokenizationResult
+        ... on ConnectPaymentFinished {
+            status
+            paymentTokenId
         }
-        ... on AdditionalPaymentsDetailsResponseAction {
-            action
+        ... on ActionRequired {
+            paymentTokenId
+            actionV2
         }
     }
 }

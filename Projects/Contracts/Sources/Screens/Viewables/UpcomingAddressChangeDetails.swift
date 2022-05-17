@@ -20,7 +20,15 @@ extension UpcomingAddressChangeDetails: Presentable {
 
         bag += viewController.install(form)
 
-        bag += form.append(details)
+        let hostView = makeHost {
+            details.view
+        }
+
+        bag += {
+            hostView.removeFromSuperview()
+        }
+
+        form.append(hostView)
 
         return (viewController, bag)
     }
