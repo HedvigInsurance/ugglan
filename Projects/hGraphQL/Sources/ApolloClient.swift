@@ -126,11 +126,13 @@ extension ApolloClient {
             if keychainToken == nil {
                 // If Keychain has no entry, check back on disk and migrate that data to Keychain
                 // This is due to the fact that existing installs might rely on disk for tokens
-                guard let diskToken = try? Disk.retrieve(
-                    "authorization-token.json",
-                    from: .applicationSupport,
-                    as: AuthorizationToken.self
-                ) else {
+                guard
+                    let diskToken = try? Disk.retrieve(
+                        "authorization-token.json",
+                        from: .applicationSupport,
+                        as: AuthorizationToken.self
+                    )
+                else {
                     // If disk also has no entry, then it's a new install on this device
                     return self.createClientFromNewSession()
                         .onResult { result in
@@ -141,12 +143,12 @@ extension ApolloClient {
                         }
                         .disposable
                 }
-                
+
                 saveToken(token: diskToken.token)
                 try? Disk.remove("authorization-token.json", from: .applicationSupport)
                 let result = self.createClient(token: diskToken.token)
                 completion(.success(result))
-                
+
             } else {
                 let result = self.createClient(token: keychainToken!.token)
                 completion(.success(result))
