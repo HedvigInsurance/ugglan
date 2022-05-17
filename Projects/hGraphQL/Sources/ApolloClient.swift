@@ -121,9 +121,7 @@ extension ApolloClient {
 
     public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
         Future { completion in
-            let keychainToken = self.retreiveToken()
-
-            if keychainToken == nil {
+            guard let keychainToken = self.retreiveToken() else {
                 // If Keychain has no entry, check back on disk and migrate that data to Keychain
                 // This is due to the fact that existing installs might rely on disk for tokens
                 guard let diskToken = try? Disk.retrieve(
@@ -141,17 +139,16 @@ extension ApolloClient {
                         }
                         .disposable
                 }
-                
+
                 saveToken(token: diskToken.token)
                 try? Disk.remove("authorization-token.json", from: .applicationSupport)
                 let result = self.createClient(token: diskToken.token)
                 completion(.success(result))
-                
-            } else {
-                let result = self.createClient(token: keychainToken!.token)
-                completion(.success(result))
+                return NilDisposer()
             }
 
+            let result = self.createClient(token: keychainToken.token)
+            completion(.success(result))
             return NilDisposer()
         }
     }
