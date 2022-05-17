@@ -1,6 +1,6 @@
 import Foundation
 
-final class KeychainHelper {
+final public class KeychainHelper {
     
     static let standard = KeychainHelper()
     private init() {}
@@ -11,7 +11,7 @@ final class KeychainHelper {
     /// - Parameters:
     ///   - item: Object of type `Codable` that needs to be entried to keychain
     ///   - key: Key with which the object has to be saved
-    func save<T>(_ item: T, key: String) where T : Codable {
+    public func save<T>(_ item: T, key: String) where T : Codable {
         do {
             let data = try JSONEncoder().encode(item)
             save(data, key: key)
@@ -25,7 +25,7 @@ final class KeychainHelper {
     ///   - key: Key which has to be queried
     ///   - type: Transforms the data from keychain to this required type T which has to be a `Codable`
     /// - Returns: Object from the keychain of the type specified
-    func read<T>(key: String, type: T.Type) -> T? where T : Codable {
+    public func read<T>(key: String, type: T.Type) -> T? where T : Codable {
         guard let data = read(key: key) else {
             return nil
         }
@@ -41,7 +41,7 @@ final class KeychainHelper {
     
     /// Deletes key from the keychain
     /// - Parameter key: Specifies key which has to be removed from the keychain
-    func delete(key: String) {
+    public func delete(key: String) {
         let query = [
             kSecAttrService: key,
             kSecAttrAccount: account,
