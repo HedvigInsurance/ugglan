@@ -4,7 +4,7 @@ final class KeychainHelper {
     
     static let standard = KeychainHelper()
     private init() {}
-    private let kSecAttrAccount: String = "hedvig"
+    private let account: String = "hedvig"
     
     // MARK: - Public methods
     ///  Saves value in keychain
@@ -44,7 +44,7 @@ final class KeychainHelper {
     func delete(key: String) {
         let query = [
             kSecAttrService: key,
-            kSecAttrAccount: kSecAttrAccount,
+            kSecAttrAccount: account,
             kSecClass: kSecClassGenericPassword,
         ] as CFDictionary
         SecItemDelete(query)
@@ -56,7 +56,7 @@ final class KeychainHelper {
             kSecValueData: data,
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: key,
-            kSecAttrAccount: kSecAttrAccount,
+            kSecAttrAccount: account,
         ] as CFDictionary
         
         let status = SecItemAdd(query, nil)
@@ -68,14 +68,14 @@ final class KeychainHelper {
             // Item already exist, update it.
             let query = [
                 kSecAttrService: key,
-                kSecAttrAccount: kSecAttrAccount,
+                kSecAttrAccount: account,
                 kSecClass: kSecClassGenericPassword,
             ] as CFDictionary
 
             let attributesToUpdate = [kSecValueData: data] as CFDictionary
             SecItemUpdate(query, attributesToUpdate)
         default:
-            // Type "security error -{OSStatus}" in terminal for details of the error
+            // Fire "security error -{OSStatus}" in terminal for details of the error
             print("Failed to save token with OSStatus: \(status)")
         }
     }
@@ -83,7 +83,7 @@ final class KeychainHelper {
     private func read(key: String) -> Data? {
         let query = [
             kSecAttrService: key,
-            kSecAttrAccount: kSecAttrAccount,
+            kSecAttrAccount: account,
             kSecClass: kSecClassGenericPassword,
             kSecReturnData: true
         ] as CFDictionary

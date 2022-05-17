@@ -83,65 +83,16 @@ extension ApolloClient {
     }
 
     public static func deleteToken() {
-        let query = [
-            kSecAttrService: "apollo-token",
-            kSecAttrAccount: "hedvig",
-            kSecClass: kSecClassGenericPassword,
-        ] as CFDictionary
-        SecItemDelete(query)
+        KeychainHelper.standard.delete(key: "authorizationToken")
     }
 
     public static func retreiveToken() -> AuthorizationToken? {
-        let query = [
-            kSecAttrService: "apollo-token",
-            kSecAttrAccount: "hedvig",
-            kSecClass: kSecClassGenericPassword,
-            kSecReturnData: true
-        ] as CFDictionary
-        
-        var result: AnyObject?
-        SecItemCopyMatching(query, &result)
-        
-        var token: AuthorizationToken?
-        if let data = result as? Data {
-            token = try? JSONDecoder().decode(AuthorizationToken.self, from: data)
-        }
-        return token
+        KeychainHelper.standard.read(key: "authorizationToken", type: AuthorizationToken.self)
     }
 
     public static func saveToken(token: String) {
         let authorizationToken = AuthorizationToken(token: token)
-//        KeychainHelper.standard.save(authorizationToken, key: "authorization-token.json")
-        do {
-            let data = try JSONEncoder().encode(authorizationToken)
-            let query = [
-                kSecValueData: data,
-                kSecClass: kSecClassGenericPassword,
-                kSecAttrService: "apollo-token",
-                kSecAttrAccount: "hedvig",
-            ] as CFDictionary
-            
-            let status = SecItemAdd(query, nil)
-            
-            switch status {
-            case errSecSuccess:
-                break
-            case errSecDuplicateItem:
-                // Item already exist, thus update it.
-                let query = [
-                    kSecAttrService: "apollo-token",
-                    kSecAttrAccount: "hedvig",
-                    kSecClass: kSecClassGenericPassword,
-                ] as CFDictionary
-
-                let attributesToUpdate = [kSecValueData: data] as CFDictionary
-                SecItemUpdate(query, attributesToUpdate)
-            default:
-                print("Failed to save token: \(status)")
-            }
-        } catch {
-            print("Fail to encode item for keychain: \(error)")
-        }
+        KeychainHelper.standard.save(authorizationToken, key: "authorizationToken")
     }
 
     public static func createClientFromNewSession() -> Future<(ApolloStore, ApolloClient)> {
