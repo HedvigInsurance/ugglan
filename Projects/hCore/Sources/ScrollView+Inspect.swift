@@ -69,9 +69,11 @@ class IntrospectionViewController: UIViewController {
     required init() {
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required init?(
+        coder: NSCoder
+    ) {
         fatalError("init(coder:) has not been implemented")
     }
 }
@@ -87,17 +89,24 @@ struct ViewControllerIntrospector<UIViewControllerType: UIViewController>: UIVie
         Coordinator()
     }
 
-    func makeUIViewController(context: UIViewControllerRepresentableContext<ViewControllerIntrospector>) -> IntrospectionViewController {
+    func makeUIViewController(
+        context: UIViewControllerRepresentableContext<ViewControllerIntrospector>
+    ) -> IntrospectionViewController {
         return IntrospectionViewController()
     }
 
     func findViewController(from: UIViewController) -> UIViewControllerType? {
         if let viewController = from as? UIViewControllerType {
             return viewController
-        } else if let viewController = from.children.compactMap({ child in
-            findViewController(from: child)
-            
-        }).first { return viewController } else {
+        } else if let viewController = from.children
+            .compactMap({ child in
+                findViewController(from: child)
+
+            })
+            .first
+        {
+            return viewController
+        } else {
             return nil
         }
     }
@@ -110,10 +119,10 @@ struct ViewControllerIntrospector<UIViewControllerType: UIViewController>: UIVie
         if let viewController = findViewController(from: parent) {
             return viewController
         }
-        
+
         return traverseUp(from: parent)
     }
-    
+
     public func updateUIViewController(
         _ uiViewController: IntrospectionViewController,
         context: UIViewControllerRepresentableContext<ViewControllerIntrospector>
@@ -141,12 +150,18 @@ extension View {
     public func introspectTextField(_ foundTextField: @escaping (_ textField: UITextField) -> Void) -> some View {
         self.background(ViewIntrospector<UITextField>(foundView: foundTextField))
     }
-    
-    public func introspectNavigationController(_ foundNavigationController: @escaping (_ navigationController: UINavigationController) -> Void) -> some View {
-        self.background(ViewControllerIntrospector<UINavigationController>(foundViewController: foundNavigationController))
+
+    public func introspectNavigationController(
+        _ foundNavigationController: @escaping (_ navigationController: UINavigationController) -> Void
+    ) -> some View {
+        self.background(
+            ViewControllerIntrospector<UINavigationController>(foundViewController: foundNavigationController)
+        )
     }
-    
-    public func introspectViewController(_ foundNavigationController: @escaping (_ viewController: UIViewController) -> Void) -> some View {
+
+    public func introspectViewController(
+        _ foundNavigationController: @escaping (_ viewController: UIViewController) -> Void
+    ) -> some View {
         self.background(ViewControllerIntrospector<UIViewController>(foundViewController: foundNavigationController))
     }
 }
