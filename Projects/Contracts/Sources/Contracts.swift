@@ -8,64 +8,14 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public indirect enum ContractFilter {
-    var displaysActiveContracts: Bool {
-        switch self {
-        case .terminated: return false
-        case .active: return true
-        case .none: return false
-        }
-    }
-
-    var displaysTerminatedContracts: Bool {
-        switch self {
-        case .terminated: return true
-        case .active: return false
-        case .none: return false
-        }
-    }
-
-    var emptyFilter: ContractFilter {
-        switch self {
-        case let .terminated(ifEmpty): return ifEmpty
-        case let .active(ifEmpty): return ifEmpty
-        case .none: return .none
-        }
-    }
-
-    case terminated(ifEmpty: ContractFilter)
-    case active(ifEmpty: ContractFilter)
-    case none
-}
-
-extension ContractFilter {
-    func nonemptyFilter(state: ContractState) -> ContractFilter {
-        switch self {
-        case .active:
-            let activeContracts = state
-                .contractBundles
-                .flatMap { $0.contracts }
-            return activeContracts.isEmpty ? self.emptyFilter : self
-        case .terminated:
-            let terminatedContracts = state.contracts.filter { contract in
-                contract.currentAgreement?.status == .terminated
-            }
-            return terminatedContracts.isEmpty ? self.emptyFilter : self
-        case .none: return self
-        }
-    }
-}
-
 public struct Contracts {
     @PresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
-    let filter: ContractFilter
-
-    public init(
-        filter: ContractFilter
-    ) {
-        self.filter = filter
-    }
+    
+    @State
+    var navigationController: UINavigationController?
+    
+    public init() {}
 }
 
 extension Contracts: View {
@@ -76,7 +26,7 @@ extension Contracts: View {
 
     public var body: some View {
         hForm {
-            ContractTable(filter: filter)
+            ContractTable()
         }
         .onReceive(pollTimer) { _ in
             fetch()
@@ -85,6 +35,7 @@ extension Contracts: View {
             fetch()
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insurances))
+        .navigationBarTitle(L10n.InsurancesTab.title)
     }
 }
 
@@ -97,27 +48,22 @@ public enum ContractsResult {
 
 extension Contracts {
     public static func journey<ResultJourney: JourneyPresentation>(
-        filter: ContractFilter = .active(ifEmpty: .terminated(ifEmpty: .none)),
         @JourneyBuilder resultJourney: @escaping (_ result: ContractsResult) -> ResultJourney,
         openDetails: Bool = true
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: Contracts(filter: filter),
+            rootView: Contracts(),
             options: [
                 .defaults,
                 .prefersLargeTitles(true),
-                .largeTitleDisplayMode(filter.displaysActiveContracts ? .always : .never),
+                .largeTitleDisplayMode(.always),
             ]
         ) { action in
             if case let .openDetail(contractId) = action, openDetails {
                 ContractDetail(id: contractId).journey()
             } else if case .openTerminatedContracts = action {
-                Self.journey(
-                    filter: .terminated(ifEmpty: .none),
-                    resultJourney: resultJourney,
-                    openDetails: false
-                )
+                TerminatedContractsTable.journey()
             } else if case let .openCrossSellingDetail(crossSell) = action {
                 resultJourney(.openCrossSellingDetail(crossSell: crossSell))
             } else if case let .openCrossSellingEmbark(name) = action {
@@ -137,12 +83,9 @@ extension Contracts {
                 navigationController.isHeroEnabled = true
                 navigationController.hero.navigationAnimationType = .fade
             }
-
-            if filter.displaysActiveContracts {
-                presenter.matter.installChatButton()
-            }
+            
+            presenter.matter.installChatButton()
         })
-        .configureTitle(filter.displaysActiveContracts ? L10n.InsurancesTab.title : "")
         .configureContractsTabBarItem
     }
 }

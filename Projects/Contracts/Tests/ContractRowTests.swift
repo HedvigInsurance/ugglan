@@ -51,7 +51,7 @@ extension Contract {
             upcomingAgreementsTable: .mock(),
             currentAgreementsTable: .mock(),
             gradientOption: .one,
-            logo: .none,
+            logo: nil,
             displayName: displayName,
             switchedFromInsuranceProvider: nil,
             upcomingRenewal: nil,

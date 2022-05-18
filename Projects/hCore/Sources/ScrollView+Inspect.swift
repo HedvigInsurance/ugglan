@@ -65,6 +65,74 @@ struct ViewIntrospector<ViewType: UIView>: UIViewRepresentable {
     }
 }
 
+class IntrospectionViewController: UIViewController {
+    required init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+struct ViewControllerIntrospector<UIViewControllerType: UIViewController>: UIViewControllerRepresentable {
+    var foundViewController: (_ viewController: UIViewControllerType) -> Void
+
+    class Coordinator {
+        var viewController: UIViewControllerType? = nil
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    func makeUIViewController(context: UIViewControllerRepresentableContext<ViewControllerIntrospector>) -> IntrospectionViewController {
+        return IntrospectionViewController()
+    }
+
+    func findViewController(from: UIViewController) -> UIViewControllerType? {
+        if let viewController = from as? UIViewControllerType {
+            return viewController
+        } else if let viewController = from.children.compactMap({ child in
+            findViewController(from: child)
+            
+        }).first { return viewController } else {
+            return nil
+        }
+    }
+
+    func traverseUp(from viewController: UIViewController) -> UIViewControllerType? {
+        guard let parent = viewController.parent else {
+            return nil
+        }
+
+        if let viewController = findViewController(from: parent) {
+            return viewController
+        }
+        
+        return traverseUp(from: parent)
+    }
+    
+    public func updateUIViewController(
+        _ uiViewController: IntrospectionViewController,
+        context: UIViewControllerRepresentableContext<ViewControllerIntrospector>
+    ) {
+        guard context.coordinator.viewController == nil else {
+            return
+        }
+
+        DispatchQueue.main.async {
+            let viewController = traverseUp(from: uiViewController)
+            context.coordinator.viewController = viewController
+
+            if let viewController = viewController {
+                foundViewController(viewController)
+            }
+        }
+    }
+}
+
 extension View {
     public func introspectScrollView(_ foundScrollView: @escaping (_ scrollView: UIScrollView) -> Void) -> some View {
         self.background(ViewIntrospector<UIScrollView>(foundView: foundScrollView))
@@ -72,6 +140,14 @@ extension View {
 
     public func introspectTextField(_ foundTextField: @escaping (_ textField: UITextField) -> Void) -> some View {
         self.background(ViewIntrospector<UITextField>(foundView: foundTextField))
+    }
+    
+    public func introspectNavigationController(_ foundNavigationController: @escaping (_ navigationController: UINavigationController) -> Void) -> some View {
+        self.background(ViewControllerIntrospector<UINavigationController>(foundViewController: foundNavigationController))
+    }
+    
+    public func introspectViewController(_ foundNavigationController: @escaping (_ viewController: UIViewController) -> Void) -> some View {
+        self.background(ViewControllerIntrospector<UIViewController>(foundViewController: foundNavigationController))
     }
 }
 

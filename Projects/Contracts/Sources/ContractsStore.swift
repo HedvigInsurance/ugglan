@@ -11,6 +11,7 @@ public struct ContractState: StateProtocol {
     public var hasLoadedContractBundlesOnce = false
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
+    public var terminatedContracs: [Contract] = []
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
 
@@ -139,10 +140,11 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             newState.hasLoadedContractBundlesOnce = true
             // Prevent infinite spinner if there are no active contracts
             guard activeContractBundles != state.contractBundles else { return newState }
-
+            
             newState.contractBundles = activeContractBundles
         case .setContracts(let contracts):
-            newState.contracts = contracts
+            newState.contracts = contracts.filter { $0.currentAgreement?.status != .terminated }
+            newState.terminatedContracs = contracts.filter { $0.currentAgreement?.status == .terminated }
         case let .hasSeenCrossSells(value):
             newState.contractBundles = newState.contractBundles.map { bundle in
                 var newBundle = bundle

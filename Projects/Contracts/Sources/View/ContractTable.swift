@@ -9,20 +9,18 @@ import hCoreUI
 import hGraphQL
 
 struct ContractTable {
-    let filter: ContractFilter
     @PresentableStore var store: ContractStore
+    
+    @State
+    var contracts = [Contract]()
+    
+    private func updateContracts(for state: ContractState) {
+        let contracts = store.state.contracts + store.state.contractBundles.flatMap { $0.contracts }
 
-    func getContractsToShow(for state: ContractState, filter: ContractFilter) -> [Contract] {
-        switch filter {
-        case .active:
-            return state
-                .contractBundles
-                .flatMap { $0.contracts }
-        case .terminated:
-            return state.contracts.filter { contract in
-                contract.currentAgreement?.status == .terminated
-            }
-        case .none: return []
+        if contracts.isEmpty {
+            self.contracts = store.state.terminatedContracs
+        } else {
+            self.contracts = contracts
         }
     }
 }
@@ -30,61 +28,53 @@ struct ContractTable {
 extension ContractTable: View {
     var body: some View {
         ContractBundleLoadingIndicator()
-
+        
         hSection {
-            PresentableStoreLens(
-                ContractStore.self,
-                getter: { state in
-                    getContractsToShow(for: state, filter: filter.nonemptyFilter(state: state))
-                }
-            ) { contracts in
-                ForEach(contracts, id: \.id) { contract in
-                    ContractRow(id: contract.id)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, 15)
-                        .transition(.slide)
-                }
+            ForEach(contracts, id: \.id) { contract in
+                ContractRow(id: contract.id)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 15)
+                    .transition(.slide)
             }
         }
         .presentableStoreLensAnimation(.spring())
         .sectionContainerStyle(.transparent)
-
-        PresentableStoreLens(
-            ContractStore.self,
-            getter: { state in
-                return self.filter.nonemptyFilter(state: state).displaysActiveContracts
-            }
-        ) { displaysActiveContracts in
-            if displaysActiveContracts {
-                CrossSellingStack()
-
-                PresentableStoreLens(
-                    ContractStore.self,
-                    getter: { state in
-                        getContractsToShow(for: state, filter: .terminated(ifEmpty: .none))
-                    }
-                ) { terminatedContracts in
-                    if !terminatedContracts.isEmpty {
-                        hSection(header: hText(L10n.InsurancesTab.moreTitle)) {
-                            hRow {
-                                hText(L10n.InsurancesTab.terminatedInsurancesLabel)
-                            }
-                            .withCustomAccessory({
-                                Spacer()
-                                hText(String(terminatedContracts.count), style: .body)
-                                    .foregroundColor(hLabelColor.secondary)
-                                    .padding(.trailing, 8)
-                                StandaloneChevronAccessory()
-                            })
-                            .onTap {
-                                store.send(.openTerminatedContracts)
-                            }
-                        }
-                        .transition(.slide)
-                    }
+    
+        if contracts.contains(where: { $0.currentAgreement?.status == .active }) {
+            CrossSellingStack()
+        }
+        
+        hSection {
+            PresentableStoreLens(
+                ContractStore.self,
+                getter: { state in
+                    return state.terminatedContracs
                 }
-                .presentableStoreLensAnimation(.spring())
+            ) { terminatedContracts in
+                if !terminatedContracts.isEmpty {
+                    hSection(header: hText(L10n.InsurancesTab.moreTitle)) {
+                        hRow {
+                            hText(L10n.InsurancesTab.terminatedInsurancesLabel)
+                        }
+                        .withCustomAccessory({
+                            Spacer()
+                            hText(String(terminatedContracts.count), style: .body)
+                                .foregroundColor(hLabelColor.secondary)
+                                .padding(.trailing, 8)
+                            StandaloneChevronAccessory()
+                        })
+                        .onTap {
+                            store.send(.openTerminatedContracts)
+                        }
+                    }
+                    .transition(.slide)
+                }
             }
+            .presentableStoreLensAnimation(.spring())
+        }.onReceive(store.stateSignal.atOnce().plain().publisher) { state in
+            updateContracts(for: state)
+        }.onAppear {
+            updateContracts(for: store.state)
         }
     }
 }
