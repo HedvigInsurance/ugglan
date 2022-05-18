@@ -29,6 +29,7 @@ struct DetailPill: View {
     var body: some View {
         VStack {
             hText(text.uppercased(), style: .caption2)
+                .lineLimit(1)
         }
         .padding([.top, .bottom], 5)
         .padding([.leading, .trailing], 8)
