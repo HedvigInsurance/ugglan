@@ -77,11 +77,19 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     @ViewBuilder var logo: some View {
         if let logo = contract.logo {
             RemoteVectorIconView(icon: logo, backgroundFetch: true)
+                .enableHero(
+                    "ContractRow_\(contract.id)_logo",
+                    modifiers: [.spring(stiffness: 250, damping: 25)]
+                )
                 .frame(width: 36, height: 36)
         } else {
             // Fallback to Hedvig logo if no logo
             Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
                 .resizable()
+                .enableHero(
+                    "ContractRow_\(contract.id)_logo",
+                    modifiers: [.spring(stiffness: 250, damping: 25)]
+                )
                 .frame(width: 24, height: 24)
         }
     }
