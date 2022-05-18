@@ -1,5 +1,6 @@
 fragment EmbarkLinkFragment on EmbarkLink {
   name
+  hidden
   label
 }
 
