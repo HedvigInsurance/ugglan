@@ -10,10 +10,10 @@ import hGraphQL
 
 struct ContractTable {
     @PresentableStore var store: ContractStore
-    
+
     @State
     var contracts = [Contract]()
-    
+
     private func updateContracts(for state: ContractState) {
         let contracts = store.state.contracts + store.state.contractBundles.flatMap { $0.contracts }
 
@@ -28,7 +28,7 @@ struct ContractTable {
 extension ContractTable: View {
     var body: some View {
         ContractBundleLoadingIndicator()
-        
+
         hSection {
             ForEach(contracts, id: \.id) { contract in
                 ContractRow(id: contract.id)
@@ -39,11 +39,11 @@ extension ContractTable: View {
         }
         .presentableStoreLensAnimation(.spring())
         .sectionContainerStyle(.transparent)
-    
+
         if contracts.contains(where: { $0.currentAgreement?.status == .active }) {
             CrossSellingStack()
         }
-        
+
         hSection {
             PresentableStoreLens(
                 ContractStore.self,
@@ -71,9 +71,11 @@ extension ContractTable: View {
                 }
             }
             .presentableStoreLensAnimation(.spring())
-        }.onReceive(store.stateSignal.atOnce().plain().publisher) { state in
+        }
+        .onReceive(store.stateSignal.atOnce().plain().publisher) { state in
             updateContracts(for: state)
-        }.onAppear {
+        }
+        .onAppear {
             updateContracts(for: store.state)
         }
     }

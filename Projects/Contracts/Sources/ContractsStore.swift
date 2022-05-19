@@ -140,7 +140,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             newState.hasLoadedContractBundlesOnce = true
             // Prevent infinite spinner if there are no active contracts
             guard activeContractBundles != state.contractBundles else { return newState }
-            
+
             newState.contractBundles = activeContractBundles
         case .setContracts(let contracts):
             newState.contracts = contracts.filter { $0.currentAgreement?.status != .terminated }
