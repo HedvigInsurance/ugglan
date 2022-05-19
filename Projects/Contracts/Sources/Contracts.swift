@@ -11,7 +11,7 @@ import hGraphQL
 public struct Contracts {
     @PresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
-    
+
     public init() {}
 }
 
