@@ -12,15 +12,16 @@ struct TerminatedContractsTable: View {
                 ContractStore.self,
                 getter: { state in
                     state.terminatedContracts
-                }) {
-                    terminatedContracts in
-                    ForEach(terminatedContracts, id: \.id) { contract in
-                        ContractRow(id: contract.id)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(.top, 15)
-                            .transition(.slide)
-                    }
                 }
+            ) {
+                terminatedContracts in
+                ForEach(terminatedContracts, id: \.id) { contract in
+                    ContractRow(id: contract.id)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, 15)
+                        .transition(.slide)
+                }
+            }
         }
     }
 }
