@@ -11,7 +11,7 @@ public struct ContractState: StateProtocol {
     public var hasLoadedContractBundlesOnce = false
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
-    public var terminatedContracs: [Contract] = []
+    public var terminatedContracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
 

@@ -17,11 +17,7 @@ struct ContractTable {
     private func updateContracts(for state: ContractState) {
         let contracts = store.state.contracts + store.state.contractBundles.flatMap { $0.contracts }
 
-        if contracts.isEmpty {
-            self.contracts = store.state.terminatedContracs
-        } else {
-            self.contracts = contracts
-        }
+        self.contracts = contracts.isEmpty ? state.terminatedContracts : contracts
     }
 }
 
@@ -48,7 +44,7 @@ extension ContractTable: View {
             PresentableStoreLens(
                 ContractStore.self,
                 getter: { state in
-                    return state.terminatedContracs
+                    return state.terminatedContracts
                 }
             ) { terminatedContracts in
                 if !terminatedContracts.isEmpty {

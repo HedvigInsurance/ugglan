@@ -11,10 +11,7 @@ import hGraphQL
 public struct Contracts {
     @PresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
-
-    @State
-    var navigationController: UINavigationController?
-
+    
     public init() {}
 }
 
@@ -35,7 +32,6 @@ extension Contracts: View {
             fetch()
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insurances))
-        .navigationBarTitle(L10n.InsurancesTab.title)
     }
 }
 
@@ -86,6 +82,7 @@ extension Contracts {
 
             presenter.matter.installChatButton()
         })
+        .configureTitle(L10n.InsurancesTab.title)
         .configureContractsTabBarItem
     }
 }
