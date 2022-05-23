@@ -17,16 +17,24 @@ struct VariantSelector: View {
         hRow {
             HStack(alignment: .top, spacing: 12) {
                 VariantCircle(variant: variant)
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        hText(variant.bundle.displayName, style: .title3)
-                            .fixedSize(horizontal: false, vertical: true)
-                        if let tag = variant.tag {
-                            hText(tag, style: .footnote).foregroundColor(.secondary)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(alignment: .center) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            hText(variant.bundle.displayName, style: .title3)
+                                .fixedSize(horizontal: false, vertical: true)
+                            if let tag = variant.tag {
+                                hText(tag, style: .footnote)
+                                    .foregroundColor(hLabelColor.secondary)
+                            }
                         }
+                        Spacer()
+                        hText(price).foregroundColor(hLabelColor.secondary)
                     }
-                    Spacer()
-                    hText(price).foregroundColor(hLabelColor.secondary)
+                    if let description = variant.description {
+                        hText(description, style: .callout)
+                            .foregroundColor(hLabelColor.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
             }
         }

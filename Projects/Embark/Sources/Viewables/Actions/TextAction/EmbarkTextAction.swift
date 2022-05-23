@@ -68,6 +68,14 @@ extension EmbarkTextAction: Viewable {
         }
         textSignal.value = prefillValue
 
+        if let subtitle = data.textActionData.subtitle {
+            let subtitleView = UILabel(value: subtitle, style: .brand(.body(color: .tertiary)).centerAligned)
+            boxStack.addArrangedSubview(subtitleView)
+            animator.register(key: \.subtitle, value: subtitleView)
+        } else {
+            animator.register(key: \.subtitle, value: UILabel())
+        }
+
         let button = Button(
             title: data.textActionData.link.fragments.embarkLinkFragment.label,
             type: .standard(

@@ -13,6 +13,7 @@ extension EmbarkTextAction: ViewableAnimatorHandler {
         @ViewableAnimatedView var boxStack: UIStackView
         @ViewableAnimatedView var input: UIView
         @ViewableAnimatedView var button: UIButton
+        @ViewableAnimatedView var subtitle: UILabel
     }
 
     enum AnimatorState {
@@ -30,6 +31,7 @@ extension EmbarkTextAction: ViewableAnimatorHandler {
         let box = animator.views.box
         let button = animator.views.button
         let input = animator.views.input
+        let subtitle = animator.views.subtitle
 
         input.endEditing(true)
 
@@ -49,6 +51,8 @@ extension EmbarkTextAction: ViewableAnimatorHandler {
             button.alpha = 0
             button.isHidden = true
             button.transform = CGAffineTransform(translationX: 0, y: 50)
+            subtitle.isHidden = true
+            subtitle.alpha = 0
             layoutAllContainers()
         }
 

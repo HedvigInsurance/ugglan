@@ -216,7 +216,9 @@ public class EmbarkState {
                 return previousDepth
             }
 
-            let links = passage.allLinks.map { $0.name }
+            let links = passage.allLinks
+                .filter { !$0.hidden }
+                .map { $0.name }
 
             if links.isEmpty { return previousDepth }
 
