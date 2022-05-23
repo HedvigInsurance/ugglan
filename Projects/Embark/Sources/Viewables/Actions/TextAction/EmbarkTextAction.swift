@@ -67,7 +67,7 @@ extension EmbarkTextAction: Viewable {
             animator.register(key: \.input, value: inputView)
         }
         textSignal.value = prefillValue
-        
+
         if let subtitle = data.textActionData.subtitle {
             let subtitleView = UILabel(value: subtitle, style: .brand(.body(color: .tertiary)).centerAligned)
             boxStack.addArrangedSubview(subtitleView)
