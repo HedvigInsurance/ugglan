@@ -3,6 +3,7 @@ fragment QuoteBundleFragment on QuoteBundle {
   possibleVariations {
     id
     tag(locale: $locale)
+    description(locale: $locale)
     bundle {
       displayName(locale: $locale)
       bundleCost {
@@ -66,10 +67,6 @@ fragment QuoteBundleFragment on QuoteBundle {
         }
         contractPerils(locale: $locale) {
           ...PerilFragment
-        }
-        termsAndConditions(locale: $locale) {
-          displayName
-          url
         }
         insurableLimits(locale: $locale) {
           ...InsurableLimitFragment

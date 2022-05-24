@@ -101,15 +101,19 @@ public struct QuoteVariant: Codable, Equatable {
     public init(
         bundle: QuoteBundle,
         tag: String?,
+        description: String?,
         id: String
     ) {
         self.bundle = bundle
         self.tag = tag
+        self.description = description
         self.id = id
     }
 
     public var bundle: QuoteBundle
     public let tag: String?
+    public let description: String?
+
     public let id: String
 
     public init(
@@ -117,6 +121,7 @@ public struct QuoteVariant: Codable, Equatable {
     ) {
         self.bundle = .init(bundle: variant.bundle)
         self.tag = variant.tag
+        self.description = variant.description
         self.id = variant.id
     }
 
@@ -129,6 +134,7 @@ public struct QuoteVariant: Codable, Equatable {
             )
         )
         self.tag = variant.tag
+        self.description = nil
         self.id = variant.id
     }
 }
