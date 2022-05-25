@@ -82,15 +82,17 @@ extension ApolloClient {
         return (store, client)
     }
 
-    public static func deleteToken() { try? Disk.remove("authorization-token.json", from: .applicationSupport) }
+    public static func deleteToken() {
+        KeychainHelper.standard.delete(key: "authorizationToken")
+    }
 
     public static func retreiveToken() -> AuthorizationToken? {
-        try? Disk.retrieve("authorization-token.json", from: .applicationSupport, as: AuthorizationToken.self)
+        KeychainHelper.standard.read(key: "authorizationToken", type: AuthorizationToken.self)
     }
 
     public static func saveToken(token: String) {
         let authorizationToken = AuthorizationToken(token: token)
-        try? Disk.save(authorizationToken, to: .applicationSupport, as: "authorization-token.json")
+        KeychainHelper.standard.save(authorizationToken, key: "authorizationToken")
     }
 
     public static func createClientFromNewSession() -> Future<(ApolloStore, ApolloClient)> {
@@ -119,22 +121,36 @@ extension ApolloClient {
 
     public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
         Future { completion in
-            let tokenData = self.retreiveToken()
-
-            if tokenData == nil {
-                return self.createClientFromNewSession()
-                    .onResult { result in
-                        switch result {
-                        case let .success(result): completion(.success(result))
-                        case let .failure(error): completion(.failure(error))
+            guard let keychainToken = self.retreiveToken() else {
+                // If Keychain has no entry, check back on disk and migrate that data to Keychain
+                // This is due to the fact that existing installs might rely on disk for tokens
+                guard
+                    let diskToken = try? Disk.retrieve(
+                        "authorization-token.json",
+                        from: .applicationSupport,
+                        as: AuthorizationToken.self
+                    )
+                else {
+                    // If disk also has no entry, then it's a new install on this device
+                    return self.createClientFromNewSession()
+                        .onResult { result in
+                            switch result {
+                            case let .success(result): completion(.success(result))
+                            case let .failure(error): completion(.failure(error))
+                            }
                         }
-                    }
-                    .disposable
-            } else {
-                let result = self.createClient(token: tokenData!.token)
+                        .disposable
+                }
+
+                saveToken(token: diskToken.token)
+                try? Disk.remove("authorization-token.json", from: .applicationSupport)
+                let result = self.createClient(token: diskToken.token)
                 completion(.success(result))
+                return NilDisposer()
             }
 
+            let result = self.createClient(token: keychainToken.token)
+            completion(.success(result))
             return NilDisposer()
         }
     }
