@@ -2,6 +2,7 @@ import Foundation
 import Flow
 import SwiftUI
 import hCore
+import hCoreUI
 import Combine
 import Claims
 import Contracts
@@ -11,11 +12,11 @@ struct DeleteAccountView: View {
     
     var body: some View {
         if viewModel.hasActiveClaims {
-            // Show error state for having claims
-            Text("has active claims")
+            // TODO: The signal for claims has issues as claim.claimDetailData.status is always returned as .none
+            BlockAccountDeletionView()
         } else if viewModel.hasActiveContracts {
-            // Show error state for having active contracts
-            Text("has active contracts")
+            // TODO: Check if the signal for hasActiveContracts is working properly
+            BlockAccountDeletionView()
         } else {
             // Show the screen for deleting claims
             Text("Placeholder text")
@@ -50,9 +51,7 @@ class DeleteAccountViewModel: ObservableObject {
         self.hasActiveClaims = activeClaimsSignal.value
         self.hasActiveContracts = activeContractsSignal.value
         
-        bag += activeClaimsSignal.onValue {
-            self.hasActiveClaims = $0
-        }
-        bag += activeContractsSignal.plain().onValue { self.hasActiveContracts = $0 }
+        bag += activeClaimsSignal.onValue { self.hasActiveClaims = $0 }
+        bag += activeContractsSignal.onValue { self.hasActiveContracts = $0 }
     }
 }
