@@ -195,6 +195,8 @@ extension AppInfo: Presentable {
             bag += languageRow.onSelect.onValue {
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             }
+            
+            bag += bodySection.append(DeleteAccountButton())
         }
 
         func setupAppInfo() {
