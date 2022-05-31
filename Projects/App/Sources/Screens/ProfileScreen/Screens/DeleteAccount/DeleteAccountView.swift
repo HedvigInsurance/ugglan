@@ -11,13 +11,13 @@ struct DeleteAccountView: View {
     @ObservedObject var viewModel: DeleteAccountViewModel
     
     var body: some View {
-        if viewModel.hasActiveClaims {
-            // TODO: The signal for claims has issues as claim.claimDetailData.status is always returned as .none
-            BlockAccountDeletionView()
-        } else if viewModel.hasActiveContracts {
-            // TODO: Check if the signal for hasActiveContracts is working properly
-            BlockAccountDeletionView()
-        } else {
+//        if viewModel.hasActiveClaims {
+//            // TODO: The signal for claims has issues as claim.claimDetailData.status is always returned as .none
+//            BlockAccountDeletionView()
+//        } else if viewModel.hasActiveContracts {
+//            // TODO: Check if the signal for hasActiveContracts is working properly
+//            BlockAccountDeletionView()
+//        } else {
             // Show the screen for deleting claims
             hForm {
                 hText("Are you sure you want to delete your account?", style: .title2)
@@ -38,13 +38,11 @@ struct DeleteAccountView: View {
                     )
                     .modifier(ParagraphTextModifier(color: hLabelColor.secondary, padding: 16))
                 }
-                
-                
             }
             .hFormAttachToBottom {
                 VStack {
                     Button {
-                        // Proceed to deletion
+                        viewModel.deleteMemberRequest()
                     } label: {
                         hText("I am sure I want to proceed", style: .body)
                             .foregroundColor(.white)
@@ -57,7 +55,7 @@ struct DeleteAccountView: View {
                 }
                 .padding()
             }
-        }
+//        }
     }
 }
 
@@ -90,6 +88,11 @@ class DeleteAccountViewModel: ObservableObject {
         
         bag += activeClaimsSignal.onValue { self.hasActiveClaims = $0 }
         bag += activeContractsSignal.onValue { self.hasActiveContracts = $0 }
+    }
+    
+    func deleteMemberRequest() {
+        let bot = SlackBot()
+        bot.postMemberDetails(memberID: "Satish-test1234")
     }
 }
 
