@@ -1,12 +1,23 @@
 import Foundation
 
 class SlackBot {
-    private let token: String = "Bearer xoxb-189699051172-3592269948246-CAYwxaD47ic6f90OcPoIGSRR"
     
+    enum SlackError: Error {
+        case invalidBody(description: String)
+        case requestError(description: String)
+        case invalidStatusCode
+        case emptyDataReceived
+        case badResponse
+    }
+    
+    private let token: String = "Bearer xoxb-189699051172-3592269948246-jri096wtqdW72X7dbuGUSpCJ"
     private let channelID: String = "C03HLK3PB7V"
     private let url: URL = URL(string: "https://slack.com/api/chat.postMessage")!
     
-    func postMemberDetails(memberID: String) {
+    func postMemberDetails(
+        memberID: String,
+        completion: @escaping (Result<Bool, SlackError>) -> Void
+    ) {
         var request = URLRequest(url: url)
         
         request.httpMethod = "POST"
@@ -22,43 +33,39 @@ class SlackBot {
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
         } catch let error {
-            print(error.localizedDescription)
+            completion(.failure(.invalidBody(description: error.localizedDescription)))
             return
         }
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            
             if let error = error {
-                print("Post Request Error: \(error.localizedDescription)")
+                completion(.failure(.requestError(description: error.localizedDescription)))
                 return
             }
             
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode)
             else {
-                print("Invalid Response received from the server")
+                completion(.failure(.invalidStatusCode))
                 return
             }
             
-            
             guard let responseData = data else {
-                print("nil Data received from the server")
+                completion(.failure(.emptyDataReceived))
                 return
             }
             
             do {
-                if let jsonResponse = try JSONSerialization.jsonObject(with: responseData, options: .mutableContainers) as? [String: Any] {
-                    print(jsonResponse)
-                    if let status = jsonResponse["ok"] as? Bool {
-                        status == true ? print("Message delivered successfully") : print("Message not delivered")
-                    }
-                    // handle json response
+                if let json = try JSONSerialization.jsonObject(
+                    with: responseData,
+                    options: .mutableContainers
+                ) as? [String: Any], let status = json["ok"] as? Bool {
+                    completion(.success(status))
                 } else {
-                    print("data maybe corrupted or in wrong format")
-                    throw URLError(.badServerResponse)
+                    completion(.failure(.badResponse))
                 }
             } catch let error {
-                print(error.localizedDescription)
+                completion(.failure(.requestError(description: error.localizedDescription)))
             }
         }
         

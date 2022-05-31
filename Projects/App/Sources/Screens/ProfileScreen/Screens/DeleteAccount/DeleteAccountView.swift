@@ -92,7 +92,14 @@ class DeleteAccountViewModel: ObservableObject {
     
     func deleteMemberRequest() {
         let bot = SlackBot()
-        bot.postMemberDetails(memberID: "Satish-test1234")
+        bot.postMemberDetails(memberID: "Satish-test1234") { result in
+            switch result {
+            case let .success(value):
+                value ? print("Message delivered successfully") : print("Message not delivered")
+            case let .failure(error):
+                print(error)
+            }
+        }
     }
 }
 
