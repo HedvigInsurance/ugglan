@@ -10,7 +10,7 @@ class SlackBot {
         case badResponse
     }
     
-    private let token: String = "Bearer xoxb-189699051172-3592269948246-jri096wtqdW72X7dbuGUSpCJ"
+    private let token: String = ""
     private let channelID: String = "C03HLK3PB7V"
     private let url: URL = URL(string: "https://slack.com/api/chat.postMessage")!
     
