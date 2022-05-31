@@ -5,9 +5,9 @@ import Foundation
 import Kingfisher
 import SafariServices
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
-import hAnalytics
 
 private let fiveMinutes: TimeInterval = 60 * 5
 
@@ -84,12 +84,12 @@ extension Message: Reusable {
             options: [.usesLineFragmentOrigin, .usesFontLeading],
             context: nil
         )
-        
+
         let extraPadding: CGFloat = {
             if hAnalyticsExperiment.useHedvigLettersFont {
                 return 25
             }
-            
+
             return 20
         }()
 
@@ -184,7 +184,7 @@ extension Message: Reusable {
             containerView,
             { message in
                 let bag = DisposeBag()
-                
+
                 contentContainer.subviews.forEach { view in
                     view.removeFromSuperview()
                 }
