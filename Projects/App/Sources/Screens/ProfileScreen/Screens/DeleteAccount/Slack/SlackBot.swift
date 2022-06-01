@@ -84,9 +84,7 @@ class SlackBot {
         let text = ":rotating_light:*A new request from <\(hopeURL)|\(memberDetails.displayName)> to have their account deleted*\nContact details:\n:e-mail: \(memberDetails.email ?? "N/A")\n:phone: \(memberDetails.phone ?? "N/A")"
         
         let block = SlackMessageFormat.Block(
-            type: "section",
             text: SlackMessageFormat.Block.Text(
-                type: "mrkdwn",
                 text: text
             )
         )
@@ -100,11 +98,11 @@ struct SlackMessageFormat: Codable {
     var blocks: [Self.Block]
     
     struct Block: Codable {
-        var type: String
+        var type: String = "section"
         var text: Self.Text
         
         struct Text: Codable {
-            var type: String
+            var type: String = "mrkdwn"
             var text: String
         }
     }
