@@ -1,9 +1,10 @@
 import Foundation
+import hGraphQL
 
 class SlackBot {
     
     enum SlackError: Error {
-        case invalidBody(description: String)
+        case invalidRequestBody(description: String)
         case requestError(description: String)
         case invalidStatusCode
         case emptyDataReceived
@@ -14,8 +15,8 @@ class SlackBot {
     private let channelID: String = "C03HLK3PB7V"
     private let url: URL = URL(string: "https://slack.com/api/chat.postMessage")!
     
-    func postMemberDetails(
-        memberID: String,
+    func postSlackMessage(
+        memberDetails: MemberDetails,
         completion: @escaping (Result<Bool, SlackError>) -> Void
     ) {
         var request = URLRequest(url: url)
@@ -26,14 +27,12 @@ class SlackBot {
             "Content-Type": "application/json"
         ]
         
-        let parameters: [String: String] = [
-            "channel": channelID,
-            "text": "The member \(memberID) has requested for deleting their account"
-        ]
+        let requestBody = generatePostMessageBody(memberDetails: memberDetails)
+        
         do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
+            request.httpBody =  try JSONEncoder().encode(requestBody)
         } catch let error {
-            completion(.failure(.invalidBody(description: error.localizedDescription)))
+            completion(.failure(.invalidRequestBody(description: error.localizedDescription)))
             return
         }
         
@@ -70,5 +69,45 @@ class SlackBot {
         }
         
         task.resume()
+    }
+    
+    private func generatePostMessageBody(memberDetails: MemberDetails) -> SlackMessageFormat {
+        var hopeURL: String
+        switch Environment.current {
+        case .staging, .custom:
+            hopeURL = "https://hedvig-hope-staging.herokuapp.com/members/\(memberDetails.id)"
+        case .production:
+            // TODO: Change URL to production URL
+            hopeURL = "https://hedvig-hope-staging.herokuapp.com/members/\(memberDetails.id)"
+        }
+        
+        let text = ":rotating_light:*A new request from <\(hopeURL)|\(memberDetails.displayName)> to have their account deleted*\nContact details:\n:e-mail: \(memberDetails.email ?? "N/A")\n:phone: \(memberDetails.phone ?? "N/A")"
+        
+        let block = SlackMessageFormat.Block(
+            type: "section",
+            text: SlackMessageFormat.Block.Text(
+                type: "mrkdwn",
+                text: text
+            )
+        )
+        
+        return SlackMessageFormat(channel: self.channelID, blocks: [block])
+    }
+}
+
+
+
+struct SlackMessageFormat: Codable {
+    var channel: String
+    var blocks: [Self.Block]
+    
+    struct Block: Codable {
+        var type: String
+        var text: Self.Text
+        
+        struct Text: Codable {
+            var type: String
+            var text: String
+        }
     }
 }
