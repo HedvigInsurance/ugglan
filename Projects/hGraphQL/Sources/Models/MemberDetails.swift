@@ -21,4 +21,18 @@ public struct MemberDetails: Codable, Equatable, Identifiable {
         self.firstName = memberData.firstName ?? ""
         self.lastName = memberData.lastName ?? ""
     }
+    
+    public init(
+        id: String,
+        firstName: String,
+        lastName: String,
+        phone: String,
+        email: String
+    ) {
+        self.id = id
+        self.firstName = firstName
+        self.lastName = lastName
+        self.phone = phone
+        self.email = email
+    }
 }

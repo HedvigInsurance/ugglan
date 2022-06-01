@@ -6,6 +6,7 @@ import Contracts
 import hGraphQL
 import Flow
 import Apollo
+import Presentation
 
 class DeleteAccountViewModel: ObservableObject {
     @Inject var client: ApolloClient
@@ -40,28 +41,20 @@ class DeleteAccountViewModel: ObservableObject {
         bag += activeContractsSignal.onValue { self.hasActiveContracts = $0 }
     }
     
-    func deleteMemberRequest() {
+    func deleteAccount() {
         guard let memberDetails = memberDetails else {
             self.fetchMemberDetails { [weak self] details in
-                self?.sendSlackMessage(details)
+                self?.sendDeleteAccountRequest(details)
             }
             return
         }
 
-        sendSlackMessage(memberDetails)
+        sendDeleteAccountRequest(memberDetails)
     }
     
-    private func sendSlackMessage(_ memberDetails: MemberDetails) {
-        let bot = SlackBot()
-        bot.postSlackMessage(memberDetails: memberDetails) { result in
-            switch result {
-            case let .success(value):
-                value ? print("Message delivered successfully") : print("Message not delivered")
-            case let .failure(error):
-                // TODO: Handle error
-                print(error)
-            }
-        }
+    private func sendDeleteAccountRequest(_ memberDetails: MemberDetails) {
+        let store: UgglanStore = globalPresentableStoreContainer.get()
+        store.send(.sendAccountDeleteRequest(details: memberDetails))
     }
     
     func fetchMemberDetails(_ completion: ((MemberDetails) -> Void)? = nil) {

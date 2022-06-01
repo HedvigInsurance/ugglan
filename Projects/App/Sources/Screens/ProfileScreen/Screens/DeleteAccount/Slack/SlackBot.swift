@@ -95,8 +95,6 @@ class SlackBot {
     }
 }
 
-
-
 struct SlackMessageFormat: Codable {
     var channel: String
     var blocks: [Self.Block]

@@ -36,7 +36,7 @@ struct DeleteAccountView: View {
             .hFormAttachToBottom {
                 VStack {
                     Button {
-                        viewModel.deleteMemberRequest()
+                        viewModel.deleteAccount()
                     } label: {
                         hText("I am sure I want to proceed", style: .body)
                             .foregroundColor(.white)
