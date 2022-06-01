@@ -71,7 +71,7 @@ public struct Claim: Codable, Equatable, Identifiable {
             claim: ClaimStatusCard.Claim
         ) {
             self.id = claim.id
-            self.status = .none
+            self.status = Claim.ClaimDetailData.ClaimStatus(rawValue: claim.status.rawValue) ?? .none
             self.outcome = .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none
             self.submittedAt = claim.submittedAt
             self.closedAt = claim.closedAt
