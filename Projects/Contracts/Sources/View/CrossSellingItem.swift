@@ -1,9 +1,9 @@
 import Foundation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
 
 struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
@@ -16,7 +16,8 @@ struct CrossSellingItem: View {
             hAnalyticsEvent.cardClickCrossSellEmbark(
                 id: crossSell.typeOfContract,
                 storyName: embarkStoryName
-            ).send()
+            )
+            .send()
         }
     }
 
@@ -25,7 +26,8 @@ struct CrossSellingItem: View {
             if crossSell.info != nil {
                 hAnalyticsEvent.cardClickCrossSellDetail(
                     id: crossSell.typeOfContract
-                ).send()
+                )
+                .send()
                 store.send(.openCrossSellingDetail(crossSell: crossSell))
             } else {
                 openEmbark()
