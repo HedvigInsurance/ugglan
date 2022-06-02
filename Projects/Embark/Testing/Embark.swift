@@ -85,14 +85,14 @@ extension EmbarkStory {
     }
 
     fileprivate static let datePickerAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
-        .makeEmbarkDatePickerAction(component: "", next: .init(name: "", label: ""), storeKey: "", label: "Access Date")
+        .makeEmbarkDatePickerAction(component: "", next: .init(name: "", hidden: false, label: ""), storeKey: "", label: "Access Date")
 
     fileprivate static let mockedMultiAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
         .makeEmbarkMultiAction(
             multiActionData: .init(
                 addLabel: "Add Building",
                 maxAmount: "1",
-                link: .init(name: "asd1234", label: "Next"),
+                link: .init(name: "asd1234", hidden: false, label: "Next"),
                 components: [
                     EmbarkStory.embarkNumberComponent, EmbarkStory.embarkDropDownComponent,
                     EmbarkStory.embarkSwitchComponent,
@@ -144,14 +144,14 @@ extension EmbarkStory {
             numberActionData: .init(
                 key: "year",
                 placeholder: "year",
-                link: .init(name: "continue", label: "continue")
+                link: .init(name: "continue", hidden: false, label: "continue")
             )
         )
 
     fileprivate static let embarkAudioRecorderAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
         .makeEmbarkAudioRecorderAction(
             component: "audioRec",
-            audioRecorderData: .init(storeKey: "key", label: "Continue", next: .init(name: "mock", label: "mock"))
+            audioRecorderData: .init(storeKey: "key", label: "Continue", next: .init(name: "mock", hidden: false, label: "mock"))
         )
 }
 
