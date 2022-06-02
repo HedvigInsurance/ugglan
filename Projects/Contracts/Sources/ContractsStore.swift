@@ -144,7 +144,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             newState.contractBundles = activeContractBundles
         case .setContracts(let contracts):
             newState.contracts = contracts.filter { $0.currentAgreement?.status != .terminated }
-            newState.terminatedContracs = contracts.filter { $0.currentAgreement?.status == .terminated }
+            newState.terminatedContracts = contracts.filter { $0.currentAgreement?.status == .terminated }
         case let .hasSeenCrossSells(value):
             newState.contractBundles = newState.contractBundles.map { bundle in
                 var newBundle = bundle
