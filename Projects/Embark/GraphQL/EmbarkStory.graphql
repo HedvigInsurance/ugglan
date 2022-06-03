@@ -1,5 +1,6 @@
 fragment EmbarkLinkFragment on EmbarkLink {
   name
+  hidden
   label
 }
 
@@ -89,6 +90,7 @@ fragment ApiGeneratedVariableFragment on EmbarkAPIGraphQLGeneratedVariable {
 
 fragment ApiMultiActionVariableFragment on EmbarkAPIGraphQLMultiActionVariable {
   key
+  from
   variables {
     ...ApiSingleVariableFragment
     ...ApiGeneratedVariableFragment
@@ -99,7 +101,14 @@ fragment ApiMultiActionVariableFragment on EmbarkAPIGraphQLMultiActionVariable {
         ...ApiGeneratedVariableFragment
       }
     }
+    ...ApiConstantVariableFragment
   }
+}
+
+fragment ApiConstantVariableFragment on EmbarkAPIGraphQLConstantVariable {
+  key
+  value
+  as
 }
 
 fragment EmbarkNumberActionFragment on EmbarkNumberActionData {
@@ -118,6 +127,7 @@ fragment ApiVariablesFragment on EmbarkAPIGraphQLVariable {
   ...ApiSingleVariableFragment
   ...ApiGeneratedVariableFragment
   ...ApiMultiActionVariableFragment
+  ...ApiConstantVariableFragment
 }
 
 fragment ApiFragment on EmbarkApi {
@@ -211,6 +221,15 @@ query EmbarkStory($name: String!, $locale: String!) {
         component
         data {
           location
+        }
+      }
+      quoteCartOfferRedirects {
+        data {
+          id
+          selectedInsuranceTypes
+          expression {
+            ...ExpressionFragment
+          }
         }
       }
       offerRedirect {
@@ -308,6 +327,7 @@ query EmbarkStory($name: String!, $locale: String!) {
         ... on EmbarkTextAction {
           component
           textActionData: data {
+            subtitle
             key
             placeholder
             mask

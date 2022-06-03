@@ -3,6 +3,8 @@ import Offer
 import Payment
 import Presentation
 import hCore
+import hCoreUI
+import hGraphQL
 
 extension AppJourney {
     static var storedOnboardingOffer: some JourneyPresentation {
@@ -28,12 +30,16 @@ extension AppJourney {
                     .withDismissButton
             case .signed:
                 AppJourney.postOnboarding
+            case let .signedQuoteCart(token, _):
+                Journey(ApolloClientSaveTokenLoader(accessToken: token)) {
+                    AppJourney.postOnboarding
+                }
             case .close:
                 ContinueJourney()
             case let .menu(action):
                 action.journey
             case .openCheckout:
-                offerCheckout
+                AppJourney.offerCheckout
             }
         }
     }
@@ -42,24 +48,28 @@ extension AppJourney {
         let store: OfferStore = globalPresentableStoreContainer.get()
 
         PaymentSetup(
-            setupType: .preOnboarding(monthlyNetCost: store.state.currentVariant?.bundle.bundleCost.monthlyNet)
+            setupType: .preOnboarding(
+                monthlyNetCost: store.state.currentVariant?.bundle.bundleCost.monthlyNet
+            )
         )
-        .journey { success in
-            Journey(
-                Checkout(),
-                style: .default,
-                options: [
-                    .defaults,
-                    .autoPop,
-                    .prefersLargeTitles(true),
-                    .largeTitleDisplayMode(.always),
-                    .allowSwipeDismissAlways,
-                ]
-            ) { _ in
-                DismissJourney()
+        .journey { success, paymentConnectionID in
+            if let paymentConnectionID = paymentConnectionID {
+                Journey(
+                    Checkout(paymentConnectionID: paymentConnectionID),
+                    style: .default,
+                    options: [
+                        .defaults,
+                        .autoPop,
+                        .prefersLargeTitles(true),
+                        .largeTitleDisplayMode(.always),
+                        .allowSwipeDismissAlways,
+                    ]
+                ) { _ in
+                    DismissJourney()
+                }
+                .withJourneyDismissButton
+                .hidesBackButton
             }
-            .withJourneyDismissButton
-            .hidesBackButton
         }
         .setOptions([.defaults, .allowSwipeDismissAlways])
         .mapJourneyDismissToCancel

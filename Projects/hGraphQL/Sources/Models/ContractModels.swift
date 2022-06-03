@@ -10,7 +10,7 @@ public struct ActiveContractBundle: Codable, Equatable {
         bundle: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle
     ) {
         contracts = bundle.contracts.map { .init(contract: $0) }
-        movingFlowEmbarkId = bundle.angelStories.addressChange
+        movingFlowEmbarkId = bundle.angelStories.addressChangeV2
         id = bundle.id
         crossSells = bundle.potentialCrossSells.compactMap { CrossSell($0) }
     }
@@ -172,6 +172,7 @@ public struct Contract: Codable, Hashable, Equatable {
         case one = "GRADIENT_ONE"
         case two = "GRADIENT_TWO"
         case three = "GRADIENT_THREE"
+        case four = "GRADIENT_FOUR"
     }
 }
 
@@ -187,13 +188,17 @@ public struct UpcomingRenewal: Codable, Hashable {
     }
 }
 
-public struct TermsAndConditions: Codable, Hashable {
+public struct TermsAndConditions: Identifiable, Codable, Hashable {
     public init(
         displayName: String,
         url: String
     ) {
         self.displayName = displayName
         self.url = url
+    }
+
+    public var id: String {
+        displayName + url
     }
 
     public let displayName: String

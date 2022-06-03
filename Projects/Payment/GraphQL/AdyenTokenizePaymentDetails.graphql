@@ -1,10 +1,12 @@
-mutation AdyenTokenizePaymentDetails($request: TokenizationRequest!) {
-    tokenizePaymentDetails(req: $request) {
-      ... on TokenizationResponseFinished {
-        resultCode
+mutation AdyenTokenizePaymentDetails($input: ConnectPaymentInput!) {
+    paymentConnection_connectPayment(input: $input) {
+      ... on ConnectPaymentFinished {
+        paymentTokenId
+        status
       }
-      ... on TokenizationResponseAction {
-        action
+      ... on ActionRequired {
+        paymentTokenId
+        actionV2
       }
     }
 }

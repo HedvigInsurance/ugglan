@@ -7,9 +7,9 @@ import hCore
 import hCoreUI
 
 extension AppJourney {
-    static var onboarding: some JourneyPresentation {
+    static func onboarding() -> some JourneyPresentation {
         EmbarkOnboardingJourney
-            .journey
+            .journey()
             .onPresent {
                 ApplicationState.preserveState(.onboarding)
             }

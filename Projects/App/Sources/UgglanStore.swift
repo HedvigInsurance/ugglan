@@ -4,7 +4,6 @@ import Foundation
 import Offer
 import Presentation
 import UIKit
-import hAnalytics
 import hCore
 import hGraphQL
 
@@ -67,8 +66,6 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             return performTokenExchange(with: exchangeToken)
         case let .exchangePaymentToken(token):
             return performTokenExchange(with: token)
-        case .didAcceptHonestyPledge:
-            hAnalyticsEvent.honorPledgeConfirmed().send()
         default:
             break
         }
