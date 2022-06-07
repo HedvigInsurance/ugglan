@@ -1,20 +1,19 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import Apollo
 import hGraphQL
 
 struct DeleteRequestLoadingView: View {
     @PresentableStore var store: UgglanStore
     
-    let memberDetails: MemberDetails
-    
     enum ScreenState {
-        case sendingMessage
+        case sendingMessage(MemberDetails)
         case success
         case error
     }
     
-    @State var screenState: ScreenState = .sendingMessage
+    @State var screenState: ScreenState
     
     @ViewBuilder var sendingState: some View {
         VStack {
@@ -95,10 +94,10 @@ struct DeleteRequestLoadingView: View {
     
     var body: some View {
         switch screenState {
-        case .sendingMessage:
+        case let .sendingMessage(memberDetails):
             sendingState
                 .onAppear {
-                    sendSlackMessage()
+                    sendSlackMessage(details: memberDetails)
                 }
         case .success:
             successState
@@ -107,12 +106,15 @@ struct DeleteRequestLoadingView: View {
         }
     }
     
-    private func sendSlackMessage() {
+    private func sendSlackMessage(details: MemberDetails) {
         let bot = SlackBot()
-        bot.postSlackMessage(memberDetails: memberDetails) { result in
+        bot.postSlackMessage(memberDetails: details) { result in
             switch result {
             case let .success(value):
                 self.screenState = value ? .success : .error
+                if value {
+                    ApolloClient.saveDeleteAccountStatus(for: details.id)
+                }
             case .failure:
                 // TODO: Handle error
                 self.screenState = .error
@@ -130,6 +132,6 @@ struct DeleteRequestLoadingView_Previews: PreviewProvider {
             phone: "7343434343",
             email: "jasper@happens.se"
         )
-        return DeleteRequestLoadingView(memberDetails: sampleMember)
+        return DeleteRequestLoadingView(screenState: .sendingMessage(sampleMember))
     }
 }

@@ -9,7 +9,9 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct DeleteAccountButton {  }
+struct DeleteAccountButton {
+    let memberDetails: MemberDetails
+}
 
 extension DeleteAccountButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
@@ -28,7 +30,12 @@ extension DeleteAccountButton: Viewable {
         
         func presentDeleteAccountJourney() {
             if let window = view.viewController {
-                bag += window.present(AppJourney.deleteAccountJourney)
+                let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
+                if hasAlreadyRequested {
+                    bag += window.present(AppJourney.deleteRequestAlreadyPlacedJourney)
+                } else {
+                    bag += window.present(AppJourney.deleteAccountJourney(details: memberDetails))
+                }
             }
         }
         

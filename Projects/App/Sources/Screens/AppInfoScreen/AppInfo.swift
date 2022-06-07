@@ -196,7 +196,16 @@ extension AppInfo: Presentable {
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             }
             
-            bag += bodySection.append(DeleteAccountButton())
+            bag += client.fetch(
+                query: GraphQL.MemberDetailsQuery(),
+                cachePolicy: .returnCacheDataElseFetch,
+                queue: .global(qos: .background)
+            )
+                .valueSignal
+                .compactMap(on: .background) { MemberDetails(memberData: $0.member) }
+                .compactMap(on: .main) { details in
+                    bag += bodySection.append(DeleteAccountButton(memberDetails: details))
+                }
         }
 
         func setupAppInfo() {

@@ -9,7 +9,7 @@ import Contracts
 import hGraphQL
 
 extension AppJourney {
-    static var deleteAccountJourney: some JourneyPresentation {
+    static func deleteAccountJourney(details: MemberDetails) -> some JourneyPresentation {
         let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
         let contractsStore: ContractStore = globalPresentableStoreContainer.get()
         
@@ -17,6 +17,7 @@ extension AppJourney {
             UgglanStore.self,
             rootView: DeleteAccountView(
                 viewModel: DeleteAccountViewModel(
+                    memberDetails: details,
                     claimsStore: claimsStore,
                     contractsStore: contractsStore
                 )
@@ -35,14 +36,24 @@ extension AppJourney {
     static func sendAccountDeleteRequestJourney(details: MemberDetails) -> some JourneyPresentation {
         HostingJourney(
             UgglanStore.self,
-            rootView: DeleteRequestLoadingView(memberDetails: details),
+            rootView: DeleteRequestLoadingView(screenState: .sendingMessage(details)),
             style: .modally(presentationStyle: .fullScreen)
         ) { action in
-            // TODO: Create a store and actions for AccountDeletion
             if case .makeTabActive = action {
                 DismissJourney()
             }
         }
     }
     
+    static var deleteRequestAlreadyPlacedJourney: some JourneyPresentation {
+        HostingJourney(
+            UgglanStore.self,
+            rootView: DeleteRequestLoadingView(screenState: .success),
+            style: .modally(presentationStyle: .fullScreen)
+        ) { action in
+            if case .makeTabActive = action {
+                DismissJourney()
+            }
+        }
+    }
 }

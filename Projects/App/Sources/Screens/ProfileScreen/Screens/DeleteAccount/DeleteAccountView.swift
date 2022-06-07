@@ -5,18 +5,17 @@ struct DeleteAccountView: View {
     @ObservedObject var viewModel: DeleteAccountViewModel
     
     private func generateBulletPoints(texts: [String]) -> String {
-        texts.map { " •  \($0)" }
-            .joined(separator: "\n")
+        texts.map { " •  \($0)" }.joined(separator: "\n")
     }
     
     var body: some View {
         if viewModel.hasActiveClaims {
-            // TODO: The signal for claims has issues as claim.claimDetailData.status is always returned as .none
             BlockAccountDeletionView()
-        } else if viewModel.hasActiveContracts {
-            // TODO: Check if the signal for hasActiveContracts is working properly
-            BlockAccountDeletionView()
-        } else {
+        }
+//        else if viewModel.hasActiveContracts {
+//            BlockAccountDeletionView()
+//        }
+        else {
             hForm {
                 hText("Are you sure you want to delete your account?", style: .title2)
                     .foregroundColor(hLabelColor.primary)
@@ -73,9 +72,6 @@ struct DeleteAccountView: View {
                     .cornerRadius(.defaultCornerRadius)
                 }
                 .padding()
-            }
-            .onAppear {
-                viewModel.fetchMemberDetails()
             }
         }
     }

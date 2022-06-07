@@ -11,7 +11,7 @@ import Presentation
 class DeleteAccountViewModel: ObservableObject {
     @Inject var client: ApolloClient
     
-    var memberDetails: MemberDetails?
+    var memberDetails: MemberDetails
     let claimsStore: ClaimsStore
     let contractsStore: ContractStore
     let bag = DisposeBag()
@@ -28,9 +28,11 @@ class DeleteAccountViewModel: ObservableObject {
     @Published var hasActiveContracts: Bool = false
     
     internal init(
+        memberDetails: MemberDetails,
         claimsStore: ClaimsStore,
         contractsStore: ContractStore
     ) {
+        self.memberDetails = memberDetails
         self.claimsStore = claimsStore
         self.contractsStore = contractsStore
         
@@ -42,32 +44,7 @@ class DeleteAccountViewModel: ObservableObject {
     }
     
     func deleteAccount() {
-        guard let memberDetails = memberDetails else {
-            self.fetchMemberDetails { [weak self] details in
-                self?.sendDeleteAccountRequest(details)
-            }
-            return
-        }
-
-        sendDeleteAccountRequest(memberDetails)
-    }
-    
-    private func sendDeleteAccountRequest(_ memberDetails: MemberDetails) {
         let store: UgglanStore = globalPresentableStoreContainer.get()
         store.send(.sendAccountDeleteRequest(details: memberDetails))
-    }
-    
-    func fetchMemberDetails(_ completion: ((MemberDetails) -> Void)? = nil) {
-        bag += client.fetch(
-            query: GraphQL.MemberDetailsQuery(),
-            cachePolicy: .returnCacheDataElseFetch,
-            queue: .global(qos: .background)
-        )
-            .valueSignal
-            .compactMap(on: .background) { MemberDetails(memberData: $0.member) }
-            .compactMap(on: .main) { details in
-                self.memberDetails = details
-                completion?(details)
-            }
     }
 }
