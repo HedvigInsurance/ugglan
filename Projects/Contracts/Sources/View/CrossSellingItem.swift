@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -12,12 +13,21 @@ struct CrossSellingItem: View {
         if let embarkStoryName = crossSell.embarkStoryName {
             store.send(.openCrossSellingEmbark(name: embarkStoryName))
             store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
+            hAnalyticsEvent.cardClickCrossSellEmbark(
+                id: crossSell.typeOfContract,
+                storyName: embarkStoryName
+            )
+            .send()
         }
     }
 
     var body: some View {
         SwiftUI.Button {
             if crossSell.info != nil {
+                hAnalyticsEvent.cardClickCrossSellDetail(
+                    id: crossSell.typeOfContract
+                )
+                .send()
                 store.send(.openCrossSellingDetail(crossSell: crossSell))
             } else {
                 openEmbark()
