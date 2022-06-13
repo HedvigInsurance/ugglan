@@ -1,7 +1,11 @@
 import Foundation
 import hGraphQL
+import Apollo
+import hCore
+import Flow
 
 class SlackBot {
+    @Inject var client: ApolloClient
     
     enum SlackError: Error {
         case invalidRequestBody(description: String)
@@ -11,31 +15,44 @@ class SlackBot {
         case badResponse
     }
     
-    private let token: String = ""
-    private let channelID: String = "C03HLK3PB7V"
     private let url: URL = URL(string: "https://slack.com/api/chat.postMessage")!
+    var bag = DisposeBag()
     
     func postSlackMessage(
         memberDetails: MemberDetails,
-        completion: @escaping (Result<Bool, SlackError>) -> Void
+        completion: @escaping (Swift.Result<Bool, SlackError>) -> Void
     ) {
-        var request = URLRequest(url: url)
-        
-        request.httpMethod = "POST"
-        request.allHTTPHeaderFields = [
-            "Authorization": token,
-            "Content-Type": "application/json"
-        ]
-        
-        let requestBody = generatePostMessageBody(memberDetails: memberDetails)
-        
-        do {
-            request.httpBody =  try JSONEncoder().encode(requestBody)
-        } catch let error {
-            completion(.failure(.invalidRequestBody(description: error.localizedDescription)))
-            return
+        bag += client.fetch(
+            query: GraphQL.SlackDetailsQuery(),
+            cachePolicy: .returnCacheDataElseFetch,
+            queue: .main
+        )
+        .valueSignal
+        .compactMap { result in
+            var request = URLRequest(url: self.url)
+            
+            request.httpMethod = "POST"
+            request.allHTTPHeaderFields = [
+                "Authorization": "Bearer xoxb-" + result.slackDetails.token,
+                "Content-Type": "application/json"
+            ]
+            
+            let requestBody = self.generatePostMessageBody(memberDetails: memberDetails, channelID: result.slackDetails.channelId)
+            
+            do {
+                request.httpBody =  try JSONEncoder().encode(requestBody)
+            } catch let error {
+                completion(.failure(.invalidRequestBody(description: error.localizedDescription)))
+            }
+            
+            return request
         }
-        
+        .map {
+            self.slackNetworkRequest(request: $0, completion: completion)
+        }
+    }
+    
+    private func slackNetworkRequest(request: URLRequest, completion: @escaping (Swift.Result<Bool, SlackError>) -> Void) {
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(.requestError(description: error.localizedDescription)))
@@ -71,7 +88,7 @@ class SlackBot {
         task.resume()
     }
     
-    private func generatePostMessageBody(memberDetails: MemberDetails) -> SlackMessageFormat {
+    private func generatePostMessageBody(memberDetails: MemberDetails, channelID: String) -> SlackMessageFormat {
         var hopeURL: String
         switch Environment.current {
         case .staging, .custom:
@@ -89,7 +106,7 @@ class SlackBot {
             )
         )
         
-        return SlackMessageFormat(channel: self.channelID, blocks: [block])
+        return SlackMessageFormat(channel: channelID, blocks: [block])
     }
 }
 

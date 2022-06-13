@@ -46,7 +46,7 @@ extension ApolloClient {
         let httpAdditionalHeaders = headers(token: token)
 
         let store = ApolloStore(cache: ApolloClient.cache)
-
+        // TODO: Check if the token has account delete request in place. IF yes, check if the account has been deleted and log them out.
         let networkInterceptorProvider = NetworkInterceptorProvider(
             store: store,
             token: token ?? "",
