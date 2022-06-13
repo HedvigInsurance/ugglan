@@ -92,8 +92,7 @@ class SlackBot {
         case .staging, .custom:
             hopeURL = "https://hedvig-hope-staging.herokuapp.com/members/\(memberDetails.id)"
         case .production:
-            // TODO: Change URL to production URL
-            hopeURL = "https://hedvig-hope-staging.herokuapp.com/members/\(memberDetails.id)"
+            hopeURL = "https://hope.hedvig.com/members/\(memberDetails.id)"
         }
         
         let text = ":rotating_light:*A new request from <\(hopeURL)|\(memberDetails.displayName)> to have their account deleted*\nContact details:\n:e-mail: \(memberDetails.email ?? "N/A")\n:phone: \(memberDetails.phone ?? "N/A")"
