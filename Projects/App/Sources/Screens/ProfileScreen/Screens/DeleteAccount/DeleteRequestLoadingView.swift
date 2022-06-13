@@ -53,43 +53,45 @@ struct DeleteRequestLoadingView: View {
                 hText("Back to home", style: .body)
                     .foregroundColor(.primary)
             }
-            .padding()
+            .padding([.top, .horizontal])
+            .padding(.bottom, 40)
         }
     }
     
     @ViewBuilder private var errorState: some View {
         VStack {
-                Spacer()
-                VStack {
-                    hCoreUIAssets.circularCross.view
-                        .frame(width: 32, height: 32)
-                    
-                    Spacer()
-                        .frame(height: 16)
-                    
-                    hText(L10n.HomeTab.errorTitle, style: .body)
-                        .foregroundColor(.primary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
-                    
-                    Spacer()
-                        .frame(height: 16)
-                    
-                    hText(L10n.offerSaveStartDateErrorAlertTitle, style: .callout)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
-                }
-                Spacer()
+            Spacer()
+            VStack {
+                hCoreUIAssets.circularCross.view
+                    .frame(width: 32, height: 32)
                 
-                hButton.LargeButtonOutlined {
-                    store.send(.makeTabActive(deeplink: .home))
-                } content: {
-                    hText("Back to home", style: .body)
-                        .foregroundColor(.primary)
-                }
-                .padding()
+                Spacer()
+                    .frame(height: 16)
+                
+                hText(L10n.HomeTab.errorTitle, style: .body)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+                
+                Spacer()
+                    .frame(height: 16)
+                
+                hText(L10n.offerSaveStartDateErrorAlertTitle, style: .callout)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
             }
+            Spacer()
+            
+            hButton.LargeButtonOutlined {
+                store.send(.makeTabActive(deeplink: .home))
+            } content: {
+                hText("Back to home", style: .body)
+                    .foregroundColor(.primary)
+            }
+            .padding([.top, .horizontal])
+            .padding(.bottom, 40)
+        }
     }
     
     var body: some View {
@@ -123,13 +125,6 @@ struct DeleteRequestLoadingView: View {
 
 struct DeleteRequestLoadingView_Previews: PreviewProvider {
     static var previews: some View {
-        let sampleMember = MemberDetails(
-            id: "423423422",
-            firstName: "Jasper",
-            lastName: "Ljungehed",
-            phone: "7343434343",
-            email: "jasper@happens.se"
-        )
-        return DeleteRequestLoadingView(screenState: .sendingMessage(sampleMember))
+        DeleteRequestLoadingView(screenState: .success)
     }
 }

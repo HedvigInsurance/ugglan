@@ -12,10 +12,9 @@ struct DeleteAccountView: View {
         if viewModel.hasActiveClaims {
             BlockAccountDeletionView()
         }
-        //TODO: Undo comments
-//        else if viewModel.hasActiveContracts {
-//            BlockAccountDeletionView()
-//        }
+        else if viewModel.hasActiveContracts {
+            BlockAccountDeletionView()
+        }
         else {
             hForm {
                 hText("Are you sure you want to delete your account?", style: .title2)
