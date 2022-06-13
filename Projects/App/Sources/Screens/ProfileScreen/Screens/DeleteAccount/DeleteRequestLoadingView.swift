@@ -67,7 +67,7 @@ struct DeleteRequestLoadingView: View {
                     Spacer()
                         .frame(height: 16)
                     
-                    hText("Something went wrong", style: .body)
+                    hText(L10n.HomeTab.errorTitle, style: .body)
                         .foregroundColor(.primary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
@@ -75,7 +75,7 @@ struct DeleteRequestLoadingView: View {
                     Spacer()
                         .frame(height: 16)
                     
-                    hText("Please try again later", style: .callout)
+                    hText(L10n.offerSaveStartDateErrorAlertTitle, style: .callout)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)

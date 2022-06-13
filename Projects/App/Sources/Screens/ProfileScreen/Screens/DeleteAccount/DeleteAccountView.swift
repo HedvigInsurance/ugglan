@@ -12,6 +12,7 @@ struct DeleteAccountView: View {
         if viewModel.hasActiveClaims {
             BlockAccountDeletionView()
         }
+        //TODO: Undo comments
 //        else if viewModel.hasActiveContracts {
 //            BlockAccountDeletionView()
 //        }
