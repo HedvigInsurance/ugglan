@@ -4,7 +4,7 @@ import hCoreUI
 
 struct BlockAccountDeletionView: View {
     @PresentableStore var store: UgglanStore
-    
+
     var body: some View {
         VStack {
             hText("We cannot delete your account right now.", style: .title2)
@@ -12,16 +12,19 @@ struct BlockAccountDeletionView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            
-            hText("You have ongoing claims. In order to delete your account you need open claims to be settled.", style: .callout)
-                .foregroundColor(hLabelColor.secondary)
-                .padding(.leading, 16)
-                .padding(.trailing, 48)
-                .padding(.vertical, 16)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
+
+            hText(
+                "You have ongoing claims. In order to delete your account you need open claims to be settled.",
+                style: .callout
+            )
+            .foregroundColor(hLabelColor.secondary)
+            .padding(.leading, 16)
+            .padding(.trailing, 48)
+            .padding(.vertical, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
             Spacer()
-            
+
             hButton.LargeButtonOutlined {
                 store.send(.openChat)
             } content: {

@@ -17,17 +17,17 @@ extension DeleteAccountButton: Viewable {
     func materialize(events: ViewableEvents) -> (UIStackView, Disposable) {
         let bag = DisposeBag()
         let view = UIStackView()
-        
+
         view.axis = .vertical
         view.spacing = 0
         view.alignment = .center
         bag += view.addArranged(Spacing(height: 49))
-        
+
         let deleteButton = Button(
             title: "Delete account",
             type: .transparentLarge(textColor: .brand(.destructive))
         )
-        
+
         func presentDeleteAccountJourney() {
             if let window = view.viewController {
                 let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
@@ -38,13 +38,13 @@ extension DeleteAccountButton: Viewable {
                 }
             }
         }
-        
+
         bag += deleteButton.onTapSignal.onValue { _ in
             presentDeleteAccountJourney()
         }
-        
+
         bag += view.addArranged(deleteButton)
-        
+
         return (view, bag)
     }
 }

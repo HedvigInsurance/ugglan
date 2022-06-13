@@ -1,18 +1,18 @@
+import Claims
+import Contracts
 import Flow
 import Foundation
 import Presentation
 import UIKit
 import hCore
 import hCoreUI
-import Claims
-import Contracts
 import hGraphQL
 
 extension AppJourney {
     static func deleteAccountJourney(details: MemberDetails) -> some JourneyPresentation {
         let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
         let contractsStore: ContractStore = globalPresentableStoreContainer.get()
-        
+
         return HostingJourney(
             UgglanStore.self,
             rootView: DeleteAccountView(
@@ -32,7 +32,7 @@ extension AppJourney {
         .setStyle(.detented(.large))
         .withJourneyDismissButton
     }
-    
+
     static func sendAccountDeleteRequestJourney(details: MemberDetails) -> some JourneyPresentation {
         HostingJourney(
             UgglanStore.self,
@@ -44,7 +44,7 @@ extension AppJourney {
             }
         }
     }
-    
+
     static var deleteRequestAlreadyPlacedJourney: some JourneyPresentation {
         HostingJourney(
             UgglanStore.self,
