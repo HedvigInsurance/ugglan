@@ -16,18 +16,13 @@ class SlackBot {
     }
     
     private let url: URL = URL(string: "https://slack.com/api/chat.postMessage")!
-    var bag = DisposeBag()
     
     func postSlackMessage(
-        memberDetails: MemberDetails,
-        completion: @escaping (Swift.Result<Bool, SlackError>) -> Void
-    ) {
-        bag += client.fetch(
-            query: GraphQL.SlackDetailsQuery(),
-            cachePolicy: .returnCacheDataElseFetch,
-            queue: .main
+        memberDetails: MemberDetails
+    ) -> Future<Bool> {
+        client.fetch(
+            query: GraphQL.SlackDetailsQuery()
         )
-        .valueSignal
         .compactMap { result in
             var request = URLRequest(url: self.url)
             
@@ -42,50 +37,53 @@ class SlackBot {
             do {
                 request.httpBody =  try JSONEncoder().encode(requestBody)
             } catch let error {
-                completion(.failure(.invalidRequestBody(description: error.localizedDescription)))
+                throw SlackError.requestError(description: error.localizedDescription)
             }
             
             return request
         }
-        .map {
-            self.slackNetworkRequest(request: $0, completion: completion)
+        .flatMap {
+            self.slackNetworkRequest(request: $0)
         }
     }
     
-    private func slackNetworkRequest(request: URLRequest, completion: @escaping (Swift.Result<Bool, SlackError>) -> Void) {
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(.requestError(description: error.localizedDescription)))
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode)
-            else {
-                completion(.failure(.invalidStatusCode))
-                return
-            }
-            
-            guard let responseData = data else {
-                completion(.failure(.emptyDataReceived))
-                return
-            }
-            
-            do {
-                if let json = try JSONSerialization.jsonObject(
-                    with: responseData,
-                    options: .mutableContainers
-                ) as? [String: Any], let status = json["ok"] as? Bool {
-                    completion(.success(status))
-                } else {
-                    completion(.failure(.badResponse))
+    private func slackNetworkRequest(request: URLRequest) -> Future<Bool> {
+        return Future { completion in
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                if let error = error {
+                    completion(.failure(SlackError.requestError(description: error.localizedDescription)))
                 }
-            } catch let error {
-                completion(.failure(.requestError(description: error.localizedDescription)))
+                
+                guard let httpResponse = response as? HTTPURLResponse,
+                      (200...299).contains(httpResponse.statusCode)
+                else {
+                    completion(.failure(SlackError.invalidStatusCode))
+                    return
+                }
+                
+                guard let responseData = data else {
+                    completion(.failure(SlackError.emptyDataReceived))
+                    return
+                }
+                
+                do {
+                    if let json = try JSONSerialization.jsonObject(
+                        with: responseData,
+                        options: .mutableContainers
+                    ) as? [String: Any], let status = json["ok"] as? Bool {
+                        completion(.success(status))
+                    } else {
+                        completion(.failure(SlackError.badResponse))
+                    }
+                } catch let error {
+                    completion(.failure(SlackError.requestError(description: error.localizedDescription)))
+                }
             }
+            
+            task.resume()
+            
+            return Disposer { task.cancel() }
         }
-        
-        task.resume()
     }
     
     private func generatePostMessageBody(memberDetails: MemberDetails, channelID: String) -> SlackMessageFormat {

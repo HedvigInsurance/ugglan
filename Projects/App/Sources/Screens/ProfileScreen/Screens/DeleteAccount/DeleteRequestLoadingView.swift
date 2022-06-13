@@ -108,18 +108,16 @@ struct DeleteRequestLoadingView: View {
     
     private func sendSlackMessage(details: MemberDetails) {
         let bot = SlackBot()
-        bot.postSlackMessage(memberDetails: details) { result in
-            switch result {
-            case let .success(value):
-                self.screenState = value ? .success : .error
-                if value {
+        bot.postSlackMessage(memberDetails: details)
+            .onValue { status in
+                self.screenState = status ? .success : .error
+                if status {
                     ApolloClient.saveDeleteAccountStatus(for: details.id)
                 }
-            case .failure:
-                // TODO: Handle error
+            }
+            .onError { _ in
                 self.screenState = .error
             }
-        }
     }
 }
 
