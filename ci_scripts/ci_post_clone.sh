@@ -1,5 +1,5 @@
 #!/bin/sh
 
-curl -Ls https://install.tuist.io | bash
+INSTALL_DIR=$PWD/tuist curl -Ls https://install.tuist.io | bash
 
-/usr/local/bin/tuist generate
+$INSTALL_DIR  generate
