@@ -9,14 +9,15 @@ public struct ClaimsState: StateProtocol {
     var commonClaims: [CommonClaim]? = nil
 
     public init() {}
-    
+
     public var hasActiveClaims: Bool {
         if let claims = claims {
-            return !claims.filter {
-                $0.claimDetailData.status == .beingHandled ||
-                $0.claimDetailData.status == .reopened ||
-                $0.claimDetailData.status == .submitted
-            }.isEmpty
+            return
+                !claims.filter {
+                    $0.claimDetailData.status == .beingHandled || $0.claimDetailData.status == .reopened
+                        || $0.claimDetailData.status == .submitted
+                }
+                .isEmpty
         }
         return false
     }

@@ -195,12 +195,13 @@ extension AppInfo: Presentable {
             bag += languageRow.onSelect.onValue {
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             }
-            
-            bag += client.fetch(
-                query: GraphQL.MemberDetailsQuery(),
-                cachePolicy: .returnCacheDataElseFetch,
-                queue: .global(qos: .background)
-            )
+
+            bag +=
+                client.fetch(
+                    query: GraphQL.MemberDetailsQuery(),
+                    cachePolicy: .returnCacheDataElseFetch,
+                    queue: .global(qos: .background)
+                )
                 .valueSignal
                 .compactMap(on: .background) { MemberDetails(memberData: $0.member) }
                 .compactMap(on: .main) { details in

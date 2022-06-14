@@ -6,11 +6,11 @@ public struct MemberDetails: Codable, Equatable, Identifiable {
     public var email: String?
     public var firstName: String
     public var lastName: String
-    
+
     public var displayName: String {
         firstName + " " + lastName
     }
-    
+
     public init?(
         memberData: GraphQL.MemberDetailsQuery.Data.Member
     ) {
@@ -21,7 +21,7 @@ public struct MemberDetails: Codable, Equatable, Identifiable {
         self.firstName = memberData.firstName ?? ""
         self.lastName = memberData.lastName ?? ""
     }
-    
+
     public init(
         id: String,
         firstName: String,
