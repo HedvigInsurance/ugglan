@@ -2,4 +2,4 @@
 
 curl -Ls https://install.tuist.io | bash
 
-tuist generate
+/usr/local/bin/tuist generate
