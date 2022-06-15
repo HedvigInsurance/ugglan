@@ -24,8 +24,14 @@ public struct ContractState: StateProtocol {
             return inBundleContract
         }
 
-        return contracts.first { contract in
+        if let contract = contracts.first { contract in
             contract.id == id
+        } {
+            return contract
+        } else {
+            return terminatedContracts.first { contract in
+                contract.id == id
+            }
         }
     }
 }

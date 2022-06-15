@@ -7,21 +7,24 @@ struct TerminatedContractsTable: View {
     @PresentableStore var store: ContractStore
 
     var body: some View {
-        hSection {
-            PresentableStoreLens(
-                ContractStore.self,
-                getter: { state in
-                    state.terminatedContracts
-                }
-            ) {
-                terminatedContracts in
-                ForEach(terminatedContracts, id: \.id) { contract in
-                    ContractRow(id: contract.id)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, 15)
-                        .transition(.slide)
+        VStack {
+            hSection {
+                PresentableStoreLens(
+                    ContractStore.self,
+                    getter: { state in
+                        state.terminatedContracts
+                    }
+                ) {
+                    terminatedContracts in
+                    ForEach(terminatedContracts, id: \.id) { contract in
+                        ContractRow(id: contract.id)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.top, 15)
+                            .transition(.slide)
+                    }
                 }
             }
+            Spacer()
         }
     }
 }
@@ -36,10 +39,8 @@ extension TerminatedContractsTable {
             rootView: TerminatedContractsTable(),
             style: style,
             options: options
-        ) { action in
-            if case let .openDetail(contractId) = action {
-                ContractDetail(id: contractId).journey()
-            }
+        ) { _ in
+            ContinueJourney()
         }
     }
 }
