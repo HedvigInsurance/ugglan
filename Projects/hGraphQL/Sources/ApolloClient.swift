@@ -46,7 +46,7 @@ extension ApolloClient {
         let httpAdditionalHeaders = headers(token: token)
 
         let store = ApolloStore(cache: ApolloClient.cache)
-        
+
         let networkInterceptorProvider = NetworkInterceptorProvider(
             store: store,
             token: token ?? "",
