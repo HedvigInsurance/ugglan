@@ -31,10 +31,11 @@ class SlackBot {
                 "Authorization": "Bearer xoxb-" + result.slackDetails.token,
                 "Content-Type": "application/json",
             ]
-
+            
+            let stagingSlackChannelId: String = "C03L32WF6JD"
             let requestBody = self.generatePostMessageBody(
                 memberDetails: memberDetails,
-                channelID: result.slackDetails.channelId
+                channelID: Environment.current == .production ? result.slackDetails.channelId : stagingSlackChannelId
             )
 
             do {
