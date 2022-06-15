@@ -16,7 +16,7 @@ public enum UgglanAction: ActionProtocol {
     case setSelectedTabIndex(index: Int)
     case makeTabActive(deeplink: DeepLink)
     case showLoggedIn
-    case validatePaymentToken
+    case validateAuthToken
     case openClaims
     case exchangePaymentLink(link: String)
     case exchangePaymentToken(token: String)
@@ -67,7 +67,7 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             return performTokenExchange(with: exchangeToken)
         case let .exchangePaymentToken(token):
             return performTokenExchange(with: token)
-        case .validatePaymentToken:
+        case .validateAuthToken:
             return client.fetch(query: GraphQL.MemberIdQuery())
                 .valueThenEndSignal
                 .atError(on: .main) { error in
