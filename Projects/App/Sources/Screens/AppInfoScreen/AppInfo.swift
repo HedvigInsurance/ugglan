@@ -205,7 +205,10 @@ extension AppInfo: Presentable {
                 .valueSignal
                 .compactMap(on: .background) { MemberDetails(memberData: $0.member) }
                 .compactMap(on: .main) { details in
-                    bag += bodySection.append(DeleteAccountButton(memberDetails: details))
+                    /// Checks for application state as this screen can also be opened from other places
+                    if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
+                        bag += bodySection.append(DeleteAccountButton(memberDetails: details))
+                    }
                 }
         }
 
