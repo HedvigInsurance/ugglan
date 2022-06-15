@@ -5,27 +5,25 @@ import hCoreUI
 
 struct TerminatedContractsTable: View {
     @PresentableStore var store: ContractStore
-
+    
     var body: some View {
         VStack {
-            hSection {
-                PresentableStoreLens(
-                    ContractStore.self,
-                    getter: { state in
-                        state.terminatedContracts
-                    }
-                ) {
-                    terminatedContracts in
-                    ForEach(terminatedContracts, id: \.id) { contract in
-                        ContractRow(id: contract.id)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(.top, 15)
-                            .transition(.slide)
-                    }
+            PresentableStoreLens(
+                ContractStore.self,
+                getter: { state in
+                    state.terminatedContracts
+                }
+            ) {
+                terminatedContracts in
+                ForEach(terminatedContracts, id: \.id) { contract in
+                    ContractRow(id: contract.id)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, 15)
+                        .transition(.slide)
                 }
             }
             Spacer()
-        }
+        }.padding(.horizontal)
     }
 }
 
