@@ -144,6 +144,7 @@ extension AppJourney {
                     profileTab
                 }
             )
+            .sendActionImmediately(UgglanStore.self, .validatePaymentToken)
             .sendActionImmediately(ContractStore.self, .fetch)
             .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
