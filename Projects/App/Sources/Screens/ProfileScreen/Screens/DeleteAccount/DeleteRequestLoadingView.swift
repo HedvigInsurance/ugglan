@@ -17,8 +17,7 @@ struct DeleteRequestLoadingView: View {
 
     @ViewBuilder var sendingState: some View {
         VStack {
-            hText("Sending your request...", style: .body)
-                .foregroundColor(hLabelColor.primary)
+            WordmarkActivityIndicator(.standard)
         }
     }
 
