@@ -16,8 +16,8 @@ struct ContractTable {
 
     private func updateContracts(for state: ContractState) {
         let contracts = store.state.contracts + store.state.contractBundles.flatMap { $0.contracts }
-
-        self.contracts = contracts.isEmpty ? state.terminatedContracts : contracts
+        
+        self.contracts = contracts.isEmpty ? state.terminatedContracts : Array(Set(contracts))
     }
 }
 

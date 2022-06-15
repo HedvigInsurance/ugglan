@@ -37,7 +37,7 @@ extension String {
     }
 }
 
-public struct Contract: Codable, Hashable, Equatable {
+public struct Contract: Codable {
     public init(
         id: String,
         upcomingAgreementsTable: DetailAgreementsTable,
@@ -173,6 +173,16 @@ public struct Contract: Codable, Hashable, Equatable {
         case two = "GRADIENT_TWO"
         case three = "GRADIENT_THREE"
         case four = "GRADIENT_FOUR"
+    }
+}
+
+extension Contract: Equatable, Hashable {
+    public static func ==(lhs: Self, rhs: Self) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 
