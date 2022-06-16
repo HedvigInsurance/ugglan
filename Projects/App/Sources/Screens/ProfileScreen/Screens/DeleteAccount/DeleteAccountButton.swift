@@ -24,7 +24,7 @@ extension DeleteAccountButton: Viewable {
         bag += view.addArranged(Spacing(height: 49))
 
         let deleteButton = Button(
-            title: "Delete account",
+            title: L10n.SettingsScreen.deleteAccountButton,
             type: .transparentLarge(textColor: .brand(.destructive))
         )
 

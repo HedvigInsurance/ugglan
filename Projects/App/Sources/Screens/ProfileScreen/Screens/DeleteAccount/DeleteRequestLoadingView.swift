@@ -31,7 +31,7 @@ struct DeleteRequestLoadingView: View {
                 Spacer()
                     .frame(height: 24)
 
-                hText("We have received your request for account deletion", style: .title2)
+                hText(L10n.DeleteAccount.processedTitle, style: .title2)
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
@@ -40,7 +40,7 @@ struct DeleteRequestLoadingView: View {
                     .frame(height: 16)
 
                 hText(
-                    "We will get in touch with you by the email or phone. Your account will be active until then.",
+                    L10n.DeleteAccount.processedDescription,
                     style: .callout
                 )
                 .foregroundColor(.secondary)
@@ -52,7 +52,7 @@ struct DeleteRequestLoadingView: View {
             hButton.LargeButtonOutlined {
                 store.send(.makeTabActive(deeplink: .home))
             } content: {
-                hText("Back to home", style: .body)
+                hText(L10n.DeleteAccount.processedButton, style: .body)
                     .foregroundColor(.primary)
             }
             .padding([.top, .horizontal])

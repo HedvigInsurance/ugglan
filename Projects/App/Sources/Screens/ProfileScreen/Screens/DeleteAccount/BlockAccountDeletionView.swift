@@ -7,14 +7,14 @@ struct BlockAccountDeletionView: View {
 
     var body: some View {
         VStack {
-            hText("We cannot delete your account right now.", style: .title2)
+            hText(L10n.DeleteAccount.ongoingClaimsTitle, style: .title2)
                 .foregroundColor(hLabelColor.primary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             hText(
-                "In order to delete your account you need to have your open claims settled and not have any active insurances. Please reach out to our service.",
+                L10n.DeleteAccount.ongoingClaimsDescription,
                 style: .callout
             )
             .foregroundColor(hLabelColor.secondary)
