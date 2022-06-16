@@ -14,13 +14,13 @@ struct DeleteAccountView: View {
                     .foregroundColor(hLabelColor.primary)
                     .padding(16)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                
+
                 hSection {
                     hText(L10n.DeleteAccount.deletedDataDescription, style: .callout)
                         .modifier(ParagraphTextModifier(color: hLabelColor.secondary))
                         .padding(16)
                 }
-                
+
                 hSection {
                     hText(L10n.DeleteAccount.processingFooter, style: .callout)
                         .modifier(ParagraphTextModifier(color: hLabelColor.secondary))
