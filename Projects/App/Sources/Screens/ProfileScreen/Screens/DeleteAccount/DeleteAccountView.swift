@@ -17,7 +17,7 @@ struct DeleteAccountView: View {
                     .foregroundColor(hLabelColor.primary)
                     .padding(16)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                
+
                 hText("If you delete your account the following data will be gone:", style: .callout)
                     .modifier(ParagraphTextModifier(color: hLabelColor.secondary))
                     .padding(.horizontal, 16)
@@ -32,7 +32,7 @@ struct DeleteAccountView: View {
                     .modifier(ParagraphTextModifier(color: hLabelColor.primary))
                     .padding(16)
                 }
-                
+
                 hText(
                     "Information you have contributed to Hedvig will be kept due to regulations, but it will not be linked to you:",
                     style: .callout
