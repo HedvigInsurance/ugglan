@@ -14,7 +14,7 @@ struct BlockAccountDeletionView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             hText(
-                "You have ongoing claims. In order to delete your account you need open claims to be settled.",
+                "In order to delete your account you need to have your open claims settled and not have any active insurances. Please reach out to our service.",
                 style: .callout
             )
             .foregroundColor(hLabelColor.secondary)

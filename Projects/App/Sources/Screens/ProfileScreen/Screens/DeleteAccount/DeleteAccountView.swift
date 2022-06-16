@@ -9,22 +9,20 @@ struct DeleteAccountView: View {
     }
 
     var body: some View {
-        if viewModel.hasActiveClaims {
-            BlockAccountDeletionView()
-        } else if viewModel.hasActiveContracts {
+        if viewModel.hasActiveClaims || viewModel.hasActiveContracts {
             BlockAccountDeletionView()
         } else {
             hForm {
                 hText("Are you sure you want to delete your account?", style: .title2)
                     .foregroundColor(hLabelColor.primary)
-                    .padding([.horizontal, .top], 16)
+                    .padding(16)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                
+                hText("If you delete your account the following data will be gone:", style: .callout)
+                    .modifier(ParagraphTextModifier(color: hLabelColor.secondary))
+                    .padding(.horizontal, 16)
 
                 hSection {
-                    hText("If you delete your account the following data will be gone:", style: .callout)
-                        .modifier(ParagraphTextModifier(color: hLabelColor.secondary))
-                        .padding(16)
-
                     hText(
                         generateBulletPoints(texts: [
                             "Insurances subscription", "Insurance history", "E-mail", "Phone number", "Name",
@@ -32,17 +30,17 @@ struct DeleteAccountView: View {
                         style: .subheadline
                     )
                     .modifier(ParagraphTextModifier(color: hLabelColor.primary))
-                    .padding([.horizontal, .bottom], 16)
+                    .padding(16)
                 }
+                
+                hText(
+                    "Information you have contributed to Hedvig will be kept due to regulations, but it will not be linked to you:",
+                    style: .callout
+                )
+                .modifier(ParagraphTextModifier(color: hLabelColor.secondary))
+                .padding(.horizontal, 16)
 
                 hSection {
-                    hText(
-                        "Information you have contributed to Hedvig will be kept due to regulations, but it will not be linked to you:",
-                        style: .callout
-                    )
-                    .modifier(ParagraphTextModifier(color: hLabelColor.secondary))
-                    .padding(16)
-
                     hText(
                         generateBulletPoints(texts: [
                             "All data associated with claims", "All data associated with insurance",
@@ -50,17 +48,15 @@ struct DeleteAccountView: View {
                         style: .subheadline
                     )
                     .modifier(ParagraphTextModifier(color: hLabelColor.primary))
-                    .padding([.horizontal, .bottom], 16)
-                }
-
-                hSection {
-                    hText(
-                        "After sending a request we will contact you in 1–2 business days for further steps.",
-                        style: .callout
-                    )
-                    .modifier(ParagraphTextModifier(color: hLabelColor.secondary))
                     .padding(16)
                 }
+
+                hText(
+                    "After sending a request we will contact you in 1–2 business days for further steps.",
+                    style: .callout
+                )
+                .modifier(ParagraphTextModifier(color: hLabelColor.secondary))
+                .padding(.horizontal, 16)
             }
             .hFormAttachToBottom {
                 VStack {
