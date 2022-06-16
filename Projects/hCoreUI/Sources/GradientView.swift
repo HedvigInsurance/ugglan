@@ -151,7 +151,13 @@ extension GradientView: Viewable {
                 CATransaction.disableActions()
             }
             layer.bounds = gradientView.layer.bounds
-            layer.frame = gradientView.layer.frame
+            layer.frame = .init(
+                origin: gradientView.layer.frame.origin,
+                size: CGSize(
+                    width: gradientView.layer.frame.size.width,
+                    height: gradientView.layer.frame.height + 2
+                )
+            )
             layer.position = gradientView.layer.position
             orbLayer.frame = orbContainerView.bounds
             orbLayer.cornerRadius = orbContainerView.bounds.width / 2
