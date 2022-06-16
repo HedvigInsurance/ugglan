@@ -241,7 +241,21 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                 callback(.value(.refetch))
                 return NilDisposer()
             }
-        case .setOfferBundle, .setQuoteCart:
+        case .setOfferBundle:
+            return Signal(after: 0.5).map { .setLoading(isLoading: false) }
+        case let .setQuoteCart(cart):
+            let allQuoteIds = cart.offerBundle?.possibleVariations
+                .flatMap({ variant in
+                    variant.bundle.quotes
+                })
+                .compactMap { quote in quote.id }
+            
+            if let allQuoteIds = allQuoteIds {
+                hAnalyticsEvent.receivedQuotes(
+                    quoteIds: allQuoteIds
+                ).send()
+            }
+            
             return Signal(after: 0.5).map { .setLoading(isLoading: false) }
         case .startCheckout:
             return Signal(after: 0.1).map { .openCheckout }
@@ -373,12 +387,18 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.selectedIds = []
         case let .setQuoteCart(quoteCart):
             newState.offerData = quoteCart.offerBundle
-
+            
             if newState.selectedIds.isEmpty {
                 let allQuotes = newState.offerData?.possibleVariations
                     .flatMap({ variant in
                         variant.bundle.quotes
                     })
+                
+                if let allQuotes = allQuotes {
+                    hAnalyticsEvent.receivedQuotes(
+                        quoteIds: allQuotes.compactMap { quote in quote.id }
+                    ).send()
+                }
 
                 let selectedIds = allQuotes?
                     .filter({ quote in
@@ -393,7 +413,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     newState.selectedIds = Array(Set(selectedIds ?? []))
                 }
             }
-
+            
             newState.checkoutStatus = quoteCart.checkoutStatus
             newState.paymentConnection = quoteCart.paymentConnection
             newState.swedishBankIDStatusCode = quoteCart.checkoutStatusText
