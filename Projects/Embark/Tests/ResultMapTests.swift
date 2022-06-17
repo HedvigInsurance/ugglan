@@ -66,25 +66,10 @@ final class ResultMapTests: XCTestCase {
                     ]
             ]
 
-        let expectedMap: GraphQLMap = [
-            "quoteCartId": "abcdefghijklmnop",
-            "input":
-                [
-                    "payload":
-                        [
-                            [
-                                "data": [
-                                    "type": "House",
-                                    "lastName": "Hedvigsen",
-                                ]
-                            ]
-                        ]
-                ],
-        ]
+        let value = "abcdefghijklmnop"
+        let newMap = map.lodash_set(path: "quoteCartId", value: value)
 
-        let newMap = map.lodash_set(path: "quoteCartId", value: "abcdefghijklmnop")
-
-        XCTAssertEqual(newMap.jsonObject.prettyPrinted, expectedMap.jsonObject.prettyPrinted)
+        XCTAssertEqual(newMap["quoteCartId"] as? String, value)
     }
 
     func testLodash_DeepArrayAppend() {
