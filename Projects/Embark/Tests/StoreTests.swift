@@ -125,7 +125,7 @@ final class StoreTests: XCTestCase {
         addLabel: "asd",
         key: "asd",
         maxAmount: "4",
-        link: .init(name: "", label: ""),
+        link: .init(name: "", hidden: false, label: ""),
         components: []
     )
 
