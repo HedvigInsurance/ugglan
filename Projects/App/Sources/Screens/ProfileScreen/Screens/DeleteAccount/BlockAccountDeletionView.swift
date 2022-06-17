@@ -37,6 +37,7 @@ struct BlockAccountDeletionView: View {
                     hText(L10n.MovingUwFailure.buttonText, style: .body)
                         .foregroundColor(hLabelColor.primary)
                 }
+                .frame(maxWidth: .infinity)
             }
             .padding()
         }
