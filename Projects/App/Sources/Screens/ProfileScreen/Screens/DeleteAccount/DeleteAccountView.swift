@@ -34,10 +34,10 @@ struct DeleteAccountView: View {
                     } label: {
                         hText(L10n.DeleteAccount.confirmButton, style: .body)
                             .foregroundColor(.white)
+                            .frame(minHeight: 52)
+                            .frame(minWidth: 200)
+                            .frame(maxWidth: .infinity)
                     }
-                    .frame(minHeight: 52)
-                    .frame(minWidth: 200)
-                    .frame(maxWidth: .infinity)
                     .background(hTintColor.red)
                     .cornerRadius(.defaultCornerRadius)
                 }

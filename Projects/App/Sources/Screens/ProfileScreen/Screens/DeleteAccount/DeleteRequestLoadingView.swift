@@ -54,6 +54,7 @@ struct DeleteRequestLoadingView: View {
             } content: {
                 hText(L10n.DeleteAccount.processedButton, style: .body)
                     .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity)
             }
             .padding([.top, .horizontal])
             .padding(.bottom, 40)
