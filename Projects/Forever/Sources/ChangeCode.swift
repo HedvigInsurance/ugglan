@@ -51,6 +51,7 @@ extension ChangeCode: Presentable {
         viewController.navigationItem.rightBarButtonItem = saveBarButtonItem
 
         let form = FormView()
+        form.dynamicStyle = .brandInset
         bag += viewController.install(form)
 
         form.appendSpacing(.top)
@@ -67,9 +68,14 @@ extension ChangeCode: Presentable {
         let textFieldSection = form.appendSection(
             header: nil,
             footer: nil,
-            style: .brandGrouped(separatorType: .none, borderColor: .brand(.primaryButtonBackgroundColor))
+            style: .brandGrouped(separatorType: .none)
         )
         let textFieldRow = textFieldSection.appendRow()
+        textFieldRow.row.layer.borderWidth = 1
+        textFieldRow.row.layer.cornerRadius = .defaultCornerRadius
+        bag += textFieldRow.row.applyBorderColor { trait in
+                .brand(.link)
+        }
 
         let normalFieldStyle = FieldStyle.default.restyled { (style: inout FieldStyle) in
             style.text.alignment = .center
@@ -83,6 +89,7 @@ extension ChangeCode: Presentable {
             style: normalFieldStyle
         )
         textFieldRow.append(textField)
+        
 
         let clearButton = makeClearButton(textFieldRow.row)
 
