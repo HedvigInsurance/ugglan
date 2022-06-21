@@ -46,40 +46,6 @@ extension GradientView {
             CATransform3DMakeAffineTransform(CGAffineTransform(a: 1, b: 0, c: 0, d: 2.94, tx: 0, ty: -0.97))
         }
 
-        public func applySettings(orbLayer: CAGradientLayer, traitCollection: UITraitCollection) {
-            var colors = [UIColor]()
-
-            switch (preset, traitCollection.userInterfaceStyle) {
-            case (.insuranceOne, .light):
-                colors.append(UIColor(red: 0.937, green: 0.918, blue: 0.776, alpha: 1))
-            case (.insuranceOne, .dark):
-                colors.append(UIColor(red: 0.796, green: 0.71, blue: 0.514, alpha: 1))
-            case (.insuranceTwo, .light):
-                colors.append(UIColor(red: 0.886, green: 0.8, blue: 0.808, alpha: 1))
-            case (.insuranceTwo, .dark):
-                colors.append(UIColor(red: 0.776, green: 0.678, blue: 0.541, alpha: 1))
-            case (.insuranceThree, .light):
-                colors.append(UIColor(red: 0.973, green: 0.726, blue: 0.574, alpha: 1))
-            case (.insuranceThree, .dark):
-                colors.append(UIColor(red: 0.925, green: 0.584, blue: 0.374, alpha: 1))
-            case (.insuranceFour, .light):
-                break
-            case (.insuranceFour, .dark):
-                break
-            default:
-                colors.append(.white)
-            }
-
-            let alphaWhite = UIColor.white.withAlphaComponent(0.0)
-            colors.append(alphaWhite)
-
-            orbLayer.type = .radial
-            orbLayer.colors = colors.map { $0.cgColor }
-            orbLayer.locations = [0, 1.0]
-            orbLayer.startPoint = CGPoint(x: 0.5, y: 0.5)
-            orbLayer.endPoint = CGPoint(x: 1.0, y: 1.0)
-        }
-
         public func backgroundColors(traitCollection: UITraitCollection) -> [UIColor] {
             switch (preset, traitCollection.userInterfaceStyle) {
             case (.insuranceOne, .light):
@@ -115,10 +81,20 @@ extension GradientView {
                 ]
             case (.insuranceFour, .light):
                 return [
+                    UIColor(red: 0.91, green: 0.84, blue: 0.60, alpha: 1),
+                    UIColor(red: 0.93, green: 0.80, blue: 0.80, alpha: 1),
+                ]
+            case (.insuranceFour, .dark):
+                return [
+                    UIColor(red: 0.40, green: 0.26, blue: 0.06, alpha: 1),
+                    UIColor(red: 0.53, green: 0.31, blue: 0.53, alpha: 1),
+                ]
+            case (.insuranceFive, .light):
+                return [
                     UIColor(red: 0.95, green: 0.55, blue: 0.67, alpha: 1),
                     UIColor(red: 0.84, green: 0.78, blue: 0.90, alpha: 1),
                 ]
-            case (.insuranceFour, .dark):
+            case (.insuranceFive, .dark):
                 return [
                     UIColor(red: 0.67, green: 0.47, blue: 0.65, alpha: 1),
                     UIColor(red: 0.44, green: 0.39, blue: 0.69, alpha: 1),
@@ -134,6 +110,7 @@ extension GradientView {
         case insuranceTwo
         case insuranceThree
         case insuranceFour
+        case insuranceFive
 
         public static var random: Self {
             Self.allCases.shuffled().randomElement()!
@@ -152,6 +129,8 @@ extension Contract.GradientOption {
             return .insuranceThree
         case .four:
             return .insuranceFour
+        case .five:
+            return .insuranceFive
         }
     }
 }

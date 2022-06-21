@@ -173,6 +173,7 @@ public struct Contract: Codable, Hashable, Equatable {
         case two = "GRADIENT_TWO"
         case three = "GRADIENT_THREE"
         case four = "GRADIENT_FOUR"
+        case five = "GRADIENT_FIVE"
     }
 }
 

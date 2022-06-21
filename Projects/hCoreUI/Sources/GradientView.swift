@@ -107,17 +107,6 @@ extension GradientView: Viewable {
         let gradientView = UIView()
         gradientView.isUserInteractionEnabled = false
 
-        let orbContainerView = UIView()
-        orbContainerView.backgroundColor = .clear
-        orbContainerView.isUserInteractionEnabled = false
-
-        gradientView.addSubview(orbContainerView)
-        orbContainerView.snp.makeConstraints { make in
-            make.height.width.equalTo(200)
-            make.centerX.equalTo(gradientView.snp.trailing)
-            make.centerY.equalTo(gradientView.snp.bottom)
-        }
-
         let shimmerView = UIView()
         shimmerView.isUserInteractionEnabled = false
         shimmerView.backgroundColor = .clear
@@ -133,10 +122,6 @@ extension GradientView: Viewable {
         let layer = CAGradientLayer()
         layer.masksToBounds = true
         gradientView.layer.addSublayer(layer)
-
-        let orbLayer = CAGradientLayer()
-        orbContainerView.layer.addSublayer(orbLayer)
-        gradientView.bringSubviewToFront(orbContainerView)
 
         let shimmerLayer = self.createShimmerLayer()
         shimmerView.layer.addSublayer(shimmerLayer)
@@ -159,8 +144,6 @@ extension GradientView: Viewable {
                 )
             )
             layer.position = gradientView.layer.position
-            orbLayer.frame = orbContainerView.bounds
-            orbLayer.cornerRadius = orbContainerView.bounds.width / 2
 
             shimmerLayer.frame = shimmerView.frame
             shimmerLayer.bounds = shimmerView.bounds.insetBy(
@@ -174,21 +157,11 @@ extension GradientView: Viewable {
             let signal = $gradientOption.atOnce().filter(predicate: { $0 != nil }).distinct()
 
             bag += signal.onFirstValue({ gradientOption in
-                gradientOption?
-                    .applySettings(
-                        orbLayer: orbLayer,
-                        traitCollection: gradientView.traitCollection
-                    )
                 applySettings(layer, gradientView.traitCollection)
             })
 
             bag += signal.skip(first: 1)
                 .onValue({ gradientOption in
-                    gradientOption?
-                        .applySettings(
-                            orbLayer: orbLayer,
-                            traitCollection: gradientView.traitCollection
-                        )
                     applySettingsWithAnimation(layer, gradientView.traitCollection)
                 })
         })
@@ -198,11 +171,6 @@ extension GradientView: Viewable {
                 lhs.userInterfaceStyle == rhs.userInterfaceStyle
             })
             .onValue({ traitCollection in
-                gradientOption?
-                    .applySettings(
-                        orbLayer: orbLayer,
-                        traitCollection: gradientView.traitCollection
-                    )
                 applySettings(layer, traitCollection)
             })
 
