@@ -160,6 +160,7 @@ class PaymentDelegate: NSObject, PaymentComponentDelegate {
             threeDS2Component.handle(action)
         case .voucher(_): break
         case .qrCode(_): break
+        case .document: break
         }
     }
 
