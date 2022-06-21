@@ -269,8 +269,19 @@ extension UIViewController {
 
             bag += (self.view as? UIScrollView)?.panGestureRecognizer
                 .onValue { _ in callback(self.currentDetent) }
+            
+            bag += self.view.didLayoutSignal.onValue({ _ in
+                callback(self.currentDetent)
+            })
 
-            bag += self.view.didLayoutSignal.onValue { callback(self.currentDetent) }
+            bag += self.view.didLayoutSignal.map({ _ in
+                self.currentDetent
+            }).distinct().onValue({ _ in
+                if let scrollView = self.view as? UIScrollView {
+                    let desiredOffset = CGPoint(x: 0, y: -scrollView.adjustedContentInset.top)
+                    scrollView.setContentOffset(desiredOffset, animated: true)
+                }
+            })
 
             return bag
         }
