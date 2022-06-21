@@ -146,7 +146,7 @@ extension PerilDetail: Presentable {
                     if window.traitCollection.userInterfaceIdiom == .pad { bottomSafeArea = 0 }
 
                     swipeHintContainer.edgeInsets = UIEdgeInsets(
-                        top: 20,
+                        top: 10,
                         left: 0,
                         bottom: bottomSafeArea != 0 ? bottomSafeArea : 20,
                         right: 0
