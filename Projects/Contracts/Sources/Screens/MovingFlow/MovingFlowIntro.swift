@@ -3,12 +3,12 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 public struct MovingFlowIntro {
     @Inject var client: ApolloClient
@@ -174,7 +174,7 @@ extension MovingFlowIntro: Presentable {
                 bag += $section.atOnce()
                     .onValueDisposePrevious { state in
                         let innerBag = DisposeBag()
-                        
+
                         let button = state.makeButton(onTap: {
                             callbacker(.value(state.route ?? .chat))
                         })
@@ -216,9 +216,11 @@ extension MovingFlowIntro: Presentable {
                             )
                         }
 
-                        buttonContainer.addArrangedSubview(makeHost({
-                            button
-                        }))
+                        buttonContainer.addArrangedSubview(
+                            makeHost({
+                                button
+                            })
+                        )
 
                         innerBag += {
                             buttonContainer.removeFromSuperview()
