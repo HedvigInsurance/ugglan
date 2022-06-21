@@ -5,7 +5,7 @@ import hCoreUI
 
 struct TerminatedContractsTable: View {
     @PresentableStore var store: ContractStore
-    
+
     var body: some View {
         VStack {
             PresentableStoreLens(
@@ -23,7 +23,8 @@ struct TerminatedContractsTable: View {
                 }
             }
             Spacer()
-        }.padding(.horizontal)
+        }
+        .padding(.horizontal)
     }
 }
 
