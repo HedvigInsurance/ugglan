@@ -207,7 +207,7 @@ platform :ios do
 
             payload = {
                 iat: Time.now.to_i - 60,
-                exp: Time.now.to_i + (10 * 60),
+                exp: Time.now.to_i + (9 * 60),
                 iss: ENV["HEDVIG_GITHUB_APP_ID"].to_i
             }
 
