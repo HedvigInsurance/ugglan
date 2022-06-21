@@ -74,7 +74,7 @@ extension ChangeCode: Presentable {
         textFieldRow.row.layer.borderWidth = 1
         textFieldRow.row.layer.cornerRadius = .defaultCornerRadius
         bag += textFieldRow.row.applyBorderColor { trait in
-                .brand(.link)
+            .brand(.link)
         }
 
         let normalFieldStyle = FieldStyle.default.restyled { (style: inout FieldStyle) in
@@ -89,7 +89,6 @@ extension ChangeCode: Presentable {
             style: normalFieldStyle
         )
         textFieldRow.append(textField)
-        
 
         let clearButton = makeClearButton(textFieldRow.row)
 

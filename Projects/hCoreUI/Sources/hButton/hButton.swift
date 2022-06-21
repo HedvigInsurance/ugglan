@@ -436,7 +436,7 @@ public enum hButton {
             .buttonStyle(ButtonOutlinedStyle(size: .small))
         }
     }
-    
+
     public struct SmallButtonText<Content: View>: View {
         var content: () -> Content
         var action: () -> Void
