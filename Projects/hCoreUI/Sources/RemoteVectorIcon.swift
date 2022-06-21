@@ -45,8 +45,6 @@ extension RemoteVectorIcon: Viewable {
         func renderPdfDocument(pdfDocument: CGPDFDocument) {
             let imageViewSize = imageView.frame.size
 
-            if let image = imageView.image { if image.size == imageViewSize { return } }
-
             let page = pdfDocument.page(at: 1)!
             let rect = page.getBoxRect(CGPDFBox.mediaBox)
 
