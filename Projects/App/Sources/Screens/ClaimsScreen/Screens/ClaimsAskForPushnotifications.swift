@@ -12,8 +12,8 @@ struct ClaimsAskForPushnotifications: Presentable {
         let pushNotificationsDoButton = Button(
             title: L10n.claimsActivateNotificationsCta,
             type: .standard(
-                backgroundColor: .brand(.primaryButtonBackgroundColor),
-                textColor: .brand(.primaryButtonTextColor)
+                backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                textColor: .brand(.secondaryButtonBackgroundColor)
             )
         )
 
