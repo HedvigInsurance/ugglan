@@ -288,7 +288,11 @@ extension Embark: Presentable {
                         ]
                     )
 
-                    bag += viewController.present(alert).onValue { _ in state.restart() }
+                    bag += viewController.present(alert).onValue { shouldRestart in
+                        if shouldRestart {
+                            state.restart()
+                        }
+                    }
                 }
 
                 let optionsOrCloseButton = UIBarButtonItem(
