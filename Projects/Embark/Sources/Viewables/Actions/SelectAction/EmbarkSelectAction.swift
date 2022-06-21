@@ -1,11 +1,11 @@
 import Flow
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
-import hGraphQL
 import hCoreUI
-import SwiftUI
+import hGraphQL
 
 typealias EmbarkSelectActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction
 
@@ -13,14 +13,14 @@ struct EmbarkSelectAction {
     let state: EmbarkState
     let data: EmbarkSelectActionData
     @ReadWriteState private var isSelectOptionLoading = false
-    
+
     func handleClick(option: EmbarkSelectActionData.SelectActionDatum.Option) -> Future<GraphQL.EmbarkLinkFragment>? {
         if isSelectOptionLoading {
             return nil
         }
-        
+
         $isSelectOptionLoading.value = true
-        
+
         let optionFuture: Future<(GraphQL.EmbarkLinkFragment, ActionResponseData)> = {
             let result = ActionResponseData(
                 keys: option.keys,
@@ -39,7 +39,7 @@ struct EmbarkSelectAction {
 
             return Future((defaultLink, result))
         }()
-        
+
         return optionFuture.map { link, result in
             result.keys.enumerated()
                 .forEach { offset, key in
@@ -56,7 +56,7 @@ struct EmbarkSelectAction {
                     value: result.textValue
                 )
             }
-            
+
             return link
         }
     }
@@ -74,7 +74,7 @@ extension EmbarkSelectAction: Viewable {
             view,
             Signal { callback in
                 let options = self.data.selectActionData.options
-                
+
                 if options.count == 1, let option = options.first {
                     let button = LoadableButton(
                         button: Button(
@@ -85,18 +85,18 @@ extension EmbarkSelectAction: Viewable {
                             )
                         )
                     )
-                    
+
                     bag += button.onTapSignal.onValue({ _ in
                         if option.api != nil {
                             button.isLoadingSignal.value = true
                         }
-                        
-                        handleClick(option: option)?.onValue({ link in
-                            callback(link)
-                        })
+
+                        handleClick(option: option)?
+                            .onValue({ link in
+                                callback(link)
+                            })
                     })
-                    
-                    
+
                     bag += view.addArranged(button)
                 } else {
                     let numberOfStacks =
@@ -120,9 +120,10 @@ extension EmbarkSelectAction: Viewable {
 
                             return stack.addArranged(selectActionOption)
                                 .onValue { _ in
-                                    handleClick(option: option)?.onValue({ link in
-                                        callback(link)
-                                    })
+                                    handleClick(option: option)?
+                                        .onValue({ link in
+                                            callback(link)
+                                        })
                                 }
                         }
                         if optionsSlice.count < 2, options.count > 1 {
