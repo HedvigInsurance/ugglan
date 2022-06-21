@@ -8,7 +8,7 @@ import hGraphQL
 
 public struct DetailAgreementsTableView: View {
     var table: DetailAgreementsTable
-    
+
     var hasTitle: Bool {
         table.title.count > 0
     }
@@ -19,7 +19,7 @@ public struct DetailAgreementsTableView: View {
                 hText(table.title, style: .title3)
                     .padding(.leading, 15)
             }
-            
+
             ForEach(table.sections, id: \.hashValue) { section in
                 hSection(section.rows, id: \.title) { row in
                     hRow {
@@ -51,7 +51,7 @@ public struct DetailAgreementsTableView: View {
                     } else {
                         hText(section.title)
                     }
-                    
+
                 }
             }
         }
