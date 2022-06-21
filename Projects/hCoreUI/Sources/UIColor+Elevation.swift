@@ -8,11 +8,7 @@ extension UIColor {
         elevated: UIColor
     ) {
         self.init(dynamic: { trait in
-            if #available(iOS 13.0, *) {
-                return trait.userInterfaceLevel == .elevated ? elevated : base
-            } else {
-                return base
-            }
+            return trait.userInterfaceLevel == .elevated ? elevated : base
         })
     }
 }

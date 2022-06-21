@@ -89,7 +89,7 @@ extension PostOnboarding: Presentable {
         let bag = DisposeBag()
         let viewController = UIViewController()
         viewController.navigationItem.hidesBackButton = true
-        if #available(iOS 13.0, *) { viewController.isModalInPresentation = true }
+        viewController.isModalInPresentation = true
 
         ApplicationState.preserveState(.loggedIn)
 

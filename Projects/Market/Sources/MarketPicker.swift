@@ -20,13 +20,11 @@ extension MarketPicker: Presentable {
     public func materialize() -> (UIViewController, Signal<Void>) {
         let viewController = UIViewController()
 
-        if #available(iOS 13.0, *) {
-            let appearance = UINavigationBarAppearance()
-            DefaultStyling.applyCommonNavigationBarStyling(appearance)
-            appearance.configureWithTransparentBackground()
-            viewController.navigationItem.standardAppearance = appearance
-            viewController.navigationItem.compactAppearance = appearance
-        }
+        let appearance = UINavigationBarAppearance()
+        DefaultStyling.applyCommonNavigationBarStyling(appearance)
+        appearance.configureWithTransparentBackground()
+        viewController.navigationItem.standardAppearance = appearance
+        viewController.navigationItem.compactAppearance = appearance
 
         let bag = DisposeBag()
 
@@ -61,11 +59,7 @@ extension MarketPicker: Presentable {
         let view = UIView()
 
         bag += view.windowSignal.onFirstValue { _ in
-            if #available(iOS 13.0, *) {
-                viewController.navigationController?.navigationBar.overrideUserInterfaceStyle = .dark
-            } else {
-                viewController.navigationController?.navigationBar.barStyle = .black
-            }
+            viewController.navigationController?.navigationBar.overrideUserInterfaceStyle = .dark
         }
 
         viewController.view = view
@@ -118,9 +112,7 @@ extension MarketPicker: Presentable {
             Signal { callback in
                 func renderMarketPicker() {
                     let section = form.appendSection()
-                    if #available(iOS 13.0, *) {
-                        section.overrideUserInterfaceStyle = .dark
-                    }
+                    section.overrideUserInterfaceStyle = .dark
 
                     let marketRow = MarketRow()
                     bag += section.append(marketRow)

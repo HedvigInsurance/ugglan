@@ -24,7 +24,7 @@ extension GradientScroller {
             ContextGradient.$currentOption.atOnce().latestTwo()
         )
         .onValue { traitCollection, option in
-            if #available(iOS 13.0, *), ContextGradient.rules.contains(.disallowOnElevatedTraits) {
+            if ContextGradient.rules.contains(.disallowOnElevatedTraits) {
                 if traitCollection.userInterfaceLevel == .elevated {
                     gradientLayer.isHidden = true
                     return
@@ -36,12 +36,8 @@ extension GradientScroller {
             let (prevOption, option) = option
 
             func optionToColors(_ option: ContextGradient.Option) -> [CGColor] {
-                if #available(iOS 13, *) {
-                    return option.colors(for: traitCollection)
-                        .map { $0.resolvedColor(with: traitCollection).cgColor }
-                } else {
-                    return option.colors(for: traitCollection).map(\.cgColor)
-                }
+                return option.colors(for: traitCollection)
+                    .map { $0.resolvedColor(with: traitCollection).cgColor }
             }
 
             gradientLayer.locations = option.locations(for: traitCollection)

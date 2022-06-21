@@ -5,7 +5,6 @@ import SwiftUI
 import UIKit
 import hCoreUI
 
-@available(iOS 13, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     let bag = DisposeBag()
     var window: UIWindow?
