@@ -99,37 +99,45 @@ extension EmbarkSelectAction: Viewable {
 
                     bag += view.addArranged(button)
                 } else {
-                    let numberOfStacks =
-                        options.count % 2 == 0
-                        ? options.count / 2 : Int(floor(Double(options.count) / 2) + 1)
-
-                    for iteration in 1...numberOfStacks {
+                    bag += options.chunked(into: 2).map { chunk -> [Disposable] in
                         let stack = UIStackView()
                         stack.spacing = 10
                         stack.distribution = .fillEqually
                         view.addArrangedSubview(stack)
-
-                        let optionsSlice = Array(
-                            options[2 * iteration - 2..<min(2 * iteration, options.count)]
-                        )
-                        bag += optionsSlice.map { option in
-                            let selectActionOption = EmbarkSelectActionOption(
-                                state: state,
-                                data: option
-                            )
-
-                            return stack.addArranged(selectActionOption)
-                                .onValue { _ in
-                                    handleClick(option: option)?
-                                        .onValue({ link in
-                                            callback(link)
-                                        })
+                        
+                        var chunkComposition: [Either<EmbarkSelectActionData.SelectActionDatum.Option, Void>] = []
+                        
+                        chunkComposition.append(contentsOf: chunk.map { .left($0) })
+                        
+                        if chunk.count < 2, options.count > 1 {
+                            chunkComposition.append(.right(()))
+                        }
+                        
+                        return chunkComposition.map { composition in
+                            if let option = composition.left {
+                                let selectActionOption = EmbarkSelectActionOption(
+                                    state: state,
+                                    data: option
+                                )
+                                
+                                return stack.addArranged(selectActionOption)
+                                    .onValue { _ in
+                                        handleClick(option: option)?
+                                            .onValue({ link in
+                                                callback(link)
+                                            })
+                                    }
+                            } else {
+                                let spacer = UIView()
+                                
+                                stack.addArrangedSubview(spacer)
+                                
+                                return Disposer {
+                                    spacer.removeFromSuperview()
                                 }
+                            }
                         }
-                        if optionsSlice.count < 2, options.count > 1 {
-                            stack.addArrangedSubview(UIView())
-                        }
-                    }
+                    }.flatMap { $0 }
                 }
 
                 return bag
