@@ -23,7 +23,7 @@ func shell(_ command: String) -> String {
     task.arguments = ["-c", command]
     task.executableURL = URL(fileURLWithPath: "/bin/bash")
     task.standardInput = nil
-    task.run()
+    try! task.run()
     
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     let output = String(data: data, encoding: .utf8)!
