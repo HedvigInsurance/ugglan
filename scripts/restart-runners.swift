@@ -14,46 +14,28 @@ struct RunnerReponse: Codable {
 
 let dispatchGroup = DispatchGroup()
 
-func shell(_ command: String) -> String {
-    let task = Process()
-    let pipe = Pipe()
-    
-    task.standardOutput = pipe
-    task.standardError = pipe
-    task.arguments = ["-c", command]
-    task.executableURL = URL(fileURLWithPath: "/bin/bash")
-    task.standardInput = nil
-    try? task.run()
-    task.waitUntilExit()
-    
-    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    let output = String(data: data, encoding: .utf8)!
-    
-    return output
+func restartServer(_ runnerIP: String, _ runnerName: String) {
+    var request = URLRequest(url: URL(string: "http://\(runnerIP):9000/hooks/restart?name=\(runnerName)")!)
+    request.allHTTPHeaderFields = [:]
+    request.httpMethod = "POST"
+
+    dispatchGroup.enter()
+
+    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        dispatchGroup.leave()
+    }
+    task.resume()
 }
 
 func handleServerStatus(_ response: RunnerReponse) {
   response.runners.forEach { runner in
-    if (runner.status == "online") {
-      guard let runnerPassword = ProcessInfo.processInfo.environment["RUNNER_\(runner.name)_PASSWORD"] else {
-        return
-      }
+    if (runner.status != "online") {
       guard let runnerIP = ProcessInfo.processInfo.environment["RUNNER_\(runner.name)_IP"] else {
         return
       }
 
-      let netcatOutput = shell("nc --no-shutdown -z \(runnerIP) 22")
-
-      print(netcatOutput)
-
-      let isUp = netcatOutput.contains("succeeded")
-
-      if isUp {
-        let _ = shell("echo \(runnerPassword) | ssh -tt administrator@\(runnerIP) sudo shutdown -r now")
-        print("Restarted \(runner.name)")
-      } else {
-        print("Didn't restart \(runner.name) as SSH wasn't online")
-      }
+      restartServer(runnerIP, runner.name)
+      print("Sent restart command")
     }
   }
 
