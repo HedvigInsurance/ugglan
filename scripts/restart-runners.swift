@@ -42,7 +42,7 @@ func handleServerStatus(_ response: RunnerReponse) {
         return
       }
 
-      let netcatOutput = shell("nc -q 2 -z \(runnerIP) 22")
+      let netcatOutput = shell("nc --no-shutdown -z \(runnerIP) 22")
 
       print(netcatOutput)
 
