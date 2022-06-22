@@ -44,18 +44,8 @@ func handleServerStatus(_ response: RunnerReponse) {
         return
       }
 
-      let netcatOutput = shell("nc -z \(runnerIP) 22")
-
-      print(netcatOutput)
-
-      let isUp = netcatOutput.contains("succeeded")
-
-      if isUp {
-        let _ = shell("echo \(runnerPassword) | ssh -tt administrator@\(runnerIP) sudo shutdown -r now")
-        print("Restarted \(runner.name)")
-      } else {
-        print("Didn't restart \(runner.name) as SSH wasn't online")
-      }
+      let _ = shell("echo \(runnerPassword) | ssh -tt administrator@\(runnerIP) sudo shutdown -r now")
+      print("Restarted \(runner.name)")
     }
   }
 
