@@ -17,6 +17,8 @@ let dispatchGroup = DispatchGroup()
 func shell(_ command: String) -> String {
     let task = Process()
     let pipe = Pipe()
+
+    dispatchGroup.enter()
     
     task.standardOutput = pipe
     task.standardError = pipe
@@ -25,6 +27,8 @@ func shell(_ command: String) -> String {
     task.standardInput = nil
     try! task.run()
     task.waitUntilExit()
+
+    dispatchGroup.leave()
     
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     let output = String(data: data, encoding: .utf8)!
