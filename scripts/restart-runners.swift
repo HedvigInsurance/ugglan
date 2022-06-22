@@ -26,7 +26,7 @@ func shell(_ command: String) -> String {
     try? task.run()
     task.waitUntilExit()
 
-    Thread.sleep(forTimeInterval: 1)
+    Thread.sleep(forTimeInterval: 10)
     
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     let output = String(data: data, encoding: .utf8)!
