@@ -1,11 +1,11 @@
-name: SwiftFormat
+name: RestartRunners
 
 on:
   pull_request:
     branches: ["*"]
 
 jobs:
-  format:
+  restart:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
