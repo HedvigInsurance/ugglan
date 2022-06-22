@@ -11,9 +11,13 @@ struct RunnerReponse: Codable {
     }
 }
 
-func shell(_ command: String) {
+let dispatchGroup = DispatchGroup()
+
+func shell(_ command: String) -> String {
     let task = Process()
     let pipe = Pipe()
+
+    dispatchGroup.enter()
     
     task.standardOutput = pipe
     task.standardError = pipe
@@ -22,10 +26,13 @@ func shell(_ command: String) {
     task.standardInput = nil
     task.launch()
     
-    let _ = pipe.fileHandleForReading.readDataToEndOfFile()
-}
+    let data = pipe.fileHandleForReading.readDataToEndOfFile()
+    let output = String(data: data, encoding: .utf8)!
 
-let dispatchGroup = DispatchGroup()
+    dispatchGroup.leave()
+    
+    return output
+}
 
 func handleServerStatus(_ response: RunnerReponse) {
   response.runners.forEach { runner in
@@ -37,9 +44,14 @@ func handleServerStatus(_ response: RunnerReponse) {
         return
       }
 
-      shell("echo \(runnerPassword) | ssh -tt administrator@\(runnerIP) sudo shutdown -r now")
+      let isUp = shell("nc -z \(runnerIP) 22").contains("succeeded")
 
-      print("Restarted \(runner.name)")
+      if isUp {
+        let _ = shell("echo \(runnerPassword) | ssh -tt administrator@\(runnerIP) sudo shutdown -r now")
+        print("Restarted \(runner.name)")
+      } else {
+        print("Didn't restart \(runner.name) as SSH wasn't online")
+      }
     }
   }
 
@@ -49,7 +61,7 @@ func handleServerStatus(_ response: RunnerReponse) {
 func getServerStatus() {
     var request = URLRequest(url: URL(string: "https://api.github.com/repos/HedvigInsurance/Ugglan/actions/runners")!)
     request.allHTTPHeaderFields = [
-      "Authorization": "token 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",
+      "Authorization": "token \(ProcessInfo.processInfo.environment["RUNNER_GITHUB_TOKEN"]!)",
       "Accept": "application/vnd.github.v3+json"
     ]
     request.httpMethod = "GET"

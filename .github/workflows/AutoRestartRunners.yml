@@ -17,3 +17,7 @@ jobs:
         run: sshpass -p ${{ secrets.RUNNER_vm1_PASSWORD }} ssh -o StrictHostKeyChecking=no administrator@${{ secrets.RUNNER_vm1_IP }}
       - name: Restart runners if needed
         run: scripts/restart-runners.swift
+        env:
+          RUNNER_GITHUB_TOKEN: ${{ secrets.RUNNER_GITHUB_TOKEN }}
+          RUNNER_vm1_PASSWORD: ${{ secrets.RUNNER_vm1_PASSWORD }}
+          RUNNER_vm1_IP: ${{ secrets.RUNNER_vm1_IP }}
