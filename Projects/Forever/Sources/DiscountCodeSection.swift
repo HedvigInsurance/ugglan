@@ -1,6 +1,7 @@
 import Flow
 import Form
 import Foundation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
@@ -13,22 +14,22 @@ extension DiscountCodeSection: Viewable {
         let section = SectionView(
             headerView: {
                 let stackView = UIStackView()
+                stackView.distribution = .equalSpacing
                 stackView.axis = .horizontal
 
                 let label = UILabel(value: L10n.ReferralsEmpty.Code.headline, style: .default)
                 stackView.addArrangedSubview(label)
 
-                let changeButton = Button(
-                    title: L10n.ReferralsEmpty.Edit.Code.button,
-                    type: .outline(borderColor: .clear, textColor: .brand(.link))
-                )
-
-                bag += changeButton.onTapSignal.onValue { _ in
-                    stackView.viewController?
-                        .present(ChangeCode(service: self.service), style: .modal)
+                let changeButton = makeHost {
+                    hText(L10n.ReferralsEmpty.Edit.Code.button)
+                        .foregroundColor(hLabelColor.link)
+                        .onTapGesture {
+                            stackView.viewController?
+                                .present(ChangeCode(service: self.service), style: .modal)
+                        }
                 }
 
-                bag += stackView.addArranged(changeButton.wrappedIn(UIStackView()))
+                stackView.addArrangedSubview(changeButton)
 
                 return stackView
             }(),
