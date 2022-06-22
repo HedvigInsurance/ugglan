@@ -1,9 +1,7 @@
 #!/usr/bin/env swift
 
 import Foundation
-#if canImport(FoundationNetworking)
 import FoundationNetworking
-#endif
 
 struct RunnerReponse: Codable {
     let runners: [Runner]
