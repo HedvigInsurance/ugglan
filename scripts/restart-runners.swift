@@ -17,18 +17,14 @@ let dispatchGroup = DispatchGroup()
 func shell(_ command: String) -> String {
     let task = Process()
     let pipe = Pipe()
-
-    dispatchGroup.enter()
     
     task.standardOutput = pipe
     task.standardError = pipe
     task.arguments = ["-c", command]
     task.executableURL = URL(fileURLWithPath: "/bin/bash")
     task.standardInput = nil
-    try! task.run()
+    task.launch()
     task.waitUntilExit()
-
-    dispatchGroup.leave()
     
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     let output = String(data: data, encoding: .utf8)!
@@ -46,9 +42,9 @@ func handleServerStatus(_ response: RunnerReponse) {
         return
       }
 
-      let netcatOuput = shell("nc -z \(runnerIP) 22")
+      let netcatOutput = shell("nc -z \(runnerIP) 22")
 
-      print(netcatOuput)
+      print(netcatOutput)
 
       let isUp = netcatOuput.contains("succeeded")
 
