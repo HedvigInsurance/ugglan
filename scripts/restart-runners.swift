@@ -38,6 +38,8 @@ func handleServerStatus(_ response: RunnerReponse) {
       }
 
       shell("echo \(runnerPassword) | ssh -tt administrator@\(runnerIP) sudo shutdown -r now")
+
+      print("Restarted \(runner.name)")
     }
   }
 
