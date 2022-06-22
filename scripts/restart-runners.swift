@@ -25,8 +25,6 @@ func shell(_ command: String) -> String {
     task.standardInput = nil
     try? task.run()
     task.waitUntilExit()
-
-    Thread.sleep(forTimeInterval: 10)
     
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     let output = String(data: data, encoding: .utf8)!
@@ -44,8 +42,18 @@ func handleServerStatus(_ response: RunnerReponse) {
         return
       }
 
-      let _ = shell("echo \(runnerPassword) | ssh -tt administrator@\(runnerIP) sudo shutdown -r now")
-      print("Restarted \(runner.name)")
+      let netcatOutput = shell("nc -q 2 -z \(runnerIP) 22")
+
+      print(netcatOutput)
+
+      let isUp = netcatOutput.contains("succeeded")
+
+      if isUp {
+        let _ = shell("echo \(runnerPassword) | ssh -tt administrator@\(runnerIP) sudo shutdown -r now")
+        print("Restarted \(runner.name)")
+      } else {
+        print("Didn't restart \(runner.name) as SSH wasn't online")
+      }
     }
   }
 
