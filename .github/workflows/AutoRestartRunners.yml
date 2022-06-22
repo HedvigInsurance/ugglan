@@ -16,4 +16,4 @@ jobs:
       - name: VM1 Auth
         run: sshpass -p ${{ secrets.RUNNER_vm1_PASSWORD }} ssh -o StrictHostKeyChecking=no administrator@${{ secrets.RUNNER_vm1_IP }}
       - name: Restart runners if needed
-        run: scripts/restart-runners.sh
+        run: scripts/restart-runners.swift
