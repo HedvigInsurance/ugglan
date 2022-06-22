@@ -34,7 +34,6 @@ extension DefaultStyling {
         return .brand(.primaryBackground())
     })
 
-    @available(iOS 13, *)
     public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
         appearance.titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
@@ -107,65 +106,43 @@ extension DefaultStyling {
             .backgroundColor = .brand(.primaryBackground())
             view.appearance().backgroundColor = .brand(.primaryBackground())
 
-            if #available(iOS 13.0, *) {
-                view.appearance(for: UITraitCollection(userInterfaceLevel: .elevated)).backgroundColor =
-                    .brand(.secondaryBackground())
-            }
+            view.appearance(for: UITraitCollection(userInterfaceLevel: .elevated)).backgroundColor =
+                .brand(.secondaryBackground())
         }
 
         UIRefreshControl.appearance().tintColor = .brand(.primaryTintColor)
 
-        if #available(iOS 13.0, *) {
-            setNavigationBarAppearance()
-        } else {
-            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).shadowImage = UIColor
-                .clear
-                .asImage()
-            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self]).titleTextAttributes = [
-                NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                NSAttributedString.Key.font: Fonts.fontFor(style: .headline),
-            ]
-            UINavigationBar.appearance(whenContainedInInstancesOf: [hNavigationController.self])
-                .largeTitleTextAttributes = [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
-                ]
-        }
+        setNavigationBarAppearance()
 
         UITabBar.appearance().backgroundColor = tabBarBackgroundColor
         UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
         UITabBar.appearance().tintColor = .brand(.primaryText())
 
-        if #available(iOS 13.0, *) {
-            UITabBar.appearance(
-                for: UITraitCollection(userInterfaceStyle: .dark)
-            )
-            .backgroundImage =
-                tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
-                .asImage()
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .backgroundImage =
+            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
+            .asImage()
 
-            UITabBar.appearance(
-                for: UITraitCollection(userInterfaceStyle: .light)
-            )
-            .backgroundImage =
-                tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                .asImage()
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .light)
+        )
+        .backgroundImage =
+            tabBarBackgroundColor.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+            .asImage()
 
-            UITabBar.appearance(
-                for: UITraitCollection(userInterfaceStyle: .dark)
-            )
-            .shadowImage = UIColor.brand(.primaryBorderColor)
-                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .dark)
+        )
+        .shadowImage = UIColor.brand(.primaryBorderColor)
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).asImage()
 
-            UITabBar.appearance(
-                for: UITraitCollection(userInterfaceStyle: .light)
-            )
-            .shadowImage = UIColor.brand(.primaryBorderColor)
-                .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
-        } else {
-            UITabBar.appearance().backgroundImage = tabBarBackgroundColor.asImage()
-            UITabBar.appearance().shadowImage = UIColor.brand(.primaryBorderColor).asImage()
-        }
+        UITabBar.appearance(
+            for: UITraitCollection(userInterfaceStyle: .light)
+        )
+        .shadowImage = UIColor.brand(.primaryBorderColor)
+            .resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).asImage()
 
         UITabBarItem.appearance()
             .setTitleTextAttributes(

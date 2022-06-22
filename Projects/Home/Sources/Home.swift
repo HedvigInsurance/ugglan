@@ -61,20 +61,18 @@ extension Home: Presentable {
         viewController.title = L10n.HomeTab.title
         viewController.installChatButton(allowsChatHint: true)
 
-        if #available(iOS 13.0, *) {
-            let scrollEdgeAppearance = UINavigationBarAppearance()
-            DefaultStyling.applyCommonNavigationBarStyling(scrollEdgeAppearance)
-            scrollEdgeAppearance.configureWithTransparentBackground()
-            scrollEdgeAppearance.largeTitleTextAttributes = scrollEdgeAppearance.largeTitleTextAttributes
-                .merging(
-                    [
-                        NSAttributedString.Key.foregroundColor: UIColor.clear
-                    ],
-                    uniquingKeysWith: takeRight
-                )
+        let scrollEdgeAppearance = UINavigationBarAppearance()
+        DefaultStyling.applyCommonNavigationBarStyling(scrollEdgeAppearance)
+        scrollEdgeAppearance.configureWithTransparentBackground()
+        scrollEdgeAppearance.largeTitleTextAttributes = scrollEdgeAppearance.largeTitleTextAttributes
+            .merging(
+                [
+                    NSAttributedString.Key.foregroundColor: UIColor.clear
+                ],
+                uniquingKeysWith: takeRight
+            )
 
-            viewController.navigationItem.scrollEdgeAppearance = scrollEdgeAppearance
-        }
+        viewController.navigationItem.scrollEdgeAppearance = scrollEdgeAppearance
 
         let bag = DisposeBag()
 

@@ -93,9 +93,7 @@ enum SwedishBankIdSignError: Error {
 extension SwedishBankIdSign: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
-        if #available(iOS 13.0, *) {
-            viewController.isModalInPresentation = true
-        }
+        viewController.isModalInPresentation = true
 
         let bag = DisposeBag()
 

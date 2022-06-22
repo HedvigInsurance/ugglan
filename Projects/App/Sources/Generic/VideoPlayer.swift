@@ -27,7 +27,7 @@ extension VideoPlayer: Presentable {
         let bag = DisposeBag()
 
         let viewController = VideoPlayerViewController()
-        if #available(iOS 13.0, *) { viewController.overrideUserInterfaceStyle = .dark }
+        viewController.overrideUserInterfaceStyle = .dark
         viewController.player = player
 
         return (

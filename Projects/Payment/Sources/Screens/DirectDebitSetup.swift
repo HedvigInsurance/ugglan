@@ -37,7 +37,7 @@ extension DirectDebitSetup: Presentable {
         let viewController = UIViewController()
         viewController.hidesBottomBarWhenPushed = true
 
-        if #available(iOS 13.0, *) { viewController.isModalInPresentation = true }
+        viewController.isModalInPresentation = true
 
         switch setupType {
         case .replacement: viewController.title = L10n.PayInIframeInApp.connectPayment

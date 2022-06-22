@@ -164,10 +164,8 @@ extension Checkout: Presentable {
             FiniteSignal { callback in
 
                 func toggleAllowDismissal() {
-                    if #available(iOS 13.0, *) {
-                        viewController.isModalInPresentation = !viewController
-                            .isModalInPresentation
-                    }
+                    viewController.isModalInPresentation = !viewController
+                        .isModalInPresentation
                     viewController.navigationItem.rightBarButtonItem?.isEnabled =
                         !(viewController.navigationItem.rightBarButtonItem?.isEnabled ?? true)
                 }

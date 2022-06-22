@@ -27,7 +27,7 @@ extension AdyenPayInSync: Presentable {
 
         let activityIndicator = UIActivityIndicatorView()
 
-        if #available(iOS 13.0, *) { activityIndicator.style = .large }
+        activityIndicator.style = .large
 
         form.addSubview(activityIndicator)
 

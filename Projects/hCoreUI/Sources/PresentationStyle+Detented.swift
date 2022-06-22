@@ -474,126 +474,114 @@ extension PresentationStyle {
         detents: [Detent],
         modally: Bool
     ) -> PresentingViewController.Result {
-        if #available(iOS 13, *) {
-            viewController.setLargeTitleDisplayMode(options)
+        viewController.setLargeTitleDisplayMode(options)
 
-            if modally {
-                let vc = viewController.embededInNavigationController(options)
+        if modally {
+            let vc = viewController.embededInNavigationController(options)
 
-                let bag = DisposeBag()
+            let bag = DisposeBag()
 
-                let delegate = DetentedTransitioningDelegate(
-                    detents: detents,
-                    options: options,
-                    wantsGrabber: options.contains(.wantsGrabber),
-                    viewController: viewController
-                )
-                bag.hold(delegate)
-                vc.transitioningDelegate = delegate
-                vc.modalPresentationStyle = .custom
+            let delegate = DetentedTransitioningDelegate(
+                detents: detents,
+                options: options,
+                wantsGrabber: options.contains(.wantsGrabber),
+                viewController: viewController
+            )
+            bag.hold(delegate)
+            vc.transitioningDelegate = delegate
+            vc.modalPresentationStyle = .custom
 
-                return from.modallyPresentQueued(vc, options: options) {
-                    return Future { completion in
-                        let dismissal =
-                            PresentationStyle.modalPresentationDismissalSetup(
-                                for: vc,
-                                options: options
-                            )
-                            .onResult(completion)
-
-                        return Disposer {
-                            bag.dispose()
-                            dismissal.cancel()
-                        }
-                    }
-                }
-            } else {
-                let bag = DisposeBag()
-
-                if let navigationController = from.navigationController,
-                    let presentationController = navigationController.presentationController
-                {
-                    from.lastDetentIndex = getDetentIndex(on: presentationController)
-
-                    Self.Detent.set(
-                        detents,
-                        on: presentationController,
-                        viewController: viewController,
-                        unanimated: options.contains(.unanimated)
-                    )
-                    setGrabber(
-                        on: presentationController,
-                        to: options.contains(.wantsGrabber)
-                    )
-
-                    bag += navigationController.willPopViewControllerSignal
-                        .wait(
-                            until: navigationController
-                                .interactivePopGestureRecognizer?
-                                .map { $0 == .possible || $0 == .ended }
-                                ?? ReadSignal(true)
+            return from.modallyPresentQueued(vc, options: options) {
+                return Future { completion in
+                    let dismissal =
+                        PresentationStyle.modalPresentationDismissalSetup(
+                            for: vc,
+                            options: options
                         )
-                        .debug().filter(predicate: { $0 == viewController })
-                        .onValue { _ in
-                            guard
-                                let previousViewController =
-                                    navigationController.viewControllers
-                                    .last
-                            else { return }
+                        .onResult(completion)
 
-                            func handleDismiss() {
-                                navigationController.view.backgroundColor =
-                                    previousViewController.view
-                                    .backgroundColor
-                                Self.Detent.set(
-                                    previousViewController.appliedDetents,
-                                    on: presentationController,
-                                    viewController: previousViewController,
-                                    lastDetentIndex: previousViewController
-                                        .lastDetentIndex,
-                                    unanimated: options.contains(.unanimated)
-                                )
-                            }
-
-                            if navigationController.interactivePopGestureRecognizer?
-                                .state == .ended,
-                                !(navigationController.transitionCoordinator?
-                                    .isCancelled ?? false)
-                            {
-                                handleDismiss()
-                            } else if navigationController
-                                .interactivePopGestureRecognizer?
-                                .state == .possible
-                            {
-                                handleDismiss()
-                            }
-                        }
-                }
-
-                let defaultPresentation = PresentationStyle.default.present(
-                    viewController,
-                    from: from,
-                    options: options
-                )
-
-                return (
-                    defaultPresentation.result,
-                    {
+                    return Disposer {
                         bag.dispose()
-                        return defaultPresentation.dismisser()
+                        dismissal.cancel()
                     }
-                )
+                }
             }
         } else {
-            if modally {
-                return PresentationStyle.modal.present(
-                    viewController,
-                    from: from,
-                    options: options
+            let bag = DisposeBag()
+
+            if let navigationController = from.navigationController,
+                let presentationController = navigationController.presentationController
+            {
+                from.lastDetentIndex = getDetentIndex(on: presentationController)
+
+                Self.Detent.set(
+                    detents,
+                    on: presentationController,
+                    viewController: viewController,
+                    unanimated: options.contains(.unanimated)
                 )
+                setGrabber(
+                    on: presentationController,
+                    to: options.contains(.wantsGrabber)
+                )
+
+                bag += navigationController.willPopViewControllerSignal
+                    .wait(
+                        until: navigationController
+                            .interactivePopGestureRecognizer?
+                            .map { $0 == .possible || $0 == .ended }
+                            ?? ReadSignal(true)
+                    )
+                    .debug().filter(predicate: { $0 == viewController })
+                    .onValue { _ in
+                        guard
+                            let previousViewController =
+                                navigationController.viewControllers
+                                .last
+                        else { return }
+
+                        func handleDismiss() {
+                            navigationController.view.backgroundColor =
+                                previousViewController.view
+                                .backgroundColor
+                            Self.Detent.set(
+                                previousViewController.appliedDetents,
+                                on: presentationController,
+                                viewController: previousViewController,
+                                lastDetentIndex: previousViewController
+                                    .lastDetentIndex,
+                                unanimated: options.contains(.unanimated)
+                            )
+                        }
+
+                        if navigationController.interactivePopGestureRecognizer?
+                            .state == .ended,
+                            !(navigationController.transitionCoordinator?
+                                .isCancelled ?? false)
+                        {
+                            handleDismiss()
+                        } else if navigationController
+                            .interactivePopGestureRecognizer?
+                            .state == .possible
+                        {
+                            handleDismiss()
+                        }
+                    }
             }
 
-            return PresentationStyle.default.present(viewController, from: from, options: options)
+            let defaultPresentation = PresentationStyle.default.present(
+                viewController,
+                from: from,
+                options: options
+            )
+
+            return (
+                defaultPresentation.result,
+                {
+                    bag.dispose()
+                    return defaultPresentation.dismisser()
+                }
+            )
         }
     }
 

@@ -287,15 +287,13 @@ let log = Logger.builder
                     backgroundColor: .brand(.regularCaution)
                 )
 
-                if #available(iOS 13, *) {
-                    self.bag += toast.onTap.onValue {
-                        self.window.rootViewController?
-                            .present(
-                                UIHostingController(rootView: Debug()),
-                                style: .detented(.medium, .large),
-                                options: []
-                            )
-                    }
+                self.bag += toast.onTap.onValue {
+                    self.window.rootViewController?
+                        .present(
+                            UIHostingController(rootView: Debug()),
+                            style: .detented(.medium, .large),
+                            options: []
+                        )
                 }
 
                 Toasts.shared.displayToast(toast: toast)
