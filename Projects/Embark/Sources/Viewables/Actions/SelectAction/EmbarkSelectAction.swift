@@ -99,45 +99,47 @@ extension EmbarkSelectAction: Viewable {
 
                     bag += view.addArranged(button)
                 } else {
-                    bag += options.chunked(into: 2).map { chunk -> [Disposable] in
-                        let stack = UIStackView()
-                        stack.spacing = 10
-                        stack.distribution = .fillEqually
-                        view.addArrangedSubview(stack)
-                        
-                        var chunkComposition: [Either<EmbarkSelectActionData.SelectActionDatum.Option, Void>] = []
-                        
-                        chunkComposition.append(contentsOf: chunk.map { .left($0) })
-                        
-                        if chunk.count < 2, options.count > 1 {
-                            chunkComposition.append(.right(()))
-                        }
-                        
-                        return chunkComposition.map { composition in
-                            if let option = composition.left {
-                                let selectActionOption = EmbarkSelectActionOption(
-                                    state: state,
-                                    data: option
-                                )
-                                
-                                return stack.addArranged(selectActionOption)
-                                    .onValue { _ in
-                                        handleClick(option: option)?
-                                            .onValue({ link in
-                                                callback(link)
-                                            })
+                    bag += options.chunked(into: 2)
+                        .map { chunk -> [Disposable] in
+                            let stack = UIStackView()
+                            stack.spacing = 10
+                            stack.distribution = .fillEqually
+                            view.addArrangedSubview(stack)
+
+                            var chunkComposition: [Either<EmbarkSelectActionData.SelectActionDatum.Option, Void>] = []
+
+                            chunkComposition.append(contentsOf: chunk.map { .left($0) })
+
+                            if chunk.count < 2, options.count > 1 {
+                                chunkComposition.append(.right(()))
+                            }
+
+                            return chunkComposition.map { composition in
+                                if let option = composition.left {
+                                    let selectActionOption = EmbarkSelectActionOption(
+                                        state: state,
+                                        data: option
+                                    )
+
+                                    return stack.addArranged(selectActionOption)
+                                        .onValue { _ in
+                                            handleClick(option: option)?
+                                                .onValue({ link in
+                                                    callback(link)
+                                                })
+                                        }
+                                } else {
+                                    let spacer = UIView()
+
+                                    stack.addArrangedSubview(spacer)
+
+                                    return Disposer {
+                                        spacer.removeFromSuperview()
                                     }
-                            } else {
-                                let spacer = UIView()
-                                
-                                stack.addArrangedSubview(spacer)
-                                
-                                return Disposer {
-                                    spacer.removeFromSuperview()
                                 }
                             }
                         }
-                    }.flatMap { $0 }
+                        .flatMap { $0 }
                 }
 
                 return bag
