@@ -24,6 +24,7 @@ func shell(_ command: String) -> String {
     task.executableURL = URL(fileURLWithPath: "/bin/bash")
     task.standardInput = nil
     try! task.run()
+    task.waitUntilExit()
     
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     let output = String(data: data, encoding: .utf8)!
