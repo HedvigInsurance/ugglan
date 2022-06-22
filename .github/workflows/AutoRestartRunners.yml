@@ -1,0 +1,19 @@
+name: SwiftFormat
+
+on:
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install SSHPass
+        run: sudo apt-get install -y sshpass
+      - name: VM1 Auth
+        run: sshpass -p ${{ secrets.RUNNER_vm1_PASSWORD }} ssh -o StrictHostKeyChecking=no administrator@${{ secrets.RUNNER_vm1_IP }}
+      - name: Restart runners if needed
+        run: scripts/restart-runners.sh
