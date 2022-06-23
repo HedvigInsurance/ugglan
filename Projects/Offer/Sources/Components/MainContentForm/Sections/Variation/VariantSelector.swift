@@ -10,7 +10,15 @@ struct VariantSelector: View {
     var variant: QuoteVariant
 
     var price: String {
-        "\(variant.bundle.bundleCost.monthlyNet.formattedAmountWithoutSymbol)\(variant.bundle.bundleCost.monthlyNet.currencySymbol)\(L10n.perMonth)"
+        var cost: MonetaryAmount {
+            if variant.bundle.appConfiguration.ignoreCampaigns {
+                return variant.bundle.bundleCost.monthlyGross
+            }
+            
+            return variant.bundle.bundleCost.monthlyNet
+        }
+        
+        return "\(cost.formattedAmountWithoutSymbol)\(cost.currencySymbol)\(L10n.perMonth)"
     }
 
     var body: some View {
