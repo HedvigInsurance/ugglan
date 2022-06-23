@@ -14,10 +14,10 @@ struct VariantSelector: View {
             if variant.bundle.appConfiguration.ignoreCampaigns {
                 return variant.bundle.bundleCost.monthlyGross
             }
-            
+
             return variant.bundle.bundleCost.monthlyNet
         }
-        
+
         return "\(cost.formattedAmountWithoutSymbol)\(cost.currencySymbol)\(L10n.perMonth)"
     }
 
