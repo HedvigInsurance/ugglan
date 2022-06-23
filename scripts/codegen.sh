@@ -7,7 +7,7 @@ defaults write com.apple.dt.Xcode IDEDisableAutomaticPackageResolution -bool NO
 
 tuist generate --path Projects/Codegen --no-open
 
-x=$( xcodebuild -showBuildSettings -project Projects/Codegen/Codegen.xcodeproj | grep ' BUILD_DIR =' | sed -e 's/.*= *//' )
+x=$( xcodebuild -showBuildSettings -derivedDataPath $CI_DERIVED_DATA_PATH -project Projects/Codegen/Codegen.xcodeproj | grep ' BUILD_DIR =' | sed -e 's/.*= *//' )
 
 ls -R $x
 
