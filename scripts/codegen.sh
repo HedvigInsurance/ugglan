@@ -2,8 +2,8 @@
 set -e
 set -x
 
-Set default com.apple.dt.Xcode IDEPackageOnlyUseVersionsFromResolvedFile to false
-Set default com.apple.dt.Xcode IDEDisableAutomaticPackageResolution to false
+defaults write com.apple.dt.Xcode IDEPackageOnlyUseVersionsFromResolvedFile to false
+default write com.apple.dt.Xcode IDEDisableAutomaticPackageResolution to false
 
 tuist generate --path Projects/Codegen --no-open
 
