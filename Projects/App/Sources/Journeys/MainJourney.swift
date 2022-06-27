@@ -15,10 +15,8 @@ extension AppJourney {
                 AppJourney.updateApp
             } else {
                 switch ApplicationState.currentState {
-                case .onboardingChat, .onboarding:
-                    AppJourney.onboarding()
-                case .offer:
-                    AppJourney.storedOnboardingOffer
+                case .onboardingChat, .onboarding, .offer:
+                    AppJourney.marketPicker
                 case .loggedIn:
                     AppJourney.loggedIn
                 case .impersonation:
