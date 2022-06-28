@@ -1,0 +1,23 @@
+name: RestartRunners
+
+on:
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  restart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Restart runners if needed
+        run: scripts/restart-runners.swift
+        env:
+          RUNNER_GITHUB_TOKEN: ${{ secrets.RUNNER_GITHUB_TOKEN }}
+          RUNNER_vm1_IP: ${{ secrets.RUNNER_vm1_IP }}
+          RUNNER_vm2_IP: ${{ secrets.RUNNER_vm2_IP }}
+          RUNNER_vm3_IP: ${{ secrets.RUNNER_vm3_IP }}
+          RUNNER_vm4_IP: ${{ secrets.RUNNER_vm4_IP }}
+          RUNNER_vm5_IP: ${{ secrets.RUNNER_vm5_IP }}
+          RUNNER_vm6_IP: ${{ secrets.RUNNER_vm6_IP }}
