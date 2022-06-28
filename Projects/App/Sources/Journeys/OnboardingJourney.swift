@@ -15,7 +15,10 @@ extension AppJourney {
             var webUrl = Environment.current.webBaseURL
             webUrl.appendPathComponent(Localization.Locale.currentLocale.webPath)
             webUrl.appendPathComponent("new-member")
-            webUrl = webUrl.appending("utm_source", value: "hedvigIOSApp")
+            webUrl = webUrl
+                .appending("utm_source", value: "ios")
+                .appending("utm_medium", value: "hedvig-app")
+                .appending("utm_campaign", value: Localization.Locale.currentLocale.market.rawValue.lowercased())
             
             UIApplication.shared.open(webUrl)
             
