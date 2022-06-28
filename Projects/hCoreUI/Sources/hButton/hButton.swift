@@ -295,6 +295,39 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
     }
 }
 
+struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
+    struct Label: View {
+        var configuration: Configuration
+
+        var body: some View {
+            LoaderOrContent {
+                configuration.label
+                    .foregroundColor(hLabelColor.primary)
+                    .environment(\.defaultHTextStyle, .body)
+            }
+        }
+    }
+
+    struct OpacityModifier: ViewModifier {
+        @Environment(\.isEnabled) var isEnabled
+
+        func body(content: Content) -> some View {
+            content.opacity(isEnabled ? 1 : 0.2)
+        }
+    }
+
+    func makeBody(configuration: Configuration) -> some View {
+        VStack {
+            Label(configuration: configuration).contentShape(Rectangle())
+        }
+        .modifier(SmallButtonModifier())
+        .background(Color.clear)
+        .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
+        .cornerRadius(.defaultCornerRadius)
+        .modifier(OpacityModifier())
+    }
+}
+
 struct _hButton<Content: View>: View {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hButtonIsLoading) var isLoading
@@ -401,6 +434,26 @@ public enum hButton {
                 content()
             }
             .buttonStyle(ButtonOutlinedStyle(size: .small))
+        }
+    }
+
+    public struct SmallButtonText<Content: View>: View {
+        var content: () -> Content
+        var action: () -> Void
+
+        public init(
+            action: @escaping () -> Void,
+            @ViewBuilder content: @escaping () -> Content
+        ) {
+            self.action = action
+            self.content = content
+        }
+
+        public var body: some View {
+            _hButton(action: action) {
+                content()
+            }
+            .buttonStyle(SmallButtonTextStyle())
         }
     }
 

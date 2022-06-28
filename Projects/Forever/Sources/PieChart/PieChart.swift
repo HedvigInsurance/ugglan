@@ -103,12 +103,8 @@ extension PieChart: Viewable {
             .onValue { trait in
                 filledLayer.strokeColor = UIColor(red: 1.00, green: 0.59, blue: 0.31, alpha: 1).cgColor
 
-                if #available(iOS 13.0, *) {
-                    if trait.userInterfaceLevel == .elevated {
-                        sliceLayer.strokeColor = UIColor.brand(.primaryBackground()).cgColor
-                    } else {
-                        sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
-                    }
+                if trait.userInterfaceLevel == .elevated {
+                    sliceLayer.strokeColor = UIColor.brand(.primaryBackground()).cgColor
                 } else {
                     sliceLayer.strokeColor = UIColor.brand(.secondaryBackground()).cgColor
                 }

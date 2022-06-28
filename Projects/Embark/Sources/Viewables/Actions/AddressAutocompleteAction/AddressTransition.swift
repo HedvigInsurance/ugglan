@@ -144,29 +144,21 @@ extension PresentationStyle {
         _ options: PresentationOptions,
         with transition: AddressTransition
     ) -> PresentingViewController.Result {
-        if #available(iOS 13.0, *) {
-            let vc = viewController.embededInNavigationController(options)
-            let bag = DisposeBag()
-            let delegate = AddressTransitionDelegate(transition: transition)
+        let vc = viewController.embededInNavigationController(options)
+        let bag = DisposeBag()
+        let delegate = AddressTransitionDelegate(transition: transition)
 
-            bag.hold(delegate)
-            vc.transitioningDelegate = delegate
-            vc.modalPresentationStyle = .automatic
-            vc.isModalInPresentation = true
+        bag.hold(delegate)
+        vc.transitioningDelegate = delegate
+        vc.modalPresentationStyle = .automatic
+        vc.isModalInPresentation = true
 
-            return from.modallyPresentQueued(vc, options: options) {
-                return Future { completion in
-                    PresentationStyle.modalPresentationDismissalSetup(for: vc, options: options)
-                        .onResult(completion)
-                    return bag
-                }
+        return from.modallyPresentQueued(vc, options: options) {
+            return Future { completion in
+                PresentationStyle.modalPresentationDismissalSetup(for: vc, options: options)
+                    .onResult(completion)
+                return bag
             }
-        } else {
-            return PresentationStyle.modal.present(
-                viewController,
-                from: from,
-                options: options
-            )
         }
     }
 

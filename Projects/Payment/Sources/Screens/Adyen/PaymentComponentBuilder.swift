@@ -142,4 +142,6 @@ class AdyenPaymentBuilder: PaymentComponentBuilder, APIContextAware {
     func build(paymentMethod: BoletoPaymentMethod) -> PaymentComponent? { nil }
     func build(paymentMethod: AffirmPaymentMethod) -> PaymentComponent? { nil }
     func build(paymentMethod: OXXOPaymentMethod) -> PaymentComponent? { nil }
+    func build(paymentMethod: BACSDirectDebitPaymentMethod) -> PaymentComponent? { nil }
+    func build(paymentMethod: ACHDirectDebitPaymentMethod) -> PaymentComponent? { nil }
 }

@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-@available(iOS 13, *) struct ExchangeToken: View {
+struct ExchangeToken: View {
     let onToken: (_ token: String, _ locale: Localization.Locale) -> Void
 
     init(onToken: @escaping (_ token: String, _ locale: Localization.Locale) -> Void) { self.onToken = onToken }

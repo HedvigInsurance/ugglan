@@ -38,6 +38,7 @@ struct CrossSellingItem: View {
             }
         }
         .buttonStyle(CrossSellingCardButtonStyle(crossSell: crossSell))
+        .contentShape(Rectangle())
     }
 }
 

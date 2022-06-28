@@ -35,7 +35,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public func swiftPackages() -> [Package] {
         switch self {
-        case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .exact("4.2.0"))]
+        case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .exact("4.7.2"))]
         case .runtime:
             return [.package(url: "https://github.com/wickwirew/Runtime", .exact("2.2.2"))]
         case .firebase:
@@ -69,9 +69,9 @@ public enum ExternalDependencies: CaseIterable {
         case .disk:
             return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.5"))]
         case .kingfisher:
-            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.0.0"))]
+            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.2.2"))]
         case .snapkit:
-            return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.0.1"))]
+            return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.6.0"))]
         case .markdownkit:
             return [
                 .package(
@@ -84,16 +84,16 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/pointfreeco/swift-snapshot-testing",
-                    .upToNextMajor(from: "1.8.2")
+                    .upToNextMajor(from: "1.9.0")
                 )
             ]
         case .shake: return [.package(url: "https://github.com/shakebugs/shake-ios", .branch("master"))]
         case .reveal: return []
         case .datadog:
-            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.7.1"))]
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.10.0"))]
         case .hAnalytics:
             return [
-                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.259.0"))
+                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.260.0"))
             ]
         }
     }

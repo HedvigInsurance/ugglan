@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-@available(iOS 13, *) public struct ForceAvailableLocales: View {
+public struct ForceAvailableLocales: View {
     public init() {}
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore

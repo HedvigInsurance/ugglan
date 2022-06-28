@@ -6,25 +6,16 @@ extension UIColor {
         light: UIColor,
         dark: UIColor
     ) {
-        if #available(iOS 13, *) {
-            self.init(dynamicProvider: { trait in if trait.userInterfaceStyle == .dark { return dark }
+        self.init(dynamicProvider: { trait in
+            if trait.userInterfaceStyle == .dark { return dark }
 
-                return light
-            })
-            return
-        }
-
-        self.init(cgColor: light.cgColor)
+            return light
+        })
     }
 
     public convenience init(
         dynamic: @escaping (_ trait: UITraitCollection) -> UIColor
     ) {
-        if #available(iOS 13, *) {
-            self.init(dynamicProvider: dynamic)
-            return
-        }
-
-        self.init(cgColor: dynamic(UITraitCollection()).cgColor)
+        self.init(dynamicProvider: dynamic)
     }
 }

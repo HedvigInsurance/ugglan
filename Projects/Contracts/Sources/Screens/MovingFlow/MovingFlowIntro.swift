@@ -3,6 +3,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hAnalytics
 import hCore
@@ -21,27 +22,25 @@ enum MovingFlowIntroState {
     case normal(String)
     case none
 
-    var button: Button? {
+    @ViewBuilder func makeButton(onTap: @escaping () -> Void) -> some View {
         switch self {
         case .existing, .manual:
-            return Button(
-                title: L10n.MovingIntro.manualHandlingButtonText,
-                type: .standardIcon(
-                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                    textColor: .brand(.secondaryButtonTextColor),
-                    icon: .left(image: hCoreUIAssets.chat.image, width: 22)
-                )
-            )
+            hButton.LargeButtonFilled {
+                onTap()
+            } content: {
+                HStack(spacing: 8) {
+                    hCoreUIAssets.chat.view
+                    hText(L10n.MovingIntro.manualHandlingButtonText)
+                }
+            }
         case .normal:
-            return Button(
-                title: L10n.MovingIntro.openFlowButtonText,
-                type: .standard(
-                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                    textColor: .brand(.secondaryButtonTextColor)
-                )
-            )
-        default:
-            return nil
+            hButton.LargeButtonFilled {
+                onTap()
+            } content: {
+                hText(L10n.MovingIntro.openFlowButtonText)
+            }
+        case .none:
+            EmptyView()
         }
     }
 
@@ -176,53 +175,55 @@ extension MovingFlowIntro: Presentable {
                     .onValueDisposePrevious { state in
                         let innerBag = DisposeBag()
 
-                        if let button = state.button {
-                            let buttonContainer = UIStackView()
-                            buttonContainer.isLayoutMarginsRelativeArrangement = true
-                            scrollView.addSubview(buttonContainer)
+                        let button = state.makeButton(onTap: {
+                            callbacker(.value(state.route ?? .chat))
+                        })
 
-                            buttonContainer.snp.makeConstraints { make in
-                                make.bottom.equalTo(
-                                    scrollView.frameLayoutGuide.snp.bottom
-                                )
-                                make.trailing.leading.equalToSuperview()
-                            }
+                        let buttonContainer = UIStackView()
+                        buttonContainer.isLayoutMarginsRelativeArrangement = true
+                        scrollView.addSubview(buttonContainer)
 
-                            innerBag += buttonContainer.didLayoutSignal.onValue { _ in
-                                buttonContainer.layoutMargins = UIEdgeInsets(
-                                    top: 0,
-                                    left: 15,
-                                    bottom: scrollView.safeAreaInsets.bottom == 0
-                                        ? 15 : scrollView.safeAreaInsets.bottom,
-                                    right: 15
-                                )
+                        buttonContainer.snp.makeConstraints { make in
+                            make.bottom.equalTo(
+                                scrollView.frameLayoutGuide.snp.bottom
+                            )
+                            make.trailing.leading.equalToSuperview()
+                        }
 
-                                let size = buttonContainer.systemLayoutSizeFitting(
-                                    .zero
-                                )
-                                scrollView.contentInset = UIEdgeInsets(
-                                    top: 0,
-                                    left: 0,
-                                    bottom: size.height,
-                                    right: 0
-                                )
-                                scrollView.scrollIndicatorInsets = UIEdgeInsets(
-                                    top: 0,
-                                    left: 0,
-                                    bottom: size.height,
-                                    right: 0
-                                )
-                            }
+                        innerBag += buttonContainer.didLayoutSignal.onValue { _ in
+                            buttonContainer.layoutMargins = UIEdgeInsets(
+                                top: 0,
+                                left: 15,
+                                bottom: scrollView.safeAreaInsets.bottom == 0
+                                    ? 15 : scrollView.safeAreaInsets.bottom,
+                                right: 15
+                            )
 
-                            innerBag += buttonContainer.addArranged(button)
+                            let size = buttonContainer.systemLayoutSizeFitting(
+                                .zero
+                            )
+                            scrollView.contentInset = UIEdgeInsets(
+                                top: 0,
+                                left: 0,
+                                bottom: size.height,
+                                right: 0
+                            )
+                            scrollView.scrollIndicatorInsets = UIEdgeInsets(
+                                top: 0,
+                                left: 0,
+                                bottom: size.height,
+                                right: 0
+                            )
+                        }
 
-                            innerBag += {
-                                buttonContainer.removeFromSuperview()
-                            }
+                        buttonContainer.addArrangedSubview(
+                            makeHost({
+                                button
+                            })
+                        )
 
-                            innerBag += button.onTapSignal.onValue {
-                                callbacker(.value(state.route ?? .chat))
-                            }
+                        innerBag += {
+                            buttonContainer.removeFromSuperview()
                         }
 
                         return innerBag

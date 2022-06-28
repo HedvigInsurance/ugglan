@@ -25,7 +25,7 @@ extension TerminatedSection: Presentable {
         let section = SectionView()
         section.dynamicStyle = .brandGrouped(separatorType: .none)
 
-        var titleLabel = MultilineLabel(value: "", style: .brand(.largeTitle(color: .primary)))
+        var titleLabel = MultilineLabel(value: "", style: .brand(.prominentTitle(color: .primary)))
         bag += section.append(titleLabel)
 
         section.appendSpacing(.inbetween)

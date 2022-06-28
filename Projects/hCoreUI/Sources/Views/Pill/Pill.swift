@@ -75,13 +75,7 @@ extension Pill: Reusable {
 
 extension UIView {
     fileprivate func embed() {
-        let effect: UIBlurEffect
-
-        if #available(iOS 13.0, *) {
-            effect = UIBlurEffect(style: .systemUltraThinMaterial)
-        } else {
-            effect = UIBlurEffect(style: .light)
-        }
+        let effect = UIBlurEffect(style: .systemUltraThinMaterial)
 
         let pillView = UIVisualEffectView(effect: effect)
         pillView.layer.cornerRadius = 4
@@ -91,14 +85,9 @@ extension UIView {
         pillView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
 
         let vibrancyView: UIVisualEffectView
-
-        if #available(iOS 13.0, *) {
-            vibrancyView = UIVisualEffectView(
-                effect: UIVibrancyEffect(blurEffect: effect, style: .secondaryLabel)
-            )
-        } else {
-            vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: effect))
-        }
+        vibrancyView = UIVisualEffectView(
+            effect: UIVibrancyEffect(blurEffect: effect, style: .secondaryLabel)
+        )
 
         pillView.contentView.addSubview(vibrancyView)
 

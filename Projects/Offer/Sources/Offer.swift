@@ -67,13 +67,11 @@ extension Offer: Presentable {
             ApplicationState.preserveState(.offer)
         }
 
-        if #available(iOS 13.0, *) {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithTransparentBackground()
-            DefaultStyling.applyCommonNavigationBarStyling(appearance)
-            viewController.navigationItem.standardAppearance = appearance
-            viewController.navigationItem.compactAppearance = appearance
-        }
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        DefaultStyling.applyCommonNavigationBarStyling(appearance)
+        viewController.navigationItem.standardAppearance = appearance
+        viewController.navigationItem.compactAppearance = appearance
 
         let bag = DisposeBag()
         bag += store.stateSignal.compactMap { $0.currentVariant?.bundle.appConfiguration.title }

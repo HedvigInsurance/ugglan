@@ -23,6 +23,7 @@ public enum UgglanAction: ActionProtocol {
     case exchangeFailed
     case didAcceptHonestyPledge
     case openChat
+    case sendAccountDeleteRequest(details: MemberDetails)
 }
 
 public final class UgglanStore: StateStore<UgglanState, UgglanAction> {

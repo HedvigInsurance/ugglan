@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-@available(iOS 13, *) struct CheckmarkToggleStyle: ToggleStyle {
+struct CheckmarkToggleStyle: ToggleStyle {
     func makeBody(configuration: Self.Configuration) -> some View {
         HStack {
             Button(action: { withAnimation { configuration.$isOn.wrappedValue.toggle() } }) {

@@ -57,7 +57,7 @@ enum ChatResult {
                     case .close:
                         DismissJourney()
                     case .signed:
-                        AppJourney.postOnboarding
+                        ContinueJourney()
                     case let .menu(action):
                         action.journey
                     case .openCheckout:
@@ -150,30 +150,26 @@ extension Chat: Presentable {
         }
 
         tableKit.view.contentInsetAdjustmentBehavior = .never
-        if #available(iOS 13.0, *) {
-            tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
-        }
+        tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
 
         // hack to fix modal dismissing when dragging up in scrollView
-        if #available(iOS 13.0, *) {
-            func setSheetInteractionState(_ enabled: Bool) {
-                let presentationController = viewController.navigationController?.presentationController
-                let key = [
-                    "_sheet", "Interaction",
-                ]
-                let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
-                sheetInteraction?.setValue(enabled, forKey: "enabled")
-            }
+        func setSheetInteractionState(_ enabled: Bool) {
+            let presentationController = viewController.navigationController?.presentationController
+            let key = [
+                "_sheet", "Interaction",
+            ]
+            let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
+            sheetInteraction?.setValue(enabled, forKey: "enabled")
+        }
 
-            bag += tableKit.delegate.willBeginDragging.onValue { _ in
-                viewController.isModalInPresentation = true
-                setSheetInteractionState(false)
-            }
+        bag += tableKit.delegate.willBeginDragging.onValue { _ in
+            viewController.isModalInPresentation = true
+            setSheetInteractionState(false)
+        }
 
-            bag += tableKit.delegate.willEndDragging.onValue { _ in
-                viewController.isModalInPresentation = false
-                setSheetInteractionState(true)
-            }
+        bag += tableKit.delegate.willEndDragging.onValue { _ in
+            viewController.isModalInPresentation = false
+            setSheetInteractionState(true)
         }
 
         bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
