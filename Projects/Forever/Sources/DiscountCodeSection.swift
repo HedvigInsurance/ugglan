@@ -72,18 +72,18 @@ extension DiscountCodeSection: Viewable {
 
         bag += section.append(codeRow)
             .onValueDisposePrevious { _ in let innerBag = DisposeBag()
-
+                Toasts.shared.displayToast(
+                    toast: .init(
+                        symbol: .icon(Asset.toastIcon.image),
+                        body: L10n.ReferralsActiveToast.text
+                    )
+                )
+                
                 section.viewController?.presentConditionally(PushNotificationReminder(), style: .modal)
                     .onResult { _ in
                         innerBag += self.service.dataSignal.atOnce()
                             .compactMap { $0?.discountCode }
                             .bindTo(UIPasteboard.general, \.string)
-                        Toasts.shared.displayToast(
-                            toast: .init(
-                                symbol: .icon(Asset.toastIcon.image),
-                                body: L10n.ReferralsActiveToast.text
-                            )
-                        )
                     }
 
                 return innerBag
