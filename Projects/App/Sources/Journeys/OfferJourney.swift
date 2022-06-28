@@ -7,43 +7,6 @@ import hCoreUI
 import hGraphQL
 
 extension AppJourney {
-    static var storedOnboardingOffer: some JourneyPresentation {
-        Journey(
-            Offer(
-                menu: Menu(
-                    title: nil,
-                    children: [
-                        MenuChild.appInformation,
-                        MenuChild.appSettings,
-                        MenuChild.login,
-                    ]
-                ),
-                options: [
-                    .menuToTrailing
-                ]
-            )
-        ) { offerResult in
-            switch offerResult {
-            case .chat:
-                AppJourney
-                    .freeTextChat()
-                    .withDismissButton
-            case .signed:
-                AppJourney.postOnboarding
-            case let .signedQuoteCart(token, _):
-                Journey(ApolloClientSaveTokenLoader(accessToken: token)) {
-                    AppJourney.postOnboarding
-                }
-            case .close:
-                ContinueJourney()
-            case let .menu(action):
-                action.journey
-            case .openCheckout:
-                AppJourney.offerCheckout
-            }
-        }
-    }
-
     @JourneyBuilder static var offerCheckout: some JourneyPresentation {
         let store: OfferStore = globalPresentableStoreContainer.get()
 
