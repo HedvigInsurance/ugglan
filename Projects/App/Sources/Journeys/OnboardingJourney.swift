@@ -6,6 +6,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import hAnalytics
 
 extension AppJourney {
     @JourneyBuilder
@@ -16,6 +17,8 @@ extension AppJourney {
             webUrl.appendPathComponent("new-member")
             
             UIApplication.shared.open(webUrl)
+            
+            hAnalyticsEvent.redirectedToWebOnboarding().send()
         }
     }
 }
