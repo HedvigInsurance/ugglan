@@ -5,6 +5,7 @@ import Offer
 import Presentation
 import UIKit
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct UgglanState: StateProtocol {
@@ -16,6 +17,7 @@ public enum UgglanAction: ActionProtocol {
     case setSelectedTabIndex(index: Int)
     case makeTabActive(deeplink: DeepLink)
     case showLoggedIn
+    case validateAuthToken
     case openClaims
     case exchangePaymentLink(link: String)
     case exchangePaymentToken(token: String)
@@ -67,6 +69,26 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             return performTokenExchange(with: exchangeToken)
         case let .exchangePaymentToken(token):
             return performTokenExchange(with: token)
+        case .validateAuthToken:
+            return client.fetch(query: GraphQL.MemberIdQuery())
+                .valueThenEndSignal
+                .atError(on: .main) { error in
+                    print(error.localizedDescription)
+                    ApplicationState.preserveState(.marketPicker)
+                    UIApplication.shared.appDelegate.logout(token: nil)
+                    let toast = Toast(
+                        symbol: .icon(hCoreUIAssets.infoShield.image),
+                        body: "You have been logged out, please login again",
+                        textColor: .black,
+                        backgroundColor: .brand(.regularCaution)
+                    )
+
+                    Toasts.shared.displayToast(toast: toast)
+                }
+                .compactMap { $0.member.id }
+                .compactMap(on: .main) { _ in
+                    return nil
+                }
         default:
             break
         }
