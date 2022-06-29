@@ -5,6 +5,7 @@ import Offer
 import Presentation
 import UIKit
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct UgglanState: StateProtocol {
@@ -75,6 +76,14 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
                     print(error.localizedDescription)
                     ApplicationState.preserveState(.marketPicker)
                     UIApplication.shared.appDelegate.logout(token: nil)
+                    let toast = Toast(
+                        symbol: .icon(hCoreUIAssets.infoShield.image),
+                        body: "You have been logged out, please login again",
+                        textColor: .black,
+                        backgroundColor: .brand(.regularCaution)
+                    )
+
+                    Toasts.shared.displayToast(toast: toast)
                 }
                 .compactMap { $0.member.id }
                 .compactMap(on: .main) { _ in
