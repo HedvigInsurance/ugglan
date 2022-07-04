@@ -73,7 +73,7 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             return client.fetch(query: GraphQL.MemberIdQuery())
                 .valueThenEndSignal
                 .atError(on: .main) { error in
-                    print(error.localizedDescription)
+                    log.error(error.localizedDescription)
                     ApplicationState.preserveState(.marketPicker)
                     UIApplication.shared.appDelegate.logout(token: nil)
                     let toast = Toast(
