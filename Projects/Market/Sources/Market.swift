@@ -21,14 +21,11 @@ public enum Market: String, CaseIterable, Codable {
     }
 
     public var title: String {
-        switch (self, Localization.Locale.currentLocale) {
-        case (.sweden, .sv_SE): return "Sverige"
-        case (.sweden, _): return "Sweden"
-        case (.norway, .nb_NO): return "Norge"
-        case (.norway, _): return "Norway"
-        case (.denmark, .da_DK): return "Danmark"
-        case (.denmark, _): return "Denmark"
-        case (.france, _): return "France"
+        switch self {
+        case .norway: return L10n.marketNorway
+        case .sweden: return L10n.marketSweden
+        case .denmark: return L10n.marketDenmark
+        case .france: return L10n.marketFrance
         }
     }
 
