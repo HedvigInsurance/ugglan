@@ -78,7 +78,8 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
                     UIApplication.shared.appDelegate.logout(token: nil)
                     let toast = Toast(
                         symbol: .icon(hCoreUIAssets.infoShield.image),
-                        body: "You have been logged out, please login again",
+                        body: L10n.forceLogoutMessageTitle,
+                        subtitle: L10n.forceLogoutMessageSubtitle,
                         textColor: .black,
                         backgroundColor: .brand(.regularCaution)
                     )
