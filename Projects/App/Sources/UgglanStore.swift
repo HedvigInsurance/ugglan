@@ -83,14 +83,14 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
                         textColor: .black,
                         backgroundColor: .brand(.regularCaution)
                     )
-                    
+
                     Toasts.shared.displayToast(toast: toast)
                 }
                 .compactMap { $0.member.id }
                 .compactMap(on: .main) { _ in
                     return nil
                 }
-            
+
         default:
             break
         }
