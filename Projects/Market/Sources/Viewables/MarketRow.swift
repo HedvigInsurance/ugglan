@@ -29,6 +29,7 @@ extension MarketRow: Viewable {
         bag += Localization.Locale.$currentLocale.atOnce().delay(by: 0)
             .transition(style: .crossDissolve(duration: 0.25), with: row) { _ in
                 row.title = L10n.MarketLanguageScreen.marketLabel
+                row.subtitle = store.state.market.title
             }
 
         let flagImageView = UIImageView()
