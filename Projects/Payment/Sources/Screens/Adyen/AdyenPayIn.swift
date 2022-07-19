@@ -35,6 +35,7 @@ public struct AdyenPayIn: Presentable {
     
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
+    @PresentableStore var paymentStore: PaymentStore
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
@@ -55,15 +56,16 @@ public struct AdyenPayIn: Presentable {
             self.client
                 .perform(
                     mutation: GraphQL.AdyenTokenizePaymentDetailsMutation(
-                        request: GraphQL.TokenizationRequest(
+                        input: GraphQL.ConnectPaymentInput(
                             paymentMethodDetails: json,
                             channel: .ios,
-                            returnUrl: "\(urlScheme)://adyen"
+                            returnUrl: "\(urlScheme)://adyen",
+                            market: Localization.Locale.currentLocale.market.graphQL
                         )
                     )
                 )
                 .onValue { data in
-                    if data.tokenizePaymentDetails?.asTokenizationResponseFinished != nil {
+                    if let data = data.paymentConnectionConnectPayment.asConnectPaymentFinished {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             client.fetch(
                                 query: GraphQL.ActivePaymentMethodsQuery(),
@@ -71,14 +73,16 @@ public struct AdyenPayIn: Presentable {
                             )
                             .sink()
                         }
+                        paymentStore.send(.setConnectionID(id: data.paymentTokenId))
                         onResult(.success(.make(())))
-                    } else if let data = data.tokenizePaymentDetails?.asTokenizationResponseAction {
-                        guard let jsonData = data.action.data(using: .utf8) else { return }
+                    } else if let data = data.paymentConnectionConnectPayment.asActionRequired {
+                        guard let jsonData = data.actionV2.data(using: .utf8) else { return }
                         guard
                             let action = try? JSONDecoder()
                                 .decode(AdyenActions.Action.self, from: jsonData)
                         else { return }
 
+                        paymentStore.send(.setConnectionID(id: data.paymentTokenId))
                         onResult(.success(.make(action)))
                     } else {
                         onResult(.failure(AdyenError.tokenization))

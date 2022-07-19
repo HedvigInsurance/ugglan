@@ -4,8 +4,8 @@ import Foundation
 import Offer
 import Presentation
 import UIKit
-import hAnalytics
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct UgglanState: StateProtocol {
@@ -20,9 +20,11 @@ public enum UgglanAction: ActionProtocol {
     case openClaims
     case exchangePaymentLink(link: String)
     case exchangePaymentToken(token: String)
+    case validateAuthToken
     case exchangeFailed
     case didAcceptHonestyPledge
     case openChat
+    case sendAccountDeleteRequest(details: MemberDetails)
 }
 
 public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
@@ -67,8 +69,28 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             return performTokenExchange(with: exchangeToken)
         case let .exchangePaymentToken(token):
             return performTokenExchange(with: token)
-        case .didAcceptHonestyPledge:
-            hAnalyticsEvent.honorPledgeConfirmed().send()
+        case .validateAuthToken:
+            return client.fetch(query: GraphQL.MemberIdQuery())
+                .valueThenEndSignal
+                .atError(on: .main) { error in
+                    log.error(error.localizedDescription)
+                    ApplicationState.preserveState(.marketPicker)
+                    UIApplication.shared.appDelegate.logout(token: nil)
+                    let toast = Toast(
+                        symbol: .icon(hCoreUIAssets.infoShield.image),
+                        body: L10n.forceLogoutMessageTitle,
+                        subtitle: L10n.forceLogoutMessageSubtitle,
+                        textColor: .black,
+                        backgroundColor: .brand(.regularCaution)
+                    )
+
+                    Toasts.shared.displayToast(toast: toast)
+                }
+                .compactMap { $0.member.id }
+                .compactMap(on: .main) { _ in
+                    return nil
+                }
+
         default:
             break
         }

@@ -161,7 +161,7 @@ extension ContractDetail {
                 )
                 .withDismissButton
             } else if case let .contractDetailNavigationAction(action: .insurableLimit(limit)) = action {
-                InsurableLimitDetail(limit: limit).journey.withDismissButton
+                InsurableLimitDetail(limit: limit).journey
             } else if case let .contractDetailNavigationAction(action: .document(url, title)) = action {
                 Journey(
                     Document(url: url, title: title),

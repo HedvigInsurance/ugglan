@@ -56,6 +56,18 @@ extension Header: Presentable {
                         shouldShimmer: false,
                         shouldAnimate: false
                     )
+                case .four:
+                    gradientView.gradientOption = .init(
+                        preset: .insuranceFour,
+                        shouldShimmer: false,
+                        shouldAnimate: false
+                    )
+                case .five:
+                    gradientView.gradientOption = .init(
+                        preset: .insuranceFive,
+                        shouldShimmer: false,
+                        shouldAnimate: false
+                    )
                 }
             }
 

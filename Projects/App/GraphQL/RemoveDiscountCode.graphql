@@ -1,4 +1,4 @@
-mutation RemoveDiscountCode {
+mutation RemoveDiscountCode($locale: Locale!) {
     removeDiscountCode {
         campaigns {
             ...CampaignFragment

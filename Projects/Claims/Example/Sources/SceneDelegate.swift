@@ -5,7 +5,6 @@ import UIKit
 import hCore
 import hCoreUI
 
-@available(iOS 13, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(

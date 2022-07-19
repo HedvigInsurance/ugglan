@@ -2,6 +2,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
@@ -27,33 +28,22 @@ extension MainContentForm: Presentable {
         formContainer.insetsLayoutMarginsFromSafeArea = true
         container.addArrangedSubview(formContainer)
 
-        let form = FormView()
-        form.dynamicStyle = DynamicFormStyle { _ in
-            .init(insets: .zero)
+        let hostView = makeHost {
+            VStack {
+                DataCollectionSection()
+                VariationSection()
+                DetailsSection()
+                CoverageSection()
+                SwitcherSection()
+                FrequentlyAskedQuestionsSection()
+            }
         }
-        form.layer.cornerRadius = .defaultCornerRadius
-        form.layer.masksToBounds = true
-        form.backgroundColor = .brand(.primaryBackground())
-        formContainer.addArrangedSubview(form)
-
-        form.append(HostingView(rootView: DataCollectionSection()))
-
-        bag += form.append(DetailsSection())
-
-        form.appendSpacing(.inbetween)
-
-        bag += form.append(CoverageSection())
-        bag += form.append(SwitcherSection())
-
-        form.appendSpacing(.inbetween)
-
-        bag += form.append(FrequentlyAskedQuestionsSection())
+        formContainer.addArrangedSubview(hostView)
 
         bag += merge(
             scrollView.didLayoutSignal,
             container.didLayoutSignal,
             formContainer.didLayoutSignal,
-            form.didLayoutSignal,
             scrollView.didScrollSignal,
             store.stateSignal.compactMap { $0.offerData }.toVoid()
         )

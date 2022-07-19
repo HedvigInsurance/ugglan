@@ -228,20 +228,18 @@ extension Home: Presentable {
         viewController.title = L10n.HomeTab.title
         viewController.installChatButton(allowsChatHint: true)
 
-        if #available(iOS 13.0, *) {
-            let scrollEdgeAppearance = UINavigationBarAppearance()
-            DefaultStyling.applyCommonNavigationBarStyling(scrollEdgeAppearance)
-            scrollEdgeAppearance.configureWithTransparentBackground()
-            scrollEdgeAppearance.largeTitleTextAttributes = scrollEdgeAppearance.largeTitleTextAttributes
-                .merging(
-                    [
-                        NSAttributedString.Key.foregroundColor: UIColor.clear
-                    ],
-                    uniquingKeysWith: takeRight
-                )
+        let scrollEdgeAppearance = UINavigationBarAppearance()
+        DefaultStyling.applyCommonNavigationBarStyling(scrollEdgeAppearance)
+        scrollEdgeAppearance.configureWithTransparentBackground()
+        scrollEdgeAppearance.largeTitleTextAttributes = scrollEdgeAppearance.largeTitleTextAttributes
+            .merging(
+                [
+                    NSAttributedString.Key.foregroundColor: UIColor.clear
+                ],
+                uniquingKeysWith: takeRight
+            )
 
-            viewController.navigationItem.scrollEdgeAppearance = scrollEdgeAppearance
-        }
+        viewController.navigationItem.scrollEdgeAppearance = scrollEdgeAppearance
 
         let bag = DisposeBag()
 
@@ -308,7 +306,7 @@ extension Home: Presentable {
 
                 if let name = state.memberStateData.name {
                     let label = makeHost {
-                        hText(L10n.HomeTab.welcomeTitle(name), style: .largeTitle)
+                        hText(L10n.HomeTab.welcomeTitle(name), style: .prominentTitle)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
@@ -347,7 +345,7 @@ extension Home: Presentable {
             case .future:
                 innerBag += titleSection.append(FutureSection())
             case .terminated:
-                innerBag += titleSection.append(TerminatedSection(claimSubmitHandler))
+                innerBag += titleSection.append(TerminatedSection(claimsContent: claimsContent))
             case .loading:
                 break
             }

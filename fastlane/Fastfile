@@ -207,7 +207,7 @@ platform :ios do
 
             payload = {
                 iat: Time.now.to_i - 60,
-                exp: Time.now.to_i + (10 * 60),
+                exp: Time.now.to_i + (9 * 60),
                 iss: ENV["HEDVIG_GITHUB_APP_ID"].to_i
             }
 
@@ -733,7 +733,7 @@ platform :ios do
             )
         end
         
-        device = "iPhone 12 Pro (15.0)"
+        device = "iPhone 13 Pro (15.4)"
         
         schemes.each { |scheme|
             begin

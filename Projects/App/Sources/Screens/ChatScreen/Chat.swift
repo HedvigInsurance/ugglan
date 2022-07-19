@@ -7,6 +7,7 @@ import Presentation
 import UIKit
 import hAnalytics
 import hCore
+import hCoreUI
 import hGraphQL
 
 struct Chat {
@@ -56,11 +57,13 @@ enum ChatResult {
                     case .close:
                         DismissJourney()
                     case .signed:
-                        AppJourney.postOnboarding
+                        ContinueJourney()
                     case let .menu(action):
                         action.journey
                     case .openCheckout:
                         AppJourney.offerCheckout
+                    case .signedQuoteCart:
+                        DismissJourney()
                     }
                 }
                 .hidesBackButton
@@ -147,30 +150,26 @@ extension Chat: Presentable {
         }
 
         tableKit.view.contentInsetAdjustmentBehavior = .never
-        if #available(iOS 13.0, *) {
-            tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
-        }
+        tableKit.view.automaticallyAdjustsScrollIndicatorInsets = false
 
         // hack to fix modal dismissing when dragging up in scrollView
-        if #available(iOS 13.0, *) {
-            func setSheetInteractionState(_ enabled: Bool) {
-                let presentationController = viewController.navigationController?.presentationController
-                let key = [
-                    "_sheet", "Interaction",
-                ]
-                let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
-                sheetInteraction?.setValue(enabled, forKey: "enabled")
-            }
+        func setSheetInteractionState(_ enabled: Bool) {
+            let presentationController = viewController.navigationController?.presentationController
+            let key = [
+                "_sheet", "Interaction",
+            ]
+            let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
+            sheetInteraction?.setValue(enabled, forKey: "enabled")
+        }
 
-            bag += tableKit.delegate.willBeginDragging.onValue { _ in
-                viewController.isModalInPresentation = true
-                setSheetInteractionState(false)
-            }
+        bag += tableKit.delegate.willBeginDragging.onValue { _ in
+            viewController.isModalInPresentation = true
+            setSheetInteractionState(false)
+        }
 
-            bag += tableKit.delegate.willEndDragging.onValue { _ in
-                viewController.isModalInPresentation = false
-                setSheetInteractionState(true)
-            }
+        bag += tableKit.delegate.willEndDragging.onValue { _ in
+            viewController.isModalInPresentation = false
+            setSheetInteractionState(true)
         }
 
         bag += tableKit.delegate.willDisplayCell.onValue { cell, _ in
@@ -245,17 +244,7 @@ extension Chat: Presentable {
                 bag += navigateCallbacker.onValue { navigationEvent in
                     switch navigationEvent {
                     case .offer:
-                        client.fetch(query: GraphQL.LastQuoteOfMemberQuery())
-                            .onValue { data in
-                                guard
-                                    let id = data.lastQuoteOfMember.asCompleteQuote?
-                                        .id
-                                else {
-                                    return
-                                }
-
-                                callback(.offer(ids: [id]))
-                            }
+                        break
                     case .dashboard:
                         callback(.loggedIn)
                     case .login:

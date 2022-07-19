@@ -383,8 +383,8 @@ public struct hLabelColor {
 
     public static var link: some hColor {
         hColorScheme(
-            light: Color(hexString: "BE9BF3"),
-            dark: Color(hexString: "BE9BF3")
+            light: Color(hexString: "875EC5"),
+            dark: Color(hexString: "875EC5")
         )
     }
 }

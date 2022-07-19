@@ -1,4 +1,4 @@
-query MyPayment {
+query MyPayment($locale: Locale!) {
     insuranceCost {
         ...CostFragment
     }

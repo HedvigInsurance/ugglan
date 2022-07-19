@@ -1,70 +1,73 @@
 import Flow
 import Form
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hGraphQL
 
-extension DetailAgreementsTable: Viewable {
-    public func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
-        let bag = DisposeBag()
+public struct DetailAgreementsTableView: View {
+    var table: DetailAgreementsTable
 
-        let sectionView: SectionView
+    var hasTitle: Bool {
+        table.title.count > 0
+    }
 
-        if !title.isEmpty {
-            let headerContainer = UIStackView()
-
-            headerContainer.addArrangedSubview(
-                UILabel(
-                    value: title,
-                    style: .brand(.title2(color: .primary))
-                )
-            )
-
-            sectionView = SectionView(headerView: headerContainer, footerView: nil)
-        } else {
-            sectionView = SectionView(headerView: nil, footerView: nil)
-        }
-
-        sectionView.dynamicStyle = .brandGrouped(separatorType: .none)
-        bag += {
-            sectionView.removeFromSuperview()
-        }
-
-        sections.enumerated()
-            .forEach { (offset, section) in
-                let headerContainer = UIStackView()
-                headerContainer.addArrangedSubview(
-                    UILabel(
-                        value: section.title,
-                        style: .brand(.callout(color: .tertiary))
-                    )
-                )
-
-                let detailsSection = SectionView(
-                    headerView: headerContainer,
-                    footerView: nil
-                )
-                detailsSection.dynamicStyle = .brandGroupedInset(separatorType: .standard)
-                sectionView.append(detailsSection)
-
-                section.rows.forEach { tableRow in
-                    let row = RowView(
-                        title: tableRow.title,
-                        subtitle: tableRow.subtitle ?? ""
-                    )
-                    detailsSection.append(row)
-
-                    let valueLabel = UILabel(
-                        value: tableRow.value,
-                        style: .brand(.body(color: .secondary))
-                    )
-                    row.append(valueLabel)
-                }
-
-                sectionView.appendSpacing(.inbetween)
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            if hasTitle {
+                hText(table.title, style: .title3)
+                    .padding(.leading, 15)
             }
 
-        return (sectionView, bag)
+            ForEach(table.sections, id: \.hashValue) { section in
+                hSection(section.rows, id: \.title) { row in
+                    hRow {
+                        VStack(alignment: .leading) {
+                            hText(row.title, style: .body)
+                                .foregroundColor(hLabelColor.primary)
+
+                            if let subtitle = row.subtitle {
+                                hText(subtitle, style: .subheadline)
+                                    .foregroundColor(hLabelColor.secondary)
+                            }
+                        }
+                    }
+                    .withCustomAccessory {
+                        Spacer()
+                        VStack {
+                            hText(row.value, style: .body)
+                                .foregroundColor(hLabelColor.secondary)
+                        }
+                    }
+                }
+                .withHeader {
+                    if hasTitle {
+                        hText(
+                            section.title,
+                            style: .headline
+                        )
+                        .foregroundColor(hLabelColor.secondary)
+                    } else {
+                        hText(section.title)
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+struct Previews_DetailAgreementsTableView: PreviewProvider {
+    static var previews: some View {
+        DetailAgreementsTableView(
+            table: DetailAgreementsTable(sections: [], title: "Mock title")
+        )
+    }
+}
+
+extension DetailAgreementsTable {
+    public var view: DetailAgreementsTableView {
+        DetailAgreementsTableView(table: self)
     }
 }

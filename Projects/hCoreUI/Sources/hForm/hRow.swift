@@ -39,7 +39,7 @@ public struct hRow<Content: View, Accessory: View>: View {
 
     var content: Content
     var accessory: Accessory
-    var padding: CGFloat = 15
+    var padding: CGFloat = 21
 
     public init(
         _ accessory: Accessory,

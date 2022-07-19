@@ -2,6 +2,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
@@ -11,22 +12,20 @@ struct QuoteCoverage {
     let quote: QuoteBundle.Quote
 }
 
-extension QuoteCoverage: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
-        let viewController = UIViewController()
-        viewController.title = L10n.offerScreenCoverageTitle
-        let bag = DisposeBag()
+extension QuoteCoverage: View {
+    var body: some View {
+        hForm {
+            SingleQuoteCoverage(quote: quote)
+        }
+    }
+}
 
-        let form = FormView()
-
-        bag += form.append(SingleQuoteCoverage(quote: quote))
-
-        form.appendSpacing(.top)
-
-        let scrollView = FormScrollView()
-        scrollView.backgroundColor = .brand(.primaryBackground())
-        bag += viewController.install(form, scrollView: scrollView)
-
-        return (viewController, bag)
+extension QuoteCoverage {
+    var journey: some JourneyPresentation {
+        HostingJourney(rootView: self)
+            .withDismissButton
+            .setStyle(.detented(.large))
+            .setOptions([.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)])
+            .configureTitle(L10n.offerScreenCoverageTitle)
     }
 }

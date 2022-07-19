@@ -100,98 +100,95 @@ extension PerilDetail: Presentable {
             }
         }
 
-        // only show swipe hint if detents are available on system which is iOS 13+
-        if #available(iOS 13, *) {
-            let swipeHintBackgroundView = UIView()
-            scrollView.addSubview(swipeHintBackgroundView)
+        let swipeHintBackgroundView = UIView()
+        scrollView.addSubview(swipeHintBackgroundView)
 
-            swipeHintBackgroundView.snp.makeConstraints { make in
-                make.bottom.equalTo(scrollView.frameLayoutGuide.snp.bottom)
-                make.left.equalTo(scrollView.frameLayoutGuide.snp.left)
-                make.right.equalTo(scrollView.frameLayoutGuide.snp.right)
+        swipeHintBackgroundView.snp.makeConstraints { make in
+            make.bottom.equalTo(scrollView.frameLayoutGuide.snp.bottom)
+            make.left.equalTo(scrollView.frameLayoutGuide.snp.left)
+            make.right.equalTo(scrollView.frameLayoutGuide.snp.right)
+        }
+
+        let gradient = CAGradientLayer()
+        gradient.locations = [0, 0.3, 1]
+        swipeHintBackgroundView.layer.addSublayer(gradient)
+
+        bag += swipeHintBackgroundView.traitCollectionSignal.atOnce()
+            .onValue { _ in
+                gradient.colors = [
+                    UIColor.brand(.secondaryBackground()).withAlphaComponent(0).cgColor,
+                    UIColor.brand(.secondaryBackground()).cgColor,
+                    UIColor.brand(.secondaryBackground()).cgColor,
+                ]
             }
 
-            let gradient = CAGradientLayer()
-            gradient.locations = [0, 0.3, 1]
-            swipeHintBackgroundView.layer.addSublayer(gradient)
+        bag += swipeHintBackgroundView.didLayoutSignal.onValue { _ in
+            scrollView.bringSubviewToFront(swipeHintBackgroundView)
+            gradient.frame = swipeHintBackgroundView.bounds
+        }
 
-            bag += swipeHintBackgroundView.traitCollectionSignal.atOnce()
-                .onValue { _ in
-                    gradient.colors = [
-                        UIColor.brand(.secondaryBackground()).withAlphaComponent(0).cgColor,
-                        UIColor.brand(.secondaryBackground()).cgColor,
-                        UIColor.brand(.secondaryBackground()).cgColor,
-                    ]
+        let swipeHintContainer = UIStackView()
+        swipeHintContainer.axis = .vertical
+        swipeHintContainer.alignment = .center
+        swipeHintContainer.spacing = 5
+        swipeHintBackgroundView.addSubview(swipeHintContainer)
+
+        bag += swipeHintBackgroundView.windowSignal.atOnce()
+            .onValueDisposePrevious { window in
+                guard let window = window else {
+                    return NilDisposer()
                 }
 
-            bag += swipeHintBackgroundView.didLayoutSignal.onValue { _ in
-                scrollView.bringSubviewToFront(swipeHintBackgroundView)
-                gradient.frame = swipeHintBackgroundView.bounds
-            }
+                var bottomSafeArea = window.safeAreaInsets.bottom
 
-            let swipeHintContainer = UIStackView()
-            swipeHintContainer.axis = .vertical
-            swipeHintContainer.alignment = .center
-            swipeHintContainer.spacing = 5
-            swipeHintBackgroundView.addSubview(swipeHintContainer)
+                if window.traitCollection.userInterfaceIdiom == .pad { bottomSafeArea = 0 }
 
-            bag += swipeHintBackgroundView.windowSignal.atOnce()
-                .onValueDisposePrevious { window in
-                    guard let window = window else {
-                        return NilDisposer()
-                    }
+                swipeHintContainer.edgeInsets = UIEdgeInsets(
+                    top: 10,
+                    left: 0,
+                    bottom: bottomSafeArea != 0 ? bottomSafeArea : 20,
+                    right: 0
+                )
 
-                    var bottomSafeArea = window.safeAreaInsets.bottom
-
-                    if window.traitCollection.userInterfaceIdiom == .pad { bottomSafeArea = 0 }
-
-                    swipeHintContainer.edgeInsets = UIEdgeInsets(
-                        top: 20,
-                        left: 0,
-                        bottom: bottomSafeArea != 0 ? bottomSafeArea : 20,
-                        right: 0
+                return stackView.didLayoutSignal.onValue { _ in
+                    let mainContentHeight = stackView.frame.size
+                    let navigationBarHeight =
+                        viewController.navigationController?.navigationBar.frame.height ?? 0
+                    viewController.preferredContentSize = CGSize(
+                        width: mainContentHeight.width,
+                        height: mainContentHeight.height
+                            + (swipeHintContainer.frame.height - bottomSafeArea)
+                            + navigationBarHeight
                     )
-
-                    return stackView.didLayoutSignal.onValue { _ in
-                        let mainContentHeight = stackView.frame.size
-                        let navigationBarHeight =
-                            viewController.navigationController?.navigationBar.frame.height ?? 0
-                        viewController.preferredContentSize = CGSize(
-                            width: mainContentHeight.width,
-                            height: mainContentHeight.height
-                                + (swipeHintContainer.frame.height - bottomSafeArea)
-                                + navigationBarHeight
-                        )
-                    }
                 }
-
-            swipeHintContainer.snp.makeConstraints { make in
-                make.top.bottom.trailing.leading.equalToSuperview()
             }
 
-            let swipeHintTapGestureRecognizer = UITapGestureRecognizer()
-            swipeHintContainer.addGestureRecognizer(swipeHintTapGestureRecognizer)
+        swipeHintContainer.snp.makeConstraints { make in
+            make.top.bottom.trailing.leading.equalToSuperview()
+        }
 
-            bag += swipeHintTapGestureRecognizer.signal(forState: .recognized)
-                .compactMap { viewController.appliedDetents.last }
-                .bindTo(viewController.currentDetentSignal)
+        let swipeHintTapGestureRecognizer = UITapGestureRecognizer()
+        swipeHintContainer.addGestureRecognizer(swipeHintTapGestureRecognizer)
 
-            let chevronUpImageView = UIImageView()
-            chevronUpImageView.image = hCoreUIAssets.chevronUp.image
-            chevronUpImageView.contentMode = .scaleAspectFit
-            swipeHintContainer.addArrangedSubview(chevronUpImageView)
+        bag += swipeHintTapGestureRecognizer.signal(forState: .recognized)
+            .compactMap { viewController.appliedDetents.last }
+            .bindTo(viewController.currentDetentSignal)
 
-            let swipeHintLabel = UILabel(
-                value: L10n.PerilDetail.moreInfo,
-                style: TextStyle.brand(.footnote(color: .primary)).centerAligned
-            )
-            swipeHintContainer.addArrangedSubview(swipeHintLabel)
+        let chevronUpImageView = UIImageView()
+        chevronUpImageView.image = hCoreUIAssets.chevronUp.image
+        chevronUpImageView.contentMode = .scaleAspectFit
+        swipeHintContainer.addArrangedSubview(chevronUpImageView)
 
-            bag += viewController.install(form, scrollView: scrollView)
+        let swipeHintLabel = UILabel(
+            value: L10n.PerilDetail.moreInfo,
+            style: TextStyle.brand(.footnote(color: .primary)).centerAligned
+        )
+        swipeHintContainer.addArrangedSubview(swipeHintLabel)
 
-            bag += viewController.currentDetentSignal.animated(style: .lightBounce()) { detent in
-                swipeHintBackgroundView.alpha = detent == .large ? 0 : 1
-            }
+        bag += viewController.install(form, scrollView: scrollView)
+
+        bag += viewController.currentDetentSignal.animated(style: .lightBounce()) { detent in
+            swipeHintBackgroundView.alpha = detent == .large ? 0 : 1
         }
 
         return (viewController, bag)

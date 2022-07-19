@@ -5,6 +5,7 @@ import Foundation
 import Kingfisher
 import SafariServices
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -84,11 +85,19 @@ extension Message: Reusable {
             context: nil
         )
 
+        let extraPadding: CGFloat = {
+            if hAnalyticsExperiment.useHedvigLettersFont {
+                return 25
+            }
+
+            return 20
+        }()
+
         if isRelatedToPreviousMessage {
-            return size.height + smallerMarginTop + 20 + extraHeightForTimeStampLabel
+            return size.height + smallerMarginTop + extraPadding + extraHeightForTimeStampLabel
         }
 
-        return size.height + largerMarginTop + 20 + extraHeightForTimeStampLabel
+        return size.height + largerMarginTop + extraPadding + extraHeightForTimeStampLabel
     }
 
     static var bubbleColor: UIColor { UIColor(red: 0.904, green: 0.837, blue: 1, alpha: 1) }
@@ -173,7 +182,12 @@ extension Message: Reusable {
 
         return (
             containerView,
-            { message in let bag = DisposeBag()
+            { message in
+                let bag = DisposeBag()
+
+                contentContainer.subviews.forEach { view in
+                    view.removeFromSuperview()
+                }
 
                 UIView.performWithoutAnimation {
                     func handleTimeStamp() {
@@ -329,9 +343,6 @@ extension Message: Reusable {
                         }
 
                         contentContainer.addArrangedSubview(imageViewContainer)
-
-                        bag += { imageViewContainer.removeFromSuperview() }
-
                     case let .gif(url):
                         bubble.backgroundColor = .clear
                         let imageViewContainer = UIView()
@@ -377,9 +388,6 @@ extension Message: Reusable {
                         }
 
                         contentContainer.addArrangedSubview(imageViewContainer)
-
-                        bag += { imageViewContainer.removeFromSuperview() }
-
                     case let .file(url):
                         let textStyle = TextStyle.brand(.body(color: .primary))
                             .colored(messageTextColor)
@@ -393,8 +401,6 @@ extension Message: Reusable {
                         label.isUserInteractionEnabled = false
 
                         contentContainer.addArrangedSubview(label)
-
-                        bag += { label.removeFromSuperview() }
 
                         let linkTapGestureRecognizer = UITapGestureRecognizer()
                         bag += contentContainer.install(linkTapGestureRecognizer)
@@ -458,8 +464,6 @@ extension Message: Reusable {
                                         options: []
                                     )
                             }
-
-                        bag += { imageViewContainer.removeFromSuperview() }
                     case .text:
                         let textStyle = TextStyle.brand(.body(color: .primary))
                             .colored(messageTextColor)
@@ -511,8 +515,6 @@ extension Message: Reusable {
                                         )
                                 }
                             }
-
-                        bag += { label.removeFromSuperview() }
                     }
 
                     if !message.type.isRichType {

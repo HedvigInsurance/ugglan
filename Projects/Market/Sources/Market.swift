@@ -22,10 +22,10 @@ public enum Market: String, CaseIterable, Codable {
 
     public var title: String {
         switch self {
-        case .norway: return "Norge"
-        case .sweden: return "Sverige"
-        case .denmark: return "Danmark"
-        case .france: return "France"
+        case .norway: return L10n.marketNorway
+        case .sweden: return L10n.marketSweden
+        case .denmark: return L10n.marketDenmark
+        case .france: return L10n.marketFrance
         }
     }
 

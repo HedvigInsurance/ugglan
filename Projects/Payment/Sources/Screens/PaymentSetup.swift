@@ -54,18 +54,20 @@ extension PaymentSetup: Presentable {
 
 extension PaymentSetup {
     public func journey<Next: JourneyPresentation>(
-        @JourneyBuilder _ next: @escaping (_ success: Bool) -> Next
+        @JourneyBuilder _ next: @escaping (_ success: Bool, _ paymentConnectionID: String?) -> Next
     ) -> some JourneyPresentation {
         Journey(
             self,
             style: .detented(.large),
             options: [.defaults, .autoPopSelfAndSuccessors]
         ) { result in
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+
             if let success = result.left {
-                next(success)
+                next(success, store.state.paymentConnectionID)
             } else if let options = result.right {
                 Journey(AdyenPayIn(adyenOptions: options, urlScheme: Bundle.main.urlScheme ?? "")) { success in
-                    next(success)
+                    next(success, store.state.paymentConnectionID)
                 }
                 .withJourneyDismissButton
             }
@@ -74,7 +76,7 @@ extension PaymentSetup {
 
     /// Sets up payment and then dismisses
     public var journeyThenDismiss: some JourneyPresentation {
-        journey { _ in
+        journey { _, _ in
             DismissJourney()
         }
     }

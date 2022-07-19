@@ -45,8 +45,6 @@ extension RemoteVectorIcon: Viewable {
         func renderPdfDocument(pdfDocument: CGPDFDocument) {
             let imageViewSize = imageView.frame.size
 
-            if let image = imageView.image { if image.size == imageViewSize { return } }
-
             let page = pdfDocument.page(at: 1)!
             let rect = page.getBoxRect(CGPDFBox.mediaBox)
 
@@ -173,7 +171,11 @@ public struct RemoteVectorIconView: UIViewRepresentable {
         let (view, disposable) = context.coordinator.remoteVectorIcon.materialize(
             events: .init(wasAddedCallbacker: .init())
         )
-        context.coordinator.bag += disposable
+        context.coordinator.bag += Disposer {
+            DispatchQueue.main.async {
+                disposable.dispose()
+            }
+        }
         return view
     }
 

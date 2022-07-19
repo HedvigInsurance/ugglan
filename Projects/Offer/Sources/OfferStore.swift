@@ -15,12 +15,12 @@ public struct OfferState: StateProtocol {
     var startDates: [String: Date?] {
         switch currentVariant?.bundle.inception {
         case let .concurrent(concurrentInception):
-            return concurrentInception.correspondingQuotes.reduce(into: [:]) { partialResult, quote in
-                partialResult[quote.id ?? ""] = concurrentInception.startDate?.localDateToDate ?? Date()
+            return concurrentInception.correspondingQuotes.reduce(into: [:]) { partialResult, id in
+                partialResult[id] = concurrentInception.startDate?.localDateToDate ?? Date()
             }
         case let .independent(inceptions):
             return inceptions.reduce(into: [:]) { partialResult, inception in
-                partialResult[inception.correspondingQuote.id ?? ""] = inception.startDate?.localDateToDate ?? Date()
+                partialResult[inception.correspondingQuoteId] = inception.startDate?.localDateToDate ?? Date()
             }
         default:
             return [:]
@@ -52,6 +52,18 @@ public struct OfferState: StateProtocol {
             })
     }
 
+    var paymentConnection: PaymentConnection?
+
+    // Quote Cart
+    var quoteCartId: String? = nil
+    var selectedInsuranceTypes = [String]()
+    var checkoutStatus: CheckoutStatus? = nil
+    var accessToken: String? = nil
+
+    var isQuoteCart: Bool {
+        quoteCartId != nil
+    }
+
     public init() {}
 }
 
@@ -68,6 +80,12 @@ public enum OfferAction: ActionProtocol {
     case query
     case setOfferBundle(bundle: OfferBundle)
     case refetch
+    case openPerilDetail(peril: Perils)
+    case openInsurableLimit(limit: InsurableLimits)
+    case openQuoteCoverage(quote: QuoteBundle.Quote)
+    case openDocument(url: URL)
+    case openFAQ(item: QuoteBundle.FrequentlyAskedQuestion)
+    case setPaymentConnectionID(id: String)
 
     /// Start date events
     case setStartDates(dateMap: [String: Date?])
@@ -80,6 +98,15 @@ public enum OfferAction: ActionProtocol {
     case didRedeemCampaigns
     case didRemoveCampaigns
 
+    /// Quote Cart Events
+    case setQuoteCartId(id: String, insuranceTypes: [String])
+    case setQuoteCart(quoteCart: QuoteCart)
+    case setPaymentConnectionId(id: String)
+    case startCheckout
+    case requestQuoteCartSign
+    case fetchAccessToken
+    case setAccessToken(id: String)
+
     case failed(event: OfferStoreError)
 
     public enum SignEvent: Codable {
@@ -87,6 +114,7 @@ public enum OfferAction: ActionProtocol {
         case simpleSign
         case done
         case failed
+        case cancelled
     }
 
     public enum OfferStoreError: Error, Codable {
@@ -108,6 +136,40 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         )
     }
 
+    func query(for quoteCart: String) -> GraphQL.QuoteCartQuery {
+        GraphQL.QuoteCartQuery(
+            locale: Localization.Locale.currentLocale.asGraphQLLocale(),
+            id: quoteCart
+        )
+    }
+
+    func query(for state: OfferState, cachePolicy: CachePolicy) -> FiniteSignal<OfferAction>? {
+        if let quoteCartId = state.quoteCartId {
+            return self.client
+                .fetch(
+                    query: query(for: quoteCartId),
+                    cachePolicy: cachePolicy
+                )
+                .compactMap { data in
+                    data.quoteCart.fragments.quoteCartFragment
+                }
+                .map { quoteCart in
+                    return .setQuoteCart(quoteCart: .init(quoteCart: quoteCart))
+                }
+                .valueThenEndSignal
+        } else {
+            let query = self.query(for: state.ids)
+            return client.fetch(query: query, cachePolicy: cachePolicy)
+                .compactMap { data in
+                    return OfferBundle(data: data)
+                }
+                .map {
+                    return .setOfferBundle(bundle: $0)
+                }
+                .valueThenEndSignal
+        }
+    }
+
     internal var isLoadingSignal: CoreSignal<Read, Bool> {
         stateSignal.map { $0.offerData == nil }
     }
@@ -123,35 +185,57 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     quoteIds: getState().selectedIds
                 )
                 .send()
+                self.cancelEffect(.startSign)
+            } else if event == .cancelled {
+                self.cancelEffect(.startSign)
             }
         case .startSign:
-            return signQuotesEffect()
+            if let _ = getState().quoteCartId {
+                return FiniteSignal { callback in
+                    let bag = DisposeBag()
+
+                    bag += Signal(every: 0.5)
+                        .atValue { _ in
+                            callback(.value(.refetch))
+                        }
+                        .delay(by: 130)
+                        .onValue { _ in
+                            bag.dispose()
+                            callback(.value(.sign(event: .failed)))
+                        }
+
+                    bag += self.stateSignal
+                        .filter(predicate: {
+                            $0.checkoutStatus == .signed || $0.checkoutStatus == .completed
+                        })
+                        .onValue { _ in
+                            callback(.value(.sign(event: .done)))
+                        }
+
+                    callback(.value(.requestQuoteCartSign))
+
+                    return bag
+                }
+            } else {
+                return signQuotesEffect()
+            }
         case .query:
-            let query = self.query(for: getState().ids)
-            return client.fetch(query: query)
-                .compactMap { data in
-                    return OfferBundle(data: data)
-                }
-                .map {
-                    return .setOfferBundle(bundle: $0)
-                }
-                .valueThenEndSignal
+            return query(for: getState(), cachePolicy: .fetchIgnoringCacheData)
         case let .updateStartDates(dateMap):
+            let state = getState()
+            if let quoteCartId = state.quoteCartId,
+                let currentVariant = state.currentVariant,
+                let date = dateMap.values.first
+            {
+                return self.updateStartDatesQuoteCart(id: quoteCartId, date: date, currentVariant: currentVariant)
+            }
             return self.updateStartDates(dateMap: dateMap)
         case .removeRedeemedCampaigns:
-            return removeRedeemedCampaigns()
+            return removeRedeemedCampaigns(quoteCartId: getState().quoteCartId)
         case let .updateRedeemedCampaigns(discountCode):
-            return updateRedeemedCampaigns(discountCode: discountCode)
+            return updateRedeemedCampaigns(discountCode: discountCode, quoteCartId: getState().quoteCartId)
         case .refetch:
-            let query = query(for: state.ids)
-            return client.fetch(query: query, cachePolicy: .fetchIgnoringCacheData)
-                .compactMap { data in
-                    return OfferBundle(data: data)
-                }
-                .map {
-                    return .setOfferBundle(bundle: $0)
-                }
-                .valueThenEndSignal
+            return query(for: getState(), cachePolicy: .fetchIgnoringCacheCompletely)
         case .didRedeemCampaigns, .didRemoveCampaigns:
             return FiniteSignal { callback in
                 callback(.value(.refetch))
@@ -159,6 +243,58 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             }
         case .setOfferBundle:
             return Signal(after: 0.5).map { .setLoading(isLoading: false) }
+        case let .setQuoteCart(cart):
+            let allQuoteIds = cart.offerBundle?.possibleVariations
+                .flatMap({ variant in
+                    variant.bundle.quotes
+                })
+                .compactMap { quote in quote.id }
+
+            if let allQuoteIds = allQuoteIds {
+                hAnalyticsEvent.receivedQuotes(
+                    quoteIds: allQuoteIds
+                )
+                .send()
+            }
+
+            return Signal(after: 0.5).map { .setLoading(isLoading: false) }
+        case .startCheckout:
+            return Signal(after: 0.1).map { .openCheckout }
+        case .requestQuoteCartSign:
+            let state = getState()
+            if let quoteCartId = state.quoteCartId, let quoteId = state.currentVariant?.id {
+                let ids = state.currentVariant?.bundle.quotes.compactMap { $0.id } ?? [quoteId]
+                return requestQuoteCartSign(quoteCartId: quoteCartId, ids: ids)
+            }
+        case .fetchAccessToken:
+            if let quoteCartId = getState().quoteCartId {
+                return self.client.perform(mutation: GraphQL.CreateAccessTokenMutation(id: quoteCartId))
+                    .compactMap { data in
+                        data.quoteCartCreateAccessToken.accessToken
+                    }
+                    .map {
+                        .setAccessToken(id: $0)
+                    }
+                    .valueThenEndSignal
+            }
+        case let .setPaymentConnectionID(paymentConnectionID):
+            if let quoteCartId = getState().quoteCartId {
+                return self.client
+                    .perform(
+                        mutation: GraphQL.QuoteCartSetPaymentConnectionIdMutation(
+                            id: quoteCartId,
+                            paymentConnectionID: paymentConnectionID,
+                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                        )
+                    )
+                    .compactMap { data in
+                        data.quoteCartAddPaymentToken.asQuoteCart?.fragments.quoteCartFragment
+                    }
+                    .map {
+                        .setQuoteCart(quoteCart: .init(quoteCart: $0))
+                    }
+                    .valueThenEndSignal
+            }
         default:
             return nil
         }
@@ -177,6 +313,11 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
         case let .setIds(ids, selectedIds):
             newState.ids = ids
             newState.selectedIds = selectedIds
+            newState.offerData = nil
+            newState.hasSignedQuotes = false
+            newState.accessToken = nil
+        case .requestQuoteCartSign:
+            newState.checkoutStatus = nil
         case let .setSelectedIds(selectedIds):
             newState.selectedIds = selectedIds
         case let .sign(event):
@@ -205,7 +346,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                         var copy = inception
 
                         dateMap.forEach { quoteId, startDate in
-                            if inception.correspondingQuote.id == quoteId {
+                            if inception.correspondingQuoteId == quoteId {
                                 copy.startDate = startDate?.localDateString
                             }
                         }
@@ -217,7 +358,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
                     break
                 case .concurrent(let inception):
                     dateMap.forEach { quoteId, startDate in
-                        if inception.correspondingQuotes.contains(where: { $0.id == quoteId }) {
+                        if inception.correspondingQuotes.contains(where: { $0 == quoteId }) {
                             var newInception = inception
                             newInception.startDate = startDate?.localDateString
                             newVariant.bundle.inception = .concurrent(inception: newInception)
@@ -230,6 +371,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
             newState.offerData = newOfferData
         case let .setOfferBundle(bundle):
+            newState.isUpdatingStartDates = false
             newState.offerData = bundle
         case let .setLoading(isLoading):
             newState.isLoading = isLoading
@@ -237,6 +379,48 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             newState.isUpdatingStartDates = true
         case .failed(event: .updateStartDate):
             newState.isUpdatingStartDates = false
+        case let .setQuoteCartId(id, selectedInsuranceTypes):
+            newState.quoteCartId = id
+            newState.selectedInsuranceTypes = selectedInsuranceTypes
+            newState.offerData = nil
+            newState.hasSignedQuotes = false
+            newState.accessToken = nil
+            newState.selectedIds = []
+        case let .setQuoteCart(quoteCart):
+            newState.offerData = quoteCart.offerBundle
+
+            if newState.selectedIds.isEmpty {
+                let allQuotes = newState.offerData?.possibleVariations
+                    .flatMap({ variant in
+                        variant.bundle.quotes
+                    })
+
+                if let allQuotes = allQuotes {
+                    hAnalyticsEvent.receivedQuotes(
+                        quoteIds: allQuotes.compactMap { quote in quote.id }
+                    )
+                    .send()
+                }
+
+                let selectedIds = allQuotes?
+                    .filter({ quote in
+                        newState.selectedInsuranceTypes.contains(quote.insuranceType ?? "")
+                            || newState.selectedInsuranceTypes.contains(quote.typeOfContract)
+                    })
+                    .compactMap({ quote in quote.id })
+
+                if selectedIds?.isEmpty ?? true {
+                    newState.selectedIds = Array(Set(allQuotes?.compactMap { $0.id } ?? []))
+                } else {
+                    newState.selectedIds = Array(Set(selectedIds ?? []))
+                }
+            }
+
+            newState.checkoutStatus = quoteCart.checkoutStatus
+            newState.paymentConnection = quoteCart.paymentConnection
+            newState.swedishBankIDStatusCode = quoteCart.checkoutStatusText
+        case let .setAccessToken(id):
+            newState.accessToken = id
         default:
             break
         }
@@ -249,33 +433,72 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 extension OfferStore {
     typealias Campaign = GraphQL.QuoteBundleQuery.Data.RedeemedCampaign
 
-    private func updateRedeemedCampaigns(discountCode: String) -> FiniteSignal<OfferAction>? {
-        return self.client
-            .perform(
-                mutation: GraphQL.RedeemDiscountCodeMutation(
-                    code: discountCode,
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+    private func updateRedeemedCampaigns(discountCode: String, quoteCartId: String?) -> FiniteSignal<OfferAction>? {
+        if let quoteCartId = quoteCartId {
+            return self
+                .client
+                .perform(
+                    mutation: GraphQL.QuoteCartRedeemCampaignMutation(
+                        code: discountCode,
+                        id: quoteCartId,
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
                 )
-            )
-            .map { data in
-                guard data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns != nil else {
-                    return .failed(event: .updateRedeemedCampaigns)
+                .compactMap {
+                    $0.quoteCartAddCampaign.asQuoteCart?.fragments.quoteCartFragment
                 }
+                .map {
+                    .setQuoteCart(quoteCart: .init(quoteCart: $0))
+                }
+                .valueThenEndSignal
+        } else {
+            return self.client
+                .perform(
+                    mutation: GraphQL.RedeemDiscountCodeMutation(
+                        code: discountCode,
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
+                )
+                .map { data in
+                    guard data.redeemCodeV2.asSuccessfulRedeemResult?.campaigns != nil else {
+                        return .failed(event: .updateRedeemedCampaigns)
+                    }
 
-                return .didRedeemCampaigns
-            }
-            .valueThenEndSignal
+                    return .didRedeemCampaigns
+                }
+                .valueThenEndSignal
+        }
     }
 
-    private func removeRedeemedCampaigns() -> FiniteSignal<OfferAction>? {
-        return self.client.perform(mutation: GraphQL.RemoveDiscountMutation())
-            .map { data in
-                .didRemoveCampaigns
-            }
-            .mapError { _ in
-                .failed(event: .removeCampaigns)
-            }
-            .valueThenEndSignal
+    private func removeRedeemedCampaigns(quoteCartId: String?) -> FiniteSignal<OfferAction>? {
+        if let quoteCartId = quoteCartId {
+            return self.client
+                .perform(
+                    mutation: GraphQL.QuoteCartRemoveCampaignMutation(
+                        id: quoteCartId,
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
+                )
+                .compactMap { data in
+                    data.quoteCartRemoveCampaign.asQuoteCart?.fragments.quoteCartFragment
+                }
+                .map {
+                    .setQuoteCart(quoteCart: .init(quoteCart: $0))
+                }
+                .mapError { _ in
+                    .failed(event: .removeCampaigns)
+                }
+                .valueThenEndSignal
+        } else {
+            return self.client.perform(mutation: GraphQL.RemoveDiscountMutation())
+                .map { data in
+                    .didRemoveCampaigns
+                }
+                .mapError { _ in
+                    .failed(event: .removeCampaigns)
+                }
+                .valueThenEndSignal
+        }
     }
 
     func checkoutUpdate(quoteId: String, email: String, ssn: String) -> Future<Void> {

@@ -22,6 +22,7 @@ final class SelectActionOptionTests: XCTestCase {
                     link: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
                         .AsEmbarkSelectAction.SelectActionDatum.Option.Link(
                             name: "somewhere",
+                            hidden: false,
                             label: "This is a label"
                         )
                 )

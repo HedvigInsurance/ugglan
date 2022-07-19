@@ -24,6 +24,8 @@ extension Document: Presentable {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
+        viewController.edgesForExtendedLayout = []
+        viewController.navigationItem.scrollEdgeAppearance = DefaultStyling.standardNavigationBarAppearance()
         viewController.title = title
 
         let pdfViewer = PDFViewer()

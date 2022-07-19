@@ -10,6 +10,7 @@ public enum ExternalRedirect {
     case offer(allIds: [String], selectedIds: [String])
     case close
     case chat
+    case quoteCartOffer(id: String, selectedInsuranceTypes: [String])
     case dataCollection(
         providerID: String,
         providerDisplayName: String,
@@ -28,6 +29,7 @@ public class EmbarkState {
     let passageHistorySignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
     let bag = DisposeBag()
+    var quoteCartId: String = ""
 
     public init() {
         defer {
@@ -64,6 +66,8 @@ public class EmbarkState {
                 computedValues[computedValue.key] = computedValue.value
                 return computedValues
             } ?? [:]
+        store.setValue(key: "quoteCartId", value: quoteCartId)
+        store.createRevision()
     }
 
     func startTracking() {
@@ -159,6 +163,16 @@ public class EmbarkState {
 
                 hAnalyticsEvent.embarkVariantedOfferRedirect(allIds: allIds, selectedIds: selectedIds).send()
                 externalRedirectSignal.value = .offer(allIds: allIds, selectedIds: selectedIds)
+            } else if let quoteCartOfferRedirects = resultingPassage.quoteCartOfferRedirects.first(where: {
+                store.passes(expression: $0.data.expression.fragments.expressionFragment)
+            }) {
+
+                let id = quoteCartOfferRedirects.data.id
+                let type = quoteCartOfferRedirects.data.selectedInsuranceTypes
+
+                let quoteCartId = store.getValue(key: id) ?? ""
+
+                externalRedirectSignal.value = .quoteCartOffer(id: quoteCartId, selectedInsuranceTypes: type)
             } else {
                 self.isApiLoadingSignal.value = false
                 currentPassageSignal.value = resultingPassage
@@ -202,7 +216,9 @@ public class EmbarkState {
                 return previousDepth
             }
 
-            let links = passage.allLinks.map { $0.name }
+            let links = passage.allLinks
+                .filter { !$0.hidden }
+                .map { $0.name }
 
             if links.isEmpty { return previousDepth }
 

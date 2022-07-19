@@ -13,7 +13,7 @@ public struct Embark {
     @Inject var client: ApolloClient
     let name: String
     public let menu: Menu?
-    let state = EmbarkState()
+    let state: EmbarkState
 
     public func goBack() { state.goBack() }
 
@@ -23,6 +23,7 @@ public struct Embark {
     ) {
         self.name = name
         self.menu = menu
+        self.state = EmbarkState()
     }
 }
 
@@ -179,11 +180,22 @@ extension Embark: Presentable {
             )
             .valueSignal.compactMap { $0.embarkStory }
             .onValue { embarkStory in
-                activityIndicator.removeFromSuperview()
-                self.state.storySignal.value = embarkStory
-                self.state.passagesSignal.value = embarkStory.passages
-                self.state.startPassageIDSignal.value = embarkStory.startPassage
-                self.state.restart()
+                client.perform(
+                    mutation: GraphQL.CreateQuoteCartMutation(
+                        input: .init(
+                            market: Localization.Locale.currentLocale.market.graphQL,
+                            locale: Localization.Locale.currentLocale.code
+                        )
+                    )
+                )
+                .onValue { quoteCartCreate in
+                    activityIndicator.removeFromSuperview()
+                    self.state.quoteCartId = quoteCartCreate.createQuoteCart.id
+                    self.state.storySignal.value = embarkStory
+                    self.state.passagesSignal.value = embarkStory.passages
+                    self.state.startPassageIDSignal.value = embarkStory.startPassage
+                    self.state.restart()
+                }
             }
 
         bag += edgePanGestureRecognizer.signal(forState: .ended)
@@ -276,7 +288,12 @@ extension Embark: Presentable {
                         ]
                     )
 
-                    bag += viewController.present(alert).onValue { _ in state.restart() }
+                    bag += viewController.present(alert)
+                        .onValue { shouldRestart in
+                            if shouldRestart {
+                                state.restart()
+                            }
+                        }
                 }
 
                 let optionsOrCloseButton = UIBarButtonItem(

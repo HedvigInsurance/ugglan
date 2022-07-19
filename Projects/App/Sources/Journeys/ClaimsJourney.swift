@@ -10,6 +10,27 @@ import hCoreUI
 import hGraphQL
 
 extension AppJourney {
+    static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
+        HostingJourney(
+            UgglanStore.self,
+            rootView: ClaimDetailView(claim: claim),
+            options: [.embedInNavigationController]
+        ) { action in
+            DismissJourney()
+        }
+        .inlineTitle()
+        .configureTitle(L10n.ClaimStatus.title)
+    }
+
+    static func claimsInfoJourney() -> some JourneyPresentation {
+        Journey(ClaimsInfoPager())
+            .onAction(ClaimsStore.self) { action in
+                if case .submitNewClaim = action {
+                    DismissJourney()
+                }
+            }
+    }
+
     static var claimJourney: some JourneyPresentation {
         AppJourney.claimsJourneyPledgeAndNotificationWrapper { redirect in
             switch redirect {
@@ -27,6 +48,8 @@ extension AppJourney {
                 DismissJourney()
             case .dataCollection:
                 ContinueJourney()
+            case .quoteCartOffer:
+                DismissJourney()
             }
         }
     }
@@ -42,6 +65,20 @@ extension AppJourney {
             }
             .withJourneyDismissButton
         }
+    }
+
+    static func commonClaimDetailJourney(claim: CommonClaim) -> some JourneyPresentation {
+        Journey(
+            CommonClaimDetail(claim: claim),
+            style: .detented(.medium, .large),
+            options: .defaults
+        )
+        .onAction(ClaimsStore.self) { action in
+            if case .submitNewClaim = action {
+                DismissJourney()
+            }
+        }
+        .withJourneyDismissButton
     }
 }
 
@@ -83,42 +120,5 @@ extension JourneyPresentation {
 
             store.send(action)
         }
-    }
-}
-
-extension AppJourney {
-    static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
-        HostingJourney(
-            UgglanStore.self,
-            rootView: ClaimDetailView(claim: claim),
-            options: [.embedInNavigationController]
-        ) { action in
-            DismissJourney()
-        }
-        .inlineTitle()
-        .configureTitle(L10n.ClaimStatus.title)
-    }
-
-    static func claimsInfoJourney() -> some JourneyPresentation {
-        Journey(ClaimsInfoPager())
-            .onAction(ClaimsStore.self) { action in
-                if case .submitNewClaim = action {
-                    DismissJourney()
-                }
-            }
-    }
-
-    static func commonClaimDetailJourney(claim: CommonClaim) -> some JourneyPresentation {
-        Journey(
-            CommonClaimDetail(claim: claim),
-            style: .detented(.medium, .large),
-            options: .defaults
-        )
-        .onAction(ClaimsStore.self) { action in
-            if case .submitNewClaim = action {
-                DismissJourney()
-            }
-        }
-        .withJourneyDismissButton
     }
 }

@@ -9,6 +9,7 @@ import hGraphQL
 public struct PaymentState: StateProtocol {
     var monthlyNetCost: MonetaryAmount? = nil
     var paymentStatus: PayinMethodStatus = .active
+    var paymentConnectionID: String? = nil
     public init() {}
 }
 
@@ -18,6 +19,7 @@ public enum PaymentAction: ActionProtocol {
     case setPayInMethodStatus(status: PayinMethodStatus)
     case connectPayments
     case fetchPayInMethodStatus
+    case setConnectionID(id: String)
 }
 
 public typealias PayinMethodStatus = GraphQL.PayinMethodStatus
@@ -33,8 +35,11 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
         switch action {
         case .load:
             return
-                client.fetch(
-                    query: GraphQL.MyPaymentQuery()
+                client
+                .fetch(
+                    query: GraphQL.MyPaymentQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
                 )
                 .compactMap { data in
                     if let fragment = data.insuranceCost?.monthlyNet.fragments.monetaryAmountFragment {
@@ -67,6 +72,8 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
         case .setPayInMethodStatus(let paymentStatus):
             print("PMENT: SETTING", paymentStatus)
             newState.paymentStatus = paymentStatus
+        case let .setConnectionID(id):
+            newState.paymentConnectionID = id
         default:
             break
         }

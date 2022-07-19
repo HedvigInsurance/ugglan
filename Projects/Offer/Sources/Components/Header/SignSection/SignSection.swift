@@ -34,7 +34,10 @@ extension SignSection: Presentable {
 
         bag += store.stateSignal
             .map {
-                ($0.offerData?.signMethodForQuotes, $0.currentVariant?.bundle.appConfiguration.approveButtonTerminology)
+                (
+                    $0.offerData?.signMethodForQuotes,
+                    $0.currentVariant?.bundle.appConfiguration.approveButtonTerminology
+                )
             }
             .distinct(==)
             .onValueDisposePrevious { signMethodForQuotes, approveButtonTerminology in
@@ -77,7 +80,7 @@ extension SignSection: Presentable {
 
                     innerBag += signButton.onTapSignal.compactMap { _ in row.viewController }
                         .onValue { viewController in
-                            store.send(.openCheckout)
+                            store.send(.startCheckout)
                         }
 
                     innerBag += row.append(signButton)

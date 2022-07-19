@@ -10,7 +10,7 @@ public struct ActiveContractBundle: Codable, Equatable {
         bundle: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle
     ) {
         contracts = bundle.contracts.map { .init(contract: $0) }
-        movingFlowEmbarkId = bundle.angelStories.addressChange
+        movingFlowEmbarkId = bundle.angelStories.addressChangeV2
         id = bundle.id
         crossSells = bundle.potentialCrossSells.compactMap { CrossSell($0) }
     }
@@ -43,6 +43,7 @@ public struct Contract: Codable, Hashable, Equatable {
         upcomingAgreementsTable: DetailAgreementsTable,
         currentAgreementsTable: DetailAgreementsTable?,
         gradientOption: Contract.GradientOption?,
+        logo: IconEnvelope?,
         displayName: String,
         switchedFromInsuranceProvider: String?,
         upcomingRenewal: UpcomingRenewal?,
@@ -59,6 +60,7 @@ public struct Contract: Codable, Hashable, Equatable {
         self.upcomingAgreementsTable = upcomingAgreementsTable
         self.currentAgreementsTable = currentAgreementsTable
         self.gradientOption = gradientOption
+        self.logo = logo
         self.displayName = displayName
         self.switchedFromInsuranceProvider = switchedFromInsuranceProvider
         self.upcomingRenewal = upcomingRenewal
@@ -76,6 +78,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let upcomingAgreementsTable: DetailAgreementsTable
     public let currentAgreementsTable: DetailAgreementsTable?
     public let gradientOption: GradientOption?
+    public let logo: IconEnvelope?
     public let displayName: String
     public let switchedFromInsuranceProvider: String?
     public let upcomingRenewal: UpcomingRenewal?
@@ -111,6 +114,12 @@ public struct Contract: Codable, Hashable, Equatable {
         statusPills = contract.statusPills
         detailPills = contract.detailPills
 
+        if let logo = contract.logo {
+            self.logo = .init(fragment: logo.fragments.iconFragment)
+        } else {
+            self.logo = nil
+        }
+
         if let contractGradientOption = contract.gradientOption {
             gradientOption = .init(rawValue: contractGradientOption.rawValue)
         } else {
@@ -143,6 +152,12 @@ public struct Contract: Codable, Hashable, Equatable {
         statusPills = contract.statusPills
         detailPills = contract.detailPills
 
+        if let logo = contract.logo {
+            self.logo = .init(fragment: logo.fragments.iconFragment)
+        } else {
+            self.logo = nil
+        }
+
         if let contractGradientOption = contract.gradientOption {
             gradientOption = .init(rawValue: contractGradientOption.rawValue)
         } else {
@@ -157,6 +172,8 @@ public struct Contract: Codable, Hashable, Equatable {
         case one = "GRADIENT_ONE"
         case two = "GRADIENT_TWO"
         case three = "GRADIENT_THREE"
+        case four = "GRADIENT_FOUR"
+        case five = "GRADIENT_FIVE"
     }
 }
 
@@ -172,13 +189,17 @@ public struct UpcomingRenewal: Codable, Hashable {
     }
 }
 
-public struct TermsAndConditions: Codable, Hashable {
+public struct TermsAndConditions: Identifiable, Codable, Hashable {
     public init(
         displayName: String,
         url: String
     ) {
         self.displayName = displayName
         self.url = url
+    }
+
+    public var id: String {
+        displayName + url
     }
 
     public let displayName: String

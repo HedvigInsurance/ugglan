@@ -1,0 +1,9 @@
+query MemberDetails {
+  member {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+  }
+}

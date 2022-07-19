@@ -20,7 +20,12 @@ extension PaymentDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
-        let dataSignal = client.watch(query: GraphQL.MyPaymentQuery(), cachePolicy: .returnCacheDataAndFetch)
+        let dataSignal = client.watch(
+            query: GraphQL.MyPaymentQuery(
+                locale: Localization.Locale.currentLocale.asGraphQLLocale()
+            ),
+            cachePolicy: .returnCacheDataAndFetch
+        )
 
         let section = SectionView(header: L10n.myPaymentPaymentRowLabel, footer: nil)
 
@@ -72,7 +77,9 @@ extension PaymentDetailsSection: Viewable {
 
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
                 self.store.update(
-                    query: GraphQL.MyPaymentQuery(),
+                    query: GraphQL.MyPaymentQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    ),
                     updater: { (data: inout GraphQL.MyPaymentQuery.Data) in
                         if let costFragment = result.cost?.fragments.costFragment {
                             data.insuranceCost?.fragments.costFragment = costFragment

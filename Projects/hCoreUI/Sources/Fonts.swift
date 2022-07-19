@@ -38,10 +38,10 @@ public enum Fonts {
 
     public static var forceTraitCollection: UITraitCollection? = nil
 
-    public static func fontFor(style: UIFont.TextStyle) -> UIFont {
+    public static func fontFor(style: HFontTextStyle) -> UIFont {
         func getFont(_ font: UIFont) -> UIFont {
             let defaultDescriptor = UIFontDescriptor.preferredFontDescriptor(
-                withTextStyle: style,
+                withTextStyle: style.uifontTextStyle,
                 compatibleWith: forceTraitCollection
             )
             let size = defaultDescriptor.pointSize
@@ -59,7 +59,7 @@ public enum Fonts {
         }
 
         switch style {
-        case .largeTitle:
+        case .prominentTitle:
             return getFont(hedvigLettersSmall)
         default:
             return getFont(hedvigLettersStandard)

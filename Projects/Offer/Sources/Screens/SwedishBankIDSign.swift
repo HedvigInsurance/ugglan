@@ -93,9 +93,7 @@ enum SwedishBankIdSignError: Error {
 extension SwedishBankIdSign: Presentable {
     func materialize() -> (UIViewController, Future<Void>) {
         let viewController = UIViewController()
-        if #available(iOS 13.0, *) {
-            viewController.isModalInPresentation = true
-        }
+        viewController.isModalInPresentation = true
 
         let bag = DisposeBag()
 
@@ -156,13 +154,15 @@ extension SwedishBankIdSign: Presentable {
                     style: .brand(.body(color: .primary))
                 )
 
+                let store: OfferStore = get()
+
                 bag += cancelButton.onValue({ _ in
+                    store.send(.sign(event: .cancelled))
                     completion(.failure(SwedishBankIdSignError.userCancel))
                 })
 
                 viewController.navigationItem.rightBarButtonItem = cancelButton
 
-                let store: OfferStore = get()
                 store.send(.startSign)
 
                 bag += store.stateSignal.compactMap { $0.swedishBankIDAutoStartToken }
@@ -174,6 +174,19 @@ extension SwedishBankIdSign: Presentable {
                                     "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
                             )
                         else { return }
+
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(
+                                url,
+                                options: [:],
+                                completionHandler: nil
+                            )
+                        }
+                    }
+
+                bag += store.stateSignal.atOnce().compactMap { $0.quoteCartId }.toVoid()
+                    .onValue {
+                        guard let url = URL(string: "bankid:///?redirect=hedvig://") else { return }
 
                         if UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(
@@ -214,8 +227,7 @@ extension SwedishBankIdSign: Presentable {
                         case "userCancel", "cancelled":
                             statusText = L10n.signCanceled
                         default:
-                            statusText =
-                                L10n.signFailedReasonUnknown
+                            statusText = statusCode
                         }
 
                         statusLabel.value = statusText

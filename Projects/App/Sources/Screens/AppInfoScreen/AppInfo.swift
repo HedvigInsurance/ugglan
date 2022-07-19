@@ -95,13 +95,11 @@ extension AppInfo: Presentable {
 
             bag += debugGesture.signal(forState: .recognized)
                 .onValue { _ in
-                    if #available(iOS 13, *) {
-                        viewController.present(
-                            UIHostingController(rootView: Debug()),
-                            style: .detented(.large),
-                            options: []
-                        )
-                    }
+                    viewController.present(
+                        UIHostingController(rootView: Debug()),
+                        style: .detented(.large),
+                        options: []
+                    )
                 }
         }
 
@@ -195,6 +193,21 @@ extension AppInfo: Presentable {
             bag += languageRow.onSelect.onValue {
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             }
+
+            bag +=
+                client.fetch(
+                    query: GraphQL.MemberDetailsQuery(),
+                    cachePolicy: .returnCacheDataElseFetch,
+                    queue: .global(qos: .background)
+                )
+                .valueSignal
+                .compactMap(on: .background) { MemberDetails(memberData: $0.member) }
+                .compactMap(on: .main) { details in
+                    /// Checks for application state as this screen can also be opened from other places
+                    if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
+                        bag += bodySection.append(DeleteAccountButton(memberDetails: details))
+                    }
+                }
         }
 
         func setupAppInfo() {

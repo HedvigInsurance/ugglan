@@ -1,90 +1,10 @@
-fragment InceptionFragment on QuoteBundleInception {
-  ... on ConcurrentInception {
-    correspondingQuotes {
-      ... on CompleteQuote {
-        id
-      }
-    }
-    startDate
-    currentInsurer {
-      id
-      displayName
-      switchable
-    }
-  }
-  ... on IndependentInceptions {
-    inceptions {
-      startDate
-      currentInsurer {
-        id
-        displayName
-        switchable
-      }
-      correspondingQuote {
-        ... on CompleteQuote {
-          id
-        }
-      }
-    }
-  }
-}
-
 query QuoteBundle($ids: [ID!]!, $locale: Locale!) {
   quoteBundle(input: { ids: $ids }) {
     possibleVariations {
         id
         tag(locale: $locale)
         bundle {
-            displayName(locale: $locale)
-            quotes {
-              ... on BundledQuote {
-                dataCollectionId
-                id
-                ssn
-                email
-                displayName(locale: $locale)
-                detailsTable(locale: $locale) {
-                  ...DetailsTableFragment
-                }
-                contractPerils(locale: $locale) {
-                  ...PerilFragment
-                }
-                insurableLimits(locale: $locale) {
-                  ...InsurableLimitFragment
-                }
-                insuranceTerms(locale: $locale) {
-                  displayName
-                  url
-                  type
-                }
-                currentInsurer {
-                  id
-                  displayName
-                  switchable
-                }
-              }
-            }
-            displayName(locale: $locale)
-            bundleCost {
-              ...CostFragment
-            }
-            frequentlyAskedQuestions(locale: $locale) {
-              id
-              headline
-              body
-            }
-            inception {
-              ...InceptionFragment
-            }
-            appConfiguration {
-              showCampaignManagement
-              showFAQ
-              ignoreCampaigns
-              approveButtonTerminology
-              startDateTerminology
-              title
-              gradientOption
-            }
+            ...QuoteBundleFragment
         }
     }
   }
