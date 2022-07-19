@@ -31,7 +31,7 @@ public struct Toast: Equatable {
     let subtitle: String?
     let textColor: UIColor
     let backgroundColor: UIColor
-    let duration: TimeInterval
+    let duration: TimeInterval?
     public var onTap: Signal<Void> {
         onTapCallbacker.providedSignal
     }
@@ -45,7 +45,7 @@ public struct Toast: Equatable {
         subtitle: String? = nil,
         textColor: UIColor = .brand(.primaryText()),
         backgroundColor: UIColor = UIColor.brand(.secondaryBackground()),
-        duration: TimeInterval = 3.0
+        duration: TimeInterval? = 3.0
     ) {
         self.symbol = symbol
         self.body = body
@@ -358,12 +358,14 @@ extension Toasts: Viewable {
                             innerBag.dispose()
                             pauseSignal.value = false
                         }
-
-                    hideBag += Signal.animatedDelay(after: toast.duration)
-                        .onValue { _ in
-                            hideCallbacker.callAll()
-                        }
-                    innerBag += hideBag
+                    
+                    if let duration = toast.duration {
+                        hideBag += Signal.animatedDelay(after: duration)
+                            .onValue { _ in
+                                hideCallbacker.callAll()
+                            }
+                        innerBag += hideBag
+                    }
 
                     innerBag += panGestureRecognizer.signal(forState: .ended)
                         .onValue {
@@ -398,10 +400,12 @@ extension Toasts: Viewable {
                             if pause {
                                 hideBag.dispose()
                             } else {
-                                hideBag += Signal.animatedDelay(after: toast.duration)
-                                    .onValue { _ in
-                                        hideCallbacker.callAll()
-                                    }
+                                if let duration = toast.duration {
+                                    hideBag += Signal.animatedDelay(after: duration)
+                                        .onValue { _ in
+                                            hideCallbacker.callAll()
+                                        }
+                                }
                             }
                         }
                 }

@@ -258,15 +258,7 @@ let log = Logger.builder
 
         self.setupHAnalyticsExperiments()
         
-        NetworkReachability.sharedInstance.observeReachability()
-        NetworkReachability.sharedInstance.whenUnreachable = { _ in
-            Toasts.shared.displayToast(
-                toast: Toast(
-                    symbol: .icon(hCoreUIAssets.warningTriangle.image),
-                    body: "No network connection"
-                )
-            )
-        }
+        self.setupReachabilityListeners()
 
         bag += ApplicationContext.shared.$hasLoadedExperiments.take(first: 1)
             .onValue { isLoaded in
