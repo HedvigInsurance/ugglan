@@ -11,17 +11,19 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-// End to remove
-
-public struct HomeSwiftUI {
+public struct HomeSwiftUI<Content: View>: View {
     @PresentableStore var store: HomeStore
-    @SwiftUI.Environment(\.cardView) var statusCard: AnyView
+    //@SwiftUI.Environment(\.cardView) var statusCard: AnyView
+    //@ViewBuilder var statusCard: StatusCard
+    var statusCard: Content
 
     var claimsContent: Claims
     var commonClaims: CommonClaimsView
     var claimSubmitHandler: () -> Void
 
-    public init() {
+    public init(statusCard: () -> Content) {
+    //public init() {
+        self.statusCard = statusCard()
         let claims = Claims()
         self.claimsContent = claims
         self.commonClaims = CommonClaimsView()
@@ -31,6 +33,7 @@ public struct HomeSwiftUI {
 
 struct WithCard<Card: View>: ViewModifier {
     var card: () -> Card
+    @State private var rect1: CGRect = CGRect()
 
     func body(content: Content) -> some View {
         VStack {
@@ -46,40 +49,57 @@ extension View {
     }
 }
 
-extension HomeSwiftUI: View {
+extension HomeSwiftUI {
     func fetch() {
         store.send(.fetchMemberState)
     }
 
     public var body: some View {
         hForm {
-            hSection {
-                PresentableStoreLens(
-                    HomeStore.self,
-                    getter: { state in
-                        state.memberStateData
-                    }
-                ) { memberStateData in
-                    switch memberStateData.state {
-                    case .active:
+            PresentableStoreLens(
+                HomeStore.self,
+                getter: { state in
+                    state.memberStateData
+                }
+            ) { memberStateData in
+                switch memberStateData.state {
+                case .active:
+                    hSection {
                         if let name = memberStateData.name {
                             hText(L10n.HomeTab.welcomeTitle(name), style: .largeTitle)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .addStatusCard {
-                                    statusCard
-                                }
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity, alignment: .center)
                         }
-                        ActiveSessionView(claimsContent: claimsContent, commonClaims: commonClaims)
-                    case .future:
-                        Text("Future")
-                    case .terminated:
-                        Text("Terminated")
-                    case .loading:
-                        Text("Loading")
+                        claimsContent.addStatusCard {
+                            statusCard
+                        }
+                    }.sectionContainerStyle(.transparent)
+                    commonClaims
+                    hSection {
+                        hRow {
+                            L10n.HomeTab.editingSectionChangeAddressLabel.hText()
+                        }.withCustomAccessory {
+                            Spacer()
+                            Image(uiImage: hCoreUIAssets.chevronRight.image)
+                        }
+                        .onTap {
+                            store.send(.openMovingFlow)
+                        }
+                    }.withHeader {
+                        hText(
+                            L10n.HomeTab.editingSectionTitle,
+                            style: .title2
+                        )
                     }
+                    //ActiveSessionView(claimsContent: claimsContent, commonClaims: commonClaims)
+                case .future:
+                    Text("Future")
+                case .terminated:
+                    Text("Terminated")
+                case .loading:
+                    Text("Loading")
                 }
             }
-            .sectionContainerStyle(.transparent)
         }
         .onAppear {
             fetch()
@@ -87,7 +107,7 @@ extension HomeSwiftUI: View {
     }
 }
 
-private struct CardViewKey: EnvironmentKey {
+/*private struct CardViewKey: EnvironmentKey {
     static let defaultValue: AnyView = AnyView(Text("Hello"))
 }
 
@@ -102,20 +122,16 @@ extension View {
     public func statusCard<V: View>(_ card: @escaping () -> V) -> some View {
         environment(\.cardView, AnyView(card()))
     }
-}
+}*/
 
 extension HomeSwiftUI {
-    public static func journey<ResultJourney: JourneyPresentation, V: View>(
-        statusCardView: @escaping () -> V,
-        @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney
+    public static func journey<ResultJourney: JourneyPresentation>(
+        @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney,
+        statusCard: @escaping () -> Content
     ) -> some JourneyPresentation {
         HostingJourney(
             HomeStore.self,
-            rootView: HomeSwiftUI()
-                .statusCard {
-                    // Is it really a good idea to use EnvironmentValues here? Maybe just pass it down as a parameter to HomeSwiftUI?
-                    statusCardView()
-                },
+            rootView: HomeSwiftUI(statusCard: statusCard),
             options: [
                 .defaults,
                 .prefersLargeTitles(true),

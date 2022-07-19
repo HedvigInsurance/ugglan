@@ -79,24 +79,29 @@ public struct CommonClaimsView: View {
 
     public init() {}
     public var body: some View {
-        VStack {
-            hText(L10n.claimsQuickChoiceHeader, style: .title2)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 52)
-                .padding(.bottom, 16)
-
-            PresentableStoreLens(
-                ClaimsStore.self,
-                getter: { state in
-                    return state.commonClaims ?? []
-                },
-                setter: { _ in
-                    .fetchCommonClaims
+        hSection {
+            hRow {
+                PresentableStoreLens(
+                    ClaimsStore.self,
+                    getter: { state in
+                        return state.commonClaims ?? []
+                    },
+                    setter: { _ in
+                        .fetchCommonClaims
+                    }
+                ) { commonClaims, _ in
+                    CommonClaimsCollection(commonClaims: commonClaims)
                 }
-            ) { commonClaims, _ in
-                CommonClaimsCollection(commonClaims: commonClaims)
-            }
+            }.noSpacing()
         }
+        .withHeader {
+            hText(
+                L10n.claimsQuickChoiceHeader,
+                style: .title2
+            )
+        }
+        .padding(.top, 56)
+        .sectionContainerStyle(.transparent)
         .onAppear {
             store.send(.fetchCommonClaims)
         }

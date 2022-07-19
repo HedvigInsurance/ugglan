@@ -10,6 +10,7 @@ import hCore
 import hGraphQL
 
 struct DirectDebitSetup {
+    @PresentableStore var paymentStore: PaymentStore
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
     let setupType: PaymentSetup.SetupType
@@ -205,7 +206,10 @@ extension DirectDebitSetup: Presentable {
                                 make.edges.equalToSuperview()
                             }
                         }
-                        .onValue { success in callback(.value(success)) }
+                        .onValue { success in
+                            paymentStore.send(.fetchPayInMethodStatus)
+                            callback(.value(success))
+                        }
                         .onError { _ in
                             bag += Signal(after: 0.5).onValue { _ in startRegistration() }
                         }

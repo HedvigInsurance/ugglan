@@ -49,13 +49,13 @@ extension AppJourney {
         }
         .configureClaimsNavigation
     }*/
+    
+    enum CardActions {
+        case openConnectPayments
+    }
 
     fileprivate static var homeTab: some JourneyPresentation {
-        HomeSwiftUI.journey(statusCardView: {
-            VStack {
-                ConnectPaymentCardView()
-            }
-        }) { result in
+        HomeSwiftUI.journey() { result in
             switch result {
             case .startMovingFlow:
                 AppJourney.movingFlow
@@ -63,6 +63,10 @@ extension AppJourney {
                 AppJourney.freeTextChat()
             case .openConnectPayments:
                 PaymentSetup(setupType: .initial).journeyThenDismiss
+            }
+        } statusCard: {
+            VStack {
+                ConnectPaymentCardView()
             }
         }
         .onTabSelected {
@@ -77,6 +81,7 @@ extension AppJourney {
         }
         .claimStoreRedirectFromHome
         .configureClaimsNavigation
+        .configurePaymentNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -227,6 +232,16 @@ extension JourneyPresentation {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
+            }
+        }
+    }
+}
+
+extension JourneyPresentation {
+    public var configurePaymentNavigation: some JourneyPresentation {
+        onAction(PaymentStore.self) { action in
+            if case .connectPayments = action {
+                PaymentSetup(setupType: .initial).journeyThenDismiss
             }
         }
     }

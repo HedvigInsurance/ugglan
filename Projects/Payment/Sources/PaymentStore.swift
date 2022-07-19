@@ -45,6 +45,7 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
                 }
                 .valueThenEndSignal
         case .fetchPayInMethodStatus:
+            print("PMENT: FETCHING")
             return
                 client
                 .fetch(query: GraphQL.PayInMethodStatusQuery(), cachePolicy: .fetchIgnoringCacheData)
@@ -64,6 +65,7 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
         case let .setMonthlyNetCost(cost):
             newState.monthlyNetCost = cost
         case .setPayInMethodStatus(let paymentStatus):
+            print("PMENT: SETTING", paymentStatus)
             newState.paymentStatus = paymentStatus
         default:
             break
