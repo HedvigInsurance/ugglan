@@ -2,7 +2,7 @@ import Flow
 import Foundation
 import UIKit
 
-public final class FormScrollView: UIScrollView, GradientScroller {
+public final class FormScrollView: UIScrollView, hGradientScroller {
     let bag = DisposeBag()
     public var appliesGradient: Bool = true
 

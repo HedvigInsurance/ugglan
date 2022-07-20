@@ -35,7 +35,6 @@ public struct AdyenPayIn: Presentable {
     
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
-    @PresentableStore var paymentStore: PaymentStore
     let adyenOptions: AdyenOptions
     let urlScheme: String
 

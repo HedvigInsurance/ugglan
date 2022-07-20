@@ -70,6 +70,7 @@ extension AppJourney {
             }
         }
         .onTabSelected {
+            GradientState.shared.gradientType = .home
             ContextGradient.currentOption = .home
         }
         .makeTabSelected(UgglanStore.self) { action in
@@ -98,6 +99,7 @@ extension AppJourney {
             }
         }
         .onTabSelected {
+            GradientState.shared.gradientType = .insurance
             ContextGradient.currentOption = .none
         }
         .makeTabSelected(UgglanStore.self) { action in

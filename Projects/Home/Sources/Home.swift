@@ -31,6 +31,27 @@ public struct HomeSwiftUI<Content: View>: View {
     }
 }
 
+// Start gradient test
+
+/*enum GradientType {
+    case home, insurances
+}
+
+class GradientState: ObservableObject {
+    static let shared = GradientState()
+    private init() {}
+    
+    @Published var gradientType
+}
+
+struct WithGradient: ViewModifier {
+    func body(content: Content) -> some View {
+        
+    }
+}*/
+
+// End gradient test
+
 struct WithCard<Card: View>: ViewModifier {
     var card: () -> Card
     @State private var rect1: CGRect = CGRect()
@@ -55,7 +76,7 @@ extension HomeSwiftUI {
     }
 
     public var body: some View {
-        hForm {
+        hForm(gradientType: .home) {
             PresentableStoreLens(
                 HomeStore.self,
                 getter: { state in
@@ -66,9 +87,9 @@ extension HomeSwiftUI {
                 case .active:
                     hSection {
                         if let name = memberStateData.name {
-                            hText(L10n.HomeTab.welcomeTitle(name), style: .largeTitle)
+                            hText(L10n.HomeTab.welcomeTitle(name), style: .prominentTitle)
                                 .multilineTextAlignment(.center)
-                                .frame(maxWidth: .infinity, alignment: .center)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                         claimsContent.addStatusCard {
                             statusCard
@@ -100,7 +121,7 @@ extension HomeSwiftUI {
                     Text("Loading")
                 }
             }
-        }
+        }.background(Color.blue)
         .onAppear {
             fetch()
         }
