@@ -16,12 +16,13 @@ extension hGradientScroller {
             .onValue { _ in
                 let gradientView = HostingView(rootView: HostingGradient())
                 print("GRADZ adding grad to legacy view")
-                
+                print("GRADZ layer size:", self.layer.frame.size)
+                print("GRADZ view size:", self.frame.size)
                 //self.layer.insertSublayer(gradientView.layer, at: 0)
-                /*self.insertSubview(gradientView, at: 0)
+                self.insertSubview(gradientView, at: 0)
                 gradientView.snp.makeConstraints { make in
                     make.top.bottom.left.right.equalToSuperview()
-                }*/
+                }
             }
     }
 }

@@ -141,13 +141,33 @@ extension AppJourney {
     }
 
     fileprivate static var profileTab: some JourneyPresentation {
-        Journey(
+        /*HostingJourney(
+            rootView: ProfileView(),
+            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+        )
+        /*Journey(
             Profile(),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         )
-        .configureTabBarItem
+        .configureTabBarItem*/
+        .configureTitle(L10n.profileTitle)*/
+        ProfileView.journey { result in
+            switch result {
+            case .logout:
+                Journey(
+                    MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
+                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
+                )
+            case .openPayment:
+                Journey(
+                    MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
+                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
+                )
+            }
+        }
         .onTabSelected {
-            ContextGradient.currentOption = .profile
+            GradientState.shared.gradientType = .profile
+            //ContextGradient.currentOption = .profile
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {

@@ -121,7 +121,7 @@ extension HomeSwiftUI {
                     Text("Loading")
                 }
             }
-        }.background(Color.blue)
+        }
         .onAppear {
             fetch()
         }
