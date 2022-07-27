@@ -114,10 +114,22 @@ public struct ForeverView: View {
 
     public var body: some View {
         hForm(gradientType: .forever) {
-            HeaderView()
-            DiscountCodeSectionView()
-            InvitationTable()
+            HeaderView().slideUpAppearAnimation()
+            DiscountCodeSectionView().slideUpAppearAnimation()
+            InvitationTable().slideUpAppearAnimation()
             //DiscountCodeRepresentable(service: ForeverServiceGraphQL()).frame(height: 200).padding().border(.black)
+        }
+        .hFormAttachToBottom {
+            VStack {
+                Divider().background(Color(UIColor.brand(.primaryBorderColor))).padding(0).edgesIgnoringSafeArea(.all)
+                hButton.LargeButtonFilled {
+                    print("share")
+                } content: {
+                    hText(L10n.ReferralsEmpty.shareCodeButton)
+                }
+                .padding(.horizontal).padding(.vertical, 6)
+            }
+            .background(Color(DefaultStyling.tabBarBackgroundColor).edgesIgnoringSafeArea(.all))
         }
     }
 }
@@ -154,6 +166,12 @@ extension ForeverView {
         }
         .configureTitle(L10n.referralsScreenTitle)
         .configureForeverTabBarItem
+        .addConfiguration { presenter in
+            if let tabBarController = presenter.viewController.tabBarController {
+                tabBarController.tabBar.shadowImage = UIColor.clear.asImage()
+            }
+
+        }
         /*.addConfiguration({ presenter in
             // - TODO - refactor
             let tabBarItem = UITabBarItem(
