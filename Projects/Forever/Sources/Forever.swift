@@ -167,10 +167,17 @@ extension ForeverView {
         .configureTitle(L10n.referralsScreenTitle)
         .configureForeverTabBarItem
         .addConfiguration { presenter in
-            if let tabBarController = presenter.viewController.tabBarController {
-                tabBarController.tabBar.shadowImage = UIColor.clear.asImage()
-            }
+            presenter.bag += presenter.viewController.view.didMoveToWindowSignal.onValue({ _ in
+                if let tabBarController = presenter.viewController.tabBarController {
+                    tabBarController.tabBar.shadowImage = UIColor.clear.asImage()
+                }
+            })
 
+            presenter.bag += presenter.viewController.view.didMoveFromWindowSignal.onValue({ _ in
+                if let tabBarController = presenter.viewController.tabBarController {
+                    tabBarController.tabBar.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
+                }
+            })
         }
         /*.addConfiguration({ presenter in
             // - TODO - refactor
