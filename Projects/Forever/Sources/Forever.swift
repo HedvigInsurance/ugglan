@@ -115,6 +115,9 @@ public struct ForeverView: View {
     public var body: some View {
         hForm(gradientType: .forever) {
             HeaderView()
+            DiscountCodeSectionView()
+            InvitationTable()
+            //DiscountCodeRepresentable(service: ForeverServiceGraphQL()).frame(height: 200).padding().border(.black)
         }
     }
 }
@@ -138,6 +141,15 @@ extension ForeverView {
         ) { action in
             if case .showTemporaryCampaignDetail = action {
                 TemporaryCampaignDetail().journey
+            } else if case .showChangeCodeDetail = action {
+                Journey(
+                    ChangeCode(service: ForeverServiceGraphQL()),
+                    style: .modally()
+                )
+                .onDismiss {
+                    let store: ForeverStore = globalPresentableStoreContainer.get()
+                    store.send(.fetch)
+                }
             }
         }
         .configureTitle(L10n.referralsScreenTitle)
@@ -154,18 +166,17 @@ extension ForeverView {
     }
 }
 
-public struct HeaderRepresentable: UIViewRepresentable {
+public struct DiscountCodeRepresentable: UIViewRepresentable {
     let service: ForeverService
-    @Binding var dynamicHeight: CGFloat
 
     public class Coordinator {
         let bag = DisposeBag()
-        let headerView: Header
+        let discountView: DiscountCodeSection
 
         init(
             service: ForeverService
         ) {
-            self.headerView = Header(service: service)
+            self.discountView = DiscountCodeSection(service: service)
         }
     }
 
@@ -174,23 +185,26 @@ public struct HeaderRepresentable: UIViewRepresentable {
     }
 
     public func makeUIView(context: Context) -> some UIView {
-        let (view, disposable) = context.coordinator.headerView.materialize(
+        let (view, disposable) = context.coordinator.discountView.materialize(
             events: ViewableEvents(wasAddedCallbacker: .init())
         )
+        //let (view, disposable) = context.coordinator.headerView.materialize(
+        //    events: ViewableEvents(wasAddedCallbacker: .init())
+        //)
         context.coordinator.bag += DisposeOnMain(disposable)
-        print("GRADZ height:", dynamicHeight, view.sizeThatFits(view.bounds.size).height)
+        //print("GRADZ height:", dynamicHeight, view.sizeThatFits(view.bounds.size).height)
         //view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }
 
     public func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        /*uiView.setContentHuggingPriority(.defaultHigh, for: .vertical)
         uiView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         DispatchQueue.main.async {
             dynamicHeight =
                 uiView.sizeThatFits(CGSize(width: uiView.bounds.width, height: CGFloat.greatestFiniteMagnitude)).height
             print("GRADZ height:", dynamicHeight, uiView.sizeThatFits(uiView.bounds.size).height)
-        }
+        }*/
     }
 }
 
