@@ -7,6 +7,7 @@ import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct Slice: Shape {
     var startSlices: CGFloat = 0
@@ -113,57 +114,7 @@ public struct ForeverView: View {
 
     public var body: some View {
         hForm(gradientType: .forever) {
-            hSection {
-                VStack {
-                    TemporaryCampaignBanner {
-                        store.send(.showTemporaryCampaignDetail)
-                    }
-                    VStack {
-                        PresentableStoreLens(
-                            ForeverStore.self,
-                            getter: { state in
-                                state.foreverData?.grossAmount
-                            }
-                        ) { grossAmount in
-                            if let grossAmount = grossAmount {
-                                hText(grossAmount.formattedAmount, style: .caption2)
-                                    .foregroundColor(hLabelColor.tertiary)
-                            }
-                        }
-                        PresentableStoreLens(
-                            ForeverStore.self,
-                            getter: { state in
-                                state.foreverData
-                                    ?? ForeverData.init(
-                                        grossAmount: .init(amount: 0, currency: ""),
-                                        netAmount: .init(amount: 0, currency: ""),
-                                        potentialDiscountAmount: .init(amount: 0, currency: ""),
-                                        discountCode: "",
-                                        invitations: []
-                                    )
-                            }
-                        ) { data in
-                            if let grossAmount = data.grossAmount,
-                                let netAmount = data.netAmount,
-                                let potentialDiscountAmount = data.potentialDiscountAmount
-                            {
-                                PieChartView(
-                                    state: .init(
-                                        grossAmount: grossAmount,
-                                        netAmount: netAmount,
-                                        potentialDiscountAmount: potentialDiscountAmount
-                                    ),
-                                    newPrice: netAmount.formattedAmount
-                                )
-                                .frame(width: 250, height: 250, alignment: .center)
-                            }
-                        }
-                        hText(L10n.ReferralsEmpty.headline, style: .title1)
-                            .padding(.top, 16)
-                    }
-                }
-            }
-            .sectionContainerStyle(.transparent)
+            HeaderView()
         }
     }
 }
