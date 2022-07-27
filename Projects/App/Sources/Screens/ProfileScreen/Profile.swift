@@ -14,7 +14,7 @@ struct ProfileRow: View {
     let subtitle: String?
     let icon: UIImage
     let onTap: () -> Void
-    
+
     public var body: some View {
         hRow {
             HStack(spacing: 16) {
@@ -28,7 +28,8 @@ struct ProfileRow: View {
                         hText(subtitle, style: .footnote).foregroundColor(hLabelColor.secondary)
                     }
                 }
-            }.padding(0)
+            }
+            .padding(0)
         }
         .withCustomAccessory({
             Spacer()
@@ -43,24 +44,25 @@ struct ProfileRow: View {
 
 struct ProfileView: View {
     @PresentableStore var store: ProfileStore
-    //@State private var showLogoutAlert = false
-    
+    @State private var showLogoutAlert = false
+
     private func getLogoutIcon() -> UIImage {
         let icon = Asset.logoutIcon.image.withTintColor(.brand(.destructive))
         return icon
     }
-    
-    /*private var logoutAlert: SwiftUI.Alert {
+
+    private var logoutAlert: SwiftUI.Alert {
         return Alert(
             title: Text(L10n.logoutAlertTitle),
             message: nil,
             primaryButton: .cancel(Text(L10n.logoutAlertActionCancel)),
             secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
-                store.send(.logout)
+                ApplicationState.preserveState(.marketPicker)
+                UIApplication.shared.appDelegate.logout(token: nil)
             }
         )
-    }*/
-    
+    }
+
     public var body: some View {
         hForm(gradientType: .profile) {
             PresentableStoreLens(
@@ -123,29 +125,33 @@ struct ProfileView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 hText(L10n.logoutButton).foregroundColor(Color(.brand(.destructive)))
                             }
-                            
-                        }.padding(0)
+
+                        }
+                        .padding(0)
                     }
                     .withCustomAccessory({
                         Spacer()
                     })
                     .verticalPadding(12)
                     .onTap {
-                        //showLogoutAlert = true
-                        store.send(.logout)
+                        showLogoutAlert = true
+                    }
+                    .alert(isPresented: $showLogoutAlert) {
+                        logoutAlert
                     }
                 }
                 .withHeader {
                     hText(
                         L10n.Profile.AppSettingsSection.title,
                         style: .title2
-                    ).padding(.leading, 16)
+                    )
+                    .padding(.leading, 16)
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
-                
-            }.presentableStoreLensAnimation(.spring())
-        }.onAppear {
+            }
+        }
+        .onAppear {
             store.send(.fetchProfileState)
         }
     }
@@ -153,7 +159,6 @@ struct ProfileView: View {
 
 public enum ProfileResult {
     case openPayment
-    case logout
 }
 
 extension ProfileView {
@@ -191,8 +196,6 @@ extension ProfileView {
                     AppInfo(type: .appSettings),
                     options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
                 )
-            } else if case .logout = action {
-                resultJourney(.logout)
             }
         }
         .configureTitle(L10n.profileTitle)

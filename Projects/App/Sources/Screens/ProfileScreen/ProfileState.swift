@@ -18,14 +18,13 @@ public enum ProfileAction: ActionProtocol {
     case openPayment
     case openAppInformation
     case openAppSettings
-    case logout
     case setProfileState(name: String, charity: String, monthlyNet: Int)
 }
 
 public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
-    
+
     public override func effects(
         _ getState: @escaping () -> ProfileState,
         _ action: ProfileAction
@@ -42,14 +41,11 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                     return .setProfileState(name: name, charity: charity, monthlyNet: monthlyNet)
                 }
                 .valueThenEndSignal
-        case .openProfile:
-            print("Open profile")
-            return nil
         default:
             return nil
         }
     }
-    
+
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
@@ -69,10 +65,8 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             break
         case .openAppSettings:
             break
-        case .logout:
-            break
         }
-        
+
         return newState
     }
 }

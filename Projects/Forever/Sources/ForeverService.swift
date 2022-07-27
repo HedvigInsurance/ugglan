@@ -16,7 +16,7 @@ public struct ForeverInvitation: Hashable, Codable {
     }
 }
 
-public struct ForeverData: Codable {
+public struct ForeverData: Codable, Equatable {
     public init(
         grossAmount: MonetaryAmount,
         netAmount: MonetaryAmount,

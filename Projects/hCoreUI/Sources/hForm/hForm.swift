@@ -34,29 +34,34 @@ struct BackgroundView: UIViewRepresentable {
 
 extension View {
     func animatableGradient(fromGradient: Gradient, toGradient: Gradient, progress: CGFloat) -> some View {
-        self.modifier(AnimatableGradientModifier(fromGradient: fromGradient, toGradient: toGradient, progress: progress))
+        self.modifier(
+            AnimatableGradientModifier(fromGradient: fromGradient, toGradient: toGradient, progress: progress)
+        )
     }
 }
 
 struct hGradient: View {
     @Binding var oldGradientType: GradientType
     @Binding var newGradientType: GradientType
-    
+
     @State private var progress: CGFloat = 0
     @State private var colors: [Color] = []
-    
+
     var body: some View {
         Rectangle()
-            .animatableGradient(fromGradient: Gradient(colors: oldGradientType.colors()), toGradient: Gradient(colors: newGradientType.colors()), progress: progress)
+            .animatableGradient(
+                fromGradient: Gradient(colors: oldGradientType.colors()),
+                toGradient: Gradient(colors: newGradientType.colors()),
+                progress: progress
+            )
             .edgesIgnoringSafeArea(.all)
             .onAppear {
-                print("GRADZ new")
                 self.progress = 0
                 withAnimation(.linear(duration: 1.0)) {
                     self.progress = 1
                 }
             }
-        
+
         /*LinearGradient(
             colors: colors,
             startPoint: .top,
@@ -72,14 +77,14 @@ struct hGradient: View {
 
 public enum GradientType {
     case none, home, insurance, forever, profile
-    
+
     public func colors() -> [Color] {
         switch self {
         case .none:
             return [
                 Color(.brand(.primaryBackground())),
                 Color(.brand(.primaryBackground())),
-                Color(.brand(.primaryBackground()))
+                Color(.brand(.primaryBackground())),
             ]
         case .home:
             return [
@@ -123,14 +128,17 @@ extension Color {
     private func components() -> (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) {
         let scanner = Scanner(string: self.description.trimmingCharacters(in: CharacterSet.alphanumerics.inverted))
         var hexNumber: UInt64 = 0
-        var r: CGFloat = 0.0, g: CGFloat = 0.0, b: CGFloat = 0.0, a: CGFloat = 0.0
+        var r: CGFloat = 0.0
+        var g: CGFloat = 0.0
+        var b: CGFloat = 0.0
+        var a: CGFloat = 0.0
 
         let result = scanner.scanHexInt64(&hexNumber)
         if result {
-            r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
-            g = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
-            b = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
-            a = CGFloat(hexNumber & 0x000000ff) / 255
+            r = CGFloat((hexNumber & 0xff00_0000) >> 24) / 255
+            g = CGFloat((hexNumber & 0x00ff_0000) >> 16) / 255
+            b = CGFloat((hexNumber & 0x0000_ff00) >> 8) / 255
+            a = CGFloat(hexNumber & 0x0000_00ff) / 255
         }
         return (r, g, b, a)
     }
@@ -140,33 +148,37 @@ struct AnimatableGradientModifier: AnimatableModifier {
     let fromGradient: Gradient
     let toGradient: Gradient
     var progress: CGFloat = 0.0
- 
+
     var animatableData: CGFloat {
         get { progress }
         set { progress = newValue }
     }
- 
+
     func body(content: Content) -> some View {
         var gradientColors = [Color]()
- 
+
         for i in 0..<fromGradient.stops.count {
-            
+
             let fromColor = fromGradient.stops[i].color.uiColor()
             let toColor = toGradient.stops[i].color.uiColor()
- 
+
             gradientColors.append(colorMixer(fromColor: fromColor, toColor: toColor, progress: progress))
         }
- 
-        return LinearGradient(gradient: Gradient(colors: gradientColors), startPoint: .topLeading, endPoint: .bottomTrailing)
+
+        return LinearGradient(
+            gradient: Gradient(colors: gradientColors),
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
     }
- 
+
     func colorMixer(fromColor: UIColor, toColor: UIColor, progress: CGFloat) -> Color {
         guard let fromColor = fromColor.cgColor.components else { return Color(fromColor) }
         guard let toColor = toColor.cgColor.components else { return Color(toColor) }
         let red = fromColor[0] + (toColor[0] - fromColor[0]) * progress
         let green = fromColor[1] + (toColor[1] - fromColor[1]) * progress
         let blue = fromColor[2] + (toColor[2] - fromColor[2]) * progress
- 
+
         return Color(red: Double(red), green: Double(green), blue: Double(blue))
     }
 }
@@ -174,9 +186,9 @@ struct AnimatableGradientModifier: AnimatableModifier {
 public class GradientState: ObservableObject {
     public static let shared = GradientState()
     private init() {}
-    
+
     @Published var oldGradientType: GradientType = .none
-    
+
     @Published public var gradientType: GradientType = .none {
         didSet {
             if gradientType != oldValue {
@@ -189,9 +201,9 @@ public class GradientState: ObservableObject {
 
 public struct HostingGradient: View {
     @ObservedObject var gradientState = GradientState.shared
-    
+
     public init() {}
-    
+
     public var body: some View {
         if gradientState.gradientType != .none {
             hGradient(
@@ -206,7 +218,7 @@ public struct HostingGradient: View {
 
 public struct hForm<Content: View>: View {
     @ObservedObject var gradientState = GradientState.shared
-    
+
     @State var bottomAttachedViewHeight: CGFloat = 0
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     var content: Content

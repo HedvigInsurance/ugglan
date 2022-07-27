@@ -49,13 +49,13 @@ extension AppJourney {
         }
         .configureClaimsNavigation
     }*/
-    
+
     enum CardActions {
         case openConnectPayments
     }
 
     fileprivate static var homeTab: some JourneyPresentation {
-        HomeSwiftUI.journey() { result in
+        HomeSwiftUI.journey { result in
             switch result {
             case .startMovingFlow:
                 AppJourney.movingFlow
@@ -123,12 +123,31 @@ extension AppJourney {
     }
 
     fileprivate static var foreverTab: some JourneyPresentation {
-        Journey(
+        /*HostingJourney(
+            rootView: ForeverView(),
+            options: [
+                .defaults,
+                .prefersLargeTitles(true),
+                .largeTitleDisplayMode(.always),
+            ]
+        )
+        .configureTitle(L10n.referralsScreenTitle)*/
+        /*Journey(
             Forever(service: ForeverServiceGraphQL()),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        )
+        )*/
+        ForeverView.journey { result in
+            switch result {
+            case .dummy:
+                Journey(
+                    MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
+                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
+                )
+            }
+        }
         .onTabSelected {
-            ContextGradient.currentOption = .forever
+            GradientState.shared.gradientType = .forever
+            //ContextGradient.currentOption = .forever
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
@@ -137,27 +156,11 @@ extension AppJourney {
                 return false
             }
         }
-        .configureForeverTabBarItem
     }
 
     fileprivate static var profileTab: some JourneyPresentation {
-        /*HostingJourney(
-            rootView: ProfileView(),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        )
-        /*Journey(
-            Profile(),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        )
-        .configureTabBarItem*/
-        .configureTitle(L10n.profileTitle)*/
         ProfileView.journey { result in
             switch result {
-            case .logout:
-                Journey(
-                    MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
             case .openPayment:
                 Journey(
                     MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
@@ -203,6 +206,7 @@ extension AppJourney {
             )
             .sendActionImmediately(UgglanStore.self, .validateAuthToken)
             .sendActionImmediately(ContractStore.self, .fetch)
+            .sendActionImmediately(ForeverStore.self, .fetch)
             .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
             .onAction(UgglanStore.self) { action in

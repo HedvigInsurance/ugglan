@@ -3,31 +3,6 @@ import Foundation
 import UIKit
 import hCore
 
-protocol hGradientScroller where Self: UIScrollView {}
-
-extension hGradientScroller {
-    func addGradient(into bag: DisposeBag) {
-        guard bag.isEmpty, !UITraitCollection.isCatalyst else {
-            return
-        }
-        bag +=
-            didMoveToWindowSignal
-            .take(first: 1)
-            .onValue { _ in
-                let gradientView = HostingView(rootView: HostingGradient())
-                print("GRADZ adding grad to legacy view")
-                print("GRADZ layer size:", self.layer.frame.size)
-                print("GRADZ view size:", self.frame.size)
-                //self.layer.insertSublayer(gradientView.layer, at: 0)
-                self.insertSubview(gradientView, at: 0)
-                gradientView.snp.makeConstraints { make in
-                    make.top.bottom.left.right.equalToSuperview()
-                }
-            }
-    }
-}
-
-
 protocol GradientScroller where Self: UIScrollView {}
 
 let colorViewTag = 88888
