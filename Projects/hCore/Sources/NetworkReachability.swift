@@ -1,5 +1,6 @@
 import Foundation
 import Reachability
+import Flow
 
 /**
  Wrapper class around Reachability
@@ -10,6 +11,8 @@ public class NetworkReachability: NSObject {
     
     public var whenReachable: ((Reachability) -> Void)?
     public var whenUnreachable: ((Reachability) -> Void)?
+    
+    public var reachableSignal: ReadSignal<Bool>?
     
     public func observeReachability() {
         self.reachability = try! Reachability()
@@ -36,10 +39,12 @@ public class NetworkReachability: NSObject {
             if let callback = whenReachable {
                 callback(reachability)
             }
+            reachableSignal = ReadSignal<Bool>(true)
         case .none, .unavailable:
             if let callback = whenUnreachable {
                 callback(reachability)
             }
+            reachableSignal = ReadSignal<Bool>(false)
         }
     }
 }

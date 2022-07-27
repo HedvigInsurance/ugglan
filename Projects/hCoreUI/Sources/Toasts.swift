@@ -31,10 +31,12 @@ public struct Toast: Equatable {
     let subtitle: String?
     let textColor: UIColor
     let backgroundColor: UIColor
-    let duration: TimeInterval?
+    let duration: TimeInterval
     public var onTap: Signal<Void> {
         onTapCallbacker.providedSignal
     }
+    
+    var hideSignal: ReadSignal<Bool>?
 
     private let onTapCallbacker = Callbacker<Void>()
     let shouldHideCallbacker = Callbacker<Void>()
@@ -45,7 +47,8 @@ public struct Toast: Equatable {
         subtitle: String? = nil,
         textColor: UIColor = .brand(.primaryText()),
         backgroundColor: UIColor = UIColor.brand(.secondaryBackground()),
-        duration: TimeInterval? = 3.0
+        duration: TimeInterval = 3.0,
+        hideSignal: ReadSignal<Bool>? = nil
     ) {
         self.symbol = symbol
         self.body = body
@@ -53,6 +56,7 @@ public struct Toast: Equatable {
         self.textColor = textColor
         self.backgroundColor = backgroundColor
         self.duration = duration
+        self.hideSignal = hideSignal
     }
 }
 
@@ -359,11 +363,18 @@ extension Toasts: Viewable {
                             pauseSignal.value = false
                         }
                     
-                    if let duration = toast.duration {
-                        hideBag += Signal.animatedDelay(after: duration)
-                            .onValue { _ in
+                    hideBag += Signal.animatedDelay(after: toast.duration)
+                        .onValue { _ in
+                            hideCallbacker.callAll()
+                        }
+                    innerBag += hideBag
+                    
+                    if let hideSignal = toast.hideSignal {
+                        hideBag += hideSignal.onValue { shouldHide in
+                            if shouldHide {
                                 hideCallbacker.callAll()
                             }
+                        }
                         innerBag += hideBag
                     }
 
@@ -400,12 +411,10 @@ extension Toasts: Viewable {
                             if pause {
                                 hideBag.dispose()
                             } else {
-                                if let duration = toast.duration {
-                                    hideBag += Signal.animatedDelay(after: duration)
-                                        .onValue { _ in
-                                            hideCallbacker.callAll()
-                                        }
-                                }
+                                hideBag += Signal.animatedDelay(after: toast.duration)
+                                    .onValue { _ in
+                                        hideCallbacker.callAll()
+                                    }
                             }
                         }
                 }
