@@ -6,6 +6,7 @@ import SwiftUI
 struct LanguageRowView: View {
     @PresentableStore var store: MarketStore
     @State var locale: Localization.Locale = .currentLocale
+    @State var languageLabel: String = L10n.MarketLanguageScreen.languageLabel
     
     var body: some View {
         Button {
@@ -13,12 +14,16 @@ struct LanguageRowView: View {
         } label: {
 
         }
-        .buttonStyle(LanguageRowButtonStyle(locale: locale))
+        .buttonStyle(LanguageRowButtonStyle(locale: locale, languageLabel: languageLabel))
+        .onReceive(Localization.Locale.$currentLocale.plain().publisher) { _ in
+            self.languageLabel = L10n.MarketLanguageScreen.languageLabel
+        }
     }
 }
 
 struct LanguageRowButtonStyle: ButtonStyle {
     let locale: Localization.Locale
+    let languageLabel: String
 
     func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: 16) {
@@ -28,7 +33,7 @@ struct LanguageRowButtonStyle: ButtonStyle {
                 .frame(width: 24, height: 24)
                 
             VStack(alignment: .leading) {
-                hText(L10n.MarketLanguageScreen.languageLabel, style: .headline)
+                hText(languageLabel, style: .headline)
                     
                 hText(locale.displayName, style: .subheadline)
                     .foregroundColor(hLabelColor.secondary)

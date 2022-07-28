@@ -222,6 +222,9 @@ public struct MarketPickerView: View {
     @PresentableStore var store: MarketStore
     @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
     
+    @State var title: String = L10n.MarketLanguageScreen.title
+    @State var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
+    
     public init() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
@@ -234,12 +237,12 @@ public struct MarketPickerView: View {
     public var body: some View {
         hForm {
             if horizontalSizeClass == .compact {
-                hText(viewModel.title, style: .title1)
+                hText(title, style: .title1)
                     .padding(.top, 50)
                 
                 Spacer()
             } else {
-                hText(viewModel.title, style: .title1)
+                hText(title, style: .title1)
             }
         }
         .hFormAttachToBottom {
@@ -263,7 +266,7 @@ public struct MarketPickerView: View {
                     
                     store.send(.openMarketing)
                 } content: {
-                    hText(viewModel.buttonText)
+                    hText(buttonText)
                 }
             }
             .padding(.horizontal, 16)
@@ -275,6 +278,10 @@ public struct MarketPickerView: View {
             blurHash: viewModel.blurHash
         )
         .transition(.opacity)
+        .onReceive(Localization.Locale.$currentLocale.plain().publisher) { _ in
+            self.title = L10n.MarketLanguageScreen.title
+            self.buttonText = L10n.MarketLanguageScreen.continueButtonText
+        }
     }
 }
 
@@ -282,9 +289,6 @@ public class MarketPickerViewModel: ObservableObject {
     @Inject var client: ApolloClient
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
-    
-    @Published var title: String = L10n.MarketLanguageScreen.title
-    @Published var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     @Published var show: Bool = false
     
     func fetchMarketingImage() {

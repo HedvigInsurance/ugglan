@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MarketRowView: View {
     @PresentableStore var store: MarketStore
+    @State var marketLabel: String = L10n.MarketLanguageScreen.marketLabel
     
     @ViewBuilder
     public func marketRow(_ market: Market) -> some View {
@@ -17,7 +18,10 @@ struct MarketRowView: View {
         } label: {
 
         }
-        .buttonStyle(MarketRowButtonStyle(market: market))
+        .buttonStyle(MarketRowButtonStyle(market: market, marketLabel: marketLabel))
+        .onReceive(Localization.Locale.$currentLocale.plain().publisher) { _ in
+            self.marketLabel = L10n.MarketLanguageScreen.marketLabel
+        }
     }
     
     var body: some View {
@@ -38,6 +42,7 @@ struct MarketRowView: View {
 
 struct MarketRowButtonStyle: ButtonStyle {
     let market: Market
+    let marketLabel: String
 
     func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: 16) {
@@ -47,7 +52,7 @@ struct MarketRowButtonStyle: ButtonStyle {
                 .frame(width: 24, height: 24)
                 
             VStack(alignment: .leading) {
-                hText(L10n.MarketLanguageScreen.marketLabel, style: .headline)
+                hText(marketLabel, style: .headline)
                     
                 hText(market.title, style: .subheadline)
                     .foregroundColor(hLabelColor.secondary)
