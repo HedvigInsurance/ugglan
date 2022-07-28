@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 import SwiftUI
 
-struct LanguageRowView: View {
+struct LanguageRow: View {
     @PresentableStore var store: MarketStore
     @State var locale: Localization.Locale = .currentLocale
     @State var languageLabel: String = L10n.MarketLanguageScreen.languageLabel
@@ -19,6 +19,7 @@ struct LanguageRowView: View {
             Localization.Locale.$currentLocale
                 .distinct()
                 .plain()
+                .delay(by: 0.1)
                 .publisher
         ) { newLocale in
             self.languageLabel = L10n.MarketLanguageScreen.languageLabel
@@ -61,6 +62,6 @@ struct LanguageRowButtonStyle: ButtonStyle {
 
 struct LanguageRow_Previews: PreviewProvider {
     static var previews: some View {
-        LanguageRowView()
+        LanguageRow()
     }
 }

@@ -20,11 +20,17 @@ class ImageLoaderService: ObservableObject {
     }
 }
 
-struct RemoteImage: View {
+public struct RemoteImage: View {
     var url: URL?
     @ObservedObject var imageLoader = ImageLoaderService()
-
-    var body: some View {
+    
+    public init(
+        url: URL?
+    ) {
+        self.url = url
+    }
+    
+    public var body: some View {
         Image(uiImage: imageLoader.image)
             .resizable()
             .onAppear {
@@ -71,6 +77,50 @@ extension View {
                         .resizable()
                     )
             }
+        }
+    }
+}
+
+public struct ImageWithHashFallBack: View {
+    var imageURL: String
+    var blurHash: String
+    
+    public init(
+        imageURL: String,
+        blurHash: String
+    ) {
+        self.imageURL = imageURL
+        self.blurHash = blurHash
+    }
+    
+    public var body: some View {
+        if #available(iOS 14, *) {
+            KFImage(URL(string: imageURL))
+                .fade(duration: 0.25)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .edgesIgnoringSafeArea(.all)
+                .background(
+                    Image(
+                        uiImage: UIImage(
+                            blurHash: blurHash,
+                            size: .init(width: 32, height: 32)
+                        ) ?? UIImage()
+                    )
+                    .resizable()
+                )
+        } else {
+            RemoteImage(url: URL(string: imageURL))
+                .aspectRatio(contentMode: .fill)
+                .background(
+                    Image(
+                        uiImage: UIImage(
+                            blurHash: blurHash,
+                            size: .init(width: 32, height: 32)
+                        ) ?? UIImage()
+                    )
+                    .resizable()
+                )
         }
     }
 }

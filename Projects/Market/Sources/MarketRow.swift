@@ -7,7 +7,7 @@ import hCoreUI
 import hGraphQL
 import SwiftUI
 
-struct MarketRowView: View {
+struct MarketRow: View {
     @PresentableStore var store: MarketStore
     @State var marketLabel: String = L10n.MarketLanguageScreen.marketLabel
     
@@ -23,6 +23,7 @@ struct MarketRowView: View {
             Localization.Locale.$currentLocale
                 .distinct()
                 .plain()
+                .delay(by: 0.1)
                 .publisher
         ) { _ in
             self.marketLabel = L10n.MarketLanguageScreen.marketLabel
@@ -76,6 +77,6 @@ struct MarketRowButtonStyle: ButtonStyle {
 
 struct MarketRow_Previews: PreviewProvider {
     static var previews: some View {
-        MarketRowView()
+        MarketRow()
     }
 }
