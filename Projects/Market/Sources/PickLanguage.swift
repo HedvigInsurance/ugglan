@@ -1,63 +1,14 @@
-import Flow
-import Form
 import Foundation
 import Presentation
-import UIKit
 import hCore
 import hCoreUI
 import SwiftUI
 
-//public struct PickLanguage {
-//    let currentMarket: Market
-//
-//    public init(
-//        currentMarket: Market
-//    ) {
-//        self.currentMarket = currentMarket
-//    }
-//}
-//
-//extension PickLanguage: Presentable {
-//    public func materialize() -> (UIViewController, Future<Localization.Locale>) {
-//        let viewController = UIViewController()
-//        viewController.title = L10n.LanguagePickerModal.title
-//        let bag = DisposeBag()
-//
-//        let form = FormView()
-//        bag += viewController.install(form)
-//
-//        let titleSection = form.appendSection()
-//        bag += titleSection.append(
-//            MultilineLabel(value: L10n.LanguagePickerModal.text, style: .brand(.body(color: .secondary)))
-//                .insetted(UIEdgeInsets(inset: 15))
-//        )
-//
-//        let section = form.appendSection()
-//        return (
-//            viewController,
-//            Future { completion in
-//
-//                currentMarket.languages.forEach { language in
-//                    let row = RowView(title: language.displayName)
-//
-//                    if language == Localization.Locale.currentLocale {
-//                        row.append(Asset.checkmark.image)
-//                    }
-//
-//                    bag += section.append(row).onValue { completion(.success(language)) }
-//                }
-//
-//                return bag
-//            }
-//        )
-//    }
-//}
-
-
-
 public struct PickLanguage: View {
     let currentMarket: Market
     @PresentableStore var store: MarketStore
+    
+    @State var currentLocale: Localization.Locale = .currentLocale
     
     public init(
         currentMarket: Market
@@ -67,16 +18,22 @@ public struct PickLanguage: View {
     
     public var body: some View {
         hForm {
+            hText(L10n.LanguagePickerModal.text, style: .body)
+                .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+            
             hSection(currentMarket.languages, id: \.lprojCode) { locale in
                 hRow {
                     locale.displayName.hText()
                 }
-                .withSelectedAccessory(locale == Localization.Locale.currentLocale)
+                .withSelectedAccessory(locale == currentLocale)
                 .onTap {
-                    
+                    Localization.Locale.currentLocale = locale
+                    self.currentLocale = locale
                 }
             }
-            .dividerInsets(.leading, 50)
         }
     }
 }
