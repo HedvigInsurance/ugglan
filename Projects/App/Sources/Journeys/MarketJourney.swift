@@ -5,17 +5,6 @@ import hCore
 
 extension AppJourney {
     static var marketPicker: some JourneyPresentation {
-//        Journey(MarketPicker()) { _ in
-//            Journey(Marketing()) { marketingResult in
-//                switch marketingResult {
-//                case .onboard:
-//                    AppJourney.onboarding()
-//                case .login:
-//                    AppJourney.login
-//                }
-//            }
-//        }
-        
         HostingJourney(
             MarketStore.self,
             rootView: MarketPickerView()
@@ -32,6 +21,10 @@ extension AppJourney {
                         AppJourney.login
                     }
                 }
+            } else if case let .presentMarketPicker(currentMarket) = action {
+                PickMarket(currentMarket: currentMarket).journey
+            } else if case let .presentLanguagePicker(currentMarket) = action {
+                PickLanguage(currentMarket: currentMarket).journey
             }
         }
     }
