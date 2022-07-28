@@ -15,8 +15,14 @@ struct LanguageRowView: View {
 
         }
         .buttonStyle(LanguageRowButtonStyle(locale: locale, languageLabel: languageLabel))
-        .onReceive(Localization.Locale.$currentLocale.plain().publisher) { _ in
+        .onReceive(
+            Localization.Locale.$currentLocale
+                .distinct()
+                .plain()
+                .publisher
+        ) { newLocale in
             self.languageLabel = L10n.MarketLanguageScreen.languageLabel
+            locale = newLocale
         }
     }
 }

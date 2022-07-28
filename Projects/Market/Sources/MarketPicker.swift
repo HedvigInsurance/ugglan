@@ -11,6 +11,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 import SwiftUI
+import simd
 
 public struct MarketPicker {
     @Inject var client: ApolloClient
@@ -232,6 +233,7 @@ public struct MarketPickerView: View {
         ApplicationState.preserveState(.marketPicker)
         
         viewModel.fetchMarketingImage()
+        viewModel.detectMarketFromLocation()
     }
     
     public var body: some View {
@@ -278,7 +280,13 @@ public struct MarketPickerView: View {
             blurHash: viewModel.blurHash
         )
         .transition(.opacity)
-        .onReceive(Localization.Locale.$currentLocale.plain().publisher) { _ in
+        .onReceive(
+            Localization.Locale.$currentLocale
+                .distinct()
+                .plain()
+                .delay(by: 0.1)
+                .publisher
+        ) { _ in
             self.title = L10n.MarketLanguageScreen.title
             self.buttonText = L10n.MarketLanguageScreen.continueButtonText
         }
@@ -306,34 +314,33 @@ public class MarketPickerViewModel: ObservableObject {
             if let blurHash = $0.blurhash, let imageURL = $0.image?.url {
                 self.blurHash = blurHash
                 self.imageURL = imageURL
-                self.show = true
             }
         }
     }
     
-    func fetchGeoQuery() {
+    func detectMarketFromLocation() {
         let store: MarketStore = globalPresentableStoreContainer.get()
-        bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal
-            .atValue { data in
-                if let bestMatchedLocale = Market.activatedMarkets.flatMap({ market in market.languages })
-                    .first(where: {
-                        locale -> Bool in
-                        locale.rawValue.lowercased()
-                            .contains(data.geo.countryIsoCode.lowercased())
-                    })
-                {
-                    let locale = Localization.Locale(
-                        rawValue: bestMatchedLocale.rawValue
-                    )!
-                    let market = Market(rawValue: locale.market.rawValue)!
-                    store.send(.selectMarket(market: market))
-                } else {
-                    store.send(.selectMarket(market: .sweden))
+        bag += client.fetch(query: GraphQL.GeoQuery(), queue: .global(qos: .background))
+            .valueSignal
+            .map { $0.geo.countryIsoCode.lowercased() }
+            .map { code -> Market in
+                guard let bestMatch = Market.activatedMarkets.flatMap({ market in
+                    market.languages
+                }).first(where: { locale -> Bool in
+                    locale.rawValue.lowercased().contains(code)
+                }) else {
+                    return .sweden
                 }
+                
+                return Market(rawValue: bestMatch.market.rawValue)!
             }
-            .onError { _ in
+            .atValue(on: .main) { market in
+                store.send(.selectMarket(market: market))
+                self.show = true
+            }
+            .onError(on: .main) { _ in
                 store.send(.selectMarket(market: .sweden))
+                self.show = true
             }
-
     }
 }

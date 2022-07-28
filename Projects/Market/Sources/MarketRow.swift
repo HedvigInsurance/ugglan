@@ -19,7 +19,12 @@ struct MarketRowView: View {
 
         }
         .buttonStyle(MarketRowButtonStyle(market: market, marketLabel: marketLabel))
-        .onReceive(Localization.Locale.$currentLocale.plain().publisher) { _ in
+        .onReceive(
+            Localization.Locale.$currentLocale
+                .distinct()
+                .plain()
+                .publisher
+        ) { _ in
             self.marketLabel = L10n.MarketLanguageScreen.marketLabel
         }
     }
@@ -29,11 +34,8 @@ struct MarketRowView: View {
             MarketStore.self,
             getter: { state in
                 state.market
-            },
-            setter: { _ in
-                nil
             }
-        ) { market, _ in
+        ) { market in
             marketRow(market)
         }
 
