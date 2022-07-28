@@ -1,59 +1,54 @@
-import Flow
-import Form
 import Foundation
-import UIKit
 import hCore
 import hCoreUI
+import SwiftUI
 
-struct LanguageRow {
+struct LanguageRowView: View {
     @PresentableStore var store: MarketStore
+    @State var locale: Localization.Locale = .currentLocale
+    
+    var body: some View {
+        Button {
+            store.send(.presentLanguagePicker(currentMarket: store.state.market))
+        } label: {
+
+        }
+        .buttonStyle(LanguageRowButtonStyle(locale: locale))
+    }
 }
 
-extension LanguageRow: Viewable {
-    func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
-        let bag = DisposeBag()
+struct LanguageRowButtonStyle: ButtonStyle {
+    let locale: Localization.Locale
 
-        let row = RowView(
-            title: "",
-            subtitle: "",
-            style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
-                style.title = .brand(.headline(color: .primary(state: .negative)))
-                style.subtitle = .brand(.subHeadline(color: .secondary(state: .negative)))
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 16) {
+            Image(uiImage: Asset.globe.image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
+                
+            VStack(alignment: .leading) {
+                hText(L10n.MarketLanguageScreen.languageLabel, style: .headline)
+                    
+                hText(locale.displayName, style: .subheadline)
+                    .foregroundColor(hLabelColor.secondary)
             }
-        )
-        bag += Localization.Locale.$currentLocale.atOnce().map { $0.displayName }.bindTo(row, \.subtitle)
+            
+            Spacer()
+            
+            Image(uiImage: hCoreUIAssets.chevronRight.image)
+                .resizable()
+                .foregroundColor(.white)
+                .frame(width: 16, height: 16)
+        }
+        .padding(.horizontal, 16)
+        .animation(.easeInOut(duration: 0.25))
+        .preferredColorScheme(.dark)
+    }
+}
 
-        bag += Localization.Locale.$currentLocale.atOnce().delay(by: 0)
-            .transition(style: .crossDissolve(duration: 0.25), with: row) { _ in
-                row.title = L10n.MarketLanguageScreen.languageLabel
-            }
-
-        let iconImageView = UIImageView()
-        iconImageView.image = Asset.globe.image
-        iconImageView.contentMode = .scaleAspectFit
-        iconImageView.tintColor = .white
-
-        row.prepend(iconImageView)
-
-        iconImageView.snp.makeConstraints { make in make.width.equalTo(24) }
-
-        row.setCustomSpacing(16, after: iconImageView)
-
-        let chevronImageView = UIImageView()
-        chevronImageView.tintColor = .white
-        chevronImageView.image = hCoreUIAssets.chevronRight.image
-
-        row.append(chevronImageView)
-
-        bag += events.onSelect.compactMap { row.viewController }
-            .onValue { viewController in
-                viewController.present(
-                    PickLanguage(currentMarket: store.state.market).wrappedInCloseButton(),
-                    style: .detented(.scrollViewContentSize)
-                )
-                .onValue { locale in Localization.Locale.currentLocale = locale }
-            }
-
-        return (row, bag)
+struct LanguageRow_Previews: PreviewProvider {
+    static var previews: some View {
+        LanguageRowView()
     }
 }

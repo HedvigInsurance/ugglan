@@ -114,11 +114,11 @@ extension MarketPicker: Presentable {
                     let section = form.appendSection()
                     section.overrideUserInterfaceStyle = .dark
 
-                    let marketRow = MarketRow()
-                    bag += section.append(marketRow)
+                    let marketRow = HostingView(rootView: MarketRowView())
+                    section.append(marketRow)
 
-                    let languageRow = LanguageRow()
-                    bag += section.append(languageRow)
+                    let languageRow = HostingView(rootView: LanguageRowView())
+                    section.append(languageRow)
 
                     bag += form.append(Spacing(height: 36))
 

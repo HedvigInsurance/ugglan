@@ -1,61 +1,73 @@
 import Flow
-import Form
 import Foundation
 import Presentation
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import SwiftUI
 
-public struct MarketRow {
+struct MarketRowView: View {
     @PresentableStore var store: MarketStore
+    
+    @ViewBuilder
+    public func marketRow(_ market: Market) -> some View {
+        Button {
+            store.send(.presentMarketPicker(currentMarket: store.state.market))
+        } label: {
 
-    public init() {}
+        }
+        .buttonStyle(MarketRowButtonStyle(market: market))
+    }
+    
+    var body: some View {
+        PresentableStoreLens(
+            MarketStore.self,
+            getter: { state in
+                state.market
+            },
+            setter: { _ in
+                nil
+            }
+        ) { market, _ in
+            marketRow(market)
+        }
+
+    }
 }
 
-extension MarketRow: Viewable {
-    public func materialize(events: SelectableViewableEvents) -> (RowView, Disposable) {
-        let bag = DisposeBag()
-        let row = RowView(
-            title: "",
-            subtitle: "",
-            style: TitleSubtitleStyle.default.restyled { (style: inout TitleSubtitleStyle) in
-                style.title = .brand(.headline(color: .primary(state: .negative)))
-                style.subtitle = .brand(.subHeadline(color: .secondary(state: .negative)))
+struct MarketRowButtonStyle: ButtonStyle {
+    let market: Market
+
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 16) {
+            Image(uiImage: market.icon)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
+                
+            VStack(alignment: .leading) {
+                hText(L10n.MarketLanguageScreen.marketLabel, style: .headline)
+                    
+                hText(market.title, style: .subheadline)
+                    .foregroundColor(hLabelColor.secondary)
             }
-        )
-        bag += store.stateSignal.atOnce().map { $0.market.title }.bindTo(row, \.subtitle)
+            
+            Spacer()
+            
+            Image(uiImage: hCoreUIAssets.chevronRight.image)
+                .resizable()
+                .foregroundColor(.white)
+                .frame(width: 16, height: 16)
+        }
+        .padding(.horizontal, 16)
+        .preferredColorScheme(.dark)
+        .animation(.easeInOut(duration: 0.25))
+    }
+}
 
-        bag += Localization.Locale.$currentLocale.atOnce().delay(by: 0)
-            .transition(style: .crossDissolve(duration: 0.25), with: row) { _ in
-                row.title = L10n.MarketLanguageScreen.marketLabel
-                row.subtitle = store.state.market.title
-            }
-
-        let flagImageView = UIImageView()
-        flagImageView.contentMode = .scaleAspectFit
-        row.prepend(flagImageView)
-
-        bag += store.stateSignal.atOnce().map { $0.market.icon }.bindTo(flagImageView, \.image)
-
-        flagImageView.snp.makeConstraints { make in make.width.equalTo(24) }
-
-        row.setCustomSpacing(16, after: flagImageView)
-
-        let chevronImageView = UIImageView()
-        chevronImageView.tintColor = .white
-        chevronImageView.image = hCoreUIAssets.chevronRight.image
-
-        row.append(chevronImageView)
-
-        bag += events.onSelect.compactMap { row.viewController }
-            .onValue { viewController in
-                viewController.present(
-                    PickMarket(currentMarket: store.state.market).journey
-                )
-                .sink()
-            }
-
-        return (row, bag)
+struct MarketRow_Previews: PreviewProvider {
+    static var previews: some View {
+        MarketRowView()
     }
 }
