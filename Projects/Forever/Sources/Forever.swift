@@ -139,6 +139,12 @@ public enum ForeverResult {
 }
 
 extension ForeverView {
+    private func encodedCode(code: String) -> String {
+        return code.addingPercentEncoding(
+            withAllowedCharacters: .urlQueryAllowed
+        ) ?? ""
+    }
+
     public static func journey<ResultJourney: JourneyPresentation>(
         @JourneyBuilder resultJourney: @escaping (_ result: ForeverResult) -> ResultJourney
     ) -> some JourneyPresentation {

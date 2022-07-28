@@ -31,6 +31,7 @@ public enum ForeverAction: ActionProtocol {
     case showChangeCodeDetail
     case fetch
     case setForeverData(data: ForeverData)
+    case showShareSheet(code: String)
 }
 
 public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
@@ -162,6 +163,8 @@ public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
             newState.hasSeenFebruaryCampaign = hasSeenFebruaryCampaign
         case let .setForeverData(data):
             newState.foreverData = data
+        case .showShareSheet:
+            break
         case .showChangeCodeDetail:
             break
         case .fetch:
