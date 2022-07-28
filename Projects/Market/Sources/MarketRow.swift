@@ -61,6 +61,7 @@ struct MarketRowButtonStyle: ButtonStyle {
                 .frame(width: 16, height: 16)
         }
         .padding(.horizontal, 16)
+        .contentShape(Rectangle())
         .preferredColorScheme(.dark)
         .animation(.easeInOut(duration: 0.25))
     }
