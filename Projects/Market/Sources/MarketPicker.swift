@@ -291,8 +291,10 @@ public class MarketPickerViewModel: ObservableObject {
     @Published var imageURL: String = ""
     @Published var show: Bool = false
     
+    let bag = DisposeBag()
+    
     func fetchMarketingImage() {
-        client.fetch(
+        bag += client.fetch(
             query: GraphQL.MarketingImagesQuery()
         )
         .compactMap {
@@ -307,5 +309,31 @@ public class MarketPickerViewModel: ObservableObject {
                 self.show = true
             }
         }
+    }
+    
+    func fetchGeoQuery() {
+        let store: MarketStore = globalPresentableStoreContainer.get()
+        bag += client.fetch(query: GraphQL.GeoQuery()).valueSignal
+            .atValue { data in
+                if let bestMatchedLocale = Market.activatedMarkets.flatMap({ market in market.languages })
+                    .first(where: {
+                        locale -> Bool in
+                        locale.rawValue.lowercased()
+                            .contains(data.geo.countryIsoCode.lowercased())
+                    })
+                {
+                    let locale = Localization.Locale(
+                        rawValue: bestMatchedLocale.rawValue
+                    )!
+                    let market = Market(rawValue: locale.market.rawValue)!
+                    store.send(.selectMarket(market: market))
+                } else {
+                    store.send(.selectMarket(market: .sweden))
+                }
+            }
+            .onError { _ in
+                store.send(.selectMarket(market: .sweden))
+            }
+
     }
 }
