@@ -8,138 +8,80 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import SwiftUI
 
-public struct Marketing {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
-
-    public init() {}
-}
-
-public enum MarketingResult {
-    case onboard
-    case login
-}
-
-extension Marketing: Presentable {
-    public func materialize() -> (UIViewController, Signal<MarketingResult>) {
-        let viewController = UIViewController()
-
-        let appearance = UINavigationBarAppearance()
-        DefaultStyling.applyCommonNavigationBarStyling(appearance)
-        appearance.configureWithTransparentBackground()
-        viewController.navigationItem.standardAppearance = appearance
-        viewController.navigationItem.compactAppearance = appearance
-        viewController.navigationItem.scrollEdgeAppearance = appearance
-
-        let bag = DisposeBag()
-
-        let containerView = UIView()
-        containerView.clipsToBounds = true
-        viewController.view = containerView
-
-        bag += containerView.windowSignal.onFirstValue { _ in
-            viewController.navigationController?.navigationBar.overrideUserInterfaceStyle = .dark
+public struct Marketing: View {
+    @PresentableStore var store: MarketStore
+    @ObservedObject var viewModel = MarketingViewModel()
+    
+    public init() {
+        viewModel.fetchMarketingImage()
+    }
+    
+    public var body: some View {
+        VStack {
+            Spacer()
+            Image(uiImage: hCoreUIAssets.wordmarkWhite.image)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 150, height: 40)
+            Spacer()
+            
+            hButton.LargeButtonFilled {
+                hAnalyticsEvent.buttonClickMarketingOnboard().send()
+                
+                store.send(.onboard)
+            } content: {
+                hText(L10n.marketingGetHedvig)
+            }
+            
+            hButton.LargeButtonOutlined {
+                hAnalyticsEvent.buttonClickMarketingLogin().send()
+                
+                store.send(.loginButtonTapped)
+            } content: {
+                hText(L10n.marketingLogin)
+            }
         }
-
-        let imageView = UIImageView()
-
-        containerView.addSubview(imageView)
-
-        imageView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
-
-        let wordmarkImageView = UIImageView()
-        wordmarkImageView.contentMode = .scaleAspectFill
-        wordmarkImageView.image = hCoreUIAssets.wordmarkWhite.image
-        containerView.addSubview(wordmarkImageView)
-
-        wordmarkImageView.snp.makeConstraints { make in make.centerX.centerY.equalToSuperview()
-            make.width.equalTo(150)
-            make.height.equalTo(40)
-        }
-
-        bag += client.fetch(query: GraphQL.MarketingImagesQuery())
-            .compactMap {
-                $0.appMarketingImages
-                    .filter { $0.language?.code == Localization.Locale.currentLocale.code }.first
-            }
-            .compactMap { $0 }
-            .onValue { marketingImage in
-                guard let url = URL(string: marketingImage.image?.url ?? "") else { return }
-
-                let blurImage = UIImage(
-                    blurHash: marketingImage.blurhash ?? "",
-                    size: .init(width: 32, height: 32)
-                )
-                imageView.image = blurImage
-
-                imageView.contentMode = .scaleAspectFill
-                imageView.kf.setImage(
-                    with: url,
-                    placeholder: blurImage,
-                    options: [.transition(.fade(0.25))]
-                )
-            }
-
-        let contentStackView = UIStackView()
-        contentStackView.axis = .vertical
-        contentStackView.spacing = 15
-        contentStackView.layoutMargins = UIEdgeInsets(horizontalInset: 15, verticalInset: 10)
-        contentStackView.isLayoutMarginsRelativeArrangement = true
-
-        containerView.addSubview(contentStackView)
-
-        contentStackView.snp.makeConstraints { make in make.bottom.trailing.leading.equalToSuperview() }
-
-        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .marketing))
-
-        return (
-            viewController,
-            Signal { callback in
-
-                let onboardButton = Button(
-                    title: L10n.marketingGetHedvig,
-                    type: .standard(backgroundColor: .white, textColor: .black)
-                )
-
-                bag += onboardButton.onTapSignal
-                    .onValue { _ in
-                        viewController.navigationController?.navigationBar
-                            .overrideUserInterfaceStyle =
-                            .unspecified
-                        if !UITraitCollection.isCatalyst {
-                            viewController.navigationController?.hero.isEnabled = false
-                        }
-
-                        hAnalyticsEvent.buttonClickMarketingOnboard().send()
-
-                        callback(.onboard)
-                    }
-
-                bag += contentStackView.addArranged(onboardButton) { buttonView in
-                    buttonView.hero.id = "ContinueButton"
-                    buttonView.hero.modifiers = [.spring(stiffness: 400, damping: 100)]
-                }
-
-                let loginButton = Button(
-                    title: L10n.marketingLogin,
-                    type: .standardOutline(borderColor: .white, textColor: .white)
-                )
-
-                bag += loginButton.onTapSignal.onValue { _ in
-                    if !UITraitCollection.isCatalyst {
-                        viewController.navigationController?.hero.isEnabled = false
-                    }
-
-                    hAnalyticsEvent.buttonClickMarketingLogin().send()
-
-                    callback(.login)
-                }
-
-                bag += contentStackView.addArranged(loginButton)
-
-                return bag
-            }
+        .padding(.horizontal, 16)
+        .background(
+            ImageWithHashFallBack(
+                imageURL: viewModel.imageURL,
+                blurHash: viewModel.blurHash
+            )
         )
+        .preferredColorScheme(.dark)
+        .trackOnAppear(hAnalyticsEvent.screenView(screen: .marketing))
+    }
+}
+
+class MarketingViewModel: ObservableObject {
+    @Inject var client: ApolloClient
+    @Published var blurHash: String = ""
+    @Published var imageURL: String = ""
+    
+    let bag = DisposeBag()
+    
+    func fetchMarketingImage() {
+        bag += client.fetch(
+            query: GraphQL.MarketingImagesQuery()
+        )
+        .compactMap {
+            $0.appMarketingImages
+                .filter { $0.language?.code == Localization.Locale.currentLocale.code }.first
+        }
+        .compactMap { $0 }
+        .onValue {
+            if let blurHash = $0.blurhash, let imageURL = $0.image?.url {
+                self.blurHash = blurHash
+                self.imageURL = imageURL
+            }
+        }
+    }
+}
+
+struct Marketing_Previews: PreviewProvider {
+    static var previews: some View {
+        Marketing()
     }
 }

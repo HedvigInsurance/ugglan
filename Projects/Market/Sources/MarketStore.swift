@@ -14,6 +14,8 @@ public enum MarketAction: ActionProtocol {
     case presentMarketPicker(currentMarket: Market)
     case openMarketing
     case presentLanguagePicker(currentMarket: Market)
+    case loginButtonTapped
+    case onboard
 }
 
 public final class MarketStore: StateStore<MarketState, MarketAction> {

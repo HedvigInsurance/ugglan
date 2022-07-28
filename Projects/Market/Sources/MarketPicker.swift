@@ -18,9 +18,6 @@ public struct MarketPickerView: View {
     @State var show: Bool = false
     
     public init() {
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithTransparentBackground()
-        
         ApplicationState.preserveState(.marketPicker)
         
         viewModel.fetchMarketingImage()
@@ -56,16 +53,15 @@ public struct MarketPickerView: View {
             }
             .padding(.bottom, 16)
         }
-        
         .padding(.horizontal, 16)
+        .opacity(show ? 1 : 0)
         .background(
             ImageWithHashFallBack(
                 imageURL: viewModel.imageURL,
                 blurHash: viewModel.blurHash
             )
         )
-        .transition(.opacity)
-        .opacity(show ? 1 : 0)
+        .preferredColorScheme(.dark)
         .onReceive(
             Localization.Locale.$currentLocale
                 .distinct()
@@ -79,7 +75,7 @@ public struct MarketPickerView: View {
         .onReceive(viewModel.$bootStrapped) { val in
             if val {
                 hAnalyticsEvent.screenView(screen: .marketPicker).send()
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.75)) {
                     self.show = true
                 }
             }
@@ -135,24 +131,18 @@ public class MarketPickerViewModel: ObservableObject {
                 innerBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
                     .delay(by: 1.25)
                     .take(first: 1)
-                    .animated(
-                        style: .lightBounce(duration: 0.75),
-                        animations: { _ in
-                            self.bootStrapped = true
-                        }
-                    )
+                    .map { _ in
+                        self.bootStrapped = true
+                    }
             }
             .onError(on: .main) { _ in
                 store.send(.selectMarket(market: .sweden))
                 innerBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
                     .delay(by: 1.25)
                     .take(first: 1)
-                    .animated(
-                        style: .lightBounce(duration: 0.75),
-                        animations: { _ in
-                            self.bootStrapped = true
-                        }
-                    )
+                    .map { _ in
+                        self.bootStrapped = true
+                    }
             }
     }
 }
