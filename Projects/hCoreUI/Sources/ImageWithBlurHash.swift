@@ -5,7 +5,11 @@ import SwiftUI
 class ImageLoaderService: ObservableObject {
     @Published var image: UIImage = UIImage()
 
-    func loadImage(url: URL) {
+    func loadImage(url: URL?) {
+        guard let url = url else {
+            return
+        }
+
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data else { return }
             DispatchQueue.main.async {
@@ -17,7 +21,7 @@ class ImageLoaderService: ObservableObject {
 }
 
 struct RemoteImage: View {
-    var url: URL
+    var url: URL?
     @ObservedObject var imageLoader = ImageLoaderService()
 
     var body: some View {
@@ -31,7 +35,7 @@ struct RemoteImage: View {
 
 extension View {
     public func backgroundImageWithBlurHashFallback(
-        imageURL: URL,
+        imageURL: URL?,
         blurHash: String
     ) -> some View {
         Group {

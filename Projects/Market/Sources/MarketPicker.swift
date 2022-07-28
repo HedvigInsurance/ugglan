@@ -10,6 +10,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import SwiftUI
 
 public struct MarketPicker {
     @Inject var client: ApolloClient
@@ -213,5 +214,94 @@ extension MarketPicker: Presentable {
                 return bag
             }
         )
+    }
+}
+
+public struct MarketPickerView: View {
+    @ObservedObject var viewModel = MarketPickerViewModel()
+    @PresentableStore var store: MarketStore
+    @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
+    
+    public init() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        
+        ApplicationState.preserveState(.marketPicker)
+        
+        viewModel.fetchMarketingImage()
+    }
+    
+    public var body: some View {
+        hForm {
+            if horizontalSizeClass == .compact {
+                hText(viewModel.title, style: .title1)
+                    .padding(.top, 50)
+                
+                Spacer()
+            } else {
+                hText(viewModel.title, style: .title1)
+            }
+        }
+        .hFormAttachToBottom {
+            VStack {
+                MarketRowView()
+                Divider()
+                LanguageRowView()
+                
+                Spacer()
+                    .frame(height: 36)
+                
+                hButton.LargeButtonFilled {
+                    hAnalyticsEvent.marketSelected(
+                        locale: Localization.Locale.currentLocale.lprojCode
+                    )
+                    .send()
+
+                    hAnalyticsExperiment.load { _ in
+                        
+                    }
+                    
+                    store.send(.openMarketing)
+                } content: {
+                    hText(viewModel.buttonText)
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+        .opacity(viewModel.show ? 1 : 0)
+        .preferredColorScheme(.dark)
+        .backgroundImageWithBlurHashFallback(
+            imageURL: URL(string: viewModel.imageURL),
+            blurHash: viewModel.blurHash
+        )
+        .transition(.opacity)
+    }
+}
+
+public class MarketPickerViewModel: ObservableObject {
+    @Inject var client: ApolloClient
+    @Published var blurHash: String = ""
+    @Published var imageURL: String = ""
+    
+    @Published var title: String = L10n.MarketLanguageScreen.title
+    @Published var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
+    @Published var show: Bool = false
+    
+    func fetchMarketingImage() {
+        client.fetch(
+            query: GraphQL.MarketingImagesQuery()
+        )
+        .compactMap {
+            $0.appMarketingImages
+                .filter { $0.language?.code == Localization.Locale.currentLocale.code }.first
+        }
+        .compactMap { $0 }
+        .onValue {
+            if let blurHash = $0.blurhash, let imageURL = $0.image?.url {
+                self.blurHash = blurHash
+                self.imageURL = imageURL
+                self.show = true
+            }
+        }
     }
 }
