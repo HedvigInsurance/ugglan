@@ -2,9 +2,7 @@ import Apollo
 import Flow
 import Presentation
 import SwiftUI
-import hAnalytics
 import hCore
-import hCoreUI
 import hGraphQL
 
 public class MarketPickerViewModel: ObservableObject {
