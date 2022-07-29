@@ -23,13 +23,13 @@ class ImageLoaderService: ObservableObject {
 public struct RemoteImage: View {
     var url: URL?
     @ObservedObject var imageLoader = ImageLoaderService()
-    
+
     public init(
         url: URL?
     ) {
         self.url = url
     }
-    
+
     public var body: some View {
         Image(uiImage: imageLoader.image)
             .resizable()
@@ -84,7 +84,7 @@ extension View {
 public struct ImageWithHashFallBack: View {
     var imageURL: String
     var blurHash: String
-    
+
     public init(
         imageURL: String,
         blurHash: String
@@ -92,7 +92,7 @@ public struct ImageWithHashFallBack: View {
         self.imageURL = imageURL
         self.blurHash = blurHash
     }
-    
+
     public var body: some View {
         if #available(iOS 14, *) {
             KFImage(URL(string: imageURL))

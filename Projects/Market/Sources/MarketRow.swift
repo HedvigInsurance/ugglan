@@ -1,11 +1,11 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct MarketRow: View {
     @PresentableStore var store: MarketStore
     @State var marketLabel: String = L10n.MarketLanguageScreen.marketLabel
-    
+
     @ViewBuilder
     public func marketRow(_ market: Market) -> some View {
         Button {
@@ -24,7 +24,7 @@ struct MarketRow: View {
             self.marketLabel = L10n.MarketLanguageScreen.marketLabel
         }
     }
-    
+
     var body: some View {
         PresentableStoreLens(
             MarketStore.self,
@@ -48,16 +48,16 @@ struct MarketRowButtonStyle: ButtonStyle {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)
-                
+
             VStack(alignment: .leading) {
                 hText(marketLabel, style: .headline)
-                    
+
                 hText(market.title, style: .subheadline)
                     .foregroundColor(hLabelColor.secondary)
             }
-            
+
             Spacer()
-            
+
             Image(uiImage: hCoreUIAssets.chevronRight.image)
                 .resizable()
                 .foregroundColor(.white)
