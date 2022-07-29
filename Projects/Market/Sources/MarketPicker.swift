@@ -10,6 +10,8 @@ public struct MarketPickerView: View {
     @State var title: String = L10n.MarketLanguageScreen.title
     @State var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     
+    @Environment(\.presentationMode) var presentationMode
+    
     enum ViewState {
         case loading
         case marketAndLanguage
@@ -72,12 +74,7 @@ public struct MarketPickerView: View {
         
         Button {
             hAnalyticsEvent.buttonClickMarketingOnboard().send()
-
-//            store.send(.onboard)
-            withAnimation(.easeInOut) {
-                viewState = .marketAndLanguage
-            }
-            
+            store.send(.onboard)
         } label: {
             hText(L10n.marketingGetHedvig, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
@@ -88,7 +85,6 @@ public struct MarketPickerView: View {
         
         hButton.LargeButtonOutlined {
             hAnalyticsEvent.buttonClickMarketingLogin().send()
-
             store.send(.loginButtonTapped)
         } content: {
             hText(L10n.marketingLogin)
@@ -104,6 +100,17 @@ public struct MarketPickerView: View {
                 marketAndLanguage
             case .onboardAndLogin:
                 onboardAndLogin
+                    .navigationBarItems(
+                        leading: Button(action: {
+                            withAnimation(.easeInOut) {
+                                self.presentationMode.wrappedValue.dismiss()
+                                viewState = .marketAndLanguage
+                            }
+                    }) {
+                        Image(uiImage: hCoreUIAssets.backButton.image)
+                            .resizable()
+                            .foregroundColor(hLabelColor.primary)
+                    })
             }
         }
         .environment(\.colorScheme, .dark)
@@ -128,7 +135,7 @@ public struct MarketPickerView: View {
         .onReceive(viewModel.$bootStrapped) { val in
             if val {
                 hAnalyticsEvent.screenView(screen: .marketPicker).send()
-                withAnimation(.easeInOut(duration: 0.75)) {
+                withAnimation {
                     self.viewState = .marketAndLanguage
                 }
             }
