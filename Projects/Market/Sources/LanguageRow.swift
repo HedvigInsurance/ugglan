@@ -1,12 +1,12 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct LanguageRow: View {
     @PresentableStore var store: MarketStore
     @State var locale: Localization.Locale = .currentLocale
     @State var languageLabel: String = L10n.MarketLanguageScreen.languageLabel
-    
+
     var body: some View {
         Button {
             store.send(.presentLanguagePicker(currentMarket: store.state.market))
@@ -37,16 +37,16 @@ struct LanguageRowButtonStyle: ButtonStyle {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)
-                
+
             VStack(alignment: .leading) {
                 hText(languageLabel, style: .headline)
-                    
+
                 hText(locale.displayName, style: .subheadline)
                     .foregroundColor(hLabelColor.secondary)
             }
-            
+
             Spacer()
-            
+
             Image(uiImage: hCoreUIAssets.chevronRight.image)
                 .resizable()
                 .foregroundColor(.white)
