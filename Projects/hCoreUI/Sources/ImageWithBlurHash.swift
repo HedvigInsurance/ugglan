@@ -81,46 +81,54 @@ extension View {
     }
 }
 
-public struct ImageWithHashFallBack: View {
-    var imageURL: String
+public struct ImageWithHashFallBack: ViewModifier {
+    var imageURL: URL?
     var blurHash: String
 
     public init(
-        imageURL: String,
+        imageURL: URL?,
         blurHash: String
     ) {
         self.imageURL = imageURL
         self.blurHash = blurHash
     }
 
-    public var body: some View {
+    public func body(content: Content) -> some View {
         if #available(iOS 14, *) {
-            KFImage(URL(string: imageURL))
-                .fade(duration: 0.25)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .edgesIgnoringSafeArea(.all)
+            content
                 .background(
-                    Image(
-                        uiImage: UIImage(
-                            blurHash: blurHash,
-                            size: .init(width: 32, height: 32)
-                        ) ?? UIImage()
-                    )
-                    .resizable()
+                    KFImage(imageURL)
+                        .fade(duration: 0.25)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .edgesIgnoringSafeArea(.all)
+                        .background(
+                            Image(
+                                uiImage: UIImage(
+                                    blurHash: blurHash,
+                                    size: .init(width: 32, height: 32)
+                                ) ?? UIImage()
+                            )
+                            .resizable()
+                        )
                 )
+            
         } else {
-            RemoteImage(url: URL(string: imageURL))
-                .aspectRatio(contentMode: .fill)
+            content
                 .background(
-                    Image(
-                        uiImage: UIImage(
-                            blurHash: blurHash,
-                            size: .init(width: 32, height: 32)
-                        ) ?? UIImage()
-                    )
-                    .resizable()
+                    RemoteImage(url: imageURL)
+                        .aspectRatio(contentMode: .fill)
+                        .background(
+                            Image(
+                                uiImage: UIImage(
+                                    blurHash: blurHash,
+                                    size: .init(width: 32, height: 32)
+                                ) ?? UIImage()
+                            )
+                            .resizable()
+                        )
                 )
+            
         }
     }
 }

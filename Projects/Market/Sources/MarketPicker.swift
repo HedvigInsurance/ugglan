@@ -35,6 +35,7 @@ public struct MarketPickerView: View {
 
         MarketRow()
         Divider()
+            .foregroundColor(hLabelColor.primary)
         LanguageRow()
 
         Spacer()
@@ -43,17 +44,12 @@ public struct MarketPickerView: View {
         Button {
             hAnalyticsEvent.marketSelected(
                 locale: Localization.Locale.currentLocale.lprojCode
-            )
-            .send()
-
-            hAnalyticsExperiment.load { _ in
-
-            }
+            ).send()
+            hAnalyticsExperiment.load { _ in }
             
             withAnimation(.easeInOut) {
                 viewState = .onboardAndLogin
             }
-            
         } label: {
             hText(buttonText, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
@@ -116,9 +112,9 @@ public struct MarketPickerView: View {
         .environment(\.colorScheme, .dark)
         .padding(.horizontal, 16)
         .opacity(viewState == .loading ? 0 : 1)
-        .background(
+        .modifier(
             ImageWithHashFallBack(
-                imageURL: viewModel.imageURL,
+                imageURL: URL(string: viewModel.imageURL),
                 blurHash: viewModel.blurHash
             )
         )

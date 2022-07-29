@@ -52,7 +52,6 @@ struct LanguageRowButtonStyle: ButtonStyle {
                 .foregroundColor(.white)
                 .frame(width: 16, height: 16)
         }
-        .padding(.horizontal, 16)
         .contentShape(Rectangle())
         .animation(.easeInOut(duration: 0.25))
         .preferredColorScheme(.dark)
