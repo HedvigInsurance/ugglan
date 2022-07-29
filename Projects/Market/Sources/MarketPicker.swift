@@ -35,11 +35,9 @@ public struct MarketPickerView: View {
 
         MarketRow()
         Divider()
-            .foregroundColor(hLabelColor.primary)
         LanguageRow()
 
-        Spacer()
-            .frame(height: 36)
+        Spacer().frame(height: 36)
         
         Button {
             hAnalyticsEvent.marketSelected(
@@ -131,7 +129,7 @@ public struct MarketPickerView: View {
         .onReceive(viewModel.$bootStrapped) { val in
             if val {
                 hAnalyticsEvent.screenView(screen: .marketPicker).send()
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.5)) {
                     self.viewState = .marketAndLanguage
                 }
             }
