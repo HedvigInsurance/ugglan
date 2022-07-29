@@ -2,11 +2,11 @@ import Apollo
 import Flow
 import Foundation
 import Presentation
+import SwiftUI
 import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 public struct MarketPickerView: View {
     @ObservedObject var viewModel = MarketPickerViewModel()
@@ -15,24 +15,24 @@ public struct MarketPickerView: View {
     @State var title: String = L10n.MarketLanguageScreen.title
     @State var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     @State var show: Bool = false
-    
+
     public init() {
         ApplicationState.preserveState(.marketPicker)
-        
+
         viewModel.fetchMarketingImage()
         viewModel.detectMarketFromLocation()
     }
-    
+
     public var body: some View {
         VStack {
             Spacer()
             hText(title, style: .title1)
             Spacer()
-            
+
             MarketRow()
             Divider()
             LanguageRow()
-            
+
             Spacer()
                 .frame(height: 36)
             
@@ -43,7 +43,7 @@ public struct MarketPickerView: View {
                 .send()
 
                 hAnalyticsExperiment.load { _ in
-                    
+
                 }
                 store.send(.openMarketing)
             } label: {
@@ -89,26 +89,27 @@ public class MarketPickerViewModel: ObservableObject {
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false
-    
+
     let bag = DisposeBag()
-    
+
     func fetchMarketingImage() {
-        bag += client.fetch(
-            query: GraphQL.MarketingImagesQuery()
-        )
-        .compactMap {
-            $0.appMarketingImages
-                .filter { $0.language?.code == Localization.Locale.currentLocale.code }.first
-        }
-        .compactMap { $0 }
-        .onValue {
-            if let blurHash = $0.blurhash, let imageURL = $0.image?.url {
-                self.blurHash = blurHash
-                self.imageURL = imageURL
+        bag +=
+            client.fetch(
+                query: GraphQL.MarketingImagesQuery()
+            )
+            .compactMap {
+                $0.appMarketingImages
+                    .filter { $0.language?.code == Localization.Locale.currentLocale.code }.first
             }
-        }
+            .compactMap { $0 }
+            .onValue {
+                if let blurHash = $0.blurhash, let imageURL = $0.image?.url {
+                    self.blurHash = blurHash
+                    self.imageURL = imageURL
+                }
+            }
     }
-    
+
     func detectMarketFromLocation() {
         let store: MarketStore = globalPresentableStoreContainer.get()
         let innerBag = bag.innerBag()
@@ -116,14 +117,18 @@ public class MarketPickerViewModel: ObservableObject {
             .valueSignal
             .map { $0.geo.countryIsoCode.lowercased() }
             .map { code -> Market in
-                guard let bestMatch = Market.activatedMarkets.flatMap({ market in
-                    market.languages
-                }).first(where: { locale -> Bool in
-                    locale.rawValue.lowercased().contains(code)
-                }) else {
+                guard
+                    let bestMatch = Market.activatedMarkets
+                        .flatMap({ market in
+                            market.languages
+                        })
+                        .first(where: { locale -> Bool in
+                            locale.rawValue.lowercased().contains(code)
+                        })
+                else {
                     return .sweden
                 }
-                
+
                 return Market(rawValue: bestMatch.market.rawValue)!
             }
             .atValue(on: .main) { market in

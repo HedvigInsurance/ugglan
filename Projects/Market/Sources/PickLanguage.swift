@@ -1,20 +1,20 @@
 import Presentation
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 public struct PickLanguage: View {
     let currentMarket: Market
     @PresentableStore var store: MarketStore
-    
+
     @State var currentLocale: Localization.Locale = .currentLocale
-    
+
     public init(
         currentMarket: Market
     ) {
         self.currentMarket = currentMarket
     }
-    
+
     public var body: some View {
         hForm {
             hText(L10n.LanguagePickerModal.text, style: .body)
@@ -22,7 +22,7 @@ public struct PickLanguage: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
                 .padding(.top, 16)
-            
+
             hSection(currentMarket.languages, id: \.lprojCode) { locale in
                 hRow {
                     locale.displayName.hText()

@@ -18,7 +18,7 @@ extension AppJourney {
             }
         }
     }
-    
+
     static var marketing: some JourneyPresentation {
         HostingJourney(
             MarketStore.self,

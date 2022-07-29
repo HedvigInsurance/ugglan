@@ -6,13 +6,13 @@ import hCoreUI
 public struct PickMarket: View {
     let currentMarket: Market
     @PresentableStore var store: MarketStore
-    
+
     public init(
         currentMarket: Market
     ) {
         self.currentMarket = currentMarket
     }
-    
+
     public var body: some View {
         hForm {
             hSection(Market.activatedMarkets, id: \.title) { market in
