@@ -11,7 +11,7 @@ import hGraphQL
 public struct MarketPickerView: View {
     @ObservedObject var viewModel = MarketPickerViewModel()
     @PresentableStore var store: MarketStore
-    
+
     @State var title: String = L10n.MarketLanguageScreen.title
     @State var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     
