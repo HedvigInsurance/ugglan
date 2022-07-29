@@ -10,8 +10,6 @@ public struct MarketPickerView: View {
     @State var title: String = L10n.MarketLanguageScreen.title
     @State var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
 
-    @Environment(\.presentationMode) var presentationMode
-
     enum ViewState {
         case loading
         case marketAndLanguage
@@ -98,7 +96,6 @@ public struct MarketPickerView: View {
                     .navigationBarItems(
                         leading: Button(action: {
                             withAnimation(.easeInOut) {
-                                self.presentationMode.wrappedValue.dismiss()
                                 viewState = .marketAndLanguage
                             }
                         }) {
