@@ -14,7 +14,14 @@ public struct MarketPickerView: View {
     
     @State var title: String = L10n.MarketLanguageScreen.title
     @State var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
-    @State var show: Bool = false
+    
+    enum ViewState {
+        case loading
+        case marketAndLanguage
+        case onboardAndLogin
+    }
+    
+    @State var viewState: ViewState = .loading
 
     public init() {
         ApplicationState.preserveState(.marketPicker)
@@ -22,41 +29,85 @@ public struct MarketPickerView: View {
         viewModel.fetchMarketingImage()
         viewModel.detectMarketFromLocation()
     }
+    
+    @ViewBuilder
+    var marketAndLanguage: some View {
+        Spacer()
+        hText(title, style: .title1)
+        Spacer()
+
+        MarketRow()
+        Divider()
+        LanguageRow()
+
+        Spacer()
+            .frame(height: 36)
+        
+        Button {
+            hAnalyticsEvent.marketSelected(
+                locale: Localization.Locale.currentLocale.lprojCode
+            )
+            .send()
+
+            hAnalyticsExperiment.load { _ in
+
+            }
+            
+            viewState = .onboardAndLogin
+        } label: {
+            hText(buttonText, style: .body)
+                .foregroundColor(hLabelColor.primary.inverted)
+                .frame(minWidth: 200, maxWidth: .infinity, minHeight: 52)
+        }
+        .background(Color.white)
+        .cornerRadius(.defaultCornerRadius)
+    }
+    
+    @ViewBuilder
+    var onboardAndLogin: some View {
+        Spacer()
+        Image(uiImage: hCoreUIAssets.wordmarkWhite.image)
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .frame(width: 150, height: 40)
+        Spacer()
+        
+        Button {
+            hAnalyticsEvent.buttonClickMarketingOnboard().send()
+
+//            store.send(.onboard)
+            viewState = .marketAndLanguage
+        } label: {
+            hText(L10n.marketingGetHedvig, style: .body)
+                .foregroundColor(hLabelColor.primary.inverted)
+                .frame(minWidth: 200, maxWidth: .infinity, minHeight: 52)
+        }
+        .background(Color.white)
+        .cornerRadius(.defaultCornerRadius)
+        
+        hButton.LargeButtonOutlined {
+            hAnalyticsEvent.buttonClickMarketingLogin().send()
+
+            store.send(.loginButtonTapped)
+        } content: {
+            hText(L10n.marketingLogin)
+        }
+    }
 
     public var body: some View {
         VStack {
-            Spacer()
-            hText(title, style: .title1)
-            Spacer()
-
-            MarketRow()
-            Divider()
-            LanguageRow()
-
-            Spacer()
-                .frame(height: 36)
-            
-            Button {
-                hAnalyticsEvent.marketSelected(
-                    locale: Localization.Locale.currentLocale.lprojCode
-                )
-                .send()
-
-                hAnalyticsExperiment.load { _ in
-
-                }
-                store.send(.openMarketing)
-            } label: {
-                hText(buttonText, style: .body)
-                    .foregroundColor(hLabelColor.primary.inverted)
-                    .frame(minWidth: 200, maxWidth: .infinity, minHeight: 52)
+            switch viewState {
+            case .loading:
+                ZStack {}
+            case .marketAndLanguage:
+                marketAndLanguage
+            case .onboardAndLogin:
+                onboardAndLogin
             }
-            .background(Color.white)
-            .cornerRadius(.defaultCornerRadius)
         }
         .environment(\.colorScheme, .dark)
         .padding(.horizontal, 16)
-        .opacity(show ? 1 : 0)
+        .opacity(viewState == .loading ? 0 : 1)
         .background(
             ImageWithHashFallBack(
                 imageURL: viewModel.imageURL,
@@ -77,7 +128,7 @@ public struct MarketPickerView: View {
             if val {
                 hAnalyticsEvent.screenView(screen: .marketPicker).send()
                 withAnimation(.easeInOut(duration: 0.75)) {
-                    self.show = true
+                    self.viewState = .marketAndLanguage
                 }
             }
         }
