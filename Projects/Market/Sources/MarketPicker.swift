@@ -11,7 +11,7 @@ import hGraphQL
 public struct MarketPickerView: View {
     @ObservedObject var viewModel = MarketPickerViewModel()
     @PresentableStore var store: MarketStore
-    
+
     @State var title: String = L10n.MarketLanguageScreen.title
     @State var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     @State var show: Bool = false
@@ -35,7 +35,7 @@ public struct MarketPickerView: View {
 
             Spacer()
                 .frame(height: 36)
-            
+
             Button {
                 hAnalyticsEvent.marketSelected(
                     locale: Localization.Locale.currentLocale.lprojCode

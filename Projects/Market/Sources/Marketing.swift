@@ -23,7 +23,7 @@ public struct Marketing: View {
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 150, height: 40)
             Spacer()
-            
+
             Button {
                 hAnalyticsEvent.buttonClickMarketingOnboard().send()
 
@@ -35,7 +35,7 @@ public struct Marketing: View {
             }
             .background(Color.white)
             .cornerRadius(.defaultCornerRadius)
-            
+
             hButton.LargeButtonOutlined {
                 hAnalyticsEvent.buttonClickMarketingLogin().send()
 
