@@ -7,59 +7,11 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct Marketing: View {
-    @PresentableStore var store: MarketStore
-    @ObservedObject var viewModel = MarketingViewModel()
-
-    public init() {
-        viewModel.fetchMarketingImage()
-    }
-
-    public var body: some View {
-        VStack {
-            Spacer()
-            Image(uiImage: hCoreUIAssets.wordmarkWhite.image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 150, height: 40)
-            Spacer()
-
-            Button {
-                hAnalyticsEvent.buttonClickMarketingOnboard().send()
-
-                store.send(.onboard)
-            } label: {
-                hText(L10n.marketingGetHedvig, style: .body)
-                    .foregroundColor(hLabelColor.primary.inverted)
-                    .frame(minWidth: 200, maxWidth: .infinity, minHeight: 52)
-            }
-            .background(Color.white)
-            .cornerRadius(.defaultCornerRadius)
-
-            hButton.LargeButtonOutlined {
-                hAnalyticsEvent.buttonClickMarketingLogin().send()
-
-                store.send(.loginButtonTapped)
-            } content: {
-                hText(L10n.marketingLogin)
-            }
-        }
-        .environment(\.colorScheme, .dark)
-        .padding(.horizontal, 16)
-        .background(
-            ImageWithHashFallBack(
-                imageURL: viewModel.imageURL,
-                blurHash: viewModel.blurHash
-            )
-        )
-        .trackOnAppear(hAnalyticsEvent.screenView(screen: .marketing))
-    }
-}
-
-class MarketingViewModel: ObservableObject {
+public class MarketPickerViewModel: ObservableObject {
     @Inject var client: ApolloClient
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
+    @Published var bootStrapped: Bool = false
 
     let bag = DisposeBag()
 
@@ -80,10 +32,45 @@ class MarketingViewModel: ObservableObject {
                 }
             }
     }
-}
 
-struct Marketing_Previews: PreviewProvider {
-    static var previews: some View {
-        Marketing()
+    func detectMarketFromLocation() {
+        let store: MarketStore = globalPresentableStoreContainer.get()
+        let innerBag = bag.innerBag()
+        bag += client.fetch(query: GraphQL.GeoQuery(), queue: .global(qos: .background))
+            .valueSignal
+            .map { $0.geo.countryIsoCode.lowercased() }
+            .map { code -> Market in
+                guard
+                    let bestMatch = Market.activatedMarkets
+                        .flatMap({ market in
+                            market.languages
+                        })
+                        .first(where: { locale -> Bool in
+                            locale.rawValue.lowercased().contains(code)
+                        })
+                else {
+                    return .sweden
+                }
+
+                return Market(rawValue: bestMatch.market.rawValue)!
+            }
+            .atValue(on: .main) { market in
+                store.send(.selectMarket(market: market))
+                innerBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
+                    .delay(by: 1.25)
+                    .take(first: 1)
+                    .map { _ in
+                        self.bootStrapped = true
+                    }
+            }
+            .onError(on: .main) { _ in
+                store.send(.selectMarket(market: .sweden))
+                innerBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
+                    .delay(by: 1.25)
+                    .take(first: 1)
+                    .map { _ in
+                        self.bootStrapped = true
+                    }
+            }
     }
 }
