@@ -9,15 +9,15 @@ public struct MarketPickerView: View {
 
     @State var title: String = L10n.MarketLanguageScreen.title
     @State var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
-    
+
     @Environment(\.presentationMode) var presentationMode
-    
+
     enum ViewState {
         case loading
         case marketAndLanguage
         case onboardAndLogin
     }
-    
+
     @State var viewState: ViewState = .loading
 
     public init() {
@@ -26,7 +26,7 @@ public struct MarketPickerView: View {
         viewModel.fetchMarketingImage()
         viewModel.detectMarketFromLocation()
     }
-    
+
     @ViewBuilder
     var marketAndLanguage: some View {
         Spacer()
@@ -38,13 +38,14 @@ public struct MarketPickerView: View {
         LanguageRow()
 
         Spacer().frame(height: 36)
-        
+
         Button {
             hAnalyticsEvent.marketSelected(
                 locale: Localization.Locale.currentLocale.lprojCode
-            ).send()
+            )
+            .send()
             hAnalyticsExperiment.load { _ in }
-            
+
             withAnimation(.easeInOut) {
                 viewState = .onboardAndLogin
             }
@@ -56,7 +57,7 @@ public struct MarketPickerView: View {
         .background(Color.white)
         .cornerRadius(.defaultCornerRadius)
     }
-    
+
     @ViewBuilder
     var onboardAndLogin: some View {
         Spacer()
@@ -65,7 +66,7 @@ public struct MarketPickerView: View {
             .aspectRatio(contentMode: .fill)
             .frame(width: 150, height: 40)
         Spacer()
-        
+
         Button {
             hAnalyticsEvent.buttonClickMarketingOnboard().send()
             store.send(.onboard)
@@ -76,7 +77,7 @@ public struct MarketPickerView: View {
         }
         .background(Color.white)
         .cornerRadius(.defaultCornerRadius)
-        
+
         hButton.LargeButtonOutlined {
             hAnalyticsEvent.buttonClickMarketingLogin().send()
             store.send(.loginButtonTapped)
@@ -100,11 +101,12 @@ public struct MarketPickerView: View {
                                 self.presentationMode.wrappedValue.dismiss()
                                 viewState = .marketAndLanguage
                             }
-                    }) {
-                        Image(uiImage: hCoreUIAssets.backButton.image)
-                            .resizable()
-                            .foregroundColor(hLabelColor.primary)
-                    })
+                        }) {
+                            Image(uiImage: hCoreUIAssets.backButton.image)
+                                .resizable()
+                                .foregroundColor(hLabelColor.primary)
+                        }
+                    )
             }
         }
         .environment(\.colorScheme, .dark)

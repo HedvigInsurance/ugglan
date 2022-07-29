@@ -112,7 +112,7 @@ public struct ImageWithHashFallBack: ViewModifier {
                             .resizable()
                         )
                 )
-            
+
         } else {
             content
                 .background(
@@ -128,7 +128,7 @@ public struct ImageWithHashFallBack: ViewModifier {
                             .resizable()
                         )
                 )
-            
+
         }
     }
 }
