@@ -11,7 +11,6 @@ import SwiftUI
 public struct MarketPickerView: View {
     @ObservedObject var viewModel = MarketPickerViewModel()
     @PresentableStore var store: MarketStore
-    @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
     
     @State var title: String = L10n.MarketLanguageScreen.title
     @State var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
@@ -37,7 +36,7 @@ public struct MarketPickerView: View {
             Spacer()
                 .frame(height: 36)
             
-            hButton.LargeButtonFilled {
+            Button {
                 hAnalyticsEvent.marketSelected(
                     locale: Localization.Locale.currentLocale.lprojCode
                 )
@@ -46,13 +45,16 @@ public struct MarketPickerView: View {
                 hAnalyticsExperiment.load { _ in
                     
                 }
-                
                 store.send(.openMarketing)
-            } content: {
-                hText(buttonText)
+            } label: {
+                hText(buttonText, style: .body)
+                    .foregroundColor(hLabelColor.primary.inverted)
+                    .frame(minWidth: 200, maxWidth: .infinity, minHeight: 52)
             }
-            .padding(.bottom, 16)
+            .background(Color.white)
+            .cornerRadius(.defaultCornerRadius)
         }
+        .environment(\.colorScheme, .dark)
         .padding(.horizontal, 16)
         .opacity(show ? 1 : 0)
         .background(
@@ -61,7 +63,6 @@ public struct MarketPickerView: View {
                 blurHash: viewModel.blurHash
             )
         )
-        .preferredColorScheme(.dark)
         .onReceive(
             Localization.Locale.$currentLocale
                 .distinct()
@@ -126,12 +127,11 @@ public class MarketPickerViewModel: ObservableObject {
                 return Market(rawValue: bestMatch.market.rawValue)!
             }
             .atValue(on: .main) { market in
-                store.send(.selectMarket(market: market))
-                
                 innerBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
                     .delay(by: 1.25)
                     .take(first: 1)
                     .map { _ in
+                        store.send(.selectMarket(market: market))
                         self.bootStrapped = true
                     }
             }

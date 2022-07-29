@@ -24,13 +24,17 @@ public struct Marketing: View {
                 .frame(width: 150, height: 40)
             Spacer()
             
-            hButton.LargeButtonFilled {
+            Button {
                 hAnalyticsEvent.buttonClickMarketingOnboard().send()
                 
                 store.send(.onboard)
-            } content: {
-                hText(L10n.marketingGetHedvig)
+            } label: {
+                hText(L10n.marketingGetHedvig, style: .body)
+                    .foregroundColor(hLabelColor.primary.inverted)
+                    .frame(minWidth: 200, maxWidth: .infinity, minHeight: 52)
             }
+            .background(Color.white)
+            .cornerRadius(.defaultCornerRadius)
             
             hButton.LargeButtonOutlined {
                 hAnalyticsEvent.buttonClickMarketingLogin().send()
@@ -40,6 +44,7 @@ public struct Marketing: View {
                 hText(L10n.marketingLogin)
             }
         }
+        .environment(\.colorScheme, .dark)
         .padding(.horizontal, 16)
         .background(
             ImageWithHashFallBack(
@@ -47,7 +52,6 @@ public struct Marketing: View {
                 blurHash: viewModel.blurHash
             )
         )
-        .preferredColorScheme(.dark)
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .marketing))
     }
 }
