@@ -53,7 +53,10 @@ public struct MarketPickerView: View {
 
             }
             
-            viewState = .onboardAndLogin
+            withAnimation(.easeInOut) {
+                viewState = .onboardAndLogin
+            }
+            
         } label: {
             hText(buttonText, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
@@ -76,7 +79,10 @@ public struct MarketPickerView: View {
             hAnalyticsEvent.buttonClickMarketingOnboard().send()
 
 //            store.send(.onboard)
-            viewState = .marketAndLanguage
+            withAnimation(.easeInOut) {
+                viewState = .marketAndLanguage
+            }
+            
         } label: {
             hText(L10n.marketingGetHedvig, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
@@ -183,11 +189,11 @@ public class MarketPickerViewModel: ObservableObject {
                 return Market(rawValue: bestMatch.market.rawValue)!
             }
             .atValue(on: .main) { market in
+                store.send(.selectMarket(market: market))
                 innerBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
                     .delay(by: 1.25)
                     .take(first: 1)
                     .map { _ in
-                        store.send(.selectMarket(market: market))
                         self.bootStrapped = true
                     }
             }
