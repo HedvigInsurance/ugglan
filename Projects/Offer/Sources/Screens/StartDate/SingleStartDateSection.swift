@@ -62,11 +62,7 @@ struct SingleStartDateSection {
 
 struct DatePickerStyleModifier: ViewModifier {
     func body(content: Content) -> some View {
-        if #available(iOS 14, *) {
-            content.datePickerStyle(.graphical)
-        } else {
-            content.datePickerStyle(.wheel)
-        }
+        content.datePickerStyle(.graphical)
     }
 }
 

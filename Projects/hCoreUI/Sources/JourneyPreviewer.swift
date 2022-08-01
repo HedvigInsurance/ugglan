@@ -69,11 +69,9 @@ public struct JourneyPreviewer<Journey: JourneyPresentation>: UIViewControllerRe
             journey
         }
         .addConfiguration { presenter in
-            if #available(iOS 14.0, *) {
-                presenter.viewController.overrideUserInterfaceStyle = .init(
-                    context.environment.colorScheme
-                )
-            }
+            presenter.viewController.overrideUserInterfaceStyle = .init(
+                context.environment.colorScheme
+            )
         }
 
         navigationController.present(
