@@ -18,7 +18,6 @@ struct MarketRow: View {
             Localization.Locale.$currentLocale
                 .distinct()
                 .plain()
-                //                .delay(by: 0.1)
                 .publisher
         ) { _ in
             self.marketLabel = L10n.MarketLanguageScreen.marketLabel
