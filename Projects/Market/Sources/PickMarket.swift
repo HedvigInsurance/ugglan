@@ -1,18 +1,19 @@
-import Flow
-import Form
-import Foundation
 import Presentation
 import SwiftUI
-import UIKit
 import hCore
 import hCoreUI
-import hGraphQL
 
-struct PickMarket: View {
+public struct PickMarket: View {
     let currentMarket: Market
     @PresentableStore var store: MarketStore
 
-    var body: some View {
+    public init(
+        currentMarket: Market
+    ) {
+        self.currentMarket = currentMarket
+    }
+
+    public var body: some View {
         hForm {
             hSection(Market.activatedMarkets, id: \.title) { market in
                 hRow {
@@ -31,7 +32,7 @@ struct PickMarket: View {
 }
 
 extension PickMarket {
-    var journey: some JourneyPresentation {
+    public var journey: some JourneyPresentation {
         HostingJourney(
             MarketStore.self,
             rootView: self,
