@@ -18,7 +18,6 @@ struct LanguageRow: View {
             Localization.Locale.$currentLocale
                 .distinct()
                 .plain()
-                .delay(by: 0.1)
                 .publisher
         ) { newLocale in
             self.languageLabel = L10n.MarketLanguageScreen.languageLabel

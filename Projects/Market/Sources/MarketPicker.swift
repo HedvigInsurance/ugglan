@@ -128,7 +128,7 @@ public struct MarketPickerView: View {
         .onReceive(viewModel.$bootStrapped) { val in
             if val {
                 hAnalyticsEvent.screenView(screen: .marketPicker).send()
-                withAnimation(.easeInOut(duration: 0.5)) {
+                withAnimation(.easeOut(duration: 0.5)) {
                     self.viewState = .marketAndLanguage
                 }
             }
