@@ -15,6 +15,8 @@ import hCoreUI
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
+        @Injected(\.claimsProvider) var claimsProvider: ClaimsProviding
+        
         let claims = Claims()
         let commonClaims = CommonClaimsView()
         return Journey(
