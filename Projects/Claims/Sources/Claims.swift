@@ -7,6 +7,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import hInterfaces
 
 struct Claims {
     @PresentableStore var store: ClaimsStore
@@ -34,12 +35,6 @@ extension Claims: View {
             }
     }
 }
-
-public protocol ClaimsProviding {
-    var claims: AnyView { get }
-    var commonClaims: AnyView { get }
-}
-
 
 struct ClaimsProvider: ClaimsProviding {
     var claims: AnyView {
