@@ -123,27 +123,8 @@ extension AppJourney {
     }
 
     fileprivate static var foreverTab: some JourneyPresentation {
-        /*HostingJourney(
-            rootView: ForeverView(),
-            options: [
-                .defaults,
-                .prefersLargeTitles(true),
-                .largeTitleDisplayMode(.always),
-            ]
-        )
-        .configureTitle(L10n.referralsScreenTitle)*/
-        /*Journey(
-            Forever(service: ForeverServiceGraphQL()),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        )*/
-        ForeverView.journey { result in
-            switch result {
-            case .dummy:
-                Journey(
-                    MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
-            }
+        ForeverView.journey { _ in
+            ContinueJourney()
         }
         .onTabSelected {
             GradientState.shared.gradientType = .forever

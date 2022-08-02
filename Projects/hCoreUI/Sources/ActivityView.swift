@@ -62,11 +62,19 @@ extension ActivityView: Presentable {
     }
 }
 
-struct ActivityViewController: UIViewControllerRepresentable {
+public struct ActivityViewController: UIViewControllerRepresentable {
     var activityItems: [Any]
     var applicationActivities: [UIActivity]? = nil
 
-    func makeUIViewController(
+    public init(
+        activityItems: [Any],
+        applicationActivities: [UIActivity]? = nil
+    ) {
+        self.activityItems = activityItems
+        self.applicationActivities = applicationActivities
+    }
+
+    public func makeUIViewController(
         context: UIViewControllerRepresentableContext<ActivityViewController>
     ) -> UIActivityViewController {
         let controller = UIActivityViewController(
@@ -76,7 +84,7 @@ struct ActivityViewController: UIViewControllerRepresentable {
         return controller
     }
 
-    func updateUIViewController(
+    public func updateUIViewController(
         _ uiViewController: UIActivityViewController,
         context: UIViewControllerRepresentableContext<ActivityViewController>
     ) {}

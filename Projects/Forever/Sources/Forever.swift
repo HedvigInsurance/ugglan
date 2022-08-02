@@ -117,34 +117,49 @@ public struct ForeverView: View {
             HeaderView().slideUpAppearAnimation()
             DiscountCodeSectionView().slideUpAppearAnimation()
             InvitationTable().slideUpAppearAnimation()
-            //DiscountCodeRepresentable(service: ForeverServiceGraphQL()).frame(height: 200).padding().border(.black)
         }
         .hFormAttachToBottom {
             VStack {
                 Divider().background(Color(UIColor.brand(.primaryBorderColor))).padding(0).edgesIgnoringSafeArea(.all)
-                hButton.LargeButtonFilled {
-                    print("share")
-                } content: {
-                    hText(L10n.ReferralsEmpty.shareCodeButton)
+                PresentableStoreLens(
+                    ForeverStore.self,
+                    getter: { state in
+                        state.foreverData?.discountCode
+                    }
+                ) { code in
+                    if let code = code {
+                        hButton.LargeButtonFilled {
+                            store.send(.showShareSheet(code: code))
+                        } content: {
+                            hText(L10n.ReferralsEmpty.shareCodeButton)
+                        }
+                        .padding(.horizontal).padding(.vertical, 6)
+                    }
                 }
-                .padding(.horizontal).padding(.vertical, 6)
             }
             .background(Color(DefaultStyling.tabBarBackgroundColor).edgesIgnoringSafeArea(.all))
         }
+        .navigationBarItems(
+            trailing:
+                PresentableStoreLens(
+                    ForeverStore.self,
+                    getter: { state in
+                        state.foreverData?.potentialDiscountAmount
+                    }
+                ) { discountAmount in
+                    if let discountAmount = discountAmount {
+                        Button(action: {
+                            store.send(.showInfoSheet(discount: discountAmount.formattedAmount))
+                        }) {
+                            Image(uiImage: hCoreUIAssets.infoLarge.image).foregroundColor(hLabelColor.primary)
+                        }
+                    }
+                }
+        )
     }
-}
-
-public enum ForeverResult {
-    case dummy
 }
 
 extension ForeverView {
-    private func encodedCode(code: String) -> String {
-        return code.addingPercentEncoding(
-            withAllowedCharacters: .urlQueryAllowed
-        ) ?? ""
-    }
-
     public static func journey<ResultJourney: JourneyPresentation>(
         @JourneyBuilder resultJourney: @escaping (_ result: ForeverResult) -> ResultJourney
     ) -> some JourneyPresentation {
@@ -168,6 +183,19 @@ extension ForeverView {
                     let store: ForeverStore = globalPresentableStoreContainer.get()
                     store.send(.fetch)
                 }
+            } else if case let .showShareSheet(code) = action {
+                HostingJourney(
+                    rootView: ActivityViewController(activityItems: [
+                        URL(
+                            string: L10n.referralsLink(
+                                code.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                            )
+                        ) ?? ""
+                    ]),
+                    style: .activityView
+                )
+            } else if case let .showInfoSheet(discount) = action {
+                infoSheetJourney(potentialDiscount: discount)
             }
         }
         .configureTitle(L10n.referralsScreenTitle)
@@ -184,58 +212,20 @@ extension ForeverView {
                     tabBarController.tabBar.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
                 }
             })
-        }
-        /*.addConfiguration({ presenter in
-            // - TODO - refactor
-            let tabBarItem = UITabBarItem(
-                title: L10n.tabReferralsTitle,
-                image: Asset.tab.image,
-                selectedImage: Asset.tabActive.image
-            )
-            presenter.viewController.tabBarItem = tabBarItem
-        })*/
-    }
-}
 
-public struct DiscountCodeRepresentable: UIViewRepresentable {
-    let service: ForeverService
-
-    public class Coordinator {
-        let bag = DisposeBag()
-        let discountView: DiscountCodeSection
-
-        init(
-            service: ForeverService
-        ) {
-            self.discountView = DiscountCodeSection(service: service)
         }
     }
 
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(service: service)
-    }
-
-    public func makeUIView(context: Context) -> some UIView {
-        let (view, disposable) = context.coordinator.discountView.materialize(
-            events: ViewableEvents(wasAddedCallbacker: .init())
+    static func infoSheetJourney(potentialDiscount: String) -> some JourneyPresentation {
+        HostingJourney(
+            rootView: InfoAndTermsView(potentialDiscount: "10 kr"),
+            style: .modally()
         )
-        //let (view, disposable) = context.coordinator.headerView.materialize(
-        //    events: ViewableEvents(wasAddedCallbacker: .init())
-        //)
-        context.coordinator.bag += DisposeOnMain(disposable)
-        //print("GRADZ height:", dynamicHeight, view.sizeThatFits(view.bounds.size).height)
-        //view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }
-
-    public func updateUIView(_ uiView: UIViewType, context: Context) {
-        /*uiView.setContentHuggingPriority(.defaultHigh, for: .vertical)
-        uiView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        DispatchQueue.main.async {
-            dynamicHeight =
-                uiView.sizeThatFits(CGSize(width: uiView.bounds.width, height: CGFloat.greatestFiniteMagnitude)).height
-            print("GRADZ height:", dynamicHeight, uiView.sizeThatFits(uiView.bounds.size).height)
-        }*/
+        .onAction(ForeverStore.self) { action in
+            if case .closeInfoSheet = action {
+                DismissJourney()
+            }
+        }
     }
 }
 
