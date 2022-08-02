@@ -123,20 +123,18 @@ extension AppJourney {
     }
 
     fileprivate static var foreverTab: some JourneyPresentation {
-        ForeverView.journey { _ in
-            ContinueJourney()
-        }
-        .onTabSelected {
-            GradientState.shared.gradientType = .forever
-            //ContextGradient.currentOption = .forever
-        }
-        .makeTabSelected(UgglanStore.self) { action in
-            if case .makeTabActive(let deepLink) = action {
-                return deepLink == .forever
-            } else {
-                return false
+        ForeverView.journey()
+            .onTabSelected {
+                GradientState.shared.gradientType = .forever
+                //ContextGradient.currentOption = .forever
             }
-        }
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .forever
+                } else {
+                    return false
+                }
+            }
     }
 
     fileprivate static var profileTab: some JourneyPresentation {

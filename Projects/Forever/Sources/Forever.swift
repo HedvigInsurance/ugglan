@@ -160,9 +160,7 @@ public struct ForeverView: View {
 }
 
 extension ForeverView {
-    public static func journey<ResultJourney: JourneyPresentation>(
-        @JourneyBuilder resultJourney: @escaping (_ result: ForeverResult) -> ResultJourney
-    ) -> some JourneyPresentation {
+    public static func journey() -> some JourneyPresentation {
         HostingJourney(
             ForeverStore.self,
             rootView: ForeverView(),

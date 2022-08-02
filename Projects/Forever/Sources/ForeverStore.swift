@@ -25,8 +25,6 @@ public struct ForeverState: StateProtocol {
     var foreverData: ForeverData? = nil
 }
 
-public enum ForeverResult {}
-
 public enum ForeverAction: ActionProtocol {
     case hasSeenFebruaryCampaign(value: Bool)
     case showTemporaryCampaignDetail
