@@ -8,15 +8,15 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct Claims {
+struct Claims {
     @PresentableStore var store: ClaimsStore
     let pollTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
-    public func claimSubmission() {
+    func claimSubmission() {
         store.send(.submitNewClaim)
     }
 
-    public init() {}
+    init() {}
 }
 
 extension Claims: View {
@@ -40,6 +40,7 @@ public protocol ClaimsProviding {
     var commonClaims: AnyView { get }
 }
 
+
 struct ClaimsProvider: ClaimsProviding {
     var claims: AnyView {
         Claims().typeErased
@@ -48,6 +49,11 @@ struct ClaimsProvider: ClaimsProviding {
     var commonClaims: AnyView {
         CommonClaimsView().typeErased
     }
+}
+
+extension View {
+    /// Returns a type-erased version of the view.
+    public var typeErased: AnyView { AnyView(self) }
 }
 
 private struct ClaimsKey: InjectionKey {
@@ -59,9 +65,4 @@ extension InjectedValues {
         get { Self[ClaimsKey.self] }
         set { Self[ClaimsKey.self] = newValue }
     }
-}
-
-extension View {
-    /// Returns a type-erased version of the view.
-    public var typeErased: AnyView { AnyView(self) }
 }
