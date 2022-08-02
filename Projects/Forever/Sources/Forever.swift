@@ -218,7 +218,7 @@ extension ForeverView {
 
     static func infoSheetJourney(potentialDiscount: String) -> some JourneyPresentation {
         HostingJourney(
-            rootView: InfoAndTermsView(potentialDiscount: "10 kr"),
+            rootView: InfoAndTermsView(potentialDiscount: potentialDiscount),
             style: .modally()
         )
         .onAction(ForeverStore.self) { action in
