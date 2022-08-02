@@ -12,18 +12,15 @@ import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
+import Factory
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
-        @Injected(\.claimsProvider) var claimsProvider: ClaimsProviding
+        @Injected(Container.claimsProvider) var claimsProvider
         
-        let claims = Claims()
-        let commonClaims = CommonClaimsView()
         return Journey(
             Home(
-                claimsContent: claims,
-                commonClaims: commonClaims,
-                claims.claimSubmission
+                claimsProvider: claimsProvider
             ),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         ) { result in

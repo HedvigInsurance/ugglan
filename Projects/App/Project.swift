@@ -54,7 +54,6 @@ let appDependencies: [TargetDependency] = [
     [
         .project(target: "hCore", path: .relativeToRoot("Projects/hCore")),
         .project(target: "hCoreUI", path: .relativeToRoot("Projects/hCoreUI")),
-        .project(target: "hInterfaces", path: .relativeToRoot("Projects/hInterfaces")),
         .project(target: "hGraphQL", path: .relativeToRoot("Projects/hGraphQL")),
         .project(target: "Forever", path: .relativeToRoot("Projects/Forever")),
         .project(target: "Contracts", path: .relativeToRoot("Projects/Contracts")),

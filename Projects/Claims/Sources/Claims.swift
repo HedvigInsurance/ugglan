@@ -7,7 +7,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hInterfaces
+import Factory
 
 struct Claims {
     @PresentableStore var store: ClaimsStore
@@ -44,6 +44,10 @@ struct ClaimsProvider: ClaimsProviding {
     var commonClaims: AnyView {
         CommonClaimsView().typeErased
     }
+    
+    var claimSubmission: () -> Void {
+        Claims().claimSubmission
+    }
 }
 
 extension View {
@@ -51,13 +55,6 @@ extension View {
     public var typeErased: AnyView { AnyView(self) }
 }
 
-private struct ClaimsKey: InjectionKey {
-    static var currentValue: ClaimsProviding = ClaimsProvider()
-}
-
-extension InjectedValues {
-    public var claimsProvider: ClaimsProviding {
-        get { Self[ClaimsKey.self] }
-        set { Self[ClaimsKey.self] = newValue }
-    }
+extension Container {
+    public static var claimsProvider = Factory<ClaimsProviding> { ClaimsProvider() }
 }

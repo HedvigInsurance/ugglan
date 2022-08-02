@@ -10,22 +10,14 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct Home<ClaimsContent: View, CommonClaims: View> {
+public struct Home {
     @Inject var client: ApolloClient
-    var claimsContent: ClaimsContent
-    var commonClaims: CommonClaims
-    var claimSubmitHandler: () -> Void
+    var claimsProvider: ClaimsProviding
     
-    
-
     public init(
-        claimsContent: ClaimsContent,
-        commonClaims: CommonClaims,
-        _ claimSubmitHandler: @escaping () -> Void
+        claimsProvider: ClaimsProviding
     ) {
-        self.claimsContent = claimsContent
-        self.commonClaims = commonClaims
-        self.claimSubmitHandler = claimSubmitHandler
+        self.claimsProvider = claimsProvider
     }
 }
 
@@ -150,8 +142,8 @@ extension Home: Presentable {
 
                 innerBag += form.append(
                     ActiveSection(
-                        claimsContent: self.claimsContent,
-                        commonClaims: self.commonClaims
+                        claimsContent: self.claimsProvider.claims,
+                        commonClaims: self.claimsProvider.commonClaims
                     )
                 )
 
@@ -180,7 +172,7 @@ extension Home: Presentable {
             case .future:
                 innerBag += titleSection.append(FutureSection())
             case .terminated:
-                innerBag += titleSection.append(TerminatedSection(claimsContent: claimsContent))
+                innerBag += titleSection.append(TerminatedSection(claimsContent: claimsProvider.claims))
             case .loading:
                 break
             }
