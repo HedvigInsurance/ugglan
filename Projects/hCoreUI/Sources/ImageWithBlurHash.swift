@@ -1,43 +1,5 @@
-import Foundation
 import Kingfisher
 import SwiftUI
-
-class ImageLoaderService: ObservableObject {
-    @Published var image: UIImage = UIImage()
-
-    func loadImage(url: URL?) {
-        guard let url = url else {
-            return
-        }
-
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data else { return }
-            DispatchQueue.main.async {
-                self.image = UIImage(data: data) ?? UIImage()
-            }
-        }
-        task.resume()
-    }
-}
-
-public struct RemoteImage: View {
-    var url: URL?
-    @ObservedObject var imageLoader = ImageLoaderService()
-
-    public init(
-        url: URL?
-    ) {
-        self.url = url
-    }
-
-    public var body: some View {
-        Image(uiImage: imageLoader.image)
-            .resizable()
-            .onAppear {
-                imageLoader.loadImage(url: url)
-            }
-    }
-}
 
 extension View {
     public func backgroundImageWithBlurHashFallback(
@@ -45,38 +7,21 @@ extension View {
         blurHash: String
     ) -> some View {
         Group {
-            if #available(iOS 14, *) {
-                self.background(
-                    KFImage(imageURL)
-                        .fade(duration: 0.25)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                )
-                .background(
-                    Image(
-                        uiImage: UIImage(
-                            blurHash: blurHash,
-                            size: .init(width: 32, height: 32)
-                        ) ?? UIImage()
-                    )
+            self.background(
+                KFImage(imageURL)
+                    .fade(duration: 0.25)
                     .resizable()
+                    .aspectRatio(contentMode: .fill)
+            )
+            .background(
+                Image(
+                    uiImage: UIImage(
+                        blurHash: blurHash,
+                        size: .init(width: 32, height: 32)
+                    ) ?? UIImage()
                 )
-            } else {
-                self
-                    .background(
-                        RemoteImage(url: imageURL)
-                            .aspectRatio(contentMode: .fill)
-                    )
-                    .background(
-                        Image(
-                            uiImage: UIImage(
-                                blurHash: blurHash,
-                                size: .init(width: 32, height: 32)
-                            ) ?? UIImage()
-                        )
-                        .resizable()
-                    )
-            }
+                .resizable()
+            )
         }
     }
 }
@@ -94,41 +39,22 @@ public struct ImageWithHashFallBack: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        if #available(iOS 14, *) {
-            content
-                .background(
-                    KFImage(imageURL)
-                        .fade(duration: 0.25)
+        content
+            .background(
+                KFImage(imageURL)
+                    .fade(duration: 0.25)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .edgesIgnoringSafeArea(.all)
+                    .background(
+                        Image(
+                            uiImage: UIImage(
+                                blurHash: blurHash,
+                                size: .init(width: 32, height: 32)
+                            ) ?? UIImage()
+                        )
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .edgesIgnoringSafeArea(.all)
-                        .background(
-                            Image(
-                                uiImage: UIImage(
-                                    blurHash: blurHash,
-                                    size: .init(width: 32, height: 32)
-                                ) ?? UIImage()
-                            )
-                            .resizable()
-                        )
-                )
-
-        } else {
-            content
-                .background(
-                    RemoteImage(url: imageURL)
-                        .aspectRatio(contentMode: .fill)
-                        .background(
-                            Image(
-                                uiImage: UIImage(
-                                    blurHash: blurHash,
-                                    size: .init(width: 32, height: 32)
-                                ) ?? UIImage()
-                            )
-                            .resizable()
-                        )
-                )
-
-        }
+                    )
+            )
     }
 }

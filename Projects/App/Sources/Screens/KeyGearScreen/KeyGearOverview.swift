@@ -146,7 +146,7 @@ extension KeyGearOverview: Presentable {
         let split = UISplitViewController()
         bag += split.view.traitCollectionSignal.atOnce()
             .onValue { trait in
-                split.preferredDisplayMode = trait.userInterfaceIdiom == .pad ? .allVisible : .automatic
+                split.preferredDisplayMode = trait.userInterfaceIdiom == .pad ? .oneBesideSecondary : .automatic
             }
 
         split.view.backgroundColor = .brand(.primaryBackground())
