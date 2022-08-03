@@ -25,7 +25,14 @@ struct PushNotificationReminderView: View {
             hButton.LargeButtonFilled {
                 // Ask for push notifications
                 print("Ask for notifs")
-                store.send(.askForPushNotifications)
+                //store.send(.askForPushNotifications)
+
+                let center = UNUserNotificationCenter.current()
+                center.requestAuthorization(options: [.alert, .sound, .badge]) {
+                    _,
+                    error in
+                    store.send(.dismissPushNotificationSheet)
+                }
             } content: {
                 L10n.ReferralsAllowPushNotificationSheet.Allow.button.hText()
             }
@@ -33,8 +40,7 @@ struct PushNotificationReminderView: View {
         }
         .navigationBarItems(
             trailing: Button(action: {
-                // Skip
-                print("Skip for now")
+                store.send(.dismissPushNotificationSheet)
             }) {
                 L10n.NavBar.skip.hText().foregroundColor(Color(.brand(.destructive)))
             }

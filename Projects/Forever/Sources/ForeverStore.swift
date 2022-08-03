@@ -36,7 +36,7 @@ public indirect enum ForeverAction: ActionProtocol {
     case closeInfoSheet
     case showShareSheetOnly(code: String)
     case showPushNotificationsReminder
-    case askForPushNotifications
+    case dismissPushNotificationSheet
 }
 
 public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
