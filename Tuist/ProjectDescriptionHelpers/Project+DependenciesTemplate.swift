@@ -20,6 +20,7 @@ public enum ExternalDependencies: CaseIterable {
     case reveal
     case datadog
     case hAnalytics
+    case odysseyKit
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -95,6 +96,10 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.260.0"))
             ]
+        case .odysseyKit:
+            return [
+                .package(url: "https://github.com/HedvigInsurance/OdysseyKit.git", .exact("0.51.0"))
+            ]
         }
     }
 
@@ -157,6 +162,10 @@ public enum ExternalDependencies: CaseIterable {
         case .hAnalytics:
             return [
                 .package(product: "hAnalytics")
+            ]
+        case .odysseyKit:
+            return [
+                .package(product: "OdysseyKit")
             ]
         }
     }

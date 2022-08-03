@@ -22,6 +22,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import OdysseyKit
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -228,6 +229,7 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        OdysseyKit.initialize()
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
 
