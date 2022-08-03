@@ -10,12 +10,12 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct Home {
+public struct Home<Claims: ClaimsProviding> {
     @Inject var client: ApolloClient
-    var claimsProvider: ClaimsProviding
+    var claimsProvider: Claims
     
     public init(
-        claimsProvider: ClaimsProviding
+        claimsProvider: Claims
     ) {
         self.claimsProvider = claimsProvider
     }

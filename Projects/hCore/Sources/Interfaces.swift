@@ -1,8 +1,11 @@
 import SwiftUI
 
 public protocol ClaimsProviding {
-    var claims: AnyView { get }
-    var commonClaims: AnyView { get }
+    associatedtype ClaimsType: View
+    associatedtype CommonClaimsType: View
+    
+    var claims: ClaimsType { get }
+    var commonClaims: CommonClaimsType { get }
     
     var claimSubmission: () -> Void { get }
 }

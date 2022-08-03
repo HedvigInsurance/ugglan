@@ -74,11 +74,10 @@ struct CommonClaimButtonStyle: ButtonStyle {
     }
 }
 
-public struct CommonClaimsView: View {
+struct CommonClaimsView: View {
     @PresentableStore var store: ClaimsStore
-
-    public init() {}
-    public var body: some View {
+    
+    var body: some View {
         VStack {
             hText(L10n.claimsQuickChoiceHeader, style: .title2)
                 .frame(maxWidth: .infinity, alignment: .leading)

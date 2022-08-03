@@ -16,7 +16,7 @@ import Factory
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
-        @Injected(Container.claimsProvider) var claimsProvider
+        let claimsProvider: some ClaimsProviding = Container.claimsProvider
         
         return Journey(
             Home(

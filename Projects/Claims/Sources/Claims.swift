@@ -25,7 +25,7 @@ extension Claims: View {
         store.send(.fetchClaims)
     }
 
-    public var body: some View {
+    var body: some View {
         ClaimSectionLoading()
             .onReceive(pollTimer) { _ in
                 fetch()
@@ -37,12 +37,12 @@ extension Claims: View {
 }
 
 struct ClaimsProvider: ClaimsProviding {
-    var claims: AnyView {
-        Claims().typeErased
+    var claims: some View {
+        Claims()
     }
     
-    var commonClaims: AnyView {
-        CommonClaimsView().typeErased
+    var commonClaims: some View {
+        CommonClaimsView()
     }
     
     var claimSubmission: () -> Void {
@@ -50,11 +50,6 @@ struct ClaimsProvider: ClaimsProviding {
     }
 }
 
-extension View {
-    /// Returns a type-erased version of the view.
-    public var typeErased: AnyView { AnyView(self) }
-}
-
 extension Container {
-    public static var claimsProvider = Factory<ClaimsProviding> { ClaimsProvider() }
+    public static var claimsProvider: some ClaimsProviding = ClaimsProvider()
 }
