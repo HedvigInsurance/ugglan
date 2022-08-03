@@ -180,8 +180,8 @@ extension Header: Viewable {
                 piePrice.alpha = 1
             }
 
-        let pieChart = PieChart(stateSignal: .init(.init(percentagePerSlice: 0, slices: 0)))
-        bag += stackView.addArranged(pieChart)
+        //let pieChart = PieChart(stateSignal: .init(.init(percentagePerSlice: 0, slices: 0)))
+        //bag += stackView.addArranged(pieChart)
 
         let emptyStateHeader = EmptyStateHeader(
             potentialDiscountAmountSignal: service.dataSignal.map { $0?.potentialDiscountAmount }.atOnce()
@@ -208,14 +208,14 @@ extension Header: Viewable {
             service.dataSignal.map { $0?.potentialDiscountAmount }.atOnce().compactMap { $0 }
         )
         .onValue { grossAmount, netAmount, potentialDiscountAmount in
-            bag += Signal(after: 0.8)
+            /*bag += Signal(after: 0.8)
                 .onValue { _ in
                     pieChart.stateSignal.value = .init(
                         grossAmount: grossAmount,
                         netAmount: netAmount,
                         potentialDiscountAmount: potentialDiscountAmount
                     )
-                }
+                }*/
 
             emptyStateHeader.isHiddenSignal.value = grossAmount.amount != netAmount.amount
             priceSection.isHiddenSignal.value = grossAmount.amount == netAmount.amount

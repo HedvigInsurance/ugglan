@@ -18,12 +18,14 @@ extension Debug: Presentable {
 
         let form = FormView()
 
-        let section = form.appendSection(
+        _ = form.appendSection(
             headerView: UILabel(value: "Screens", style: .default),
             footerView: nil
         )
 
-        bag += section.appendRow(title: "Forever tab screen")
+        // To be implemented with the SwiftUI screens
+
+        /*bag += section.appendRow(title: "Forever tab screen")
             .onValue {
                 bag +=
                     viewController.present(
@@ -46,10 +48,7 @@ extension Debug: Presentable {
                     InfoAndTerms(potentialDiscountAmountSignal: .init(.sek(10))),
                     style: .modal
                 )
-            }
-
-        bag += section.appendRow(title: "PieChart debugger")
-            .onValue { viewController.present(PieChartDebugger()) }
+            }*/
 
         bag += viewController.install(form)
 
