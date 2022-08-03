@@ -13,7 +13,7 @@ import hGraphQL
 public struct Home<Claims: ClaimsProviding> {
     @Inject var client: ApolloClient
     var claimsProvider: Claims
-    
+
     public init(
         claimsProvider: Claims
     ) {

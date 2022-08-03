@@ -1,3 +1,4 @@
+import Factory
 import Flow
 import Foundation
 import Presentation
@@ -7,7 +8,6 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import Factory
 
 struct Claims {
     @PresentableStore var store: ClaimsStore
@@ -40,11 +40,11 @@ struct ClaimsProvider: ClaimsProviding {
     var claims: some View {
         Claims()
     }
-    
+
     var commonClaims: some View {
         CommonClaimsView()
     }
-    
+
     var claimSubmission: () -> Void {
         Claims().claimSubmission
     }
