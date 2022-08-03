@@ -12,6 +12,7 @@ import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
+import OdysseyKit
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
@@ -32,6 +33,11 @@ extension AppJourney {
                 AppJourney.freeTextChat()
             case .openConnectPayments:
                 PaymentSetup(setupType: .initial).journeyThenDismiss
+            case .openOdyssey:
+                RootView(name: "mainRouter")
+                    .disposableHostingJourney
+                    .setStyle(.detented(.large))
+                    .setOptions([])
             }
         }
         .configureTabBarItem
