@@ -33,6 +33,7 @@ struct DiscountCodeSectionView: View {
                 if let code = code {
                     Button(action: {
                         UIPasteboard.general.string = code
+                        store.send(.showPushNotificationsReminder)
                         Toasts.shared.displayToast(
                             toast: .init(
                                 symbol: .icon(Asset.toastIcon.image),

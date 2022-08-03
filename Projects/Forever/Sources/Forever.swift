@@ -129,7 +129,7 @@ public struct ForeverView: View {
                 ) { code in
                     if let code = code {
                         hButton.LargeButtonFilled {
-                            store.send(.showShareSheet(code: code))
+                            store.send(.showShareSheetWithNotificationReminder(code: code))
                         } content: {
                             hText(L10n.ReferralsEmpty.shareCodeButton)
                         }
@@ -181,37 +181,26 @@ extension ForeverView {
                     let store: ForeverStore = globalPresentableStoreContainer.get()
                     store.send(.fetch)
                 }
-            } else if case let .showShareSheet(code) = action {
-                HostingJourney(
-                    rootView: ActivityViewController(activityItems: [
-                        URL(
-                            string: L10n.referralsLink(
-                                code.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-                            )
-                        ) ?? ""
-                    ]),
-                    style: .activityView
-                )
+            } else if case let .showShareSheetWithNotificationReminder(code) = action {
+                pushNotificationJourney(onDismissAction: {
+                    let store: ForeverStore = globalPresentableStoreContainer.get()
+                    store.send(.showShareSheetOnly(code: code))
+                }) {
+                    shareSheetJourney(code: code)
+                }
+            } else if case let .showShareSheetOnly(code) = action {
+                shareSheetJourney(code: code)
             } else if case let .showInfoSheet(discount) = action {
                 infoSheetJourney(potentialDiscount: discount)
+            } else if case .showPushNotificationsReminder = action {
+                pushNotificationJourney {
+                    ContinueJourney()
+                }
             }
         }
         .configureTitle(L10n.referralsScreenTitle)
         .configureForeverTabBarItem
-        .addConfiguration { presenter in
-            presenter.bag += presenter.viewController.view.didMoveToWindowSignal.onValue({ _ in
-                if let tabBarController = presenter.viewController.tabBarController {
-                    tabBarController.tabBar.shadowImage = UIColor.clear.asImage()
-                }
-            })
-
-            presenter.bag += presenter.viewController.view.didMoveFromWindowSignal.onValue({ _ in
-                if let tabBarController = presenter.viewController.tabBarController {
-                    tabBarController.tabBar.shadowImage = UIColor.brand(.primaryBorderColor).asImage()
-                }
-            })
-
-        }
+        .configureTabBarBorder
     }
 
     static func infoSheetJourney(potentialDiscount: String) -> some JourneyPresentation {
@@ -222,6 +211,43 @@ extension ForeverView {
         .onAction(ForeverStore.self) { action in
             if case .closeInfoSheet = action {
                 DismissJourney()
+            }
+        }
+    }
+
+    static func shareSheetJourney(code: String) -> some JourneyPresentation {
+        HostingJourney(
+            rootView: ActivityViewController(activityItems: [
+                URL(
+                    string: L10n.referralsLink(
+                        code.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                    )
+                ) ?? ""
+            ]),
+            style: .activityView
+        )
+    }
+
+    static func pushNotificationJourney<ResultJourney: JourneyPresentation>(
+        onDismissAction: (() -> Void)? = nil,
+        @JourneyBuilder resultJourney: @escaping () -> ResultJourney
+    ) -> some JourneyPresentation {
+        GroupJourney {
+            if !UIApplication.shared.isRegisteredForRemoteNotifications {
+                HostingJourney(
+                    ForeverStore.self,
+                    rootView: PushNotificationReminderView(),
+                    style: .modal
+                ) { action in
+                    DismissJourney()
+                }
+                .onDismiss {
+                    if let onDismissAction = onDismissAction {
+                        onDismissAction()
+                    }
+                }
+            } else {
+                resultJourney()
             }
         }
     }

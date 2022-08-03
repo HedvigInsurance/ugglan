@@ -25,15 +25,18 @@ public struct ForeverState: StateProtocol {
     var foreverData: ForeverData? = nil
 }
 
-public enum ForeverAction: ActionProtocol {
+public indirect enum ForeverAction: ActionProtocol {
     case hasSeenFebruaryCampaign(value: Bool)
     case showTemporaryCampaignDetail
     case showChangeCodeDetail
     case fetch
     case setForeverData(data: ForeverData)
-    case showShareSheet(code: String)
+    case showShareSheetWithNotificationReminder(code: String)
     case showInfoSheet(discount: String)
     case closeInfoSheet
+    case showShareSheetOnly(code: String)
+    case showPushNotificationsReminder
+    case askForPushNotifications
 }
 
 public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
@@ -165,17 +168,7 @@ public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
             newState.hasSeenFebruaryCampaign = hasSeenFebruaryCampaign
         case let .setForeverData(data):
             newState.foreverData = data
-        case .showShareSheet:
-            break
-        case .showChangeCodeDetail:
-            break
-        case .showInfoSheet:
-            break
-        case .closeInfoSheet:
-            break
-        case .fetch:
-            break
-        case .showTemporaryCampaignDetail:
+        default:
             break
         }
 
