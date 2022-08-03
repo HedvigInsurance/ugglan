@@ -18,6 +18,9 @@ public struct ForeverView: View {
             DiscountCodeSectionView().slideUpAppearAnimation()
             InvitationTable().slideUpAppearAnimation()
         }
+        .onAppear {
+            store.send(.fetch)
+        }
         .hFormAttachToBottom {
             VStack {
                 Divider().background(Color(UIColor.brand(.primaryBorderColor))).padding(0).edgesIgnoringSafeArea(.all)
@@ -56,6 +59,7 @@ public struct ForeverView: View {
                     }
                 }
         )
+        .trackOnAppear(hAnalyticsEvent.screenView(screen: .forever))
     }
 }
 

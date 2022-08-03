@@ -63,13 +63,6 @@ struct InvitationTable: View {
             ForeverStore.self,
             getter: { state in
                 state.foreverData?.invitations ?? []
-                /*[
-                    ForeverInvitation.init(name: "Axel", state: .pending, discount: .sek(10), invitedByOther: false),
-                    ForeverInvitation.init(name: "Samuel", state: .active, discount: .sek(10), invitedByOther: false),
-                    ForeverInvitation.init(name: "Alex", state: .terminated, discount: .sek(10), invitedByOther: false),
-                    ForeverInvitation.init(name: "Karin", state: .terminated, discount: .sek(10), invitedByOther: true)
-
-                ]*/
             }
         ) { invitations in
             if !invitations.isEmpty {
