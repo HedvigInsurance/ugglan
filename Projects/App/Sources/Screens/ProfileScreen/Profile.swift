@@ -9,39 +9,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ProfileRow: View {
-    let title: String
-    let subtitle: String?
-    let icon: UIImage
-    let onTap: () -> Void
-
-    public var body: some View {
-        hRow {
-            HStack(spacing: 16) {
-                Image(uiImage: icon)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 40, height: 40)
-                VStack(alignment: .leading, spacing: 2) {
-                    hText(title)
-                    if let subtitle = subtitle {
-                        hText(subtitle, style: .footnote).foregroundColor(hLabelColor.secondary)
-                    }
-                }
-            }
-            .padding(0)
-        }
-        .withCustomAccessory({
-            Spacer()
-            StandaloneChevronAccessory()
-        })
-        .verticalPadding(12)
-        .onTap {
-            onTap()
-        }
-    }
-}
-
 struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
@@ -153,7 +120,7 @@ struct ProfileView: View {
         }
         .onAppear {
             store.send(.fetchProfileState)
-        }
+        }.trackOnAppear(hAnalyticsEvent.screenView(screen: .profile))
     }
 }
 
@@ -208,82 +175,5 @@ extension ProfileView {
             )
             presenter.viewController.tabBarItem = tabBarItem
         })
-    }
-}
-
-public struct ProfileRepresentable: UIViewControllerRepresentable {
-    public init() {}
-
-    public class Coordinator {
-        let bag = DisposeBag()
-        let profileView: Profile
-
-        init() {
-            self.profileView = Profile()
-        }
-    }
-
-    public func makeCoordinator() -> Coordinator {
-        Coordinator()
-    }
-
-    public func makeUIViewController(context: Context) -> UIViewController {
-        let (vc, disposable) = context.coordinator.profileView.materialize()
-        context.coordinator.bag += DisposeOnMain(disposable)
-        vc.view.backgroundColor = .clear
-        return vc
-    }
-
-    public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
-}
-
-struct Profile { @Inject var client: ApolloClient }
-
-extension Profile: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
-        let bag = DisposeBag()
-
-        let viewController = UIViewController()
-        viewController.displayableTitle = L10n.profileTitle
-        viewController.installChatButton()
-
-        let form = FormView()
-
-        let profileSection = ProfileSection(presentingViewController: viewController)
-
-        bag += form.append(profileSection)
-
-        bag += form.append(Spacing(height: 20))
-
-        let settingsSection = SettingsSection(presentingViewController: viewController)
-        bag += form.append(settingsSection)
-
-        form.appendSpacing(.custom(20))
-
-        let query = GraphQL.ProfileQuery()
-
-        bag += client.watch(query: query).bindTo(profileSection.dataSignal)
-
-        bag += viewController.install(form) { scrollView in
-            let refreshControl = UIRefreshControl()
-            bag += self.client.refetchOnRefresh(query: query, refreshControl: refreshControl)
-
-            scrollView.refreshControl = refreshControl
-            bag += scrollView.chainAllControlResponders(shouldLoop: true, returnKey: .next)
-        }
-
-        viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .profile))
-
-        return (viewController, bag)
-    }
-}
-
-extension Profile: Tabable {
-    func tabBarItem() -> UITabBarItem {
-        UITabBarItem(
-            title: L10n.tabProfileTitle,
-            image: Asset.profileTab.image,
-            selectedImage: Asset.profileTabActive.image
-        )
     }
 }
