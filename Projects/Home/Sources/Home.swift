@@ -21,8 +21,10 @@ public struct HomeSwiftUI<Content: View>: View {
     var commonClaims: CommonClaimsView
     var claimSubmitHandler: () -> Void
 
-    public init(statusCard: () -> Content) {
-    //public init() {
+    public init(
+        statusCard: () -> Content
+    ) {
+        //public init() {
         self.statusCard = statusCard()
         let claims = Claims()
         self.claimsContent = claims
@@ -40,13 +42,13 @@ public struct HomeSwiftUI<Content: View>: View {
 class GradientState: ObservableObject {
     static let shared = GradientState()
     private init() {}
-    
+
     @Published var gradientType
 }
 
 struct WithGradient: ViewModifier {
     func body(content: Content) -> some View {
-        
+
     }
 }*/
 
@@ -94,25 +96,28 @@ extension HomeSwiftUI {
                         claimsContent.addStatusCard {
                             statusCard
                         }
-                    }.sectionContainerStyle(.transparent)
+                    }
+                    .sectionContainerStyle(.transparent)
                     commonClaims
                     hSection {
                         hRow {
                             L10n.HomeTab.editingSectionChangeAddressLabel.hText()
-                        }.withCustomAccessory {
+                        }
+                        .withCustomAccessory {
                             Spacer()
                             Image(uiImage: hCoreUIAssets.chevronRight.image)
                         }
                         .onTap {
                             store.send(.openMovingFlow)
                         }
-                    }.withHeader {
+                    }
+                    .withHeader {
                         hText(
                             L10n.HomeTab.editingSectionTitle,
                             style: .title2
                         )
                     }
-                    //ActiveSessionView(claimsContent: claimsContent, commonClaims: commonClaims)
+                //ActiveSessionView(claimsContent: claimsContent, commonClaims: commonClaims)
                 case .future:
                     Text("Future")
                 case .terminated:
@@ -125,6 +130,7 @@ extension HomeSwiftUI {
         .onAppear {
             fetch()
         }
+        .trackOnAppear(hAnalyticsEvent.screenView(screen: .home))
     }
 }
 
@@ -168,33 +174,8 @@ extension HomeSwiftUI {
             }
         }
         .configureTitle(L10n.HomeTab.title)
-        .addConfiguration({ presenter in
-            // - TODO - refactor
-            let scrollEdgeAppearance = UINavigationBarAppearance()
-            DefaultStyling.applyCommonNavigationBarStyling(scrollEdgeAppearance)
-            scrollEdgeAppearance.configureWithTransparentBackground()
-            scrollEdgeAppearance.largeTitleTextAttributes = scrollEdgeAppearance.largeTitleTextAttributes
-                .merging(
-                    [
-                        NSAttributedString.Key.foregroundColor: UIColor.clear
-                    ],
-                    uniquingKeysWith: takeRight
-                )
-
-            let tabBarItem = UITabBarItem(
-                title: L10n.HomeTab.title,
-                image: Asset.tab.image,
-                selectedImage: Asset.tabSelected.image
-            )
-            presenter.viewController.tabBarItem = tabBarItem
-
-            guard let navigationController = presenter.viewController as? UINavigationController else {
-                presenter.viewController.navigationItem.scrollEdgeAppearance = scrollEdgeAppearance
-                return
-            }
-            navigationController.viewControllers.first?.navigationItem.scrollEdgeAppearance = scrollEdgeAppearance
-            presenter.viewController.navigationItem.scrollEdgeAppearance = scrollEdgeAppearance
-        })
+        .configureTabBarItem(title: L10n.HomeTab.title, image: Asset.tab.image, selectedImage: Asset.tabSelected.image)
+        .configureHomeScroll()
     }
 }
 

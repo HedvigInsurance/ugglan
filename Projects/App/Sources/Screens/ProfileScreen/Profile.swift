@@ -120,7 +120,8 @@ struct ProfileView: View {
         }
         .onAppear {
             store.send(.fetchProfileState)
-        }.trackOnAppear(hAnalyticsEvent.screenView(screen: .profile))
+        }
+        .trackOnAppear(hAnalyticsEvent.screenView(screen: .profile))
     }
 }
 
@@ -166,14 +167,10 @@ extension ProfileView {
             }
         }
         .configureTitle(L10n.profileTitle)
-        .addConfiguration({ presenter in
-            // - TODO - refactor
-            let tabBarItem = UITabBarItem(
-                title: L10n.profileTitle,
-                image: Asset.profileTab.image,
-                selectedImage: Asset.profileTabActive.image
-            )
-            presenter.viewController.tabBarItem = tabBarItem
-        })
+        .configureTabBarItem(
+            title: L10n.profileTitle,
+            image: Asset.profileTab.image,
+            selectedImage: Asset.profileTabActive.image
+        )
     }
 }
