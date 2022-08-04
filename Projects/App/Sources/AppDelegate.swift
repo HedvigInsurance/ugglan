@@ -12,6 +12,7 @@ import Flow
 import Form
 import Foundation
 import Hero
+import OdysseyKit
 import Offer
 import Payment
 import Presentation
@@ -22,7 +23,6 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import OdysseyKit
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
