@@ -16,6 +16,10 @@ public struct AnalyticsCoordinator {
             .compactMap { $0.member.id }
             .onValue { id in
                 Shake.setMetadata(key: "memberId", value: id)
+                Shake.setMetadata(
+                    key: "locale",
+                    value: Localization.Locale.currentLocale.lprojCode
+                )
                 Datadog.setUserInfo(
                     id: id,
                     extraInfo: [
