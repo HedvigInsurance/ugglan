@@ -2,16 +2,16 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
-import SwiftUI
 
 struct SignSection {
     @State var isLoading = false
     @PresentableStore var store: OfferStore
-    
+
 }
 
 extension QuoteBundle.AppConfiguration.ApproveButtonTerminology {

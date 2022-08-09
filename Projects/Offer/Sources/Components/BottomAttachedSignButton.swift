@@ -1,12 +1,11 @@
-import Foundation
 import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct BottomAttachedSignButton: Presentable {
     func materialize() -> (UIView, Disposable) {
@@ -29,13 +28,12 @@ struct BottomAttachedSignButtonOffsetModifier: ViewModifier {
     }
 }
 
-
-
 extension BottomAttachedSignButton: View {
     var body: some View {
         hFormBottomAttachedBackground {
             SignSection().padding(.bottom, 15)
-        }.modifier(
+        }
+        .modifier(
             ContentOffsetModifier { scrollView, contentOffset in
                 BottomAttachedSignButtonOffsetModifier(scrollView: scrollView, contentOffset: contentOffset)
             }

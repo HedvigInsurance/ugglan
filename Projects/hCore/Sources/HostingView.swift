@@ -4,7 +4,7 @@ import UIKit
 
 struct SafeAreaEdgesModifier: ViewModifier {
     var edgesIgnoringSafeArea: Edge.Set?
-    
+
     func body(content: Content) -> some View {
         if let edgesIgnoringSafeArea = edgesIgnoringSafeArea {
             content.edgesIgnoringSafeArea(edgesIgnoringSafeArea)

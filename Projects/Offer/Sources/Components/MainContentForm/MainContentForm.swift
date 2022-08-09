@@ -39,7 +39,7 @@ extension MainContentForm: Presentable {
             }
         }
         formContainer.addArrangedSubview(hostView)
-        
+
         scrollView.automaticallyAdjustsScrollIndicatorInsets = false
 
         bag += merge(
@@ -78,7 +78,7 @@ extension MainContentForm: Presentable {
                     bottom: transformY + bottomContentInset,
                     right: 0
                 )
-                
+
                 let extraInsetLeft: CGFloat = scrollView.safeAreaInsets.left > 0 ? 0 : 15
 
                 formContainer.layoutMargins = UIEdgeInsets(
