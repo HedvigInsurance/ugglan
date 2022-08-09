@@ -134,7 +134,7 @@ extension Offer: Presentable {
 
         bag += form.append(Header(scrollView: scrollView))
         bag += form.append(MainContentForm(scrollView: scrollView))
-                
+
         bag += scrollView.addSubview(BottomAttachedSignButton()) { view, _ in
             view.snp.makeConstraints { make in
                 make.bottom.equalTo(scrollView.frameLayoutGuide.snp.bottom)
