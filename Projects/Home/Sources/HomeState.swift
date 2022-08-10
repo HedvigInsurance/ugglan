@@ -4,6 +4,8 @@ import Presentation
 import hCore
 import hGraphQL
 
+//public typealias InsuranceProvider = GraphQL.HomeInsuranceProvidersQuery.Data.InsuranceProvider
+
 public struct MemberStateData: Codable, Equatable {
     let state: MemberContractState
     let name: String?
@@ -11,7 +13,7 @@ public struct MemberStateData: Codable, Equatable {
 
 public struct HomeState: StateProtocol {
     var memberStateData: MemberStateData = .init(state: .loading, name: nil)
-    var paymentStatus: PayinMethodStatus = .active
+    var futureStatus: FutureStatus = .none
 
     public init() {}
 }
@@ -23,8 +25,15 @@ public enum HomeAction: ActionProtocol {
     case openClaim
     case connectPayments
     case setMemberContractState(state: MemberStateData)
-    case setPayInMethodStatus(status: PayinMethodStatus)
-    case fetchPayInMethodStatus
+    case fetchFutureStatus
+    case setFutureStatus(status: FutureStatus)
+}
+
+public enum FutureStatus: Codable, Equatable {
+    case activeInFuture(inceptionDate: String)
+    case pendingSwitchable
+    case pendingNonswitchable
+    case none
 }
 
 public final class HomeStore: StateStore<HomeState, HomeAction> {
@@ -46,12 +55,35 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                     .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))
                 }
                 .valueThenEndSignal
-        case .fetchPayInMethodStatus:
+        case .fetchFutureStatus:
             return
                 client
-                .fetch(query: GraphQL.PayInMethodStatusQuery(), cachePolicy: .fetchIgnoringCacheData)
-                .map { data in
-                    .setPayInMethodStatus(status: data.payinMethodStatus)
+                .fetch(
+                    query: GraphQL.HomeInsuranceProvidersQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
+                )
+                .join(with: client.fetch(query: GraphQL.HomeQuery()))
+                .map { insuranceProviderData, homeData in
+                    if let contract = homeData.contracts.first(where: {
+                        $0.status.asActiveInFutureStatus != nil || $0.status.asPendingStatus != nil
+                    }) {
+                        if let activeInFutureStatus = contract.status.asActiveInFutureStatus {
+                            return .setFutureStatus(
+                                status: .activeInFuture(inceptionDate: activeInFutureStatus.futureInception ?? "")
+                            )
+                        } else if let switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider,
+                            let insuranceProvider = insuranceProviderData.insuranceProviders.first(where: {
+                                provider -> Bool in provider.id == switchedFromInsuranceProvider
+                            }), insuranceProvider.switchable
+                        {
+                            return .setFutureStatus(status: .pendingSwitchable)
+                        } else {
+                            return .setFutureStatus(status: .pendingNonswitchable)
+                        }
+                    } else {
+                        return .setFutureStatus(status: .none)
+                    }
                 }
                 .valueThenEndSignal
         default:
@@ -65,19 +97,9 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         switch action {
         case .setMemberContractState(let memberState):
             newState.memberStateData = memberState
-        case .setPayInMethodStatus(let paymentStatus):
-            newState.paymentStatus = paymentStatus
-        case .openFreeTextChat:
-            break
-        case .fetchMemberState:
-            break
-        case .connectPayments:
-            break
-        case .openMovingFlow:
-            break
-        case .openClaim:
-            break
-        case .fetchPayInMethodStatus:
+        case .setFutureStatus(let status):
+            newState.futureStatus = status
+        default:
             break
         }
 
@@ -91,9 +113,6 @@ public enum MemberContractState: String, Codable, Equatable {
     case active
     case loading
 }
-
-public typealias PayinMethodStatus = GraphQL.PayinMethodStatus
-extension PayinMethodStatus: Codable {}
 
 extension GraphQL.HomeQuery.Data {
     fileprivate var homeState: MemberContractState {

@@ -62,6 +62,7 @@ struct WithCard<Card: View>: ViewModifier {
         VStack {
             content
             card()
+                .padding(.top, 32)
         }
     }
 }
@@ -75,6 +76,7 @@ extension View {
 extension HomeSwiftUI {
     func fetch() {
         store.send(.fetchMemberState)
+        store.send(.fetchFutureStatus)
     }
 
     public var body: some View {
@@ -98,32 +100,81 @@ extension HomeSwiftUI {
                         }
                     }
                     .sectionContainerStyle(.transparent)
-                    commonClaims
-                    hSection {
-                        hRow {
-                            L10n.HomeTab.editingSectionChangeAddressLabel.hText()
+                    if hAnalyticsExperiment.homeCommonClaim {
+                        commonClaims
+                    }
+                    if hAnalyticsExperiment.movingFlow {
+                        hSection {
+                            hRow {
+                                L10n.HomeTab.editingSectionChangeAddressLabel.hText()
+                            }
+                            .withCustomAccessory {
+                                Spacer()
+                                Image(uiImage: hCoreUIAssets.chevronRight.image)
+                            }
+                            .onTap {
+                                store.send(.openMovingFlow)
+                            }
                         }
-                        .withCustomAccessory {
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.chevronRight.image)
-                        }
-                        .onTap {
-                            store.send(.openMovingFlow)
+                        .withHeader {
+                            hText(
+                                L10n.HomeTab.editingSectionTitle,
+                                style: .title2
+                            )
                         }
                     }
-                    .withHeader {
-                        hText(
-                            L10n.HomeTab.editingSectionTitle,
-                            style: .title2
-                        )
-                    }
-                //ActiveSessionView(claimsContent: claimsContent, commonClaims: commonClaims)
                 case .future:
-                    Text("Future")
+                    PresentableStoreLens(
+                        HomeStore.self,
+                        getter: { state in
+                            state.futureStatus
+                        }
+                    ) { futureStatus in
+                        hSection {
+                            VStack(spacing: 16) {
+                                switch futureStatus {
+                                case .activeInFuture(let inceptionDate):
+                                    L10n.HomeTab
+                                        .activeInFutureWelcomeTitle(
+                                            memberStateData.name ?? "",
+                                            inceptionDate
+                                        )
+                                        .hText(.prominentTitle)
+                                    L10n.HomeTab.activeInFutureBody
+                                        .hText(.body)
+                                        .foregroundColor(hLabelColor.secondary)
+                                case .pendingSwitchable:
+                                    L10n.HomeTab.pendingSwitchableWelcomeTitle(memberStateData.name ?? "")
+                                        .hText(.prominentTitle)
+                                    L10n.HomeTab.pendingSwitchableBody
+                                        .hText(.body)
+                                        .foregroundColor(hLabelColor.secondary)
+                                case .pendingNonswitchable:
+                                    L10n.HomeTab.pendingNonswitchableWelcomeTitle(memberStateData.name ?? "")
+                                        .hText(.prominentTitle)
+                                    L10n.HomeTab.pendingNonswitchableBody
+                                        .hText(.body)
+                                        .foregroundColor(hLabelColor.secondary)
+                                case .none:
+                                    EmptyView()
+                                }
+                            }
+                        }
+                        .sectionContainerStyle(.transparent)
+                    }
                 case .terminated:
-                    Text("Terminated")
+                    hSection {
+                        VStack(spacing: 16) {
+                            L10n.HomeTab.terminatedWelcomeTitle(memberStateData.name ?? "").hText(.prominentTitle)
+                            L10n.HomeTab.terminatedBody
+                                .hText(.body)
+                                .foregroundColor(hLabelColor.secondary)
+                        }
+                        claimsContent
+                    }
+                    .sectionContainerStyle(.transparent)
                 case .loading:
-                    Text("Loading")
+                    EmptyView()
                 }
             }
         }

@@ -6,9 +6,9 @@ import hCoreUI
 
 public struct ConnectPaymentCardView: View {
     @PresentableStore var store: PaymentStore
-    
+
     public init() {}
-    
+
     public var body: some View {
         VStack {
             PresentableStoreLens(
@@ -26,11 +26,11 @@ public struct ConnectPaymentCardView: View {
                     ) {
                         hButton.SmallButtonOutlined {
                             store.send(.connectPayments)
-                            
+
                         } content: {
                             L10n.InfoCardMissingPayment.buttonText.hText()
                         }
-                    }.padding(.top, 52)
+                    }
                 }
             }
         }

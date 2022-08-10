@@ -92,7 +92,8 @@ public struct CommonClaimsView: View {
                 ) { commonClaims, _ in
                     CommonClaimsCollection(commonClaims: commonClaims)
                 }
-            }.noSpacing()
+            }
+            .noSpacing()
         }
         .withHeader {
             hText(
@@ -100,7 +101,6 @@ public struct CommonClaimsView: View {
                 style: .title2
             )
         }
-        .padding(.top, 56)
         .sectionContainerStyle(.transparent)
         .onAppear {
             store.send(.fetchCommonClaims)
