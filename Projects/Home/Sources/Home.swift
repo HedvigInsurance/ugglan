@@ -164,7 +164,7 @@ extension HomeSwiftUI {
                     }
                 case .terminated:
                     hSection {
-                        VStack(spacing: 16) {
+                        VStack(alignment: .leading, spacing: 16) {
                             L10n.HomeTab.terminatedWelcomeTitle(memberStateData.name ?? "").hText(.prominentTitle)
                             L10n.HomeTab.terminatedBody
                                 .hText(.body)
