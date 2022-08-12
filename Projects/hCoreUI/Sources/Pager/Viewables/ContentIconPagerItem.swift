@@ -36,7 +36,7 @@ extension ContentIconPagerItem: Presentable {
         containerView.axis = .horizontal
         containerView.distribution = .fill
         containerView.isLayoutMarginsRelativeArrangement = true
-        containerView.edgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        containerView.edgeInsets = .zero
 
         let loadingIndicator = LoadingIndicator(showAfter: 0, color: .black)
         let loadingIndicatorBag = DisposeBag()
@@ -109,7 +109,7 @@ extension ContentIconPagerItem: Presentable {
 
         viewController.view = containerView
 
-        bag += viewController.view.didLayoutSignal.onValue { _ in
+        bag += viewController.view.didMoveToWindowSignal.onValue { _ in
             containerView.snp.makeConstraints { make in make.height.centerX.centerY.equalToSuperview()
                 make.width.equalToSuperview().inset(20)
             }

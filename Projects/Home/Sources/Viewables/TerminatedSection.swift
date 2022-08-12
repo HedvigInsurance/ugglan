@@ -3,20 +3,15 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SwiftUI
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
 
-struct TerminatedSection {
+struct TerminatedSection<ClaimsContent: View> {
     @Inject var client: ApolloClient
-    var claimSubmitHandler: () -> Void
-
-    init(
-        _ claimSubmitHandler: @escaping () -> Void
-    ) {
-        self.claimSubmitHandler = claimSubmitHandler
-    }
+    var claimsContent: ClaimsContent
 }
 
 extension TerminatedSection: Presentable {
@@ -43,17 +38,10 @@ extension TerminatedSection: Presentable {
 
         section.appendSpacing(.top)
 
-        let claimButton = Button(
-            title: L10n.HomeTab.claimButtonText,
-            type: .standard(
-                backgroundColor: .brand(.secondaryButtonBackgroundColor),
-                textColor: .brand(.secondaryButtonTextColor)
-            )
-        )
-        bag += section.append(claimButton)
-
-        bag += claimButton.onTapSignal.onValue {
-            claimSubmitHandler()
+        let hostingView = HostingView(rootView: claimsContent)
+        section.append(hostingView)
+        bag += {
+            hostingView.removeFromSuperview()
         }
 
         return (section, bag)

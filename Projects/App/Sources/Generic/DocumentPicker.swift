@@ -2,6 +2,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import UniformTypeIdentifiers
 
 struct DocumentPicker {}
 
@@ -66,7 +67,7 @@ enum DocumentPickerError: Error { case cancelled }
 
 extension DocumentPicker: Presentable {
     func materialize() -> (UIDocumentPickerViewController, Future<[URL]>) {
-        let viewController = UIDocumentPickerViewController(documentTypes: ["public.item"], in: .import)
+        let viewController = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.item])
         viewController.allowsMultipleSelection = true
         viewController.preferredPresentationStyle = .modally(
             presentationStyle: .formSheet,
