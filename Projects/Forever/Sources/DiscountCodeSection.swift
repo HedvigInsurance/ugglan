@@ -78,13 +78,14 @@ extension DiscountCodeSection: Viewable {
                         body: L10n.ReferralsActiveToast.text
                     )
                 )
+                
+                innerBag += self.service.dataSignal.atOnce()
+                    .compactMap { $0?.discountCode }
+                    .bindTo(UIPasteboard.general, \.string)
 
-                section.viewController?.presentConditionally(PushNotificationReminder(), style: .modal)
-                    .onResult { _ in
-                        innerBag += self.service.dataSignal.atOnce()
-                            .compactMap { $0?.discountCode }
-                            .bindTo(UIPasteboard.general, \.string)
-                    }
+                innerBag += section.viewController?
+                    .presentConditionally(PushNotificationReminder(), style: .modal)
+                    .disposable
 
                 return innerBag
             }
