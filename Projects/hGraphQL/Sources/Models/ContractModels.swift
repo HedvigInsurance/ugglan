@@ -182,6 +182,14 @@ public struct UpcomingRenewal: Codable, Hashable {
     public let draftCertificateUrl: String?
 
     init(
+        renewalDate: String,
+        draftCertificateUrl: String
+    ) {
+        self.renewalDate = renewalDate
+        self.draftCertificateUrl = draftCertificateUrl
+    }
+
+    init(
         upcomingRenewal: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract.UpcomingRenewal?
     ) {
         renewalDate = upcomingRenewal?.renewalDate

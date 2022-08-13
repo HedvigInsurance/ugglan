@@ -222,6 +222,12 @@ extension HomeSwiftUI {
                 resultJourney(.startMovingFlow)
             } else if case .connectPayments = action {
                 resultJourney(.openConnectPayments)
+            } else if case let .openDocument(contractURL) = action {
+                Journey(
+                    Document(url: contractURL, title: L10n.insuranceCertificateTitle),
+                    style: .detented(.large),
+                    options: .defaults
+                )
             }
         }
         .configureTitle(L10n.HomeTab.title)
@@ -296,7 +302,7 @@ extension Home: Presentable {
 
         let bag = DisposeBag()
 
-        store.send(.setMemberContractState(state: .init(state: .loading, name: nil)))
+        store.send(.setMemberContractState(state: .init(state: .loading, name: nil), contracts: []))
 
         let onAppearProxy = SwiftUI.Color.clear.onAppear {
             fetch()

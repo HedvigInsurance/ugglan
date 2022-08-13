@@ -65,8 +65,9 @@ extension AppJourney {
                 PaymentSetup(setupType: .initial).journeyThenDismiss
             }
         } statusCard: {
-            VStack {
-                ConnectPaymentCardView()
+            VStack(spacing: 16) {
+                //ConnectPaymentCardView()
+                RenewalCardView()
             }
         }
         .onTabSelected {

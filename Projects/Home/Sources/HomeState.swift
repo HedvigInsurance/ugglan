@@ -1,10 +1,37 @@
 import Apollo
 import Flow
+import Foundation
 import Presentation
 import hCore
 import hGraphQL
 
-//public typealias InsuranceProvider = GraphQL.HomeInsuranceProvidersQuery.Data.InsuranceProvider
+//fileprivate typealias Contract = GraphQL.HomeQuery.Data.Contract
+
+public struct UpcomingRenewal: Codable, Equatable {
+    let renewalDate: String?
+    let draftCertificateUrl: String?
+
+    public init(
+        upcomingRenewal: GraphQL.HomeQuery.Data.Contract.UpcomingRenewal?
+    ) {
+        self.renewalDate = upcomingRenewal?.renewalDate
+        self.draftCertificateUrl = upcomingRenewal?.draftCertificateUrl
+    }
+}
+
+public struct Contract: Codable, Equatable {
+    var upcomingRenewal: UpcomingRenewal?
+    var displayName: String
+
+    public init(
+        contract: GraphQL.HomeQuery.Data.Contract
+    ) {
+        if contract.upcomingRenewal != nil {
+            upcomingRenewal = UpcomingRenewal(upcomingRenewal: contract.upcomingRenewal)
+        }
+        displayName = contract.displayName
+    }
+}
 
 public struct MemberStateData: Codable, Equatable {
     let state: MemberContractState
@@ -14,6 +41,11 @@ public struct MemberStateData: Codable, Equatable {
 public struct HomeState: StateProtocol {
     var memberStateData: MemberStateData = .init(state: .loading, name: nil)
     var futureStatus: FutureStatus = .none
+    var contracts: [Contract] = []
+
+    var upcomingRenewalContracts: [Contract] {
+        return contracts.filter { $0.upcomingRenewal != nil }
+    }
 
     public init() {}
 }
@@ -24,9 +56,11 @@ public enum HomeAction: ActionProtocol {
     case openMovingFlow
     case openClaim
     case connectPayments
-    case setMemberContractState(state: MemberStateData)
+    case setMemberContractState(state: MemberStateData, contracts: [Contract])
     case fetchFutureStatus
     case setFutureStatus(status: FutureStatus)
+    case fetchUpcomingRenewalContracts
+    case openDocument(contractURL: URL)
 }
 
 public enum FutureStatus: Codable, Equatable {
@@ -52,7 +86,10 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                 client
                 .fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
                 .map { data in
-                    .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))
+                    .setMemberContractState(
+                        state: .init(state: data.homeState, name: data.member.firstName),
+                        contracts: data.contracts.map { Contract(contract: $0) }
+                    )
                 }
                 .valueThenEndSignal
         case .fetchFutureStatus:
@@ -95,8 +132,9 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         var newState = state
 
         switch action {
-        case .setMemberContractState(let memberState):
+        case .setMemberContractState(let memberState, let contracts):
             newState.memberStateData = memberState
+            newState.contracts = contracts
         case .setFutureStatus(let status):
             newState.futureStatus = status
         default:
