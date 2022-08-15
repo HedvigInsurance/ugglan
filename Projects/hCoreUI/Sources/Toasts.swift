@@ -35,8 +35,6 @@ public struct Toast: Equatable {
     public var onTap: Signal<Void> {
         onTapCallbacker.providedSignal
     }
-    
-    var hideSignal: ReadSignal<Bool>?
 
     private let onTapCallbacker = Callbacker<Void>()
     let shouldHideCallbacker = Callbacker<Void>()
@@ -47,8 +45,7 @@ public struct Toast: Equatable {
         subtitle: String? = nil,
         textColor: UIColor = .brand(.primaryText()),
         backgroundColor: UIColor = UIColor.brand(.secondaryBackground()),
-        duration: TimeInterval = 3.0,
-        hideSignal: ReadSignal<Bool>? = nil
+        duration: TimeInterval = 3.0
     ) {
         self.symbol = symbol
         self.body = body
@@ -56,7 +53,6 @@ public struct Toast: Equatable {
         self.textColor = textColor
         self.backgroundColor = backgroundColor
         self.duration = duration
-        self.hideSignal = hideSignal
     }
 }
 
@@ -362,21 +358,12 @@ extension Toasts: Viewable {
                             innerBag.dispose()
                             pauseSignal.value = false
                         }
-                    
+
                     hideBag += Signal.animatedDelay(after: toast.duration)
                         .onValue { _ in
                             hideCallbacker.callAll()
                         }
                     innerBag += hideBag
-                    
-                    if let hideSignal = toast.hideSignal {
-                        hideBag += hideSignal.onValue { shouldHide in
-                            if shouldHide {
-                                hideCallbacker.callAll()
-                            }
-                        }
-                        innerBag += hideBag
-                    }
 
                     innerBag += panGestureRecognizer.signal(forState: .ended)
                         .onValue {
