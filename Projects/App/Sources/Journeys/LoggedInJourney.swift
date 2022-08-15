@@ -1,6 +1,7 @@
 import Claims
 import Contracts
 import Embark
+import Factory
 import Flow
 import Forever
 import Form
@@ -12,12 +13,11 @@ import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
-import Factory
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claimsProvider: some ClaimsProviding = Container.claimsProvider
-        
+
         return Journey(
             Home(
                 claimsProvider: claimsProvider

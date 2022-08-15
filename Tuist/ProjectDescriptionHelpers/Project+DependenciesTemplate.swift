@@ -164,7 +164,7 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "hAnalytics")
             ]
         case .factory:
-            return [ .package(product: "Factory") ]
+            return [.package(product: "Factory")]
         }
     }
 }

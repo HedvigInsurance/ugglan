@@ -76,7 +76,7 @@ struct CommonClaimButtonStyle: ButtonStyle {
 
 struct CommonClaimsView: View {
     @PresentableStore var store: ClaimsStore
-    
+
     var body: some View {
         VStack {
             hText(L10n.claimsQuickChoiceHeader, style: .title2)
