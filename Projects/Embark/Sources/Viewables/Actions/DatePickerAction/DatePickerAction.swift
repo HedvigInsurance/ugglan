@@ -47,9 +47,7 @@ extension EmbarkDatePickerAction: Viewable {
         datePicker.calendar = Calendar.current
         datePicker.datePickerMode = .date
         datePicker.tintColor = .brand(.link)
-        if #available(iOS 14.0, *) {
-            datePicker.preferredDatePickerStyle = .inline
-        }
+        datePicker.preferredDatePickerStyle = .inline
         datePicker.date = Date()
 
         let titleLabel = UILabel()
