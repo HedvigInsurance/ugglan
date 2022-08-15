@@ -20,7 +20,6 @@ public enum ExternalDependencies: CaseIterable {
     case reveal
     case datadog
     case hAnalytics
-    case reachability
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -96,8 +95,6 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.260.0"))
             ]
-        case .reachability:
-            return [.package(url: "https://github.com/ashleymills/Reachability.swift", .upToNextMajor(from: "5.1.0"))]
         }
     }
 
@@ -161,8 +158,6 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(product: "hAnalytics")
             ]
-        case .reachability:
-            return [.package(product: "Reachability")]
         }
     }
 }

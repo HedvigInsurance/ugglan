@@ -1,50 +1,24 @@
 import Foundation
-import Reachability
-import Flow
+import Network
 
-/**
- Wrapper class around Reachability
- */
-public class NetworkReachability: NSObject {
-    public static let sharedInstance = NetworkReachability()
-    private var reachability : Reachability!
-    
-    public var whenReachable: ((Reachability) -> Void)?
-    public var whenUnreachable: ((Reachability) -> Void)?
-    
-    public var reachableSignal: ReadSignal<Bool>?
-    
-    public func observeReachability() {
-        self.reachability = try! Reachability()
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector:#selector(self.reachabilityChanged),
-            name: NSNotification.Name.reachabilityChanged,
-            object: self.reachability
-        )
-        
-        do {
-            try self.reachability.startNotifier()
+public class NetworkReachabability {
+    public static let shared = NetworkReachabability()
+
+    let monitor = NWPathMonitor()
+    private var status: NWPath.Status = .requiresConnection
+    public var isReachable: Bool { status == .satisfied }
+    public var reachabilityStatusChanged: ((Bool) -> Void)?
+
+    public func startMonitoring() {
+        monitor.pathUpdateHandler = { [weak self] path in
+            self?.reachabilityStatusChanged?(path.status == .satisfied)
         }
-        catch(let error) {
-            print(error.localizedDescription)
-        }
+
+        let queue = DispatchQueue(label: "NetworkMonitor")
+        monitor.start(queue: queue)
     }
-    
-    @objc func reachabilityChanged(note: Notification) {
-        let reachability = note.object as! Reachability
-        switch reachability.connection {
-        case .cellular, .wifi:
-            if let callback = whenReachable {
-                callback(reachability)
-            }
-            reachableSignal = ReadSignal<Bool>(true)
-        case .none, .unavailable:
-            if let callback = whenUnreachable {
-                callback(reachability)
-            }
-            reachableSignal = ReadSignal<Bool>(false)
-        }
+
+    public func stopMonitoring() {
+        monitor.cancel()
     }
 }

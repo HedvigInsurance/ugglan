@@ -70,6 +70,7 @@ let log = Logger.builder
 
     func applicationWillTerminate(_ application: UIApplication) {
         hAnalyticsEvent.appShutdown().send()
+        NetworkReachabability.shared.stopMonitoring()
         NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
         Thread.sleep(forTimeInterval: 3)
     }
@@ -257,8 +258,15 @@ let log = Logger.builder
         trackNotificationPermission()
 
         self.setupHAnalyticsExperiments()
-        
-        self.setupReachabilityListeners()
+
+        NetworkReachabability.shared.startMonitoring()
+        NetworkReachabability.shared.reachabilityStatusChanged = { reachable in
+            if reachable {
+                print("Network is reachable")
+            } else {
+                print("Network is not reachable")
+            }
+        }
 
         bag += ApplicationContext.shared.$hasLoadedExperiments.take(first: 1)
             .onValue { isLoaded in
