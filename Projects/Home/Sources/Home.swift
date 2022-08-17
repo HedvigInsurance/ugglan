@@ -106,6 +106,7 @@ extension HomeSwiftUI {
                     if hAnalyticsExperiment.movingFlow {
                         hSection {
                             hRow {
+                                Image(uiImage: hCoreUIAssets.apartment.image)
                                 L10n.HomeTab.editingSectionChangeAddressLabel.hText()
                             }
                             .withCustomAccessory {
