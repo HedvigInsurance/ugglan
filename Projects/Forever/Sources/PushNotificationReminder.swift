@@ -23,14 +23,13 @@ struct PushNotificationReminderView: View {
         }
         .hFormAttachToBottom {
             hButton.LargeButtonFilled {
-                // Ask for push notifications
-                print("Ask for notifs")
-                //store.send(.askForPushNotifications)
-
                 let center = UNUserNotificationCenter.current()
                 center.requestAuthorization(options: [.alert, .sound, .badge]) {
                     _,
-                    error in
+                    _ in
+                    DispatchQueue.main.async {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
                     store.send(.dismissPushNotificationSheet)
                 }
             } content: {
