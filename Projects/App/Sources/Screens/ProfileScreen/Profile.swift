@@ -149,8 +149,10 @@ extension ProfileView {
             if case .openProfile = action {
                 Journey(
                     MyInfo(),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
+                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never), .autoPop]
+                ) { _ in
+                    DismissJourney()
+                }
             } else if case .openCharity = action {
                 Journey(
                     Charity(),
