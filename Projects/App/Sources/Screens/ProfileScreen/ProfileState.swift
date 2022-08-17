@@ -16,6 +16,7 @@ public enum ProfileAction: ActionProtocol {
     case openProfile
     case openCharity
     case openPayment
+    case openFreeTextChat
     case openAppInformation
     case openAppSettings
     case setProfileState(name: String, charity: String, monthlyNet: Int)
@@ -53,17 +54,7 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             newState.memberFullName = name
             newState.memberCharityName = charity
             newState.monthlyNet = monthlyNet
-        case .fetchProfileState:
-            break
-        case .openCharity:
-            break
-        case .openPayment:
-            break
-        case .openProfile:
-            break
-        case .openAppInformation:
-            break
-        case .openAppSettings:
+        default:
             break
         }
 

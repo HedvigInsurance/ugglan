@@ -49,7 +49,7 @@ public struct RenewalCardView: View {
             PresentableStoreLens(
                 HomeStore.self,
                 getter: { state in
-                    state.contracts
+                    state.upcomingRenewalContracts
                 }
             ) { contracts in
                 if contracts.count > 1,
@@ -77,7 +77,6 @@ public struct RenewalCardView: View {
                             )
                         }
                     }
-                    .slideUpFadeAppearAnimation()
                 } else if let contract = contracts.first {
                     let renewalDate = contract.upcomingRenewal?.renewalDate?.localDateToDate ?? Date()
                     hCard(

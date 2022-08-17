@@ -78,6 +78,9 @@ extension Contracts: View {
         hForm(gradientType: .insurance) {
             ContractTable(filter: filter)
         }
+        .withChatButton {
+            store.send(.goToFreeTextChat)
+        }
         .onReceive(pollTimer) { _ in
             fetch()
         }

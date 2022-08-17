@@ -178,6 +178,9 @@ extension HomeSwiftUI {
                 }
             }
         }
+        .withChatButton(tooltip: true) {
+            store.send(.openFreeTextChat)
+        }
         .onAppear {
             fetch()
         }

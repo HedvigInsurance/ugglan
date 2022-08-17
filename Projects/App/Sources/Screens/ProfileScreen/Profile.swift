@@ -118,6 +118,9 @@ struct ProfileView: View {
                 .sectionContainerStyle(.transparent)
             }
         }
+        .withChatButton {
+            store.send(.openFreeTextChat)
+        }
         .onAppear {
             store.send(.fetchProfileState)
         }
@@ -127,6 +130,7 @@ struct ProfileView: View {
 
 public enum ProfileResult {
     case openPayment
+    case openFreeTextChat
 }
 
 extension ProfileView {
@@ -164,6 +168,8 @@ extension ProfileView {
                     AppInfo(type: .appSettings),
                     options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
                 )
+            } else if case .openFreeTextChat = action {
+                resultJourney(.openFreeTextChat)
             }
         }
         .configureTitle(L10n.profileTitle)
