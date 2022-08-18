@@ -86,6 +86,7 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             // Fallback to Hedvig logo if no logo
             Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
                 .resizable()
+                .aspectRatio(contentMode: .fit)
                 .enableHero(
                     "ContractRow_\(contract.id)_logo",
                     modifiers: [.spring(stiffness: 250, damping: 25)]
@@ -103,29 +104,34 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 Spacer()
                 logo
             }
+            
             Spacer()
-            HStack {
-                hText(contract.displayName, style: .title2)
-                Spacer()
-            }
-            HStack {
-                ForEach(contract.detailPills, id: \.self) { pill in
-                    if contract.gradientOption == nil {
-                        DetailPill(text: pill)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .stroke(hLabelColor.primary, lineWidth: 1)
-                            )
-                    } else {
-                        DetailPill(text: pill)
-                    }
+            
+            VStack {
+                HStack {
+                    hText(contract.displayName, style: .title2)
+                    Spacer()
                 }
-                Spacer()
-                ContractRowChevron()
+                
+                HStack {
+                    ForEach(contract.detailPills, id: \.self) { pill in
+                        if contract.gradientOption == nil {
+                            DetailPill(text: pill)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .stroke(hLabelColor.primary, lineWidth: 1)
+                                )
+                        } else {
+                            DetailPill(text: pill)
+                        }
+                    }
+                    Spacer()
+                    ContractRowChevron()
+                }
             }
         }
         .padding(16)
-        .frame(minHeight: 200)
+        .frame(height: 200)
         .background(
             backgroundColor(configuration: configuration)
         )

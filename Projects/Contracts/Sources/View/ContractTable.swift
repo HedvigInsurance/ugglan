@@ -30,7 +30,7 @@ struct ContractTable {
 extension ContractTable: View {
     var body: some View {
         ContractBundleLoadingIndicator()
-
+    
         hSection {
             PresentableStoreLens(
                 ContractStore.self,
@@ -41,7 +41,6 @@ extension ContractTable: View {
                 ForEach(contracts, id: \.id) { contract in
                     ContractRow(id: contract.id)
                         .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, 15)
                         .transition(.slide)
                 }
             }
