@@ -20,7 +20,7 @@ struct ProfileRow: View {
                     .frame(width: 40, height: 40)
                 VStack(alignment: .leading, spacing: 2) {
                     hText(title)
-                    if let subtitle = subtitle {
+                    if let subtitle = subtitle, subtitle != "" {
                         hText(subtitle, style: .footnote).foregroundColor(hLabelColor.secondary)
                     }
                 }

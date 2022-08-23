@@ -75,17 +75,6 @@ struct hGradient: View {
         } else {
             EmptyView()
         }
-
-        /*LinearGradient(
-            colors: colors,
-            startPoint: .top,
-            endPoint: .bottom
-        ).onAppear {
-            colors = oldColors
-            withAnimation(.easeInOut(duration: 1.0)) {
-                colors = newColors
-            }
-        }*/
     }
 }
 
@@ -209,8 +198,6 @@ public class GradientState: ObservableObject {
     @Published public var gradientType: GradientType = .none {
         didSet {
             if gradientType != oldValue && oldValue != .none {
-                print("GRADZ new value:", gradientType, "old value:", oldValue, "animate:", animate)
-
                 oldGradientType = oldValue
 
                 if gradientType == .none {
