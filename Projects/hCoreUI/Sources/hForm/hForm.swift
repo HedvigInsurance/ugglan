@@ -41,6 +41,8 @@ extension View {
 }
 
 struct hGradient: View {
+    @Environment(\.colorScheme) var colorScheme
+
     @Binding var oldGradientType: GradientType
     @Binding var newGradientType: GradientType
     @Binding var animate: Bool
@@ -53,15 +55,15 @@ struct hGradient: View {
         if #available(iOS 14.0, *) {
             Rectangle()
                 .animatableGradient(
-                    fromGradient: Gradient(colors: oldGradientType.colors()),
-                    toGradient: Gradient(colors: newGradientType.colors()),
+                    fromGradient: Gradient(colors: oldGradientType.colors(for: colorScheme)),
+                    toGradient: Gradient(colors: newGradientType.colors(for: colorScheme)),
                     progress: animate ? progress : 1
                 )
                 .edgesIgnoringSafeArea(.all)
                 .onAppear {
                     if !hasAnimatedCurrentTypes {
                         self.progress = 0
-                        withAnimation(.linear(duration: 1.0)) {
+                        withAnimation(.easeOut(duration: 1.0)) {
                             self.progress = 1
                         }
                         hasAnimatedCurrentTypes = true
@@ -81,7 +83,7 @@ struct hGradient: View {
 public enum GradientType {
     case none, home, insurance, forever, profile
 
-    public func colors() -> [Color] {
+    public func colors(for scheme: ColorScheme) -> [Color] {
         switch self {
         case .none:
             return [
@@ -90,29 +92,65 @@ public enum GradientType {
                 Color(.brand(.primaryBackground())),
             ]
         case .home:
-            return [
-                Color(red: 0.75, green: 0.79, blue: 0.85, opacity: 1.00),
-                Color(red: 0.93, green: 0.80, blue: 0.67, opacity: 1.00),
-                Color(red: 0.96, green: 0.96, blue: 0.96, opacity: 1.00),
-            ]
+            switch scheme {
+            case .dark:
+                return [
+                    Color(red: 0.00, green: 0.00, blue: 0.00, opacity: 1.00),
+                    Color(red: 0.11, green: 0.15, blue: 0.19, opacity: 1.00),
+                    Color(red: 0.20, green: 0.13, blue: 0.12, opacity: 1.00),
+                ]
+            default:
+                return [
+                    Color(red: 0.75, green: 0.79, blue: 0.85, opacity: 1.00),
+                    Color(red: 0.93, green: 0.80, blue: 0.67, opacity: 1.00),
+                    Color(red: 0.96, green: 0.96, blue: 0.96, opacity: 1.00),
+                ]
+            }
         case .insurance:
-            return [
-                Color(red: 0.95, green: 0.85, blue: 0.75, opacity: 1.00),
-                Color(red: 0.96, green: 0.91, blue: 0.86, opacity: 1.00),
-                Color(red: 0.96, green: 0.96, blue: 0.96, opacity: 1.00),
-            ]
+            switch scheme {
+            case .dark:
+                return [
+                    Color(red: 0.00, green: 0.00, blue: 0.00, opacity: 1.00),
+                    Color(red: 0.04, green: 0.09, blue: 0.10, opacity: 1.00),
+                    Color(red: 0.10, green: 0.18, blue: 0.20, opacity: 1.00),
+                ]
+            default:
+                return [
+                    Color(red: 0.95, green: 0.85, blue: 0.75, opacity: 1.00),
+                    Color(red: 0.96, green: 0.91, blue: 0.86, opacity: 1.00),
+                    Color(red: 0.96, green: 0.96, blue: 0.96, opacity: 1.00),
+                ]
+            }
         case .forever:
-            return [
-                Color(red: 0.83, green: 0.83, blue: 0.83, opacity: 1.00),
-                Color(red: 0.90, green: 0.90, blue: 0.90, opacity: 1.00),
-                Color(red: 0.96, green: 0.96, blue: 0.96, opacity: 1.00),
-            ]
+            switch scheme {
+            case .dark:
+                return [
+                    Color(red: 0.00, green: 0.00, blue: 0.00, opacity: 1.00),
+                    Color(red: 0.07, green: 0.07, blue: 0.07, opacity: 1.00),
+                    Color(red: 0.15, green: 0.15, blue: 0.15, opacity: 1.00),
+                ]
+            default:
+                return [
+                    Color(red: 0.83, green: 0.83, blue: 0.83, opacity: 1.00),
+                    Color(red: 0.90, green: 0.90, blue: 0.90, opacity: 1.00),
+                    Color(red: 0.96, green: 0.96, blue: 0.96, opacity: 1.00),
+                ]
+            }
         case .profile:
-            return [
-                Color(red: 0.77, green: 0.87, blue: 0.93, opacity: 1.00),
-                Color(red: 0.87, green: 0.93, blue: 0.95, opacity: 1.00),
-                Color(red: 0.96, green: 0.96, blue: 0.96, opacity: 1.00),
-            ]
+            switch scheme {
+            case .dark:
+                return [
+                    Color(red: 0.00, green: 0.00, blue: 0.00, opacity: 1.00),
+                    Color(red: 0.06, green: 0.06, blue: 0.02, opacity: 1.00),
+                    Color(red: 0.12, green: 0.11, blue: 0.04, opacity: 1.00),
+                ]
+            default:
+                return [
+                    Color(red: 0.77, green: 0.87, blue: 0.93, opacity: 1.00),
+                    Color(red: 0.87, green: 0.93, blue: 0.95, opacity: 1.00),
+                    Color(red: 0.96, green: 0.96, blue: 0.96, opacity: 1.00),
+                ]
+            }
         }
     }
 }
@@ -170,8 +208,8 @@ struct AnimatableGradientModifier: AnimatableModifier {
 
         return LinearGradient(
             gradient: Gradient(colors: gradientColors),
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
+            startPoint: .top,
+            endPoint: .bottom
         )
     }
 
