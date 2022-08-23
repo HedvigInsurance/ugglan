@@ -77,22 +77,26 @@ public struct RenewalCardView: View {
                             )
                         }
                     }
-                } else if let contract = contracts.first {
-                    let renewalDate = contract.upcomingRenewal?.renewalDate?.localDateToDate ?? Date()
-                    hCard(
-                        titleIcon: hCoreUIAssets.document.image,
-                        title: L10n.dashboardRenewalPrompterTitle(
-                            contract.displayName.lowercased()
-                        ),
-                        bodyText: L10n.dashboardRenewalPrompterBody(
-                            dateComponents(from: renewalDate).day ?? 0
-                        ),
-                        backgroundColor: hTintColor.lavenderTwo
-                    ) {
-                        hButton.SmallButtonOutlined {
-                            openDocument(contract)
-                        } content: {
-                            L10n.dashboardRenewalPrompterBodyButton.hText()
+                } else {
+                    VStack(spacing: 16) {
+                        ForEach(contracts, id: \.displayName) { contract in
+                            let renewalDate = contract.upcomingRenewal?.renewalDate?.localDateToDate ?? Date()
+                            hCard(
+                                titleIcon: hCoreUIAssets.document.image,
+                                title: L10n.dashboardRenewalPrompterTitle(
+                                    contract.displayName.lowercased()
+                                ),
+                                bodyText: L10n.dashboardRenewalPrompterBody(
+                                    dateComponents(from: renewalDate).day ?? 0
+                                ),
+                                backgroundColor: hTintColor.lavenderTwo
+                            ) {
+                                hButton.SmallButtonOutlined {
+                                    openDocument(contract)
+                                } content: {
+                                    L10n.dashboardRenewalPrompterBodyButton.hText()
+                                }
+                            }
                         }
                     }
                 }

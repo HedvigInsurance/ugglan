@@ -8,7 +8,7 @@ import hGraphQL
 
 public struct PaymentState: StateProtocol {
     var monthlyNetCost: MonetaryAmount? = nil
-    var paymentStatus: PayinMethodStatus = .active
+    public var paymentStatus: PayinMethodStatus = .active
     var paymentConnectionID: String? = nil
     public init() {}
 }

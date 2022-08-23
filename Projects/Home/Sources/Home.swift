@@ -132,7 +132,7 @@ extension HomeSwiftUI {
                         }
                     ) { futureStatus in
                         hSection {
-                            VStack(spacing: 16) {
+                            VStack(alignment: .leading, spacing: 16) {
                                 switch futureStatus {
                                 case .activeInFuture(let inceptionDate):
                                     L10n.HomeTab

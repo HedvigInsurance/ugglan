@@ -5,8 +5,6 @@ import Presentation
 import hCore
 import hGraphQL
 
-//fileprivate typealias Contract = GraphQL.HomeQuery.Data.Contract
-
 public struct UpcomingRenewal: Codable, Equatable {
     let renewalDate: String?
     let draftCertificateUrl: String?
@@ -34,16 +32,24 @@ public struct Contract: Codable, Equatable {
 }
 
 public struct MemberStateData: Codable, Equatable {
-    let state: MemberContractState
-    let name: String?
+    public let state: MemberContractState
+    public let name: String?
+
+    public init(
+        state: MemberContractState,
+        name: String?
+    ) {
+        self.state = state
+        self.name = name
+    }
 }
 
 public struct HomeState: StateProtocol {
-    var memberStateData: MemberStateData = .init(state: .loading, name: nil)
-    var futureStatus: FutureStatus = .none
-    var contracts: [Contract] = []
+    public var memberStateData: MemberStateData = .init(state: .loading, name: nil)
+    public var futureStatus: FutureStatus = .none
+    public var contracts: [Contract] = []
 
-    var upcomingRenewalContracts: [Contract] {
+    public var upcomingRenewalContracts: [Contract] {
         return contracts.filter { $0.upcomingRenewal != nil }
     }
 
