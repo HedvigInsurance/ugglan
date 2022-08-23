@@ -12,6 +12,12 @@ public struct InfoAndTermsView: View {
     @PresentableStore var store: ForeverStore
     @State var potentialDiscount: String
 
+    public init(
+        potentialDiscount: String
+    ) {
+        self.potentialDiscount = potentialDiscount
+    }
+
     public var body: some View {
         hForm {
             hSection {

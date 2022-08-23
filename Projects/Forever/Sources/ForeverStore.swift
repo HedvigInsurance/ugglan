@@ -22,7 +22,7 @@ public struct ForeverState: StateProtocol {
         self.hasSeenFebruaryCampaign = false
     }
 
-    var foreverData: ForeverData? = nil
+    public var foreverData: ForeverData? = nil
 }
 
 public indirect enum ForeverAction: ActionProtocol {

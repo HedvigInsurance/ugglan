@@ -12,9 +12,11 @@ import hGraphQL
 public struct ForeverView: View {
     @PresentableStore var store: ForeverStore
 
+    public init() {}
+
     public var body: some View {
         hForm(gradientType: .forever) {
-            HeaderView().slideUpAppearAnimation()
+            HeaderView()
             DiscountCodeSectionView().slideUpAppearAnimation()
             InvitationTable().slideUpAppearAnimation()
         }
