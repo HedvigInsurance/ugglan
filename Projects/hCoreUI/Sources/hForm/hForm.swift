@@ -43,24 +43,38 @@ extension View {
 struct hGradient: View {
     @Binding var oldGradientType: GradientType
     @Binding var newGradientType: GradientType
+    @Binding var animate: Bool
 
+    @State private var hasAnimatedCurrentTypes = false
     @State private var progress: CGFloat = 0
     @State private var colors: [Color] = []
 
     var body: some View {
-        Rectangle()
-            .animatableGradient(
-                fromGradient: Gradient(colors: oldGradientType.colors()),
-                toGradient: Gradient(colors: newGradientType.colors()),
-                progress: progress
-            )
-            .edgesIgnoringSafeArea(.all)
-            .onAppear {
-                self.progress = 0
-                withAnimation(.linear(duration: 1.0)) {
-                    self.progress = 1
+        if #available(iOS 14.0, *) {
+            Rectangle()
+                .animatableGradient(
+                    fromGradient: Gradient(colors: oldGradientType.colors()),
+                    toGradient: Gradient(colors: newGradientType.colors()),
+                    progress: animate ? progress : 1
+                )
+                .edgesIgnoringSafeArea(.all)
+                .onAppear {
+                    if !hasAnimatedCurrentTypes {
+                        self.progress = 0
+                        withAnimation(.linear(duration: 1.0)) {
+                            self.progress = 1
+                        }
+                        hasAnimatedCurrentTypes = true
+                    } else {
+                        self.progress = 1
+                    }
                 }
-            }
+                .onChange(of: newGradientType) { _ in
+                    hasAnimatedCurrentTypes = false
+                }
+        } else {
+            EmptyView()
+        }
 
         /*LinearGradient(
             colors: colors,
@@ -188,36 +202,31 @@ public class GradientState: ObservableObject {
     private init() {}
 
     @Published var oldGradientType: GradientType = .none
+    @Published var animate: Bool = true
+
+    @Published var gradientTypeBeforeNone: GradientType? = nil
 
     @Published public var gradientType: GradientType = .none {
         didSet {
-            if gradientType != oldValue {
-                print("GRADZ new value:", gradientType, "old value:", oldValue)
+            if gradientType != oldValue && oldValue != .none {
+                print("GRADZ new value:", gradientType, "old value:", oldValue, "animate:", animate)
+
                 oldGradientType = oldValue
+
+                if gradientType == .none {
+                    gradientType = oldValue
+                    gradientTypeBeforeNone = oldValue
+                }
             }
-        }
-    }
-}
-
-public struct HostingGradient: View {
-    @ObservedObject var gradientState = GradientState.shared
-
-    public init() {}
-
-    public var body: some View {
-        if gradientState.gradientType != .none {
-            hGradient(
-                oldGradientType: $gradientState.oldGradientType,
-                newGradientType: $gradientState.gradientType
-            )
-        } else {
-            BackgroundView().edgesIgnoringSafeArea(.all)
         }
     }
 }
 
 public struct hForm<Content: View>: View {
     @ObservedObject var gradientState = GradientState.shared
+    let gradientType: GradientType
+
+    @State var shouldAnimateGradient = true
 
     @State var bottomAttachedViewHeight: CGFloat = 0
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
@@ -228,16 +237,26 @@ public struct hForm<Content: View>: View {
         @ViewBuilder _ builder: () -> Content
     ) {
         self.content = builder()
+        self.gradientType = gradientType
         gradientState.gradientType = gradientType
     }
 
     public var body: some View {
         ZStack {
-            if gradientState.gradientType != .none {
+            if gradientType != .none {
                 hGradient(
                     oldGradientType: $gradientState.oldGradientType,
-                    newGradientType: $gradientState.gradientType
+                    newGradientType: $gradientState.gradientType,
+                    animate: $shouldAnimateGradient
                 )
+                .onDisappear {
+                    shouldAnimateGradient = gradientState.gradientTypeBeforeNone != gradientType
+                }
+                .onAppear {
+                    if gradientState.gradientTypeBeforeNone == gradientType {
+                        gradientState.gradientTypeBeforeNone = nil
+                    }
+                }
             } else {
                 BackgroundView().edgesIgnoringSafeArea(.all)
             }
