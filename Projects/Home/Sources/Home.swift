@@ -99,7 +99,9 @@ extension HomeSwiftUI {
                             statusCard
                         }
                     }
+                    .slideUpFadeAppearAnimation()
                     .sectionContainerStyle(.transparent)
+
                     if hAnalyticsExperiment.homeCommonClaim {
                         commonClaims
                     }

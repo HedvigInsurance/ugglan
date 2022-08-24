@@ -8,9 +8,9 @@ public class GradientState: ObservableObject {
     public static let shared = GradientState()
     private init() {}
 
-    @Published var oldGradientType: GradientType = .none
-    @Published var animate: Bool = true
+    private var hasAnimatedInitial = false
 
+    @Published var oldGradientType: GradientType = .none
     @Published var gradientTypeBeforeNone: GradientType? = nil
 
     @Published public var gradientType: GradientType = .none {
@@ -22,6 +22,11 @@ public class GradientState: ObservableObject {
                     gradientType = oldValue
                     gradientTypeBeforeNone = oldValue
                 }
+            }
+
+            if gradientType != oldValue && oldValue == .none && !hasAnimatedInitial {
+                oldGradientType = oldValue
+                hasAnimatedInitial = true
             }
         }
     }

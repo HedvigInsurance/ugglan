@@ -72,7 +72,6 @@ extension AppJourney {
         }
         .onTabSelected {
             GradientState.shared.gradientType = .home
-            ContextGradient.currentOption = .home
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {

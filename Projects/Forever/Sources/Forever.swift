@@ -17,8 +17,8 @@ public struct ForeverView: View {
     public var body: some View {
         hForm(gradientType: .forever) {
             HeaderView()
-            DiscountCodeSectionView().slideUpAppearAnimation()
-            InvitationTable().slideUpAppearAnimation()
+            DiscountCodeSectionView()
+            InvitationTable()
         }
         .onAppear {
             store.send(.fetch)
