@@ -1,7 +1,6 @@
 import Flow
 import Foundation
 import SwiftUI
-import UIKit
 import hCore
 
 public class GradientState: ObservableObject {

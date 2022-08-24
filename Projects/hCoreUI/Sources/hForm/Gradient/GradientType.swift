@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import UIKit
 import hCore
 
 public enum GradientType {
