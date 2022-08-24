@@ -13,8 +13,7 @@ import hGraphQL
 
 public struct HomeSwiftUI<Content: View>: View {
     @PresentableStore var store: HomeStore
-    //@SwiftUI.Environment(\.cardView) var statusCard: AnyView
-    //@ViewBuilder var statusCard: StatusCard
+
     var statusCard: Content
 
     var claimsContent: Claims
@@ -24,52 +23,11 @@ public struct HomeSwiftUI<Content: View>: View {
     public init(
         statusCard: () -> Content
     ) {
-        //public init() {
         self.statusCard = statusCard()
         let claims = Claims()
         self.claimsContent = claims
         self.commonClaims = CommonClaimsView()
         self.claimSubmitHandler = claims.claimSubmission
-    }
-}
-
-// Start gradient test
-
-/*enum GradientType {
-    case home, insurances
-}
-
-class GradientState: ObservableObject {
-    static let shared = GradientState()
-    private init() {}
-
-    @Published var gradientType
-}
-
-struct WithGradient: ViewModifier {
-    func body(content: Content) -> some View {
-
-    }
-}*/
-
-// End gradient test
-
-struct WithCard<Card: View>: ViewModifier {
-    var card: () -> Card
-    @State private var rect1: CGRect = CGRect()
-
-    func body(content: Content) -> some View {
-        VStack {
-            content
-            card()
-                .padding(.top, 32)
-        }
-    }
-}
-
-extension View {
-    func addStatusCard<Card: View>(_ card: @escaping () -> Card) -> some View {
-        modifier(WithCard(card: card))
     }
 }
 
@@ -89,93 +47,13 @@ extension HomeSwiftUI {
             ) { memberStateData in
                 switch memberStateData.state {
                 case .active:
-                    hSection {
-                        if let name = memberStateData.name {
-                            hText(L10n.HomeTab.welcomeTitle(name), style: .prominentTitle)
-                                .multilineTextAlignment(.center)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        claimsContent.addStatusCard {
-                            statusCard
-                        }
-                    }
-                    .slideUpFadeAppearAnimation()
-                    .sectionContainerStyle(.transparent)
-
-                    if hAnalyticsExperiment.homeCommonClaim {
-                        commonClaims
-                    }
-                    if hAnalyticsExperiment.movingFlow {
-                        hSection {
-                            hRow {
-                                Image(uiImage: hCoreUIAssets.apartment.image)
-                                L10n.HomeTab.editingSectionChangeAddressLabel.hText()
-                            }
-                            .withCustomAccessory {
-                                Spacer()
-                                Image(uiImage: hCoreUIAssets.chevronRight.image)
-                            }
-                            .onTap {
-                                store.send(.openMovingFlow)
-                            }
-                        }
-                        .withHeader {
-                            hText(
-                                L10n.HomeTab.editingSectionTitle,
-                                style: .title2
-                            )
-                        }
-                    }
+                    ActiveSectionView(claimsContent: claimsContent, commonClaims: commonClaims, statusCard: statusCard)
                 case .future:
-                    PresentableStoreLens(
-                        HomeStore.self,
-                        getter: { state in
-                            state.futureStatus
-                        }
-                    ) { futureStatus in
-                        hSection {
-                            VStack(alignment: .leading, spacing: 16) {
-                                switch futureStatus {
-                                case .activeInFuture(let inceptionDate):
-                                    L10n.HomeTab
-                                        .activeInFutureWelcomeTitle(
-                                            memberStateData.name ?? "",
-                                            inceptionDate
-                                        )
-                                        .hText(.prominentTitle)
-                                    L10n.HomeTab.activeInFutureBody
-                                        .hText(.body)
-                                        .foregroundColor(hLabelColor.secondary)
-                                case .pendingSwitchable:
-                                    L10n.HomeTab.pendingSwitchableWelcomeTitle(memberStateData.name ?? "")
-                                        .hText(.prominentTitle)
-                                    L10n.HomeTab.pendingSwitchableBody
-                                        .hText(.body)
-                                        .foregroundColor(hLabelColor.secondary)
-                                case .pendingNonswitchable:
-                                    L10n.HomeTab.pendingNonswitchableWelcomeTitle(memberStateData.name ?? "")
-                                        .hText(.prominentTitle)
-                                    L10n.HomeTab.pendingNonswitchableBody
-                                        .hText(.body)
-                                        .foregroundColor(hLabelColor.secondary)
-                                case .none:
-                                    EmptyView()
-                                }
-                            }
-                        }
-                        .sectionContainerStyle(.transparent)
-                    }
+                    FutureSectionView(memberName: memberStateData.name ?? "")
+                        .slideUpFadeAppearAnimation()
                 case .terminated:
-                    hSection {
-                        VStack(alignment: .leading, spacing: 16) {
-                            L10n.HomeTab.terminatedWelcomeTitle(memberStateData.name ?? "").hText(.prominentTitle)
-                            L10n.HomeTab.terminatedBody
-                                .hText(.body)
-                                .foregroundColor(hLabelColor.secondary)
-                        }
-                        claimsContent
-                    }
-                    .sectionContainerStyle(.transparent)
+                    TerminatedSectionView(memberName: memberStateData.name ?? "", claimsContent: claimsContent)
+                        .slideUpFadeAppearAnimation()
                 case .loading:
                     EmptyView()
                 }
@@ -190,23 +68,6 @@ extension HomeSwiftUI {
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .home))
     }
 }
-
-/*private struct CardViewKey: EnvironmentKey {
-    static let defaultValue: AnyView = AnyView(Text("Hello"))
-}
-
-extension EnvironmentValues {
-    var cardView: AnyView {
-        get { self[CardViewKey.self] }
-        set { self[CardViewKey.self] = AnyView(newValue) }
-    }
-}
-
-extension View {
-    public func statusCard<V: View>(_ card: @escaping () -> V) -> some View {
-        environment(\.cardView, AnyView(card()))
-    }
-}*/
 
 extension HomeSwiftUI {
     public static func journey<ResultJourney: JourneyPresentation>(
