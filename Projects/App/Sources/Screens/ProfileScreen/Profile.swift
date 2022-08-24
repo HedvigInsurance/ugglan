@@ -38,49 +38,21 @@ struct ProfileView: View {
                 }
             ) { stateData in
                 hSection {
-                    ProfileRow(
-                        title: L10n.profileMyInfoRowTitle,
-                        subtitle: stateData.memberFullName,
-                        icon: Asset.myInfoRowIcon.image
-                    ) {
-                        store.send(.openProfile)
-                    }
+                    ProfileRow(row: .myInfo, subtitle: stateData.memberFullName)
+
                     if hAnalyticsExperiment.showCharity {
-                        ProfileRow(
-                            title: L10n.profileMyCharityRowTitle,
-                            subtitle: stateData.memberCharityName,
-                            icon: Asset.charityPlain.image
-                        ) {
-                            store.send(.openCharity)
-                        }
+                        ProfileRow(row: .myCharity, subtitle: stateData.memberCharityName)
                     }
                     if hAnalyticsExperiment.paymentScreen {
-                        ProfileRow(
-                            title: L10n.profilePaymentRowHeader,
-                            subtitle: "\(stateData.monthlyNet) \(L10n.paymentCurrencyOccurrence)",
-                            icon: Asset.paymentRowIcon.image
-                        ) {
-                            store.send(.openPayment)
-                        }
+                        ProfileRow(row: .payment, subtitle: "\(stateData.monthlyNet) \(L10n.paymentCurrencyOccurrence)")
                     }
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
                 hSection {
-                    ProfileRow(
-                        title: L10n.OnboardingContextualMenu.appInfoLabel,
-                        subtitle: nil,
-                        icon: Asset.infoIcon.image
-                    ) {
-                        store.send(.openAppInformation)
-                    }
-                    ProfileRow(
-                        title: L10n.EmbarkOnboardingMoreOptions.settingsLabel,
-                        subtitle: nil,
-                        icon: Asset.settingsIcon.image
-                    ) {
-                        store.send(.openAppSettings)
-                    }
+                    ProfileRow(row: .appInfo)
+                    ProfileRow(row: .settings)
+
                     hRow {
                         HStack(spacing: 16) {
                             Image(uiImage: Asset.logoutIcon.image)
