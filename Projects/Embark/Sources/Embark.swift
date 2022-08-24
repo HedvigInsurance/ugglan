@@ -237,30 +237,28 @@ extension Embark: Presentable {
                     action: nil
                 )
 
-                if #available(iOS 14.0, *) {
-                    func createBackMenu(canGoBack: Bool) -> UIMenu {
-                        let previousAction = UIAction(
-                            title: L10n.embarkGoBackButton,
-                            image: nil
-                        ) { _ in state.goBack() }
+                func createBackMenu(canGoBack: Bool) -> UIMenu {
+                    let previousAction = UIAction(
+                        title: L10n.embarkGoBackButton,
+                        image: nil
+                    ) { _ in state.goBack() }
 
-                        let closeAction = UIAction(
-                            title: L10n.embarkExitButton,
-                            image: hCoreUIAssets.tinyCircledX.image,
-                            attributes: .destructive
-                        ) { _ in callback(.end) }
+                    let closeAction = UIAction(
+                        title: L10n.embarkExitButton,
+                        image: hCoreUIAssets.tinyCircledX.image,
+                        attributes: .destructive
+                    ) { _ in callback(.end) }
 
-                        let menuActions = [canGoBack ? previousAction : nil, closeAction]
-                            .compactMap { $0 }
+                    let menuActions = [canGoBack ? previousAction : nil, closeAction]
+                        .compactMap { $0 }
 
-                        let addNewMenu = UIMenu(title: "", children: menuActions)
+                    let addNewMenu = UIMenu(title: "", children: menuActions)
 
-                        return addNewMenu
-                    }
-
-                    bag += state.canGoBackSignal.atOnce().map(createBackMenu)
-                        .bindTo(backButton, \.menu)
+                    return addNewMenu
                 }
+
+                bag += state.canGoBackSignal.atOnce().map(createBackMenu)
+                    .bindTo(backButton, \.menu)
 
                 bag += state.canGoBackSignal.atOnce()
                     .onValue { canGoBack in

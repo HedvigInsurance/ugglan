@@ -73,7 +73,6 @@ struct ContractInformationView: View {
                                 }
                             }
                             .sectionContainerStyle(.transparent)
-                            ChangePeopleView()
                         } else {
                             hSection {
                                 hButton.LargeButtonText {
@@ -87,6 +86,7 @@ struct ContractInformationView: View {
                             }
                             .sectionContainerStyle(.transparent)
                         }
+                        ChangePeopleView()
                     }
                 }
                 .padding(.bottom, 20)

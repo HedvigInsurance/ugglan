@@ -1,45 +1,55 @@
-import Flow
-import Form
-import Foundation
 import Presentation
-import UIKit
+import SwiftUI
 import hCore
 import hCoreUI
 
-struct PickLanguage { let currentMarket: Market }
+public struct PickLanguage: View {
+    let currentMarket: Market
+    @PresentableStore var store: MarketStore
 
-extension PickLanguage: Presentable {
-    func materialize() -> (UIViewController, Future<Localization.Locale>) {
-        let viewController = UIViewController()
-        viewController.title = L10n.LanguagePickerModal.title
-        let bag = DisposeBag()
+    @State var currentLocale: Localization.Locale = .currentLocale
 
-        let form = FormView()
-        bag += viewController.install(form)
+    public init(
+        currentMarket: Market
+    ) {
+        self.currentMarket = currentMarket
+    }
 
-        let titleSection = form.appendSection()
-        bag += titleSection.append(
-            MultilineLabel(value: L10n.LanguagePickerModal.text, style: .brand(.body(color: .secondary)))
-                .insetted(UIEdgeInsets(inset: 15))
-        )
+    public var body: some View {
+        hForm {
+            hText(L10n.LanguagePickerModal.text, style: .body)
+                .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
 
-        let section = form.appendSection()
-        return (
-            viewController,
-            Future { completion in
-
-                currentMarket.languages.forEach { language in
-                    let row = RowView(title: language.displayName)
-
-                    if language == Localization.Locale.currentLocale {
-                        row.append(Asset.checkmark.image)
-                    }
-
-                    bag += section.append(row).onValue { completion(.success(language)) }
+            hSection(currentMarket.languages, id: \.lprojCode) { locale in
+                hRow {
+                    locale.displayName.hText()
                 }
-
-                return bag
+                .withSelectedAccessory(locale == currentLocale)
+                .onTap {
+                    Localization.Locale.currentLocale = locale
+                    self.currentLocale = locale
+                }
             }
-        )
+        }
+    }
+}
+
+extension PickLanguage {
+    public var journey: some JourneyPresentation {
+        HostingJourney(
+            MarketStore.self,
+            rootView: self,
+            style: .detented(.scrollViewContentSize),
+            options: [.defaults, .prefersLargeTitles(true)]
+        ) { action in
+            if case .selectMarket = action {
+                PopJourney()
+            }
+        }
+        .configureTitle(L10n.MarketLanguageScreen.languageLabel)
+        .withDismissButton
     }
 }
