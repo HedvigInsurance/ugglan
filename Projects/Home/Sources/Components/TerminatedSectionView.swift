@@ -1,5 +1,4 @@
 import Apollo
-import Claims
 import Foundation
 import SwiftUI
 import hAnalytics
@@ -7,7 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct TerminatedSectionView: View {
+struct TerminatedSectionView<Claims: View>: View {
     var memberName: String
     var claimsContent: Claims
 

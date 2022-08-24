@@ -1,5 +1,4 @@
 import Apollo
-import Claims
 import Foundation
 import SwiftUI
 import hAnalytics
@@ -7,11 +6,11 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ActiveSectionView<Content: View>: View {
+struct ActiveSectionView<Content: View, Claims: View, CommonClaims: View>: View {
     @PresentableStore var store: HomeStore
 
     var claimsContent: Claims
-    var commonClaims: CommonClaimsView
+    var commonClaims: CommonClaims
     var statusCard: Content
 
     var body: some View {

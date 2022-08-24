@@ -15,34 +15,38 @@ import hCoreUI
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
-        HomeView.journey { result in
-            switch result {
-            case .startMovingFlow:
-                AppJourney.movingFlow
-            case .openFreeTextChat:
-                AppJourney.freeTextChat().withDismissButton
-            case .openConnectPayments:
-                PaymentSetup(setupType: .initial).journeyThenDismiss
+        let claims = Claims()
+        let commonClaims = CommonClaimsView()
+
+        return
+            HomeView.journey(claimsContent: claims, commonClaimsContent: commonClaims) { result in
+                switch result {
+                case .startMovingFlow:
+                    AppJourney.movingFlow
+                case .openFreeTextChat:
+                    AppJourney.freeTextChat().withDismissButton
+                case .openConnectPayments:
+                    PaymentSetup(setupType: .initial).journeyThenDismiss
+                }
+            } statusCard: {
+                VStack(spacing: 16) {
+                    ConnectPaymentCardView()
+                    RenewalCardView()
+                }
             }
-        } statusCard: {
-            VStack(spacing: 16) {
-                ConnectPaymentCardView()
-                RenewalCardView()
+            .onTabSelected {
+                GradientState.shared.gradientType = .home
             }
-        }
-        .onTabSelected {
-            GradientState.shared.gradientType = .home
-        }
-        .makeTabSelected(UgglanStore.self) { action in
-            if case .makeTabActive(let deepLink) = action {
-                return deepLink == .home
-            } else {
-                return false
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .home
+                } else {
+                    return false
+                }
             }
-        }
-        .claimStoreRedirectFromHome
-        .configureClaimsNavigation
-        .configurePaymentNavigation
+            .claimStoreRedirectFromHome
+            .configureClaimsNavigation
+            .configurePaymentNavigation
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {

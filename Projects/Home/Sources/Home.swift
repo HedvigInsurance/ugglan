@@ -1,5 +1,4 @@
 import Apollo
-import Claims
 import Flow
 import Form
 import Foundation
@@ -11,23 +10,23 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct HomeView<Content: View>: View {
+public struct HomeView<Content: View, Claims: View, CommonClaims: View>: View {
     @PresentableStore var store: HomeStore
 
     var statusCard: Content
 
     var claimsContent: Claims
-    var commonClaims: CommonClaimsView
-    var claimSubmitHandler: () -> Void
+    var commonClaims: CommonClaims
 
     public init(
+        claimsContent: Claims,
+        commonClaimsContent: CommonClaims,
         statusCard: () -> Content
     ) {
         self.statusCard = statusCard()
-        let claims = Claims()
-        self.claimsContent = claims
-        self.commonClaims = CommonClaimsView()
-        self.claimSubmitHandler = claims.claimSubmission
+        //let claims = Claims()
+        self.claimsContent = claimsContent
+        self.commonClaims = commonClaimsContent
     }
 }
 
@@ -74,12 +73,18 @@ extension HomeView {
 
 extension HomeView {
     public static func journey<ResultJourney: JourneyPresentation>(
+        claimsContent: Claims,
+        commonClaimsContent: CommonClaims,
         @JourneyBuilder resultJourney: @escaping (_ result: HomeResult) -> ResultJourney,
         statusCard: @escaping () -> Content
     ) -> some JourneyPresentation {
         HostingJourney(
             HomeStore.self,
-            rootView: HomeView(statusCard: statusCard),
+            rootView: HomeView(
+                claimsContent: claimsContent,
+                commonClaimsContent: commonClaimsContent,
+                statusCard: statusCard
+            ),
             options: [
                 .defaults,
                 .prefersLargeTitles(true),
