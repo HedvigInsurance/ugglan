@@ -10,9 +10,9 @@ public enum GradientType {
         switch self {
         case .none:
             return [
-                Color(.brand(.primaryBackground())),
-                Color(.brand(.primaryBackground())),
-                Color(.brand(.primaryBackground())),
+                Color(.brand(.primaryBackground(scheme == .dark))),
+                Color(.brand(.primaryBackground(scheme == .dark))),
+                Color(.brand(.primaryBackground(scheme == .dark))),
             ]
         case .home:
             switch scheme {

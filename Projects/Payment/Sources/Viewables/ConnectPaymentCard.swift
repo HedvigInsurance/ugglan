@@ -22,14 +22,15 @@ public struct ConnectPaymentCardView: View {
                         titleIcon: hCoreUIAssets.warningTriangle.image,
                         title: L10n.InfoCardMissingPayment.title,
                         bodyText: L10n.InfoCardMissingPayment.body,
-                        backgroundColor: hTintColor.yellowTwo
+                        backgroundColor: hTintColor.yellowTwo,
+                        lightTextAppearance: true
                     ) {
                         hButton.SmallButtonOutlined {
                             store.send(.connectPayments)
-
                         } content: {
                             L10n.InfoCardMissingPayment.buttonText.hText()
                         }
+                        .colorScheme(.light)
                     }
                 }
             }

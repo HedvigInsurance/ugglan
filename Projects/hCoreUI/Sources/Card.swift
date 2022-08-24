@@ -11,17 +11,22 @@ public struct hCard<Content: View, BgColor: hColor>: View {
     private var bodyText: String
     private let content: Content
     private let backgroundColor: BgColor
+    private let lightTextAppearance: Bool
+
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
 
     public init(
         titleIcon: UIImage,
         title: String,
         bodyText: String,
         backgroundColor: BgColor,
+        lightTextAppearance: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.titleIcon = titleIcon
         self.title = title
         self.bodyText = bodyText
+        self.lightTextAppearance = lightTextAppearance
         self.backgroundColor = backgroundColor
         self.content = content()
     }
@@ -44,6 +49,7 @@ public struct hCard<Content: View, BgColor: hColor>: View {
 
             content
         }
+        .colorScheme(lightTextAppearance ? .light : colorScheme)
         .frame(maxWidth: .infinity)
         .padding()
         .background(backgroundColor)
@@ -71,45 +77,6 @@ extension hCard where Content == EmptyView {
         )
     }
 }
-
-/*struct CardPreview: PreviewProvider {
-    static var previews: some View {
-        Group {
-            hCard(
-                titleIcon: hCoreUIAssets.refresh.image,
-                title: "Title",
-                bodyText: "Subtitle"
-            )
-            hCard(
-                titleIcon: hCoreUIAssets.refresh.image,
-                title: "Title",
-                bodyText: "Subtitle"
-            ) {
-                hButton.SmallButtonOutlined {
-                    print("Hello")
-                } content: {
-                    "Button".hText()
-                }
-            }
-            .preferredColorScheme(.light)
-            hCard(
-                titleIcon: hCoreUIAssets.refresh.image,
-                title: "Title",
-                bodyText: "Subtitle"
-            ) {
-                hButton.SmallButtonOutlined {
-                    print("Hello")
-                } content: {
-                    "Button".hText()
-                }
-            }
-            .preferredColorScheme(.dark)
-        }
-        .previewLayout(PreviewLayout.sizeThatFits)
-        .padding()
-        .previewDisplayName("Default preview")
-    }
-}*/
 
 public struct Card {
     @ReadWriteState var titleIcon: UIImage
