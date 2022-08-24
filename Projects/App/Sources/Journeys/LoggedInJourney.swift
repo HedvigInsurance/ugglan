@@ -15,47 +15,8 @@ import hCore
 import hCoreUI
 
 extension AppJourney {
-    /*fileprivate static var homeTab: some JourneyPresentation {
-        let claims = Claims()
-        let commonClaims = CommonClaimsView()
-        return Journey(
-            Home(
-                claimsContent: claims,
-                commonClaims: commonClaims,
-                claims.claimSubmission
-            ),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        ) { result in
-            switch result {
-            case .startMovingFlow:
-                AppJourney.movingFlow
-            case .openFreeTextChat:
-                AppJourney.freeTextChat()
-            case .openConnectPayments:
-                PaymentSetup(setupType: .initial).journeyThenDismiss
-            }
-        }
-        .configureTabBarItem
-        .onTabSelected {
-            ContextGradient.currentOption = .home
-        }
-        .claimStoreRedirectFromHome
-        .makeTabSelected(UgglanStore.self) { action in
-            if case .makeTabActive(let deepLink) = action {
-                return deepLink == .home
-            } else {
-                return false
-            }
-        }
-        .configureClaimsNavigation
-    }*/
-
-    enum CardActions {
-        case openConnectPayments
-    }
-
     fileprivate static var homeTab: some JourneyPresentation {
-        HomeSwiftUI.journey { result in
+        HomeView.journey { result in
             switch result {
             case .startMovingFlow:
                 AppJourney.movingFlow
@@ -100,7 +61,6 @@ extension AppJourney {
         }
         .onTabSelected {
             GradientState.shared.gradientType = .insurance
-            ContextGradient.currentOption = .none
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
@@ -126,7 +86,6 @@ extension AppJourney {
         ForeverView.journey()
             .onTabSelected {
                 GradientState.shared.gradientType = .forever
-                //ContextGradient.currentOption = .forever
             }
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {
@@ -151,7 +110,6 @@ extension AppJourney {
         }
         .onTabSelected {
             GradientState.shared.gradientType = .profile
-            //ContextGradient.currentOption = .profile
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {

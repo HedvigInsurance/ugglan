@@ -115,7 +115,7 @@ extension DebugView {
             switch action {
             case .openHomeActive:
                 HostingJourney(
-                    rootView: HomeSwiftUI(statusCard: {
+                    rootView: HomeView(statusCard: {
                         EmptyView()
                     })
                     .mockState(HomeStore.self) { state in
@@ -128,7 +128,7 @@ extension DebugView {
                 )
             case .openHomeActiveInFuture:
                 HostingJourney(
-                    rootView: HomeSwiftUI(statusCard: {
+                    rootView: HomeView(statusCard: {
                         EmptyView()
                     })
                     .mockState(HomeStore.self) { state in
@@ -141,7 +141,7 @@ extension DebugView {
                 )
             case .openHomePending:
                 HostingJourney(
-                    rootView: HomeSwiftUI(statusCard: {
+                    rootView: HomeView(statusCard: {
                         EmptyView()
                     })
                     .mockState(HomeStore.self) { state in
@@ -154,7 +154,7 @@ extension DebugView {
                 )
             case .openHomePendingNonswitchable:
                 HostingJourney(
-                    rootView: HomeSwiftUI(statusCard: {
+                    rootView: HomeView(statusCard: {
                         EmptyView()
                     })
                     .mockState(HomeStore.self) { state in
@@ -167,7 +167,7 @@ extension DebugView {
                 )
             case .openHomePaymentCard:
                 HostingJourney(
-                    rootView: HomeSwiftUI(statusCard: {
+                    rootView: HomeView(statusCard: {
                         ConnectPaymentCardView()
                             .mockState(PaymentStore.self) { state in
                                 var newState = state
@@ -185,7 +185,7 @@ extension DebugView {
                 )
             case .openHomeOneRenewal:
                 HostingJourney(
-                    rootView: HomeSwiftUI(statusCard: {
+                    rootView: HomeView(statusCard: {
                         RenewalCardView()
                     })
                     .mockState(HomeStore.self) { state in
@@ -211,7 +211,7 @@ extension DebugView {
                 )
             case .openHomeMultipleRenewals:
                 HostingJourney(
-                    rootView: HomeSwiftUI(statusCard: {
+                    rootView: HomeView(statusCard: {
                         RenewalCardView()
                     })
                     .mockState(HomeStore.self) { state in
@@ -248,7 +248,7 @@ extension DebugView {
                 )
             case .openHomeMultipleRenewalsSeparateDates:
                 HostingJourney(
-                    rootView: HomeSwiftUI(statusCard: {
+                    rootView: HomeView(statusCard: {
                         RenewalCardView()
                     })
                     .mockState(HomeStore.self) { state in
@@ -285,7 +285,7 @@ extension DebugView {
                 )
             case .openHomeTerminated:
                 HostingJourney(
-                    rootView: HomeSwiftUI(statusCard: {
+                    rootView: HomeView(statusCard: {
                         EmptyView()
                     })
                     .mockState(HomeStore.self) { state in
