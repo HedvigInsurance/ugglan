@@ -24,7 +24,6 @@ public struct HomeView<Content: View, Claims: View, CommonClaims: View>: View {
         statusCard: () -> Content
     ) {
         self.statusCard = statusCard()
-        //let claims = Claims()
         self.claimsContent = claimsContent
         self.commonClaims = commonClaimsContent
     }
