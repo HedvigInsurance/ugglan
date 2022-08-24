@@ -74,17 +74,6 @@ extension AppJourney {
         }
     }
 
-    fileprivate static var keyGearTab: some JourneyPresentation {
-        Journey(
-            KeyGearOverview(),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        )
-        .configureTabBarItem
-        .onTabSelected {
-            ContextGradient.currentOption = .none
-        }
-    }
-
     fileprivate static var foreverTab: some JourneyPresentation {
         Journey(
             Forever(service: ForeverServiceGraphQL()),
@@ -129,11 +118,6 @@ extension AppJourney {
                 },
                 {
                     contractsTab
-                },
-                {
-                    if hAnalyticsExperiment.keyGear {
-                        keyGearTab
-                    }
                 },
                 {
                     if hAnalyticsExperiment.forever {

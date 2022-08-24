@@ -1,7 +1,0 @@
-query KeyGearClassifier {
-    coreMLModels(where: { type: KeyGearClassifier }) {
-      file {
-        url
-      }
-    }
-}
