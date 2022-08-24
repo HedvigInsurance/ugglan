@@ -32,7 +32,7 @@ extension AdyenMethodsList {
 
 public struct AdyenPayIn: Presentable {
     @PresentableStore var paymentStore: PaymentStore
-    
+
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
     let adyenOptions: AdyenOptions
@@ -94,7 +94,7 @@ public struct AdyenPayIn: Presentable {
                     data.payinMethodStatus = .active
                 }
             }
-            
+
             paymentStore.send(.fetchPayInMethodStatus)
 
             // refetch to refresh UI
