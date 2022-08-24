@@ -5,6 +5,11 @@ import Presentation
 import hCore
 import hGraphQL
 
+public struct ImportantMessage: Codable, Equatable {
+    let message: String?
+    let link: String?
+}
+
 public struct UpcomingRenewal: Codable, Equatable {
     let renewalDate: String?
     let draftCertificateUrl: String?
@@ -48,6 +53,7 @@ public struct HomeState: StateProtocol {
     public var memberStateData: MemberStateData = .init(state: .loading, name: nil)
     public var futureStatus: FutureStatus = .none
     public var contracts: [Contract] = []
+    public var importantMessage: ImportantMessage? = nil
 
     public var upcomingRenewalContracts: [Contract] {
         return contracts.filter { $0.upcomingRenewal != nil }
@@ -59,6 +65,8 @@ public struct HomeState: StateProtocol {
 public enum HomeAction: ActionProtocol {
     case openFreeTextChat
     case fetchMemberState
+    case fetchImportantMessages
+    case setImportantMessage(message: ImportantMessage)
     case openMovingFlow
     case openClaim
     case connectPayments
@@ -87,6 +95,16 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         switch action {
         case .openFreeTextChat:
             return nil
+        case .fetchImportantMessages:
+            return
+                client
+                .fetch(query: GraphQL.ImportantMessagesQuery(langCode: Localization.Locale.currentLocale.code))
+                .compactMap { $0.importantMessages.first }
+                .compactMap { $0 }
+                .map { data in
+                    .setImportantMessage(message: .init(message: data.message, link: data.link))
+                }
+                .valueThenEndSignal
         case .fetchMemberState:
             return
                 client
@@ -143,6 +161,10 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
             newState.contracts = contracts
         case .setFutureStatus(let status):
             newState.futureStatus = status
+        case .setImportantMessage(let message):
+            if let text = message.message, text != "" {
+                newState.importantMessage = message
+            }
         default:
             break
         }

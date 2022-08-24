@@ -4,6 +4,7 @@ import Flow
 import Form
 import Foundation
 import Presentation
+import SafariServices
 import SwiftUI
 import UIKit
 import hAnalytics
@@ -35,10 +36,13 @@ extension HomeSwiftUI {
     func fetch() {
         store.send(.fetchMemberState)
         store.send(.fetchFutureStatus)
+        store.send(.fetchImportantMessages)
     }
 
     public var body: some View {
         hForm(gradientType: .home) {
+            ImportantMessagesView()
+
             PresentableStoreLens(
                 HomeStore.self,
                 getter: { state in
