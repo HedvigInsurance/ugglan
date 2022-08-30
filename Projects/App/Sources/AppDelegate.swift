@@ -229,7 +229,6 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        OdysseyKit.initialize()
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
 
@@ -268,6 +267,14 @@ let log = Logger.builder
                         Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
                         AnalyticsCoordinator().setUserId()
+
+                        if let token = ApolloClient.retreiveToken()?.token {
+                            OdysseyKit.initialize(
+                                apiUrl: "https://odyssey.dev.hedvigit.com/",
+                                authorizationToken: token,
+                                enableNetworkLogs: true
+                            )
+                        }
 
                         self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
                             .filter(predicate: { hasLoaded in hasLoaded })
