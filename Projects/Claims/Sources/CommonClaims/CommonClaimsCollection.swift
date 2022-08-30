@@ -15,19 +15,21 @@ struct CommonClaimsCollection: View {
     }
 
     var body: some View {
-        ForEach(commonClaims.chunked(into: 2), id: \.id) { claimsRow in
-            HStack(spacing: 8) {
-                ForEach(claimsRow, id: \.id) { claim in
-                    Button {
-                        store.send(.openCommonClaimDetail(commonClaim: claim))
-                    } label: {
+        VStack {
+            ForEach(commonClaims.chunked(into: 2), id: \.id) { claimsRow in
+                HStack(spacing: 8) {
+                    ForEach(claimsRow, id: \.id) { claim in
+                        Button {
+                            store.send(.openCommonClaimDetail(commonClaim: claim))
+                        } label: {
 
+                        }
+                        .buttonStyle(CommonClaimButtonStyle(claim: claim))
                     }
-                    .buttonStyle(CommonClaimButtonStyle(claim: claim))
-                }
 
-                if claimsRow.count == 1 {
-                    Spacer().frame(maxWidth: .infinity)
+                    if claimsRow.count == 1 {
+                        Spacer().frame(maxWidth: .infinity)
+                    }
                 }
             }
         }
