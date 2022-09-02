@@ -104,15 +104,15 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 Spacer()
                 logo
             }
-            
+
             Spacer()
-            
+
             VStack {
                 HStack {
                     hText(contract.displayName, style: .title2)
                     Spacer()
                 }
-                
+
                 HStack {
                     ForEach(contract.detailPills, id: \.self) { pill in
                         if contract.gradientOption == nil {
