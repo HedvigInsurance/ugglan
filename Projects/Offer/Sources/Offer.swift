@@ -135,6 +135,15 @@ extension Offer: Presentable {
         bag += form.append(Header(scrollView: scrollView))
         bag += form.append(MainContentForm(scrollView: scrollView))
 
+        bag += scrollView.addSubview(BottomAttachedSignButton()) { view, _ in
+            view.snp.makeConstraints { make in
+                make.bottom.equalTo(scrollView.frameLayoutGuide.snp.bottom)
+                make.width.equalTo(scrollView.frameLayoutGuide.snp.width)
+                make.leading.equalTo(scrollView.frameLayoutGuide.snp.leading)
+                make.trailing.equalTo(scrollView.frameLayoutGuide.snp.trailing)
+            }
+        }
+
         let navigationBarBackgroundView = UIView()
         navigationBarBackgroundView.backgroundColor = .brand(.secondaryBackground())
         navigationBarBackgroundView.alpha = 0
