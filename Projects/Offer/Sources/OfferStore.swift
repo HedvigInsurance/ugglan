@@ -216,8 +216,6 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
                     return bag
                 }
-            } else {
-                return signQuotesEffect()
             }
         case .query:
             return query(for: getState(), cachePolicy: .fetchIgnoringCacheData)
@@ -229,7 +227,6 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             {
                 return self.updateStartDatesQuoteCart(id: quoteCartId, date: date, currentVariant: currentVariant)
             }
-            return self.updateStartDates(dateMap: dateMap)
         case .removeRedeemedCampaigns:
             return removeRedeemedCampaigns(quoteCartId: getState().quoteCartId)
         case let .updateRedeemedCampaigns(discountCode):
@@ -520,141 +517,5 @@ extension OfferStore {
                     )
                     .toVoid()
             }
-    }
-
-    private func updateStartDates(dateMap: [String: Date?]) -> FiniteSignal<OfferAction>? {
-        let signals = dateMap.map { quoteId, date -> FiniteSignal<Result<(String, Date?)>> in
-            guard let date = date else {
-                return self.client.perform(mutation: GraphQL.RemoveStartDateMutation(id: quoteId))
-                    .map { data in
-                        guard data.removeStartDate.asCompleteQuote?.startDate == nil else {
-                            return .failure(OfferAction.OfferStoreError.updateStartDate)
-                        }
-
-                        return .success((quoteId, date))
-                    }
-                    .mapError { _ in
-                        .failure(OfferAction.OfferStoreError.updateStartDate)
-                    }
-                    .valueSignal
-            }
-
-            return self.client
-                .perform(
-                    mutation: GraphQL.ChangeStartDateMutation(
-                        id: quoteId,
-                        startDate: date.localDateString ?? ""
-                    )
-                )
-                .map { data in
-                    guard let date = data.editQuote.asCompleteQuote?.startDate?.localDateToDate else {
-                        return .failure(OfferAction.OfferStoreError.updateStartDate)
-                    }
-
-                    return .success((quoteId, date))
-                }
-                .mapError { _ in
-                    .failure(OfferAction.OfferStoreError.updateStartDate)
-                }
-                .valueSignal
-        }
-
-        return combineLatest(signals)
-            .map { results in
-                var didStrikeError = false
-                var map: [String: Date?] = [:]
-
-                results.forEach { result in
-                    if let (quoteId, date) = try? result.get() {
-                        map[quoteId] = date
-                    } else {
-                        didStrikeError = true
-                    }
-                }
-
-                return didStrikeError ? .failed(event: .updateStartDate) : .setStartDates(dateMap: map)
-            }
-    }
-
-    private func signQuotesEffect() -> FiniteSignal<Action> {
-        let subscription = client.subscribe(subscription: GraphQL.SignStatusSubscription())
-        let bag = DisposeBag()
-
-        return FiniteSignal { callback in
-            bag += subscription.map { $0.signStatus?.status?.signState == .completed }
-                .filter(predicate: { $0 })
-                .distinct()
-                .onValue({ _ in
-                    callback(.value(.sign(event: OfferAction.SignEvent.done)))
-                    callback(.end)
-                })
-
-            bag += subscription.compactMap { $0.signStatus?.status?.collectStatus?.code }
-                .distinct()
-                .onValue({ code in
-                    callback(.value(.setSwedishBankID(statusCode: code)))
-                })
-
-            self.client.perform(mutation: GraphQL.SignOrApproveQuotesMutation(ids: self.state.selectedIds))
-                .onResult { result in
-                    switch result {
-                    case .failure:
-                        callback(.value(.sign(event: OfferAction.SignEvent.failed)))
-                        callback(.end)
-                    case let .success(data):
-                        if let signQuoteReponse = data.signOrApproveQuotes.asSignQuoteResponse {
-                            if signQuoteReponse.signResponse.asFailedToStartSign != nil {
-                                callback(
-                                    .value(
-                                        .sign(
-                                            event: OfferAction.SignEvent
-                                                .failed
-                                        )
-                                    )
-                                )
-                                callback(.end)
-                            } else if let session = signQuoteReponse
-                                .signResponse
-                                .asSwedishBankIdSession
-                            {
-                                callback(
-                                    .value(
-                                        .startSwedishBankIDSign(
-                                            autoStartToken:
-                                                session.autoStartToken
-                                                ?? ""
-                                        )
-                                    )
-                                )
-                            } else if signQuoteReponse.signResponse.asSimpleSignSession
-                                != nil
-                            {
-                                callback(
-                                    .value(
-                                        .sign(
-                                            event: OfferAction.SignEvent
-                                                .simpleSign
-                                        )
-                                    )
-                                )
-                            }
-                        } else if let approvedResponse = data.signOrApproveQuotes
-                            .asApproveQuoteResponse
-                        {
-                            if approvedResponse.approved == true {
-                                callback(
-                                    .value(.sign(event: OfferAction.SignEvent.done))
-                                )
-                                callback(.end)
-                            }
-                        } else {
-                            callback(.value(.sign(event: OfferAction.SignEvent.failed)))
-                            callback(.end)
-                        }
-                    }
-                }
-
-            return bag
-        }
     }
 }
