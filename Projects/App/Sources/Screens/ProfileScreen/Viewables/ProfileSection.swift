@@ -31,8 +31,6 @@ extension ProfileSection: Viewable {
         if hAnalyticsExperiment.showCharity {
             let myCharityRow = MyCharityRow(presentingViewController: presentingViewController)
             bag += section.append(myCharityRow)
-
-            bag += dataSignal.atOnce().map { $0?.cashback?.name }.bindTo(myCharityRow.charityNameSignal)
         }
 
         if hAnalyticsExperiment.paymentScreen {

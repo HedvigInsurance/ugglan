@@ -6,7 +6,6 @@ import UIKit
 import hCore
 
 struct MyCharityRow {
-    let charityNameSignal = ReadWriteSignal<String?>(nil)
     let presentingViewController: UIViewController
 }
 
@@ -20,10 +19,6 @@ extension MyCharityRow: Viewable {
             iconAsset: Asset.charityPlain.image,
             options: [.withArrow]
         )
-
-        bag += charityNameSignal.atOnce()
-            .map { charityName -> String in charityName ?? L10n.profileMyCharityRowNotSelectedSubtitle }
-            .bindTo(row.subtitle)
 
         bag += events.onSelect.onValue { _ in
             self.presentingViewController.present(Charity(), options: [.largeTitleDisplayMode(.never)])
