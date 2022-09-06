@@ -108,6 +108,7 @@ extension AppJourney {
                 return false
             }
         }
+        .businessModelNavigation
     }
 
     static var loggedIn: some JourneyPresentation {
@@ -185,6 +186,14 @@ extension JourneyPresentation {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
+            }
+        }
+    }
+
+    public var businessModelNavigation: some JourneyPresentation {
+        onAction(UgglanStore.self) { action in
+            if case .businessModelDetail = action {
+                AppJourney.businessModelDetailJourney
             }
         }
     }
