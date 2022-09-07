@@ -497,30 +497,4 @@ extension OfferStore {
                 .valueThenEndSignal
         }
     }
-
-    func checkoutUpdate(quoteId: String, email: String, ssn: String) -> Future<Void> {
-        //TODO: Change CheckoutUpdateMutation
-        //        return self.client
-        //            .perform(
-        //                mutation: GraphQL.CheckoutUpdateMutation(quoteID: quoteId, email: email, ssn: ssn)
-        //            )
-        //            .flatMap { data in
-        //                guard data.editQuote.asCompleteQuote?.email == email,
-        //                    data.editQuote.asCompleteQuote?.ssn == ssn
-        //                else {
-        //                    return Future(error: OfferAction.OfferStoreError.checkoutUpdate)
-        //                }
-        //
-        //                return self.client
-        //                    .fetch(
-        //                        query: self.query(for: [quoteId]),
-        //                        cachePolicy: .fetchIgnoringCacheData
-        //                    )
-        //                    .toVoid()
-        //            }
-
-        return Future {
-
-        }
-    }
 }

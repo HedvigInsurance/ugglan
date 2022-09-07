@@ -248,11 +248,5 @@ extension Debug {
                 removeStartDate: .makeCompleteQuote(startDate: nil)
             )
         }
-
-        MutationMock(GraphQL.CheckoutUpdateMutation.self, duration: 2) { operation in
-            GraphQL.CheckoutUpdateMutation.Data(
-                editQuote: .makeCompleteQuote(email: operation.email, ssn: operation.ssn)
-            )
-        }
     }
 }
