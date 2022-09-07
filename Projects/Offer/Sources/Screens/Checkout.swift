@@ -118,45 +118,6 @@ extension Checkout: Presentable {
                 bag += ssnMasking.applyMasking(ssnTextField)
 
                 bag += form.chainAllControlResponders()
-
-                let isValidSignal = combineLatest(
-                    ssnMasking.isValidSignal(ssnTextField),
-                    emailMasking.isValidSignal(emailTextField)
-                )
-                .map { ssnValid, emailValid in ssnValid && emailValid }
-
-                bag += isValidSignal.filter { valid in valid }
-                    .onValue { _ in
-                        checkoutButton.$isLoading.value = true
-
-                        join(
-                            quoteBundle.quotes.map { quote in
-                                store.checkoutUpdate(
-                                    quoteId: quote.id,
-                                    email: emailMasking.unmaskedValue(
-                                        text: emailTextField.value
-                                    ),
-                                    ssn: ssnMasking.unmaskedValue(
-                                        text: ssnTextField.value
-                                    )
-                                )
-                            }
-                        )
-                        .onValue { _ in
-                            checkoutButton.$isLoading.value = false
-                            checkoutButton.$isEnabled.value = true
-                        }
-                        .onError { error in
-                            handleError(
-                                title: L10n.simpleSignFailedTitle,
-                                message: L10n.simpleSignFailedMessage,
-                                viewController: viewController
-                            ) {
-                                checkoutButton.$isEnabled.value = false
-                                checkoutButton.$isLoading.value = false
-                            }
-                        }
-                    }
             })
 
         return (
