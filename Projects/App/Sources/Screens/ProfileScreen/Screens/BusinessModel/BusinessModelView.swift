@@ -23,7 +23,7 @@ struct BusinessModelView: View {
                 Spacer()
                     .frame(height: 5)
 
-                hText(L10n.businessModelCardText(1), style: .body)
+                hText(L10n.businessModelCardText, style: .body)
                     .foregroundColor(hLabelColor.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding([.horizontal, .bottom], 24)
