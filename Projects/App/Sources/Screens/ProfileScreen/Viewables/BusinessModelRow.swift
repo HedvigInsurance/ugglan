@@ -10,7 +10,7 @@ extension BusinessModelRow: Viewable {
         let bag = DisposeBag()
 
         let row = IconRow(
-            title: L10n.businessModelTitle,
+            title: L10n.businessModelProfileRow,
             subtitle: "",
             iconAsset: Asset.charityPlain.image,
             options: [.withArrow]
