@@ -40,6 +40,8 @@ extension MainContentForm: Presentable {
         }
         formContainer.addArrangedSubview(hostView)
 
+        scrollView.automaticallyAdjustsScrollIndicatorInsets = false
+
         bag += merge(
             scrollView.didLayoutSignal,
             container.didLayoutSignal,
@@ -48,7 +50,7 @@ extension MainContentForm: Presentable {
             store.stateSignal.compactMap { $0.offerData }.toVoid()
         )
         .onValue {
-            let bottomContentInset: CGFloat = scrollView.safeAreaInsets.bottom + 20
+            let bottomContentInset: CGFloat = scrollView.safeAreaInsets.bottom + 40
 
             if container.frame.width > Header.trailingAlignmentBreakpoint {
                 formContainer.snp.remakeConstraints { make in
@@ -70,12 +72,6 @@ extension MainContentForm: Presentable {
                 let transformY = -(pointInScrollView.origin.y - Header.insetTop)
 
                 formContainer.transform = CGAffineTransform(translationX: 0, y: transformY)
-                scrollView.scrollIndicatorInsets = UIEdgeInsets(
-                    top: 0,
-                    left: 0,
-                    bottom: transformY + bottomContentInset,
-                    right: 0
-                )
                 scrollView.contentInset = UIEdgeInsets(
                     top: 0,
                     left: 0,

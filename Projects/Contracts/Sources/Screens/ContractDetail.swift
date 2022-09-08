@@ -112,30 +112,28 @@ struct ContractDetail: View {
     }
 
     var body: some View {
-        VStack {
-            hForm {
-                hSection {
-                    ContractRow(
-                        id: id,
-                        allowDetailNavigation: false
-                    )
-                    .padding(.bottom, 20)
-                    Picker("View", selection: $context.selected) {
-                        ForEach(ContractDetailsViews.allCases) { view in
-                            hText(view.title).tag(view)
-                        }
+        hForm {
+            hSection {
+                ContractRow(
+                    id: id,
+                    allowDetailNavigation: false
+                )
+                .padding(.bottom, 20)
+                Picker("View", selection: $context.selected) {
+                    ForEach(ContractDetailsViews.allCases) { view in
+                        hText(view.title).tag(view)
                     }
-                    .pickerStyle(.segmented)
                 }
-                .withoutBottomPadding
-                .sectionContainerStyle(.transparent)
+                .pickerStyle(.segmented)
+            }
+            .withoutBottomPadding
+            .sectionContainerStyle(.transparent)
 
-                ForEach(ContractDetailsViews.allCases) { panel in
-                    if context.trigger == panel {
-                        viewFor(view: panel)
-                            .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                            .animation(.interpolatingSpring(stiffness: 300, damping: 70))
-                    }
+            ForEach(ContractDetailsViews.allCases) { panel in
+                if context.trigger == panel {
+                    viewFor(view: panel)
+                        .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                        .animation(.interpolatingSpring(stiffness: 300, damping: 70))
                 }
             }
         }

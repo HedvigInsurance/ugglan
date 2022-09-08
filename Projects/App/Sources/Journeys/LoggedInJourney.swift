@@ -73,17 +73,6 @@ extension AppJourney {
         }
     }
 
-    fileprivate static var keyGearTab: some JourneyPresentation {
-        Journey(
-            KeyGearOverview(),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        )
-        .configureTabBarItem
-        .onTabSelected {
-            ContextGradient.currentOption = .none
-        }
-    }
-
     fileprivate static var foreverTab: some JourneyPresentation {
         Journey(
             Forever(service: ForeverServiceGraphQL()),
@@ -118,6 +107,7 @@ extension AppJourney {
                 return false
             }
         }
+        .businessModelNavigation
     }
 
     static var loggedIn: some JourneyPresentation {
@@ -128,11 +118,6 @@ extension AppJourney {
                 },
                 {
                     contractsTab
-                },
-                {
-                    if hAnalyticsExperiment.keyGear {
-                        keyGearTab
-                    }
                 },
                 {
                     if hAnalyticsExperiment.forever {
@@ -200,6 +185,14 @@ extension JourneyPresentation {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
+            }
+        }
+    }
+
+    public var businessModelNavigation: some JourneyPresentation {
+        onAction(UgglanStore.self) { action in
+            if case .businessModelDetail = action {
+                AppJourney.businessModelDetailJourney
             }
         }
     }
