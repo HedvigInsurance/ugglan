@@ -25,6 +25,8 @@ public enum UgglanAction: ActionProtocol {
     case didAcceptHonestyPledge
     case openChat
     case sendAccountDeleteRequest(details: MemberDetails)
+    case businessModelDetail
+    case aboutBusinessModel
 }
 
 public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
