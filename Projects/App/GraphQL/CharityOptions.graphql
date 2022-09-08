@@ -1,8 +1,0 @@
-query CharityOptions {
-    cashbackOptions {
-        id
-        name
-        imageUrl
-        description
-    }
-}

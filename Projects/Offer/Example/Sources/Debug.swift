@@ -143,19 +143,6 @@ extension Debug {
 
 extension Debug {
     @GraphQLMockBuilder var sharedMocks: some GraphQLMock {
-        MutationMock(GraphQL.ChangeStartDateMutation.self, duration: 2) { operation in
-            if operation.startDate
-                == Calendar.current.date(byAdding: .day, value: 3, to: Date())?
-                .localDateString
-            {
-                throw MockError.failed
-            }
-
-            return
-                GraphQL.ChangeStartDateMutation.Data(
-                    editQuote: .makeCompleteQuote(startDate: operation.startDate)
-                )
-        }
 
         MutationMock(GraphQL.RedeemDiscountCodeMutation.self, duration: 2) { operation in
             if operation.code == "hello" {
@@ -242,17 +229,5 @@ extension Debug {
                 )
             }
         )
-
-        MutationMock(GraphQL.RemoveStartDateMutation.self) { _ in
-            GraphQL.RemoveStartDateMutation.Data(
-                removeStartDate: .makeCompleteQuote(startDate: nil)
-            )
-        }
-
-        MutationMock(GraphQL.CheckoutUpdateMutation.self, duration: 2) { operation in
-            GraphQL.CheckoutUpdateMutation.Data(
-                editQuote: .makeCompleteQuote(email: operation.email, ssn: operation.ssn)
-            )
-        }
     }
 }
