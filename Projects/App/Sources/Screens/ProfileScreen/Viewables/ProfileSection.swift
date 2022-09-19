@@ -29,10 +29,7 @@ extension ProfileSection: Viewable {
             .map { (firstName: $0.firstName!, lastName: $0.lastName!) }.bindTo(myInfoRow.nameSignal)
 
         if hAnalyticsExperiment.showCharity {
-            let myCharityRow = MyCharityRow(presentingViewController: presentingViewController)
-            bag += section.append(myCharityRow)
-
-            bag += dataSignal.atOnce().map { $0?.cashback?.name }.bindTo(myCharityRow.charityNameSignal)
+            bag += section.append(BusinessModelRow())
         }
 
         if hAnalyticsExperiment.paymentScreen {

@@ -60,8 +60,6 @@ enum ChatResult {
                         ContinueJourney()
                     case let .menu(action):
                         action.journey
-                    case .openCheckout:
-                        AppJourney.offerCheckout
                     case .signedQuoteCart:
                         DismissJourney()
                     }

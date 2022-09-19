@@ -54,7 +54,6 @@ public enum OfferResult {
     case close
     case chat
     case menu(_ action: MenuChildAction)
-    case openCheckout
 }
 
 extension Offer: Presentable {
@@ -134,6 +133,15 @@ extension Offer: Presentable {
 
         bag += form.append(Header(scrollView: scrollView))
         bag += form.append(MainContentForm(scrollView: scrollView))
+
+        bag += scrollView.addSubview(BottomAttachedSignButton()) { view, _ in
+            view.snp.makeConstraints { make in
+                make.bottom.equalTo(scrollView.frameLayoutGuide.snp.bottom)
+                make.width.equalTo(scrollView.frameLayoutGuide.snp.width)
+                make.leading.equalTo(scrollView.frameLayoutGuide.snp.leading)
+                make.trailing.equalTo(scrollView.frameLayoutGuide.snp.trailing)
+            }
+        }
 
         let navigationBarBackgroundView = UIView()
         navigationBarBackgroundView.backgroundColor = .brand(.secondaryBackground())
@@ -221,10 +229,6 @@ extension Offer: Presentable {
 
                 bag += store.onAction(.openChat) {
                     callback(.value(.chat))
-                }
-
-                bag += store.onAction(.openCheckout) {
-                    callback(.value(.openCheckout))
                 }
 
                 bag += store.stateSignal.compactMap { $0.accessToken }

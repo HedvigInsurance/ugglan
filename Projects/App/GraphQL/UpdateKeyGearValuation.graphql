@@ -1,8 +1,0 @@
-mutation UpdateKeyGearValuation($itemId: ID!, $purchasePrice: MonetaryAmountV2Input!, $purchaseDate: LocalDate!) {
-    updatePurchasePriceForKeyGearItem(itemId: $itemId, newPrice: $purchasePrice) {
-        id
-    }
-    updateTimeOfPurchaseForKeyGearItem(id: $itemId, newTimeOfPurchase: $purchaseDate) {
-        id
-    }
-}
