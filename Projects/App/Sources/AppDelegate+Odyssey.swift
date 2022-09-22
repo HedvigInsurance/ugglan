@@ -1,8 +1,8 @@
+import Apollo
 import Foundation
+import OdysseyKit
 import hCore
 import hGraphQL
-import Apollo
-import OdysseyKit
 
 extension AppDelegate {
     func initOdyssey() {

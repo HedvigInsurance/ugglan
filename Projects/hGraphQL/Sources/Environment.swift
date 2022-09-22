@@ -96,7 +96,7 @@ public enum Environment: Hashable {
         case let .custom(endpointUrl, _, _, _): return endpointUrl
         }
     }
-    
+
     public var odysseyApiURL: URL {
         switch self {
         case .staging: return URL(string: "https://odyssey.dev.hedvigit.com")!

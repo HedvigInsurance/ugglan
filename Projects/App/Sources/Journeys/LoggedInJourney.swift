@@ -6,13 +6,13 @@ import Forever
 import Form
 import Foundation
 import Home
+import OdysseyKit
 import Payment
 import Presentation
 import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
-import OdysseyKit
 
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
