@@ -99,9 +99,9 @@ public enum Environment: Hashable {
     
     public var odysseyApiURL: URL {
         switch self {
-        case .staging: return URL(string: "https://odyssey.dev.hedvigit.com/api")!
-        case .production: return URL(string: "https://odyssey.hedvig.com/api")!
-        case .custom: return URL(string: "https://odyssey.dev.hedvigit.com/api")!
+        case .staging: return URL(string: "https://odyssey.dev.hedvigit.com")!
+        case .production: return URL(string: "https://odyssey.hedvig.com")!
+        case .custom: return URL(string: "https://odyssey.dev.hedvigit.com")!
         }
     }
 
