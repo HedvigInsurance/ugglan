@@ -43,7 +43,7 @@ extension HeaderForm: Presentable {
 
         bag += form.append(StartDateSection())
 
-        bag += form.append(SignSection())
+        form.append(HostingView(rootView: SignSection().padding(15)))
 
         bag += form.append(DiscountCodeSection())
 

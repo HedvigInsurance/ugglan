@@ -49,7 +49,7 @@ public struct Menu: MenuChildable {
     }
 }
 
-@available(iOS 14, *) func composeMenu(
+func composeMenu(
     _ menu: Menu,
     viewController: UIViewController,
     onAction: @escaping (_ action: MenuChildAction) -> Void
@@ -102,28 +102,7 @@ extension UIBarButtonItem {
         onAction: @escaping (_ action: MenuChildAction) -> Void
     ) -> Disposable {
         let bag = DisposeBag()
-
-        if #available(iOS 14, *) {
-            self.menu = composeMenu(menu, viewController: viewController, onAction: onAction)
-        } else {
-            bag += onValue {
-                let alert = Alert<Void>(
-                    title: menu.title,
-                    actions: [
-                        composeAlertActions(
-                            menu.children,
-                            viewController: viewController,
-                            onAction: onAction
-                        ),
-                        [Alert.Action(title: L10n.alertCancel, style: .cancel) { _ in }],
-                    ]
-                    .flatMap { $0 }
-                )
-
-                viewController.present(alert, style: .sheet(from: self.view, rect: self.bounds))
-            }
-        }
-
+        self.menu = composeMenu(menu, viewController: viewController, onAction: onAction)
         return bag
     }
 }

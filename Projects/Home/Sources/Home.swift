@@ -178,7 +178,7 @@ extension Home: Presentable {
             case .future:
                 innerBag += titleSection.append(FutureSection())
             case .terminated:
-                innerBag += titleSection.append(TerminatedSection(claimSubmitHandler))
+                innerBag += titleSection.append(TerminatedSection(claimsContent: claimsContent))
             case .loading:
                 break
             }

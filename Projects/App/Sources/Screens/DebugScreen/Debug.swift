@@ -50,7 +50,7 @@ struct Debug: View {
                         selection: $pickedEnvironment,
                         label: Text("Which environment do you want to use?")
                     ) {
-                        ForEach(0..<EnvironmentOption.allCases.count) { index in
+                        ForEach(0..<EnvironmentOption.allCases.count, id: \.self) { index in
                             Text(EnvironmentOption.allCases[index].rawValue)
                                 .tag(EnvironmentOption.allCases[index])
                         }

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Horizontal-Logo_Yellow.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

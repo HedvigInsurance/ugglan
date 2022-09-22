@@ -18,7 +18,16 @@ struct AskForRating {
 
         if numberOfSessions >= 3 {
             UserDefaults.standard.set(true, forKey: userDefaultsCompletedKey)
-            SKStoreReviewController.requestReview()
+            if let scene = UIApplication.shared.currentScene {
+                SKStoreReviewController.requestReview(in: scene)
+            }
         }
+    }
+}
+
+extension UIApplication {
+    var currentScene: UIWindowScene? {
+        connectedScenes
+            .first { $0.activationState == .foregroundActive } as? UIWindowScene
     }
 }

@@ -2,20 +2,45 @@ import Foundation
 import SwiftUI
 import UIKit
 
+struct SafeAreaEdgesModifier: ViewModifier {
+    var edgesIgnoringSafeArea: Edge.Set?
+
+    func body(content: Content) -> some View {
+        if let edgesIgnoringSafeArea = edgesIgnoringSafeArea {
+            content.edgesIgnoringSafeArea(edgesIgnoringSafeArea)
+        } else {
+            content
+        }
+    }
+}
+
 public class HostingView<Content: View>: UIView {
+    let edgesIgnoringSafeArea: Edge.Set?
     let rootViewHostingController: AdjustableHostingController<AnyView>
 
     public var swiftUIRootView: Content {
         didSet {
-            self.rootViewHostingController.rootView = AnyView(swiftUIRootView.edgesIgnoringSafeArea(.all))
+            self.rootViewHostingController.rootView = AnyView(
+                swiftUIRootView.modifier(
+                    SafeAreaEdgesModifier(edgesIgnoringSafeArea: edgesIgnoringSafeArea)
+                )
+            )
         }
     }
 
     public required init(
-        rootView: Content
+        rootView: Content,
+        edgesIgnoringSafeArea: Edge.Set? = .all
     ) {
+        self.edgesIgnoringSafeArea = edgesIgnoringSafeArea
         self.swiftUIRootView = rootView
-        self.rootViewHostingController = .init(rootView: AnyView(rootView.edgesIgnoringSafeArea(.all)))
+        self.rootViewHostingController = .init(
+            rootView: AnyView(
+                rootView.modifier(
+                    SafeAreaEdgesModifier(edgesIgnoringSafeArea: edgesIgnoringSafeArea)
+                )
+            )
+        )
 
         super.init(frame: .zero)
 

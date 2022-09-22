@@ -57,11 +57,9 @@ enum ChatResult {
                     case .close:
                         DismissJourney()
                     case .signed:
-                        AppJourney.postOnboarding
+                        ContinueJourney()
                     case let .menu(action):
                         action.journey
-                    case .openCheckout:
-                        AppJourney.offerCheckout
                     case .signedQuoteCart:
                         DismissJourney()
                     }

@@ -3,6 +3,7 @@ import Foundation
 import UIKit
 
 extension TextStyle { public enum BrandTextStyle {
+    case prominentTitle(color: UIColor.TypographyColor)
     case largeTitle(color: UIColor.TypographyColor)
     case title1(color: UIColor.TypographyColor)
     case title2(color: UIColor.TypographyColor)
@@ -17,6 +18,7 @@ extension TextStyle { public enum BrandTextStyle {
 
     private var color: UIColor {
         switch self {
+        case let .prominentTitle(color: color): return color.color
         case let .largeTitle(color: color): return color.color
         case let .title1(color: color): return color.color
         case let .title2(color: color): return color.color
@@ -33,6 +35,7 @@ extension TextStyle { public enum BrandTextStyle {
 
     private var font: UIFont {
         switch self {
+        case .prominentTitle: return Fonts.fontFor(style: .prominentTitle)
         case .largeTitle: return Fonts.fontFor(style: .largeTitle)
         case .title1: return Fonts.fontFor(style: .title1)
         case .title2: return Fonts.fontFor(style: .title2)
