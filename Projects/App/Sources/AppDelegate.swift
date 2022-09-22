@@ -229,7 +229,6 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        OdysseyKit.initialize()
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
 
@@ -265,6 +264,8 @@ let log = Logger.builder
                 guard isLoaded else { return }
                 self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
                     .atValue { _ in
+                        self.initOdyssey()
+                        
                         Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
                         AnalyticsCoordinator().setUserId()
