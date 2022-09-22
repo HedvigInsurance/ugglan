@@ -153,7 +153,7 @@ extension Home: Presentable {
                         commonClaims: self.commonClaims
                     )
                 )
-                
+
                 let section = HomeVerticalSection(
                     section: .init(
                         title: "Odyssey",
