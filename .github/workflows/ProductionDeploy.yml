@@ -22,7 +22,7 @@ jobs:
         with:
           commit-message: "Update app version to ${{ github.event.inputs.versionNumber }}"
           title: "Update app version to ${{ github.event.inputs.versionNumber }}"
-          body: "This PR was created automatically by the ProductionDeploy action, merge this so that the repo has a matching app version to what will be deployed to App Store."
+          body: "This PR was created automatically by the ProductionDeploy action, merge this so that XCode Cloud will build and upload to App Store."
           branch: "update-app-version/${{ github.event.inputs.versionNumber }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
