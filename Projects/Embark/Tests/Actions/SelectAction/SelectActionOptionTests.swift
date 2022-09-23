@@ -3,6 +3,7 @@ import SnapshotTesting
 import Testing
 import XCTest
 import hGraphQL
+import TestDependencies
 
 @testable import Embark
 

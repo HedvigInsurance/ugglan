@@ -6,6 +6,7 @@ import SnapshotTesting
 import Testing
 import XCTest
 import hCoreUI
+import TestDependencies
 
 @testable import Forever
 

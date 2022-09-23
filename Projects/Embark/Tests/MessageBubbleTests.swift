@@ -2,6 +2,7 @@ import Foundation
 import SnapshotTesting
 import Testing
 import XCTest
+import TestDependencies
 
 @testable import Embark
 
