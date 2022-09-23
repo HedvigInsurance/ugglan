@@ -17,7 +17,7 @@ jobs:
         with:
           xcode-version: "14.0"
       - name: Tuist generate
-        run: .tuist-bin/tuist generate
+        run: .tuist-bin/tuist generate --path Projects/App --no-open
       - name: Bump version
         run: cd Projects/App && xcrun agvtool new-marketing-version ${{ github.event.inputs.versionNumber }}
       - name: Create Pull Request
