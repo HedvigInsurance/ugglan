@@ -1,0 +1,39 @@
+name: ProductionDeploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionNumber:
+        description: "Version number"
+        required: true
+
+jobs:
+  deploy:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Post checkout
+        run: sh scripts/post-checkout.sh
+      - name: Bump version
+        run: cd Projects/App && xcrun agvtool new-marketing-version ${{ github.event.inputs.versionNumber }}
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: "Update app version to ${{ github.event.inputs.versionNumber }}"
+          title: "Update app version to ${{ github.event.inputs.versionNumber }}"
+          body: "This PR was created automatically by the ProductionDeploy action, merge this so that the repo has a matching app version to what will be deployed to App Store."
+          branch: "update-app-version/${{ github.event.inputs.versionNumber }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.versionNumber }}
+          release_name: Release-${{ github.event.inputs.versionNumber }}
+          body: Release
+          draft: false
+          prerelease: false
