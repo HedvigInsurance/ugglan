@@ -21,39 +21,39 @@ final class PieChartTests: XCTestCase {
         materializeViewable(pieChart) { view in
             view.snp.makeConstraints { make in make.width.height.equalTo(215) }
 
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
 
             pieChart.stateSignal.value = .init(percentagePerSlice: 0.05, slices: 10)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
 
             pieChart.stateSignal.value = .init(percentagePerSlice: 0.05, slices: 5)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
 
             pieChart.stateSignal.value = .init(percentagePerSlice: 0.05, slices: 12)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
 
             pieChart.stateSignal.value = .init(percentagePerSlice: 0.5, slices: 2)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
 
             pieChart.stateSignal.value = .init(percentagePerSlice: 0.5, slices: 1.5)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
 
             pieChart.stateSignal.value = .init(percentagePerSlice: 0.05, slices: 1.5)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
 
             pieChart.stateSignal.value = .init(
                 grossAmount: .sek(100),
                 netAmount: .sek(50),
                 potentialDiscountAmount: .sek(10)
             )
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
 
             pieChart.stateSignal.value = .init(
                 grossAmount: .sek(1000),
                 netAmount: .sek(5),
                 potentialDiscountAmount: .sek(10)
             )
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 

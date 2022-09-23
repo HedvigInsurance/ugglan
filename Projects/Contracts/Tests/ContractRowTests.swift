@@ -8,6 +8,7 @@ import TestingUtil
 import XCTest
 import hCoreUI
 import hGraphQL
+import TestDependencies
 
 @testable import Contracts
 
@@ -20,13 +21,13 @@ final class ContractRowTests: XCTestCase {
     }
 
     func assert(_ row: ContractRow, _ contract: Contract) {
-        assertSnapshot(
+        ciAssertSnapshot(
             matching: row,
             as: .image(layout: .fixed(width: 375, height: 200)),
             named: "\(contract.displayName)_\(contract.currentAgreement!.status!)"
         )
 
-        assertSnapshot(
+        ciAssertSnapshot(
             matching: row.colorScheme(.dark),
             as: .image(layout: .fixed(width: 375, height: 200)),
             named: "\(contract.displayName)_\(contract.currentAgreement!.status!)_dark"

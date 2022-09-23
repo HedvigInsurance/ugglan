@@ -5,6 +5,7 @@ import SnapshotTesting
 import Testing
 import XCTest
 import hCoreUI
+import TestDependencies
 
 @testable import hCoreUI
 
@@ -30,7 +31,7 @@ final class CardTests: XCTestCase {
 
         materializeViewable(card) { view in view.snp.makeConstraints { make in make.width.equalTo(400) }
 
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 }

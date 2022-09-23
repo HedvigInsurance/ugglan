@@ -22,7 +22,7 @@ final class DirectDebitResultTests: XCTestCase {
 
         bag += viewController.install(directDebitResult)
 
-        assertSnapshot(matching: viewController, as: .image(on: .iPhoneX))
+        ciAssertSnapshot(matching: viewController, as: .image(on: .iPhoneX))
 
         bag.dispose()
     }
@@ -35,7 +35,7 @@ final class DirectDebitResultTests: XCTestCase {
 
         bag += viewController.install(directDebitResult)
 
-        assertSnapshot(matching: viewController, as: .image(on: .iPhoneX))
+        ciAssertSnapshot(matching: viewController, as: .image(on: .iPhoneX))
 
         bag.dispose()
     }

@@ -31,7 +31,7 @@ final class SelectActionOptionTests: XCTestCase {
         materializeViewable(selectActionOption) { view in
             view.snp.makeConstraints { make in make.width.equalTo(150) }
 
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 }
