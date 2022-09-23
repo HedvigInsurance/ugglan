@@ -51,6 +51,8 @@
 	<true/>
 	<key>FacebookDisplayName</key>
 	<string>Hedvig Test</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.finance</string>
 	<key>LSApplicationQueriesSchemes</key>
