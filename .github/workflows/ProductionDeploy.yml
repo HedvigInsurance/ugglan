@@ -16,8 +16,8 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: "14.0"
-      - name: Tuist generate
-        run: .tuist-bin/tuist generate --path Projects/App --no-open
+      - name: Post checkout
+        run: PATH=$PATH":$GITHUB_WORKSPACE/.tuist-bin" scripts/post-checkout.sh
       - name: Bump version
         run: cd Projects/App && xcrun agvtool new-marketing-version ${{ github.event.inputs.versionNumber }}
       - name: Create Pull Request
