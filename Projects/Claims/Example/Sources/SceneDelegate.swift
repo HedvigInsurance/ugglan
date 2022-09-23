@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
 
     func scene(
         _ scene: UIScene,
