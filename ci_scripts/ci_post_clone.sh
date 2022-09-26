@@ -1,5 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -e
+set -x
 
-INSTALL_DIR=$PWD curl -Ls https://install.tuist.io | bash
+export PATH=$PATH":$CI_WORKSPACE/.tuist-bin"
 
-$INSTALL_DIR/tuist generate
+cd $CI_WORKSPACE;
+
+scripts/post-checkout.sh
