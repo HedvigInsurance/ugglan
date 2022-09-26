@@ -270,14 +270,6 @@ let log = Logger.builder
 
                         AnalyticsCoordinator().setUserId()
 
-                        if let token = ApolloClient.retreiveToken()?.token {
-                            OdysseyKit.initialize(
-                                apiUrl: "https://odyssey.dev.hedvigit.com/",
-                                authorizationToken: token,
-                                enableNetworkLogs: true
-                            )
-                        }
-
                         self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
                             .filter(predicate: { hasLoaded in hasLoaded })
                             .onValue { _ in
