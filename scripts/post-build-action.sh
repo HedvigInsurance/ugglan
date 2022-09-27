@@ -8,10 +8,7 @@ function copyFramework() {
 
 copyFramework Shake
 copyFramework Odyssey
-copyFramework KMPNativeCoroutinesCore
-copyFramework KMPNativeCoroutinesAsync
-copyFramework SVGView
-copyFramework UIPilot
+copyFramework OdysseyKit
 copyFramework FlexboxSwiftUI
 copyFramework FlexboxSwiftUIObjC
 copyFramework Placement
