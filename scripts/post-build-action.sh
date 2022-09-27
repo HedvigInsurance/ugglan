@@ -7,7 +7,15 @@ function copyFramework() {
 }
 
 copyFramework Shake
-copyFramework OdysseyKit
+copyFramework Odyssey
+copyFramework KMPNativeCoroutinesCore
+copyFramework KMPNativeCoroutinesAsync
+copyFramework SVGView
+copyFramework UIPilot
+copyFramework FlexboxSwiftUI
+copyFramework FlexboxSwiftUIObjC
+copyFramework Placement
+copyFramework Yoga
 
 rm -rf "${TARGET_BUILD_DIR}/${TARGET_NAME}.app/Frameworks/"*".framework"/Frameworks
 
