@@ -34,7 +34,7 @@ extension AppJourney {
             case .openConnectPayments:
                 PaymentSetup(setupType: .initial).journeyThenDismiss
             case .openOdyssey:
-                RootView(name: "mainRouter")
+                OdysseyRoot(name: "mainRouter")
                     .disposableHostingJourney
                     .setStyle(.detented(.large))
                     .setOptions([])
