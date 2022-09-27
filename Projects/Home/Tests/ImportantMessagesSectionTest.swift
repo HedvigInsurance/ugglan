@@ -10,6 +10,7 @@ import XCTest
 import hCore
 import hCoreUI
 import hGraphQL
+import TestDependencies
 
 @testable import Home
 
@@ -42,7 +43,7 @@ final class ImportantMessagesSectionTest: XCTestCase {
         apolloClient.fetch(query: GraphQL.ImportantMessagesQuery(langCode: "")).delay(by: 0.1)
             .onValue { _ in view.snp.makeConstraints { make in make.width.equalTo(400) }
 
-                assertSnapshot(matching: view, as: .image)
+                ciAssertSnapshot(matching: view, as: .image)
                 waitForApollo.fulfill()
             }
 

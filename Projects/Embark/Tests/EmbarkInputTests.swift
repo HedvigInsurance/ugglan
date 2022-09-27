@@ -2,6 +2,7 @@ import Foundation
 import SnapshotTesting
 import Testing
 import XCTest
+import TestDependencies
 
 @testable import Embark
 
@@ -16,7 +17,7 @@ final class EmbarkInputTests: XCTestCase {
 
         materializeViewable(embarkInput) { tooltipView in
             tooltipView.snp.makeConstraints { make in make.width.equalTo(300) }
-            assertSnapshot(matching: tooltipView, as: .image)
+            ciAssertSnapshot(matching: tooltipView, as: .image)
         }
     }
 }

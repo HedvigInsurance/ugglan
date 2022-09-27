@@ -10,6 +10,7 @@ import XCTest
 import hCore
 import hCoreUI
 import hGraphQL
+import TestDependencies
 
 @testable import Home
 

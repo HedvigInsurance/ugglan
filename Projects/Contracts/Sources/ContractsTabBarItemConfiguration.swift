@@ -4,6 +4,7 @@ import UIKit
 import hCore
 import hCoreUI
 
+
 extension JourneyPresentation {
     var configureContractsTabBarItem: some JourneyPresentation {
         configureTabBarItemWithDot(

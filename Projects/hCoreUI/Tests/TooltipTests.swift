@@ -5,6 +5,7 @@ import Testing
 import UIKit
 import XCTest
 import hCore
+import TestDependencies
 
 @testable import hCoreUI
 
@@ -29,6 +30,6 @@ final class TooltipTests: XCTestCase {
             make.top.right.equalToSuperview()
         }
 
-        assertSnapshot(matching: viewController, as: .image)
+        ciAssertSnapshot(matching: viewController, as: .image)
     }
 }

@@ -9,6 +9,7 @@ import XCTest
 import hCore
 import hCoreUI
 import hGraphQL
+import TestDependencies
 
 @testable import Home
 
@@ -44,20 +45,20 @@ final class RenewalCardTests: XCTestCase {
 
     func testDoesShowCard() {
         perform(.makeActiveWithMultipleRenewals()) { view in XCTAssertNotEqual(view.subviews.count, 0)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 
     func testDoesShowSingleCard() {
         perform(.makeActiveWithRenewal()) { view in XCTAssertNotEqual(view.subviews.count, 0)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 
     func testDoesShowMultipleSingleCards() {
         perform(.makeActiveWithMultipleRenewalsOnSeparateDates()) { view in
             XCTAssertNotEqual(view.subviews.count, 0)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 

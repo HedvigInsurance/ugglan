@@ -5,6 +5,7 @@ import SnapshotTesting
 import Testing
 import XCTest
 import hCoreUI
+import TestDependencies
 
 @testable import hCoreUI
 
@@ -36,7 +37,7 @@ final class DefaultStylingTests: XCTestCase {
         section.appendRow(title: "Test row", subtitle: "with a subtitle")
         section.appendRow(title: "Test row")
 
-        assertSnapshot(matching: navigationController, as: .image(on: .iPhoneX))
+        ciAssertSnapshot(matching: navigationController, as: .image(on: .iPhoneX))
 
         bag.dispose()
     }
@@ -64,7 +65,7 @@ final class DefaultStylingTests: XCTestCase {
         section.appendRow(title: "Test row", subtitle: "with a subtitle")
         section.appendRow(title: "Test row")
 
-        assertSnapshot(matching: navigationController, as: .image(on: .iPhoneX))
+        ciAssertSnapshot(matching: navigationController, as: .image(on: .iPhoneX))
 
         bag.dispose()
     }
@@ -96,7 +97,7 @@ final class DefaultStylingTests: XCTestCase {
         section.appendRow(title: "Test row", subtitle: "with a subtitle")
         section.appendRow(title: "Test row")
 
-        assertSnapshot(matching: navigationController, as: .image(on: .iPhoneX))
+        ciAssertSnapshot(matching: navigationController, as: .image(on: .iPhoneX))
 
         bag.dispose()
     }

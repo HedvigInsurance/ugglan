@@ -2,6 +2,7 @@ import Foundation
 import SnapshotTesting
 import Testing
 import XCTest
+import TestDependencies
 
 @testable import Embark
 
@@ -17,7 +18,7 @@ final class MessageBubbleTests: XCTestCase {
         materializeViewable(messageBubble) { view in
             view.snp.makeConstraints { make in make.width.equalTo(200) }
 
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 
@@ -30,7 +31,7 @@ final class MessageBubbleTests: XCTestCase {
         materializeViewable(messageBubble) { view in
             view.snp.makeConstraints { make in make.width.equalTo(200) }
 
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 }

@@ -4,6 +4,7 @@ import Foundation
 import SnapshotTesting
 import Testing
 import XCTest
+import TestDependencies
 
 @testable import hCoreUI
 
@@ -19,7 +20,7 @@ final class ToastTests: XCTestCase {
 
         materializeViewable(toast) { view in view.snp.makeConstraints { make in make.width.equalTo(400) }
 
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 }
