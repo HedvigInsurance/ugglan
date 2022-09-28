@@ -5,9 +5,6 @@ import CoreDependencies
 import Datadog
 import DatadogCrashReporting
 import Disk
-import Firebase
-import FirebaseDynamicLinks
-import FirebaseMessaging
 import Flow
 import Form
 import Foundation
@@ -88,19 +85,8 @@ let log = Logger.builder
         restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-
-        return DynamicLinks.dynamicLinks()
-            .handleUniversalLink(url) { dynamicLink, error in
-                if let error = error {
-                    log.error("Dynamic Link Error", error: error, attributes: [:])
-                }
-
-                guard let dynamicLinkURL = dynamicLink?.url else {
-                    return
-                }
-
-                self.handleDeepLink(dynamicLinkURL)
-            }
+        self.handleDeepLink(url)
+        return true
     }
 
     func setToken(_ token: String) {
@@ -138,10 +124,6 @@ let log = Logger.builder
                         completion(.success)
 
                         self.trackNotificationPermission()
-
-                        DispatchQueue.main.async {
-                            UIApplication.shared.registerForRemoteNotifications()
-                        }
                     }
                 )
 
@@ -191,8 +173,6 @@ let log = Logger.builder
     }
 
     func setupSession() {
-        Analytics.setAnalyticsCollectionEnabled(false)
-
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
         }
@@ -232,11 +212,11 @@ let log = Logger.builder
         setupSession()
 
         log.info("Starting app")
+        
+        UIApplication.shared.registerForRemoteNotifications()
 
         hAnalyticsEvent.identify()
         hAnalyticsEvent.appStarted().send()
-
-        FirebaseApp.configure()
 
         let launch = Launch()
 
@@ -251,7 +231,6 @@ let log = Logger.builder
 
         DefaultStyling.installCustom()
 
-        Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
 
         trackNotificationPermission()

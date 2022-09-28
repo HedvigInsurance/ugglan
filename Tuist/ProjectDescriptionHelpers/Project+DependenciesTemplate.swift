@@ -3,7 +3,6 @@ import ProjectDescription
 
 public enum ExternalDependencies: CaseIterable {
     case adyen
-    case firebase
     case kingfisher
     case apollo
     case flow
@@ -27,7 +26,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public var isResourceBundledDependency: Bool { self == .adyen }
 
-    public var isAppDependency: Bool { self == .firebase || self == .datadog }
+    public var isAppDependency: Bool { self == .datadog }
 
     public var isCoreDependency: Bool {
         !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
@@ -38,13 +37,6 @@ public enum ExternalDependencies: CaseIterable {
         case .adyen: return [.package(url: "https://github.com/Adyen/adyen-ios", .exact("4.7.2"))]
         case .runtime:
             return [.package(url: "https://github.com/wickwirew/Runtime", .exact("2.2.2"))]
-        case .firebase:
-            return [
-                .package(
-                    url: "https://github.com/firebase/firebase-ios-sdk",
-                    .upToNextMajor(from: "8.8.0")
-                )
-            ]
         case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("0.51.2"))]
         case .flow:
             return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.7"))]
@@ -104,12 +96,6 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(product: "Adyen"), .package(product: "AdyenCard"),
                 .package(product: "AdyenDropIn"),
-            ]
-        case .firebase:
-            return [
-                .package(product: "FirebaseAnalytics"),
-                .package(product: "FirebaseMessaging"),
-                .package(product: "FirebaseDynamicLinks"),
             ]
         case .kingfisher: return [.package(product: "Kingfisher")]
         case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]

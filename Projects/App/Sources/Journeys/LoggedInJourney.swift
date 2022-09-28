@@ -144,10 +144,6 @@ extension AppJourney {
         .onPresent {
             ApplicationState.preserveState(.loggedIn)
             AnalyticsCoordinator().setUserId()
-
-            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-                UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
-            }
         }
     }
 }
