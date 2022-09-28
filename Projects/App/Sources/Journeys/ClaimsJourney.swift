@@ -6,6 +6,7 @@ import Home
 import OdysseyKit
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -36,10 +37,7 @@ extension AppJourney {
         AppJourney.claimsJourneyPledgeAndNotificationWrapper { redirect in
             switch redirect {
             case .chat:
-                OdysseyRoot(name: "mainRouter", initialURL: "/audio-claim")
-                    .disposableHostingJourney
-                    .setStyle(.detented(.large))
-                    .setOptions([])
+                AppJourney.claimsChat()
             case .close:
                 DismissJourney()
             case .menu:
@@ -61,9 +59,15 @@ extension AppJourney {
     ) -> some JourneyPresentation {
         HonestyPledge.journey {
             AppJourney.notificationJourney {
-                let embark = Embark(name: "claims")
-
-                AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
+                if hAnalyticsExperiment.odysseyClaims {
+                    OdysseyRoot(name: "mainRouter", initialURL: "/audio-claim")
+                        .disposableHostingJourney
+                        .setStyle(.detented(.large))
+                        .setOptions([])
+                } else {
+                    let embark = Embark(name: "claims")
+                    AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
+                }
             }
             .withJourneyDismissButton
         }
