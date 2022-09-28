@@ -6,7 +6,6 @@ import Forever
 import Form
 import Foundation
 import Home
-import OdysseyKit
 import Payment
 import Presentation
 import UIKit
@@ -187,11 +186,6 @@ extension JourneyPresentation {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
-            } else if case let .submitOdysseyClaim = action {
-                OdysseyRoot(name: "mainRouter")
-                    .disposableHostingJourney
-                    .setStyle(.detented(.large))
-                    .setOptions([])
             }
         }
     }

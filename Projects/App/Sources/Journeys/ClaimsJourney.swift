@@ -3,6 +3,7 @@ import Embark
 import Flow
 import Foundation
 import Home
+import OdysseyKit
 import Presentation
 import UIKit
 import hCore
@@ -35,9 +36,10 @@ extension AppJourney {
         AppJourney.claimsJourneyPledgeAndNotificationWrapper { redirect in
             switch redirect {
             case .chat:
-                AppJourney.claimsChat()
-                    .hidesBackButton
-                    .withJourneyDismissButton
+                OdysseyRoot(name: "mainRouter", initialURL: "/audio-claim")
+                    .disposableHostingJourney
+                    .setStyle(.detented(.large))
+                    .setOptions([])
             case .close:
                 DismissJourney()
             case .menu:
@@ -74,7 +76,7 @@ extension AppJourney {
             options: .defaults
         )
         .onAction(ClaimsStore.self) { action in
-            if case .submitOdysseyClaim = action {
+            if case .submitNewClaim = action {
                 DismissJourney()
             }
         }

@@ -74,7 +74,7 @@ extension CommonClaimDetail: Presentable {
             let store: ClaimsStore = self.get()
 
             bag += claimButton.onTapSignal.onValue {
-                store.send(.submitOdysseyClaim)
+                store.send(.submitNewClaim)
             }
 
             bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))
