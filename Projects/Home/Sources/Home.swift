@@ -29,7 +29,6 @@ public struct Home<ClaimsContent: View, CommonClaims: View> {
 
 public enum HomeResult {
     case startMovingFlow
-    case openOdyssey
     case openFreeTextChat
     case openConnectPayments
 }
@@ -154,24 +153,6 @@ extension Home: Presentable {
                     )
                 )
 
-                let section = HomeVerticalSection(
-                    section: .init(
-                        title: "Odyssey",
-                        style: .vertical,
-                        children: [
-                            .init(
-                                title: "Open",
-                                icon: hCoreUIAssets.apartment.image,
-                                handler: {
-                                    store.send(.openOdyssey)
-                                }
-                            )
-                        ]
-                    )
-                )
-
-                innerBag += form.append(section)
-
                 if hAnalyticsExperiment.movingFlow {
                     let section = HomeVerticalSection(
                         section: .init(
@@ -231,8 +212,6 @@ extension Home: Presentable {
                         callback(.startMovingFlow)
                     case .connectPayments:
                         callback(.openConnectPayments)
-                    case .openOdyssey:
-                        callback(.openOdyssey)
                     default:
                         break
                     }

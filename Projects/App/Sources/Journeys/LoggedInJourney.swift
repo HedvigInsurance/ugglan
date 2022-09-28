@@ -33,11 +33,6 @@ extension AppJourney {
                 AppJourney.freeTextChat()
             case .openConnectPayments:
                 PaymentSetup(setupType: .initial).journeyThenDismiss
-            case .openOdyssey:
-                OdysseyRoot(name: "mainRouter")
-                    .disposableHostingJourney
-                    .setStyle(.detented(.large))
-                    .setOptions([])
             }
         }
         .configureTabBarItem
@@ -192,6 +187,11 @@ extension JourneyPresentation {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
+            } else if case let .submitOdysseyClaim = action {
+                OdysseyRoot(name: "mainRouter")
+                    .disposableHostingJourney
+                    .setStyle(.detented(.large))
+                    .setOptions([])
             }
         }
     }

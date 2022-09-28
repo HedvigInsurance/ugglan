@@ -33,6 +33,7 @@ public enum ClaimsAction: ActionProtocol {
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
+    case submitOdysseyClaim
 }
 
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
@@ -98,6 +99,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case .openClaimDetails:
             break
         case .submitNewClaim:
+            break
+        case .submitOdysseyClaim:
             break
         }
 

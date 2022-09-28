@@ -74,7 +74,7 @@ extension AppJourney {
             options: .defaults
         )
         .onAction(ClaimsStore.self) { action in
-            if case .submitNewClaim = action {
+            if case .submitOdysseyClaim = action {
                 DismissJourney()
             }
         }
