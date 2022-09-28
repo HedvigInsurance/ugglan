@@ -1,7 +1,15 @@
 rm -rf "${TARGET_BUILD_DIR}/${TARGET_NAME}.app/Frameworks/"*".framework"/Frameworks/FirebaseAnalytics.framework
 rm -rf "${TARGET_BUILD_DIR}/${TARGET_NAME}.app/Frameworks/"*".framework"/Frameworks/GoogleAppMeasurement.framework
 cp -rf "${CONFIGURATION_BUILD_DIR}/"Adyen3DS2.framework "${TARGET_BUILD_DIR}/${TARGET_NAME}.app/Frameworks/"Adyen3DS2.framework
-cp -rf "${CONFIGURATION_BUILD_DIR}/"Shake.framework "${TARGET_BUILD_DIR}/${TARGET_NAME}.app/Frameworks/"Shake.framework
+
+function copyFramework() {
+    cp -rf "${CONFIGURATION_BUILD_DIR}/"$1.framework "${TARGET_BUILD_DIR}/${TARGET_NAME}.app/Frameworks/"$1.framework
+}
+
+copyFramework Shake
+copyFramework Odyssey
+copyFramework OdysseyKit
+
 rm -rf "${TARGET_BUILD_DIR}/${TARGET_NAME}.app/Frameworks/"*".framework"/Frameworks
 
 find "${TARGET_BUILD_DIR}" -name '*.framework' -print0 | while read -d $'\0' framework
