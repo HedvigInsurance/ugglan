@@ -11,11 +11,6 @@ public enum ExternalRedirect {
     case close
     case chat
     case quoteCartOffer(id: String, selectedInsuranceTypes: [String])
-    case dataCollection(
-        providerID: String,
-        providerDisplayName: String,
-        onComplete: (_ id: UUID?, _ personalNumber: String?) -> Void
-    )
     case menu(_ action: MenuChildAction)
 }
 
