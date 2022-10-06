@@ -48,8 +48,6 @@ extension AppJourney {
                 DismissJourney()
             case .offer:
                 DismissJourney()
-            case .dataCollection:
-                ContinueJourney()
             case .quoteCartOffer:
                 DismissJourney()
             }
