@@ -62,10 +62,19 @@ extension AppJourney {
         HonestyPledge.journey {
             AppJourney.notificationJourney {
                 if hAnalyticsExperiment.odysseyClaims {
-                    OdysseyRoot(name: "mainRouter", initialURL: "/audio-claim")
-                        .disposableHostingJourney
-                        .setStyle(.detented(.large))
-                        .setOptions([])
+                    OdysseyRoot(name: "mainRouter", initialURL: "/audio-claim") { destinationURL in
+                        switch destinationURL {
+                        case "hedvig://chat":
+                            let store: UgglanStore = globalPresentableStoreContainer.get()
+                            store.send(.openChat)
+                        case "hedvig://close":
+                            let _ = DismissJourney().presentable.materialize()
+                        default: break
+                        }
+                    }
+                    .disposableHostingJourney
+                    .setStyle(.detented(.large))
+                    .setOptions([])
                 } else {
                     let embark = Embark(name: "claims")
                     AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
