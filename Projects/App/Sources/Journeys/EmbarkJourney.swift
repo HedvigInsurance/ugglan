@@ -44,13 +44,6 @@ extension AppJourney {
                 .onDismiss {
                     embark.goBack()
                 }
-            case let .dataCollection(providerID, providerDisplayName, onComplete):
-                DataCollection.journey(
-                    providerID: providerID,
-                    providerDisplayName: providerDisplayName,
-                    onComplete: onComplete
-                )
-                .mapJourneyDismissToCancel
             case let .menu(action):
                 action.journey
             case let .quoteCartOffer(id, types):

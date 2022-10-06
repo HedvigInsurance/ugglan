@@ -30,7 +30,6 @@ extension MainContentForm: Presentable {
 
         let hostView = makeHost {
             VStack {
-                DataCollectionSection()
                 VariationSection()
                 DetailsSection()
                 CoverageSection()
