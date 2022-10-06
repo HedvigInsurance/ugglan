@@ -60,19 +60,16 @@ extension AppJourney {
         HonestyPledge.journey {
             AppJourney.notificationJourney {
                 if hAnalyticsExperiment.odysseyClaims {
-                    OdysseyRoot(name: "mainRouter", initialURL: "/audio-claim") { destinationURL in
+                    AppJourney.odyssey { destinationURL in
                         switch destinationURL {
                         case "hedvig://chat":
-                            let store: UgglanStore = globalPresentableStoreContainer.get()
-                            store.send(.openChat)
-                        case "hedvig://close":
-                            let _ = DismissJourney().presentable.materialize()
-                        default: break
+                            AppJourney.claimsChat()
+                                .hidesBackButton
+                                .withJourneyDismissButton
+                        default:
+                            DismissJourney()
                         }
                     }
-                    .disposableHostingJourney
-                    .setStyle(.detented(.large))
-                    .setOptions([])
                 } else {
                     let embark = Embark(name: "claims")
                     AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
@@ -80,6 +77,17 @@ extension AppJourney {
             }
             .withJourneyDismissButton
         }
+    }
+
+    static func odyssey<Redirect: JourneyPresentation>(
+        @JourneyBuilder _ redirect: @escaping (String) -> Redirect
+    ) -> some JourneyPresentation {
+        OdysseyRoot(name: "mainRouter", initialURL: "/audio-claim") { destinationURL in
+            redirect(destinationURL)
+        }
+        .disposableHostingJourney
+        .setStyle(.detented(.large))
+        .setOptions([])
     }
 
     static func commonClaimDetailJourney(claim: CommonClaim) -> some JourneyPresentation {
