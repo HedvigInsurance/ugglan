@@ -33,6 +33,7 @@ public enum ClaimsAction: ActionProtocol {
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
+    case odysseyRedirect(url: String)
 }
 
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
@@ -81,23 +82,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         var newState = state
 
         switch action {
-        case .openFreeTextChat:
-            break
-        case .fetchClaims:
-            break
-        case .fetchCommonClaims:
-            break
-        case .openHowClaimsWork:
-            break
-        case .openCommonClaimDetail:
-            break
         case let .setClaims(claims):
             newState.claims = claims
         case let .setCommonClaims(commonClaims):
             newState.commonClaims = commonClaims
-        case .openClaimDetails:
-            break
-        case .submitNewClaim:
+        default:
             break
         }
 
