@@ -79,14 +79,25 @@ extension AppJourney {
         .setStyle(.detented(.large))
         .setOptions([])
         .onAction(ClaimsStore.self) { action in
-            if case let .odysseyRedirect(url) = action {
-                switch url {
+            if case let .odysseyRedirect(urlString) = action {
+                switch urlString {
                 case "hedvig://chat":
                     AppJourney.claimsChat()
                         .hidesBackButton
                         .withJourneyDismissButton
-                default:
+                case "hedvig://close":
                     DismissJourney()
+                default:
+                    ContinueJourney()
+                        .onPresent {
+                            guard urlString.lowercased().isValidURL, let url = URL(string: urlString) else {
+                                return
+                            }
+
+                            if UIApplication.shared.canOpenURL(url) {
+                                UIApplication.shared.open(url)
+                            }
+                        }
                 }
             }
         }
