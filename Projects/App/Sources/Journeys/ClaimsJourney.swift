@@ -60,16 +60,46 @@ extension AppJourney {
         HonestyPledge.journey {
             AppJourney.notificationJourney {
                 if hAnalyticsExperiment.odysseyClaims {
-                    OdysseyRoot(name: "mainRouter", initialURL: "/audio-claim")
-                        .disposableHostingJourney
-                        .setStyle(.detented(.large))
-                        .setOptions([])
+                    AppJourney.odyssey
                 } else {
                     let embark = Embark(name: "claims")
                     AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
                 }
             }
             .withJourneyDismissButton
+        }
+    }
+
+    static var odyssey: some JourneyPresentation {
+        OdysseyRoot(name: "mainRouter", initialURL: "/audio-claim") { destinationURL in
+            let store: ClaimsStore = globalPresentableStoreContainer.get()
+            store.send(.odysseyRedirect(url: destinationURL))
+        }
+        .disposableHostingJourney
+        .setStyle(.detented(.large))
+        .setOptions([])
+        .onAction(ClaimsStore.self) { action in
+            if case let .odysseyRedirect(urlString) = action {
+                switch urlString {
+                case "hedvig://chat":
+                    AppJourney.claimsChat()
+                        .hidesBackButton
+                        .withJourneyDismissButton
+                case "hedvig://close":
+                    DismissJourney()
+                default:
+                    ContinueJourney()
+                        .onPresent {
+                            guard let url = URL(string: urlString), url.isHTTP else {
+                                return
+                            }
+
+                            if UIApplication.shared.canOpenURL(url) {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                }
+            }
         }
     }
 
