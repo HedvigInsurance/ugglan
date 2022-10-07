@@ -90,7 +90,7 @@ extension AppJourney {
                 default:
                     ContinueJourney()
                         .onPresent {
-                            guard urlString.lowercased().isValidURL, let url = URL(string: urlString) else {
+                            guard let url = URL(string: urlString), url.isHttp else {
                                 return
                             }
 
