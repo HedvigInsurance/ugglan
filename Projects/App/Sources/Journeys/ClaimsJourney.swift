@@ -54,23 +54,24 @@ extension AppJourney {
         }
     }
 
+    @JourneyBuilder
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
         @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney
     ) -> some JourneyPresentation {
-        HonestyPledge.journey {
-            AppJourney.notificationJourney {
-                if hAnalyticsExperiment.odysseyClaims {
-                    AppJourney.odyssey
-                } else {
+        if hAnalyticsExperiment.odysseyClaims {
+            odysseyClaims.withJourneyDismissButton
+        } else {
+            HonestyPledge.journey {
+                AppJourney.notificationJourney {
                     let embark = Embark(name: "claims")
                     AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
                 }
+                .withJourneyDismissButton
             }
-            .withJourneyDismissButton
         }
     }
 
-    static var odyssey: some JourneyPresentation {
+    static var odysseyClaims: some JourneyPresentation {
         OdysseyRoot(name: "mainRouter", initialURL: "/audio-claim") { destinationURL in
             let store: ClaimsStore = globalPresentableStoreContainer.get()
             store.send(.odysseyRedirect(url: destinationURL))
