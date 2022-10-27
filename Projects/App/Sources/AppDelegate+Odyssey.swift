@@ -9,6 +9,7 @@ extension AppDelegate {
         OdysseyKit.initialize(
             apiUrl: Environment.current.odysseyApiURL.absoluteString,
             authorizationToken: ApolloClient.retreiveToken()?.token ?? "",
+            locale: Localization.Locale.currentLocale.acceptLanguageHeader,
             enableNetworkLogs: true
         )
     }
