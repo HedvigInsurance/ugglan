@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -38,12 +39,14 @@ struct ClaimSectionLoading: View {
             } content: {
                 L10n.Home.OpenClaim.startNewClaimButton.hText()
             }
+            .trackOnTap(hAnalyticsEvent.beginClaim(screen: .home))
         } else {
             hButton.LargeButtonFilled {
                 store.send(.submitNewClaim)
             } content: {
                 hText(L10n.HomeTab.claimButtonText)
             }
+            .trackOnTap(hAnalyticsEvent.beginClaim(screen: .home))
         }
     }
 

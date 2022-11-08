@@ -74,6 +74,7 @@ extension CommonClaimDetail: Presentable {
             let store: ClaimsStore = self.get()
 
             bag += claimButton.onTapSignal.onValue {
+                hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
                 store.send(.submitNewClaim)
             }
 

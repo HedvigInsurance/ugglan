@@ -76,7 +76,8 @@ extension AppJourney {
     }
 
     static var odysseyClaims: some JourneyPresentation {
-        OdysseyRoot(name: "mainRouter", initialURL: "/automation-claim") { destinationURL in
+        hAnalyticsEvent.beginClaim(screen: .claimHonorPledge)
+        return OdysseyRoot(name: "mainRouter", initialURL: "/automation-claim") { destinationURL in
             let store: ClaimsStore = globalPresentableStoreContainer.get()
             store.send(.odysseyRedirect(url: destinationURL))
         }
