@@ -34,7 +34,11 @@ extension AppJourney {
     }
 
     static var claimJourney: some JourneyPresentation {
-        AppJourney.claimsJourneyPledgeAndNotificationWrapper { redirect in
+        hAnalyticsEvent.claimFlowType(
+            claimType: hAnalyticsExperiment.odysseyClaims ? .automation : .manual
+        )
+        .send()
+        return AppJourney.claimsJourneyPledgeAndNotificationWrapper { redirect in
             switch redirect {
             case .chat:
                 AppJourney.claimsChat()
