@@ -35,18 +35,18 @@ struct ClaimSectionLoading: View {
     public func startClaimsButton(_ claims: [Claim]) -> some View {
         if claims.count > 0 {
             hButton.LargeButtonOutlined {
+                hAnalyticsEvent.beginClaim(screen: .home).send()
                 store.send(.submitNewClaim)
             } content: {
                 L10n.Home.OpenClaim.startNewClaimButton.hText()
             }
-            .trackOnTap(hAnalyticsEvent.beginClaim(screen: .home))
         } else {
             hButton.LargeButtonFilled {
+                hAnalyticsEvent.beginClaim(screen: .home).send()
                 store.send(.submitNewClaim)
             } content: {
                 hText(L10n.HomeTab.claimButtonText)
             }
-            .trackOnTap(hAnalyticsEvent.beginClaim(screen: .home))
         }
     }
 
