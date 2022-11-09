@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -24,6 +25,7 @@ extension ClaimsInfoPager: Presentable {
             buttonDoneTitle: L10n.ClaimsExplainer.buttonStartClaim,
             pages: []
         ) { viewController in
+            hAnalyticsEvent.beginClaim(screen: .home).send()
             store.send(.submitNewClaim)
             return Future(.forever)
         }

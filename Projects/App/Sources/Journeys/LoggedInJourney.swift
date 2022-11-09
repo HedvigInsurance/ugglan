@@ -20,8 +20,7 @@ extension AppJourney {
         return Journey(
             Home(
                 claimsContent: claims,
-                commonClaims: commonClaims,
-                claims.claimSubmission
+                commonClaims: commonClaims
             ),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         ) { result in
