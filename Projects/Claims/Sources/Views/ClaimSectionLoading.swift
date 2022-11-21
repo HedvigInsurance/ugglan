@@ -36,14 +36,14 @@ struct ClaimSectionLoading: View {
         if claims.count > 0 {
             hButton.LargeButtonOutlined {
                 hAnalyticsEvent.beginClaim(screen: .home).send()
-                store.send(.submitNewClaim)
+                store.send(.submitNewClaim(from: .generic))
             } content: {
                 L10n.Home.OpenClaim.startNewClaimButton.hText()
             }
         } else {
             hButton.LargeButtonFilled {
                 hAnalyticsEvent.beginClaim(screen: .home).send()
-                store.send(.submitNewClaim)
+                store.send(.submitNewClaim(from: .generic))
             } content: {
                 hText(L10n.HomeTab.claimButtonText)
             }

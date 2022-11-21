@@ -1,5 +1,6 @@
 import Apollo
 import Flow
+import Odyssey
 import Presentation
 import hCore
 import hGraphQL
@@ -25,7 +26,7 @@ public struct ClaimsState: StateProtocol {
 
 public enum ClaimsAction: ActionProtocol {
     case openFreeTextChat
-    case submitNewClaim
+    case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
     case setClaims(claims: [Claim])
     case fetchCommonClaims
@@ -34,6 +35,23 @@ public enum ClaimsAction: ActionProtocol {
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
     case odysseyRedirect(url: String)
+}
+
+public enum ClaimsOrigin: Codable {
+    case generic
+    case brokenPhone
+    case commonClaims
+
+    public var initialDataScopeValues: ScopeValues {
+        let scopeValues = ScopeValues()
+        switch self {
+        case .brokenPhone:
+            scopeValues.setValue(key: InitialDataScopeValueKey.shared, value: ["itemType": "PHONE"])
+        default:
+            break
+        }
+        return scopeValues
+    }
 }
 
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {

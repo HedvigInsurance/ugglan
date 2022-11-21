@@ -75,7 +75,12 @@ extension CommonClaimDetail: Presentable {
 
             bag += claimButton.onTapSignal.onValue {
                 hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
-                store.send(.submitNewClaim)
+                switch claim.id {
+                case "6":
+                    store.send(.submitNewClaim(from: .brokenPhone))
+                default:
+                    store.send(.submitNewClaim(from: .commonClaims))
+                }
             }
 
             bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))

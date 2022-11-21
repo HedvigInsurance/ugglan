@@ -26,7 +26,7 @@ extension ClaimsInfoPager: Presentable {
             pages: []
         ) { viewController in
             hAnalyticsEvent.beginClaim(screen: .home).send()
-            store.send(.submitNewClaim)
+            store.send(.submitNewClaim(from: .generic))
             return Future(.forever)
         }
 

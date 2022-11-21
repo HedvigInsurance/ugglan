@@ -17,7 +17,6 @@ public enum UgglanAction: ActionProtocol {
     case setSelectedTabIndex(index: Int)
     case makeTabActive(deeplink: DeepLink)
     case showLoggedIn
-    case openClaims
     case exchangePaymentLink(link: String)
     case exchangePaymentToken(token: String)
     case validateAuthToken
@@ -106,8 +105,6 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
         switch action {
         case let .setSelectedTabIndex(tabIndex):
             newState.selectedTabIndex = tabIndex
-        case .openClaims:
-            break
         default:
             break
         }
