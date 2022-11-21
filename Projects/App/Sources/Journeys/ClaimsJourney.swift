@@ -3,6 +3,7 @@ import Embark
 import Flow
 import Foundation
 import Home
+import Odyssey
 import OdysseyKit
 import Presentation
 import UIKit
@@ -33,12 +34,12 @@ extension AppJourney {
             }
     }
 
-    static var claimJourney: some JourneyPresentation {
+    static func claimJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
         hAnalyticsEvent.claimFlowType(
             claimType: hAnalyticsExperiment.odysseyClaims ? .automation : .manual
         )
         .send()
-        return AppJourney.claimsJourneyPledgeAndNotificationWrapper { redirect in
+        return AppJourney.claimsJourneyPledgeAndNotificationWrapper(from: origin) { redirect in
             switch redirect {
             case .chat:
                 AppJourney.claimsChat()
@@ -60,10 +61,11 @@ extension AppJourney {
 
     @JourneyBuilder
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
+        from origin: ClaimsOrigin,
         @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney
     ) -> some JourneyPresentation {
         if hAnalyticsExperiment.odysseyClaims {
-            odysseyClaims.withJourneyDismissButton
+            odysseyClaims(from: origin).withJourneyDismissButton
         } else {
             HonestyPledge.journey {
                 AppJourney.notificationJourney {
@@ -75,8 +77,12 @@ extension AppJourney {
         }
     }
 
-    static var odysseyClaims: some JourneyPresentation {
-        OdysseyRoot(name: "mainRouter", initialURL: "/automation-claim") { destinationURL in
+    static func odysseyClaims(from origin: ClaimsOrigin) -> some JourneyPresentation {
+        return OdysseyRoot(
+            name: "mainRouter",
+            initialURL: "/automation-claim",
+            scopeValues: origin.initialDataScopeValues
+        ) { destinationURL in
             let store: ClaimsStore = globalPresentableStoreContainer.get()
             store.send(.odysseyRedirect(url: destinationURL))
         }

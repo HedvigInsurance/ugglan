@@ -37,7 +37,6 @@ extension AppJourney {
         .onTabSelected {
             ContextGradient.currentOption = .home
         }
-        .claimStoreRedirectFromHome
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
                 return deepLink == .home
@@ -135,8 +134,6 @@ extension AppJourney {
             .onAction(UgglanStore.self) { action in
                 if action == .openChat {
                     AppJourney.freeTextChat().withDismissButton
-                } else if action == .openClaims {
-                    AppJourney.claimJourney
                 }
             }
         }
@@ -165,20 +162,12 @@ extension JourneyPresentation {
 }
 
 extension JourneyPresentation {
-    public var claimStoreRedirectFromHome: some JourneyPresentation {
-        onAction(HomeStore.self) { action in
-            if case .openClaim = action {
-                AppJourney.claimJourney
-            }
-        }
-    }
-
     public var configureClaimsNavigation: some JourneyPresentation {
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {
                 AppJourney.claimDetailJourney(claim: claim)
-            } else if case .submitNewClaim = action {
-                AppJourney.claimJourney
+            } else if case let .submitNewClaim(origin) = action {
+                AppJourney.claimJourney(from: origin)
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat()
             } else if case .openHowClaimsWork = action {
