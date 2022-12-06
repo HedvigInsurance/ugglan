@@ -9,7 +9,11 @@ import hCoreUI
 import hGraphQL
 
 public struct BankIDLoginSweden {
-    @Inject var client: ApolloClient
+    @PresentableStore var store: AuthenticationStore
+    
+    public init() {
+        
+    }
 }
 
 public enum BankIDLoginSwedenResult {
@@ -123,23 +127,37 @@ extension BankIDLoginSweden: Presentable {
 //
 //                statusLabel.value = statusText
 //            }
+        
+        bag += viewController.view.didMoveToWindowSignal.onFirstValue { _ in
+            store.send(.seBankIDStateAction(action: .startSession))
+        }
 
         return (
             viewController,
             Signal { callback in
-//                generateAutoStartToken()
-//                    .onValue { url in
-//                        if UIApplication.shared.canOpenURL(url) {
-//                            UIApplication.shared.open(
-//                                url,
-//                                options: [:],
-//                                completionHandler: nil
-//                            )
-//                        } else {
-//                            callback(.qrCode)
-//                        }
-//                    }
+                bag += store.stateSignal.compactMap { state in
+                    state.seBankIDState.autoStartToken
+                }.onValue { autoStartToken in
+                    let urlScheme = Bundle.main.urlScheme ?? ""
+                    
+                    guard
+                        let url = URL(
+                            string:
+                                "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
+                        )
+                    else {
+                        return
+                    }
 
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(
+                            url,
+                            options: [:],
+                            completionHandler: nil
+                        )
+                    }
+                }
+                
                 bag += alternativeLoginButton.onTapSignal.onValue { _ in
                     let alert = Alert<Void>(actions: [
                         .init(

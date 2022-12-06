@@ -249,6 +249,15 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             default:
                 break
             }
+        case let .seBankIDStateAction(action):
+            switch action {
+            case .startSession:
+                newState.seBankIDState.autoStartToken = nil
+                newState.seBankIDState.statusUrl = nil
+            case let .updateWith(autoStartToken, statusUrl):
+                newState.seBankIDState.autoStartToken = autoStartToken
+                newState.seBankIDState.statusUrl = statusUrl
+            }
         default:
             break
         }

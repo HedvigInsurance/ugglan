@@ -16,30 +16,52 @@ extension AppJourney {
         }
     }
 
+    @JourneyBuilder
     fileprivate static var bankIDSweden: some JourneyPresentation {
-        Journey(
-            BankIDLoginSweden(),
-            style: .detented(.medium, .large)
-        ) { result in
-            switch result {
-            case .qrCode:
-                Journey(BankIDLoginQR()) { result in
-                    switch result {
-                    case .loggedIn:
-                        loginCompleted
-                    case .emailLogin:
-                        otp
+        let bankIdAppTestUrl = URL(
+            string:
+                "bankid:///"
+        )!
+        
+        if UIApplication.shared.canOpenURL(bankIdAppTestUrl) {
+            Journey(
+                BankIDLoginSweden(),
+                style: .detented(.medium, .large)
+            ) { result in
+                switch result {
+                case .qrCode:
+                    Journey(BankIDLoginQR()) { result in
+                        switch result {
+                        case .loggedIn:
+                            loginCompleted
+                        case .emailLogin:
+                            otp
+                        }
                     }
+                    .withJourneyDismissButton
+                    .mapJourneyDismissToCancel
+                case .loggedIn:
+                    loginCompleted
+                case .emailLogin:
+                    otp
                 }
-                .withJourneyDismissButton
-                .mapJourneyDismissToCancel
-            case .loggedIn:
-                loginCompleted
-            case .emailLogin:
-                otp
             }
+            .withDismissButton
+        } else {
+            Journey(
+                BankIDLoginQR(),
+                style: .detented(.medium, .large)
+            ) { result in
+                switch result {
+                case .loggedIn:
+                    loginCompleted
+                case .emailLogin:
+                    otp
+                }
+            }
+            .withJourneyDismissButton
+            .mapJourneyDismissToCancel
         }
-        .withDismissButton
     }
 
     fileprivate static var otp: some JourneyPresentation {

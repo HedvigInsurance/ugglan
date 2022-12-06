@@ -5,7 +5,11 @@ import UIKit
 import hCore
 import hCoreUI
 
-public struct BankIDLoginQR {}
+public struct BankIDLoginQR {
+    @PresentableStore var store: AuthenticationStore
+    
+    public init() {}
+}
 
 public enum BankIDLoginQRResult {
     case loggedIn
@@ -101,9 +105,29 @@ extension BankIDLoginQR: Presentable {
             imageView.backgroundColor = UIColor.brand(.secondaryBackground())
             imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
         }
-
-//        bag += Signal(every: 10).atOnce().mapLatestToFuture { BankIDLoginSweden().generateAutoStartToken() }
-//            .transition(style: .crossDissolve(duration: 0.5), with: imageView, animations: generateQRCode)
+        
+        bag += Signal(every: 10)
+            .atOnce()
+            .onValue({ _ in
+                UIView.transition(with: imageView, duration: 0.5) {
+                    store.send(.seBankIDStateAction(action: .startSession))
+                }
+            })
+        
+        bag += store.stateSignal.compactMap({ state in
+            state.seBankIDState.autoStartToken
+        }).onValue({ autoStartToken in
+            guard
+                let url = URL(
+                    string:
+                        "bankid:///?autostarttoken=\(autoStartToken)"
+                )
+            else {
+                return
+            }
+            
+            generateQRCode(url)
+        })
 
         return (
             viewController,
