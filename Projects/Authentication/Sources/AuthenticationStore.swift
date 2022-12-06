@@ -112,7 +112,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                             verifyUrl: verifyUrl.absoluteString,
                             otp: state.otpState.code
                         ) { result, error in
-                            
                             if let success = result as? SubmitOtpResultSuccess {
                                 callback(.value(.exchange(code: success.loginAuthorizationCode.code)))
                             } else {
@@ -322,6 +321,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 newState.otpState.code = ""
                 newState.otpState.codeErrorMessage = nil
                 newState.otpState.isResending = true
+            case .showResentToast:
+                newState.otpState.isResending = false
             case .submitEmail:
                 newState.otpState.emailErrorMessage = nil
             default:

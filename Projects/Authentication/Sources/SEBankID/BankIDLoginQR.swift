@@ -106,15 +106,17 @@ extension BankIDLoginQR: Presentable {
             imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
         }
         
-        bag += viewController.view.didMoveToWindowSignal.onValueDisposePrevious { _ in
-            Signal(every: 75)
-                .atOnce().onValue { _ in
-                    store.send(.seBankIDStateAction(action: .startSession))
+        bag += viewController.view.windowSignal.onValueDisposePrevious { window in
+            if window != nil {
+                return Signal(every: 75)
+                    .atOnce().onValue { _ in
+                        store.send(.seBankIDStateAction(action: .startSession))
+                    }
+            } else {
+                return Signal(after: 0).onValue { _ in
+                    store.send(.cancel)
                 }
-        }
-        
-        bag += viewController.view.didMoveFromWindowSignal.onValue { _ in
-            store.send(.cancel)
+            }
         }
                 
         bag += store.stateSignal.compactMap({ state in
