@@ -7,14 +7,14 @@ public var urlSessionClientProvider: () -> URLSessionClient = {
 }
 
 public class NetworkInterceptorProvider: DefaultInterceptorProvider {
-    let token: String
+    let token: AuthorizationToken?
     let acceptLanguageHeader: String
     let userAgent: String
     let deviceIdentifier: String
 
     init(
         store: ApolloStore,
-        token: String,
+        token: AuthorizationToken?,
         acceptLanguageHeader: String,
         userAgent: String,
         deviceIdentifier: String

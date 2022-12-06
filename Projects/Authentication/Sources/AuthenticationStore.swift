@@ -22,12 +22,12 @@ struct OTPState: StateProtocol {
 }
 
 struct SEBankIDState: StateProtocol {
-    var statusUrl: URL? = nil
     var autoStartToken: String? = nil
     public init() {}
 }
 
 public struct AuthenticationState: StateProtocol {
+    var statusText: String? = nil
     var otpState = OTPState()
     var seBankIDState = SEBankIDState()
 
@@ -56,10 +56,23 @@ public enum AuthenticationNavigationAction: ActionProtocol {
 
 public enum SEBankIDStateAction: ActionProtocol {
     case startSession
-    case updateWith(autoStartToken: String, statusUrl: URL)
+    case updateWith(autoStartToken: String)
+}
+
+enum LoginError: Error {
+    case failed
 }
 
 public enum AuthenticationAction: ActionProtocol {
+    case setStatus(text: String?)
+    case exchange(code: String)
+    case observeLoginStatus(url: URL)
+    case success(
+        token: String,
+        tokenExpirationDate: Date,
+        refreshToken: String,
+        refreshTokenExpirationDate: Date
+    )
     case otpStateAction(action: OTPStateAction)
     case seBankIDStateAction(action: SEBankIDStateAction)
     case navigationAction(action: AuthenticationNavigationAction)
@@ -172,7 +185,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 )
             )
         } else if case .seBankIDStateAction(action: .startSession) = action {
-            return Future { completion in
+            return Signal { callbacker in
                 NetworkAuthRepository(environment: Environment.current.authEnvironment).startLoginAttempt(
                     loginMethod: .seBankid,
                     market: Localization.Locale.currentLocale.market.rawValue,
@@ -183,22 +196,62 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         let bankIdProperties = result as? AuthAttemptResultBankIdProperties,
                         let statusUrl = URL(string: bankIdProperties.statusUrl.url)
                     {
-                        completion(
-                            .success(
-                                .seBankIDStateAction(
-                                    action: .updateWith(
-                                        autoStartToken: bankIdProperties.autoStartToken,
-                                        statusUrl: statusUrl
-                                    )
+                        callbacker(
+                            .seBankIDStateAction(
+                                action: .updateWith(
+                                    autoStartToken: bankIdProperties.autoStartToken
                                 )
                             )
                         )
+                        
+                        callbacker(.observeLoginStatus(url: statusUrl))
                     }
                 }
                 
                 return DisposeBag()
             }
-            .valueThenEndSignal
+            .finite()
+        } else if case let .observeLoginStatus(statusUrl) = action {
+            return FiniteSignal { callbacker in
+                Signal(every: 1).onValue { _ in
+                    NetworkAuthRepository(environment: Environment.current.authEnvironment)
+                        .loginStatus(statusUrl: StatusUrl(url: statusUrl.absoluteString)) { result, error in
+                            if let completedResult = result as? LoginStatusResultCompleted {
+                                callbacker(.value(.exchange(code: completedResult.authorizationCode.code)))
+                            } else if let _ = result as? LoginStatusResultFailed {
+                                callbacker(.end(LoginError.failed))
+                            } else if let pendingResult = result as? LoginStatusResultPending {
+                                callbacker(.value(.setStatus(text: pendingResult.statusMessage)))
+                            }
+                        }
+                }
+            }
+        } else if case let .exchange(code) = action {
+            return Signal { callbacker in
+                NetworkAuthRepository(environment: Environment.current.authEnvironment)
+                    .exchange(
+                        grant: AuthorizationCodeGrant(code: code)
+                    ) { result, error in
+                        if let success = result as? AuthTokenResultSuccess {
+                            let tokenExpirationDate = Date().addingTimeInterval(
+                                Double(success.accessToken.expiryInSeconds)
+                            )
+                            
+                            let refreshTokenExpirationDate = Date().addingTimeInterval(
+                                Double(success.refreshToken.expiryInSeconds)
+                            )
+                            
+                            callbacker(.success(
+                                token: success.accessToken.token,
+                                tokenExpirationDate: tokenExpirationDate,
+                                refreshToken: success.refreshToken.token,
+                                refreshTokenExpirationDate: refreshTokenExpirationDate
+                            ))
+                        }
+                    }
+                
+                return DisposeBag()
+            }.finite()
         }
 
         return nil
@@ -253,11 +306,11 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             switch action {
             case .startSession:
                 newState.seBankIDState.autoStartToken = nil
-                newState.seBankIDState.statusUrl = nil
-            case let .updateWith(autoStartToken, statusUrl):
+            case let .updateWith(autoStartToken):
                 newState.seBankIDState.autoStartToken = autoStartToken
-                newState.seBankIDState.statusUrl = statusUrl
             }
+        case let .setStatus(text):
+            newState.statusText = text
         default:
             break
         }

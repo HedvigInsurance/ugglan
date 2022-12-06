@@ -106,7 +106,7 @@ extension BankIDLoginQR: Presentable {
             imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
         }
         
-        bag += Signal(every: 10)
+        bag += Signal(every: 75)
             .atOnce()
             .onValue({ _ in
                 store.send(.seBankIDStateAction(action: .startSession))
