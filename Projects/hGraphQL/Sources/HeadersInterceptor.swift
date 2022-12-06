@@ -3,18 +3,15 @@ import Foundation
 import authlib
 
 class HeadersInterceptor: ApolloInterceptor {
-    let token: AuthorizationToken?
     let acceptLanguageHeader: String
     let userAgent: String
     let deviceIdentifier: String
 
     init(
-        token: AuthorizationToken?,
         acceptLanguageHeader: String,
         userAgent: String,
         deviceIdentifier: String
     ) {
-        self.token = token
         self.acceptLanguageHeader = acceptLanguageHeader
         self.userAgent = userAgent
         self.deviceIdentifier = deviceIdentifier
@@ -32,24 +29,30 @@ class HeadersInterceptor: ApolloInterceptor {
             "hedvig-device-id": deviceIdentifier,
         ]
         
-        if let token = token {
+        if let token = ApolloClient.retreiveToken() {
             if Date().addingTimeInterval(60) > token.accessTokenExpirationDate {
-                NetworkAuthRepository(
-                    environment: Environment.current.authEnvironment
-                ).exchange(grant: RefreshTokenGrant(code: token.refreshToken)) { result, error in
-                    if let successResult = result as? AuthTokenResultSuccess {
-                        let newToken = successResult.accessToken.token
-                        httpAdditionalHeaders["Authorization"] = newToken
-                        
-                        httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
+                if Date() > token.refreshTokenExpirationDate {
+                    forceLogoutHook()
+                } else {
+                    NetworkAuthRepository(
+                        environment: Environment.current.authEnvironment
+                    ).exchange(grant: RefreshTokenGrant(code: token.refreshToken)) { result, error in
+                        if let successResult = result as? AuthTokenResultSuccess {
+                            ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                            
+                            let newToken = successResult.accessToken.token
+                            httpAdditionalHeaders["Authorization"] = newToken
+                            
+                            httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
 
-                        chain.proceedAsync(
-                            request: request,
-                            response: response,
-                            completion: completion
-                        )
-                    } else {
-                        // Force logout
+                            chain.proceedAsync(
+                                request: request,
+                                response: response,
+                                completion: completion
+                            )
+                        } else {
+                            forceLogoutHook()
+                        }
                     }
                 }
             } else {

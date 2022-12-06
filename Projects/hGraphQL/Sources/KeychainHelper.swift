@@ -34,7 +34,6 @@ final public class KeychainHelper {
             let item = try JSONDecoder().decode(type, from: data)
             return item
         } catch {
-            assertionFailure("Fail to decode item for keychain: \(error)")
             return nil
         }
     }

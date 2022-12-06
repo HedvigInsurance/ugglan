@@ -31,6 +31,6 @@ struct Impersonate {
 
     func impersonate(with url: URL) {
         guard let exchangeToken = getToken(from: url) else { return }
-        store.send(.exchangePaymentToken(token: exchangeToken))
+        // store.send(.exchangePaymentToken(token: exchangeToken)) TODO
     }
 }

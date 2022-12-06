@@ -543,7 +543,7 @@ extension EmbarkState {
 
             let configuration = URLSessionConfiguration.default
             configuration.httpAdditionalHeaders =
-                ApolloClient.headers(token: ApolloClient.retreiveToken()) as [AnyHashable: Any]
+                ApolloClient.headers() as [AnyHashable: Any]
 
             let urlSessionClient = URLSessionClient(sessionConfiguration: configuration)
 

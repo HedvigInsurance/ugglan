@@ -6,7 +6,7 @@ public struct AuthorizationToken: Codable {
     public var refreshToken: String
     public var refreshTokenExpirationDate: Date
 
-    init(
+    public init(
         accessToken: String,
         accessTokenExpirationDate: Date,
         refreshToken: String,

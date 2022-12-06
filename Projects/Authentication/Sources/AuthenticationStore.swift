@@ -50,7 +50,7 @@ public enum OTPStateAction: ActionProtocol {
 
 public enum AuthenticationNavigationAction: ActionProtocol {
     case otpCode
-    case authSuccess(accessToken: String)
+    case authSuccess
     case chat
 }
 
@@ -66,13 +66,8 @@ enum LoginError: Error {
 public enum AuthenticationAction: ActionProtocol {
     case setStatus(text: String?)
     case exchange(code: String)
+    case logout
     case observeLoginStatus(url: URL)
-    case success(
-        token: String,
-        tokenExpirationDate: Date,
-        refreshToken: String,
-        refreshTokenExpirationDate: Date
-    )
     case otpStateAction(action: OTPStateAction)
     case seBankIDStateAction(action: SEBankIDStateAction)
     case navigationAction(action: AuthenticationNavigationAction)
@@ -113,7 +108,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                             action: .setCodeError(message: L10n.Login.CodeInput.ErrorMsg.codeNotValid)
                         )
                     } else if let success = data.loginVerifyOtpAttempt.asVerifyOtpLoginAttemptSuccess {
-                        return .navigationAction(action: .authSuccess(accessToken: success.accessToken))
+                        return .navigationAction(action: .authSuccess)
                     }
 
                     return nil
@@ -218,6 +213,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         .loginStatus(statusUrl: StatusUrl(url: statusUrl.absoluteString)) { result, error in
                             if let completedResult = result as? LoginStatusResultCompleted {
                                 callbacker(.value(.exchange(code: completedResult.authorizationCode.code)))
+                                callbacker(.end)
                             } else if let _ = result as? LoginStatusResultFailed {
                                 callbacker(.end(LoginError.failed))
                             } else if let pendingResult = result as? LoginStatusResultPending {
@@ -232,23 +228,23 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     .exchange(
                         grant: AuthorizationCodeGrant(code: code)
                     ) { result, error in
-                        if let success = result as? AuthTokenResultSuccess {
-                            let tokenExpirationDate = Date().addingTimeInterval(
-                                Double(success.accessToken.expiryInSeconds)
-                            )
-                            
-                            let refreshTokenExpirationDate = Date().addingTimeInterval(
-                                Double(success.refreshToken.expiryInSeconds)
-                            )
-                            
-                            callbacker(.success(
-                                token: success.accessToken.token,
-                                tokenExpirationDate: tokenExpirationDate,
-                                refreshToken: success.refreshToken.token,
-                                refreshTokenExpirationDate: refreshTokenExpirationDate
-                            ))
+                        if let successResult = result as? AuthTokenResultSuccess {
+                            ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                            callbacker(.navigationAction(action: .authSuccess))
                         }
                     }
+                
+                return DisposeBag()
+            }.finite()
+        } else if case .logout = action {
+            return Signal { callbacker in
+                if let token = ApolloClient.retreiveToken() {
+                    NetworkAuthRepository(
+                        environment: Environment.current.authEnvironment
+                    ).logout(refreshToken: token.refreshToken) { _, _ in
+                            
+                    }
+                }
                 
                 return DisposeBag()
             }.finite()

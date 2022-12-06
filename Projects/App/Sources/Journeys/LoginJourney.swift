@@ -67,10 +67,8 @@ extension AppJourney {
     fileprivate static var otp: some JourneyPresentation {
         OTPAuthJourney.login { next in
             switch next {
-            case let .success(accessToken):
-                Journey(ApolloClientSaveTokenLoader(accessToken: accessToken)) { _ in
-                    loginCompleted
-                }
+            case .success:
+                loginCompleted
             case .chat:
                 AppJourney.freeTextChat().withDismissButton
             }

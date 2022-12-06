@@ -135,6 +135,10 @@ extension BankIDLoginSweden: Presentable {
         return (
             viewController,
             Signal { callback in
+                bag += store.onAction(.navigationAction(action: .authSuccess), {
+                    callback(.loggedIn)
+                })
+                
                 bag += store.stateSignal.compactMap { state in
                     state.seBankIDState.autoStartToken
                 }.onValue { autoStartToken in

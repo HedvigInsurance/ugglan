@@ -132,7 +132,10 @@ extension BankIDLoginQR: Presentable {
         return (
             viewController,
             Signal { callback in
-
+                bag += store.onAction(.navigationAction(action: .authSuccess), {
+                    callback(.loggedIn)
+                })
+                
                 bag += moreBarButtonItem.onValue { _ in
                     let alert = Alert<Void>(actions: [
                         .init(

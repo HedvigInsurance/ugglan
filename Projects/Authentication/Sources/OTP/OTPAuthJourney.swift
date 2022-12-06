@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 
 public enum OTPAuthJourneyNext {
-    case success(accessToken: String)
+    case success
     case chat
 }
 
@@ -23,8 +23,8 @@ public struct OTPAuthJourney {
                     AuthenticationStore.self,
                     rootView: OTPCodeEntry()
                 ) { action in
-                    if case let .navigationAction(action: .authSuccess(accessToken)) = action {
-                        next(.success(accessToken: accessToken)).hidesBackButton
+                    if case let .navigationAction(action: .authSuccess) = action {
+                        next(.success).hidesBackButton
                     } else if case .navigationAction(action: .chat) = action {
                         next(.chat)
                     }

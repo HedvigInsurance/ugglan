@@ -5,6 +5,7 @@ import Flow
 import Foundation
 import UIKit
 import hAnalytics
+import authlib
 
 extension ApolloClient {
     public static var acceptLanguageHeader: String = ""
@@ -20,9 +21,13 @@ extension ApolloClient {
 
     public static var cache = InMemoryNormalizedCache()
 
-    public static func headers(token: AuthorizationToken?) -> [String: String] {
-        if let token = token {
-            return ["Authorization": token.accessToken, "Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
+    public static func headers() -> [String: String] {
+        if let token = ApolloClient.retreiveToken() {
+            return [
+                "Authorization": token.accessToken,
+                "Accept-Language": acceptLanguageHeader,
+                "User-Agent": userAgent
+            ]
         }
         
         return ["Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
@@ -44,16 +49,15 @@ extension ApolloClient {
         }
     }
 
-    public static func createClient(token: AuthorizationToken?) -> (ApolloStore, ApolloClient) {
+    public static func createClient() -> (ApolloStore, ApolloClient) {
         let environment = Environment.current
 
-        let httpAdditionalHeaders = headers(token: token)
+        let httpAdditionalHeaders = headers()
 
         let store = ApolloStore(cache: ApolloClient.cache)
 
         let networkInterceptorProvider = NetworkInterceptorProvider(
             store: store,
-            token: token,
             acceptLanguageHeader: acceptLanguageHeader,
             userAgent: userAgent,
             deviceIdentifier: getDeviceIdentifier()
@@ -93,6 +97,23 @@ extension ApolloClient {
     public static func retreiveToken() -> AuthorizationToken? {
         KeychainHelper.standard.read(key: "authorizationToken", type: AuthorizationToken.self)
     }
+    
+    public static func handleAuthTokenSuccessResult(result: AuthTokenResultSuccess) {
+        let accessTokenExpirationDate = Date().addingTimeInterval(
+            Double(result.accessToken.expiryInSeconds)
+        )
+        
+        let refreshTokenExpirationDate = Date().addingTimeInterval(
+            Double(result.refreshToken.expiryInSeconds)
+        )
+        
+        ApolloClient.saveToken(token: AuthorizationToken(
+            accessToken: result.accessToken.token,
+            accessTokenExpirationDate: accessTokenExpirationDate,
+            refreshToken: result.refreshToken.token,
+            refreshTokenExpirationDate: refreshTokenExpirationDate
+        ))
+    }
 
     public static func saveToken(token: AuthorizationToken) {
         KeychainHelper.standard.save(token, key: "authorizationToken")
@@ -100,8 +121,7 @@ extension ApolloClient {
 
     public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
         Future { completion in
-            let authorizationToken = self.retreiveToken()
-            let result = self.createClient(token: authorizationToken)
+            let result = self.createClient()
             completion(.success(result))
             return NilDisposer()
         }

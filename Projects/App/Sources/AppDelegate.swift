@@ -23,6 +23,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import Authentication
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -43,9 +44,12 @@ let log = Logger.builder
         return window
     }()
 
-    func logout(token: String?) {
+    func logout() {
         hAnalyticsEvent.loggedOut().send()
         bag.dispose()
+        
+        let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
+        authenticationStore.send(.logout)
 
         ApolloClient.cache = InMemoryNormalizedCache()
         ApolloClient.deleteToken()
@@ -55,10 +59,6 @@ let log = Logger.builder
 
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()
-
-        if let token = token {
-            ApolloClient.saveToken(token: token)
-        }
 
         setupSession()
 
@@ -101,21 +101,6 @@ let log = Logger.builder
                 }
 
                 self.handleDeepLink(dynamicLinkURL)
-            }
-    }
-
-    func setToken(_ token: String) {
-        ApolloClient.cache = InMemoryNormalizedCache()
-        ApolloClient.saveToken(token: token)
-
-        ApolloClient.initAndRegisterClient()
-            .always {
-                ChatState.shared = ChatState()
-                self.bag +=
-                    self
-                    .window.present(
-                        AppJourney.loggedIn
-                    )
             }
     }
 
@@ -210,9 +195,7 @@ let log = Logger.builder
                 ApolloClient.initAndRegisterClient()
                     .always {
                         ChatState.shared = ChatState()
-                        DispatchQueue.main.async {
-                            self.updateLanguageMutation()
-                        }
+                        self.performUpdateLanguage()
                     }
             }
 
@@ -229,6 +212,20 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        forceLogoutHook = {
+            ApplicationState.preserveState(.marketPicker)
+            UIApplication.shared.appDelegate.logout()
+            let toast = Toast(
+                symbol: .icon(hCoreUIAssets.infoShield.image),
+                body: L10n.forceLogoutMessageTitle,
+                subtitle: L10n.forceLogoutMessageSubtitle,
+                textColor: .black,
+                backgroundColor: .brand(.regularCaution)
+            )
+
+            Toasts.shared.displayToast(toast: toast)
+        }
+        
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
 
