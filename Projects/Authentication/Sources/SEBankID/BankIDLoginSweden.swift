@@ -121,7 +121,7 @@ extension BankIDLoginSweden: Presentable {
                 
                 bag += store.stateSignal.compactMap { state in
                     state.seBankIDState.autoStartToken
-                }.onValue { autoStartToken in
+                }.onFirstValue { autoStartToken in
                     let urlScheme = Bundle.main.urlScheme ?? ""
                     
                     guard

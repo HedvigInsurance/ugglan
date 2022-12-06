@@ -19,12 +19,15 @@ public struct ZignsecAuthJourney {
                     if case .navigationAction(action: .authSuccess) = action {
                         next().hidesBackButton
                     }
+                }.onDismiss {
+                    let store: AuthenticationStore = globalPresentableStoreContainer.get()
+                    store.send(.cancel)
                 }
             }
         }
         .onPresent {
             let store: AuthenticationStore = globalPresentableStoreContainer.get()
-            store.send(.otpStateAction(action: .reset))
+            store.send(.zignsecStateAction(action: .reset))
         }
     }
 }

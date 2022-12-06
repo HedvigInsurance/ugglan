@@ -28,6 +28,7 @@ struct SEBankIDState: StateProtocol {
 }
 
 struct ZignsecState: StateProtocol {
+    var isLoading: Bool = false
     var personalNumber: String = ""
     var webviewUrl: URL? = nil
     
@@ -70,6 +71,8 @@ public enum SEBankIDStateAction: ActionProtocol {
 }
 
 public enum ZignsecStateAction: ActionProtocol {
+    case reset
+    case setIsLoading(isLoading: Bool)
     case setPersonalNumber(personalNumber: String)
     case setWebviewUrl(url: URL)
     case startSession(personalNumber: String)
@@ -84,6 +87,8 @@ public enum AuthenticationAction: ActionProtocol {
     case exchange(code: String)
     case cancel
     case logout
+    case logoutSuccess
+    case logoutFailure
     case observeLoginStatus(url: URL)
     case otpStateAction(action: OTPStateAction)
     case seBankIDStateAction(action: SEBankIDStateAction)
@@ -275,15 +280,21 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 return DisposeBag()
             }.finite()
         } else if case .logout = action {
-            return Signal { callbacker in
+            return FiniteSignal { callback in
                 if let token = ApolloClient.retreiveToken() {
-                    self.networkAuthRepository.logout(refreshToken: token.refreshToken) { _, _ in
-                            
+                    self.networkAuthRepository.revoke(token: token.refreshToken) { result, _ in
+                        if let _ = result as? RevokeResultSuccess {
+                            callback(.value(.logoutSuccess))
+                        } else {
+                            callback(.value(.logoutFailure))
+                        }
                     }
+                } else {
+                    callback(.value(.logoutSuccess))
                 }
                 
                 return DisposeBag()
-            }.finite()
+            }
         } else if case .cancel = action {
             let state = getState()
             
@@ -376,6 +387,10 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             }
         case let .zignsecStateAction(action):
             switch action {
+            case .reset:
+                newState.zignsecState = ZignsecState()
+            case let .setIsLoading(isLoading):
+                newState.zignsecState.isLoading = isLoading
             case let .setPersonalNumber(personalNumber):
                 newState.zignsecState.personalNumber = personalNumber
             case let .setWebviewUrl(url):
@@ -390,6 +405,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         case .cancel:
             newState.otpState = OTPState()
             newState.seBankIDState = SEBankIDState()
+            newState.zignsecState.webviewUrl = nil
+            newState.zignsecState.isLoading = false
         default:
             break
         }

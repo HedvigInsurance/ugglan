@@ -2,6 +2,11 @@ import Apollo
 import Foundation
 import authlib
 
+enum AuthError: Error {
+    case refreshTokenExpired
+    case refreshFailed
+}
+
 class HeadersInterceptor: ApolloInterceptor {
     let acceptLanguageHeader: String
     let userAgent: String
@@ -33,6 +38,12 @@ class HeadersInterceptor: ApolloInterceptor {
             if Date().addingTimeInterval(60) > token.accessTokenExpirationDate {
                 if Date() > token.refreshTokenExpirationDate {
                     forceLogoutHook()
+                    chain.handleErrorAsync(
+                        AuthError.refreshTokenExpired,
+                        request: request,
+                        response: response,
+                        completion: completion
+                    )
                 } else {
                     NetworkAuthRepository(
                         environment: Environment.current.authEnvironment,
@@ -53,6 +64,12 @@ class HeadersInterceptor: ApolloInterceptor {
                             )
                         } else {
                             forceLogoutHook()
+                            chain.handleErrorAsync(
+                                AuthError.refreshFailed,
+                                request: request,
+                                response: response,
+                                completion: completion
+                            )
                         }
                     }
                 }

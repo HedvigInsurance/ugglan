@@ -50,23 +50,30 @@ let log = Logger.builder
         
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
         authenticationStore.send(.logout)
+        
+        bag += authenticationStore.onAction(.logoutSuccess) {
+            ApolloClient.cache = InMemoryNormalizedCache()
+            ApolloClient.deleteToken()
 
-        ApolloClient.cache = InMemoryNormalizedCache()
-        ApolloClient.deleteToken()
+            // remove all persisted state
+            globalPresentableStoreContainer.deletePersistanceContainer()
 
-        // remove all persisted state
-        globalPresentableStoreContainer.deletePersistanceContainer()
+            // create new store container to remove all old store instances
+            globalPresentableStoreContainer = PresentableStoreContainer()
 
-        // create new store container to remove all old store instances
-        globalPresentableStoreContainer = PresentableStoreContainer()
+            self.setupSession()
 
-        setupSession()
+            self.bag += ApolloClient.initAndRegisterClient()
+                .onValue { _ in
+                    ChatState.shared = ChatState()
+                    self.bag += self.window.present(AppJourney.main)
+                }
+        }
+        
+        bag += authenticationStore.onAction(.logoutFailure) {
+            Toasts.shared.displayToast(toast: .init(symbol: .icon(.remove), body: "Failed logging out"))
+        }
 
-        bag += ApolloClient.initAndRegisterClient()
-            .onValue { _ in
-                ChatState.shared = ChatState()
-                self.bag += self.window.present(AppJourney.main)
-            }
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -213,17 +220,28 @@ let log = Logger.builder
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         forceLogoutHook = {
-            ApplicationState.preserveState(.marketPicker)
-            UIApplication.shared.appDelegate.logout()
-            let toast = Toast(
-                symbol: .icon(hCoreUIAssets.infoShield.image),
-                body: L10n.forceLogoutMessageTitle,
-                subtitle: L10n.forceLogoutMessageSubtitle,
-                textColor: .black,
-                backgroundColor: .brand(.regularCaution)
-            )
+            DispatchQueue.main.async {
+                ApplicationState.preserveState(.marketPicker)
+                
+                ApplicationContext.shared.hasFinishedBootstrapping = true
+                Launch.shared.completeAnimationCallbacker.callAll()
+                
+                if ApolloClient.retreiveToken() == nil {
+                    self.bag += self.window.present(AppJourney.main)
+                } else {
+                    UIApplication.shared.appDelegate.logout()
+                }
+                
+                let toast = Toast(
+                    symbol: .icon(hCoreUIAssets.infoShield.image),
+                    body: L10n.forceLogoutMessageTitle,
+                    subtitle: L10n.forceLogoutMessageSubtitle,
+                    textColor: .black,
+                    backgroundColor: .brand(.regularCaution)
+                )
 
-            Toasts.shared.displayToast(toast: toast)
+                Toasts.shared.displayToast(toast: toast)
+            }
         }
         
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
@@ -236,9 +254,7 @@ let log = Logger.builder
 
         FirebaseApp.configure()
 
-        let launch = Launch()
-
-        let (launchView, launchFuture) = launch.materialize()
+        let (launchView, launchFuture) = Launch.shared.materialize()
         window.rootView.addSubview(launchView)
         launchView.layer.zPosition = .greatestFiniteMagnitude - 2
 
@@ -255,6 +271,11 @@ let log = Logger.builder
         trackNotificationPermission()
 
         self.setupHAnalyticsExperiments()
+        
+        // for users with old non oauth tokens, force log them out
+        if ApolloClient.retreiveToken() == nil && ApplicationState.currentState == .loggedIn {
+            forceLogoutHook()
+        }
 
         bag += ApplicationContext.shared.$hasLoadedExperiments.take(first: 1)
             .onValue { isLoaded in
@@ -271,12 +292,12 @@ let log = Logger.builder
                             .filter(predicate: { hasLoaded in hasLoaded })
                             .onValue { _ in
                                 self.bag += self.window.present(AppJourney.main)
-                                launch.completeAnimationCallbacker.callAll()
                             }
                     }
             }
 
-        bag += launchFuture.valueSignal.onValue { _ in launchView.removeFromSuperview()
+        bag += launchFuture.valueSignal.onValue { _ in
+            launchView.removeFromSuperview()
             ApplicationContext.shared.hasFinishedBootstrapping = true
 
             if Environment.hasOverridenDefault {

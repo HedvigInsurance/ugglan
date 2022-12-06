@@ -27,6 +27,9 @@ public struct ZignsecCredentialEntry: View {
 
         self.focusPersonalNumberField = false
         store.send(
+            .zignsecStateAction(action: .setIsLoading(isLoading: true))
+        )
+        store.send(
             .zignsecStateAction(
                 action: .startSession(
                     personalNumber: masking.unmaskedValue(
@@ -67,8 +70,8 @@ public struct ZignsecCredentialEntry: View {
         }
         .hFormAttachToBottom {
             PresentableStoreLens(AuthenticationStore.self, getter: { state in
-                state.zignsecState.personalNumber
-            }) { personalNumber in
+                state.zignsecState
+            }) { zignsecState in
                 hSection {
                     hButton.LargeButtonFilled {
                         onSubmit()
@@ -76,7 +79,8 @@ public struct ZignsecCredentialEntry: View {
                         hText(L10n.Login.continueButton)
                     }
                 }
-                .disabled(!masking.isValid(text: personalNumber))
+                .disabled(!masking.isValid(text: zignsecState.personalNumber))
+                .hButtonIsLoading(zignsecState.isLoading)
             }
             .presentableStoreLensAnimation(.default)
         }

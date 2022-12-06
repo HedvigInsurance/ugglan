@@ -4,6 +4,8 @@ import hCore
 import hCoreUI
 
 public struct MarketPickerView: View {
+    var onLoad: () -> Void
+    
     @ObservedObject var viewModel = MarketPickerViewModel()
     @PresentableStore var store: MarketStore
 
@@ -17,8 +19,9 @@ public struct MarketPickerView: View {
     }
 
     @State var viewState: ViewState = .loading
-
-    public init() {
+    
+    public init(onLoad: @escaping () -> Void) {
+        self.onLoad = onLoad
         ApplicationState.preserveState(.marketPicker)
 
         viewModel.fetchMarketingImage()
@@ -128,9 +131,8 @@ public struct MarketPickerView: View {
         .onReceive(viewModel.$bootStrapped) { val in
             if val {
                 hAnalyticsEvent.screenView(screen: .marketPicker).send()
-                withAnimation(.easeOut(duration: 0.5)) {
-                    self.viewState = .marketAndLanguage
-                }
+                self.viewState = .marketAndLanguage
+                onLoad()
             }
         }
     }
