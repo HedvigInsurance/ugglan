@@ -6,6 +6,7 @@ import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
+import authlib
 
 struct OTPState: StateProtocol {
     var isLoading = false
@@ -20,8 +21,15 @@ struct OTPState: StateProtocol {
     public init() {}
 }
 
+struct SEBankIDState: StateProtocol {
+    var statusUrl: URL? = nil
+    var autoStartToken: String? = nil
+    public init() {}
+}
+
 public struct AuthenticationState: StateProtocol {
     var otpState = OTPState()
+    var seBankIDState = SEBankIDState()
 
     public init() {}
 }
@@ -46,8 +54,14 @@ public enum AuthenticationNavigationAction: ActionProtocol {
     case chat
 }
 
+public enum SEBankIDStateAction: ActionProtocol {
+    case startSession
+    case updateWith(autoStartToken: String, statusUrl: URL)
+}
+
 public enum AuthenticationAction: ActionProtocol {
     case otpStateAction(action: OTPStateAction)
+    case seBankIDStateAction(action: SEBankIDStateAction)
     case navigationAction(action: AuthenticationNavigationAction)
 }
 
@@ -157,6 +171,34 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     body: L10n.Login.Snackbar.codeResent
                 )
             )
+        } else if case .seBankIDStateAction(action: .startSession) = action {
+            return Future { completion in
+                NetworkAuthRepository(environment: Environment.current.authEnvironment).startLoginAttempt(
+                    loginMethod: .seBankid,
+                    market: Localization.Locale.currentLocale.market.rawValue,
+                    personalNumber: nil,
+                    email: nil
+                ) { result, error in
+                    if
+                        let bankIdProperties = result as? AuthAttemptResultBankIdProperties,
+                        let statusUrl = URL(string: bankIdProperties.statusUrl.url)
+                    {
+                        completion(
+                            .success(
+                                .seBankIDStateAction(
+                                    action: .updateWith(
+                                        autoStartToken: bankIdProperties.autoStartToken,
+                                        statusUrl: statusUrl
+                                    )
+                                )
+                            )
+                        )
+                    }
+                }
+                
+                return DisposeBag()
+            }
+            .valueThenEndSignal
         }
 
         return nil
