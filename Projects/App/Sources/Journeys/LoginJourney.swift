@@ -80,10 +80,10 @@ extension AppJourney {
             switch hAnalyticsExperiment.loginMethod {
             case .bankIdSweden:
                 bankIDSweden
-            case .bankIdNorway:
-                bankIDSweden
-            case .nemId:
-                bankIDSweden
+            case .bankIdNorway, .nemId:
+                ZignsecAuthJourney.login {
+                    loginCompleted
+                }
             case .otp:
                 otp()
             }

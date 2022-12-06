@@ -27,11 +27,19 @@ struct SEBankIDState: StateProtocol {
     public init() {}
 }
 
+struct ZignsecState: StateProtocol {
+    var personalNumber: String = ""
+    var webviewUrl: URL? = nil
+    
+    public init() {}
+}
+
 public struct AuthenticationState: StateProtocol {
     var currentlyObservingLoginStatusUrl: URL? = nil
     var statusText: String? = nil
     var otpState = OTPState()
     var seBankIDState = SEBankIDState()
+    var zignsecState = ZignsecState()
 
     public init() {}
 }
@@ -53,11 +61,18 @@ public enum OTPStateAction: ActionProtocol {
 public enum AuthenticationNavigationAction: ActionProtocol {
     case otpCode
     case authSuccess
+    case zignsecWebview
 }
 
 public enum SEBankIDStateAction: ActionProtocol {
     case startSession
     case updateWith(autoStartToken: String)
+}
+
+public enum ZignsecStateAction: ActionProtocol {
+    case setPersonalNumber(personalNumber: String)
+    case setWebviewUrl(url: URL)
+    case startSession(personalNumber: String)
 }
 
 enum LoginError: Error {
@@ -72,6 +87,7 @@ public enum AuthenticationAction: ActionProtocol {
     case observeLoginStatus(url: URL)
     case otpStateAction(action: OTPStateAction)
     case seBankIDStateAction(action: SEBankIDStateAction)
+    case zignsecStateAction(action: ZignsecStateAction)
     case navigationAction(action: AuthenticationNavigationAction)
 }
 
@@ -274,6 +290,29 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             if let currentlyObservingLoginStatusUrl = state.currentlyObservingLoginStatusUrl {
                 cancelEffect(.observeLoginStatus(url: currentlyObservingLoginStatusUrl))
             }
+        } else if case let .zignsecStateAction(.startSession(personalNumber)) = action {            
+            return FiniteSignal { callback in
+                let bag = DisposeBag()
+                
+                self.networkAuthRepository.startLoginAttempt(
+                    loginMethod: .zignsec,
+                    market: Localization.Locale.currentLocale.market.rawValue,
+                    personalNumber: personalNumber,
+                    email: nil
+                ) { result, error in
+                    if
+                        let zignsecProperties = result as? AuthAttemptResultZignSecProperties,
+                        let statusUrl = URL(string: zignsecProperties.statusUrl.url),
+                        let webviewUrl = URL(string: zignsecProperties.redirectUrl)
+                    {
+                        callback(.value(.zignsecStateAction(action: .setWebviewUrl(url: webviewUrl))))
+                        callback(.value(.navigationAction(action: .zignsecWebview)))
+                        callback(.value(.observeLoginStatus(url: statusUrl)))
+                    }
+                }
+                
+                return bag
+            }
         }
 
         return nil
@@ -334,6 +373,15 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 newState.seBankIDState.autoStartToken = nil
             case let .updateWith(autoStartToken):
                 newState.seBankIDState.autoStartToken = autoStartToken
+            }
+        case let .zignsecStateAction(action):
+            switch action {
+            case let .setPersonalNumber(personalNumber):
+                newState.zignsecState.personalNumber = personalNumber
+            case let .setWebviewUrl(url):
+                newState.zignsecState.webviewUrl = url
+            case .startSession:
+                break
             }
         case let .setStatus(text):
             newState.statusText = text
