@@ -109,9 +109,7 @@ extension BankIDLoginQR: Presentable {
         bag += Signal(every: 10)
             .atOnce()
             .onValue({ _ in
-                UIView.transition(with: imageView, duration: 0.5) {
-                    store.send(.seBankIDStateAction(action: .startSession))
-                }
+                store.send(.seBankIDStateAction(action: .startSession))
             })
         
         bag += store.stateSignal.compactMap({ state in
@@ -126,7 +124,9 @@ extension BankIDLoginQR: Presentable {
                 return
             }
             
-            generateQRCode(url)
+            UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
+                generateQRCode(url)
+            }
         })
 
         return (
