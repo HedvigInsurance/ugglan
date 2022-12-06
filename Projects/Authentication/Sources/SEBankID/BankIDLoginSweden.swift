@@ -101,32 +101,12 @@ extension BankIDLoginSweden: Presentable {
             )
         )
         bag += alternativeLoginContainer.addArranged(alternativeLoginButton)
-
-//        let statusSignal =
-//            client.subscribe(
-//                subscription: GraphQL.AuthStatusSubscription()
-//            )
-//            .compactMap { $0.authStatus?.status }
-//
-//        bag += statusSignal.skip(first: 1)
-//            .onValue { authStatus in
-//                let statusText: String
-//
-//                switch authStatus {
-//                case .initiated:
-//                    statusText = L10n.bankIdAuthTitleInitiated
-//                case .inProgress:
-//                    statusText = L10n.bankIdAuthTitleInitiated
-//                case .failed:
-//                    statusText = L10n.bankIdAuthTitleInitiated
-//                case .success:
-//                    statusText = L10n.bankIdAuthTitleInitiated
-//                case .__unknown:
-//                    statusText = L10n.bankIdAuthTitleInitiated
-//                }
-//
-//                statusLabel.value = statusText
-//            }
+        
+        bag += store.stateSignal.compactMap({ state in
+            state.statusText
+        }).onValue({ statusText in
+            statusLabel.value = statusText
+        })
         
         bag += viewController.view.didMoveToWindowSignal.onFirstValue { _ in
             store.send(.seBankIDStateAction(action: .startSession))
@@ -191,13 +171,10 @@ extension BankIDLoginSweden: Presentable {
                         )
                     )
                 }
-
-//                bag += statusSignal.distinct()
-//                    .onValue { authState in
-//                        if authState == .success {
-//                            callback(.loggedIn)
-//                        }
-//                    }
+                
+                bag += store.onAction(.navigationAction(action: .authSuccess)) {
+                    callback(.loggedIn)
+                }
 
                 return bag
             }

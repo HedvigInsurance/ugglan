@@ -35,7 +35,7 @@ extension AppJourney {
                         case .loggedIn:
                             loginCompleted
                         case .emailLogin:
-                            otp
+                            otp(style: .detented(.large, modally: false))
                         }
                     }
                     .withJourneyDismissButton
@@ -43,7 +43,7 @@ extension AppJourney {
                 case .loggedIn:
                     loginCompleted
                 case .emailLogin:
-                    otp
+                    otp(style: .detented(.large, modally: false))
                 }
             }
             .withDismissButton
@@ -56,7 +56,7 @@ extension AppJourney {
                 case .loggedIn:
                     loginCompleted
                 case .emailLogin:
-                    otp
+                    otp(style: .detented(.large, modally: false))
                 }
             }
             .withJourneyDismissButton
@@ -64,28 +64,32 @@ extension AppJourney {
         }
     }
 
-    fileprivate static var otp: some JourneyPresentation {
+    fileprivate static func otp(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
         OTPAuthJourney.login { next in
             switch next {
             case .success:
                 loginCompleted
-            case .chat:
-                AppJourney.freeTextChat().withDismissButton
             }
         }
-        .setStyle(.detented(.large)).withDismissButton
+        .setStyle(style)
+        .withDismissButton
     }
 
     @JourneyBuilder static var login: some JourneyPresentation {
-        switch hAnalyticsExperiment.loginMethod {
-        case .bankIdSweden:
-            bankIDSweden
-        case .bankIdNorway:
-            bankIDSweden
-        case .nemId:
-            bankIDSweden
-        case .otp:
-            otp
+        GroupJourney {
+            switch hAnalyticsExperiment.loginMethod {
+            case .bankIdSweden:
+                bankIDSweden
+            case .bankIdNorway:
+                bankIDSweden
+            case .nemId:
+                bankIDSweden
+            case .otp:
+                otp()
+            }
+        }.onDismiss {
+            let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
+            authenticationStore.send(.cancel)
         }
     }
 }

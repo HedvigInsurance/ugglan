@@ -35,7 +35,8 @@ class HeadersInterceptor: ApolloInterceptor {
                     forceLogoutHook()
                 } else {
                     NetworkAuthRepository(
-                        environment: Environment.current.authEnvironment
+                        environment: Environment.current.authEnvironment,
+                        additionalHttpHeaders: ApolloClient.headers()
                     ).exchange(grant: RefreshTokenGrant(code: token.refreshToken)) { result, error in
                         if let successResult = result as? AuthTokenResultSuccess {
                             ApolloClient.handleAuthTokenSuccessResult(result: successResult)

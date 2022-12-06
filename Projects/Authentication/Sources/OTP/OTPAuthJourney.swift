@@ -7,7 +7,6 @@ import hCoreUI
 
 public enum OTPAuthJourneyNext {
     case success
-    case chat
 }
 
 public struct OTPAuthJourney {
@@ -23,23 +22,9 @@ public struct OTPAuthJourney {
                     AuthenticationStore.self,
                     rootView: OTPCodeEntry()
                 ) { action in
-                    if case let .navigationAction(action: .authSuccess) = action {
+                    if case .navigationAction(action: .authSuccess) = action {
                         next(.success).hidesBackButton
-                    } else if case .navigationAction(action: .chat) = action {
-                        next(.chat)
                     }
-                }
-                .addConfiguration { presenter in
-                    let barButtonItem = UIBarButtonItem(
-                        title: L10n.Login.NavigationBar.RightElement.help
-                    )
-
-                    presenter.bag += barButtonItem.onValue { _ in
-                        let store: AuthenticationStore = globalPresentableStoreContainer.get()
-                        store.send(.navigationAction(action: .chat))
-                    }
-
-                    presenter.viewController.navigationItem.rightBarButtonItem = barButtonItem
                 }
             }
         }

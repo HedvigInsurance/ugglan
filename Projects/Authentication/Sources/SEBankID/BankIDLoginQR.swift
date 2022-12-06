@@ -106,12 +106,17 @@ extension BankIDLoginQR: Presentable {
             imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
         }
         
-        bag += Signal(every: 75)
-            .atOnce()
-            .onValue({ _ in
-                store.send(.seBankIDStateAction(action: .startSession))
-            })
+        bag += viewController.view.didMoveToWindowSignal.onValueDisposePrevious { _ in
+            Signal(every: 75)
+                .atOnce().onValue { _ in
+                    store.send(.seBankIDStateAction(action: .startSession))
+                }
+        }
         
+        bag += viewController.view.didMoveFromWindowSignal.onValue { _ in
+            store.send(.cancel)
+        }
+                
         bag += store.stateSignal.compactMap({ state in
             state.seBankIDState.autoStartToken
         }).onValue({ autoStartToken in
@@ -121,6 +126,9 @@ extension BankIDLoginQR: Presentable {
                         "bankid:///?autostarttoken=\(autoStartToken)"
                 )
             else {
+                UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
+                    imageView.image = nil
+                }
                 return
             }
             

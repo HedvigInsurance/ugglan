@@ -148,19 +148,6 @@ extension AppJourney {
 }
 
 extension JourneyPresentation {
-    @discardableResult
-    func sendActionImmediately<S: Store>(
-        _ storeType: S.Type,
-        _ action: S.Action
-    ) -> Self {
-        return self.onPresent {
-            let store: S = self.presentable.get()
-            store.send(action)
-        }
-    }
-}
-
-extension JourneyPresentation {
     public var configureClaimsNavigation: some JourneyPresentation {
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {
