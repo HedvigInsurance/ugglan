@@ -43,6 +43,24 @@ let log = Logger.builder
         window.rootViewController = UIViewController()
         return window
     }()
+    
+    func presentMainJourney() {
+        ApolloClient.cache = InMemoryNormalizedCache()
+
+        // remove all persisted state
+        globalPresentableStoreContainer.deletePersistanceContainer()
+
+        // create new store container to remove all old store instances
+        globalPresentableStoreContainer = PresentableStoreContainer()
+
+        self.setupSession()
+
+        self.bag += ApolloClient.initAndRegisterClient()
+            .onValue { _ in
+                ChatState.shared = ChatState()
+                self.bag += self.window.present(AppJourney.main)
+            }
+    }
 
     func logout() {
         hAnalyticsEvent.loggedOut().send()
@@ -52,22 +70,8 @@ let log = Logger.builder
         authenticationStore.send(.logout)
 
         bag += authenticationStore.onAction(.logoutSuccess) {
-            ApolloClient.cache = InMemoryNormalizedCache()
             ApolloClient.deleteToken()
-
-            // remove all persisted state
-            globalPresentableStoreContainer.deletePersistanceContainer()
-
-            // create new store container to remove all old store instances
-            globalPresentableStoreContainer = PresentableStoreContainer()
-
-            self.setupSession()
-
-            self.bag += ApolloClient.initAndRegisterClient()
-                .onValue { _ in
-                    ChatState.shared = ChatState()
-                    self.bag += self.window.present(AppJourney.main)
-                }
+            self.presentMainJourney()
         }
 
         bag += authenticationStore.onAction(.logoutFailure) {
