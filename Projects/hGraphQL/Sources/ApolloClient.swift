@@ -4,8 +4,8 @@ import Disk
 import Flow
 import Foundation
 import UIKit
-import hAnalytics
 import authlib
+import hAnalytics
 
 extension ApolloClient {
     public static var acceptLanguageHeader: String = ""
@@ -26,10 +26,10 @@ extension ApolloClient {
             return [
                 "Authorization": token.accessToken,
                 "Accept-Language": acceptLanguageHeader,
-                "User-Agent": userAgent
+                "User-Agent": userAgent,
             ]
         }
-        
+
         return ["Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
     }
 
@@ -97,22 +97,26 @@ extension ApolloClient {
     public static func retreiveToken() -> AuthorizationToken? {
         KeychainHelper.standard.read(key: "authorizationToken", type: AuthorizationToken.self)
     }
-    
+
     public static func handleAuthTokenSuccessResult(result: AuthTokenResultSuccess) {
-        let accessTokenExpirationDate = Date().addingTimeInterval(
-            Double(result.accessToken.expiryInSeconds)
+        let accessTokenExpirationDate = Date()
+            .addingTimeInterval(
+                Double(result.accessToken.expiryInSeconds)
+            )
+
+        let refreshTokenExpirationDate = Date()
+            .addingTimeInterval(
+                Double(result.refreshToken.expiryInSeconds)
+            )
+
+        ApolloClient.saveToken(
+            token: AuthorizationToken(
+                accessToken: result.accessToken.token,
+                accessTokenExpirationDate: accessTokenExpirationDate,
+                refreshToken: result.refreshToken.token,
+                refreshTokenExpirationDate: refreshTokenExpirationDate
+            )
         )
-        
-        let refreshTokenExpirationDate = Date().addingTimeInterval(
-            Double(result.refreshToken.expiryInSeconds)
-        )
-        
-        ApolloClient.saveToken(token: AuthorizationToken(
-            accessToken: result.accessToken.token,
-            accessTokenExpirationDate: accessTokenExpirationDate,
-            refreshToken: result.refreshToken.token,
-            refreshTokenExpirationDate: refreshTokenExpirationDate
-        ))
     }
 
     public static func saveToken(token: AuthorizationToken) {

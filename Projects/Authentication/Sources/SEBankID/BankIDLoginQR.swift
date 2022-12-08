@@ -7,7 +7,7 @@ import hCoreUI
 
 public struct BankIDLoginQR {
     @PresentableStore var store: AuthenticationStore
-    
+
     public init() {}
 }
 
@@ -105,47 +105,54 @@ extension BankIDLoginQR: Presentable {
             imageView.backgroundColor = UIColor.brand(.secondaryBackground())
             imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
         }
-        
+
         bag += viewController.view.windowSignal.onValueDisposePrevious { window in
             if window != nil {
                 return Signal(every: 75)
-                    .atOnce().onValue { _ in
+                    .atOnce()
+                    .onValue { _ in
                         store.send(.seBankIDStateAction(action: .startSession))
                     }
             } else {
-                return Signal(after: 0).onValue { _ in
-                    store.send(.cancel)
-                }
+                return Signal(after: 0)
+                    .onValue { _ in
+                        store.send(.cancel)
+                    }
             }
         }
-                
-        bag += store.stateSignal.compactMap({ state in
-            state.seBankIDState.autoStartToken
-        }).onValue({ autoStartToken in
-            guard
-                let url = URL(
-                    string:
-                        "bankid:///?autostarttoken=\(autoStartToken)"
-                )
-            else {
-                UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
-                    imageView.image = nil
+
+        bag += store.stateSignal
+            .compactMap({ state in
+                state.seBankIDState.autoStartToken
+            })
+            .onValue({ autoStartToken in
+                guard
+                    let url = URL(
+                        string:
+                            "bankid:///?autostarttoken=\(autoStartToken)"
+                    )
+                else {
+                    UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
+                        imageView.image = nil
+                    }
+                    return
                 }
-                return
-            }
-            
-            UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
-                generateQRCode(url)
-            }
-        })
+
+                UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
+                    generateQRCode(url)
+                }
+            })
 
         return (
             viewController,
             Signal { callback in
-                bag += store.onAction(.navigationAction(action: .authSuccess), {
-                    callback(.loggedIn)
-                })
-                
+                bag += store.onAction(
+                    .navigationAction(action: .authSuccess),
+                    {
+                        callback(.loggedIn)
+                    }
+                )
+
                 bag += moreBarButtonItem.onValue { _ in
                     let alert = Alert<Void>(actions: [
                         .init(

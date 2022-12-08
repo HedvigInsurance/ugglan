@@ -19,7 +19,8 @@ public struct ZignsecAuthJourney {
                     if case .navigationAction(action: .authSuccess) = action {
                         next().hidesBackButton
                     }
-                }.onDismiss {
+                }
+                .onDismiss {
                     let store: AuthenticationStore = globalPresentableStoreContainer.get()
                     store.send(.cancel)
                 }

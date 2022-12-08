@@ -1,10 +1,10 @@
 import Apollo
+import Authentication
 import Flow
 import Foundation
+import Presentation
 import hCore
 import hGraphQL
-import Presentation
-import Authentication
 
 extension AppDelegate {
     func performUpdateLanguage() {
@@ -13,14 +13,14 @@ extension AppDelegate {
                 self.updateLanguageMutation()
             } else {
                 let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
-                
+
                 self.bag += authenticationStore.onAction(.navigationAction(action: .authSuccess)) {
                     self.updateLanguageMutation()
                 }
             }
         }
     }
-    
+
     func updateLanguageMutation(numberOfRetries: Int = 0) {
         let locale = Localization.Locale.currentLocale
         let client: ApolloClient = Dependencies.shared.resolve()
