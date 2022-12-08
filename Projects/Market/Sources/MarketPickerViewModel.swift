@@ -1,5 +1,6 @@
 import Apollo
 import Flow
+import Kingfisher
 import Presentation
 import SwiftUI
 import hCore
@@ -27,6 +28,9 @@ public class MarketPickerViewModel: ObservableObject {
                 if let blurHash = $0.blurhash, let imageURL = $0.image?.url {
                     self.blurHash = blurHash
                     self.imageURL = imageURL
+
+                    let prefetcher = ImagePrefetcher(urls: [URL(string: imageURL)!])
+                    prefetcher.start()
                 }
             }
     }
@@ -34,6 +38,7 @@ public class MarketPickerViewModel: ObservableObject {
     func detectMarketFromLocation() {
         let store: MarketStore = globalPresentableStoreContainer.get()
         let innerBag = bag.innerBag()
+
         bag += client.fetch(query: GraphQL.GeoQuery(), queue: .global(qos: .background))
             .valueSignal
             .map { $0.geo.countryIsoCode.lowercased() }
@@ -54,21 +59,11 @@ public class MarketPickerViewModel: ObservableObject {
             }
             .atValue(on: .main) { market in
                 store.send(.selectMarket(market: market))
-                innerBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
-                    .delay(by: 1.25)
-                    .take(first: 1)
-                    .map { _ in
-                        self.bootStrapped = true
-                    }
+                self.bootStrapped = true
             }
             .onError(on: .main) { _ in
                 store.send(.selectMarket(market: .sweden))
-                innerBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce()
-                    .delay(by: 1.25)
-                    .take(first: 1)
-                    .map { _ in
-                        self.bootStrapped = true
-                    }
+                self.bootStrapped = true
             }
     }
 }

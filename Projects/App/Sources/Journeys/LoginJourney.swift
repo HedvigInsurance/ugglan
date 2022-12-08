@@ -16,65 +16,81 @@ extension AppJourney {
         }
     }
 
+    @JourneyBuilder
     fileprivate static var bankIDSweden: some JourneyPresentation {
-        Journey(
-            BankIDLoginSweden(),
-            style: .detented(.medium, .large)
-        ) { result in
-            switch result {
-            case .qrCode:
-                Journey(BankIDLoginQR()) { result in
-                    switch result {
-                    case .loggedIn:
-                        loginCompleted
-                    case .emailLogin:
-                        otp
+        let bankIdAppTestUrl = URL(
+            string:
+                "bankid:///"
+        )!
+
+        if UIApplication.shared.canOpenURL(bankIdAppTestUrl) {
+            Journey(
+                BankIDLoginSweden(),
+                style: .detented(.medium, .large)
+            ) { result in
+                switch result {
+                case .qrCode:
+                    Journey(BankIDLoginQR()) { result in
+                        switch result {
+                        case .loggedIn:
+                            loginCompleted
+                        case .emailLogin:
+                            otp(style: .detented(.large, modally: false))
+                        }
                     }
+                    .withJourneyDismissButton
+                    .mapJourneyDismissToCancel
+                case .loggedIn:
+                    loginCompleted
+                case .emailLogin:
+                    otp(style: .detented(.large, modally: false))
                 }
-                .withJourneyDismissButton
-                .mapJourneyDismissToCancel
-            case .loggedIn:
-                loginCompleted
-            case .emailLogin:
-                otp
             }
+            .withDismissButton
+        } else {
+            Journey(
+                BankIDLoginQR(),
+                style: .detented(.medium, .large)
+            ) { result in
+                switch result {
+                case .loggedIn:
+                    loginCompleted
+                case .emailLogin:
+                    otp(style: .detented(.large, modally: false))
+                }
+            }
+            .withJourneyDismissButton
+            .mapJourneyDismissToCancel
         }
-        .withDismissButton
     }
 
-    fileprivate static func simpleSign(type: WebViewLoginType) -> some JourneyPresentation {
-        Journey(SimpleSignLoginView(), style: .detented(.large)) { id in
-            Journey(WebViewLogin(idNumber: id, type: type), style: .detented(.large)) { _ in
-                loginCompleted
-            }
-        }
-        .withDismissButton
-    }
-
-    fileprivate static var otp: some JourneyPresentation {
+    fileprivate static func otp(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
         OTPAuthJourney.login { next in
             switch next {
-            case let .success(accessToken):
-                Journey(ApolloClientSaveTokenLoader(accessToken: accessToken)) { _ in
-                    loginCompleted
-                }
-            case .chat:
-                AppJourney.freeTextChat().withDismissButton
+            case .success:
+                loginCompleted
             }
         }
-        .setStyle(.detented(.large)).withDismissButton
+        .setStyle(style)
+        .withDismissButton
     }
 
     @JourneyBuilder static var login: some JourneyPresentation {
-        switch hAnalyticsExperiment.loginMethod {
-        case .bankIdSweden:
-            bankIDSweden
-        case .bankIdNorway:
-            simpleSign(type: .bankIdNorway)
-        case .nemId:
-            simpleSign(type: .nemId)
-        case .otp:
-            otp
+        GroupJourney {
+            switch hAnalyticsExperiment.loginMethod {
+            case .bankIdSweden:
+                bankIDSweden
+            case .bankIdNorway, .nemId:
+                ZignsecAuthJourney.login {
+                    loginCompleted
+                }
+            case .otp:
+                otp()
+            }
+        }
+        .onDismiss {
+            let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
+            authenticationStore.send(.cancel)
         }
     }
 }

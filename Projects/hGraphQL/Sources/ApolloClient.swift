@@ -4,6 +4,7 @@ import Disk
 import Flow
 import Foundation
 import UIKit
+import authlib
 import hAnalytics
 
 extension ApolloClient {
@@ -20,8 +21,16 @@ extension ApolloClient {
 
     public static var cache = InMemoryNormalizedCache()
 
-    public static func headers(token: String?) -> [String: String] {
-        ["Authorization": token ?? "", "Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
+    public static func headers() -> [String: String] {
+        if let token = ApolloClient.retreiveToken() {
+            return [
+                "Authorization": token.accessToken,
+                "Accept-Language": acceptLanguageHeader,
+                "User-Agent": userAgent,
+            ]
+        }
+
+        return ["Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
     }
 
     public static func getDeviceIdentifier() -> String {
@@ -40,16 +49,15 @@ extension ApolloClient {
         }
     }
 
-    public static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
+    public static func createClient() -> (ApolloStore, ApolloClient) {
         let environment = Environment.current
 
-        let httpAdditionalHeaders = headers(token: token)
+        let httpAdditionalHeaders = headers()
 
         let store = ApolloStore(cache: ApolloClient.cache)
 
         let networkInterceptorProvider = NetworkInterceptorProvider(
             store: store,
-            token: token ?? "",
             acceptLanguageHeader: acceptLanguageHeader,
             userAgent: userAgent,
             deviceIdentifier: getDeviceIdentifier()
@@ -90,66 +98,34 @@ extension ApolloClient {
         KeychainHelper.standard.read(key: "authorizationToken", type: AuthorizationToken.self)
     }
 
-    public static func saveToken(token: String) {
-        let authorizationToken = AuthorizationToken(token: token)
-        KeychainHelper.standard.save(authorizationToken, key: "authorizationToken")
+    public static func handleAuthTokenSuccessResult(result: AuthTokenResultSuccess) {
+        let accessTokenExpirationDate = Date()
+            .addingTimeInterval(
+                Double(result.accessToken.expiryInSeconds)
+            )
+
+        let refreshTokenExpirationDate = Date()
+            .addingTimeInterval(
+                Double(result.refreshToken.expiryInSeconds)
+            )
+
+        ApolloClient.saveToken(
+            token: AuthorizationToken(
+                accessToken: result.accessToken.token,
+                accessTokenExpirationDate: accessTokenExpirationDate,
+                refreshToken: result.refreshToken.token,
+                refreshTokenExpirationDate: refreshTokenExpirationDate
+            )
+        )
     }
 
-    public static func createClientFromNewSession() -> Future<(ApolloStore, ApolloClient)> {
-        let campaign = GraphQL.CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
-        let mutation = GraphQL.CreateSessionMutation(campaign: campaign, trackingId: nil)
-
-        return Future { completion in let (_, client) = self.createClient(token: nil)
-
-            client.perform(mutation: mutation) { result in
-                switch result {
-                case let .success(result):
-                    guard let data = result.data else { return }
-
-                    self.saveToken(token: data.createSession)
-
-                    let result = self.createClient(token: data.createSession)
-
-                    completion(.success(result))
-                case let .failure(error): completion(.failure(error))
-                }
-            }
-
-            return Disposer { _ = client }
-        }
+    public static func saveToken(token: AuthorizationToken) {
+        KeychainHelper.standard.save(token, key: "authorizationToken")
     }
 
     public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
         Future { completion in
-            guard let keychainToken = self.retreiveToken() else {
-                // If Keychain has no entry, check back on disk and migrate that data to Keychain
-                // This is due to the fact that existing installs might rely on disk for tokens
-                guard
-                    let diskToken = try? Disk.retrieve(
-                        "authorization-token.json",
-                        from: .applicationSupport,
-                        as: AuthorizationToken.self
-                    )
-                else {
-                    // If disk also has no entry, then it's a new install on this device
-                    return self.createClientFromNewSession()
-                        .onResult { result in
-                            switch result {
-                            case let .success(result): completion(.success(result))
-                            case let .failure(error): completion(.failure(error))
-                            }
-                        }
-                        .disposable
-                }
-
-                saveToken(token: diskToken.token)
-                try? Disk.remove("authorization-token.json", from: .applicationSupport)
-                let result = self.createClient(token: diskToken.token)
-                completion(.success(result))
-                return NilDisposer()
-            }
-
-            let result = self.createClient(token: keychainToken.token)
+            let result = self.createClient()
             completion(.success(result))
             return NilDisposer()
         }

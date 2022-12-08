@@ -1,6 +1,7 @@
 import Adyen
 import AdyenActions
 import Apollo
+import Authentication
 import CoreDependencies
 import Datadog
 import DatadogCrashReporting
@@ -43,30 +44,36 @@ let log = Logger.builder
         return window
     }()
 
-    func logout(token: String?) {
+    func logout() {
         hAnalyticsEvent.loggedOut().send()
         bag.dispose()
 
-        ApolloClient.cache = InMemoryNormalizedCache()
-        ApolloClient.deleteToken()
+        let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
+        authenticationStore.send(.logout)
 
-        // remove all persisted state
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        bag += authenticationStore.onAction(.logoutSuccess) {
+            ApolloClient.cache = InMemoryNormalizedCache()
+            ApolloClient.deleteToken()
 
-        // create new store container to remove all old store instances
-        globalPresentableStoreContainer = PresentableStoreContainer()
+            // remove all persisted state
+            globalPresentableStoreContainer.deletePersistanceContainer()
 
-        if let token = token {
-            ApolloClient.saveToken(token: token)
+            // create new store container to remove all old store instances
+            globalPresentableStoreContainer = PresentableStoreContainer()
+
+            self.setupSession()
+
+            self.bag += ApolloClient.initAndRegisterClient()
+                .onValue { _ in
+                    ChatState.shared = ChatState()
+                    self.bag += self.window.present(AppJourney.main)
+                }
         }
 
-        setupSession()
+        bag += authenticationStore.onAction(.logoutFailure) {
+            Toasts.shared.displayToast(toast: .init(symbol: .icon(.remove), body: "Failed logging out"))
+        }
 
-        bag += ApolloClient.initAndRegisterClient()
-            .onValue { _ in
-                ChatState.shared = ChatState()
-                self.bag += self.window.present(AppJourney.main)
-            }
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -101,21 +108,6 @@ let log = Logger.builder
                 }
 
                 self.handleDeepLink(dynamicLinkURL)
-            }
-    }
-
-    func setToken(_ token: String) {
-        ApolloClient.cache = InMemoryNormalizedCache()
-        ApolloClient.saveToken(token: token)
-
-        ApolloClient.initAndRegisterClient()
-            .always {
-                ChatState.shared = ChatState()
-                self.bag +=
-                    self
-                    .window.present(
-                        AppJourney.loggedIn
-                    )
             }
     }
 
@@ -210,9 +202,7 @@ let log = Logger.builder
                 ApolloClient.initAndRegisterClient()
                     .always {
                         ChatState.shared = ChatState()
-                        DispatchQueue.main.async {
-                            self.updateLanguageMutation()
-                        }
+                        self.performUpdateLanguage()
                     }
             }
 
@@ -229,6 +219,31 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        forceLogoutHook = {
+            DispatchQueue.main.async {
+                ApplicationState.preserveState(.marketPicker)
+
+                ApplicationContext.shared.hasFinishedBootstrapping = true
+                Launch.shared.completeAnimationCallbacker.callAll()
+
+                if ApolloClient.retreiveToken() == nil {
+                    self.bag += self.window.present(AppJourney.main)
+                } else {
+                    UIApplication.shared.appDelegate.logout()
+                }
+
+                let toast = Toast(
+                    symbol: .icon(hCoreUIAssets.infoShield.image),
+                    body: L10n.forceLogoutMessageTitle,
+                    subtitle: L10n.forceLogoutMessageSubtitle,
+                    textColor: .black,
+                    backgroundColor: .brand(.regularCaution)
+                )
+
+                Toasts.shared.displayToast(toast: toast)
+            }
+        }
+
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
 
@@ -239,9 +254,7 @@ let log = Logger.builder
 
         FirebaseApp.configure()
 
-        let launch = Launch()
-
-        let (launchView, launchFuture) = launch.materialize()
+        let (launchView, launchFuture) = Launch.shared.materialize()
         window.rootView.addSubview(launchView)
         launchView.layer.zPosition = .greatestFiniteMagnitude - 2
 
@@ -259,6 +272,11 @@ let log = Logger.builder
 
         self.setupHAnalyticsExperiments()
 
+        // for users with old non oauth tokens, force log them out
+        if ApolloClient.retreiveToken() == nil && ApplicationState.currentState == .loggedIn {
+            forceLogoutHook()
+        }
+
         bag += ApplicationContext.shared.$hasLoadedExperiments.take(first: 1)
             .onValue { isLoaded in
                 guard isLoaded else { return }
@@ -274,12 +292,12 @@ let log = Logger.builder
                             .filter(predicate: { hasLoaded in hasLoaded })
                             .onValue { _ in
                                 self.bag += self.window.present(AppJourney.main)
-                                launch.completeAnimationCallbacker.callAll()
                             }
                     }
             }
 
-        bag += launchFuture.valueSignal.onValue { _ in launchView.removeFromSuperview()
+        bag += launchFuture.valueSignal.onValue { _ in
+            launchView.removeFromSuperview()
             ApplicationContext.shared.hasFinishedBootstrapping = true
 
             if Environment.hasOverridenDefault {

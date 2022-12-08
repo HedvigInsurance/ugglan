@@ -127,7 +127,6 @@ extension AppJourney {
                     profileTab
                 }
             )
-            .sendActionImmediately(UgglanStore.self, .validateAuthToken)
             .sendActionImmediately(ContractStore.self, .fetch)
             .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
@@ -144,19 +143,6 @@ extension AppJourney {
             if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
                 UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
             }
-        }
-    }
-}
-
-extension JourneyPresentation {
-    @discardableResult
-    func sendActionImmediately<S: Store>(
-        _ storeType: S.Type,
-        _ action: S.Action
-    ) -> Self {
-        return self.onPresent {
-            let store: S = self.presentable.get()
-            store.send(action)
         }
     }
 }

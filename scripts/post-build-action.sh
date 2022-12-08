@@ -9,6 +9,7 @@ function copyFramework() {
 copyFramework Shake
 copyFramework Odyssey
 copyFramework OdysseyKit
+copyFramework authlib
 
 rm -rf "${TARGET_BUILD_DIR}/${TARGET_NAME}.app/Frameworks/"*".framework"/Frameworks
 

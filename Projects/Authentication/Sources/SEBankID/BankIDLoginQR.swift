@@ -5,15 +5,19 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct BankIDLoginQR {}
+public struct BankIDLoginQR {
+    @PresentableStore var store: AuthenticationStore
 
-enum BankIDLoginQRResult {
+    public init() {}
+}
+
+public enum BankIDLoginQRResult {
     case loggedIn
     case emailLogin
 }
 
 extension BankIDLoginQR: Presentable {
-    func materialize() -> (UIViewController, Signal<BankIDLoginQRResult>) {
+    public func materialize() -> (UIViewController, Signal<BankIDLoginQRResult>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -25,7 +29,7 @@ extension BankIDLoginQR: Presentable {
         viewController.navigationItem.hidesBackButton = true
 
         let moreBarButtonItem = UIBarButtonItem(
-            image: Asset.menuIcon.image,
+            image: hCoreUIAssets.menuIcon.image,
             style: .plain,
             target: nil,
             action: nil
@@ -102,12 +106,52 @@ extension BankIDLoginQR: Presentable {
             imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
         }
 
-        bag += Signal(every: 10).atOnce().mapLatestToFuture { BankIDLoginSweden().generateAutoStartToken() }
-            .transition(style: .crossDissolve(duration: 0.5), with: imageView, animations: generateQRCode)
+        bag += viewController.view.windowSignal.onValueDisposePrevious { window in
+            if window != nil {
+                return Signal(every: 75)
+                    .atOnce()
+                    .onValue { _ in
+                        store.send(.seBankIDStateAction(action: .startSession))
+                    }
+            } else {
+                return Signal(after: 0)
+                    .onValue { _ in
+                        store.send(.cancel)
+                    }
+            }
+        }
+
+        bag += store.stateSignal
+            .compactMap({ state in
+                state.seBankIDState.autoStartToken
+            })
+            .onValue({ autoStartToken in
+                guard
+                    let url = URL(
+                        string:
+                            "bankid:///?autostarttoken=\(autoStartToken)"
+                    )
+                else {
+                    UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
+                        imageView.image = nil
+                    }
+                    return
+                }
+
+                UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
+                    generateQRCode(url)
+                }
+            })
 
         return (
             viewController,
             Signal { callback in
+                bag += store.onAction(
+                    .navigationAction(action: .authSuccess),
+                    {
+                        callback(.loggedIn)
+                    }
+                )
 
                 bag += moreBarButtonItem.onValue { _ in
                     let alert = Alert<Void>(actions: [

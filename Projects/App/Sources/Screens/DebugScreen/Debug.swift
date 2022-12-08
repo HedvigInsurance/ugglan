@@ -18,7 +18,6 @@ struct Debug: View {
     @State private var wsEndpointURL: String = ""
     @State private var assetsEndpointURL: String = ""
     @State private var webBaseURL: String = ""
-    @State private var authorizationToken: String = ""
     @State private var showFaultyEndpointAlert = false
 
     static var environmentOptionFromTarget: EnvironmentOption {
@@ -37,7 +36,6 @@ struct Debug: View {
         _assetsEndpointURL = State(initialValue: Environment.current.assetsEndpointURL.absoluteString)
         _webBaseURL = State(initialValue: Environment.current.webBaseURL.absoluteString)
         _pickedEnvironment = State(initialValue: Debug.environmentOptionFromTarget)
-        _authorizationToken = State(initialValue: ApolloClient.retreiveToken()?.token ?? "")
     }
 
     var body: some View {
@@ -65,7 +63,6 @@ struct Debug: View {
                         SwiftUI.TextField("Web Base URL", text: $webBaseURL)
                     }
                 }
-                Section { SwiftUI.TextField("Authorization token", text: $authorizationToken) }
                 Section {
                     SwiftUI.Button(
                         "Reset Tooltips",
@@ -85,37 +82,6 @@ struct Debug: View {
                     ForceAvailableLocales()
                 }
                 Section {
-                    SwiftUI.NavigationLink(
-                        "Exchange token",
-                        destination: ExchangeToken { token, locale in
-                            Localization.Locale.currentLocale = locale
-                            ApolloClient.cache = InMemoryNormalizedCache()
-                            ApolloClient.saveToken(token: token)
-
-                            ApolloClient.initAndRegisterClient()
-                                .always {
-                                    ChatState.shared = ChatState()
-                                    let client: ApolloClient = Dependencies.shared
-                                        .resolve()
-                                    client.perform(
-                                        mutation:
-                                            GraphQL.UpdateLanguageMutation(
-                                                language: locale.code,
-                                                pickedLocale:
-                                                    locale
-                                                    .asGraphQLLocale()
-                                            )
-                                    )
-                                    .onValue { _ in
-                                        UIApplication.shared.appDelegate.bag +=
-                                            UIApplication.shared.appDelegate
-                                            .window.present(AppJourney.main)
-                                    }
-                                }
-                        }
-                    )
-                }
-                Section {
                     SwiftUI.Button(
                         "Go to market picker",
                         action: {
@@ -130,7 +96,7 @@ struct Debug: View {
                         "Logout",
                         action: {
                             ApplicationState.preserveState(.marketPicker)
-                            UIApplication.shared.appDelegate.logout(token: nil)
+                            UIApplication.shared.appDelegate.logout()
                         }
                     )
                 }
@@ -178,7 +144,6 @@ struct Debug: View {
                         }
 
                         ApplicationState.preserveState(.loggedIn)
-                        ApolloClient.saveToken(token: self.authorizationToken)
                     }
                 )
             )

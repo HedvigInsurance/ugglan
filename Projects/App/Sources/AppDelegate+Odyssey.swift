@@ -8,7 +8,7 @@ extension AppDelegate {
     func initOdyssey() {
         OdysseyKit.initialize(
             apiUrl: Environment.current.odysseyApiURL.absoluteString,
-            authorizationToken: ApolloClient.retreiveToken()?.token ?? "",
+            authorizationToken: ApolloClient.retreiveToken()?.accessToken ?? "",
             locale: Localization.Locale.currentLocale.acceptLanguageHeader,
             enableNetworkLogs: true
         )
