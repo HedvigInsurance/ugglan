@@ -108,8 +108,31 @@ extension BankIDLoginSweden: Presentable {
             statusLabel.value = statusText
         })
         
-        bag += viewController.view.didMoveToWindowSignal.onFirstValue { _ in
+        bag += viewController.view.didMoveToWindowSignal.onValueDisposePrevious { _ in
             store.send(.seBankIDStateAction(action: .startSession))
+            
+            return store.stateSignal.compactMap { state in
+                state.seBankIDState.autoStartToken
+            }.onFirstValue { autoStartToken in
+                let urlScheme = Bundle.main.urlScheme ?? ""
+                
+                guard
+                    let url = URL(
+                        string:
+                            "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
+                    )
+                else {
+                    return
+                }
+
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(
+                        url,
+                        options: [:],
+                        completionHandler: nil
+                    )
+                }
+            }
         }
 
         return (
@@ -118,29 +141,6 @@ extension BankIDLoginSweden: Presentable {
                 bag += store.onAction(.navigationAction(action: .authSuccess), {
                     callback(.loggedIn)
                 })
-                
-                bag += store.stateSignal.compactMap { state in
-                    state.seBankIDState.autoStartToken
-                }.onFirstValue { autoStartToken in
-                    let urlScheme = Bundle.main.urlScheme ?? ""
-                    
-                    guard
-                        let url = URL(
-                            string:
-                                "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
-                        )
-                    else {
-                        return
-                    }
-
-                    if UIApplication.shared.canOpenURL(url) {
-                        UIApplication.shared.open(
-                            url,
-                            options: [:],
-                            completionHandler: nil
-                        )
-                    }
-                }
                 
                 bag += alternativeLoginButton.onTapSignal.onValue { _ in
                     let alert = Alert<Void>(actions: [
