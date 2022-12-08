@@ -10,9 +10,9 @@ import hGraphQL
 
 public struct BankIDLoginSweden {
     @PresentableStore var store: AuthenticationStore
-    
+
     public init() {
-        
+
     }
 }
 
@@ -101,47 +101,54 @@ extension BankIDLoginSweden: Presentable {
             )
         )
         bag += alternativeLoginContainer.addArranged(alternativeLoginButton)
-        
-        bag += store.stateSignal.compactMap({ state in
-            state.statusText
-        }).onValue({ statusText in
-            statusLabel.value = statusText
-        })
-        
+
+        bag += store.stateSignal
+            .compactMap({ state in
+                state.statusText
+            })
+            .onValue({ statusText in
+                statusLabel.value = statusText
+            })
+
         bag += viewController.view.didMoveToWindowSignal.onValueDisposePrevious { _ in
             store.send(.seBankIDStateAction(action: .startSession))
-            
-            return store.stateSignal.compactMap { state in
-                state.seBankIDState.autoStartToken
-            }.onFirstValue { autoStartToken in
-                let urlScheme = Bundle.main.urlScheme ?? ""
-                
-                guard
-                    let url = URL(
-                        string:
-                            "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
-                    )
-                else {
-                    return
-                }
 
-                if UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(
-                        url,
-                        options: [:],
-                        completionHandler: nil
-                    )
+            return store.stateSignal
+                .compactMap { state in
+                    state.seBankIDState.autoStartToken
                 }
-            }
+                .onFirstValue { autoStartToken in
+                    let urlScheme = Bundle.main.urlScheme ?? ""
+
+                    guard
+                        let url = URL(
+                            string:
+                                "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
+                        )
+                    else {
+                        return
+                    }
+
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(
+                            url,
+                            options: [:],
+                            completionHandler: nil
+                        )
+                    }
+                }
         }
 
         return (
             viewController,
             Signal { callback in
-                bag += store.onAction(.navigationAction(action: .authSuccess), {
-                    callback(.loggedIn)
-                })
-                
+                bag += store.onAction(
+                    .navigationAction(action: .authSuccess),
+                    {
+                        callback(.loggedIn)
+                    }
+                )
+
                 bag += alternativeLoginButton.onTapSignal.onValue { _ in
                     let alert = Alert<Void>(actions: [
                         .init(
@@ -171,7 +178,7 @@ extension BankIDLoginSweden: Presentable {
                         )
                     )
                 }
-                
+
                 bag += store.onAction(.navigationAction(action: .authSuccess)) {
                     callback(.loggedIn)
                 }

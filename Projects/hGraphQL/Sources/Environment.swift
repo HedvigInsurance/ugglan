@@ -128,7 +128,7 @@ public enum Environment: Hashable {
         case let .custom(_, _, _, webBaseURL): return webBaseURL
         }
     }
-    
+
     public var authEnvironment: AuthEnvironment {
         switch self {
         case .staging: return .staging

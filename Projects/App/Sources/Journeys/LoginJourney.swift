@@ -22,7 +22,7 @@ extension AppJourney {
             string:
                 "bankid:///"
         )!
-        
+
         if UIApplication.shared.canOpenURL(bankIdAppTestUrl) {
             Journey(
                 BankIDLoginSweden(),
@@ -87,7 +87,8 @@ extension AppJourney {
             case .otp:
                 otp()
             }
-        }.onDismiss {
+        }
+        .onDismiss {
             let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
             authenticationStore.send(.cancel)
         }

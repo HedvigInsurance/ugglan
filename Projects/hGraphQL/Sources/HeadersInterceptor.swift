@@ -33,7 +33,7 @@ class HeadersInterceptor: ApolloInterceptor {
             "User-Agent": userAgent,
             "hedvig-device-id": deviceIdentifier,
         ]
-        
+
         if let token = ApolloClient.retreiveToken() {
             if Date().addingTimeInterval(60) > token.accessTokenExpirationDate {
                 if Date() > token.refreshTokenExpirationDate {
@@ -48,13 +48,14 @@ class HeadersInterceptor: ApolloInterceptor {
                     NetworkAuthRepository(
                         environment: Environment.current.authEnvironment,
                         additionalHttpHeaders: ApolloClient.headers()
-                    ).exchange(grant: RefreshTokenGrant(code: token.refreshToken)) { result, error in
+                    )
+                    .exchange(grant: RefreshTokenGrant(code: token.refreshToken)) { result, error in
                         if let successResult = result as? AuthTokenResultSuccess {
                             ApolloClient.handleAuthTokenSuccessResult(result: successResult)
-                            
+
                             let newToken = successResult.accessToken.token
                             httpAdditionalHeaders["Authorization"] = newToken
-                            
+
                             httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
 
                             chain.proceedAsync(
@@ -75,7 +76,7 @@ class HeadersInterceptor: ApolloInterceptor {
                 }
             } else {
                 httpAdditionalHeaders["Authorization"] = token.accessToken
-                
+
                 httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
 
                 chain.proceedAsync(

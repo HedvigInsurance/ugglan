@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct MarketPickerView: View {
     var onLoad: () -> Void
-    
+
     @ObservedObject var viewModel = MarketPickerViewModel()
     @PresentableStore var store: MarketStore
 
@@ -19,8 +19,10 @@ public struct MarketPickerView: View {
     }
 
     @State var viewState: ViewState = .loading
-    
-    public init(onLoad: @escaping () -> Void) {
+
+    public init(
+        onLoad: @escaping () -> Void
+    ) {
         self.onLoad = onLoad
         ApplicationState.preserveState(.marketPicker)
 

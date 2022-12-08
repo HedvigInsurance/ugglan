@@ -1,14 +1,14 @@
 import Foundation
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 
 public struct ZignsecCredentialEntry: View {
     public init() {}
-    
+
     @PresentableStore var store: AuthenticationStore
     @hTextFieldFocusState var focusPersonalNumberField = true
-    
+
     var masking: Masking {
         switch Localization.Locale.currentLocale.market {
         case .dk:
@@ -19,7 +19,7 @@ public struct ZignsecCredentialEntry: View {
             return Masking(type: .none)
         }
     }
-    
+
     func onSubmit() {
         guard masking.isValid(text: store.state.zignsecState.personalNumber) else {
             return
@@ -39,7 +39,7 @@ public struct ZignsecCredentialEntry: View {
             )
         )
     }
-    
+
     public var body: some View {
         hForm {
             hSection {
@@ -69,9 +69,12 @@ public struct ZignsecCredentialEntry: View {
             }
         }
         .hFormAttachToBottom {
-            PresentableStoreLens(AuthenticationStore.self, getter: { state in
-                state.zignsecState
-            }) { zignsecState in
+            PresentableStoreLens(
+                AuthenticationStore.self,
+                getter: { state in
+                    state.zignsecState
+                }
+            ) { zignsecState in
                 hSection {
                     hButton.LargeButtonFilled {
                         onSubmit()

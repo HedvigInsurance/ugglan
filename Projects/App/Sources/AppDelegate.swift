@@ -1,6 +1,7 @@
 import Adyen
 import AdyenActions
 import Apollo
+import Authentication
 import CoreDependencies
 import Datadog
 import DatadogCrashReporting
@@ -23,7 +24,6 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import Authentication
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -47,10 +47,10 @@ let log = Logger.builder
     func logout() {
         hAnalyticsEvent.loggedOut().send()
         bag.dispose()
-        
+
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
         authenticationStore.send(.logout)
-        
+
         bag += authenticationStore.onAction(.logoutSuccess) {
             ApolloClient.cache = InMemoryNormalizedCache()
             ApolloClient.deleteToken()
@@ -69,7 +69,7 @@ let log = Logger.builder
                     self.bag += self.window.present(AppJourney.main)
                 }
         }
-        
+
         bag += authenticationStore.onAction(.logoutFailure) {
             Toasts.shared.displayToast(toast: .init(symbol: .icon(.remove), body: "Failed logging out"))
         }
@@ -222,16 +222,16 @@ let log = Logger.builder
         forceLogoutHook = {
             DispatchQueue.main.async {
                 ApplicationState.preserveState(.marketPicker)
-                
+
                 ApplicationContext.shared.hasFinishedBootstrapping = true
                 Launch.shared.completeAnimationCallbacker.callAll()
-                
+
                 if ApolloClient.retreiveToken() == nil {
                     self.bag += self.window.present(AppJourney.main)
                 } else {
                     UIApplication.shared.appDelegate.logout()
                 }
-                
+
                 let toast = Toast(
                     symbol: .icon(hCoreUIAssets.infoShield.image),
                     body: L10n.forceLogoutMessageTitle,
@@ -243,7 +243,7 @@ let log = Logger.builder
                 Toasts.shared.displayToast(toast: toast)
             }
         }
-        
+
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
 
@@ -271,7 +271,7 @@ let log = Logger.builder
         trackNotificationPermission()
 
         self.setupHAnalyticsExperiments()
-        
+
         // for users with old non oauth tokens, force log them out
         if ApolloClient.retreiveToken() == nil && ApplicationState.currentState == .loggedIn {
             forceLogoutHook()
