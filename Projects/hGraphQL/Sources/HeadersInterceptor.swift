@@ -33,62 +33,22 @@ class HeadersInterceptor: ApolloInterceptor {
             "User-Agent": userAgent,
             "hedvig-device-id": deviceIdentifier,
         ]
-
-        if let token = ApolloClient.retreiveToken() {
-            if Date().addingTimeInterval(60) > token.accessTokenExpirationDate {
-                if Date() > token.refreshTokenExpirationDate {
-                    forceLogoutHook()
-                    chain.handleErrorAsync(
-                        AuthError.refreshTokenExpired,
-                        request: request,
-                        response: response,
-                        completion: completion
-                    )
-                } else {
-                    NetworkAuthRepository(
-                        environment: Environment.current.authEnvironment,
-                        additionalHttpHeaders: ApolloClient.headers()
-                    )
-                    .exchange(grant: RefreshTokenGrant(code: token.refreshToken)) { result, error in
-                        if let successResult = result as? AuthTokenResultSuccess {
-                            ApolloClient.handleAuthTokenSuccessResult(result: successResult)
-
-                            let newToken = successResult.accessToken.token
-                            httpAdditionalHeaders["Authorization"] = newToken
-
-                            httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
-
-                            chain.proceedAsync(
-                                request: request,
-                                response: response,
-                                completion: completion
-                            )
-                        } else {
-                            forceLogoutHook()
-                            chain.handleErrorAsync(
-                                AuthError.refreshFailed,
-                                request: request,
-                                response: response,
-                                completion: completion
-                            )
-                        }
-                    }
-                }
-            } else {
+        
+        TokenRefresher.shared.refreshIfNeeded().onValue {
+            if let token = ApolloClient.retreiveToken() {
                 httpAdditionalHeaders["Authorization"] = token.accessToken
-
-                httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
-
-                chain.proceedAsync(
-                    request: request,
-                    response: response,
-                    completion: completion
-                )
             }
-        } else {
+            
             httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
-
+            
             chain.proceedAsync(
+                request: request,
+                response: response,
+                completion: completion
+            )
+        }.onError { error in
+            chain.handleErrorAsync(
+                error,
                 request: request,
                 response: response,
                 completion: completion

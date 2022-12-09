@@ -102,7 +102,7 @@ extension ApolloClient {
         KeychainHelper.standard.read(key: "authorizationToken", type: AuthorizationToken.self)
     }
     
-    public static func deleeMigratableToken() {
+    public static func deleteMigratableToken() {
         KeychainHelper.standard.delete(key: "authorizationToken")
     }
 
