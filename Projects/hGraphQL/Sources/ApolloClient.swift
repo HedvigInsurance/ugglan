@@ -91,11 +91,19 @@ extension ApolloClient {
     }
 
     public static func deleteToken() {
-        KeychainHelper.standard.delete(key: "authorizationToken")
+        KeychainHelper.standard.delete(key: "oAuthorizationToken")
     }
 
-    public static func retreiveToken() -> AuthorizationToken? {
+    public static func retreiveToken() -> OAuthorizationToken? {
+        KeychainHelper.standard.read(key: "oAuthorizationToken", type: OAuthorizationToken.self)
+    }
+    
+    public static func retreiveMigratableToken() -> AuthorizationToken? {
         KeychainHelper.standard.read(key: "authorizationToken", type: AuthorizationToken.self)
+    }
+    
+    public static func deleeMigratableToken() {
+        KeychainHelper.standard.delete(key: "authorizationToken")
     }
 
     public static func handleAuthTokenSuccessResult(result: AuthTokenResultSuccess) {
@@ -110,7 +118,7 @@ extension ApolloClient {
             )
 
         ApolloClient.saveToken(
-            token: AuthorizationToken(
+            token: OAuthorizationToken(
                 accessToken: result.accessToken.token,
                 accessTokenExpirationDate: accessTokenExpirationDate,
                 refreshToken: result.refreshToken.token,
@@ -119,8 +127,8 @@ extension ApolloClient {
         )
     }
 
-    public static func saveToken(token: AuthorizationToken) {
-        KeychainHelper.standard.save(token, key: "authorizationToken")
+    public static func saveToken(token: OAuthorizationToken) {
+        KeychainHelper.standard.save(token, key: "oAuthorizationToken")
     }
 
     public static func initClient() -> Future<(ApolloStore, ApolloClient)> {

@@ -1,20 +1,13 @@
 import Foundation
 
 public struct AuthorizationToken: Codable {
-    public var accessToken: String
-    public var accessTokenExpirationDate: Date
-    public var refreshToken: String
-    public var refreshTokenExpirationDate: Date
+    public var token: String
 
-    public init(
-        accessToken: String,
-        accessTokenExpirationDate: Date,
-        refreshToken: String,
-        refreshTokenExpirationDate: Date
-    ) {
-        self.accessToken = accessToken
-        self.accessTokenExpirationDate = accessTokenExpirationDate
-        self.refreshToken = refreshToken
-        self.refreshTokenExpirationDate = refreshTokenExpirationDate
+    init(token: String) { self.token = token }
+
+    public var urlEncodedString: String? {
+        let allowedCharacters = CharacterSet(charactersIn: "=").inverted
+
+        return token.addingPercentEncoding(withAllowedCharacters: allowedCharacters)
     }
 }

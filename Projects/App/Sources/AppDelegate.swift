@@ -277,7 +277,8 @@ let log = Logger.builder
         self.setupHAnalyticsExperiments()
 
         // for users with old non oauth tokens, force log them out
-        if ApolloClient.retreiveToken() == nil && ApplicationState.currentState == .loggedIn {
+        if ApolloClient.retreiveMigratableToken() == nil && ApplicationState.currentState == .loggedIn {
+            // TODO migrate old token
             forceLogoutHook()
         }
 
