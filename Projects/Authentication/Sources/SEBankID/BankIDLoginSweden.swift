@@ -108,37 +108,37 @@ extension BankIDLoginSweden: Presentable {
             })
             .onValue({ statusText in
                 statusLabel.value = statusText
+                containerView.layoutIfNeeded()
             })
+        
+        store.send(.seBankIDStateAction(action: .startSession))
+        
+        bag += store.stateSignal
+            .compactMap { state in
+                state.seBankIDState.autoStartToken
+            }
+            .distinct()
+            .onValue { autoStartToken in
+                let urlScheme = Bundle.main.urlScheme ?? ""
 
-        bag += viewController.view.didMoveToWindowSignal.onValueDisposePrevious { _ in
-            store.send(.seBankIDStateAction(action: .startSession))
-
-            return store.stateSignal
-                .compactMap { state in
-                    state.seBankIDState.autoStartToken
+                guard
+                    let url = URL(
+                        string:
+                            "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
+                    )
+                else {
+                    return
                 }
-                .onFirstValue { autoStartToken in
-                    let urlScheme = Bundle.main.urlScheme ?? ""
 
-                    guard
-                        let url = URL(
-                            string:
-                                "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
-                        )
-                    else {
-                        return
-                    }
-
-                    if UIApplication.shared.canOpenURL(url) {
-                        UIApplication.shared.open(
-                            url,
-                            options: [:],
-                            completionHandler: nil
-                        )
-                    }
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(
+                        url,
+                        options: [:],
+                        completionHandler: nil
+                    )
                 }
-        }
-
+            }
+        
         return (
             viewController,
             Signal { callback in
@@ -146,6 +146,13 @@ extension BankIDLoginSweden: Presentable {
                     .navigationAction(action: .authSuccess),
                     {
                         callback(.loggedIn)
+                    }
+                )
+                
+                bag += store.onAction(
+                    .loginFailure,
+                    {
+                        store.send(.seBankIDStateAction(action: .startSession))
                     }
                 )
 
@@ -177,10 +184,6 @@ extension BankIDLoginSweden: Presentable {
                             rect: alternativeLoginContainer.frame
                         )
                     )
-                }
-
-                bag += store.onAction(.navigationAction(action: .authSuccess)) {
-                    callback(.loggedIn)
                 }
 
                 return bag

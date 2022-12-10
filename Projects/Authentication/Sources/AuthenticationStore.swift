@@ -89,6 +89,7 @@ public enum AuthenticationAction: ActionProtocol {
     case logout
     case logoutSuccess
     case logoutFailure
+    case loginFailure
     case observeLoginStatus(url: URL)
     case otpStateAction(action: OTPStateAction)
     case seBankIDStateAction(action: SEBankIDStateAction)
@@ -267,6 +268,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                                     callbacker(.value(.exchange(code: completedResult.authorizationCode.code)))
                                     callbacker(.end)
                                 } else if let _ = result as? LoginStatusResultFailed {
+                                    callbacker(.value(.loginFailure))
                                     callbacker(.end(LoginError.failed))
                                 } else if let pendingResult = result as? LoginStatusResultPending {
                                     callbacker(.value(.setStatus(text: pendingResult.statusMessage)))
