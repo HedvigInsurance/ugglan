@@ -13,7 +13,7 @@ struct ContinueButton: View {
             hButton.LargeButtonFilled {
                 if let embarkStoryName = crossSell.embarkStoryName {
                     store.send(.crossSellingDetailEmbark(name: embarkStoryName))
-                } else if let url = crossSell.webActionURL {
+                } else if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
                     store.send(.crossSellWebAction(url: url))
                 }
             } content: {

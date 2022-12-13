@@ -54,7 +54,7 @@ public struct CrossSellingDetail: View {
 public enum CrossSellingDetailResult {
     case embark(name: String)
     case chat
-    case web(url: String)
+    case web(url: URL)
 }
 
 extension CrossSellingDetail {
