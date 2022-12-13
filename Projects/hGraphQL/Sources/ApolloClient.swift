@@ -105,6 +105,30 @@ extension ApolloClient {
     public static func deleteMigratableToken() {
         KeychainHelper.standard.delete(key: "authorizationToken")
     }
+    
+    public static func migrateOldTokenIfNeeded() -> Future<Void> {
+        Future { completion in
+            if let migrateableToken = retreiveMigratableToken() {
+                NetworkAuthRepository(
+                    environment: Environment.current.authEnvironment,
+                    additionalHttpHeaders: ApolloClient.headers()
+                ).migrateOldToken(token: migrateableToken.token) { result, _ in
+                    if let success = result as? AuthTokenResultSuccess {
+                        ApolloClient.handleAuthTokenSuccessResult(result: success)
+                    } else {
+                        forceLogoutHook()
+                    }
+                    
+                    completion(.success)
+                }
+            } else {
+                completion(.success)
+            }
+            
+            return NilDisposer()
+        }
+    }
+    
 
     public static func handleAuthTokenSuccessResult(result: AuthTokenResultSuccess) {
         let accessTokenExpirationDate = Date()

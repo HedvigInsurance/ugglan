@@ -271,36 +271,7 @@ let log = Logger.builder
 
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
-
-        trackNotificationPermission()
-
-        self.setupHAnalyticsExperiments()
-
-        // for users with old non oauth tokens, force log them out
-        if ApolloClient.retreiveMigratableToken() != nil && ApplicationState.currentState == .loggedIn {
-            // TODO migrate old token
-            forceLogoutHook()
-        }
-
-        bag += ApplicationContext.shared.$hasLoadedExperiments.take(first: 1)
-            .onValue { isLoaded in
-                guard isLoaded else { return }
-                self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-                    .atValue { _ in
-                        self.initOdyssey()
-
-                        Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
-
-                        AnalyticsCoordinator().setUserId()
-
-                        self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
-                            .filter(predicate: { hasLoaded in hasLoaded })
-                            .onValue { _ in
-                                self.bag += self.window.present(AppJourney.main)
-                            }
-                    }
-            }
-
+        
         bag += launchFuture.valueSignal.onValue { _ in
             launchView.removeFromSuperview()
             ApplicationContext.shared.hasFinishedBootstrapping = true
@@ -324,6 +295,31 @@ let log = Logger.builder
 
                 Toasts.shared.displayToast(toast: toast)
             }
+        }
+        
+        ApolloClient.migrateOldTokenIfNeeded().onValue { _ in
+            self.trackNotificationPermission()
+            self.setupHAnalyticsExperiments()
+            
+            self.bag += ApplicationContext.shared.$hasLoadedExperiments
+                .atOnce()
+                .onValue { isLoaded in
+                    guard isLoaded else { return }
+                    self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
+                        .atValue { _ in
+                            self.initOdyssey()
+
+                            Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+
+                            AnalyticsCoordinator().setUserId()
+
+                            self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
+                                .filter(predicate: { hasLoaded in hasLoaded })
+                                .onValue { _ in
+                                    self.bag += self.window.present(AppJourney.main)
+                                }
+                        }
+                }
         }
 
         return true
