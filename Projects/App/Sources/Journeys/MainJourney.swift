@@ -1,3 +1,4 @@
+import Authentication
 import Flow
 import Foundation
 import Market
@@ -35,6 +36,11 @@ extension AppJourney {
         .onAction(UgglanStore.self) { action in
             if action == .showLoggedIn {
                 AppJourney.loggedIn
+            }
+        }
+        .onAction(AuthenticationStore.self) { action in
+            if action == .navigationAction(action: .impersonation) {
+                AppJourney.impersonationSettings
             }
         }
     }

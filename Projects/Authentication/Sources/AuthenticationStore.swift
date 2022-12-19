@@ -62,6 +62,7 @@ public enum OTPStateAction: ActionProtocol {
 public enum AuthenticationNavigationAction: ActionProtocol {
     case otpCode
     case authSuccess
+    case impersonation
     case zignsecWebview
 }
 
@@ -85,6 +86,7 @@ enum LoginError: Error {
 public enum AuthenticationAction: ActionProtocol {
     case setStatus(text: String?)
     case exchange(code: String)
+    case impersonate(code: String)
     case cancel
     case logout
     case logoutSuccess
@@ -295,6 +297,22 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         }
                     }
 
+                return DisposeBag()
+            }
+            .finite()
+        } else if case let .impersonate(code) = action {
+            return Signal { callbacker in
+                DispatchQueue.main.async {
+                    self.networkAuthRepository
+                        .exchange(
+                            grant: AuthorizationCodeGrant(code: code)
+                        ) { result, error in
+                            if let successResult = result as? AuthTokenResultSuccess {
+                                ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                                callbacker(.navigationAction(action: .impersonation))
+                            }
+                        }
+                }
                 return DisposeBag()
             }
             .finite()
