@@ -40,7 +40,9 @@ extension AppJourney {
         }
         .onAction(AuthenticationStore.self) { action in
             if action == .navigationAction(action: .impersonation) {
-                AppJourney.impersonationSettings
+                AppJourney.impersonationSettings.onPresent {
+                    Launch.shared.completeAnimationCallbacker.callAll()
+                }
             }
         }
     }
