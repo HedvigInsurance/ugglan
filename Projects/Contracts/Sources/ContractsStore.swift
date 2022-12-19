@@ -76,6 +76,7 @@ public enum ContractAction: ActionProtocol {
     case openCrossSellingChat
 
     case crossSellingDetailEmbark(name: String)
+    case crossSellWebAction(url: URL)
     case crossSellingCoverageDetailNavigation(action: CrossSellingCoverageDetailNavigationAction)
     case crossSellingFAQListNavigation(action: CrossSellingFAQListNavigationAction)
     case openCrossSellingDetail(crossSell: CrossSell)

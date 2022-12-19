@@ -35,6 +35,8 @@ extension AppJourney {
                     AppJourney.crossSellingEmbarkJourney(name: name, style: .default)
                 case .chat:
                     AppJourney.freeTextChat().withDismissButton
+                case let .web(url):
+                    AppJourney.webRedirect(url: url)
                 }
             }
     }
