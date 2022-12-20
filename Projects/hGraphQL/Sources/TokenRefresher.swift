@@ -3,8 +3,8 @@ import Apollo
 import Flow
 import authlib
 
-class TokenRefresher {
-    static let shared = TokenRefresher()
+public class TokenRefresher {
+    public static let shared = TokenRefresher()
     
     var isRefreshing: ReadWriteSignal<Bool> = ReadWriteSignal(false)
     
@@ -16,7 +16,7 @@ class TokenRefresher {
         return Date().addingTimeInterval(60) > token.accessTokenExpirationDate
     }
     
-    func refreshIfNeeded() -> Future<Void> {
+    public func refreshIfNeeded() -> Future<Void> {
         guard let token = ApolloClient.retreiveToken() else {
             return Future(result: .success)
         }
