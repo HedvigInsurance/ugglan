@@ -69,15 +69,8 @@ let log = Logger.builder
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
         authenticationStore.send(.logout)
 
-        bag += authenticationStore.onAction(.logoutSuccess) {
-            ApolloClient.deleteToken()
-            self.presentMainJourney()
-        }
-
-        bag += authenticationStore.onAction(.logoutFailure) {
-            Toasts.shared.displayToast(toast: .init(symbol: .icon(.remove), body: "Failed logging out"))
-        }
-
+        ApolloClient.deleteToken()
+        self.presentMainJourney()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -223,31 +216,6 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        forceLogoutHook = {
-            DispatchQueue.main.async {
-                ApplicationState.preserveState(.marketPicker)
-
-                ApplicationContext.shared.hasFinishedBootstrapping = true
-                Launch.shared.completeAnimationCallbacker.callAll()
-
-                if ApolloClient.retreiveToken() == nil {
-                    self.bag += self.window.present(AppJourney.main)
-                } else {
-                    UIApplication.shared.appDelegate.logout()
-                }
-
-                let toast = Toast(
-                    symbol: .icon(hCoreUIAssets.infoShield.image),
-                    body: L10n.forceLogoutMessageTitle,
-                    subtitle: L10n.forceLogoutMessageSubtitle,
-                    textColor: .black,
-                    backgroundColor: .brand(.regularCaution)
-                )
-
-                Toasts.shared.displayToast(toast: toast)
-            }
-        }
-
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
 
@@ -261,6 +229,29 @@ let log = Logger.builder
         let (launchView, launchFuture) = Launch.shared.materialize()
         window.rootView.addSubview(launchView)
         launchView.layer.zPosition = .greatestFiniteMagnitude - 2
+        
+        forceLogoutHook = {
+            DispatchQueue.main.async {
+                launchView.removeFromSuperview()
+                
+                ApplicationState.preserveState(.marketPicker)
+
+                ApplicationContext.shared.hasFinishedBootstrapping = true
+                Launch.shared.completeAnimationCallbacker.callAll()
+
+                UIApplication.shared.appDelegate.logout()
+
+                let toast = Toast(
+                    symbol: .icon(hCoreUIAssets.infoShield.image),
+                    body: L10n.forceLogoutMessageTitle,
+                    subtitle: L10n.forceLogoutMessageSubtitle,
+                    textColor: .black,
+                    backgroundColor: .brand(.regularCaution)
+                )
+
+                Toasts.shared.displayToast(toast: toast)
+            }
+        }
 
         window.rootViewController = UIViewController()
         window.makeKeyAndVisible()
