@@ -31,11 +31,6 @@ import hGraphQL
     #endif
 #endif
 
-let log = Logger.builder
-    .sendNetworkInfo(true)
-    .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
-    .build()
-
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let window: UIWindow = {
@@ -216,6 +211,11 @@ let log = Logger.builder
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        hGraphQL.log = Logger.builder
+            .sendNetworkInfo(true)
+            .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
+            .build()
+        
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
 
