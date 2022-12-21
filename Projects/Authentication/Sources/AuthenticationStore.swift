@@ -62,6 +62,7 @@ public enum OTPStateAction: ActionProtocol {
 public enum AuthenticationNavigationAction: ActionProtocol {
     case otpCode
     case authSuccess
+    case impersonation
     case zignsecWebview
 }
 
@@ -85,6 +86,7 @@ enum LoginError: Error {
 public enum AuthenticationAction: ActionProtocol {
     case setStatus(text: String?)
     case exchange(code: String)
+    case impersonate(code: String)
     case cancel
     case logout
     case logoutSuccess
@@ -285,16 +287,19 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             }
         } else if case let .exchange(code) = action {
             return Signal { callbacker in
-                self.networkAuthRepository
-                    .exchange(
-                        grant: AuthorizationCodeGrant(code: code)
-                    ) { result, error in
-                        if let successResult = result as? AuthTokenResultSuccess {
-                            ApolloClient.handleAuthTokenSuccessResult(result: successResult)
-                            callbacker(.navigationAction(action: .authSuccess))
-                        }
-                    }
-
+                self.exchange(code: code) { successResult in
+                    ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                    callbacker(.navigationAction(action: .authSuccess))
+                }
+                return DisposeBag()
+            }
+            .finite()
+        } else if case let .impersonate(code) = action {
+            return Signal { callbacker in
+                self.exchange(code: code) { successResult in
+                    ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                    callbacker(.navigationAction(action: .impersonation))
+                }
                 return DisposeBag()
             }
             .finite()
@@ -430,5 +435,21 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         }
 
         return newState
+    }
+
+    private func exchange(
+        code: String,
+        onSuccess: @escaping (AuthTokenResultSuccess) -> Void
+    ) {
+        DispatchQueue.main.async {
+            self.networkAuthRepository
+                .exchange(
+                    grant: AuthorizationCodeGrant(code: code)
+                ) { result, error in
+                    if let successResult = result as? AuthTokenResultSuccess {
+                        onSuccess(successResult)
+                    }
+                }
+        }
     }
 }
