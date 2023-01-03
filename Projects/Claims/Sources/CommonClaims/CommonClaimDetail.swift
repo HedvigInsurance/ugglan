@@ -75,8 +75,8 @@ extension CommonClaimDetail: Presentable {
 
             bag += claimButton.onTapSignal.onValue {
                 hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
-                switch claim.id {
-                case "6":
+                switch itemTypeFromId(id: claim.id, locale: .currentLocale) {
+                case .phone:
                     store.send(.submitNewClaim(from: .brokenPhone))
                 default:
                     store.send(.submitNewClaim(from: .commonClaims))
@@ -94,5 +94,24 @@ extension CommonClaimDetail: Presentable {
         viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .commonClaimDetail))
 
         return (viewController, bag)
+    }
+
+    public func itemTypeFromId(id: String, locale: Localization.Locale) -> CommonClaim.CommonClaimItemType? {
+        switch locale {
+        case .en_SE:
+            return id == "6" ? .phone : nil
+        case .sv_SE:
+            return id == "5" ? .phone : nil
+        case .nb_NO:
+            return id == "14" ? .phone : nil
+        case .en_NO:
+            return id == "15" ? .phone : nil
+        case .da_DK:
+            return id == "21" ? .phone : nil
+        case .en_DK:
+            return id == "22" ? .phone : nil
+        default:
+            return nil
+        }
     }
 }
