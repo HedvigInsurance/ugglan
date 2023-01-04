@@ -4,13 +4,13 @@ import Foundation
 import Presentation
 import SnapshotTesting
 import SwiftUI
+import TestDependencies
 import Testing
 import TestingUtil
 import XCTest
 import hCore
 import hCoreUI
 import hGraphQL
-import TestDependencies
 
 @testable import Home
 
@@ -33,10 +33,7 @@ class HomeTests: XCTestCase {
             Journey(
                 Home(
                     claimsContent: EmptyView(),
-                    commonClaims: EmptyView(),
-                    {
-
-                    }
+                    commonClaims: EmptyView()
                 ),
                 options: [
                     .defaults, .prefersLargeTitles(true),
