@@ -46,7 +46,13 @@ public enum ClaimsOrigin: Codable {
         let scopeValues = ScopeValues()
         switch self {
         case .brokenPhone:
-            scopeValues.setValue(key: InitialDataScopeValueKey.shared, value: ["itemType": "PHONE"])
+            scopeValues.setValue(
+                key: InitialDataScopeValueKey.shared,
+                value: [
+                    "itemType": "PHONE",
+                    "itemProblem": "BROKEN",
+                ]
+            )
         default:
             break
         }
