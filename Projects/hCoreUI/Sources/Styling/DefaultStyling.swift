@@ -193,6 +193,8 @@ extension DefaultStyling {
             [NSAttributedString.Key.foregroundColor: UIColor.clear],
             for: .highlighted
         )
+        
+        UIDatePicker.appearance().tintColor = .brand(.link)
 
         UIImageView.appearance().tintColor = .brand(.primaryTintColor)
         UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(.link)
