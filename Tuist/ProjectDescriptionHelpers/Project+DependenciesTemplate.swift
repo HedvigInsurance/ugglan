@@ -99,7 +99,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .odysseyKit:
             return [
-                .package(url: "https://github.com/HedvigInsurance/OdysseyKit.git", .exact("1.169.0"))
+                .package(url: "https://github.com/HedvigInsurance/OdysseyKit.git", .exact("1.184.0"))
             ]
         case .authlib:
             return [
