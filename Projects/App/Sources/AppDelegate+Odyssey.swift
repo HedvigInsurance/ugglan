@@ -16,17 +16,40 @@ extension TokenRefresher: OdysseyKit.AccessTokenProvider {
     }
 }
 
-class OdysseyDatadogSpanProvider: DatadogSpanProvider {
+class OdysseyDatadogLogger: DatadogLogger {
+    func debug(tag: String, message: String) {
+        log.debug("\(tag) : \(message)")
+    }
+
+    func error(tag: String, message: String) {
+        log.error("\(tag) : \(message)")
+    }
+
+    func info(tag: String, message: String) {
+        log.info("\(tag) : \(message)")
+    }
+
+    func warn(tag: String, message: String) {
+        log.warn("\(tag) : \(message)")
+    }
+}
+
+
+class OdysseyDatadogProvider: DatadogProvider {
+    let serialQueue = DispatchQueue(label: "datadog.span.serial.queue")
+
     var spans: [String: OTSpan] = [:]
 
     func end(response: OdysseyHTTPResponse) {
-        if let spanId = response.getAttribute(key: "span-id"),
-            let span = spans[spanId]
-        {
-            span.setTag(key: "http.status_code", value: response.statusCode)
+        serialQueue.sync {
+            if let spanId = response.getAttribute(key: "span-id"),
+                let span = spans[spanId]
+            {
+                span.setTag(key: "http.status_code", value: response.statusCode)
 
-            spans[spanId]?.finish()
-            spans[spanId] = nil
+                spans[spanId]?.finish()
+                spans[spanId] = nil
+            }
         }
     }
 
@@ -36,7 +59,9 @@ class OdysseyDatadogSpanProvider: DatadogSpanProvider {
         )
         let spanId = UUID().uuidString
 
-        spans[spanId] = span
+        serialQueue.sync {
+            spans[spanId] = span
+        }
 
         span.setTag(key: "http.url", value: request.url)
         span.setTag(key: "http.method", value: request.method)
@@ -48,16 +73,19 @@ class OdysseyDatadogSpanProvider: DatadogSpanProvider {
 
         return headersWriter.tracePropagationHTTPHeaders
     }
+
+    var logger: DatadogLogger = OdysseyDatadogLogger()
 }
+
 
 extension AppDelegate {
     func initOdyssey() {
         OdysseyKit.initialize(
             apiUrl: Environment.current.odysseyApiURL.absoluteString,
             accessTokenProvider: TokenRefresher.shared,
-            datadogSpanProvider: OdysseyDatadogSpanProvider(),
+            datadogProvider: OdysseyDatadogProvider(),
             locale: Localization.Locale.currentLocale.acceptLanguageHeader,
-            enableNetworkLogs: true
+            enableNetworkLogs: false
         )
     }
 }
