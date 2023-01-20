@@ -37,21 +37,17 @@ public enum ClaimsAction: ActionProtocol {
     case odysseyRedirect(url: String)
 }
 
-public enum ClaimsOrigin: Codable {
+public enum ClaimsOrigin: Codable, Equatable {
     case generic
-    case brokenPhone
-    case commonClaims
+    case commonClaims(id: String)
 
-    public var initialDataScopeValues: ScopeValues {
+    public var initialScopeValues: ScopeValues {
         let scopeValues = ScopeValues()
         switch self {
-        case .brokenPhone:
+        case let .commonClaims(id):
             scopeValues.setValue(
-                key: InitialDataScopeValueKey.shared,
-                value: [
-                    "itemType": "PHONE",
-                    "itemProblem": "BROKEN",
-                ]
+                key: CommonClaimIdScopeValueKey.shared,
+                value: id
             )
         default:
             break

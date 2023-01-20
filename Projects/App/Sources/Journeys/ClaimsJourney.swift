@@ -81,7 +81,7 @@ extension AppJourney {
         return OdysseyRoot(
             name: "mainRouter",
             initialURL: "/automation-claim",
-            scopeValues: origin.initialDataScopeValues
+            scopeValues: origin.initialScopeValues
         ) { destinationURL in
             let store: ClaimsStore = globalPresentableStoreContainer.get()
             store.send(.odysseyRedirect(url: destinationURL))
