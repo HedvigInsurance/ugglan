@@ -20,6 +20,7 @@ public enum BankIDLoginSwedenResult {
     case qrCode
     case emailLogin
     case loggedIn
+    case close
 }
 
 extension BankIDLoginSweden {
@@ -108,16 +109,17 @@ extension BankIDLoginSweden: Presentable {
             })
             .onValue({ statusText in
                 statusLabel.value = statusText
+                containerView.setNeedsLayout()
                 containerView.layoutIfNeeded()
             })
         
-        store.send(.seBankIDStateAction(action: .startSession))
-        
         bag += store.stateSignal
-            .compactMap { state in
+            .atOnce()
+            .map { state in
                 state.seBankIDState.autoStartToken
             }
-            .distinct()
+            .skip(first: 1)
+            .compactMap { $0 }
             .onValue { autoStartToken in
                 let urlScheme = Bundle.main.urlScheme ?? ""
 
@@ -139,6 +141,8 @@ extension BankIDLoginSweden: Presentable {
                 }
             }
         
+        store.send(.seBankIDStateAction(action: .startSession))
+        
         return (
             viewController,
             Signal { callback in
@@ -152,7 +156,28 @@ extension BankIDLoginSweden: Presentable {
                 bag += store.onAction(
                     .loginFailure,
                     {
-                        store.send(.seBankIDStateAction(action: .startSession))
+                        let alert = Alert<Void>(
+                            title: L10n.bankidUserCancelTitle,
+                            actions: [
+                                .init(
+                                    title: L10n.generalRetry,
+                                    action: {
+                                        store.send(.seBankIDStateAction(action: .startSession))
+                                    }
+                                ),
+                                .init(
+                                    title: L10n.alertCancel,
+                                    action: {
+                                        store.send(.cancel)
+                                        callback(.close)
+                                    }
+                                ),
+                            ]
+                        )
+                        
+                        viewController.present(
+                            alert
+                        )
                     }
                 )
 

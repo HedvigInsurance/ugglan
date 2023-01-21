@@ -113,12 +113,9 @@ extension BankIDLoginQR: Presentable {
                     .onValue { _ in
                         store.send(.seBankIDStateAction(action: .startSession))
                     }
-            } else {
-                return Signal(after: 0)
-                    .onValue { _ in
-                        store.send(.cancel)
-                    }
             }
+            
+            return NilDisposer()
         }
 
         bag += store.stateSignal

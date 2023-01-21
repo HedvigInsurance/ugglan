@@ -99,6 +99,13 @@ public enum AuthenticationAction: ActionProtocol {
     case navigationAction(action: AuthenticationNavigationAction)
 }
 
+enum LoginStatus: Equatable {
+    case pending(statusMessage: String?)
+    case completed(code: String)
+    case failed
+    case unknown
+}
+
 public final class AuthenticationStore: StateStore<AuthenticationState, AuthenticationAction> {
     @Inject var client: ApolloClient
 
@@ -107,6 +114,25 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             environment: Environment.current.authEnvironment,
             additionalHttpHeaders: ApolloClient.headers()
         )
+    }
+    
+    func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
+        return Signal { callbacker in
+            self.networkAuthRepository
+                .loginStatus(statusUrl: StatusUrl(url: statusUrl.absoluteString)) { result, error in
+                    if let completedResult = result as? LoginStatusResultCompleted {
+                        callbacker(.completed(code: completedResult.authorizationCode.code))
+                    } else if let _ = result as? LoginStatusResultFailed {
+                        callbacker(.failed)
+                    } else if let pendingResult = result as? LoginStatusResultPending {
+                        callbacker(.pending(statusMessage: pendingResult.statusMessage))
+                    } else {
+                        callbacker(.unknown)
+                    }
+                }
+            
+            return NilDisposer()
+        }
     }
 
     public override func effects(
@@ -261,22 +287,26 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case let .observeLoginStatus(statusUrl) = action {
             return FiniteSignal { callbacker in
                 let bag = DisposeBag()
-
-                bag += Signal(every: 1)
-                    .onValue { _ in
-                        self.networkAuthRepository
-                            .loginStatus(statusUrl: StatusUrl(url: statusUrl.absoluteString)) { result, error in
-                                if let completedResult = result as? LoginStatusResultCompleted {
-                                    callbacker(.value(.exchange(code: completedResult.authorizationCode.code)))
-                                    callbacker(.end)
-                                } else if let _ = result as? LoginStatusResultFailed {
-                                    callbacker(.value(.loginFailure))
-                                    callbacker(.end(LoginError.failed))
-                                } else if let pendingResult = result as? LoginStatusResultPending {
-                                    callbacker(.value(.setStatus(text: pendingResult.statusMessage)))
-                                }
+                
+                func pollStatus() {
+                    bag += self.checkStatus(statusUrl: statusUrl)
+                        .onValue({ status in
+                            if case let .completed(code) = status {
+                                callbacker(.value(.exchange(code: code)))
+                            } else if status == .failed {
+                                callbacker(.value(.loginFailure))
+                                callbacker(.end(LoginError.failed))
+                            } else if case let .pending(statusMessage) = status {
+                                callbacker(.value(.setStatus(text: statusMessage)))
                             }
-                    }
+                            
+                            bag += Signal(after: 1).onValue { _ in
+                                pollStatus()
+                            }
+                        })
+                }
+                
+                pollStatus()
 
                 bag += Signal(after: 250)
                     .onValue { _ in

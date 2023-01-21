@@ -119,6 +119,8 @@ extension ApolloClient {
                         forceLogoutHook()
                     }
                     
+                    deleteMigratableToken()
+                    
                     completion(.success)
                 }
             } else {
