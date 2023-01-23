@@ -92,6 +92,7 @@ public struct ZignsecCredentialEntry: View {
         .sectionContainerStyle(.transparent)
         .onAppear {
             self.focusPersonalNumberField = true
+            store.send(.cancel)
         }
     }
 }

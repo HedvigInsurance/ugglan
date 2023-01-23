@@ -28,13 +28,13 @@ struct WebView: UIViewRepresentable {
         let webview = WKWebView()
         webview.navigationDelegate = context.coordinator
         
-        let request = URLRequest(url: url)
-        webview.load(request)
-        
         return webview
     }
 
-    func updateUIView(_ webView: WKWebView, context: Context) {}
+    func updateUIView(_ webView: WKWebView, context: Context) {
+        let request = URLRequest(url: url)
+        webView.load(request)
+    }
 }
 
 public struct ZignsecWebview: View {
