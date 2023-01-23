@@ -112,7 +112,7 @@ extension BankIDLoginSweden: Presentable {
                 containerView.setNeedsLayout()
                 containerView.layoutIfNeeded()
             })
-        
+                
         bag += store.stateSignal
             .atOnce()
             .map { state in
@@ -131,6 +131,10 @@ extension BankIDLoginSweden: Presentable {
                 else {
                     return
                 }
+                
+                guard viewController.navigationController?.viewControllers.count == 1 else {
+                    return
+                }
 
                 if UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(
@@ -141,6 +145,7 @@ extension BankIDLoginSweden: Presentable {
                 }
             }
         
+        store.send(.cancel)
         store.send(.seBankIDStateAction(action: .startSession))
         
         return (
@@ -149,6 +154,7 @@ extension BankIDLoginSweden: Presentable {
                 bag += store.onAction(
                     .navigationAction(action: .authSuccess),
                     {
+                        store.send(.cancel)
                         callback(.loggedIn)
                     }
                 )
@@ -156,6 +162,10 @@ extension BankIDLoginSweden: Presentable {
                 bag += store.onAction(
                     .loginFailure,
                     {
+                        guard viewController.navigationController?.viewControllers.count == 1 else {
+                            return
+                        }
+                        
                         let alert = Alert<Void>(
                             title: L10n.bankidUserCancelTitle,
                             actions: [
@@ -186,12 +196,14 @@ extension BankIDLoginSweden: Presentable {
                         .init(
                             title: L10n.emailRowTitle,
                             action: {
+                                store.send(.cancel)
                                 callback(.emailLogin)
                             }
                         ),
                         .init(
                             title: L10n.bankidOnAnotherDevice,
                             action: {
+                                store.send(.cancel)
                                 callback(.qrCode)
                             }
                         ),

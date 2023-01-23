@@ -36,7 +36,6 @@ struct ZignsecState: StateProtocol {
 }
 
 public struct AuthenticationState: StateProtocol {
-    var currentlyObservingLoginStatusUrl: URL? = nil
     var statusText: String? = nil
     var otpState = OTPState()
     var seBankIDState = SEBankIDState()
@@ -293,6 +292,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         .onValue({ status in
                             if case let .completed(code) = status {
                                 callbacker(.value(.exchange(code: code)))
+                                callbacker(.end)
                             } else if status == .failed {
                                 callbacker(.value(.loginFailure))
                                 callbacker(.end(LoginError.failed))
@@ -300,13 +300,27 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                                 callbacker(.value(.setStatus(text: statusMessage)))
                             }
                             
-                            bag += Signal(after: 1).onValue { _ in
-                                pollStatus()
+                            if !bag.isEmpty {
+                                bag += Signal(after: 1).onValue { _ in
+                                    pollStatus()
+                                }
                             }
                         })
                 }
                 
                 pollStatus()
+                
+                bag += self.actionSignal.onValue({ action in
+                    switch action {
+                    case
+                            .observeLoginStatus(_),
+                            .cancel,
+                            .navigationAction(action: .authSuccess):
+                        callbacker(.end)
+                    default:
+                        break
+                    }
+                })
 
                 bag += Signal(after: 250)
                     .onValue { _ in
@@ -348,12 +362,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 }
 
                 return DisposeBag()
-            }
-        } else if case .cancel = action {
-            let state = getState()
-
-            if let currentlyObservingLoginStatusUrl = state.currentlyObservingLoginStatusUrl {
-                cancelEffect(.observeLoginStatus(url: currentlyObservingLoginStatusUrl))
             }
         } else if case let .zignsecStateAction(.startSession(personalNumber)) = action {
             return FiniteSignal { callback in
@@ -453,8 +461,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             }
         case let .setStatus(text):
             newState.statusText = text
-        case let .observeLoginStatus(url):
-            newState.currentlyObservingLoginStatusUrl = url
         case .cancel:
             newState.otpState = OTPState()
             newState.seBankIDState = SEBankIDState()

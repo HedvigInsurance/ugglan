@@ -36,6 +36,8 @@ extension AppJourney {
                             loginCompleted
                         case .emailLogin:
                             otp(style: .detented(.large, modally: false))
+                        case .close:
+                            DismissJourney()
                         }
                     }
                     .withJourneyDismissButton
@@ -59,6 +61,8 @@ extension AppJourney {
                     loginCompleted
                 case .emailLogin:
                     otp(style: .detented(.large, modally: false))
+                case .close:
+                    DismissJourney()
                 }
             }
             .withJourneyDismissButton
