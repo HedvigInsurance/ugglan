@@ -25,6 +25,8 @@ public struct ZignsecCredentialEntry: View {
             return
         }
 
+        store.send(.cancel)
+        
         self.focusPersonalNumberField = false
         store.send(
             .zignsecStateAction(action: .setIsLoading(isLoading: true))
