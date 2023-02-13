@@ -88,6 +88,8 @@ public enum ContractAction: ActionProtocol {
     case resetSignedCrossSells
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
+
+    case setTerminationDate
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {

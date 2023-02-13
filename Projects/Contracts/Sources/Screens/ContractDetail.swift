@@ -137,7 +137,7 @@ struct ContractDetail: View {
                 }
             }
             hButton.SmallButtonText {
-                //                TODO: Add journey
+                store.send(.setTerminationDate)
             } content: {
                 hText(L10n.cancelSubscriptionButton, style: .body)
                     .foregroundColor(hTintColor.red)
@@ -147,6 +147,7 @@ struct ContractDetail: View {
             .padding(.bottom, 39)
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
+
     }
 }
 

@@ -126,6 +126,8 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
+            } else if case .setTerminationDate = action {
+                SetTerminationDate().disposableHostingJourney
             }
         }
         .onPresent({
