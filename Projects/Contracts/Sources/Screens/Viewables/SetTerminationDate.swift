@@ -8,20 +8,22 @@ struct SetTerminationDate: View {
     var body: some View {
 
         hForm {
-
-            //            TODO: Fix
-            HStack(alignment: .center, spacing: 0) {
-                hText("Please set termination date for your home insurance.", style: .body)
+            HStack(spacing: 0) {
+                hText(L10n.setTerminationDateText, style: .body)
+                    .padding([.trailing, .leading], 12)
+                    .padding([.top, .bottom], 16)
             }
-            .padding(.trailing, 16)
-            .padding(.top, 20)
-            //            .background(Color.blue)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(hBackgroundColor.tertiary)
             .cornerRadius(12)
+            .padding(.leading, 16)
+            .padding(.trailing, 32)
+            .padding(.top, 20)
 
             hSection {
                 hRow {
                     HStack {
-                        hText("Termination date", style: .body)
+                        hText(L10n.terminationDateText, style: .body)
                         Spacer()
                         hText("\(printDate())", style: .body)
                             .foregroundColor(hLabelColor.link)
@@ -35,8 +37,7 @@ struct SetTerminationDate: View {
                 )
                 .datePickerStyle(.graphical)
             }
-
-            .padding(.top, 94)
+            .padding(.top, 60)
 
             hButton.LargeButtonFilled {
                 // TODO: Add action
