@@ -1,17 +1,19 @@
+import Flow
 import Foundation
+import Presentation
+import SafariServices
 import SwiftUI
 import WebKit
 import hCore
 import hCoreUI
-import Presentation
-import Flow
-import SafariServices
 
 public struct ZignsecOpenURL: View {
     @State var hasOpenedSafari = false
     var url: URL
-    
-    public init(url: URL) {
+
+    public init(
+        url: URL
+    ) {
         self.url = url
     }
 
@@ -29,7 +31,7 @@ public struct ZignsecOpenURL: View {
                             .resizable()
                             .frame(width: 80, height: 80)
                             .padding(.bottom, 25)
-                        
+
                         HStack {
                             hText(L10n.zignsecLoginFailed)
                         }
@@ -40,27 +42,25 @@ public struct ZignsecOpenURL: View {
                             .resizable()
                             .frame(width: 80, height: 80)
                             .padding(.bottom, 25)
-                        
+
                         HStack {
                             if !hasOpenedSafari {
                                 hText(L10n.zignsecOpeningBrowser)
                             } else {
                                 hText(L10n.zignsecWaitingForResponse)
                             }
-                            
+
                             ActivityIndicator(style: .large)
                         }
                     }
                 }
             }
 
-            
-            
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 UIApplication.shared.open(url)
-                
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     hasOpenedSafari = true
                 }
@@ -70,7 +70,6 @@ public struct ZignsecOpenURL: View {
         .background(hBackgroundColor.secondary.ignoresSafeArea(.all))
     }
 }
-
 
 struct ZignsecOpenURL_Previews: PreviewProvider {
     static var previews: some View {

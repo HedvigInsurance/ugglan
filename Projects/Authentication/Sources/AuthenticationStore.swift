@@ -119,7 +119,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             )
         )
     }
-    
+
     func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
         return Signal { callbacker in
             self.networkAuthRepository
@@ -134,7 +134,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         callbacker(.unknown)
                     }
                 }
-            
+
             return NilDisposer()
         }
     }
@@ -291,7 +291,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case let .observeLoginStatus(statusUrl) = action {
             return FiniteSignal { callbacker in
                 let bag = DisposeBag()
-                
+
                 func pollStatus() {
                     bag += self.checkStatus(statusUrl: statusUrl)
                         .onValue({ status in
@@ -306,17 +306,17 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                             }
                         })
                 }
-                
-                bag += Signal(every: 1).onValue { _ in
-                    pollStatus()
-                }
-                
+
+                bag += Signal(every: 1)
+                    .onValue { _ in
+                        pollStatus()
+                    }
+
                 bag += self.actionSignal.onValue({ action in
                     switch action {
-                    case
-                            .observeLoginStatus(_),
-                            .cancel,
-                            .navigationAction(action: .authSuccess):
+                    case .observeLoginStatus(_),
+                        .cancel,
+                        .navigationAction(action: .authSuccess):
                         callbacker(.end)
                     default:
                         break
