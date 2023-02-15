@@ -3,6 +3,7 @@ import hCore
 import hCoreUI
 
 struct SetTerminationDate: View {
+    @PresentableStore var store: ContractStore
     @State private var terminationDate = Date()
 
     var body: some View {
@@ -40,7 +41,7 @@ struct SetTerminationDate: View {
             .padding(.top, 60)
 
             hButton.LargeButtonFilled {
-                // TODO: Add action
+                store.send(.sendTermination)
             } content: {
                 hText(L10n.generalContinueButton, style: .body)
                     .foregroundColor(hLabelColor.primary.inverted)

@@ -90,6 +90,7 @@ public enum ContractAction: ActionProtocol {
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 
     case setTerminationDate
+    case sendTermination
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {

@@ -128,6 +128,8 @@ extension Contracts {
                 resultJourney(.movingFlow)
             } else if case .setTerminationDate = action {
                 SetTerminationDate().disposableHostingJourney
+            } else if case .sendTermination = action {
+                TerminationSuccessScreen().disposableHostingJourney
             }
         }
         .onPresent({
