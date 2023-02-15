@@ -111,7 +111,8 @@ extension ApolloClient {
             if let migrateableToken = retreiveMigratableToken() {
                 NetworkAuthRepository(
                     environment: Environment.current.authEnvironment,
-                    additionalHttpHeaders: ApolloClient.headers()
+                    additionalHttpHeaders: ApolloClient.headers(),
+                    callbacks: Callbacks(successUrl: "", failureUrl: "")
                 ).migrateOldToken(token: migrateableToken.token) { result, _ in
                     if let success = result as? AuthTokenResultSuccess {
                         ApolloClient.handleAuthTokenSuccessResult(result: success)

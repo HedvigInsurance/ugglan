@@ -135,6 +135,11 @@ import hGraphQL
     }
 
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
+        if url.relativePath.contains("login-failure") {
+            let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
+            authenticationStore.send(.loginFailure)
+        }
+        
         let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
 
         if adyenRedirect { return adyenRedirect }

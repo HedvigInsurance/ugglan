@@ -2,6 +2,7 @@ import Foundation
 import Presentation
 import hCore
 import hCoreUI
+import SafariServices
 
 public struct ZignsecAuthJourney {
     public static func login<Next: JourneyPresentation>(
@@ -11,10 +12,10 @@ public struct ZignsecAuthJourney {
             AuthenticationStore.self,
             rootView: ZignsecCredentialEntry()
         ) { action in
-            if case .navigationAction(action: .zignsecWebview) = action {
+            if case let .navigationAction(action: .zignsecWebview(url)) = action {
                 HostingJourney(
                     AuthenticationStore.self,
-                    rootView: ZignsecWebview()
+                    rootView: ZignsecOpenURL(url: url)
                 ) { action in
                     if case .navigationAction(action: .authSuccess) = action {
                         next().hidesBackButton

@@ -50,7 +50,8 @@ public class TokenRefresher {
                 log.info("Will start refreshing token")
                 NetworkAuthRepository(
                     environment: Environment.current.authEnvironment,
-                    additionalHttpHeaders: ApolloClient.headers()
+                    additionalHttpHeaders: ApolloClient.headers(),
+                    callbacks: Callbacks(successUrl: "", failureUrl: "")
                 )
                 .exchange(grant: RefreshTokenGrant(code: token.refreshToken)) { result, error in
                     if let successResult = result as? AuthTokenResultSuccess {

@@ -40,6 +40,7 @@ public struct AuthenticationState: StateProtocol {
     var otpState = OTPState()
     var seBankIDState = SEBankIDState()
     var zignsecState = ZignsecState()
+    var loginHasFailed = false
 
     public init() {}
 }
@@ -62,7 +63,7 @@ public enum AuthenticationNavigationAction: ActionProtocol {
     case otpCode
     case authSuccess
     case impersonation
-    case zignsecWebview
+    case zignsecWebview(url: URL)
 }
 
 public enum SEBankIDStateAction: ActionProtocol {
@@ -111,7 +112,11 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
     var networkAuthRepository: NetworkAuthRepository {
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
-            additionalHttpHeaders: ApolloClient.headers()
+            additionalHttpHeaders: ApolloClient.headers(),
+            callbacks: Callbacks(
+                successUrl: "\(Bundle.main.urlScheme ?? "")://login-success",
+                failureUrl: "\(Bundle.main.urlScheme ?? "")://login-failure"
+            )
         )
     }
     
@@ -299,16 +304,12 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                             } else if case let .pending(statusMessage) = status {
                                 callbacker(.value(.setStatus(text: statusMessage)))
                             }
-                            
-                            if !bag.isEmpty {
-                                bag += Signal(after: 1).onValue { _ in
-                                    pollStatus()
-                                }
-                            }
                         })
                 }
                 
-                pollStatus()
+                bag += Signal(every: 1).onValue { _ in
+                    pollStatus()
+                }
                 
                 bag += self.actionSignal.onValue({ action in
                     switch action {
@@ -321,11 +322,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         break
                     }
                 })
-
-                bag += Signal(after: 250)
-                    .onValue { _ in
-                        callbacker(.end(LoginError.failed))
-                    }
 
                 return bag
             }
@@ -377,10 +373,10 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         let statusUrl = URL(string: zignsecProperties.statusUrl.url),
                         let webviewUrl = URL(string: zignsecProperties.redirectUrl)
                     {
-                        callback(.value(.zignsecStateAction(action: .setWebviewUrl(url: webviewUrl))))
-                        callback(.value(.navigationAction(action: .zignsecWebview)))
+                        callback(.value(.navigationAction(action: .zignsecWebview(url: webviewUrl))))
                         callback(.value(.observeLoginStatus(url: statusUrl)))
                     }
+                    callback(.end)
                 }
 
                 return bag
@@ -466,6 +462,9 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             newState.seBankIDState = SEBankIDState()
             newState.zignsecState.webviewUrl = nil
             newState.zignsecState.isLoading = false
+            newState.loginHasFailed = false
+        case .loginFailure:
+            newState.loginHasFailed = true
         default:
             break
         }
