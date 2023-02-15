@@ -97,15 +97,15 @@ extension ApolloClient {
     public static func retreiveToken() -> OAuthorizationToken? {
         KeychainHelper.standard.read(key: "oAuthorizationToken", type: OAuthorizationToken.self)
     }
-    
+
     public static func retreiveMigratableToken() -> AuthorizationToken? {
         KeychainHelper.standard.read(key: "authorizationToken", type: AuthorizationToken.self)
     }
-    
+
     public static func deleteMigratableToken() {
         KeychainHelper.standard.delete(key: "authorizationToken")
     }
-    
+
     public static func migrateOldTokenIfNeeded() -> Future<Void> {
         Future { completion in
             if let migrateableToken = retreiveMigratableToken() {
@@ -113,25 +113,25 @@ extension ApolloClient {
                     environment: Environment.current.authEnvironment,
                     additionalHttpHeaders: ApolloClient.headers(),
                     callbacks: Callbacks(successUrl: "", failureUrl: "")
-                ).migrateOldToken(token: migrateableToken.token) { result, _ in
+                )
+                .migrateOldToken(token: migrateableToken.token) { result, _ in
                     if let success = result as? AuthTokenResultSuccess {
                         ApolloClient.handleAuthTokenSuccessResult(result: success)
                     } else {
                         forceLogoutHook()
                     }
-                    
+
                     deleteMigratableToken()
-                    
+
                     completion(.success)
                 }
             } else {
                 completion(.success)
             }
-            
+
             return NilDisposer()
         }
     }
-    
 
     public static func handleAuthTokenSuccessResult(result: AuthTokenResultSuccess) {
         let accessTokenExpirationDate = Date()

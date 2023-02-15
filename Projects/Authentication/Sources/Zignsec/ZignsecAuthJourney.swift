@@ -1,8 +1,8 @@
 import Foundation
 import Presentation
+import SafariServices
 import hCore
 import hCoreUI
-import SafariServices
 
 public struct ZignsecAuthJourney {
     public static func login<Next: JourneyPresentation>(
