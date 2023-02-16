@@ -15,7 +15,7 @@ public struct ZignsecAuthJourney {
             if case let .navigationAction(action: .zignsecWebview(url)) = action {
                 HostingJourney(
                     AuthenticationStore.self,
-                    rootView: ZignsecOpenURL(url: url)
+                    rootView: ZignsecLoginSession(url: url)
                 ) { action in
                     if case .navigationAction(action: .authSuccess) = action {
                         next().hidesBackButton

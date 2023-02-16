@@ -51,22 +51,32 @@ public struct ZignsecCredentialEntry: View {
                         style: .title1
                     )
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    hTextField(
-                        masking: masking,
-                        value: Binding(
-                            AuthenticationStore.self,
-                            getter: { state in
-                                state.zignsecState.personalNumber
-                            },
-                            setter: { personalNumber in
-                                .zignsecStateAction(action: .setPersonalNumber(personalNumber: personalNumber))
-                            }
+                    
+                    PresentableStoreLens(
+                        AuthenticationStore.self,
+                        getter: { state in
+                            state.zignsecState.credentialError
+                        }
+                    ) { credentialError in
+                        hTextField(
+                            masking: masking,
+                            value: Binding(
+                                AuthenticationStore.self,
+                                getter: { state in
+                                    state.zignsecState.personalNumber
+                                },
+                                setter: { personalNumber in
+                                    .zignsecStateAction(action: .setPersonalNumber(personalNumber: personalNumber))
+                                }
+                            )
                         )
-                    )
-                    .focused($focusPersonalNumberField, equals: true) {
-                        onSubmit()
+                        .focused($focusPersonalNumberField, equals: true) {
+                            onSubmit()
+                        }
+                        .hTextFieldError(
+                            credentialError ? L10n.zignsecCouldntStart : nil
+                        )
                     }
-                    .hTextFieldError(nil)
                 }
             }
         }
