@@ -42,7 +42,7 @@ public struct SetTerminationDate: View {
                 .padding([.leading, .trailing], (UIScreen.main.bounds.width) / 30)
                 .padding([.top], 5)
             }
-            .padding(.bottom, 40)
+            .padding(.top, 60)  //change
             //            .padding(.top, (UIScreen.main.bounds.height)/8)
         }
         .padding(.bottom, -200)
