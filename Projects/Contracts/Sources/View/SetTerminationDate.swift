@@ -2,11 +2,13 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct SetTerminationDate: View {
-    @PresentableStore var store: ContractStore
+public struct SetTerminationDate: View {
     @State private var terminationDate = Date()
+    @PresentableStore var store: ContractStore
 
-    var body: some View {
+    public init() {}
+
+    public var body: some View {
 
         hForm {
             HStack(spacing: 0) {
@@ -26,22 +28,25 @@ struct SetTerminationDate: View {
                     HStack {
                         hText(L10n.terminationDateText, style: .body)
                         Spacer()
-                        hText("\(printDate())", style: .body)
+                        hText(printDate(), style: .body)
                             .foregroundColor(hLabelColor.link)
                     }
                 }
 
                 DatePicker(
                     "Termination Date",
-                    selection: $terminationDate,
+                    selection: self.$terminationDate,
                     displayedComponents: [.date]
                 )
                 .datePickerStyle(.graphical)
+                .padding([.leading, .trailing], 14)
+                .padding([.top], 5)
             }
-            .padding(.top, 60)
+            .padding(.top, (UIScreen.main.bounds.height) / 10)
 
             hButton.LargeButtonFilled {
                 store.send(.sendTermination)
+                store.send(.dismissTerminationFlow)
             } content: {
                 hText(L10n.generalContinueButton, style: .body)
                     .foregroundColor(hLabelColor.primary.inverted)

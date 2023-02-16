@@ -89,8 +89,10 @@ public enum ContractAction: ActionProtocol {
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 
-    case setTerminationDate
+    case goToTerminationFlow
+    //    case goToTerminationSuccess
     case sendTermination
+    case dismissTerminationFlow
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {

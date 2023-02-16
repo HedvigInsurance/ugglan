@@ -137,7 +137,7 @@ struct ContractDetail: View {
                 }
             }
             hButton.SmallButtonText {
-                store.send(.setTerminationDate)
+                store.send(.goToTerminationFlow)
             } content: {
                 hText(L10n.cancelSubscriptionButton, style: .body)
                     .foregroundColor(hTintColor.red)

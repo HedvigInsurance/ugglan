@@ -93,6 +93,8 @@ public enum ContractsResult {
     case openFreeTextChat
     case openCrossSellingDetail(crossSell: CrossSell)
     case openCrossSellingEmbark(name: String)
+    case terminationFlow
+    case terminationSuccessFlow
 }
 
 extension Contracts {
@@ -126,10 +128,8 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case .setTerminationDate = action {
-                SetTerminationDate().disposableHostingJourney
-            } else if case .sendTermination = action {
-                TerminationSuccessScreen().disposableHostingJourney
+            } else if case .goToTerminationFlow = action {
+                resultJourney(.terminationFlow)
             }
         }
         .onPresent({

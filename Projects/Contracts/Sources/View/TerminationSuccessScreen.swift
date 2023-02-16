@@ -2,10 +2,13 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct TerminationSuccessScreen: View {
+public struct TerminationSuccessScreen: View {
     @State private var terminationDate = Date()
+    @PresentableStore var store: ContractStore
 
-    var body: some View {
+    public init() {}
+
+    public var body: some View {
 
         hForm {
             Image(uiImage: hCoreUIAssets.circularCheckmark.image)
@@ -24,7 +27,7 @@ struct TerminationSuccessScreen: View {
         }
 
         hButton.LargeButtonFilled {
-            /* TODO: Action */
+            store.send(.dismissTerminationFlow)
         } content: {
             hText("Done", style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
