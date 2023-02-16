@@ -39,20 +39,24 @@ public struct SetTerminationDate: View {
                     displayedComponents: [.date]
                 )
                 .datePickerStyle(.graphical)
-                .padding([.leading, .trailing], 14)
+                .padding([.leading, .trailing], (UIScreen.main.bounds.width) / 30)
                 .padding([.top], 5)
             }
-            .padding(.top, (UIScreen.main.bounds.height) / 10)
-
-            hButton.LargeButtonFilled {
-                store.send(.sendTermination)
-                store.send(.dismissTerminationFlow)
-            } content: {
-                hText(L10n.generalContinueButton, style: .body)
-                    .foregroundColor(hLabelColor.primary.inverted)
-            }
-            .padding([.leading, .trailing], 16)
+            .padding(.bottom, 40)
+            //            .padding(.top, (UIScreen.main.bounds.height)/8)
         }
+        .padding(.bottom, -200)
+
+        hButton.LargeButtonFilled {
+            store.send(.sendTermination)
+        } content: {
+            hText(L10n.generalContinueButton, style: .body)
+                .foregroundColor(hLabelColor.primary.inverted)
+        }
+        .frame(maxWidth: .infinity, alignment: .bottom)
+        .padding([.leading, .trailing], 16)
+        .padding(.bottom, 40)
+        .padding(.top, 10)
     }
 
     func printDate() -> String {

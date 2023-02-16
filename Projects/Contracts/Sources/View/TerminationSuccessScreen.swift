@@ -24,7 +24,9 @@ public struct TerminationSuccessScreen: View {
             hText(L10n.terminationSuccessfulText(printDate(), "Hedvig"), style: .body)
                 .foregroundColor(hLabelColor.secondary)
                 .padding([.leading, .trailing], 16)
+                .padding(.bottom, 300)
         }
+        .padding(.bottom, -100)
 
         hButton.LargeButtonFilled {
             store.send(.dismissTerminationFlow)
