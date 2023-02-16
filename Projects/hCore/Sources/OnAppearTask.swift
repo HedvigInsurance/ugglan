@@ -4,13 +4,16 @@ import SwiftUI
 struct OnAppearTaskViewModifier: ViewModifier {
     var work: () async -> Void
     @State var task: AnyTask?
-    
+
     func body(content: Content) -> some View {
         content.onAppear {
-            task = Task {
-                await work()
-            }.eraseToAnyTask
-        }.onDisappear {
+            task =
+                Task {
+                    await work()
+                }
+                .eraseToAnyTask
+        }
+        .onDisappear {
             task?.cancel()
         }
     }

@@ -26,7 +26,7 @@ public struct ZignsecCredentialEntry: View {
         }
 
         store.send(.cancel)
-        
+
         self.focusPersonalNumberField = false
         store.send(
             .zignsecStateAction(action: .setIsLoading(isLoading: true))
@@ -51,7 +51,7 @@ public struct ZignsecCredentialEntry: View {
                         style: .title1
                     )
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    
+
                     PresentableStoreLens(
                         AuthenticationStore.self,
                         getter: { state in

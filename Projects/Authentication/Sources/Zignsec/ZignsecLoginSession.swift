@@ -1,15 +1,17 @@
+import Flow
 import Foundation
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import Presentation
-import Flow
 
 public struct ZignsecLoginSession: View {
     @State var hasOpenedBrowser = false
     var url: URL
-    
-    public init(url: URL) {
+
+    public init(
+        url: URL
+    ) {
         self.url = url
     }
 
@@ -29,7 +31,7 @@ public struct ZignsecLoginSession: View {
                         )
                         .frame(width: 80, height: 80)
                         .padding(.bottom, 25)
-                        
+
                         HStack {
                             hText(L10n.zignsecLoginFailed)
                         }
@@ -41,10 +43,10 @@ public struct ZignsecLoginSession: View {
                                 .resizable()
                                 .frame(width: 80, height: 80)
                                 .padding(.bottom, 25)
-                            
+
                             HStack {
                                 hText(L10n.zignsecOpeningBrowser)
-                                
+
                                 ActivityIndicator(style: .large)
                             }
                         } else {
@@ -54,16 +56,17 @@ public struct ZignsecLoginSession: View {
                             )
                             .frame(width: 80, height: 80)
                             .padding(.bottom, 25)
-                                
+
                             HStack {
                                 hText(L10n.zignsecWaitingForResponse)
-                                
+
                                 ActivityIndicator(style: .large)
                             }
                         }
                     }
                 }
-            }.padding(.all, 25)
+            }
+            .padding(.all, 25)
         }
         .taskOnAppear {
             await delay(0.8)
@@ -75,7 +78,6 @@ public struct ZignsecLoginSession: View {
         .background(hBackgroundColor.secondary.ignoresSafeArea(.all))
     }
 }
-
 
 struct ZignsecOpenURL_Previews: PreviewProvider {
     static var previews: some View {
