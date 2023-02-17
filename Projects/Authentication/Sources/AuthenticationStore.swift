@@ -119,7 +119,7 @@ extension CoreSignal where Kind == Plain {
                     .delay(by: 0.25)
                     .poll(poller: poller, shouldPoll: shouldPoll)
             }
-            
+
             return Signal(just: value)
         }
     }
@@ -138,7 +138,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             )
         )
     }()
-    
+
     func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
         return Signal { callbacker in
             self.networkAuthRepository
@@ -153,7 +153,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         callbacker(.unknown)
                     }
                 }
-            
+
             return NilDisposer()
         }
     }
@@ -310,33 +310,34 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case let .observeLoginStatus(statusUrl) = action {
             return FiniteSignal { callbacker in
                 let bag = DisposeBag()
-                
-                bag += self.checkStatus(statusUrl: statusUrl).poll {
-                    self.checkStatus(statusUrl: statusUrl)
-                } shouldPoll: { loginStatus in
-                    if case .pending = loginStatus {
-                        return true
-                    } else if case .unknown = loginStatus {
-                        return true
+
+                bag += self.checkStatus(statusUrl: statusUrl)
+                    .poll {
+                        self.checkStatus(statusUrl: statusUrl)
+                    } shouldPoll: { loginStatus in
+                        if case .pending = loginStatus {
+                            return true
+                        } else if case .unknown = loginStatus {
+                            return true
+                        }
+
+                        return false
                     }
-                    
-                    return false
-                }.onValue { loginStatus in
-                    if case let .completed(code) = loginStatus {
-                        callbacker(.value(.exchange(code: code)))
-                        callbacker(.end)
-                    } else if loginStatus == .failed {
-                        callbacker(.value(.loginFailure))
-                        callbacker(.end(LoginError.failed))
+                    .onValue { loginStatus in
+                        if case let .completed(code) = loginStatus {
+                            callbacker(.value(.exchange(code: code)))
+                            callbacker(.end)
+                        } else if loginStatus == .failed {
+                            callbacker(.value(.loginFailure))
+                            callbacker(.end(LoginError.failed))
+                        }
                     }
-                }
-                
+
                 bag += self.actionSignal.onValue({ action in
                     switch action {
-                    case
-                            .observeLoginStatus(_),
-                            .cancel,
-                            .navigationAction(action: .authSuccess):
+                    case .observeLoginStatus(_),
+                        .cancel,
+                        .navigationAction(action: .authSuccess):
                         callbacker(.end)
                     default:
                         break
@@ -396,11 +397,13 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         callback(.value(.navigationAction(action: .zignsecWebview(url: webviewUrl))))
                         callback(.value(.observeLoginStatus(url: statusUrl)))
                     } else {
-                        callback(.value(
-                            .zignsecStateAction(
-                                action: .setIsLoading(isLoading: false)
+                        callback(
+                            .value(
+                                .zignsecStateAction(
+                                    action: .setIsLoading(isLoading: false)
+                                )
                             )
-                        ))
+                        )
                         callback(
                             .value(
                                 .zignsecStateAction(
