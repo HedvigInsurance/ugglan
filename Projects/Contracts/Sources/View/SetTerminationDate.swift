@@ -28,7 +28,7 @@ public struct SetTerminationDate: View {
                     HStack {
                         hText(L10n.terminationDateText, style: .body)
                         Spacer()
-                        hText(printDate(), style: .body)
+                        hText(formatAndPrintDate(), style: .body)
                             .foregroundColor(hLabelColor.link)
                     }
                 }
@@ -39,27 +39,30 @@ public struct SetTerminationDate: View {
                     displayedComponents: [.date]
                 )
                 .datePickerStyle(.graphical)
-                .padding([.leading, .trailing], (UIScreen.main.bounds.width) / 30)
+                .padding(.leading, 16)
                 .padding([.top], 5)
             }
-            .padding(.top, 60)  //change
-            //            .padding(.top, (UIScreen.main.bounds.height)/8)
+            .padding(.top, UIScreen.main.bounds.height / 12)
         }
-        .padding(.bottom, -200)
+        .hFormAttachToBottom {
 
-        hButton.LargeButtonFilled {
-            store.send(.sendTermination)
-        } content: {
-            hText(L10n.generalContinueButton, style: .body)
-                .foregroundColor(hLabelColor.primary.inverted)
+            VStack {
+                hButton.LargeButtonFilled {
+                    store.send(.sendTermination)
+                } content: {
+                    hText(L10n.generalContinueButton, style: .body)
+                        .foregroundColor(hLabelColor.primary.inverted)
+                        .frame(minHeight: 52)
+                        .frame(minWidth: 200)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .padding([.top, .leading, .trailing], 16)
+            .padding(.bottom, 40)
         }
-        .frame(maxWidth: .infinity, alignment: .bottom)
-        .padding([.leading, .trailing], 16)
-        .padding(.bottom, 40)
-        .padding(.top, 10)
     }
 
-    func printDate() -> String {
+    func formatAndPrintDate() -> String {
         let dateFormatter = DateFormatter()
 
         dateFormatter.timeStyle = DateFormatter.Style.none
@@ -67,7 +70,6 @@ public struct SetTerminationDate: View {
         dateFormatter.dateFormat = "dd-MM-yyyy"
         return dateFormatter.string(from: terminationDate)
     }
-
 }
 
 struct SetTerminationDate_Previews: PreviewProvider {

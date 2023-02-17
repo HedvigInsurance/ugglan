@@ -31,5 +31,6 @@ extension AppJourney {
             }
         }
         .withDismissButton
+        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 }

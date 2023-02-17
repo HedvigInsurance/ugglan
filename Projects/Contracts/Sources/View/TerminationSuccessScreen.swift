@@ -21,7 +21,7 @@ public struct TerminationSuccessScreen: View {
                 .padding(.leading, 16)
                 .padding([.bottom, .top], 10)
 
-            hText(L10n.terminationSuccessfulText(printDate(), "Hedvig"), style: .body)
+            hText(L10n.terminationSuccessfulText(formatAndPrintDate(), "Hedvig"), style: .body)
                 .foregroundColor(hLabelColor.secondary)
                 .padding([.leading, .trailing], 16)
                 .padding(.bottom, 300)
@@ -39,7 +39,7 @@ public struct TerminationSuccessScreen: View {
         .padding(.bottom, 40)
     }
 
-    func printDate() -> String {
+    func formatAndPrintDate() -> String {
         let formatter = DateFormatter()
         let myString = formatter.string(from: terminationDate)
         let yourDate = formatter.date(from: myString)
