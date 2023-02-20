@@ -103,7 +103,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .authlib:
             return [
-                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("0.0.16"))
+                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("0.0.20"))
             ]
         }
     }
