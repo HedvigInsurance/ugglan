@@ -209,32 +209,6 @@ extension Action: Viewable {
                                 state: self.state
                             )
                             innerBag += view.addArranged(inputSet).onValue(performCallback)
-                        } else if let externalInsuranceProviderAction = actionData?
-                            .asEmbarkExternalInsuranceProviderAction
-                        {
-                            innerBag +=
-                                view.addArranged(
-                                    InsuranceProviderAction(
-                                        state: self.state,
-                                        data: .external(
-                                            externalInsuranceProviderAction
-                                        )
-                                    )
-                                )
-                                .onValue(performCallback)
-                        } else if let previousInsuranceProviderAction = actionData?
-                            .asEmbarkPreviousInsuranceProviderAction
-                        {
-                            innerBag +=
-                                view.addArranged(
-                                    InsuranceProviderAction(
-                                        state: self.state,
-                                        data: .previous(
-                                            previousInsuranceProviderAction
-                                        )
-                                    )
-                                )
-                                .onValue(performCallback)
                         } else if let multiAction = actionData?.asEmbarkMultiAction {
                             innerBag +=
                                 view.addArranged(

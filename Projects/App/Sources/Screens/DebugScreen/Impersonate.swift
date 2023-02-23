@@ -4,33 +4,43 @@ import Foundation
 import SwiftUI
 import hCore
 import hGraphQL
+import Authentication
 
 struct Impersonate {
     @Inject var client: ApolloClient
     @PresentableStore var store: UgglanStore
+    @PresentableStore var authenticationStore: AuthenticationStore
 
-    private func getToken(from url: URL) -> String? {
+    private func getAuthorizationCode(from url: URL) -> String? {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         guard let queryItems = urlComponents.queryItems else { return nil }
         let items = queryItems as [NSURLQueryItem]
         if url.scheme == "hedvigengineering",
-            let token = items.first,
-            token.name == "token",
-            let value = token.value,
-            let exchangeToken = value.split(separator: "=").last
+            let queryItem = items.first,
+            queryItem.name == "authorizationCode",
+            let authorizationCode = queryItem.value
         {
-            return String(exchangeToken)
+            return String(authorizationCode)
         }
         return nil
     }
 
     func canImpersonate(with url: URL) -> Bool {
-        if getToken(from: url) != nil { return true }
+        if getAuthorizationCode(from: url) != nil { return true }
         return false
     }
 
     func impersonate(with url: URL) {
-        guard let exchangeToken = getToken(from: url) else { return }
-        store.send(.exchangePaymentToken(token: exchangeToken))
+        guard let authorizationCode = getAuthorizationCode(from: url) else { return }
+        
+        let bag = DisposeBag()
+        
+        bag += authenticationStore.onAction(.navigationAction(action: .authSuccess), {
+            ApplicationState.preserveState(.impersonation)
+            UIApplication.shared.appDelegate.presentMainJourney()
+            bag.dispose()
+        })
+        
+        authenticationStore.send(.exchange(code: authorizationCode))
     }
 }

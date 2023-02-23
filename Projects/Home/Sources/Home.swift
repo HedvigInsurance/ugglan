@@ -14,16 +14,13 @@ public struct Home<ClaimsContent: View, CommonClaims: View> {
     @Inject var client: ApolloClient
     var claimsContent: ClaimsContent
     var commonClaims: CommonClaims
-    var claimSubmitHandler: () -> Void
 
     public init(
         claimsContent: ClaimsContent,
-        commonClaims: CommonClaims,
-        _ claimSubmitHandler: @escaping () -> Void
+        commonClaims: CommonClaims
     ) {
         self.claimsContent = claimsContent
         self.commonClaims = commonClaims
-        self.claimSubmitHandler = claimSubmitHandler
     }
 }
 

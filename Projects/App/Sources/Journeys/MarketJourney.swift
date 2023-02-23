@@ -7,7 +7,9 @@ extension AppJourney {
     static var marketPicker: some JourneyPresentation {
         HostingJourney(
             MarketStore.self,
-            rootView: MarketPickerView()
+            rootView: MarketPickerView {
+                Launch.shared.completeAnimationCallbacker.callAll()
+            }
         ) { action in
             if case .onboard = action {
                 AppJourney.onboarding()

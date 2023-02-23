@@ -160,7 +160,7 @@ extension AppInfo: Presentable {
                 .onValue { shouldLogout in
                     if shouldLogout {
                         ApplicationState.preserveState(.marketPicker)
-                        UIApplication.shared.appDelegate.logout(token: nil)
+                        UIApplication.shared.appDelegate.logout()
                     }
                 }
         }

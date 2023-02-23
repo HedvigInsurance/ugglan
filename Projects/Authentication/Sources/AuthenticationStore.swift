@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import Presentation
 import UIKit
+import authlib
 import hCore
 import hCoreUI
 import hGraphQL
@@ -10,7 +11,8 @@ import hGraphQL
 struct OTPState: StateProtocol {
     var isLoading = false
     var isResending = false
-    var id: String? = nil
+    var resendUrl: URL? = nil
+    var verifyUrl: URL? = nil
     var code: String = ""
     var codeErrorMessage: String? = nil
     var emailErrorMessage: String? = nil
@@ -20,8 +22,26 @@ struct OTPState: StateProtocol {
     public init() {}
 }
 
+struct SEBankIDState: StateProtocol {
+    var autoStartToken: String? = nil
+    public init() {}
+}
+
+struct ZignsecState: StateProtocol {
+    var isLoading: Bool = false
+    var personalNumber: String = ""
+    var webviewUrl: URL? = nil
+    var credentialError: Bool = false
+
+    public init() {}
+}
+
 public struct AuthenticationState: StateProtocol {
+    var statusText: String? = nil
     var otpState = OTPState()
+    var seBankIDState = SEBankIDState()
+    var zignsecState = ZignsecState()
+    var loginHasFailed = false
 
     public init() {}
 }
@@ -33,7 +53,7 @@ public enum OTPStateAction: ActionProtocol {
     case setCodeError(message: String?)
     case setEmailError(message: String?)
     case setEmail(email: String)
-    case setID(id: String?)
+    case startSession(verifyUrl: URL, resendUrl: URL)
     case submitEmail
     case reset
     case resendCode
@@ -42,17 +62,101 @@ public enum OTPStateAction: ActionProtocol {
 
 public enum AuthenticationNavigationAction: ActionProtocol {
     case otpCode
-    case authSuccess(accessToken: String)
-    case chat
+    case authSuccess
+    case impersonation
+    case zignsecWebview(url: URL)
+}
+
+public enum SEBankIDStateAction: ActionProtocol {
+    case startSession
+    case updateWith(autoStartToken: String)
+}
+
+public enum ZignsecStateAction: ActionProtocol {
+    case reset
+    case setIsLoading(isLoading: Bool)
+    case setPersonalNumber(personalNumber: String)
+    case setWebviewUrl(url: URL)
+    case startSession(personalNumber: String)
+    case setCredentialError(error: Bool)
+}
+
+enum LoginError: Error {
+    case failed
 }
 
 public enum AuthenticationAction: ActionProtocol {
+    case setStatus(text: String?)
+    case exchange(code: String)
+    case impersonate(code: String)
+    case cancel
+    case logout
+    case logoutSuccess
+    case logoutFailure
+    case loginFailure
+    case observeLoginStatus(url: URL)
     case otpStateAction(action: OTPStateAction)
+    case seBankIDStateAction(action: SEBankIDStateAction)
+    case zignsecStateAction(action: ZignsecStateAction)
     case navigationAction(action: AuthenticationNavigationAction)
+}
+
+enum LoginStatus: Equatable {
+    case pending(statusMessage: String?)
+    case completed(code: String)
+    case failed
+    case unknown
+}
+
+extension CoreSignal where Kind == Plain {
+    func poll(
+        poller: @escaping () -> Signal<Value>,
+        shouldPoll: @escaping (_ value: Value) -> Bool
+    ) -> CoreSignal<Plain, Value> {
+        return self.flatMapLatest { value in
+            if shouldPoll(value) {
+                return poller()
+                    .delay(by: 0.25)
+                    .poll(poller: poller, shouldPoll: shouldPoll)
+            }
+
+            return Signal(just: value)
+        }
+    }
 }
 
 public final class AuthenticationStore: StateStore<AuthenticationState, AuthenticationAction> {
     @Inject var client: ApolloClient
+
+    lazy var networkAuthRepository: NetworkAuthRepository = {
+        NetworkAuthRepository(
+            environment: Environment.current.authEnvironment,
+            additionalHttpHeaders: ApolloClient.headers(),
+            callbacks: Callbacks(
+                successUrl: "\(Bundle.main.urlScheme ?? "")://login-success",
+                failureUrl: "\(Bundle.main.urlScheme ?? "")://login-failure"
+            )
+        )
+    }()
+
+    func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
+        return Signal { callbacker in
+            self.networkAuthRepository
+                .loginStatus(statusUrl: StatusUrl(url: statusUrl.absoluteString)) { result, error in
+                    if let completedResult = result as? LoginStatusResultCompleted {
+                        callbacker(.completed(code: completedResult.authorizationCode.code))
+                    } else if let _ = result as? LoginStatusResultFailed {
+                        callbacker(.failed)
+                    } else if let pendingResult = result as? LoginStatusResultPending {
+                        callbacker(.pending(statusMessage: pendingResult.statusMessage))
+                    } else {
+                        callbacker(.unknown)
+                    }
+                }
+
+            return NilDisposer()
+        }
+    }
 
     public override func effects(
         _ getState: @escaping () -> AuthenticationState,
@@ -72,26 +176,35 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case .otpStateAction(action: .verifyCode) = action {
             let state = getState()
 
-            return
-                client.perform(
-                    mutation: GraphQL.VerifyLoginOtpAttemptMutation(
-                        id: state.otpState.id ?? "",
-                        otp: state.otpState.code
-                    )
-                )
-                .delay(by: 0.5)
-                .compactMap { data in
-                    if data.loginVerifyOtpAttempt.asVerifyOtpLoginAttemptError != nil {
-                        return .otpStateAction(
-                            action: .setCodeError(message: L10n.Login.CodeInput.ErrorMsg.codeNotValid)
-                        )
-                    } else if let success = data.loginVerifyOtpAttempt.asVerifyOtpLoginAttemptSuccess {
-                        return .navigationAction(action: .authSuccess(accessToken: success.accessToken))
-                    }
+            return FiniteSignal { callback in
+                let bag = DisposeBag()
 
-                    return nil
+                if let verifyUrl = state.otpState.verifyUrl {
+                    bag += Signal(after: 0.5)
+                        .onValue { _ in
+                            self.networkAuthRepository.submitOtp(
+                                verifyUrl: verifyUrl.absoluteString,
+                                otp: state.otpState.code
+                            ) { result, error in
+                                if let success = result as? SubmitOtpResultSuccess {
+                                    callback(.value(.exchange(code: success.loginAuthorizationCode.code)))
+                                } else {
+                                    callback(
+                                        .value(
+                                            .otpStateAction(
+                                                action: .setCodeError(
+                                                    message: L10n.Login.CodeInput.ErrorMsg.codeNotValid
+                                                )
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }
                 }
-                .valueThenEndSignal
+
+                return bag
+            }
         } else if case .otpStateAction(action: .setCodeError) = action {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.error)
@@ -103,53 +216,62 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case .otpStateAction(action: .submitEmail) = action {
             let state = getState()
 
-            return
-                client.perform(
-                    mutation: GraphQL.CreateLoginOtpAttemptMutation(
-                        email: state.otpState.email
-                    )
-                )
-                .resultSignal
-                .delay(by: 0.5)
-                .flatMapLatest { result -> FiniteSignal<AuthenticationAction> in
-                    switch result {
-                    case .failure:
-                        return [
-                            .otpStateAction(action: .setLoading(isLoading: false)),
-                            .otpStateAction(action: .setEmailError(message: L10n.Login.TextInput.emailErrorNotValid)),
-                        ]
-                        .emitEachThenEnd
-                    case let .success(data):
-                        return [
-                            .navigationAction(action: .otpCode),
-                            .otpStateAction(action: .setID(id: data.loginCreateOtpAttempt)),
-                        ]
-                        .emitEachThenEnd
-                    }
+            return FiniteSignal { callback in
+                let bag = DisposeBag()
+
+                self.networkAuthRepository.startLoginAttempt(
+                    loginMethod: .otp,
+                    market: Localization.Locale.currentLocale.market.rawValue,
+                    personalNumber: nil,
+                    email: state.otpState.email
+                ) { result, error in
+                    bag += Signal(after: 0.5)
+                        .onValue { _ in
+                            if let otpProperties = result as? AuthAttemptResultOtpProperties,
+                                let verifyUrl = URL(string: otpProperties.verifyUrl),
+                                let resendUrl = URL(string: otpProperties.resendUrl)
+                            {
+                                callback(.value(.navigationAction(action: .otpCode)))
+                                callback(
+                                    .value(
+                                        .otpStateAction(
+                                            action: .startSession(verifyUrl: verifyUrl, resendUrl: resendUrl)
+                                        )
+                                    )
+                                )
+                            } else {
+                                callback(.value(.otpStateAction(action: .setLoading(isLoading: false))))
+                                callback(
+                                    .value(
+                                        .otpStateAction(
+                                            action: .setEmailError(message: L10n.Login.TextInput.emailErrorNotValid)
+                                        )
+                                    )
+                                )
+                            }
+
+                            callback(.end)
+                        }
                 }
-        } else if case .otpStateAction(action: .setID) = action {
-            return [
-                .otpStateAction(action: .setLoading(isLoading: false))
-            ]
-            .emitEachThenEnd
+
+                return bag
+            }
         } else if case .navigationAction(action: .authSuccess) = action {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
         } else if case .otpStateAction(action: .resendCode) = action {
             let state = getState()
 
-            return
-                client.perform(
-                    mutation: GraphQL.ResendLoginOtpMutation(id: state.otpState.id ?? "")
-                )
-                .valueThenEndSignal
-                .flatMapLatest { data in
-                    [
-                        .otpStateAction(action: .setID(id: data.loginResendOtp)),
-                        .otpStateAction(action: .showResentToast),
-                    ]
-                    .emitEachThenEnd
+            return FiniteSignal { callback in
+                if let resendUrl = state.otpState.resendUrl {
+                    self.networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString) { _, _ in
+                        callback(.value(.otpStateAction(action: .showResentToast)))
+                        callback(.end)
+                    }
                 }
+
+                return DisposeBag()
+            }
         } else if case .otpStateAction(action: .showResentToast) = action {
             Toasts.shared.displayToast(
                 toast: .init(
@@ -157,6 +279,144 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                     body: L10n.Login.Snackbar.codeResent
                 )
             )
+        } else if case .seBankIDStateAction(action: .startSession) = action {
+            return Signal { callbacker in
+                callbacker(.cancel)
+
+                self.networkAuthRepository.startLoginAttempt(
+                    loginMethod: .seBankid,
+                    market: Localization.Locale.currentLocale.market.rawValue,
+                    personalNumber: nil,
+                    email: nil
+                ) { result, error in
+                    if let bankIdProperties = result as? AuthAttemptResultBankIdProperties,
+                        let statusUrl = URL(string: bankIdProperties.statusUrl.url)
+                    {
+                        callbacker(
+                            .seBankIDStateAction(
+                                action: .updateWith(
+                                    autoStartToken: bankIdProperties.autoStartToken
+                                )
+                            )
+                        )
+
+                        callbacker(.observeLoginStatus(url: statusUrl))
+                    }
+                }
+
+                return DisposeBag()
+            }
+            .finite()
+        } else if case let .observeLoginStatus(statusUrl) = action {
+            return FiniteSignal { callbacker in
+                let bag = DisposeBag()
+
+                bag += self.checkStatus(statusUrl: statusUrl)
+                    .poll {
+                        self.checkStatus(statusUrl: statusUrl)
+                    } shouldPoll: { loginStatus in
+                        if case .pending = loginStatus {
+                            return true
+                        } else if case .unknown = loginStatus {
+                            return true
+                        }
+
+                        return false
+                    }
+                    .onValue { loginStatus in
+                        if case let .completed(code) = loginStatus {
+                            callbacker(.value(.exchange(code: code)))
+                            callbacker(.end)
+                        } else if loginStatus == .failed {
+                            callbacker(.value(.loginFailure))
+                            callbacker(.end(LoginError.failed))
+                        }
+                    }
+
+                bag += self.actionSignal.onValue({ action in
+                    switch action {
+                    case .observeLoginStatus(_),
+                        .cancel,
+                        .navigationAction(action: .authSuccess):
+                        callbacker(.end)
+                    default:
+                        break
+                    }
+                })
+
+                return bag
+            }
+        } else if case let .exchange(code) = action {
+            return Signal { callbacker in
+                self.exchange(code: code) { successResult in
+                    ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                    callbacker(.navigationAction(action: .authSuccess))
+                }
+                return DisposeBag()
+            }
+            .finite()
+        } else if case let .impersonate(code) = action {
+            return Signal { callbacker in
+                self.exchange(code: code) { successResult in
+                    ApolloClient.handleAuthTokenSuccessResult(result: successResult)
+                    callbacker(.navigationAction(action: .impersonation))
+                }
+                return DisposeBag()
+            }
+            .finite()
+        } else if case .logout = action {
+            return FiniteSignal { callback in
+                if let token = ApolloClient.retreiveToken() {
+                    self.networkAuthRepository.revoke(token: token.refreshToken) { result, _ in
+                        if let _ = result as? RevokeResultSuccess {
+                            callback(.value(.logoutSuccess))
+                        } else {
+                            callback(.value(.logoutFailure))
+                        }
+                    }
+                } else {
+                    callback(.value(.logoutSuccess))
+                }
+
+                return DisposeBag()
+            }
+        } else if case let .zignsecStateAction(.startSession(personalNumber)) = action {
+            return FiniteSignal { callback in
+                let bag = DisposeBag()
+
+                self.networkAuthRepository.startLoginAttempt(
+                    loginMethod: .zignsec,
+                    market: Localization.Locale.currentLocale.market.rawValue,
+                    personalNumber: personalNumber,
+                    email: nil
+                ) { result, error in
+                    if let zignsecProperties = result as? AuthAttemptResultZignSecProperties,
+                        let statusUrl = URL(string: zignsecProperties.statusUrl.url),
+                        let webviewUrl = URL(string: zignsecProperties.redirectUrl)
+                    {
+                        callback(.value(.navigationAction(action: .zignsecWebview(url: webviewUrl))))
+                        callback(.value(.observeLoginStatus(url: statusUrl)))
+                    } else {
+                        callback(
+                            .value(
+                                .zignsecStateAction(
+                                    action: .setIsLoading(isLoading: false)
+                                )
+                            )
+                        )
+                        callback(
+                            .value(
+                                .zignsecStateAction(
+                                    action: .setCredentialError(error: true)
+                                )
+                            )
+                        )
+                    }
+                    callback(.end)
+                }
+
+                return bag
+            }
         }
 
         return nil
@@ -191,9 +451,11 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             case let .setEmail(email):
                 newState.otpState.email = email
                 newState.otpState.emailErrorMessage = nil
-            case let .setID(id):
+            case let .startSession(verifyUrl, resendUrl):
                 newState.otpState.code = ""
-                newState.otpState.id = id
+                newState.otpState.verifyUrl = verifyUrl
+                newState.otpState.resendUrl = resendUrl
+                newState.otpState.isLoading = false
                 newState.otpState.codeErrorMessage = nil
                 newState.otpState.emailErrorMessage = nil
                 newState.otpState.canResendAt = Date().addingTimeInterval(60)
@@ -202,15 +464,66 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 newState.otpState.code = ""
                 newState.otpState.codeErrorMessage = nil
                 newState.otpState.isResending = true
+            case .showResentToast:
+                newState.otpState.isResending = false
             case .submitEmail:
                 newState.otpState.emailErrorMessage = nil
             default:
                 break
             }
+        case let .seBankIDStateAction(action):
+            switch action {
+            case .startSession:
+                newState.seBankIDState.autoStartToken = nil
+            case let .updateWith(autoStartToken):
+                newState.seBankIDState.autoStartToken = autoStartToken
+            }
+        case let .zignsecStateAction(action):
+            switch action {
+            case .reset:
+                newState.zignsecState = ZignsecState()
+            case let .setIsLoading(isLoading):
+                newState.zignsecState.isLoading = isLoading
+            case let .setPersonalNumber(personalNumber):
+                newState.zignsecState.personalNumber = personalNumber
+            case let .setWebviewUrl(url):
+                newState.zignsecState.webviewUrl = url
+            case let .setCredentialError(error):
+                newState.zignsecState.credentialError = error
+            case .startSession:
+                newState.zignsecState.credentialError = false
+            }
+        case let .setStatus(text):
+            newState.statusText = text
+        case .cancel:
+            newState.otpState = OTPState()
+            newState.seBankIDState = SEBankIDState()
+            newState.zignsecState.webviewUrl = nil
+            newState.zignsecState.isLoading = false
+            newState.zignsecState.credentialError = false
+            newState.loginHasFailed = false
+        case .loginFailure:
+            newState.loginHasFailed = true
         default:
             break
         }
 
         return newState
+    }
+
+    private func exchange(
+        code: String,
+        onSuccess: @escaping (AuthTokenResultSuccess) -> Void
+    ) {
+        DispatchQueue.main.async {
+            self.networkAuthRepository
+                .exchange(
+                    grant: AuthorizationCodeGrant(code: code)
+                ) { result, error in
+                    if let successResult = result as? AuthTokenResultSuccess {
+                        onSuccess(successResult)
+                    }
+                }
+        }
     }
 }

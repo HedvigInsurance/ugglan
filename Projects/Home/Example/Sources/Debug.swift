@@ -43,10 +43,7 @@ extension Debug: Presentable {
                     Journey(
                         Home(
                             claimsContent: ClaimSectionDebug(),
-                            commonClaims: CommonClaimsDebug(),
-                            {
-
-                            }
+                            commonClaims: CommonClaimsDebug()
                         ),
                         options: [
                             .defaults, .prefersLargeTitles(true),

@@ -98,6 +98,9 @@ query ActiveContractBundles($locale: Locale!) {
             name
           }
         }
+        ... on CrossSellWeb {
+          url
+        }
       }
     }
   }

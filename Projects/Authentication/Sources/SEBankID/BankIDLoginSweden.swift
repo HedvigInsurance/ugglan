@@ -8,14 +8,19 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct BankIDLoginSweden {
-    @Inject var client: ApolloClient
+public struct BankIDLoginSweden {
+    @PresentableStore var store: AuthenticationStore
+
+    public init() {
+
+    }
 }
 
-enum BankIDLoginSwedenResult {
+public enum BankIDLoginSwedenResult {
     case qrCode
     case emailLogin
     case loggedIn
+    case close
 }
 
 extension BankIDLoginSweden {
@@ -26,27 +31,10 @@ extension BankIDLoginSweden {
     enum FailedError: Error {
         case failed
     }
-
-    func generateAutoStartToken() -> Future<URL> {
-        client.perform(mutation: GraphQL.BankIdAuthMutation()).compactMap { $0.swedishBankIdAuth.autoStartToken }
-            .flatMap { autoStartToken in
-                let urlScheme = Bundle.main.urlScheme ?? ""
-                guard
-                    let url = URL(
-                        string:
-                            "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
-                    )
-                else {
-                    return Future(error: AutoStartTokenError.failedToGenerate)
-                }
-
-                return Future(url)
-            }
-    }
 }
 
 extension BankIDLoginSweden: Presentable {
-    func materialize() -> (UIViewController, Signal<BankIDLoginSwedenResult>) {
+    public func materialize() -> (UIViewController, Signal<BankIDLoginSwedenResult>) {
         let viewController = UIViewController()
         viewController.preferredPresentationStyle = .detented(.large)
         let bag = DisposeBag()
@@ -87,7 +75,7 @@ extension BankIDLoginSweden: Presentable {
         }
 
         let imageView = UIImageView()
-        imageView.image = Asset.bankIdLogo.image
+        imageView.image = hCoreUIAssets.bankIdLogo.image
         imageView.tintColor = .brand(.primaryText())
 
         iconContainerView.addSubview(imageView)
@@ -115,59 +103,107 @@ extension BankIDLoginSweden: Presentable {
         )
         bag += alternativeLoginContainer.addArranged(alternativeLoginButton)
 
-        let statusSignal =
-            client.subscribe(
-                subscription: GraphQL.AuthStatusSubscription()
-            )
-            .compactMap { $0.authStatus?.status }
+        bag += store.stateSignal
+            .compactMap({ state in
+                state.statusText
+            })
+            .onValue({ statusText in
+                statusLabel.value = statusText
+                containerView.setNeedsLayout()
+                containerView.layoutIfNeeded()
+            })
+                
+        bag += store.stateSignal
+            .atOnce()
+            .map { state in
+                state.seBankIDState.autoStartToken
+            }
+            .skip(first: 1)
+            .compactMap { $0 }
+            .onValue { autoStartToken in
+                let urlScheme = Bundle.main.urlScheme ?? ""
 
-        bag += statusSignal.skip(first: 1)
-            .onValue { authStatus in
-                let statusText: String
-
-                switch authStatus {
-                case .initiated:
-                    statusText = L10n.bankIdAuthTitleInitiated
-                case .inProgress:
-                    statusText = L10n.bankIdAuthTitleInitiated
-                case .failed:
-                    statusText = L10n.bankIdAuthTitleInitiated
-                case .success:
-                    statusText = L10n.bankIdAuthTitleInitiated
-                case .__unknown:
-                    statusText = L10n.bankIdAuthTitleInitiated
+                guard
+                    let url = URL(
+                        string:
+                            "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"
+                    )
+                else {
+                    return
+                }
+                
+                guard viewController.navigationController?.viewControllers.count == 1 else {
+                    return
                 }
 
-                statusLabel.value = statusText
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(
+                        url,
+                        options: [:],
+                        completionHandler: nil
+                    )
+                }
             }
-
+        
+        store.send(.cancel)
+        store.send(.seBankIDStateAction(action: .startSession))
+        
         return (
             viewController,
             Signal { callback in
-                generateAutoStartToken()
-                    .onValue { url in
-                        if UIApplication.shared.canOpenURL(url) {
-                            UIApplication.shared.open(
-                                url,
-                                options: [:],
-                                completionHandler: nil
-                            )
-                        } else {
-                            callback(.qrCode)
-                        }
+                bag += store.onAction(
+                    .navigationAction(action: .authSuccess),
+                    {
+                        store.send(.cancel)
+                        callback(.loggedIn)
                     }
+                )
+                
+                bag += store.onAction(
+                    .loginFailure,
+                    {
+                        guard viewController.navigationController?.viewControllers.count == 1 else {
+                            return
+                        }
+                        
+                        let alert = Alert<Void>(
+                            title: L10n.bankidUserCancelTitle,
+                            actions: [
+                                .init(
+                                    title: L10n.generalRetry,
+                                    action: {
+                                        store.send(.seBankIDStateAction(action: .startSession))
+                                    }
+                                ),
+                                .init(
+                                    title: L10n.alertCancel,
+                                    action: {
+                                        store.send(.cancel)
+                                        callback(.close)
+                                    }
+                                ),
+                            ]
+                        )
+                        
+                        viewController.present(
+                            alert
+                        )
+                    }
+                )
 
                 bag += alternativeLoginButton.onTapSignal.onValue { _ in
                     let alert = Alert<Void>(actions: [
                         .init(
                             title: L10n.emailRowTitle,
                             action: {
+                                store.send(.cancel)
                                 callback(.emailLogin)
                             }
                         ),
                         .init(
                             title: L10n.bankidOnAnotherDevice,
                             action: {
+                                store.send(.cancel)
                                 callback(.qrCode)
                             }
                         ),
@@ -186,13 +222,6 @@ extension BankIDLoginSweden: Presentable {
                         )
                     )
                 }
-
-                bag += statusSignal.distinct()
-                    .onValue { authState in
-                        if authState == .success {
-                            callback(.loggedIn)
-                        }
-                    }
 
                 return bag
             }

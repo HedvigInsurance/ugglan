@@ -74,7 +74,17 @@ extension CommonClaimDetail: Presentable {
             let store: ClaimsStore = self.get()
 
             bag += claimButton.onTapSignal.onValue {
-                store.send(.submitNewClaim)
+                hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
+
+                if claim.id == "25" {
+                    if let url = URL(
+                        string: "https://apps.apple.com/se/app/firstvet-veterin%C3%A4r-i-mobilen/id1155459157"
+                    ) {
+                        UIApplication.shared.open(url)
+                    }
+                } else {
+                    store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
+                }
             }
 
             bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))

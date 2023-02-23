@@ -20,8 +20,7 @@ extension AppJourney {
         return Journey(
             Home(
                 claimsContent: claims,
-                commonClaims: commonClaims,
-                claims.claimSubmission
+                commonClaims: commonClaims
             ),
             options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
         ) { result in
@@ -38,7 +37,6 @@ extension AppJourney {
         .onTabSelected {
             ContextGradient.currentOption = .home
         }
-        .claimStoreRedirectFromHome
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
                 return deepLink == .home
@@ -129,15 +127,12 @@ extension AppJourney {
                     profileTab
                 }
             )
-            .sendActionImmediately(UgglanStore.self, .validateAuthToken)
             .sendActionImmediately(ContractStore.self, .fetch)
             .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
             .onAction(UgglanStore.self) { action in
                 if action == .openChat {
                     AppJourney.freeTextChat().withDismissButton
-                } else if action == .openClaims {
-                    AppJourney.claimJourney
                 }
             }
         }
@@ -149,33 +144,12 @@ extension AppJourney {
 }
 
 extension JourneyPresentation {
-    @discardableResult
-    func sendActionImmediately<S: Store>(
-        _ storeType: S.Type,
-        _ action: S.Action
-    ) -> Self {
-        return self.onPresent {
-            let store: S = self.presentable.get()
-            store.send(action)
-        }
-    }
-}
-
-extension JourneyPresentation {
-    public var claimStoreRedirectFromHome: some JourneyPresentation {
-        onAction(HomeStore.self) { action in
-            if case .openClaim = action {
-                AppJourney.claimJourney
-            }
-        }
-    }
-
     public var configureClaimsNavigation: some JourneyPresentation {
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {
                 AppJourney.claimDetailJourney(claim: claim)
-            } else if case .submitNewClaim = action {
-                AppJourney.claimJourney
+            } else if case let .submitNewClaim(origin) = action {
+                AppJourney.claimJourney(from: origin)
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat()
             } else if case .openHowClaimsWork = action {

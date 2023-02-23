@@ -164,6 +164,9 @@ extension Toast: Viewable {
             value: body,
             style: TextStyle.brand(.headline(color: .primary)).colored(textColor)
         )
+        bodyLabel.lineBreakMode = .byWordWrapping
+        bodyLabel.numberOfLines = 0
+        
         textContainer.addArrangedSubview(bodyLabel)
 
         if let subtitle = subtitle {

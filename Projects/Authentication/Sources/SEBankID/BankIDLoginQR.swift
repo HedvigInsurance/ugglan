@@ -5,15 +5,20 @@ import UIKit
 import hCore
 import hCoreUI
 
-struct BankIDLoginQR {}
+public struct BankIDLoginQR {
+    @PresentableStore var store: AuthenticationStore
 
-enum BankIDLoginQRResult {
+    public init() {}
+}
+
+public enum BankIDLoginQRResult {
     case loggedIn
     case emailLogin
+    case close
 }
 
 extension BankIDLoginQR: Presentable {
-    func materialize() -> (UIViewController, Signal<BankIDLoginQRResult>) {
+    public func materialize() -> (UIViewController, Signal<BankIDLoginQRResult>) {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
@@ -25,7 +30,7 @@ extension BankIDLoginQR: Presentable {
         viewController.navigationItem.hidesBackButton = true
 
         let moreBarButtonItem = UIBarButtonItem(
-            image: Asset.menuIcon.image,
+            image: hCoreUIAssets.menuIcon.image,
             style: .plain,
             target: nil,
             action: nil
@@ -102,18 +107,79 @@ extension BankIDLoginQR: Presentable {
             imageView.image = processedImage.withRenderingMode(.alwaysTemplate)
         }
 
-        bag += Signal(every: 10).atOnce().mapLatestToFuture { BankIDLoginSweden().generateAutoStartToken() }
-            .transition(style: .crossDissolve(duration: 0.5), with: imageView, animations: generateQRCode)
+        bag += store.stateSignal
+            .compactMap({ state in
+                state.seBankIDState.autoStartToken
+            })
+            .onValue({ autoStartToken in
+                guard
+                    let url = URL(
+                        string:
+                            "bankid:///?autostarttoken=\(autoStartToken)"
+                    )
+                else {
+                    UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
+                        imageView.image = nil
+                    }
+                    return
+                }
+
+                UIView.transition(with: imageView, duration: 0.5, options: [.transitionCrossDissolve]) {
+                    generateQRCode(url)
+                }
+            })
+        
+        store.send(.seBankIDStateAction(action: .startSession))
 
         return (
             viewController,
             Signal { callback in
+                bag += store.onAction(
+                    .navigationAction(action: .authSuccess),
+                    {
+                        callback(.loggedIn)
+                    }
+                )
+                
+                bag += store.onAction(
+                    .loginFailure,
+                    {
+                        guard viewController.navigationController?.viewControllers.count == 2 else {
+                            return
+                        }
+                        
+                        let alert = Alert<Void>(
+                            title: L10n.bankidUserCancelTitle,
+                            actions: [
+                                .init(
+                                    title: L10n.generalRetry,
+                                    action: {
+                                        store.send(.seBankIDStateAction(action: .startSession))
+                                    }
+                                ),
+                                .init(
+                                    title: L10n.alertCancel,
+                                    action: {
+                                        store.send(.cancel)
+                                        callback(.close)
+                                    }
+                                ),
+                            ]
+                        )
+                        
+                        viewController.present(
+                            alert
+                        )
+                    }
+                )
+
 
                 bag += moreBarButtonItem.onValue { _ in
                     let alert = Alert<Void>(actions: [
                         .init(
                             title: L10n.demoModeStart,
                             action: {
+                                store.send(.cancel)
                                 callback(.loggedIn)
                             }
                         ), .init(title: L10n.demoModeCancel, style: .cancel, action: {}),
@@ -129,6 +195,7 @@ extension BankIDLoginQR: Presentable {
                 }
 
                 bag += emailLoginButton.onTapSignal.onValue { _ in
+                    store.send(.cancel)
                     callback(.emailLogin)
                 }
 

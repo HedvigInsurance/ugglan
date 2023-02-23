@@ -19,7 +19,10 @@ let ugglanConfigurations: [Configuration] = [
     ),
     .release(
         name: "Release",
-        settings: ["OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER"],
+        settings: [
+            "CODE_SIGN_STYLE": "automatic",
+            "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER"
+        ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
     ),
 ]
@@ -32,7 +35,7 @@ let hedvigConfigurations: [Configuration] = [
     ),
     .release(
         name: "Release",
-        settings: [:],
+        settings: ["CODE_SIGN_STYLE": "automatic"],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
     ),
 ]

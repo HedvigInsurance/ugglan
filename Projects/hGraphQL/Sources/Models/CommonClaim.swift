@@ -6,6 +6,10 @@ public struct CommonClaim: Codable, Equatable {
     public let displayTitle: String
     public let layout: Layout
 
+    public enum CommonClaimItemType: String {
+        case phone = "PHONE"
+    }
+
     public init(
         claim: GraphQL.CommonClaimsQuery.Data.CommonClaim
     ) {
