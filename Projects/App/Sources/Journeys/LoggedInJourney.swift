@@ -58,6 +58,8 @@ extension AppJourney {
                 AppJourney.crossSellingJourney(crossSell: crossSell)
             case let .openCrossSellingEmbark(name):
                 AppJourney.crossSellingEmbarkJourney(name: name, style: .detented(.large))
+            case let .openCrossSellingWebUrl(url):
+                AppJourney.webRedirect(url: url)
             }
         }
         .onTabSelected {
