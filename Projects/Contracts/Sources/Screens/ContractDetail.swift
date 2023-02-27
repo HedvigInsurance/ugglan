@@ -137,7 +137,7 @@ struct ContractDetail: View {
                 }
             }
 
-            if hAnalyticsExperiment.termination_flow {
+            if hAnalyticsExperiment.terminationFlow {
                 hButton.SmallButtonText {
                     store.send(.goToTerminationFlow)
                 } content: {
