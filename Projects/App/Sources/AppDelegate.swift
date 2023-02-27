@@ -205,7 +205,7 @@ import hGraphQL
             .build()
 
         log.info("Starting app")
-        
+
         UIApplication.shared.registerForRemoteNotifications()
 
         hAnalyticsEvent.identify()

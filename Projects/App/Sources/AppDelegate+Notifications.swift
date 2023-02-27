@@ -12,15 +12,16 @@ import hCoreUI
 import hGraphQL
 
 extension AppDelegate {
-    func application(_ application: UIApplication,
-                didRegisterForRemoteNotificationsWithDeviceToken
-                    deviceToken: Data) {
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
         bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter(predicate: { $0 })
             .onValue { _ in
                 let client: ApolloClient = Dependencies.shared.resolve()
-                
-                let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
-                
+
+                let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
+
                 client.perform(mutation: GraphQL.NotificationRegisterDeviceMutation(token: deviceTokenString))
                     .onValue { data in
                         if data.notificationRegisterDevice == true {
@@ -31,7 +32,7 @@ extension AppDelegate {
                     }
             }
     }
-    
+
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         log.info("Failed to register for remote notifications with error: \(error))")
     }
