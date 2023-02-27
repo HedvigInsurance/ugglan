@@ -73,6 +73,7 @@ public enum ContractAction: ActionProtocol {
     case goToFreeTextChat
     case setFocusedCrossSell(focusedCrossSell: CrossSell?)
     case openCrossSellingEmbark(name: String)
+    case openCrossSellingWebUrl(url: URL)
     case openCrossSellingChat
 
     case crossSellingDetailEmbark(name: String)

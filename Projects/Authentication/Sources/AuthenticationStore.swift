@@ -31,6 +31,7 @@ struct ZignsecState: StateProtocol {
     var isLoading: Bool = false
     var personalNumber: String = ""
     var webviewUrl: URL? = nil
+    var credentialError: Bool = false
 
     public init() {}
 }
@@ -40,6 +41,7 @@ public struct AuthenticationState: StateProtocol {
     var otpState = OTPState()
     var seBankIDState = SEBankIDState()
     var zignsecState = ZignsecState()
+    var loginHasFailed = false
 
     public init() {}
 }
@@ -62,7 +64,7 @@ public enum AuthenticationNavigationAction: ActionProtocol {
     case otpCode
     case authSuccess
     case impersonation
-    case zignsecWebview
+    case zignsecWebview(url: URL)
 }
 
 public enum SEBankIDStateAction: ActionProtocol {
@@ -76,6 +78,7 @@ public enum ZignsecStateAction: ActionProtocol {
     case setPersonalNumber(personalNumber: String)
     case setWebviewUrl(url: URL)
     case startSession(personalNumber: String)
+    case setCredentialError(error: Bool)
 }
 
 enum LoginError: Error {
@@ -105,16 +108,37 @@ enum LoginStatus: Equatable {
     case unknown
 }
 
+extension CoreSignal where Kind == Plain {
+    func poll(
+        poller: @escaping () -> Signal<Value>,
+        shouldPoll: @escaping (_ value: Value) -> Bool
+    ) -> CoreSignal<Plain, Value> {
+        return self.flatMapLatest { value in
+            if shouldPoll(value) {
+                return poller()
+                    .delay(by: 0.25)
+                    .poll(poller: poller, shouldPoll: shouldPoll)
+            }
+
+            return Signal(just: value)
+        }
+    }
+}
+
 public final class AuthenticationStore: StateStore<AuthenticationState, AuthenticationAction> {
     @Inject var client: ApolloClient
 
-    var networkAuthRepository: NetworkAuthRepository {
+    lazy var networkAuthRepository: NetworkAuthRepository = {
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
-            additionalHttpHeaders: ApolloClient.headers()
+            additionalHttpHeaders: ApolloClient.headers(),
+            callbacks: Callbacks(
+                successUrl: "\(Bundle.main.urlScheme ?? "")://login-success",
+                failureUrl: "\(Bundle.main.urlScheme ?? "")://login-failure"
+            )
         )
-    }
-    
+    }()
+
     func checkStatus(statusUrl: URL) -> Signal<LoginStatus> {
         return Signal { callbacker in
             self.networkAuthRepository
@@ -129,7 +153,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         callbacker(.unknown)
                     }
                 }
-            
+
             return NilDisposer()
         }
     }
@@ -286,46 +310,39 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         } else if case let .observeLoginStatus(statusUrl) = action {
             return FiniteSignal { callbacker in
                 let bag = DisposeBag()
-                
-                func pollStatus() {
-                    bag += self.checkStatus(statusUrl: statusUrl)
-                        .onValue({ status in
-                            if case let .completed(code) = status {
-                                callbacker(.value(.exchange(code: code)))
-                                callbacker(.end)
-                            } else if status == .failed {
-                                callbacker(.value(.loginFailure))
-                                callbacker(.end(LoginError.failed))
-                            } else if case let .pending(statusMessage) = status {
-                                callbacker(.value(.setStatus(text: statusMessage)))
-                            }
-                            
-                            if !bag.isEmpty {
-                                bag += Signal(after: 1).onValue { _ in
-                                    pollStatus()
-                                }
-                            }
-                        })
-                }
-                
-                pollStatus()
-                
+
+                bag += self.checkStatus(statusUrl: statusUrl)
+                    .poll {
+                        self.checkStatus(statusUrl: statusUrl)
+                    } shouldPoll: { loginStatus in
+                        if case .pending = loginStatus {
+                            return true
+                        } else if case .unknown = loginStatus {
+                            return true
+                        }
+
+                        return false
+                    }
+                    .onValue { loginStatus in
+                        if case let .completed(code) = loginStatus {
+                            callbacker(.value(.exchange(code: code)))
+                            callbacker(.end)
+                        } else if loginStatus == .failed {
+                            callbacker(.value(.loginFailure))
+                            callbacker(.end(LoginError.failed))
+                        }
+                    }
+
                 bag += self.actionSignal.onValue({ action in
                     switch action {
-                    case
-                            .observeLoginStatus(_),
-                            .cancel,
-                            .navigationAction(action: .authSuccess):
+                    case .observeLoginStatus(_),
+                        .cancel,
+                        .navigationAction(action: .authSuccess):
                         callbacker(.end)
                     default:
                         break
                     }
                 })
-
-                bag += Signal(after: 250)
-                    .onValue { _ in
-                        callbacker(.end(LoginError.failed))
-                    }
 
                 return bag
             }
@@ -377,10 +394,25 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         let statusUrl = URL(string: zignsecProperties.statusUrl.url),
                         let webviewUrl = URL(string: zignsecProperties.redirectUrl)
                     {
-                        callback(.value(.zignsecStateAction(action: .setWebviewUrl(url: webviewUrl))))
-                        callback(.value(.navigationAction(action: .zignsecWebview)))
+                        callback(.value(.navigationAction(action: .zignsecWebview(url: webviewUrl))))
                         callback(.value(.observeLoginStatus(url: statusUrl)))
+                    } else {
+                        callback(
+                            .value(
+                                .zignsecStateAction(
+                                    action: .setIsLoading(isLoading: false)
+                                )
+                            )
+                        )
+                        callback(
+                            .value(
+                                .zignsecStateAction(
+                                    action: .setCredentialError(error: true)
+                                )
+                            )
+                        )
                     }
+                    callback(.end)
                 }
 
                 return bag
@@ -456,8 +488,10 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 newState.zignsecState.personalNumber = personalNumber
             case let .setWebviewUrl(url):
                 newState.zignsecState.webviewUrl = url
+            case let .setCredentialError(error):
+                newState.zignsecState.credentialError = error
             case .startSession:
-                break
+                newState.zignsecState.credentialError = false
             }
         case let .setStatus(text):
             newState.statusText = text
@@ -466,6 +500,10 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             newState.seBankIDState = SEBankIDState()
             newState.zignsecState.webviewUrl = nil
             newState.zignsecState.isLoading = false
+            newState.zignsecState.credentialError = false
+            newState.loginHasFailed = false
+        case .loginFailure:
+            newState.loginHasFailed = true
         default:
             break
         }

@@ -62,6 +62,8 @@ extension AppJourney {
                 AppJourney.terminationFlow
             case .terminationSuccessFlow:
                 AppJourney.sendTermination()
+            case let .openCrossSellingWebUrl(url):
+                AppJourney.webRedirect(url: url)
             }
         }
         .onTabSelected {

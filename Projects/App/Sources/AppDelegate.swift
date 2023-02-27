@@ -38,7 +38,7 @@ import hGraphQL
         window.rootViewController = UIViewController()
         return window
     }()
-    
+
     func presentMainJourney() {
         ApolloClient.cache = InMemoryNormalizedCache()
 
@@ -135,6 +135,11 @@ import hGraphQL
     }
 
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
+        if url.relativePath.contains("login-failure") {
+            let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
+            authenticationStore.send(.loginFailure)
+        }
+
         let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
 
         if adyenRedirect { return adyenRedirect }
@@ -213,7 +218,7 @@ import hGraphQL
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
-        
+
         hGraphQL.log = Logger.builder
             .sendNetworkInfo(true)
             .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
@@ -229,11 +234,11 @@ import hGraphQL
         let (launchView, launchFuture) = Launch.shared.materialize()
         window.rootView.addSubview(launchView)
         launchView.layer.zPosition = .greatestFiniteMagnitude - 2
-        
+
         forceLogoutHook = {
             DispatchQueue.main.async {
                 launchView.removeFromSuperview()
-                
+
                 ApplicationState.preserveState(.marketPicker)
 
                 ApplicationContext.shared.hasFinishedBootstrapping = true
@@ -262,7 +267,7 @@ import hGraphQL
 
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
-        
+
         bag += launchFuture.valueSignal.onValue { _ in
             launchView.removeFromSuperview()
             ApplicationContext.shared.hasFinishedBootstrapping = true
@@ -287,31 +292,32 @@ import hGraphQL
                 Toasts.shared.displayToast(toast: toast)
             }
         }
-        
-        ApolloClient.migrateOldTokenIfNeeded().onValue { _ in
-            self.trackNotificationPermission()
-            self.setupHAnalyticsExperiments()
-            
-            self.bag += ApplicationContext.shared.$hasLoadedExperiments
-                .atOnce()
-                .onValue { isLoaded in
-                    guard isLoaded else { return }
-                    self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-                        .atValue { _ in
-                            self.initOdyssey()
 
-                            Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+        ApolloClient.migrateOldTokenIfNeeded()
+            .onValue { _ in
+                self.trackNotificationPermission()
+                self.setupHAnalyticsExperiments()
 
-                            AnalyticsCoordinator().setUserId()
+                self.bag += ApplicationContext.shared.$hasLoadedExperiments
+                    .atOnce()
+                    .onValue { isLoaded in
+                        guard isLoaded else { return }
+                        self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
+                            .atValue { _ in
+                                self.initOdyssey()
 
-                            self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
-                                .filter(predicate: { hasLoaded in hasLoaded })
-                                .onValue { _ in
-                                    self.bag += self.window.present(AppJourney.main)
-                                }
-                        }
-                }
-        }
+                                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+
+                                AnalyticsCoordinator().setUserId()
+
+                                self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
+                                    .filter(predicate: { hasLoaded in hasLoaded })
+                                    .onValue { _ in
+                                        self.bag += self.window.present(AppJourney.main)
+                                    }
+                            }
+                    }
+            }
 
         return true
     }

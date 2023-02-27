@@ -95,6 +95,7 @@ public enum ContractsResult {
     case openCrossSellingEmbark(name: String)
     case terminationFlow
     case terminationSuccessFlow
+    case openCrossSellingWebUrl(url: URL)
 }
 
 extension Contracts {
@@ -124,6 +125,8 @@ extension Contracts {
                 resultJourney(.openCrossSellingDetail(crossSell: crossSell))
             } else if case let .openCrossSellingEmbark(name) = action {
                 resultJourney(.openCrossSellingEmbark(name: name))
+            } else if case let .openCrossSellingWebUrl(url) = action {
+                resultJourney(.openCrossSellingWebUrl(url: url))
             } else if case .goToFreeTextChat = action {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
