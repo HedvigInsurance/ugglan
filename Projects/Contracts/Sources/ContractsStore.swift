@@ -89,6 +89,11 @@ public enum ContractAction: ActionProtocol {
     case resetSignedCrossSells
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
+
+    case goToTerminationFlow
+    //    case goToTerminationSuccess
+    case sendTermination
+    case dismissTerminationFlow
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {
