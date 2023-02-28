@@ -29,9 +29,30 @@ public struct TerminationSuccessScreen: View {
         .padding(.bottom, -100)
 
         hButton.LargeButtonFilled {
+
+            let currentMarket = Localization.Locale.currentLocale.market
+            var surveyURL = ""
+
+            switch currentMarket {
+            case .se:
+                surveyURL =
+                    "https://hedvigapp.typeform.com/to/YHVVx1#memberid=xxxxx&contract_id=xxxxx&contract_name=xxxxx&terminated_contracts_count=xxxxx"
+            case .no:
+                surveyURL = "https://hedvigapp.typeform.com/to/a7aRZzir#memberid=xxxxx"
+            case .dk:
+                surveyURL = "https://hedvigapp.typeform.com/to/dk9Dj7S8#memberid=xxxxx"
+            default:
+                break
+            }
+
+            if let url = URL(
+                string: surveyURL
+            ) {
+                UIApplication.shared.open(url)
+            }
             store.send(.dismissTerminationFlow)
         } content: {
-            hText("Done", style: .body)
+            hText(L10n.continueToSurveyButton, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
         }
         .frame(maxWidth: .infinity, alignment: .bottom)

@@ -15,7 +15,7 @@ extension AppJourney {
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
-        .withDismissButton
+        .withJourneyDismissButton
     }
 
     static func sendTermination() -> some JourneyPresentation {
@@ -30,7 +30,7 @@ extension AppJourney {
                 DismissJourney()
             }
         }
-        .withDismissButton
+        .withJourneyDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 }

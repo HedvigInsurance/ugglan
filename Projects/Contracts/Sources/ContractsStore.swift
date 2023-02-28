@@ -91,7 +91,6 @@ public enum ContractAction: ActionProtocol {
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 
     case goToTerminationFlow
-    //    case goToTerminationSuccess
     case sendTermination
     case dismissTerminationFlow
 }
