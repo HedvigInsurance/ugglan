@@ -1,6 +1,6 @@
 # State
 
-State is managed through a Event Sourcing model, the tools and framework for doing this is built in-house and is located at: `https://github.com/HedvigInsurance/presentation`
+State is managed through an Event Sourcing model, the tools and framework for doing this is built in-house and is located at: `https://github.com/HedvigInsurance/presentation`
 
 State management in Ugglan is essentially the same model as Redux.
 
