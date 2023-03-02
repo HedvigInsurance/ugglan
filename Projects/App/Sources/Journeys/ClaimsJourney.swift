@@ -35,28 +35,168 @@ extension AppJourney {
     }
 
     static func claimJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        hAnalyticsEvent.claimFlowType(
-            claimType: hAnalyticsExperiment.odysseyClaims ? .automation : .manual
-        )
-        .send()
-        return AppJourney.claimsJourneyPledgeAndNotificationWrapper(from: origin) { redirect in
-            switch redirect {
-            case .chat:
-                AppJourney.claimsChat()
-                    .hidesBackButton
-                    .withJourneyDismissButton
-            case .close:
+        //        hAnalyticsEvent.claimFlowType(
+        //            claimType: hAnalyticsExperiment.odysseyClaims ? .automation : .manual
+        //        )
+        //        .send()
+        //
+
+        HostingJourney(
+            UgglanStore.self,
+            rootView: HonestyPledge(),
+            style: .modal
+        ) {
+            action in
+            if case .didAcceptHonestyPledge = action {
+                submitClaimContractScreen(from: origin)
+            }
+        }
+        .withDismissButton
+        .setScrollEdgeNavigationBarAppearanceToStandard
+
+        //        return AppJourney.claimsJourneyPledgeAndNotificationWrapper(from: origin) { redirect in // här
+        //            switch redirect {
+        //            case .chat:
+        //                AppJourney.claimsChat()
+        //                    .hidesBackButton
+        //                    .withJourneyDismissButton
+        //            case .close:
+        //                DismissJourney()
+        //            case .menu:
+        //                ContinueJourney()
+        //            case .mailingList:
+        //                DismissJourney()
+        //            case .offer:
+        //                DismissJourney()
+        //            case .quoteCartOffer:
+        //                DismissJourney()
+        //            }
+        //        }
+    }
+
+    static func submitClaimContractScreen(from origin: ClaimsOrigin) -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimContactScreen(),
+            style: .modal
+        ) {
+            action in
+            if case .submitClaimOccuranceScreen = action {
+                submitClaimOccurranceScreen(from: origin)
+            }
+        }
+        .withDismissButton
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func submitClaimOccurranceScreen(from origin: ClaimsOrigin) -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimOccurrenceScreen(origin: origin),
+            style: .modal
+        ) {
+
+            action in
+            if case .openDatePicker = action {
+                openDatePickerScreen()
+            } else if case .openLocation = action {
+                openLocationScreen()
+            } else if case .submitClaimAudioRecordingOrInfo = action {
+
+                switch origin {
+                case .generic:
+                    openAudioRecordingSceen()
+                case .commonClaims:
+                    opernObjectInformation()
+                case .commonClaims(id: "6"):  //doesn't work
+                    opernObjectInformation()
+                }
+            }
+        }
+        .withDismissButton
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openDatePickerScreen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: DatePickerScreen(),
+            style: .modal
+        ) {
+            action in
+            if case .dissmissNewClaimFlow = action {
+                PopJourney()
+            }
+        }
+        .withDismissButton
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openLocationScreen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: LocationPickerScreen(),
+            style: .modal
+        ) {
+            action in
+            if case .dismissLocation = action {
+                PopJourney()
+            }
+        }
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openAudioRecordingSceen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimAudioRecordingScreen(),
+            style: .modal
+        ) {
+            action in
+            if case .openSuccessScreen = action {
+                openSuccessSceen()
+            }
+        }
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openSuccessSceen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimSuccessScreen(),
+            style: .modal
+        ) {
+            action in
+            if case .dissmissNewClaimFlow = action {
                 DismissJourney()
-            case .menu:
-                ContinueJourney()
-            case .mailingList:
+            } else if case .openFreeTextChat = action {
+                DismissJourney()  //change
+            }
+        }
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func opernObjectInformation() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimObjectInformation(),
+            style: .modal
+        ) {
+            action in
+            if case .dissmissNewClaimFlow = action {
                 DismissJourney()
-            case .offer:
-                DismissJourney()
-            case .quoteCartOffer:
+            } else if case .openFreeTextChat = action {
                 DismissJourney()
             }
         }
+        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     @JourneyBuilder

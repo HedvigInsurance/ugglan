@@ -35,6 +35,14 @@ public enum ClaimsAction: ActionProtocol {
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
     case odysseyRedirect(url: String)
+
+    case dissmissNewClaimFlow
+    case submitClaimOccuranceScreen
+    case openDatePicker
+    case openLocation
+    case dismissLocation
+    case openSuccessScreen
+    case submitClaimAudioRecordingOrInfo
 }
 
 public enum ClaimsOrigin: Codable, Equatable {
