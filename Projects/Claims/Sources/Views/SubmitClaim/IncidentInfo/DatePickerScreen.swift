@@ -16,7 +16,7 @@ public struct DatePickerScreen: View {
 
             hSection {
                 DatePicker(
-                    "Termination Date",
+                    "Incident Date",
                     selection: self.$dateOfOccurrence,
                     displayedComponents: [.date]
                 )
