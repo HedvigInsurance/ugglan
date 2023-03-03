@@ -46,6 +46,9 @@ public enum ClaimsAction: ActionProtocol {
     case openSummaryScreen
     case openSummaryEditScreen
     case openDamagePickerScreen
+    case openCheckoutNoRepairScreen
+    case openCheckoutTransferringScreen
+    case openCheckoutTransferringDoneScreen
 }
 
 public enum ClaimsOrigin: Codable, Equatable {

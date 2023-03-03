@@ -206,7 +206,7 @@ extension AppJourney {
             if case .dissmissNewClaimFlow = action {
                 DismissJourney()
             } else if case .openFreeTextChat = action {
-                DismissJourney()  //change
+                DismissJourney()
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
@@ -245,6 +245,8 @@ extension AppJourney {
             action in
             if case .openSummaryEditScreen = action {
                 openSummaryEditScreen()
+            } else if case .openCheckoutNoRepairScreen = action {
+                openCheckoutNoRepairScreen()
             }
         }
         .withDismissButton
@@ -267,6 +269,54 @@ extension AppJourney {
                 openDamagePickerScreen()
             } else if case .openModelPicker = action {
                 openModelPickerScreen()
+            }
+        }
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimCheckoutNoRepairScreen(),
+            style: .modal
+        ) {
+            action in
+            if case .openCheckoutTransferringScreen = action {
+                openCheckoutTransferringScreen()
+            }
+        }
+        .withDismissButton
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openCheckoutTransferringScreen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimCheckoutTransferringScreen(),
+            style: .default
+        ) {
+            action in
+            if case .openCheckoutTransferringDoneScreen = action {
+                openCheckoutTransferringDoneScreen()
+            } else if case .dissmissNewClaimFlow = action {
+                PopJourney()
+            }
+        }
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openCheckoutTransferringDoneScreen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimCheckoutTransferringDoneScreen(),
+            style: .modal /* TODO: CHANGE */
+        ) {
+            action in
+            if case .dissmissNewClaimFlow = action {
+                DismissJourney()
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard

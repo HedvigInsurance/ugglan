@@ -23,47 +23,23 @@ public struct SubmitClaimSuccessScreen: View {
         }
         .hFormAttachToBottom {
 
+            /* TODO: FIX BUTTONS */
             HStack(spacing: 10) {
-                if #available(iOS 15.0, *) {
-                    hButton.LargeButtonFilled {
-                        store.send(.dissmissNewClaimFlow)
-                    } content: {
-                        hText(L10n.generalCloseButton, style: .body)
-                            .foregroundColor(hLabelColor.primary.inverted)
-
-                    }
-                    //                                    .frame(maxWidth: .infinity, alignment: .center)
-                    //                    .padding(.leading, 16)
-                    //                    .padding(.trailing, 16)
-                    //                    .background(.blue)
-                } else {
-                    // Fallback on earlier versions
+                hButton.LargeButtonFilled {
+                    store.send(.dissmissNewClaimFlow)
+                } content: {
+                    hText(L10n.generalCloseButton, style: .body)
+                        .foregroundColor(hLabelColor.primary.inverted)
                 }
 
-                if #available(iOS 15.0, *) {
-                    hButton.LargeButtonFilled {
-                        store.send(.openFreeTextChat)
-                    } content: {
-                        hText(L10n.Message.Claims.Start.Select.From.user, style: .body)
-                            .foregroundColor(hLabelColor.primary.inverted)
-                    }
-                    //                    .background(.red)
-                    //                    .padding(.trailing, 16)
-                } else {
-                    // Fallback on earlier versions
+                hButton.LargeButtonFilled {
+                    store.send(.openFreeTextChat)
+                } content: {
+                    hText(L10n.Message.Claims.Start.Select.From.user, style: .body)
+                        .foregroundColor(hLabelColor.primary.inverted)
                 }
-                //                .frame(maxWidth: .infinity, alignment: .trailing)
-                //                .padding(.trailing, 26)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            //            .padding(.leading, 46)
-            //            .padding(.trailing, 46)
-            //            .frame(maxWidth: .infinity, alignment: .center)
-            //            .background(hBackgroundColor.tertiary)
-            //            .frame(maxWidth: .infinity, alignment: .leading)
-            //            .padding([.top, .leading, .trailing], 16)
-            //            .padding(.bottom, 40)
-
         }
     }
 }

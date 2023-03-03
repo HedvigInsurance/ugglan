@@ -16,6 +16,8 @@ public struct SubmitClaimObjectInformation: View {
 
     public var body: some View {
         hForm {
+
+            /* TODO - SHOW ONLY IF PHONE */
             hRow {
                 HStack {
                     hText(L10n.Claims.Item.Screen.Model.button)
@@ -53,13 +55,19 @@ public struct SubmitClaimObjectInformation: View {
 
             hButton.SmallButtonText {
             } content: {
-                HSsack {
+                ZStack {
+                    HStack {
+                        hText(L10n.Claims.Item.Screen.Purchase.Price.button)
+                        Spacer()
+                        hText(Localization.Locale.currentLocale.market.currencyCode)
+                    }
 
-                    /* TODO: FIX CURSOR */
-                    hText(L10n.Claims.Item.Screen.Purchase.Price.button)
                     hTextField(masking: currencyMasking, value: $purchasePrice)
                         .multilineTextAlignment(.trailing)
-                    hText(Localization.Locale.currentLocale.market.currencyCode)
+                        .padding(.trailing, 40)
+                        .padding(.top, 8.0)
+                        .border(Color.white)
+                    /* TODO: CHANGE COLOR ON CURSOR? */
                 }
             }
             .frame(height: 64)

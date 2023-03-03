@@ -30,7 +30,7 @@ public struct SubmitClaimContactScreen: View {
 
                 HStack {
                     VStack {
-                        hText("0712345678", style: .title2)
+                        hText("0712345678", style: .title2) /* TODO: CHANGE */
                         hText(L10n.phoneNumberRowTitle, style: .footnote)
                     }
                     .padding([.top, .bottom], 5)

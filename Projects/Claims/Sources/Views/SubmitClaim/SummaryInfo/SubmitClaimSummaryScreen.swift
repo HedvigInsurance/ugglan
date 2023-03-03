@@ -32,9 +32,9 @@ public struct SubmitClaimSummaryScreen: View {
 
                 hText("iPhone 13 128GB") /* TODO: CHANGE */
                     .padding(.top, 40)
-                hText(L10n.summaryPurchaseDescription("Jan. 2022", 13499))
+                hText(L10n.summaryPurchaseDescription("Jan. 2022", 13499)) /* TODO: CHANGE */
                     .padding(.top, 2)
-                hText(L10n.summarySelectedProblemDescription("Only front"))
+                hText(L10n.summarySelectedProblemDescription("Only front")) /* TODO: CHANGE */
                     .padding(.top, 2)
 
                 hButton.SmallButtonOutlined {
@@ -47,6 +47,7 @@ public struct SubmitClaimSummaryScreen: View {
         }
         .hFormAttachToBottom {
             hButton.LargeButtonFilled {
+                store.send(.openCheckoutNoRepairScreen)
             } content: {
                 hText(L10n.generalContinueButton)
             }
