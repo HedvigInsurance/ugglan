@@ -22,21 +22,21 @@ public struct LocationPickerScreen: View {
                 }
                 .onTap {
                     chosenLocation = "Hemma"
-                    store.send(.dismissLocation)
+                    store.send(.dissmissNewClaimFlow)
                 }
                 hRow {
                     hText("I Sverige")
                 }
                 .onTap {
                     chosenLocation = "I Sverige"
-                    store.send(.dismissLocation)
+                    store.send(.dissmissNewClaimFlow)
                 }
                 hRow {
                     hText("Utomlands")
                 }
                 .onTap {
                     chosenLocation = "Utomlands"
-                    store.send(.dismissLocation)
+                    store.send(.dissmissNewClaimFlow)
                 }
             }
         }

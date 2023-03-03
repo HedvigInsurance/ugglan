@@ -94,14 +94,14 @@ extension AppJourney {
 
         HostingJourney(
             ClaimsStore.self,
-            rootView: SubmitClaimOccurrenceScreen(origin: origin),
+            rootView: SubmitClaimOccurrenceScreen(),
             style: .modal
         ) {
 
             action in
             if case .openDatePicker = action {
                 openDatePickerScreen()
-            } else if case .openLocation = action {
+            } else if case .openLocationPicker = action {
                 openLocationScreen()
             } else if case .submitClaimAudioRecordingOrInfo = action {
 
@@ -109,9 +109,9 @@ extension AppJourney {
                 case .generic:
                     openAudioRecordingSceen()
                 case .commonClaims:
-                    opernObjectInformation()
+                    openObjectInformation()
                 case .commonClaims(id: "6"):  //doesn't work
-                    opernObjectInformation()
+                    openObjectInformation()
                 }
             }
         }
@@ -143,7 +143,37 @@ extension AppJourney {
             style: .modal
         ) {
             action in
-            if case .dismissLocation = action {
+            if case .dissmissNewClaimFlow = action {
+                PopJourney()
+            }
+        }
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openModelPickerScreen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: ModelPickerScreen(),
+            style: .modal
+        ) {
+            action in
+            if case .dissmissNewClaimFlow = action {
+                PopJourney()
+            }
+        }
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openDamagePickerScreen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: DamamagePickerScreen(),
+            style: .modal
+        ) {
+            action in
+            if case .dissmissNewClaimFlow = action {
                 PopJourney()
             }
         }
@@ -182,7 +212,7 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func opernObjectInformation() -> some JourneyPresentation {
+    static func openObjectInformation() -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
@@ -190,10 +220,53 @@ extension AppJourney {
             style: .modal
         ) {
             action in
-            if case .dissmissNewClaimFlow = action {
-                DismissJourney()
-            } else if case .openFreeTextChat = action {
-                DismissJourney()
+            if case .openSummaryScreen = action {
+                openSummaryScreen()
+            } else if case .openDatePicker = action {
+                openDatePickerScreen()
+            } else if case .openLocationPicker = action {
+                openLocationScreen()
+            } else if case .openDamagePickerScreen = action {
+                openDamagePickerScreen()
+            } else if case .openModelPicker = action {
+                openModelPickerScreen()
+            }
+        }
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openSummaryScreen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimSummaryScreen(),
+            style: .modal
+        ) {
+            action in
+            if case .openSummaryEditScreen = action {
+                openSummaryEditScreen()
+            }
+        }
+        .withDismissButton
+        .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openSummaryEditScreen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimEditSummaryScreen(),
+            style: .modal
+        ) {
+            action in
+            if case .openLocationPicker = action {
+                openLocationScreen()
+            } else if case .openDatePicker = action {
+                openDatePickerScreen()
+            } else if case .openDamagePickerScreen = action {
+                openDamagePickerScreen()
+            } else if case .openModelPicker = action {
+                openModelPickerScreen()
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard

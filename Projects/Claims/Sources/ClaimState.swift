@@ -39,10 +39,13 @@ public enum ClaimsAction: ActionProtocol {
     case dissmissNewClaimFlow
     case submitClaimOccuranceScreen
     case openDatePicker
-    case openLocation
-    case dismissLocation
+    case openLocationPicker
+    case openModelPicker
     case openSuccessScreen
     case submitClaimAudioRecordingOrInfo
+    case openSummaryScreen
+    case openSummaryEditScreen
+    case openDamagePickerScreen
 }
 
 public enum ClaimsOrigin: Codable, Equatable {
