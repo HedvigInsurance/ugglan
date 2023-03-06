@@ -31,7 +31,9 @@ public struct SubmitClaimCheckoutTransferringDoneScreen: View {
 
                         Image(uiImage: hCoreUIAssets.circularCheckmark.image) /* TODO: CHANGE TO FILLED? */
                         hText("3 020 kr", style: .title1) /* TODO: CHANGE */
+                            .foregroundColor(hLabelColor.primary)
                         hText(L10n.Claims.Payout.Success.message, style: .footnote)
+                            .foregroundColor(hLabelColor.primary)
 
                     }
                     .scaleEffect(
@@ -42,13 +44,11 @@ public struct SubmitClaimCheckoutTransferringDoneScreen: View {
 
                     Spacer()
 
-                    /* TODO: CHANGE COLOR? */
                     hButton.LargeButtonFilled {
                         store.send(.dissmissNewClaimFlow)
                     } content: {
                         hText(L10n.generalContinueButton)
                     }
-
                 }
                 .opacity(hasActionCompleted ? 1 : 0)
                 .disabled(!hasActionCompleted)

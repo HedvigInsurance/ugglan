@@ -21,10 +21,12 @@ public struct SubmitClaimEditSummaryScreen: View {
                     } content: {
                         HStack(spacing: 0) {
                             hText(L10n.Claims.Item.Screen.Date.Of.Incident.button)
+                                .foregroundColor(hLabelColor.primary)
                             Spacer()
 
                             HStack(spacing: 0) {
                                 hText("19 Apr 2022")
+                                    .foregroundColor(hLabelColor.primary).colorScheme(.light)
                                     .padding([.top, .bottom], 11)
                                     .padding([.trailing, .leading], 12)
                             }
@@ -40,6 +42,7 @@ public struct SubmitClaimEditSummaryScreen: View {
                 hRow {
                     HStack {
                         hText(L10n.Claims.Location.Screen.title)
+                            .foregroundColor(hLabelColor.primary)
                         Spacer()
                         hText("Sweden")
                             .foregroundColor(hLabelColor.secondary)
@@ -69,7 +72,7 @@ public struct SubmitClaimEditSummaryScreen: View {
                 hRow {
 
                     hButton.SmallButtonText {
-                        //
+                        store.send(.openDatePicker)
                     } content: {
                         HStack(spacing: 0) {
                             hText(L10n.Claims.Item.Screen.Date.Of.Purchase.button)
@@ -77,6 +80,7 @@ public struct SubmitClaimEditSummaryScreen: View {
 
                             HStack(spacing: 0) {
                                 hText("Jan 2022")
+                                    .foregroundColor(hLabelColor.primary).colorScheme(.light)
                                     .padding([.top, .bottom], 11)
                                     .padding([.trailing, .leading], 12)
                             }
@@ -97,9 +101,6 @@ public struct SubmitClaimEditSummaryScreen: View {
                             .foregroundColor(hLabelColor.secondary)
                     }
                 }
-                //                .onTap {
-                //                    store.send(.openLocationPicker)
-                //                }
 
                 hRow {
                     HStack {
@@ -118,6 +119,7 @@ public struct SubmitClaimEditSummaryScreen: View {
         }
         .hFormAttachToBottom {
             hButton.LargeButtonFilled {
+                store.send(.dissmissNewClaimFlow)
             } content: {
                 hText(L10n.generalSaveButton)
             }

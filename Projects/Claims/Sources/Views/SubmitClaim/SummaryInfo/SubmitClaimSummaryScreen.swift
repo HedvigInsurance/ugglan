@@ -12,10 +12,13 @@ public struct SubmitClaimSummaryScreen: View {
         hForm {
             VStack(spacing: 0) {
                 hText("Broken phone", style: .title3) /* TODO: CHANGE */
-                    .padding(.top, 200)
+                    //                    .padding(.top, 200)
+                    .padding(.top, UIScreen.main.bounds.size.height / 5)
 
                 HStack {
                     Image(uiImage: hCoreUIAssets.calendar.image)
+                        .resizable()
+                        .frame(width: 12.0, height: 12.0)
                         .foregroundColor(.secondary)
                     hText("19 Apr 2022") /* TODO: CHANGE */
                         .padding(.top, 2)

@@ -24,22 +24,57 @@ public struct SubmitClaimSuccessScreen: View {
         .hFormAttachToBottom {
 
             /* TODO: FIX BUTTONS */
-            HStack(spacing: 10) {
-                hButton.LargeButtonFilled {
+            HStack {
+
+                Button {
                     store.send(.dissmissNewClaimFlow)
-                } content: {
-                    hText(L10n.generalCloseButton, style: .body)
-                        .foregroundColor(hLabelColor.primary.inverted)
+                } label: {
+                    HStack {
+                        hText(L10n.generalCloseButton, style: .body)
+                            .foregroundColor(hLabelColor.primary).colorScheme(.light)
+                    }
+                    .padding([.top, .bottom], 15)
+                    .frame(width: 180)
+                    .background(hTintColor.lavenderOne)
+                    .cornerRadius(.defaultCornerRadius)
                 }
 
-                hButton.LargeButtonFilled {
+                Button {
                     store.send(.openFreeTextChat)
-                } content: {
-                    hText(L10n.Message.Claims.Start.Select.From.user, style: .body)
-                        .foregroundColor(hLabelColor.primary.inverted)
+                } label: {
+                    HStack {
+                        hText(L10n.Message.Claims.Start.Select.From.user, style: .body)
+                            .foregroundColor(hLabelColor.primary).colorScheme(.light)
+                    }
+                    .padding([.top, .bottom], 15)
+                    .frame(width: 180)
+                    .background(hTintColor.lavenderOne)
+                    .cornerRadius(.defaultCornerRadius)
                 }
+
+                //                hButton.LargeButtonFilled {
+                //                    store.send(.dissmissNewClaimFlow)
+                //                } content: {
+                //                    hText(L10n.generalCloseButton, style: .body)
+                //                        .foregroundColor(hLabelColor.primary.inverted)
+                //                }
+                //                .frame(maxWidth: 50)
+                //                .scaledToFit()
+                //                .padding(.leading, 50)
+                //                .frame(width: 80, alignment: .leading)
+
+                //                hButton.LargeButtonFilled {
+                //                    store.send(.openFreeTextChat)
+                //                } content: {
+                //
+                //                    HStack {
+                //                        hText(L10n.Message.Claims.Start.Select.From.user, style: .body)
+                //                            .foregroundColor(hLabelColor.primary.inverted)
+                //                    }
+                //
+                //                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding([.leading, .trailing], 16)
         }
     }
 }

@@ -12,7 +12,8 @@ public struct SubmitClaimContactScreen: View {
 
         hForm {
             HStack(spacing: 0) {
-                hText(L10n.Message.Claims.Ask.phone)
+                hText(L10n.Message.Claims.Ask.phone, style: .body)
+                    .foregroundColor(hLabelColor.primary)
                     .padding([.trailing, .leading], 12)
                     .padding([.top, .bottom], 16)
             }
@@ -31,7 +32,9 @@ public struct SubmitClaimContactScreen: View {
                 HStack {
                     VStack {
                         hText("0712345678", style: .title2) /* TODO: CHANGE */
+                            .foregroundColor(hLabelColor.primary)
                         hText(L10n.phoneNumberRowTitle, style: .footnote)
+                            .foregroundColor(hLabelColor.primary)
                     }
                     .padding([.top, .bottom], 5)
                 }

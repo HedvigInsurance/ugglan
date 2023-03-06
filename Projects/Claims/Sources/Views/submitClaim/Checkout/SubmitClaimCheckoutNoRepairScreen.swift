@@ -13,8 +13,10 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 hRow {
                     HStack {
                         hText(L10n.Claims.Payout.Purchase.price)
+                            .foregroundColor(hLabelColor.primary)
                         Spacer()
                         hText("13 499 kr")
+                            .foregroundColor(hLabelColor.secondary)
                     }
                 }
                 .padding([.leading, .trailing], -20)
@@ -22,8 +24,10 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 hRow {
                     HStack {
                         hText(L10n.Claims.Payout.Age.deduction)
+                            .foregroundColor(hLabelColor.primary)
                         Spacer()
-                        hText("13 499 kr")
+                        hText("- 2 000 kr")
+                            .foregroundColor(hLabelColor.secondary)
                     }
                 }
                 .padding([.leading, .trailing], -20)
@@ -31,8 +35,10 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 hRow {
                     HStack {
                         hText(L10n.Claims.Payout.Age.deductable)
+                            .foregroundColor(hLabelColor.primary)
                         Spacer()
-                        hText("13 499 kr")
+                        hText("- 1 500 kr")
+                            .foregroundColor(hLabelColor.secondary)
                     }
                 }
                 .padding([.leading, .trailing], -20)
@@ -40,20 +46,24 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 hRow {
                     HStack {
                         hText(L10n.Claims.Payout.total)
+                            .foregroundColor(hLabelColor.primary)
                         Spacer()
-                        hText("13 499 kr")
+                        hText("9 999 kr")
                     }
                 }
                 .padding([.leading, .trailing], -20)
+                .foregroundColor(hLabelColor.secondary)
             }
             .withHeader {
                 hText(L10n.Claims.Payout.Summary.subtitle, style: .title3)
+                    .foregroundColor(hLabelColor.primary)
             }
             .sectionContainerStyle(.transparent)
 
             hSection {
                 hRow {
                     hText(L10n.Claims.Payout.Method.autogiro, style: .headline)
+                        .foregroundColor(hLabelColor.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom, 4)
 
@@ -68,6 +78,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
 
                 HStack(spacing: 0) {
                     hText(L10n.Claims.Payout.Summary.method, style: .title3)
+                        .foregroundColor(hLabelColor.primary)
                 }
                 .padding(.top, 50)
                 .padding(.bottom, 10)

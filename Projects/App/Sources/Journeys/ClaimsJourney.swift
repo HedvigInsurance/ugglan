@@ -106,11 +106,10 @@ extension AppJourney {
             } else if case .submitClaimAudioRecordingOrInfo = action {
 
                 switch origin {
+                /* TODO: ADD SELECTION BETWEEN BROKEN COMPUTER AND PHONE */
                 case .generic:
                     openAudioRecordingSceen()
                 case .commonClaims:
-                    openObjectInformation()
-                case .commonClaims(id: "6"):  //doesn't work
                     openObjectInformation()
                 }
             }
@@ -269,6 +268,8 @@ extension AppJourney {
                 openDamagePickerScreen()
             } else if case .openModelPicker = action {
                 openModelPickerScreen()
+            } else if case .dissmissNewClaimFlow = action {
+                PopJourney()
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
@@ -295,7 +296,7 @@ extension AppJourney {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimCheckoutTransferringScreen(),
-            style: .default
+            style: .modally(presentationStyle: .fullScreen)
         ) {
             action in
             if case .openCheckoutTransferringDoneScreen = action {
@@ -304,7 +305,6 @@ extension AppJourney {
                 PopJourney()
             }
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func openCheckoutTransferringDoneScreen() -> some JourneyPresentation {
@@ -312,14 +312,13 @@ extension AppJourney {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimCheckoutTransferringDoneScreen(),
-            style: .modal /* TODO: CHANGE */
+            style: .modally(presentationStyle: .fullScreen)
         ) {
             action in
             if case .dissmissNewClaimFlow = action {
                 DismissJourney()
             }
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     @JourneyBuilder

@@ -19,6 +19,7 @@ public struct LocationPickerScreen: View {
             hSection {
                 hRow {
                     hText("Hemma")
+                        .foregroundColor(hLabelColor.primary)
                 }
                 .onTap {
                     chosenLocation = "Hemma"
@@ -26,6 +27,7 @@ public struct LocationPickerScreen: View {
                 }
                 hRow {
                     hText("I Sverige")
+                        .foregroundColor(hLabelColor.primary)
                 }
                 .onTap {
                     chosenLocation = "I Sverige"
@@ -33,6 +35,7 @@ public struct LocationPickerScreen: View {
                 }
                 hRow {
                     hText("Utomlands")
+                        .foregroundColor(hLabelColor.primary)
                 }
                 .onTap {
                     chosenLocation = "Utomlands"

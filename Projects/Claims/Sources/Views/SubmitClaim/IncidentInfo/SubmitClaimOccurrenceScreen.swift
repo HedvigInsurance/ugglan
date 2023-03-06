@@ -17,11 +17,13 @@ public struct SubmitClaimOccurrenceScreen: View {
 
                 HStack(spacing: 0) {
                     hText(L10n.Claims.Incident.Screen.Date.Of.incident)
+                        .foregroundColor(hLabelColor.primary)
                         .padding([.top, .bottom], 16)
 
                     Spacer()
 
                     Image(uiImage: hCoreUIAssets.calendar.image)
+                        .foregroundColor(hLabelColor.primary)
                 }
             }
             .frame(height: 64)
@@ -37,11 +39,13 @@ public struct SubmitClaimOccurrenceScreen: View {
 
                 HStack(spacing: 0) {
                     hText(L10n.Claims.Incident.Screen.location)
+                        .foregroundColor(hLabelColor.primary)
                         .padding([.top, .bottom], 16)
 
                     Spacer()
 
                     hText(L10n.Claim.Location.choose)
+                        .foregroundColor(hLabelColor.primary)
                 }
             }
             .frame(height: 64)
@@ -56,9 +60,7 @@ public struct SubmitClaimOccurrenceScreen: View {
         .hFormAttachToBottom {
 
             hButton.LargeButtonFilled {
-
                 store.send(.submitClaimAudioRecordingOrInfo)
-
             } content: {
                 hText(L10n.generalContinueButton, style: .body)
                     .foregroundColor(hLabelColor.primary.inverted)

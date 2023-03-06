@@ -10,7 +10,6 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
 
     public var body: some View {
 
-        /* TODO: EXTRACT THIS? */
         BlurredProgressOverlay {
             ZStack(alignment: .center) {
                 VStack {
@@ -30,13 +29,14 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
 
                     VStack(spacing: 16) {
 
-                        hText(L10n.Claims.Payout.Progress.title, style: .headline)
+                        hText(L10n.Claims.Payout.Progress.title, style: .title2)
 
                     }
+                    .frame(maxHeight: .infinity, alignment: .top)
                     .scaleEffect(
                         x: hasActionCompleted ? 1 : 0.3,
                         y: hasActionCompleted ? 1 : 0.3,
-                        anchor: .center
+                        anchor: .top
                     )
 
                     Spacer()

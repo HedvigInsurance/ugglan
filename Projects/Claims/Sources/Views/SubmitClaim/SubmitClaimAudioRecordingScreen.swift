@@ -68,6 +68,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
             HStack(spacing: 0) {
                 hText(L10n.Message.Claims.Record.short)
+                    .foregroundColor(hLabelColor.primary)
                     .padding([.trailing, .leading], 12)
                     .padding([.top, .bottom], 16)
             }
@@ -80,6 +81,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
             HStack(spacing: 0) {
                 hText(L10n.Message.Claims.Record.message1)
+                    .foregroundColor(hLabelColor.primary)
                     .padding([.trailing, .leading], 12)
                     .padding([.top, .bottom], 16)
             }
@@ -91,6 +93,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
             HStack(spacing: 0) {
                 hText(L10n.Message.Claims.Record.message4)
+                    .foregroundColor(hLabelColor.primary)
                     .padding([.trailing, .leading], 12)
                     .padding([.top, .bottom], 16)
             }
@@ -102,6 +105,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
             HStack(spacing: 0) {
                 hText(L10n.Message.Claims.Record.message3)
+                    .foregroundColor(hLabelColor.primary)
                     .padding([.trailing, .leading], 12)
                     .padding([.top, .bottom], 16)
             }
@@ -158,7 +162,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         }
                     }
                     .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300)))
-                    .padding(.top, 600)
+                    .padding(.top, UIScreen.main.bounds.size.height / 1.7)
                 }
             }
             .environmentObject(audioRecorder)

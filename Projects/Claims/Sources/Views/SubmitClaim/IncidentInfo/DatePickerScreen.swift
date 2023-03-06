@@ -11,6 +11,7 @@ public struct DatePickerScreen: View {
     public var body: some View {
         hForm {
             hText(L10n.Claims.Incident.Screen.Date.Of.incident, style: .title1)
+                .foregroundColor(hLabelColor.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 16)
 
