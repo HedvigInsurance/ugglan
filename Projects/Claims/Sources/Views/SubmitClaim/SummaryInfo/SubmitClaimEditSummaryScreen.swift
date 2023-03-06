@@ -4,8 +4,15 @@ import hCoreUI
 
 public struct SubmitClaimEditSummaryScreen: View {
     @PresentableStore var store: ClaimsStore
+    @State var purchasePrice: String
 
-    public init() {}
+    public init() {
+        purchasePrice = ""
+    }
+
+    var currencyMasking: Masking {
+        Masking(type: .digits)
+    }
 
     public var body: some View {
         hForm {
@@ -60,6 +67,7 @@ public struct SubmitClaimEditSummaryScreen: View {
                 hRow {
                     HStack {
                         hText(L10n.Claims.Item.Screen.Model.button)
+                            .foregroundColor(hLabelColor.primary)
                         Spacer()
                         hText("iPhone 13 128GB")
                             .foregroundColor(hLabelColor.secondary)
@@ -76,6 +84,7 @@ public struct SubmitClaimEditSummaryScreen: View {
                     } content: {
                         HStack(spacing: 0) {
                             hText(L10n.Claims.Item.Screen.Date.Of.Purchase.button)
+                                .foregroundColor(hLabelColor.primary)
                             Spacer()
 
                             HStack(spacing: 0) {
@@ -93,18 +102,39 @@ public struct SubmitClaimEditSummaryScreen: View {
                     .padding([.bottom, .top], -11)
                 }
 
+                //                hRow {
+                //                    HStack {
+                //                        hText(L10n.Claims.Item.Screen.Purchase.Price.button)
+                //                        Spacer()
+                //                        hText("13 499 kr") /* TODO: ADD EDITTEXT */
+                //                            .foregroundColor(hLabelColor.secondary)
+                //                    }
+                //                }
+
                 hRow {
-                    HStack {
-                        hText(L10n.Claims.Item.Screen.Purchase.Price.button)
-                        Spacer()
-                        hText("13 499 kr") /* TODO: ADD EDITTEXT */
-                            .foregroundColor(hLabelColor.secondary)
+                    ZStack {
+                        HStack {
+                            hText(L10n.Claims.Item.Screen.Purchase.Price.button)
+                                .foregroundColor(hLabelColor.primary)
+                            Spacer()
+                            hText(Localization.Locale.currentLocale.market.currencyCode) /* TODO: ADD EDITTEXT */
+                                .foregroundColor(hLabelColor.secondary)
+                        }
+
+                        hTextField(masking: currencyMasking, value: $purchasePrice)
+                            .keyboardType(.default)
+                            .multilineTextAlignment(.trailing)
+                            .padding(.trailing, 40)
+                            .padding(.top, 8.0)
+                            .border(.clear, width: 0)
+                            .padding([.top, .bottom], -22)
                     }
                 }
 
                 hRow {
                     HStack {
                         hText("Damage") /* TODO: CHANGE THIS TO TEXTKEY */
+                            .foregroundColor(hLabelColor.primary)
                         Spacer()
                         hText("Only front")
                             .foregroundColor(hLabelColor.secondary)
