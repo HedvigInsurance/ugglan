@@ -102,15 +102,6 @@ public struct SubmitClaimEditSummaryScreen: View {
                     .padding([.bottom, .top], -11)
                 }
 
-                //                hRow {
-                //                    HStack {
-                //                        hText(L10n.Claims.Item.Screen.Purchase.Price.button)
-                //                        Spacer()
-                //                        hText("13 499 kr") /* TODO: ADD EDITTEXT */
-                //                            .foregroundColor(hLabelColor.secondary)
-                //                    }
-                //                }
-
                 hRow {
                     ZStack {
                         HStack {

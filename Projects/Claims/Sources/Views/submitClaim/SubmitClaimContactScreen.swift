@@ -23,6 +23,7 @@ public struct SubmitClaimContactScreen: View {
             .padding(.leading, 16)
             .padding(.trailing, 32)
             .padding(.top, 20)
+            .hShadow()
         }
 
         .hFormAttachToBottom {

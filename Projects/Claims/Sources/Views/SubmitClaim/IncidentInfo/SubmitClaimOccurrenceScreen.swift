@@ -32,6 +32,7 @@ public struct SubmitClaimOccurrenceScreen: View {
             .padding(.leading, 16)
             .padding(.trailing, 16)
             .padding(.top, 20)
+            .hShadow()
 
             hButton.SmallButtonText {
                 store.send(.openLocationPicker)
@@ -54,6 +55,7 @@ public struct SubmitClaimOccurrenceScreen: View {
             .padding(.leading, 16)
             .padding(.trailing, 16)
             .padding(.top, 20)
+            .hShadow()
 
         }
 

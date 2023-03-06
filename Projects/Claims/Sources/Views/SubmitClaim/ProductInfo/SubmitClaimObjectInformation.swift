@@ -32,6 +32,7 @@ public struct SubmitClaimObjectInformation: View {
             .padding(.leading, 16)
             .padding(.trailing, 16)
             .padding(.top, 20)
+            .hShadow()
 
             hButton.SmallButtonText {
                 store.send(.openDatePicker)
@@ -52,6 +53,7 @@ public struct SubmitClaimObjectInformation: View {
             .padding(.leading, 16)
             .padding(.trailing, 16)
             .padding(.top, 20)
+            .hShadow()
 
             hRow {
                 ZStack {
@@ -76,6 +78,7 @@ public struct SubmitClaimObjectInformation: View {
             .padding(.leading, 16)
             .padding(.trailing, 16)
             .padding(.top, 20)
+            .hShadow()
 
             hRow {
                 HStack {
@@ -92,6 +95,7 @@ public struct SubmitClaimObjectInformation: View {
             .padding(.leading, 16)
             .padding(.trailing, 16)
             .padding(.top, 20)
+            .hShadow()
         }
         .hFormAttachToBottom {
             hButton.LargeButtonFilled {

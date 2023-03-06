@@ -20,6 +20,7 @@ public struct SubmitClaimSuccessScreen: View {
             .padding(.leading, 16)
             .padding(.trailing, 32)
             .padding(.top, 20)
+            .hShadow()
         }
         .hFormAttachToBottom {
 
@@ -31,12 +32,13 @@ public struct SubmitClaimSuccessScreen: View {
                 } label: {
                     HStack {
                         hText(L10n.generalCloseButton, style: .body)
-                            .foregroundColor(hLabelColor.primary).colorScheme(.light)
+                            .foregroundColor(hLabelColor.primary)
                     }
-                    .padding([.top, .bottom], 15)
+                    .padding([.top, .bottom], 10)
                     .frame(width: 180)
-                    .background(hTintColor.lavenderOne)
+                    .background(hBackgroundColor.tertiary)
                     .cornerRadius(.defaultCornerRadius)
+                    .hShadow()
                 }
 
                 Button {
@@ -44,12 +46,13 @@ public struct SubmitClaimSuccessScreen: View {
                 } label: {
                     HStack {
                         hText(L10n.Message.Claims.Start.Select.From.user, style: .body)
-                            .foregroundColor(hLabelColor.primary).colorScheme(.light)
+                            .foregroundColor(hLabelColor.primary)
                     }
-                    .padding([.top, .bottom], 15)
+                    .padding([.top, .bottom], 10)
                     .frame(width: 180)
-                    .background(hTintColor.lavenderOne)
+                    .background(hBackgroundColor.tertiary)
                     .cornerRadius(.defaultCornerRadius)
+                    .hShadow()
                 }
 
                 //                hButton.LargeButtonFilled {

@@ -78,6 +78,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             .padding(.leading, 16)
             .padding(.trailing, 32)
             .padding(.top, 20)
+            .hShadow()
 
             HStack(spacing: 0) {
                 hText(L10n.Message.Claims.Record.message1)
@@ -90,6 +91,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             .cornerRadius(12)
             .padding(.leading, 16)
             .padding(.trailing, 32)
+            .hShadow()
 
             HStack(spacing: 0) {
                 hText(L10n.Message.Claims.Record.message4)
@@ -102,6 +104,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             .cornerRadius(12)
             .padding(.leading, 16)
             .padding(.trailing, 32)
+            .hShadow()
 
             HStack(spacing: 0) {
                 hText(L10n.Message.Claims.Record.message3)
@@ -114,6 +117,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             .cornerRadius(12)
             .padding(.leading, 16)
             .padding(.trailing, 32)
+            .hShadow()
 
         }
         .hFormAttachToBottom {

@@ -12,7 +12,6 @@ public struct SubmitClaimSummaryScreen: View {
         hForm {
             VStack(spacing: 0) {
                 hText("Broken phone", style: .title3) /* TODO: CHANGE */
-                    //                    .padding(.top, 200)
                     .padding(.top, UIScreen.main.bounds.size.height / 5)
 
                 HStack {
