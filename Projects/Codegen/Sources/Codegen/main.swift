@@ -37,19 +37,24 @@ try! endpoints.forEach { name, endpoint in
         return [ownDirs, nestedDirs].flatMap { $0 }
     }
 
-    let sourceUrls = findAllGraphQLFolders(
-        basePath: sourceRootURL.appendingPathComponent(name.capitalized).path
-    )
+    let sourceUrls = findAllGraphQLFolders()
 
     sourceUrls.forEach { sourceUrl in
-
-        let folderUrl = sourceUrl.appendingPathComponent("../").appendingPathComponent("Sources")
+        guard sourceUrl.absoluteString.contains(name.capitalized) else {
+            return
+        }
+        
+        let baseFolderUrl = sourceUrl.appendingPathComponent("../")
+            .appendingPathComponent("Sources")
             .appendingPathComponent("Derived")
-            .appendingPathComponent("GraphQL")
+            .appendingPathExtension("GraphQL")
+
+        let folderUrl = baseFolderUrl
             .appendingPathComponent(name.capitalized)
 
-        try? FileManager.default.apollo.deleteFolder(at: folderUrl)
-        try? FileManager.default.apollo.createFolderIfNeeded(at: folderUrl)
+        try! FileManager.default.apollo.deleteFolder(at: folderUrl)
+        try! FileManager.default.apollo.createFolderIfNeeded(at: baseFolderUrl)
+        try! FileManager.default.apollo.createFolderIfNeeded(at: folderUrl)
 
         let hGraphQLUrl = sourceRootURL
             .appendingPathComponent("hGraphQL")
