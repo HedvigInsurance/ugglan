@@ -40,11 +40,15 @@ try! endpoints.forEach { name, endpoint in
     let sourceUrls = findAllGraphQLFolders()
 
     sourceUrls.forEach { sourceUrl in
-        guard sourceUrl.absoluteString.contains(name.capitalized) else {
+        let sourceUrl = sourceUrl.appendingPathComponent(name.capitalized)
+        
+        guard FileManager.default.apollo.folderExists(at: sourceUrl) else {
             return
         }
         
-        let baseFolderUrl = sourceUrl.appendingPathComponent("../")
+        let baseFolderUrl = sourceUrl
+            .appendingPathComponent("../")
+            .appendingPathComponent("../")
             .appendingPathComponent("Sources")
             .appendingPathComponent("Derived")
             .appendingPathExtension("GraphQL")
