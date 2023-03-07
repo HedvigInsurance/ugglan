@@ -37,7 +37,9 @@ try! endpoints.forEach { name, endpoint in
         return [ownDirs, nestedDirs].flatMap { $0 }
     }
 
-    let sourceUrls = findAllGraphQLFolders()
+    let sourceUrls = findAllGraphQLFolders(
+        basePath: sourceRootURL.appendingPathComponent(name.capitalized).path
+    )
 
     sourceUrls.forEach { sourceUrl in
 
