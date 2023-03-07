@@ -12,7 +12,7 @@ try FileManager.default.createDirectory(at: cliFolderURL, withIntermediateDirect
 
 let endpoints = [
     "giraffe": URL(string: "https://graphql.dev.hedvigit.com/graphql")!,
-    "octopus": URL(string: "https://apollo-router.dev.hedvigit.com/")!
+    "octopus": URL(string: "https://apollo-router.dev.hedvigit.com/")!,
 ]
 
 func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
@@ -32,13 +32,14 @@ func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
 let sourceUrls = findAllGraphQLFolders()
 
 sourceUrls.forEach { sourceUrl in
-    let baseFolderUrl = sourceUrl
+    let baseFolderUrl =
+        sourceUrl
         .appendingPathComponent("../")
         .appendingPathComponent("../")
         .appendingPathComponent("Sources")
         .appendingPathComponent("Derived")
         .appendingPathComponent("GraphQL")
-    
+
     try? FileManager.default.removeItem(at: baseFolderUrl)
 }
 
@@ -52,30 +53,33 @@ try! endpoints.forEach { name, endpoint in
 
     sourceUrls.forEach { sourceUrl in
         let sourceUrl = sourceUrl.appendingPathComponent(name.capitalized)
-        
+
         guard FileManager.default.apollo.folderExists(at: sourceUrl) else {
             return
         }
-        
-        let baseFolderUrl = sourceUrl
+
+        let baseFolderUrl =
+            sourceUrl
             .appendingPathComponent("../")
             .appendingPathComponent("../")
             .appendingPathComponent("Sources")
             .appendingPathComponent("Derived")
             .appendingPathComponent("GraphQL")
 
-        let folderUrl = baseFolderUrl
+        let folderUrl =
+            baseFolderUrl
             .appendingPathComponent(name.capitalized)
 
         try! FileManager.default.apollo.deleteFolder(at: folderUrl)
         try! FileManager.default.apollo.createFolderIfNeeded(at: baseFolderUrl)
         try! FileManager.default.apollo.createFolderIfNeeded(at: folderUrl)
 
-        let hGraphQLUrl = sourceRootURL
+        let hGraphQLUrl =
+            sourceRootURL
             .appendingPathComponent("hGraphQL")
             .appendingPathComponent("GraphQL")
             .appendingPathComponent(name.capitalized)
-        
+
         let hGraphQLSymlinkUrl = sourceUrl.appendingPathComponent("hGraphQL")
 
         let ishGraphQLFolder = folderUrl.absoluteString.contains("Projects/hGraphQL")

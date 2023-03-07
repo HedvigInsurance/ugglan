@@ -97,7 +97,7 @@ public enum Environment: Hashable {
         case let .custom(endpointUrl, _, _, _): return endpointUrl
         }
     }
-    
+
     public var octopusEndpointURL: URL {
         switch self {
         case .staging: return URL(string: "https://apollo-router.dev.hedvigit.com/")!
@@ -121,7 +121,7 @@ public enum Environment: Hashable {
         case let .custom(_, wsEndpointURL, _, _): return wsEndpointURL
         }
     }
-    
+
     public var octopusWSEndpointURL: URL {
         switch self {
         case .staging: return URL(string: "wss://apollo-router.dev.hedvigit.com/")!
@@ -137,7 +137,7 @@ public enum Environment: Hashable {
         case let .custom(_, _, assetsUrl, _): return assetsUrl
         }
     }
-    
+
     public var webBaseURL: URL {
         switch self {
         case .staging: return URL(string: "https://www.dev.hedvigit.com")!
