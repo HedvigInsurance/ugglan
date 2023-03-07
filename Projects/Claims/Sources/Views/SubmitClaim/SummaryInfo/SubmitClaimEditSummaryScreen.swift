@@ -21,7 +21,6 @@ public struct SubmitClaimEditSummaryScreen: View {
                 header: hText(L10n.Claims.Incident.Screen.header, style: .subheadline)
                     .foregroundColor(hLabelColor.secondary)
             ) {
-
                 hRow {
                     hButton.SmallButtonText {
                         store.send(.openDatePicker)
@@ -78,7 +77,6 @@ public struct SubmitClaimEditSummaryScreen: View {
                 }
 
                 hRow {
-
                     hButton.SmallButtonText {
                         store.send(.openDatePicker)
                     } content: {
@@ -134,9 +132,7 @@ public struct SubmitClaimEditSummaryScreen: View {
                 .onTap {
                     store.send(.openDamagePickerScreen)
                 }
-
             }
-
         }
         .hFormAttachToBottom {
             hButton.LargeButtonFilled {

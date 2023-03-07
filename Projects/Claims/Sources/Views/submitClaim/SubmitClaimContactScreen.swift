@@ -25,11 +25,8 @@ public struct SubmitClaimContactScreen: View {
             .padding(.top, 20)
             .hShadow()
         }
-
         .hFormAttachToBottom {
-
             VStack {
-
                 HStack {
                     VStack {
                         hText("0712345678", style: .title2) /* TODO: CHANGE */

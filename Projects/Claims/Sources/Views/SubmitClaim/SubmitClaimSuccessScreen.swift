@@ -24,9 +24,7 @@ public struct SubmitClaimSuccessScreen: View {
         }
         .hFormAttachToBottom {
 
-            /* TODO: FIX BUTTONS */
             HStack {
-
                 Button {
                     store.send(.dissmissNewClaimFlow)
                 } label: {
@@ -54,28 +52,6 @@ public struct SubmitClaimSuccessScreen: View {
                     .cornerRadius(.defaultCornerRadius)
                     .hShadow()
                 }
-
-                //                hButton.LargeButtonFilled {
-                //                    store.send(.dissmissNewClaimFlow)
-                //                } content: {
-                //                    hText(L10n.generalCloseButton, style: .body)
-                //                        .foregroundColor(hLabelColor.primary.inverted)
-                //                }
-                //                .frame(maxWidth: 50)
-                //                .scaledToFit()
-                //                .padding(.leading, 50)
-                //                .frame(width: 80, alignment: .leading)
-
-                //                hButton.LargeButtonFilled {
-                //                    store.send(.openFreeTextChat)
-                //                } content: {
-                //
-                //                    HStack {
-                //                        hText(L10n.Message.Claims.Start.Select.From.user, style: .body)
-                //                            .foregroundColor(hLabelColor.primary.inverted)
-                //                    }
-                //
-                //                }
             }
             .padding([.leading, .trailing], 16)
         }
