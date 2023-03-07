@@ -7,6 +7,11 @@ import UIKit
 import authlib
 import hAnalytics
 
+public struct ApolloClients {
+    let giraffe: ApolloClient
+    let octopus: ApolloClient
+}
+
 extension ApolloClient {
     public static var acceptLanguageHeader: String = ""
     public static var bundle: Bundle?
@@ -65,7 +70,7 @@ extension ApolloClient {
 
         let requestChainTransport = RequestChainNetworkTransport(
             interceptorProvider: networkInterceptorProvider,
-            endpointURL: environment.endpointURL
+            endpointURL: environment.giraffeEndpointURL
         )
 
         let clientName = "iOS:\(bundle?.bundleIdentifier ?? "")"
@@ -74,7 +79,7 @@ extension ApolloClient {
         requestChainTransport.clientVersion = appVersion
 
         let websocketNetworkTransport = WebSocketTransport(
-            websocket: WebSocket(request: URLRequest(url: environment.wsEndpointURL), protocol: .graphql_ws),
+            websocket: WebSocket(request: URLRequest(url: environment.giraffeWSEndpointURL), protocol: .graphql_ws),
             clientName: clientName,
             clientVersion: appVersion,
             connectingPayload: httpAdditionalHeaders as GraphQLMap

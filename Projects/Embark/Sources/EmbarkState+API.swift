@@ -480,7 +480,7 @@ extension EmbarkState {
 
     private func handleApiRequest(apiFragment: GraphQL.ApiFragment) -> Future<ResultMap?> {
         func performHTTPCall(_ query: String, variables: GraphQLMap) -> Future<ResultMap?> {
-            var urlRequest = URLRequest(url: Environment.current.endpointURL)
+            var urlRequest = URLRequest(url: Environment.current.giraffeEndpointURL)
             urlRequest.httpMethod = "POST"
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
 

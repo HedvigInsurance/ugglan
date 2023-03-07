@@ -31,8 +31,8 @@ struct Debug: View {
     }
 
     init() {
-        _endpointURL = State(initialValue: Environment.current.endpointURL.absoluteString)
-        _wsEndpointURL = State(initialValue: Environment.current.wsEndpointURL.absoluteString)
+        _endpointURL = State(initialValue: Environment.current.giraffeEndpointURL.absoluteString)
+        _wsEndpointURL = State(initialValue: Environment.current.giraffeWSEndpointURL.absoluteString)
         _assetsEndpointURL = State(initialValue: Environment.current.assetsEndpointURL.absoluteString)
         _webBaseURL = State(initialValue: Environment.current.webBaseURL.absoluteString)
         _pickedEnvironment = State(initialValue: Debug.environmentOptionFromTarget)
