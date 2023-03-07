@@ -35,12 +35,33 @@ extension AppJourney {
     }
 
     static func claimJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        //        hAnalyticsEvent.claimFlowType(
-        //            claimType: hAnalyticsExperiment.odysseyClaims ? .automation : .manual
-        //        )
-        //        .send()
-        //
 
+        hAnalyticsEvent.claimFlowType(
+            claimType: hAnalyticsExperiment.odysseyClaims ? .automation : .manual
+        )
+        .send()
+
+        return AppJourney.claimsJourneyPledgeAndNotificationWrapper(from: origin) { redirect in
+            switch redirect {
+            case .chat:
+                AppJourney.claimsChat()
+                    .hidesBackButton
+                    .withJourneyDismissButton
+            case .close:
+                DismissJourney()
+            case .menu:
+                ContinueJourney()
+            case .mailingList:
+                DismissJourney()
+            case .offer:
+                DismissJourney()
+            case .quoteCartOffer:
+                DismissJourney()
+            }
+        }
+    }
+
+    static func startSubmitClaimsFlow(from origin: ClaimsOrigin) -> some JourneyPresentation {
         HostingJourney(
             UgglanStore.self,
             rootView: HonestyPledge(),
@@ -53,25 +74,6 @@ extension AppJourney {
         }
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
-
-        //        return AppJourney.claimsJourneyPledgeAndNotificationWrapper(from: origin) { redirect in // här
-        //            switch redirect {
-        //            case .chat:
-        //                AppJourney.claimsChat()
-        //                    .hidesBackButton
-        //                    .withJourneyDismissButton
-        //            case .close:
-        //                DismissJourney()
-        //            case .menu:
-        //                ContinueJourney()
-        //            case .mailingList:
-        //                DismissJourney()
-        //            case .offer:
-        //                DismissJourney()
-        //            case .quoteCartOffer:
-        //                DismissJourney()
-        //            }
-        //        }
     }
 
     static func submitClaimContractScreen(from origin: ClaimsOrigin) -> some JourneyPresentation {
