@@ -15,6 +15,33 @@ let endpoints = [
     "octopus": URL(string: "https://apollo-router.dev.hedvigit.com/")!
 ]
 
+func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
+    guard let dirs = try? FileManager.default.contentsOfDirectory(atPath: basePath) else { return [] }
+
+    let ownDirs = dirs.filter { $0 == "GraphQL" }
+        .map { URL(string: "file://\(basePath)/\($0)") }
+        .compactMap { $0 }
+
+    let nestedDirs = dirs.compactMap { $0 }
+        .map { val -> [URL] in findAllGraphQLFolders(basePath: "\(basePath)/\(val)") }.flatMap { $0 }
+        .filter { !$0.absoluteString.contains("Derived") }
+
+    return [ownDirs, nestedDirs].flatMap { $0 }
+}
+
+let sourceUrls = findAllGraphQLFolders()
+
+sourceUrls.forEach { sourceUrl in
+    let baseFolderUrl = sourceUrl
+        .appendingPathComponent("../")
+        .appendingPathComponent("../")
+        .appendingPathComponent("Sources")
+        .appendingPathComponent("Derived")
+        .appendingPathComponent("GraphQL")
+    
+    try? FileManager.default.removeItem(at: baseFolderUrl)
+}
+
 try! endpoints.forEach { name, endpoint in
     let downloadConfiguration = ApolloSchemaDownloadConfiguration(
         using: .introspection(endpointURL: endpoint),
@@ -22,22 +49,6 @@ try! endpoints.forEach { name, endpoint in
     )
 
     try ApolloSchemaDownloader.fetch(with: downloadConfiguration)
-
-    func findAllGraphQLFolders(basePath: String = sourceRootURL.path) -> [URL] {
-        guard let dirs = try? FileManager.default.contentsOfDirectory(atPath: basePath) else { return [] }
-
-        let ownDirs = dirs.filter { $0 == "GraphQL" }
-            .map { URL(string: "file://\(basePath)/\($0)") }
-            .compactMap { $0 }
-
-        let nestedDirs = dirs.compactMap { $0 }
-            .map { val -> [URL] in findAllGraphQLFolders(basePath: "\(basePath)/\(val)") }.flatMap { $0 }
-            .filter { !$0.absoluteString.contains("Derived") }
-
-        return [ownDirs, nestedDirs].flatMap { $0 }
-    }
-
-    let sourceUrls = findAllGraphQLFolders()
 
     sourceUrls.forEach { sourceUrl in
         let sourceUrl = sourceUrl.appendingPathComponent(name.capitalized)
@@ -51,7 +62,7 @@ try! endpoints.forEach { name, endpoint in
             .appendingPathComponent("../")
             .appendingPathComponent("Sources")
             .appendingPathComponent("Derived")
-            .appendingPathExtension("GraphQL")
+            .appendingPathComponent("GraphQL")
 
         let folderUrl = baseFolderUrl
             .appendingPathComponent(name.capitalized)
@@ -79,14 +90,7 @@ try! endpoints.forEach { name, endpoint in
             urlToSchemaFile: cliFolderURL.appendingPathComponent("introspection_response.json")
         )
 
-        let fromUrl = ishGraphQLFolder ?
-            sourceUrl
-                .appendingPathComponent("../")
-                .appendingPathComponent("../")
-                .appendingPathComponent("../") :
-            sourceUrl
-
-        try! ApolloCodegen.run(from: fromUrl, with: cliFolderURL, options: codegenOptions)
+        try! ApolloCodegen.run(from: sourceUrl, with: cliFolderURL, options: codegenOptions)
 
         if !ishGraphQLFolder {
             var allGeneratedFiles = try! FileManager.default.contentsOfDirectory(
