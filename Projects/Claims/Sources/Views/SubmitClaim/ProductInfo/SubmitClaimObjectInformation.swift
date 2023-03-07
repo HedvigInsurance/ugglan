@@ -64,22 +64,12 @@ public struct SubmitClaimObjectInformation: View {
                         hText(Localization.Locale.currentLocale.market.currencyCode)
                     }
 
-                    /* TODO: Change? */
-                    if #available(iOS 15.0, *) {
-                        hTextField(masking: currencyMasking, value: $purchasePrice)
-                            .keyboardType(.default)
-                            .multilineTextAlignment(.trailing)
-                            .padding(.trailing, 40)
-                            .padding(.top, 8.0)
-                            .border(.primary).invertColorScheme
-                    } else {
-                        hTextField(masking: currencyMasking, value: $purchasePrice)
-                            .keyboardType(.default)
-                            .multilineTextAlignment(.trailing)
-                            .padding(.trailing, 40)
-                            .padding(.top, 8.0)
-                            .border(.clear)
-                    }
+                    hTextField(masking: currencyMasking, value: $purchasePrice)
+                        .keyboardType(.default)
+                        .multilineTextAlignment(.trailing)
+                        .padding(.trailing, 40)
+                        .padding(.top, 8.0)
+                        .border(.clear)
                 }
             }
             .frame(height: 64)
