@@ -23,8 +23,8 @@ extension AppDelegate {
 
     func updateLanguageMutation(numberOfRetries: Int = 0) {
         let locale = Localization.Locale.currentLocale
-        let client: ApolloClient = Dependencies.shared.resolve()
-        client.perform(
+        let giraffe: hGiraffe = Dependencies.shared.resolve()
+        giraffe.client.perform(
             mutation: GiraffeGraphQL.UpdateLanguageMutation(
                 language: locale.code,
                 pickedLocale: locale.asGraphQLLocale()

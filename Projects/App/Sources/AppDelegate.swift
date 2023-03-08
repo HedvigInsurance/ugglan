@@ -327,8 +327,8 @@ extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
         Self.initClients()
             .onValue { hApollo in
-                Dependencies.shared.add(module: Module { hApollo })
-                Dependencies.shared.add(module: Module { hApollo })
+                Dependencies.shared.add(module: Module { hApollo.giraffe })
+                Dependencies.shared.add(module: Module { hApollo.octopus })
             }
             .toVoid()
     }
