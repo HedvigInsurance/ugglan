@@ -40,13 +40,6 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                     )
 
                     Spacer()
-
-                    /* TODO: CHANGE COLOR? */
-                    hButton.LargeButtonFilled {
-                        store.send(.openCheckoutTransferringDoneScreen)
-                    } content: {
-                        hText(L10n.generalContinueButton)
-                    }
                 }
                 .opacity(hasActionCompleted ? 1 : 0)
                 .disabled(!hasActionCompleted)
@@ -66,8 +59,9 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                     await delay(2)
                     withAnimation {
                         hasActionCompleted = true
-
                     }
+                    await delay(5)
+                    store.send(.openCheckoutTransferringDoneScreen)
                 }
             }
         }
