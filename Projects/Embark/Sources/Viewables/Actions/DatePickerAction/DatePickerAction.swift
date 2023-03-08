@@ -6,7 +6,8 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-typealias EmbarkDatePickerActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkDatePickerAction
+typealias EmbarkDatePickerActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+    .AsEmbarkDatePickerAction
 
 struct EmbarkDatePickerAction {
     let state: EmbarkState

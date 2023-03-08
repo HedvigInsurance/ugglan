@@ -5,7 +5,8 @@ public struct InsuranceTerm: Codable, Equatable {
     public var url: URL
 
     init?(
-        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info.InsuranceTerm
+        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info
+            .InsuranceTerm
     ) {
         guard let url = URL(string: data.url) else {
 

@@ -6,11 +6,14 @@ import hGraphQL
 
 public class ForeverServiceGraphQL: ForeverService {
     public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
-        giraffe.client.perform(
-            mutation: GiraffeGraphQL.ForeverUpdateDiscountCodeMutation(code: value)
-        ).valueSignal.map { data -> Either<Void, ForeverChangeCodeError> in
-            let updateReferralCampaignCode = data.updateReferralCampaignCode
-            
+        giraffe.client
+            .perform(
+                mutation: GiraffeGraphQL.ForeverUpdateDiscountCodeMutation(code: value)
+            )
+            .valueSignal
+            .map { data -> Either<Void, ForeverChangeCodeError> in
+                let updateReferralCampaignCode = data.updateReferralCampaignCode
+
                 if updateReferralCampaignCode.asCodeAlreadyTaken != nil {
                     return .right(ForeverChangeCodeError.nonUnique)
                 } else if updateReferralCampaignCode.asCodeTooLong != nil {

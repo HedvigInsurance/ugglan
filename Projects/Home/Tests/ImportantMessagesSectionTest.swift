@@ -4,13 +4,13 @@ import Form
 import Foundation
 import HomeTesting
 import SnapshotTesting
+import TestDependencies
 import Testing
 import TestingUtil
 import XCTest
 import hCore
 import hCoreUI
 import hGraphQL
-import TestDependencies
 
 @testable import Home
 

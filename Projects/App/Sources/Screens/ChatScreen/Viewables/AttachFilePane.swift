@@ -32,16 +32,17 @@ struct FileUpload {
         let file = GraphQLFile(fieldName: "file", originalName: fileName, mimeType: mimeType, data: data)
 
         return Future { completion in
-            giraffe.client.upload(
-                operation: GiraffeGraphQL.UploadFileMutation(file: "image"),
-                files: [file],
-                queue: DispatchQueue.global(qos: .background)
-            )
-            .onValue { data in let key = data.uploadFile.key
-                let bucket = data.uploadFile.bucket
-                completion(.success((key, bucket)))
-            }
-            .disposable
+            giraffe.client
+                .upload(
+                    operation: GiraffeGraphQL.UploadFileMutation(file: "image"),
+                    files: [file],
+                    queue: DispatchQueue.global(qos: .background)
+                )
+                .onValue { data in let key = data.uploadFile.key
+                    let bucket = data.uploadFile.bucket
+                    completion(.success((key, bucket)))
+                }
+                .disposable
         }
     }
 }

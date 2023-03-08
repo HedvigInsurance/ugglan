@@ -7,10 +7,12 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-typealias EmbarkNumberActionSetData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberActionSet
+typealias EmbarkNumberActionSetData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+    .AsEmbarkNumberActionSet
     .Datum
 
-typealias EmbarkTextActionSetData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextActionSet
+typealias EmbarkTextActionSetData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+    .AsEmbarkTextActionSet
     .TextActionSetDatum
 
 struct EmbarkNumberActionSet {

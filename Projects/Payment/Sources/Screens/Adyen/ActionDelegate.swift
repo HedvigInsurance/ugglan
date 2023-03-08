@@ -31,36 +31,38 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
             let detailsJson = String(data: detailsJsonData, encoding: .utf8)
         else { return }
 
-        giraffe.client.perform(
-            mutation: GiraffeGraphQL.AdyenAdditionalPaymentDetailsMutation(
-                paymentConnectionID: store.state.paymentConnectionID ?? "",
-                req: detailsJson
+        giraffe.client
+            .perform(
+                mutation: GiraffeGraphQL.AdyenAdditionalPaymentDetailsMutation(
+                    paymentConnectionID: store.state.paymentConnectionID ?? "",
+                    req: detailsJson
+                )
             )
-        )
-        .onValue { data in
-            if [.pending, .authorised]
-                .contains(
-                    data.paymentConnectionSubmitAdditionalPaymentDetails.asConnectPaymentFinished?.status
-                ),
-                let paymentConnectionId = data.paymentConnectionSubmitAdditionalPaymentDetails.asConnectPaymentFinished?
-                    .paymentTokenId
-            {
-                self.store.send(.setConnectionID(id: paymentConnectionId))
-                self.onResult(.success(.make(())))
-            } else if let data = data.paymentConnectionSubmitAdditionalPaymentDetails.asActionRequired {
-                self.store.send(.setConnectionID(id: data.paymentTokenId))
+            .onValue { data in
+                if [.pending, .authorised]
+                    .contains(
+                        data.paymentConnectionSubmitAdditionalPaymentDetails.asConnectPaymentFinished?.status
+                    ),
+                    let paymentConnectionId = data.paymentConnectionSubmitAdditionalPaymentDetails
+                        .asConnectPaymentFinished?
+                        .paymentTokenId
+                {
+                    self.store.send(.setConnectionID(id: paymentConnectionId))
+                    self.onResult(.success(.make(())))
+                } else if let data = data.paymentConnectionSubmitAdditionalPaymentDetails.asActionRequired {
+                    self.store.send(.setConnectionID(id: data.paymentTokenId))
 
-                guard let jsonData = data.actionV2.data(using: .utf8) else { return }
-                guard
-                    let action = try? JSONDecoder()
-                        .decode(AdyenActions.Action.self, from: jsonData)
-                else { return }
+                    guard let jsonData = data.actionV2.data(using: .utf8) else { return }
+                    guard
+                        let action = try? JSONDecoder()
+                            .decode(AdyenActions.Action.self, from: jsonData)
+                    else { return }
 
-                self.onResult(.success(.make(action)))
-            } else {
-                self.onResult(.failure(AdyenError.action))
+                    self.onResult(.success(.make(action)))
+                } else {
+                    self.onResult(.failure(AdyenError.action))
+                }
             }
-        }
     }
 
     func didFail(with error: Error, from component: ActionComponent) {

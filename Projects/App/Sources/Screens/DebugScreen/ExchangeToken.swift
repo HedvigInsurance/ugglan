@@ -32,19 +32,20 @@ struct ExchangeToken: View {
                         afterHashbang?.replacingOccurrences(of: "exchange-token=", with: "")
                         ?? ""
 
-                    giraffe.client.perform(
-                        mutation: GiraffeGraphQL.ExchangeTokenMutation(
-                            exchangeToken: exchangeToken.removingPercentEncoding ?? ""
+                    giraffe.client
+                        .perform(
+                            mutation: GiraffeGraphQL.ExchangeTokenMutation(
+                                exchangeToken: exchangeToken.removingPercentEncoding ?? ""
+                            )
                         )
-                    )
-                    .onValue { response in
-                        guard
-                            let token = response.exchangeToken
-                                .asExchangeTokenSuccessResponse?
-                                .token
-                        else { return }
-                        onToken(token, selectedLocale)
-                    }
+                        .onValue { response in
+                            guard
+                                let token = response.exchangeToken
+                                    .asExchangeTokenSuccessResponse?
+                                    .token
+                            else { return }
+                            onToken(token, selectedLocale)
+                        }
                 }
             }
         }

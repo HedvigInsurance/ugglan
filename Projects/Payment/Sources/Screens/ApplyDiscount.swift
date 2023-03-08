@@ -15,7 +15,9 @@ public struct ApplyDiscount {
         GiraffeGraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult
     >()
 
-    public var didRedeemValidCodeSignal: Signal<GiraffeGraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult> {
+    public var didRedeemValidCodeSignal:
+        Signal<GiraffeGraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult>
+    {
         didRedeemValidCodeCallbacker.providedSignal
     }
 

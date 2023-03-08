@@ -195,7 +195,8 @@ extension AppInfo: Presentable {
             }
 
             bag +=
-            giraffe.client.fetch(
+                giraffe.client
+                .fetch(
                     query: GiraffeGraphQL.MemberDetailsQuery(),
                     cachePolicy: .returnCacheDataElseFetch,
                     queue: .global(qos: .background)

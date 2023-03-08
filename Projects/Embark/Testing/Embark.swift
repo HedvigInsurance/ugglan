@@ -85,7 +85,12 @@ extension EmbarkStory {
     }
 
     fileprivate static let datePickerAction = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
-        .makeEmbarkDatePickerAction(component: "", next: .init(name: "", hidden: false, label: ""), storeKey: "", label: "Access Date")
+        .makeEmbarkDatePickerAction(
+            component: "",
+            next: .init(name: "", hidden: false, label: ""),
+            storeKey: "",
+            label: "Access Date"
+        )
 
     fileprivate static let mockedMultiAction = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
         .makeEmbarkMultiAction(
@@ -151,7 +156,11 @@ extension EmbarkStory {
     fileprivate static let embarkAudioRecorderAction = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
         .makeEmbarkAudioRecorderAction(
             component: "audioRec",
-            audioRecorderData: .init(storeKey: "key", label: "Continue", next: .init(name: "mock", hidden: false, label: "mock"))
+            audioRecorderData: .init(
+                storeKey: "key",
+                label: "Continue",
+                next: .init(name: "mock", hidden: false, label: "mock")
+            )
         )
 }
 

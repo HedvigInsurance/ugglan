@@ -14,7 +14,9 @@ struct EmbarkSelectAction {
     let data: EmbarkSelectActionData
     @ReadWriteState private var isSelectOptionLoading = false
 
-    func handleClick(option: EmbarkSelectActionData.SelectActionDatum.Option) -> Future<GiraffeGraphQL.EmbarkLinkFragment>? {
+    func handleClick(
+        option: EmbarkSelectActionData.SelectActionDatum.Option
+    ) -> Future<GiraffeGraphQL.EmbarkLinkFragment>? {
         if isSelectOptionLoading {
             return nil
         }

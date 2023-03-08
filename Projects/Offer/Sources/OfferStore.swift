@@ -264,9 +264,10 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             }
         case .fetchAccessToken:
             if let quoteCartId = getState().quoteCartId {
-                return self.giraffe.client.perform(
-                    mutation: GiraffeGraphQL.CreateAccessTokenMutation(id: quoteCartId)
-                )
+                return self.giraffe.client
+                    .perform(
+                        mutation: GiraffeGraphQL.CreateAccessTokenMutation(id: quoteCartId)
+                    )
                     .compactMap { data in
                         data.quoteCartCreateAccessToken.accessToken
                     }

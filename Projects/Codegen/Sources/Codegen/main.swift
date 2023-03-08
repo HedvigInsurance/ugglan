@@ -83,37 +83,40 @@ try! endpoints.forEach { name, endpoint in
         let hGraphQLSymlinkUrl = sourceUrl.appendingPathComponent("hGraphQL")
 
         let ishGraphQLFolder = folderUrl.absoluteString.contains("Projects/hGraphQL")
-        
+
         var symlinks: [URL] = []
-        
+
         if !ishGraphQLFolder {
             symlinks.append(hGraphQLSymlinkUrl)
             try? FileManager.default.createSymbolicLink(at: hGraphQLSymlinkUrl, withDestinationURL: hGraphQLUrl)
         } else {
             sourceUrls.filter { url in
                 !url.absoluteString.contains("hGraphQL")
-            }.forEach { sourceUrl in
-                let hGraphQLSymlinkUrl = sourceUrl
+            }
+            .forEach { sourceUrl in
+                let hGraphQLSymlinkUrl =
+                    sourceUrl
                     .appendingPathComponent(name.capitalized)
-                
+
                 var projectName: String {
                     let pattern = "/Projects/([^/]+)/"
                     let input = sourceUrl.absoluteString
 
                     if let range = input.range(of: pattern, options: .regularExpression, range: nil, locale: nil) {
                         let projectNameWithSlash = String(input[range])
-                        let projectName = projectNameWithSlash
+                        let projectName =
+                            projectNameWithSlash
                             .replacingOccurrences(of: "/Projects/", with: "")
                             .replacingOccurrences(of: "/", with: "")
                         return projectName
                     }
-                    
+
                     fatalError("Couldn't find project name for \(sourceUrl)")
                 }
-                
+
                 let symlinkUrl = hGraphQLUrl.appendingPathComponent(projectName)
                 symlinks.append(symlinkUrl)
-                
+
                 try? FileManager.default.createSymbolicLink(
                     at: symlinkUrl,
                     withDestinationURL: hGraphQLSymlinkUrl
@@ -189,15 +192,16 @@ try! endpoints.forEach { name, endpoint in
             }
             .filter { !$0.lastPathComponent.contains("Types.graphql.swift") }
             .forEach { url in try? FileManager.default.removeItem(at: url) }
-            
+
             allGeneratedFiles
-            .filter { $0.lastPathComponent.contains("Types.graphql.swift") }
-            .forEach { typesFileUrl in
-                let destination = typesFileUrl
-                    .deletingLastPathComponent()
-                    .appendingPathComponent("\(name.capitalized)Types.graphql.swift")
-                try! FileManager.default.moveItem(at: typesFileUrl, to: destination)
-            }
+                .filter { $0.lastPathComponent.contains("Types.graphql.swift") }
+                .forEach { typesFileUrl in
+                    let destination =
+                        typesFileUrl
+                        .deletingLastPathComponent()
+                        .appendingPathComponent("\(name.capitalized)Types.graphql.swift")
+                    try! FileManager.default.moveItem(at: typesFileUrl, to: destination)
+                }
         }
 
         symlinks.forEach { symlink in

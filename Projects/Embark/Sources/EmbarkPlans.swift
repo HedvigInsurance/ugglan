@@ -110,7 +110,8 @@ extension EmbarkPlans: Presentable {
             }
         }
 
-        bag += giraffe.client.fetch(query: GiraffeGraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue))
+        bag += giraffe.client
+            .fetch(query: GiraffeGraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue))
             .valueSignal
             .compactMap {
                 $0.embarkStories
