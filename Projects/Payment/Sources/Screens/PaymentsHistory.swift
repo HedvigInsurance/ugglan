@@ -22,7 +22,7 @@ extension PaymentsHistory: Presentable {
         let section = form.appendSection(header: nil, footer: nil)
 
         bag +=
-            client.watch(
+            giraffe.client.watch(
                 query: GiraffeGraphQL.MyPaymentQuery(
                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
                 )

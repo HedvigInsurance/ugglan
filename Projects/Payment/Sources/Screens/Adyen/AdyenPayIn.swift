@@ -50,7 +50,7 @@ public struct AdyenPayIn: Presentable {
                 let json = String(data: jsonData, encoding: .utf8)
             else { return }
 
-            self.client
+            self.giraffe.client
                 .perform(
                     mutation: GiraffeGraphQL.AdyenTokenizePaymentDetailsMutation(
                         input: GiraffeGraphQL.ConnectPaymentInput(

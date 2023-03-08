@@ -75,7 +75,7 @@ class ChatState {
 
     func fetch(cachePolicy: CachePolicy = .returnCacheDataAndFetch, hasFetched: @escaping () -> Void = {}) {
         bag +=
-            client.fetch(
+            giraffe.client.fetch(
                 query: GiraffeGraphQL.ChatMessagesQuery(),
                 cachePolicy: cachePolicy,
                 queue: DispatchQueue.global(qos: .background)
@@ -112,7 +112,7 @@ class ChatState {
     @discardableResult func subscribe() -> CoreSignal<Plain.DropReadWrite, GiraffeGraphQL.MessageData> {
         subscriptionBag.dispose()
         let signal =
-            client.subscribe(
+            giraffe.client.subscribe(
                 subscription: GiraffeGraphQL.ChatMessagesSubscriptionSubscription(),
                 queue: DispatchQueue.global(qos: .background)
             )
@@ -136,7 +136,7 @@ class ChatState {
     func reset() {
         handledGlobalIds = []
         listSignal.value = []
-        bag += client.perform(mutation: GiraffeGraphQL.TriggerResetChatMutation())
+        bag += giraffe.client.perform(mutation: GiraffeGraphQL.TriggerResetChatMutation())
             .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
     }
 

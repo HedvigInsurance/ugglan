@@ -19,7 +19,7 @@ extension CardDetailsSection: Viewable {
 
         let section = SectionView(header: L10n.myPaymentCardRowLabel, footer: nil)
 
-        let dataSignal = client.watch(
+        let dataSignal = giraffe.client.watch(
             query: GiraffeGraphQL.ActivePaymentMethodsQuery(),
             cachePolicy: .returnCacheDataAndFetch
         )

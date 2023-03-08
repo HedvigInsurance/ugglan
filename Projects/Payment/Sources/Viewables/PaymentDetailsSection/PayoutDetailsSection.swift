@@ -20,7 +20,7 @@ extension PayoutDetailsSection: Viewable {
         let section = SectionView(header: L10n.PaymentScreen.payoutSectionTitle, footer: nil)
         section.isHidden = true
 
-        let dataSignal = client.watch(
+        let dataSignal = giraffe.client.watch(
             query: GiraffeGraphQL.ActivePayoutMethodsQuery(),
             cachePolicy: .returnCacheDataAndFetch
         )

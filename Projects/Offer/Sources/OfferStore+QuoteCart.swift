@@ -6,7 +6,7 @@ import hGraphQL
 
 extension OfferStore {
     internal func requestQuoteCartSign(quoteCartId: String, ids: [String]) -> FiniteSignal<OfferAction>? {
-        return self.client
+        return self.giraffe.client
             .perform(
                 mutation: GiraffeGraphQL.SignQuoteCartMutation(
                     quoteCartId: quoteCartId,
@@ -40,7 +40,7 @@ extension OfferStore {
             payload: encodedString,
             locale: Localization.Locale.currentLocale.asGraphQLLocale()
         )
-        return self.client.perform(mutation: mutation)
+        return self.giraffe.client.perform(mutation: mutation)
             .compactMap { data in
                 return data.quoteCartEditQuote.asQuoteCart?.fragments.quoteCartFragment
             }

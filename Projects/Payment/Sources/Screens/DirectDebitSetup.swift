@@ -110,7 +110,7 @@ extension DirectDebitSetup: Presentable {
 
             webView.trackOnAppear(hAnalyticsEvent.screenView(screen: .connectPaymentTrustly))
 
-            bag += client.perform(mutation: GiraffeGraphQL.StartDirectDebitRegistrationMutation()).valueSignal
+            bag += giraffe.client.perform(mutation: GiraffeGraphQL.StartDirectDebitRegistrationMutation()).valueSignal
                 .compactMap { $0.startDirectDebitRegistration }
                 .onValue { startDirectDebitRegistration in
                     webView.load(URLRequest(url: URL(string: startDirectDebitRegistration)!))

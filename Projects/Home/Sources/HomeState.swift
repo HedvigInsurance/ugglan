@@ -34,8 +34,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         case .openFreeTextChat:
             return nil
         case .fetchMemberState:
-            return
-                client
+            return giraffe.client
                 .fetch(query: GiraffeGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
                 .map { data in
                     .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))

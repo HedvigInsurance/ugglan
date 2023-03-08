@@ -15,8 +15,7 @@ public class MarketPickerViewModel: ObservableObject {
     let bag = DisposeBag()
 
     func fetchMarketingImage() {
-        bag +=
-            client.fetch(
+        bag += giraffe.client.fetch(
                 query: GiraffeGraphQL.MarketingImagesQuery()
             )
             .compactMap {
@@ -39,7 +38,10 @@ public class MarketPickerViewModel: ObservableObject {
         let store: MarketStore = globalPresentableStoreContainer.get()
         let innerBag = bag.innerBag()
 
-        bag += client.fetch(query: GiraffeGraphQL.GeoQuery(), queue: .global(qos: .background))
+        bag += giraffe.client.fetch(
+            query: GiraffeGraphQL.GeoQuery(),
+            queue: .global(qos: .background)
+        )
             .valueSignal
             .map { $0.geo.countryIsoCode.lowercased() }
             .map { code -> Market in

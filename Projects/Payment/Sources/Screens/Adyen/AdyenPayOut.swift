@@ -40,7 +40,7 @@ struct AdyenPayOut: Presentable {
                 let json = String(data: jsonData, encoding: .utf8)
             else { return }
 
-            self.client
+            self.giraffe.client
                 .perform(
                     mutation: GiraffeGraphQL.AdyenTokenizePayoutDetailsMutation(
                         request: GiraffeGraphQL.TokenizationRequest(
@@ -66,7 +66,7 @@ struct AdyenPayOut: Presentable {
                     }
                 }
         } onSuccess: {
-            store.update(query: GiraffeGraphQL.ActivePayoutMethodsQuery()) {
+            giraffe.store.update(query: GiraffeGraphQL.ActivePayoutMethodsQuery()) {
                 (data: inout GiraffeGraphQL.ActivePayoutMethodsQuery.Data) in
                 data.activePayoutMethods = .init(status: .pending)
             }

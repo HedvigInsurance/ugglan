@@ -35,7 +35,7 @@ extension RenewalCard: Viewable {
             }
         }
 
-        bag += client.watch(query: GiraffeGraphQL.HomeQuery())
+        bag += giraffe.client.watch(query: GiraffeGraphQL.HomeQuery())
             .map { $0.contracts.filter { contract in contract.upcomingRenewal != nil } }
             .filter { !$0.isEmpty }
             .onValueDisposePrevious { contracts -> Disposable? in let bag = DisposeBag()

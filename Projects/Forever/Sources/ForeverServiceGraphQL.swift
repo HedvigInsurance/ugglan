@@ -8,7 +8,7 @@ public class ForeverServiceGraphQL: ForeverService {
     public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
         giraffe.client.perform(
             mutation: GiraffeGraphQL.ForeverUpdateDiscountCodeMutation(code: value)
-        ).valueSignal.map { data in
+        ).valueSignal.map { data -> Either<Void, ForeverChangeCodeError> in
             let updateReferralCampaignCode = data.updateReferralCampaignCode
             
                 if updateReferralCampaignCode.asCodeAlreadyTaken != nil {
@@ -24,7 +24,7 @@ public class ForeverServiceGraphQL: ForeverService {
                         )
                     )
                 } else if updateReferralCampaignCode.asSuccessfullyUpdatedCode != nil {
-                    self.store.withinReadWriteTransaction(
+                    self.giraffe.store.withinReadWriteTransaction(
                         { transaction in
                             try transaction.update(query: GiraffeGraphQL.ForeverQuery()) {
                                 (data: inout GiraffeGraphQL.ForeverQuery.Data) in

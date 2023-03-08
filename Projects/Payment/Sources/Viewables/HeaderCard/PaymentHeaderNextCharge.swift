@@ -26,7 +26,7 @@ extension PaymentHeaderNextCharge: Viewable {
         contentContainer.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
         bag +=
-            client.watch(
+            giraffe.client.watch(
                 query: GiraffeGraphQL.MyPaymentQuery(
                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
                 )

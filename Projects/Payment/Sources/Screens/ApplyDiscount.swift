@@ -102,7 +102,7 @@ extension ApplyDiscount: Presentable {
                             loadableSubmitButton.isLoadingSignal.value = false
                         }
 
-                        self.client
+                        self.giraffe.client
                             .perform(
                                 mutation: GiraffeGraphQL.RedeemCodeMutation(
                                     code: discountCode,
