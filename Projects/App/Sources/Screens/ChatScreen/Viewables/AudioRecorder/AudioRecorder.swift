@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct AudioRecorder {
     @Inject var giraffe: hGiraffe

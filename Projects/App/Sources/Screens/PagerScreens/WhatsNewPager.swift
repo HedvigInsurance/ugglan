@@ -13,7 +13,7 @@ extension WhatsNewPager: FutureConditional {
     var lastNewsSeen: String { ApplicationState.getLastNewsSeen() }
 
     func getPages() -> Future<[PagerItem]> {
-        client.fetch(
+        giraffe.client.fetch(
             query: GiraffeGraphQL.WhatsNewQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale(),
                 sinceVersion: lastNewsSeen

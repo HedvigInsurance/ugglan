@@ -27,7 +27,7 @@ struct FileUpload {
     let fileName: String
 
     func upload() -> Future<(key: String, bucket: String)> {
-        let client: ApolloClient = Dependencies.shared.resolve()
+        let giraffe: hGiraffe = Dependencies.shared.resolve()
 
         let file = GraphQLFile(fieldName: "file", originalName: fileName, mimeType: mimeType, data: data)
 

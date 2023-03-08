@@ -19,7 +19,7 @@ extension PaymentDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
-        let dataSignal = client.watch(
+        let dataSignal = giraffe.client.watch(
             query: GiraffeGraphQL.MyPaymentQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             ),
@@ -75,7 +75,7 @@ extension PaymentDetailsSection: Viewable {
         bag += applyDiscountButtonRow.onSelect.onValue { _ in let applyDiscount = ApplyDiscount()
 
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
-                self.store.update(
+                self.giraffe.store.update(
                     query: GiraffeGraphQL.MyPaymentQuery(
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()
                     ),

@@ -164,7 +164,7 @@ extension DirectDebitSetup: Presentable {
                     bag += viewController.present(alert)
                         .onValue { shouldDismiss in
                             if shouldDismiss {
-                                client
+                                giraffe.client
                                     .perform(
                                         mutation:
                                             GiraffeGraphQL
@@ -186,9 +186,9 @@ extension DirectDebitSetup: Presentable {
 
                     switch type {
                     case .success:
-                        client.fetch(query: GiraffeGraphQL.PayInMethodStatusQuery())
+                        giraffe.client.fetch(query: GiraffeGraphQL.PayInMethodStatusQuery())
                             .onValue { _ in
-                                client.store.update(
+                                giraffe.store.update(
                                     query: GiraffeGraphQL.PayInMethodStatusQuery()
                                 ) { (data: inout GiraffeGraphQL.PayInMethodStatusQuery.Data) in
                                     data.payinMethodStatus = .pending
@@ -231,7 +231,7 @@ extension DirectDebitSetup: Presentable {
                 // if user is closing app in the middle of process make sure to inform backend
                 bag += NotificationCenter.default.signal(forName: .applicationWillTerminate)
                     .onValue { _ in
-                        client
+                        giraffe.client
                             .perform(mutation: GiraffeGraphQL.CancelDirectDebitRequestMutation())
                             .sink()
                     }

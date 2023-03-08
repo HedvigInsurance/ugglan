@@ -12,7 +12,7 @@ public struct AnalyticsCoordinator {
     public init() {}
 
     func setUserId() {
-        client.fetch(query: GiraffeGraphQL.MemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
+        giraffe.client.fetch(query: GiraffeGraphQL.MemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
             .compactMap { $0.member.id }
             .onValue { id in
                 Shake.setMetadata(key: "memberId", value: id)

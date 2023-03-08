@@ -23,7 +23,7 @@ extension BankDetailsSection: Viewable {
 
         bag += section.append(row)
 
-        let dataSignal = client.watch(
+        let dataSignal = giraffe.client.watch(
             query: GiraffeGraphQL.MyPaymentQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             )
@@ -36,7 +36,7 @@ extension BankDetailsSection: Viewable {
 
         bag += dataSignal.compactMap { $0.bankAccount?.descriptor }.bindTo(row.valueSignal)
 
-        let myPaymentQuerySignal = client.watch(
+        let myPaymentQuerySignal = giraffe.client.watch(
             query: GiraffeGraphQL.MyPaymentQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             ),

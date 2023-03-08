@@ -145,7 +145,7 @@ class ChatState {
     func sendSingleSelectResponse(selectedValue: GraphQLID) {
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
             .onValue { globalId in
-                self.bag += self.client
+                self.bag += self.giraffe.client
                     .perform(
                         mutation: GiraffeGraphQL.SendChatSingleSelectResponseMutation(
                             globalId: globalId,
@@ -165,7 +165,7 @@ class ChatState {
             innerBag += self.currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
                 .take(first: 1)
                 .onValue { globalId in
-                    innerBag += self.client
+                    innerBag += self.giraffe.client
                         .perform(
                             mutation: GiraffeGraphQL.SendChatTextResponseMutation(
                                 globalId: globalId,
@@ -186,7 +186,7 @@ class ChatState {
 
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
             .onValue { globalId in
-                self.bag += self.client
+                self.bag += self.giraffe.client
                     .perform(
                         mutation: GiraffeGraphQL.SendChatFileResponseMutation(
                             globalID: globalId,
@@ -204,7 +204,7 @@ class ChatState {
 
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
             .onValue { globalId in
-                self.bag += self.client
+                self.bag += self.giraffe.client
                     .upload(
                         operation: GiraffeGraphQL.SendChatAudioResponseMutation(
                             globalID: globalId,
@@ -261,7 +261,7 @@ class ChatState {
                                     }
                                     .map { $0.1 }
 
-                                self.bag += self.client
+                                self.bag += self.giraffe.client
                                     .perform(
                                         mutation:
                                             GiraffeGraphQL.EditLastResponseMutation()

@@ -20,7 +20,7 @@ class SlackBot {
     func postSlackMessage(
         memberDetails: MemberDetails
     ) -> Future<Bool> {
-        client.fetch(
+        giraffe.client.fetch(
             query: GiraffeGraphQL.SlackDetailsQuery()
         )
         .compactMap { result in

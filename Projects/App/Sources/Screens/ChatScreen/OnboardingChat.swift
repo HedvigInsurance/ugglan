@@ -4,6 +4,7 @@ import Form
 import Presentation
 import UIKit
 import hCore
+import hGraphQL
 
 struct OnboardingChat { @Inject var giraffe: hGiraffe }
 

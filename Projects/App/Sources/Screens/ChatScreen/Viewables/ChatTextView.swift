@@ -4,6 +4,7 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct ChatTextView {
     @Inject var giraffe: hGiraffe
