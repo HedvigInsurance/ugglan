@@ -6,8 +6,7 @@ import hGraphQL
 
 public struct ForceAvailableLocales: View {
     public init() {}
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
 
     @State private var availableLocales: [GiraffeGraphQL.Locale] = [] {
         didSet {

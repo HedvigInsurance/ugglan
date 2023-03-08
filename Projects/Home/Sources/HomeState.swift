@@ -24,8 +24,7 @@ public enum HomeAction: ActionProtocol {
 }
 
 public final class HomeStore: StateStore<HomeState, HomeAction> {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
 
     public override func effects(
         _ getState: @escaping () -> HomeState,

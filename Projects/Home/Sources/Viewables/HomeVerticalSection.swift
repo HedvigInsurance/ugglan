@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 public struct HomeVerticalSection {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     let section: HomeSection
 

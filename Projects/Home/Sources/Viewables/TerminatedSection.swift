@@ -10,7 +10,7 @@ import hCoreUI
 import hGraphQL
 
 struct TerminatedSection<ClaimsContent: View> {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     var claimsContent: ClaimsContent
 }
 

@@ -9,8 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct PaymentDetailsSection {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
     let presentingViewController: UIViewController
 
     init(presentingViewController: UIViewController) { self.presentingViewController = presentingViewController }

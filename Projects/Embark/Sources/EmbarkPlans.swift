@@ -14,7 +14,7 @@ public typealias EmbarkStory = GiraffeGraphQL.ChoosePlanQuery.Data.EmbarkStory
 
 public struct EmbarkPlans {
     @Inject
-    var client: ApolloClient
+    var giraffe: hGiraffe
     let menu: Menu?
     let plansSignal = ReadWriteSignal<[GiraffeGraphQL.ChoosePlanQuery.Data.EmbarkStory]>([])
     @ReadWriteState var selectedIndex = 0
@@ -110,7 +110,7 @@ extension EmbarkPlans: Presentable {
             }
         }
 
-        bag += client.fetch(query: GiraffeGraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue))
+        bag += giraffe.client.fetch(query: GiraffeGraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue))
             .valueSignal
             .compactMap {
                 $0.embarkStories

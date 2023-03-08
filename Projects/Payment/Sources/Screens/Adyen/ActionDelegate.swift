@@ -16,7 +16,7 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
     typealias ResultHandler = (_ result: Flow.Result<Either<Void, AdyenActions.Action>>) -> Void
 
     @PresentableStore var store: PaymentStore
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let onResult: ResultHandler
 
     init(onResult: @escaping ResultHandler) { self.onResult = onResult }
@@ -31,7 +31,7 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
             let detailsJson = String(data: detailsJsonData, encoding: .utf8)
         else { return }
 
-        client.perform(
+        giraffe.client.perform(
             mutation: GiraffeGraphQL.AdyenAdditionalPaymentDetailsMutation(
                 paymentConnectionID: store.state.paymentConnectionID ?? "",
                 req: detailsJson

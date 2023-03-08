@@ -10,7 +10,7 @@ import hCore
 import hGraphQL
 
 struct DirectDebitSetup {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let setupType: PaymentSetup.SetupType
 
     private func makeDismissButton() -> UIBarButtonItem {
@@ -167,7 +167,7 @@ extension DirectDebitSetup: Presentable {
                                 client
                                     .perform(
                                         mutation:
-                                            GraphQL
+                                            GiraffeGraphQL
                                             .CancelDirectDebitRequestMutation()
                                     )
                                     .sink()

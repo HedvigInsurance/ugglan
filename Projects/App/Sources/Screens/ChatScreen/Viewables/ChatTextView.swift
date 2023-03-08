@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 
 struct ChatTextView {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let chatState: ChatState
     let isHiddenSignal = ReadWriteSignal<Bool>(false)
 

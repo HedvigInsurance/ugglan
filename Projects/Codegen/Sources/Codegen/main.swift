@@ -84,7 +84,10 @@ try! endpoints.forEach { name, endpoint in
 
         let ishGraphQLFolder = folderUrl.absoluteString.contains("Projects/hGraphQL")
         
+        var symlinks: [URL] = []
+        
         if !ishGraphQLFolder {
+            symlinks.append(hGraphQLSymlinkUrl)
             try? FileManager.default.createSymbolicLink(at: hGraphQLSymlinkUrl, withDestinationURL: hGraphQLUrl)
         } else {
             sourceUrls.filter { url in
@@ -108,8 +111,11 @@ try! endpoints.forEach { name, endpoint in
                     fatalError("Couldn't find project name for \(sourceUrl)")
                 }
                 
-                try! FileManager.default.createSymbolicLink(
-                    at: hGraphQLUrl.appendingPathComponent(projectName),
+                let symlinkUrl = hGraphQLUrl.appendingPathComponent(projectName)
+                symlinks.append(symlinkUrl)
+                
+                try? FileManager.default.createSymbolicLink(
+                    at: symlinkUrl,
                     withDestinationURL: hGraphQLSymlinkUrl
                 )
             }
@@ -194,6 +200,8 @@ try! endpoints.forEach { name, endpoint in
             }
         }
 
-        try? FileManager.default.removeItem(at: hGraphQLSymlinkUrl)
+        symlinks.forEach { symlink in
+            try? FileManager.default.removeItem(at: symlink)
+        }
     }
 }

@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct PayoutDetailsSection {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let urlScheme: String
 }
 

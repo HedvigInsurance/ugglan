@@ -6,9 +6,11 @@ import hGraphQL
 
 public class ForeverServiceGraphQL: ForeverService {
     public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
-        client.perform(mutation: GiraffeGraphQL.ForeverUpdateDiscountCodeMutation(code: value)).valueSignal
-            .map { data in let updateReferralCampaignCode = data.updateReferralCampaignCode
-
+        giraffe.client.perform(
+            mutation: GiraffeGraphQL.ForeverUpdateDiscountCodeMutation(code: value)
+        ).valueSignal.map { data in
+            let updateReferralCampaignCode = data.updateReferralCampaignCode
+            
                 if updateReferralCampaignCode.asCodeAlreadyTaken != nil {
                     return .right(ForeverChangeCodeError.nonUnique)
                 } else if updateReferralCampaignCode.asCodeTooLong != nil {
@@ -41,7 +43,7 @@ public class ForeverServiceGraphQL: ForeverService {
     }
 
     public var dataSignal: ReadSignal<ForeverData?> {
-        client.watch(query: GiraffeGraphQL.ForeverQuery())
+        giraffe.client.watch(query: GiraffeGraphQL.ForeverQuery())
             .map { data -> ForeverData in
                 let grossAmount = data.referralInformation.costReducedIndefiniteDiscount?.monthlyGross
                 let grossAmountMonetary = MonetaryAmount(
@@ -148,11 +150,10 @@ public class ForeverServiceGraphQL: ForeverService {
     }
 
     public func refetch() {
-        client.fetch(query: GiraffeGraphQL.ForeverQuery(), cachePolicy: .fetchIgnoringCacheData).sink()
+        giraffe.client.fetch(query: GiraffeGraphQL.ForeverQuery(), cachePolicy: .fetchIgnoringCacheData).sink()
     }
 
     public init() {}
 
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
 }

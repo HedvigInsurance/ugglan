@@ -7,7 +7,7 @@ import hGraphQL
 import Authentication
 
 struct Impersonate {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     @PresentableStore var store: UgglanStore
     @PresentableStore var authenticationStore: AuthenticationStore
 

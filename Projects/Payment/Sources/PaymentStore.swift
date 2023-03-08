@@ -19,7 +19,7 @@ public enum PaymentAction: ActionProtocol {
 }
 
 public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     public override func effects(
         _ getState: @escaping () -> PaymentState,
@@ -27,8 +27,7 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
     ) -> FiniteSignal<PaymentAction>? {
         switch action {
         case .load:
-            return
-                client
+            return giraffe.client
                 .fetch(
                     query: GiraffeGraphQL.MyPaymentQuery(
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()

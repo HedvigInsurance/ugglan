@@ -10,7 +10,7 @@ import hGraphQL
 struct AttachGIFPane {
     let isOpenSignal: ReadWriteSignal<Bool>
     let chatState: ChatState
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     init(
         isOpenSignal: ReadWriteSignal<Bool>,

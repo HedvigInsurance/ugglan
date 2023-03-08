@@ -5,10 +5,11 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct ApolloMultilineLabel<Query: GraphQLQuery> {
     let query: Query
-    @Inject private var client: ApolloClient
+    @Inject private var giraffe: hGiraffe
     let mapDataAndStyle: (_ data: Query.Data) -> StyledText
 
     init(
@@ -25,10 +26,10 @@ extension ApolloMultilineLabel: Viewable {
         let bag = DisposeBag()
         let multilineLabel = MultilineLabel(value: "", style: TextStyle.brand(.body(color: .primary)))
 
-        bag += client.watch(query: query).map { self.mapDataAndStyle($0) }.map { $0.text }
+        bag += giraffe.client.watch(query: query).map { self.mapDataAndStyle($0) }.map { $0.text }
             .bindTo(multilineLabel.$value)
 
-        bag += client.watch(query: query).map { self.mapDataAndStyle($0) }.map { $0.style }
+        bag += giraffe.client.watch(query: query).map { self.mapDataAndStyle($0) }.map { $0.style }
             .bindTo(multilineLabel.$style)
 
         return (multilineLabel, bag)

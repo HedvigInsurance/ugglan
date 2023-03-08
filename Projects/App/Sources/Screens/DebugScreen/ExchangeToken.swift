@@ -10,7 +10,7 @@ struct ExchangeToken: View {
     init(onToken: @escaping (_ token: String, _ locale: Localization.Locale) -> Void) { self.onToken = onToken }
 
     @State var paymentUrl: String = ""
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     @State private var selectedLocale = Localization.Locale.currentLocale
 
@@ -32,7 +32,7 @@ struct ExchangeToken: View {
                         afterHashbang?.replacingOccurrences(of: "exchange-token=", with: "")
                         ?? ""
 
-                    client.perform(
+                    giraffe.client.perform(
                         mutation: GiraffeGraphQL.ExchangeTokenMutation(
                             exchangeToken: exchangeToken.removingPercentEncoding ?? ""
                         )

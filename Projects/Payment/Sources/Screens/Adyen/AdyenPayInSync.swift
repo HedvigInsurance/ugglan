@@ -10,7 +10,7 @@ import hCoreUI
 import hGraphQL
 
 struct AdyenPayInSync {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     let setupType: PaymentSetup.SetupType
     let urlScheme: String

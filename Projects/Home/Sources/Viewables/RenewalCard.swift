@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct RenewalCard { @Inject var client: ApolloClient }
+struct RenewalCard { @Inject var giraffe: hGiraffe }
 
 extension RenewalCard: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {

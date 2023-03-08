@@ -10,7 +10,7 @@ import hCore
 import hCoreUI
 
 struct PostOnboarding {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     typealias Content = ReusableSignalViewable<ImageTextAction<TableAction>, TableAction>
 
     enum TableAction { case payment, push, pushSkip }

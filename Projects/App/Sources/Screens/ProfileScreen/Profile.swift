@@ -9,7 +9,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct Profile { @Inject var client: ApolloClient }
+struct Profile { @Inject var giraffe: hGiraffe }
 
 extension Profile: Presentable {
     func materialize() -> (UIViewController, Disposable) {

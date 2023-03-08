@@ -10,7 +10,7 @@ import hCoreUI
 import hGraphQL
 
 public struct Embark {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let name: String
     public let menu: Menu?
     let state: EmbarkState
@@ -170,8 +170,7 @@ extension Embark: Presentable {
 
         activityIndicator.snp.makeConstraints { make in make.center.equalToSuperview() }
 
-        bag +=
-            client.fetch(
+        bag += giraffe.client.fetch(
                 query: GiraffeGraphQL.EmbarkStoryQuery(
                     name: name,
                     locale: Localization.Locale.currentLocale.code
@@ -180,7 +179,7 @@ extension Embark: Presentable {
             )
             .valueSignal.compactMap { $0.embarkStory }
             .onValue { embarkStory in
-                client.perform(
+                giraffe.client.perform(
                     mutation: GiraffeGraphQL.CreateQuoteCartMutation(
                         input: .init(
                             market: Localization.Locale.currentLocale.market.graphQL,

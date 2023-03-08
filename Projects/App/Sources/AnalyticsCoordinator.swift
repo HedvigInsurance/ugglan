@@ -7,7 +7,7 @@ import hCore
 import hGraphQL
 
 public struct AnalyticsCoordinator {
-    @Inject private var client: ApolloClient
+    @Inject private var giraffe: hGiraffe
 
     public init() {}
 

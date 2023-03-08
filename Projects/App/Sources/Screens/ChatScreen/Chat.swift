@@ -11,7 +11,7 @@ import hCoreUI
 import hGraphQL
 
 struct Chat {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let reloadChatCallbacker = Callbacker<Void>()
     let chatState = ChatState.shared
 

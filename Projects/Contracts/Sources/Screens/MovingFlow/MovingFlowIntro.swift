@@ -11,7 +11,7 @@ import hCoreUI
 import hGraphQL
 
 public struct MovingFlowIntro {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     @ReadWriteState var section = MovingFlowIntroState.none
     public init() {}
 }

@@ -219,7 +219,7 @@ import hGraphQL
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
 
-        hGiraffeGraphQL.log = Logger.builder
+        hGraphQL.log = Logger.builder
             .sendNetworkInfo(true)
             .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
             .build()
@@ -325,10 +325,10 @@ import hGraphQL
 
 extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
-        Self.initClient()
-            .onValue { store, client in
-                Dependencies.shared.add(module: Module { store })
-                Dependencies.shared.add(module: Module { client })
+        Self.initClients()
+            .onValue { hApollo in
+                Dependencies.shared.add(module: Module { hApollo })
+                Dependencies.shared.add(module: Module { hApollo })
             }
             .toVoid()
     }

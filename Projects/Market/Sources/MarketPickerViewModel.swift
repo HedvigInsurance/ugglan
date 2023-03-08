@@ -7,7 +7,7 @@ import hCore
 import hGraphQL
 
 public class MarketPickerViewModel: ObservableObject {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false

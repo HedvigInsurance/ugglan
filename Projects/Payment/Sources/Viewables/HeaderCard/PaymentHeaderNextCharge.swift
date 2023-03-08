@@ -6,7 +6,7 @@ import UIKit
 import hCore
 import hGraphQL
 
-struct PaymentHeaderNextCharge { @Inject var client: ApolloClient }
+struct PaymentHeaderNextCharge { @Inject var giraffe: hGiraffe }
 
 extension PaymentHeaderNextCharge: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {

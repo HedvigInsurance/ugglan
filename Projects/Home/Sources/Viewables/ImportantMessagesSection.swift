@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ImportantMessagesSection { @Inject var client: ApolloClient }
+struct ImportantMessagesSection { @Inject var giraffe: hGiraffe }
 
 extension ImportantMessagesSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
@@ -18,7 +18,7 @@ extension ImportantMessagesSection: Viewable {
         sectionView.dynamicStyle = .brandGroupedCaution
         outerSection.append(sectionView)
 
-        client.fetch(query: GiraffeGraphQL.ImportantMessagesQuery(langCode: Localization.Locale.currentLocale.code))
+        giraffe.client.fetch(query: GiraffeGraphQL.ImportantMessagesQuery(langCode: Localization.Locale.currentLocale.code))
             .compactMap { $0.importantMessages.first }.compactMap { $0 }
             .onValue { importantMessage in let row = RowView()
                 bag += row.append(

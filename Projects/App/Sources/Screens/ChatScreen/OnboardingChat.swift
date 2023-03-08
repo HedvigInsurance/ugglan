@@ -5,7 +5,7 @@ import Presentation
 import UIKit
 import hCore
 
-struct OnboardingChat { @Inject var client: ApolloClient }
+struct OnboardingChat { @Inject var giraffe: hGiraffe }
 
 enum OnboardingChatResult {
     case menu(action: MenuChildAction)

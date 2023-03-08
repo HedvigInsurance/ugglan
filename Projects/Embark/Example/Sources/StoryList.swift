@@ -9,7 +9,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct StoryList { @Inject var client: ApolloClient }
+struct StoryList { @Inject var giraffe: hGiraffe }
 
 extension StoryList: Presentable {
     func materialize() -> (UIViewController, Disposable) {

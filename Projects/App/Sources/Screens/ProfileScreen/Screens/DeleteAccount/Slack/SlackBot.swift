@@ -5,7 +5,7 @@ import hCore
 import hGraphQL
 
 class SlackBot {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     enum SlackError: Error {
         case invalidRequestBody(description: String)

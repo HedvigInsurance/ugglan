@@ -61,7 +61,7 @@ extension AddressSuggestion: Equatable {
 }
 
 class AddressState {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     let pickedSuggestionSignal: ReadWriteSignal<AddressSuggestion?> = ReadWriteSignal(nil)
     let confirmedSuggestionSignal: ReadWriteSignal<AddressSuggestion?> = ReadWriteSignal(nil)
@@ -69,7 +69,7 @@ class AddressState {
 
     func getSuggestions(searchTerm: String, suggestion: AddressSuggestion?) -> Future<[AddressSuggestion]> {
         let queryParams = getApiQueryParams(searchTerm, suggestion)
-        return self.client
+        return self.giraffe.client
             .fetch(
                 query: GiraffeGraphQL.AddressAutocompleteQuery(
                     input: queryParams.apiQuery,
@@ -134,7 +134,7 @@ class AddressState {
         if let previousSuggestion = previousSuggestion, suggestion == previousSuggestion {
             return Future(suggestion)
         }
-        return self.client
+        return self.giraffe.client
             .fetch(
                 query: GiraffeGraphQL.AddressAutocompleteQuery(
                     input: suggestion.address,

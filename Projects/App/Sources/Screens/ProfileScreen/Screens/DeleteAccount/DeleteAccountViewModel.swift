@@ -9,7 +9,7 @@ import hCore
 import hGraphQL
 
 class DeleteAccountViewModel: ObservableObject {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     var memberDetails: MemberDetails
     let claimsStore: ClaimsStore

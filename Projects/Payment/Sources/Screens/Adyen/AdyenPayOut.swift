@@ -30,8 +30,7 @@ extension AdyenMethodsList {
 }
 
 struct AdyenPayOut: Presentable {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
     let adyenOptions: AdyenOptions
     let urlScheme: String
 

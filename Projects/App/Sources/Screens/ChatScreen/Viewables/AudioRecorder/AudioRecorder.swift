@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 
 struct AudioRecorder {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let chatState: ChatState
 
     init(chatState: ChatState) { self.chatState = chatState }

@@ -13,7 +13,7 @@ class ChatState {
     private let bag = DisposeBag()
     private let subscriptionBag = DisposeBag()
     private let editBag = DisposeBag()
-    @Inject private var client: ApolloClient
+    @Inject private var giraffe: hGiraffe
     private var handledGlobalIds: [GraphQLID] = []
     private var hasShownStatusMessage = false
     var allowNewMessageToast = true

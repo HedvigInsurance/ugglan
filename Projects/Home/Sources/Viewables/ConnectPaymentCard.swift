@@ -9,7 +9,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ConnectPaymentCard { @Inject var client: ApolloClient }
+struct ConnectPaymentCard { @Inject var giraffe: hGiraffe }
 
 extension ConnectPaymentCard: Presentable {
     func materialize() -> (UIStackView, Disposable) {

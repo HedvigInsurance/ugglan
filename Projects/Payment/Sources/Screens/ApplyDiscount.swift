@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 public struct ApplyDiscount {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     private let didRedeemValidCodeCallbacker = Callbacker<
         GiraffeGraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult

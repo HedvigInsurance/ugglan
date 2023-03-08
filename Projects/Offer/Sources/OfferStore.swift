@@ -126,8 +126,7 @@ public enum OfferAction: ActionProtocol {
 }
 
 public final class OfferStore: StateStore<OfferState, OfferAction> {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
 
     func query(for ids: [String]) -> GiraffeGraphQL.QuoteBundleQuery {
         GiraffeGraphQL.QuoteBundleQuery(

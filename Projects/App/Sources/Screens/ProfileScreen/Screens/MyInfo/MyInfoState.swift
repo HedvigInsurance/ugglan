@@ -7,8 +7,7 @@ import hCore
 import hGraphQL
 
 struct MyInfoState {
-    @Inject private var client: ApolloClient
-    @Inject private var store: ApolloStore
+    @Inject private var giraffe: hGiraffe
 
     let presentingViewController: UIViewController
 
@@ -47,7 +46,7 @@ struct MyInfoState {
 
                     let innerBag = bag.innerBag()
 
-                    innerBag += self.client
+                    innerBag += self.giraffe.client
                         .perform(
                             mutation: GiraffeGraphQL.UpdatePhoneNumberMutation(
                                 phoneNumber: phoneNumber
@@ -78,11 +77,11 @@ struct MyInfoState {
 
                     let innerBag = bag.innerBag()
 
-                    innerBag += self.client
+                    innerBag += self.giraffe.client
                         .perform(mutation: GiraffeGraphQL.UpdateEmailMutation(email: email))
                         .onValue { _ in completion(.success)
 
-                            self.store.update(query: GiraffeGraphQL.MyInfoQuery()) {
+                            self.giraffe.store.update(query: GiraffeGraphQL.MyInfoQuery()) {
                                 (data: inout GiraffeGraphQL.MyInfoQuery.Data) in
                                 data.member.email = email
                             }
@@ -111,7 +110,7 @@ struct MyInfoState {
     func loadData() -> Disposable {
         let bag = DisposeBag()
 
-        let dataSignal = client.watch(query: GiraffeGraphQL.MyInfoQuery(), cachePolicy: .returnCacheDataAndFetch)
+        let dataSignal = giraffe.client.watch(query: GiraffeGraphQL.MyInfoQuery(), cachePolicy: .returnCacheDataAndFetch)
 
         bag += dataSignal.compactMap { $0.member.email }.bindTo(emailSignal)
         bag += dataSignal.compactMap { $0.member.phoneNumber }.bindTo(phoneNumberSignal)

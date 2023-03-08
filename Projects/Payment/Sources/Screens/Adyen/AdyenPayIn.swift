@@ -31,8 +31,7 @@ extension AdyenMethodsList {
 }
 
 public struct AdyenPayIn: Presentable {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
     @PresentableStore var paymentStore: PaymentStore
     let adyenOptions: AdyenOptions
     let urlScheme: String
@@ -65,7 +64,7 @@ public struct AdyenPayIn: Presentable {
                 .onValue { data in
                     if let data = data.paymentConnectionConnectPayment.asConnectPaymentFinished {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            client.fetch(
+                            giraffe.client.fetch(
                                 query: GiraffeGraphQL.ActivePaymentMethodsQuery(),
                                 cachePolicy: .fetchIgnoringCacheData
                             )
@@ -87,7 +86,7 @@ public struct AdyenPayIn: Presentable {
                     }
                 }
         } onSuccess: {
-            store.withinReadWriteTransaction { transaction in
+            giraffe.store.withinReadWriteTransaction { transaction in
                 try? transaction.update(query: GiraffeGraphQL.PayInMethodStatusQuery()) {
                     (data: inout GiraffeGraphQL.PayInMethodStatusQuery.Data) in
                     data.payinMethodStatus = .active
@@ -96,7 +95,7 @@ public struct AdyenPayIn: Presentable {
 
             // refetch to refresh UI
             Future().delay(by: 0.5)
-                .flatMapResult { _ in client.fetch(query: GiraffeGraphQL.ActivePaymentMethodsQuery()) }
+                .flatMapResult { _ in giraffe.client.fetch(query: GiraffeGraphQL.ActivePaymentMethodsQuery()) }
                 .sink()
         }
         .materialize()
