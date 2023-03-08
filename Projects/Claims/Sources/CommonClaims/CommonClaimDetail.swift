@@ -46,17 +46,10 @@ extension CommonClaimDetail: Presentable {
         topCardContentView.isLayoutMarginsRelativeArrangement = true
         topCard.addSubview(topCardContentView)
 
-        topCardContentView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
-
-        let icon = RemoteVectorIcon(claim.icon, threaded: true)
-        bag += topCardContentView.addArranged(
-            icon.alignedTo(
-                .leading,
-                configure: { iconView in
-                    iconView.snp.makeConstraints { make in make.height.width.equalTo(40) }
-                }
-            )
-        )
+        topCardContentView.snp.makeConstraints { make in
+            make.bottom.trailing.leading.equalToSuperview()
+            make.top.equalTo(40)
+        }
 
         let layoutTitle = MultilineLabel(value: self.layoutTitle, style: .brand(.title2(color: .primary)))
         bag += topCardContentView.addArranged(layoutTitle)
