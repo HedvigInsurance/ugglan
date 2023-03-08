@@ -26,12 +26,13 @@ extension FutureSection: Viewable {
 
         bag += combineLatest(
             giraffe.client.fetch(query: GiraffeGraphQL.HomeQuery()).valueSignal,
-            giraffe.client.fetch(
-                query: GiraffeGraphQL.HomeInsuranceProvidersQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+            giraffe.client
+                .fetch(
+                    query: GiraffeGraphQL.HomeInsuranceProvidersQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
                 )
-            )
-            .valueSignal
+                .valueSignal
         )
         .onValue { homeData, insuranceProvidersData in
             if let contract = homeData.contracts.first(where: {

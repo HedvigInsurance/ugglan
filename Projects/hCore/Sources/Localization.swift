@@ -45,7 +45,7 @@ public enum Localization {
                 case .fr: return L10n.marketFrance
                 }
             }
-            
+
             public var graphQL: GiraffeGraphQL.Market {
                 switch self {
                 case .dk:

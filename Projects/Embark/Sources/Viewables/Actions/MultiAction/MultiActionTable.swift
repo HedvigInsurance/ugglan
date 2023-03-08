@@ -154,7 +154,8 @@ typealias EmbarkDropDownActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.Embark
 typealias EmbarkSwitchActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
     .MultiActionDatum.Component.AsEmbarkSwitchAction.SwitchActionDatum
 
-typealias EmbarkNumberMultiActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
+typealias EmbarkNumberMultiActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+    .AsEmbarkMultiAction
     .MultiActionDatum.Component.AsEmbarkMultiActionNumberAction.NumberActionDatum
 
 internal typealias MultiActionStoreSignal = Signal<[String: MultiActionValue]>

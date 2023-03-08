@@ -105,7 +105,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
     ) -> FiniteSignal<ContractAction>? {
         switch action {
         case .fetchContractBundles:
-            return giraffe.client.fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+            return giraffe.client
+                .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                 .valueThenEndSignal
                 .map { activeContractBundles in
                     ContractAction.setContractBundles(activeContractBundles: activeContractBundles)

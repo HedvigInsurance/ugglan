@@ -63,7 +63,7 @@ extension ApolloClient {
             return identifierForVendor.uuidString
         }
     }
-    
+
     static func createGiraffeClient() -> hGiraffe {
         let environment = Environment.current
 
@@ -101,10 +101,10 @@ extension ApolloClient {
         )
 
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
-        
+
         return hGiraffe(client: client, store: store)
     }
-    
+
     static func createOctopusClient() -> hOctopus {
         let environment = Environment.current
 
@@ -142,7 +142,7 @@ extension ApolloClient {
         )
 
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
-        
+
         return hOctopus(client: client, store: store)
     }
 

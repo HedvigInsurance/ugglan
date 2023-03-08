@@ -108,10 +108,11 @@ extension EmbarkMessages: Viewable {
         bag += state.edgePanGestureRecognizer?.signal(forState: .ended)
             .animated(style: .heavyBounce()) { view.transform = CGAffineTransform(translationX: 0, y: 0) }
 
-        let previousResponseSignal: ReadWriteSignal<(response: GiraffeGraphQL.ResponseFragment?, passageName: String?)?> =
-            ReadWriteSignal(
-                nil
-            )
+        let previousResponseSignal:
+            ReadWriteSignal<(response: GiraffeGraphQL.ResponseFragment?, passageName: String?)?> =
+                ReadWriteSignal(
+                    nil
+                )
 
         let messagesDataSignal = state.currentPassageSignal.map {
             passage -> [GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Message] in

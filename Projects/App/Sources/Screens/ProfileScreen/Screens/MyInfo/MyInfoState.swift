@@ -110,7 +110,10 @@ struct MyInfoState {
     func loadData() -> Disposable {
         let bag = DisposeBag()
 
-        let dataSignal = giraffe.client.watch(query: GiraffeGraphQL.MyInfoQuery(), cachePolicy: .returnCacheDataAndFetch)
+        let dataSignal = giraffe.client.watch(
+            query: GiraffeGraphQL.MyInfoQuery(),
+            cachePolicy: .returnCacheDataAndFetch
+        )
 
         bag += dataSignal.compactMap { $0.member.email }.bindTo(emailSignal)
         bag += dataSignal.compactMap { $0.member.phoneNumber }.bindTo(phoneNumberSignal)

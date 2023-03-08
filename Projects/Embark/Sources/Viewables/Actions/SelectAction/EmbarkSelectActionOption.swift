@@ -8,7 +8,8 @@ import hGraphQL
 
 struct EmbarkSelectActionOption {
     let state: EmbarkState
-    let data: GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option
+    let data:
+        GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction.SelectActionDatum.Option
     @ReadWriteState var isLoading = false
 }
 
