@@ -83,9 +83,36 @@ try! endpoints.forEach { name, endpoint in
         let hGraphQLSymlinkUrl = sourceUrl.appendingPathComponent("hGraphQL")
 
         let ishGraphQLFolder = folderUrl.absoluteString.contains("Projects/hGraphQL")
-
+        
         if !ishGraphQLFolder {
             try? FileManager.default.createSymbolicLink(at: hGraphQLSymlinkUrl, withDestinationURL: hGraphQLUrl)
+        } else {
+            sourceUrls.filter { url in
+                !url.absoluteString.contains("hGraphQL")
+            }.forEach { sourceUrl in
+                let hGraphQLSymlinkUrl = sourceUrl
+                    .appendingPathComponent(name.capitalized)
+                
+                var projectName: String {
+                    let pattern = "/Projects/([^/]+)/"
+                    let input = sourceUrl.absoluteString
+
+                    if let range = input.range(of: pattern, options: .regularExpression, range: nil, locale: nil) {
+                        let projectNameWithSlash = String(input[range])
+                        let projectName = projectNameWithSlash
+                            .replacingOccurrences(of: "/Projects/", with: "")
+                            .replacingOccurrences(of: "/", with: "")
+                        return projectName
+                    }
+                    
+                    fatalError("Couldn't find project name for \(sourceUrl)")
+                }
+                
+                try! FileManager.default.createSymbolicLink(
+                    at: hGraphQLUrl.appendingPathComponent(projectName),
+                    withDestinationURL: hGraphQLSymlinkUrl
+                )
+            }
         }
 
         let codegenOptions = ApolloCodegenOptions(
@@ -117,11 +144,13 @@ try! endpoints.forEach { name, endpoint in
 
                 return allhGraphQLFiles.first(where: { $0.lastPathComponent.contains(originalFileName) }) != nil
             }
-            .forEach { url in allGeneratedFiles.removeAll(where: { $0 == url })
+            .forEach { url in
+                allGeneratedFiles.removeAll(where: { $0 == url })
                 try? FileManager.default.removeItem(at: url)
             }
 
-            allGeneratedFiles.forEach { file in let fileHandle = try! FileHandle(forWritingTo: file)
+            allGeneratedFiles.forEach { file in
+                let fileHandle = try! FileHandle(forWritingTo: file)
                 fileHandle.seek(toFileOffset: 0)
                 let fileData = try! String(contentsOf: file, encoding: .utf8).data(using: .utf8)!
                 var data = "import hGraphQL\n".data(using: .utf8)!
