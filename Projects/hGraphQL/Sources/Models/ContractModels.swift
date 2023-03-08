@@ -7,7 +7,7 @@ public struct ActiveContractBundle: Codable, Equatable {
     public var crossSells: [CrossSell]
 
     public init(
-        bundle: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle
+        bundle: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle
     ) {
         contracts = bundle.contracts.map { .init(contract: $0) }
         movingFlowEmbarkId = bundle.angelStories.addressChangeV2
@@ -20,7 +20,7 @@ public struct IconEnvelope: Codable, Equatable, Hashable {
     public let dark: String
     public let light: String
     public init?(
-        fragment: GraphQL.IconFragment?
+        fragment: GiraffeGraphQL.IconFragment?
     ) {
         guard let fragment = fragment else { return nil }
         dark = fragment.variants.dark.pdfUrl
@@ -92,7 +92,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let upcomingAgreementDate: Date?
 
     init(
-        contract: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract
+        contract: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract
     ) {
         id = contract.id
         upcomingAgreementsTable = .init(
@@ -132,7 +132,7 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 
     public init(
-        contract: GraphQL.ContractsQuery.Data.Contract
+        contract: GiraffeGraphQL.ContractsQuery.Data.Contract
     ) {
         id = contract.id
         upcomingAgreementsTable = .init(
@@ -182,7 +182,7 @@ public struct UpcomingRenewal: Codable, Hashable {
     public let draftCertificateUrl: String?
 
     init(
-        upcomingRenewal: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract.UpcomingRenewal?
+        upcomingRenewal: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract.UpcomingRenewal?
     ) {
         renewalDate = upcomingRenewal?.renewalDate
         draftCertificateUrl = upcomingRenewal?.draftCertificateUrl
@@ -225,7 +225,7 @@ public struct DetailAgreementsTable: Codable, Hashable, Identifiable {
     public let sections: [Section]
     public let title: String
     public init(
-        fragment: GraphQL.DetailsTableFragment
+        fragment: GiraffeGraphQL.DetailsTableFragment
     ) {
         sections = fragment.sections.map { .init(section: $0) }
         title = fragment.title
@@ -247,7 +247,7 @@ public struct DetailAgreementsTable: Codable, Hashable, Identifiable {
         public let rows: [Row]
 
         init(
-            section: GraphQL.DetailsTableFragment.Section
+            section: GiraffeGraphQL.DetailsTableFragment.Section
         ) {
             title = section.title
             rows = section.rows.map { .init(row: $0) }
@@ -269,7 +269,7 @@ public struct DetailAgreementsTable: Codable, Hashable, Identifiable {
         public let subtitle: String?
         public let value: String
         init(
-            row: GraphQL.DetailsTableFragment.Section.Row
+            row: GiraffeGraphQL.DetailsTableFragment.Section.Row
         ) {
             title = row.title
             subtitle = row.subtitle
@@ -286,7 +286,7 @@ public struct Perils: Codable, Equatable, Hashable {
     public let exceptions: [String]
 
     public init(
-        fragment: GraphQL.PerilFragment
+        fragment: GiraffeGraphQL.PerilFragment
     ) {
         title = fragment.title
         description = fragment.description
@@ -302,7 +302,7 @@ public struct InsurableLimits: Codable, Hashable {
     public let description: String
 
     public init(
-        fragment: GraphQL.InsurableLimitFragment
+        fragment: GiraffeGraphQL.InsurableLimitFragment
     ) {
         label = fragment.label
         limit = fragment.limit
@@ -332,7 +332,7 @@ public struct CurrentAgreement: Codable, Hashable {
     public let status: ContractStatus?
 
     init?(
-        currentAgreement: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract.CurrentAgreement?
+        currentAgreement: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract.CurrentAgreement?
     ) {
         guard let currentAgreement = currentAgreement else {
             return nil
@@ -346,7 +346,7 @@ public struct CurrentAgreement: Codable, Hashable {
     }
 
     init?(
-        currentAgreement: GraphQL.ContractsQuery.Data.Contract.CurrentAgreement?
+        currentAgreement: GiraffeGraphQL.ContractsQuery.Data.Contract.CurrentAgreement?
     ) {
         guard let currentAgreement = currentAgreement else {
             return nil
@@ -385,7 +385,7 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
     }
 
     public init(
-        fragment: GraphQL.MonetaryAmountFragment
+        fragment: GiraffeGraphQL.MonetaryAmountFragment
     ) {
         amount = fragment.amount
         currency = fragment.currency

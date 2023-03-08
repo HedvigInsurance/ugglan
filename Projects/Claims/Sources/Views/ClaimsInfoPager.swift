@@ -33,7 +33,7 @@ extension ClaimsInfoPager: Presentable {
         let (viewController, future) = pager.materialize()
 
         client.fetch(
-            query: GraphQL.HowClaimsWorkQuery(
+            query: GiraffeGraphQL.HowClaimsWorkQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             )
         )

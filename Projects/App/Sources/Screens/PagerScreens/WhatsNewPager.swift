@@ -14,7 +14,7 @@ extension WhatsNewPager: FutureConditional {
 
     func getPages() -> Future<[PagerItem]> {
         client.fetch(
-            query: GraphQL.WhatsNewQuery(
+            query: GiraffeGraphQL.WhatsNewQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale(),
                 sinceVersion: lastNewsSeen
             )

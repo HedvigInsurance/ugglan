@@ -32,7 +32,7 @@ extension Profile: Presentable {
 
         form.appendSpacing(.custom(20))
 
-        let query = GraphQL.ProfileQuery()
+        let query = GiraffeGraphQL.ProfileQuery()
 
         bag += client.watch(query: query).bindTo(profileSection.dataSignal)
 

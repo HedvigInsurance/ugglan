@@ -27,7 +27,7 @@ extension PaymentHeaderNextCharge: Viewable {
 
         bag +=
             client.watch(
-                query: GraphQL.MyPaymentQuery(
+                query: GiraffeGraphQL.MyPaymentQuery(
                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
                 )
             )

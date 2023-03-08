@@ -148,13 +148,13 @@ internal struct MultiActionValue {
     var isValid = false
 }
 
-typealias EmbarkDropDownActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
+typealias EmbarkDropDownActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
     .MultiActionDatum.Component.AsEmbarkDropdownAction.DropDownActionDatum
 
-typealias EmbarkSwitchActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
+typealias EmbarkSwitchActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
     .MultiActionDatum.Component.AsEmbarkSwitchAction.SwitchActionDatum
 
-typealias EmbarkNumberMultiActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
+typealias EmbarkNumberMultiActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
     .MultiActionDatum.Component.AsEmbarkMultiActionNumberAction.NumberActionDatum
 
 internal typealias MultiActionStoreSignal = Signal<[String: MultiActionValue]>

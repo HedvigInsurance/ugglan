@@ -4,8 +4,8 @@ import Foundation
 import hCore
 import hGraphQL
 
-typealias SearchType = GraphQL.AddressAutocompleteType
-typealias SuggestionData = GraphQL.AddressAutocompleteQuery.Data
+typealias SearchType = GiraffeGraphQL.AddressAutocompleteType
+typealias SuggestionData = GiraffeGraphQL.AddressAutocompleteQuery.Data
 typealias AddressSuggestion = SuggestionData.AutoCompleteAddress
 
 enum AddressStoreKeys: String, CaseIterable {
@@ -52,8 +52,8 @@ extension AddressSuggestion {
 
 extension AddressSuggestion: Equatable {
     public static func == (
-        lhs: GraphQL.AddressAutocompleteQuery.Data.AutoCompleteAddress,
-        rhs: GraphQL.AddressAutocompleteQuery.Data.AutoCompleteAddress
+        lhs: GiraffeGraphQL.AddressAutocompleteQuery.Data.AutoCompleteAddress,
+        rhs: GiraffeGraphQL.AddressAutocompleteQuery.Data.AutoCompleteAddress
     ) -> Bool {
         // Note: in the Web implementation, all fields are compared. Should be enough with just address though
         return lhs.address == rhs.address
@@ -71,7 +71,7 @@ class AddressState {
         let queryParams = getApiQueryParams(searchTerm, suggestion)
         return self.client
             .fetch(
-                query: GraphQL.AddressAutocompleteQuery(
+                query: GiraffeGraphQL.AddressAutocompleteQuery(
                     input: queryParams.apiQuery,
                     type: queryParams.searchType
                 )
@@ -136,7 +136,7 @@ class AddressState {
         }
         return self.client
             .fetch(
-                query: GraphQL.AddressAutocompleteQuery(
+                query: GiraffeGraphQL.AddressAutocompleteQuery(
                     input: suggestion.address,
                     type: .apartment
                 )

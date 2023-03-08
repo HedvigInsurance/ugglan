@@ -9,13 +9,13 @@ public struct ForceAvailableLocales: View {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
 
-    @State private var availableLocales: [GraphQL.Locale] = [] {
+    @State private var availableLocales: [GiraffeGraphQL.Locale] = [] {
         didSet {
 
         }
     }
 
-    func bindingFor(_ locale: GraphQL.Locale) -> Binding<Bool> {
+    func bindingFor(_ locale: GiraffeGraphQL.Locale) -> Binding<Bool> {
         Binding<Bool>(
             get: { availableLocales.contains(locale) },
             set: { newValue in
@@ -28,7 +28,7 @@ public struct ForceAvailableLocales: View {
         )
     }
     public var body: some View {
-        ForEach(GraphQL.Locale.allCases, id: \.self) { locale in
+        ForEach(GiraffeGraphQL.Locale.allCases, id: \.self) { locale in
             Toggle(isOn: bindingFor(locale)) { Text(locale.rawValue) }.toggleStyle(CheckmarkToggleStyle())
         }
         .onAppear(perform: {

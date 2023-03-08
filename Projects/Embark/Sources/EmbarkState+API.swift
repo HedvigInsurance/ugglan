@@ -210,7 +210,7 @@ extension GraphQLMap {
     }
 }
 
-extension GraphQL.ApiSingleVariableFragment {
+extension GiraffeGraphQL.ApiSingleVariableFragment {
     func graphQLMap(currentMap: GraphQLMap, store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
@@ -228,7 +228,7 @@ extension GraphQL.ApiSingleVariableFragment {
     }
 }
 
-extension GraphQL.ApiGeneratedVariableFragment {
+extension GiraffeGraphQL.ApiGeneratedVariableFragment {
     func graphQLMap(currentMap: GraphQLMap, store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
@@ -245,7 +245,7 @@ extension GraphQL.ApiGeneratedVariableFragment {
     }
 }
 
-extension GraphQL.ApiMultiActionVariableFragment {
+extension GiraffeGraphQL.ApiMultiActionVariableFragment {
     func graphQLMapArray(store: EmbarkStore) -> [ResultMap] {
         var items: [ResultMap] = []
 
@@ -268,7 +268,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
             if let apiSingleVariableFragment = variable.fragments.apiSingleVariableFragment {
                 groupedMultiActionItems.enumerated()
                     .forEach { offset, _ in
-                        var nestedApiSingleVariableFragment = GraphQL.ApiSingleVariableFragment(
+                        var nestedApiSingleVariableFragment = GiraffeGraphQL.ApiSingleVariableFragment(
                             unsafeResultMap: apiSingleVariableFragment.resultMap
                         )
                         nestedApiSingleVariableFragment.from =
@@ -281,7 +281,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
             } else if let apiConstantVariableFragment = variable.fragments.apiConstantVariableFragment {
                 groupedMultiActionItems.enumerated()
                     .forEach { offset, _ in
-                        var nestedApiSingleVariableFragment = GraphQL.ApiSingleVariableFragment(
+                        var nestedApiSingleVariableFragment = GiraffeGraphQL.ApiSingleVariableFragment(
                             unsafeResultMap: apiConstantVariableFragment.resultMap
                         )
                         nestedApiSingleVariableFragment.from =
@@ -308,7 +308,7 @@ extension GraphQL.ApiMultiActionVariableFragment {
     }
 }
 
-extension GraphQL.ApiVariablesFragment {
+extension GiraffeGraphQL.ApiVariablesFragment {
     func graphQLMap(accumulatedMap: GraphQLMap, store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
@@ -336,7 +336,7 @@ extension GraphQL.ApiVariablesFragment {
     }
 }
 
-extension GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery.Datum {
+extension GiraffeGraphQL.ApiFragment.AsEmbarkApiGraphQlQuery.Datum {
     func graphQLVariables(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
@@ -350,7 +350,7 @@ extension GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery.Datum {
     }
 }
 
-extension GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
+extension GiraffeGraphQL.ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
     func graphQLVariables(store: EmbarkStore) -> GraphQLMap {
         var map = GraphQLMap()
 
@@ -364,23 +364,23 @@ extension GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation.Datum {
     }
 }
 
-extension GraphQL.ApiVariablesFragment: Comparable {
+extension GiraffeGraphQL.ApiVariablesFragment: Comparable {
     var key: String {
         return self.asEmbarkApiGraphQlConstantVariable?.key ?? self.asEmbarkApiGraphQlSingleVariable?.key
             ?? self.asEmbarkApiGraphQlGeneratedVariable?.key ?? self.asEmbarkApiGraphQlMultiActionVariable?.key ?? ""
     }
 
-    public static func < (lhs: GraphQL.ApiVariablesFragment, rhs: GraphQL.ApiVariablesFragment) -> Bool {
+    public static func < (lhs: GiraffeGraphQL.ApiVariablesFragment, rhs: GiraffeGraphQL.ApiVariablesFragment) -> Bool {
         return lhs.key < rhs.key
     }
 
-    public static func == (lhs: GraphQL.ApiVariablesFragment, rhs: GraphQL.ApiVariablesFragment) -> Bool {
+    public static func == (lhs: GiraffeGraphQL.ApiVariablesFragment, rhs: GiraffeGraphQL.ApiVariablesFragment) -> Bool {
         return lhs.key == rhs.key
     }
 }
 
 extension ResultMap {
-    func insertInto(store: EmbarkStore, basedOn query: GraphQL.ApiFragment.AsEmbarkApiGraphQlQuery) {
+    func insertInto(store: EmbarkStore, basedOn query: GiraffeGraphQL.ApiFragment.AsEmbarkApiGraphQlQuery) {
         query.data.queryResults.forEach { queryResult in
             let values = getValues(at: queryResult.key)
 
@@ -401,7 +401,7 @@ extension ResultMap {
         }
     }
 
-    func insertInto(store: EmbarkStore, basedOn mutation: GraphQL.ApiFragment.AsEmbarkApiGraphQlMutation) {
+    func insertInto(store: EmbarkStore, basedOn mutation: GiraffeGraphQL.ApiFragment.AsEmbarkApiGraphQlMutation) {
         mutation.data.mutationResults.compactMap { $0 }
             .forEach { mutationResult in
                 let values = getValues(at: mutationResult.key)
@@ -448,7 +448,7 @@ extension GraphQLMap {
 }
 
 extension EmbarkState {
-    func handleApi(apiFragment: GraphQL.ApiFragment) -> Future<GraphQL.EmbarkLinkFragment?> {
+    func handleApi(apiFragment: GiraffeGraphQL.ApiFragment) -> Future<GiraffeGraphQL.EmbarkLinkFragment?> {
         handleApiRequest(apiFragment: apiFragment)
             .mapResult { result in
                 switch result {
@@ -478,7 +478,7 @@ extension EmbarkState {
             }
     }
 
-    private func handleApiRequest(apiFragment: GraphQL.ApiFragment) -> Future<ResultMap?> {
+    private func handleApiRequest(apiFragment: GiraffeGraphQL.ApiFragment) -> Future<ResultMap?> {
         func performHTTPCall(_ query: String, variables: GraphQLMap) -> Future<ResultMap?> {
             var urlRequest = URLRequest(url: Environment.current.giraffeEndpointURL)
             urlRequest.httpMethod = "POST"

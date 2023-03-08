@@ -32,7 +32,7 @@ class ActionDelegate: NSObject, ActionComponentDelegate {
         else { return }
 
         client.perform(
-            mutation: GraphQL.AdyenAdditionalPaymentDetailsMutation(
+            mutation: GiraffeGraphQL.AdyenAdditionalPaymentDetailsMutation(
                 paymentConnectionID: store.state.paymentConnectionID ?? "",
                 req: detailsJson
             )

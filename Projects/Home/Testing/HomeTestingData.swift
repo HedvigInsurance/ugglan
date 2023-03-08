@@ -20,7 +20,7 @@ func addDaysToDate(_ days: Int = 30) -> Date {
 extension JSONObject {
     public static func makeActiveWithRenewal() -> JSONObject {
         combineMultiple([
-            GraphQL.HomeQuery
+            GiraffeGraphQL.HomeQuery
                 .Data(
                     member: .init(firstName: "Mock"),
                     contracts: [
@@ -41,7 +41,7 @@ extension JSONObject {
 
     public static func makeActiveWithMultipleRenewals() -> JSONObject {
         combineMultiple([
-            GraphQL.HomeQuery
+            GiraffeGraphQL.HomeQuery
                 .Data(
                     member: .init(firstName: "Mock"),
                     contracts: [
@@ -71,7 +71,7 @@ extension JSONObject {
 
     public static func makeActiveWithMultipleRenewalsOnSeparateDates() -> JSONObject {
         combineMultiple([
-            GraphQL.HomeQuery
+            GiraffeGraphQL.HomeQuery
                 .Data(
                     member: .init(firstName: "Mock"),
                     contracts: [
@@ -101,20 +101,20 @@ extension JSONObject {
 
     public static func makeActive() -> JSONObject {
         combineMultiple([
-            GraphQL.HomeQuery
+            GiraffeGraphQL.HomeQuery
                 .Data(
                     member: .init(firstName: "Mock"),
                     contracts: [.init(displayName: "Home insurance", status: .makeActiveStatus())]
                 )
                 .jsonObject,
-            GraphQL.HomeInsuranceProvidersQuery
+            GiraffeGraphQL.HomeInsuranceProvidersQuery
                 .Data(insuranceProviders: [.init(id: "hedvig", name: "Hedvig", switchable: true)]).jsonObject,
         ])
     }
 
     public static func makeActiveInFuture(switchable: Bool) -> JSONObject {
         combineMultiple([
-            GraphQL.HomeQuery
+            GiraffeGraphQL.HomeQuery
                 .Data(
                     member: .init(firstName: "Mock"),
                     contracts: [
@@ -127,14 +127,14 @@ extension JSONObject {
                     ]
                 )
                 .jsonObject,
-            GraphQL.HomeInsuranceProvidersQuery
+            GiraffeGraphQL.HomeInsuranceProvidersQuery
                 .Data(insuranceProviders: [.init(id: "hedvig", name: "Hedvig", switchable: switchable)]).jsonObject,
         ])
     }
 
     public static func makePending(switchable: Bool) -> JSONObject {
         combineMultiple([
-            GraphQL.HomeQuery
+            GiraffeGraphQL.HomeQuery
                 .Data(
                     member: .init(firstName: "Mock"),
                     contracts: [
@@ -146,14 +146,14 @@ extension JSONObject {
                     ]
                 )
                 .jsonObject,
-            GraphQL.HomeInsuranceProvidersQuery
+            GiraffeGraphQL.HomeInsuranceProvidersQuery
                 .Data(insuranceProviders: [.init(id: "hedvig", name: "Hedvig", switchable: switchable)]).jsonObject,
         ])
     }
 
     public static func makeTerminatedInTheFuture() -> JSONObject {
         combineMultiple([
-            GraphQL.HomeQuery
+            GiraffeGraphQL.HomeQuery
                 .Data(
                     member: .init(firstName: "Mock"),
                     contracts: [
@@ -170,7 +170,7 @@ extension JSONObject {
 
     public static func makeTerminated() -> JSONObject {
         combineMultiple([
-            GraphQL.HomeQuery
+            GiraffeGraphQL.HomeQuery
                 .Data(
                     member: .init(firstName: "Mock"),
                     contracts: [

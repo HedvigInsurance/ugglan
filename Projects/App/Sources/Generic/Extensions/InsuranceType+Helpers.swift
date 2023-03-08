@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-extension GraphQL.InsuranceType {
+extension GiraffeGraphQL.InsuranceType {
     var isStudent: Bool {
         switch self {
         case .studentBrf, .studentRent: return true

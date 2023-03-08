@@ -33,7 +33,7 @@ struct FileUpload {
 
         return Future { completion in
             client.upload(
-                operation: GraphQL.UploadFileMutation(file: "image"),
+                operation: GiraffeGraphQL.UploadFileMutation(file: "image"),
                 files: [file],
                 queue: DispatchQueue.global(qos: .background)
             )

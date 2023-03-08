@@ -30,7 +30,7 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
             return
                 client
                 .fetch(
-                    query: GraphQL.MyPaymentQuery(
+                    query: GiraffeGraphQL.MyPaymentQuery(
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()
                     )
                 )

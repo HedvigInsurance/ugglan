@@ -7,10 +7,10 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-typealias EmbarkNumberActionSetData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberActionSet
+typealias EmbarkNumberActionSetData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkNumberActionSet
     .Datum
 
-typealias EmbarkTextActionSetData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextActionSet
+typealias EmbarkTextActionSetData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkTextActionSet
     .TextActionSetDatum
 
 struct EmbarkNumberActionSet {
@@ -61,13 +61,13 @@ struct EmbarkActionSetInputData {
     }
 
     var actions: [Action]
-    let link: GraphQL.EmbarkLinkFragment
-    let api: GraphQL.ApiFragment?
+    let link: GiraffeGraphQL.EmbarkLinkFragment
+    let api: GiraffeGraphQL.ApiFragment?
     let state: EmbarkState
 }
 
 extension EmbarkActionSetInputData: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GiraffeGraphQL.EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
         view.spacing = 10

@@ -58,7 +58,7 @@ extension PaymentHeaderCard: Viewable {
 
         let dataSignal =
             client.fetch(
-                query: GraphQL.MyPaymentQuery(
+                query: GiraffeGraphQL.MyPaymentQuery(
                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
                 )
             )

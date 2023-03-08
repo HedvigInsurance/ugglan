@@ -129,15 +129,15 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
     @Inject var client: ApolloClient
     @Inject var store: ApolloStore
 
-    func query(for ids: [String]) -> GraphQL.QuoteBundleQuery {
-        GraphQL.QuoteBundleQuery(
+    func query(for ids: [String]) -> GiraffeGraphQL.QuoteBundleQuery {
+        GiraffeGraphQL.QuoteBundleQuery(
             ids: ids,
             locale: Localization.Locale.currentLocale.asGraphQLLocale()
         )
     }
 
-    func query(for quoteCart: String) -> GraphQL.QuoteCartQuery {
-        GraphQL.QuoteCartQuery(
+    func query(for quoteCart: String) -> GiraffeGraphQL.QuoteCartQuery {
+        GiraffeGraphQL.QuoteCartQuery(
             locale: Localization.Locale.currentLocale.asGraphQLLocale(),
             id: quoteCart
         )
@@ -265,7 +265,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             }
         case .fetchAccessToken:
             if let quoteCartId = getState().quoteCartId {
-                return self.client.perform(mutation: GraphQL.CreateAccessTokenMutation(id: quoteCartId))
+                return self.client.perform(mutation: GiraffeGraphQL.CreateAccessTokenMutation(id: quoteCartId))
                     .compactMap { data in
                         data.quoteCartCreateAccessToken.accessToken
                     }
@@ -278,7 +278,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             if let quoteCartId = getState().quoteCartId {
                 return self.client
                     .perform(
-                        mutation: GraphQL.QuoteCartSetPaymentConnectionIdMutation(
+                        mutation: GiraffeGraphQL.QuoteCartSetPaymentConnectionIdMutation(
                             id: quoteCartId,
                             paymentConnectionID: paymentConnectionID,
                             locale: Localization.Locale.currentLocale.asGraphQLLocale()
@@ -428,14 +428,14 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
 
 // Old offer state refactored
 extension OfferStore {
-    typealias Campaign = GraphQL.QuoteBundleQuery.Data.RedeemedCampaign
+    typealias Campaign = GiraffeGraphQL.QuoteBundleQuery.Data.RedeemedCampaign
 
     private func updateRedeemedCampaigns(discountCode: String, quoteCartId: String?) -> FiniteSignal<OfferAction>? {
         if let quoteCartId = quoteCartId {
             return self
                 .client
                 .perform(
-                    mutation: GraphQL.QuoteCartRedeemCampaignMutation(
+                    mutation: GiraffeGraphQL.QuoteCartRedeemCampaignMutation(
                         code: discountCode,
                         id: quoteCartId,
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()
@@ -451,7 +451,7 @@ extension OfferStore {
         } else {
             return self.client
                 .perform(
-                    mutation: GraphQL.RedeemDiscountCodeMutation(
+                    mutation: GiraffeGraphQL.RedeemDiscountCodeMutation(
                         code: discountCode,
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()
                     )
@@ -471,7 +471,7 @@ extension OfferStore {
         if let quoteCartId = quoteCartId {
             return self.client
                 .perform(
-                    mutation: GraphQL.QuoteCartRemoveCampaignMutation(
+                    mutation: GiraffeGraphQL.QuoteCartRemoveCampaignMutation(
                         id: quoteCartId,
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()
                     )
@@ -487,7 +487,7 @@ extension OfferStore {
                 }
                 .valueThenEndSignal
         } else {
-            return self.client.perform(mutation: GraphQL.RemoveDiscountMutation())
+            return self.client.perform(mutation: GiraffeGraphQL.RemoveDiscountMutation())
                 .map { data in
                     .didRemoveCampaigns
                 }

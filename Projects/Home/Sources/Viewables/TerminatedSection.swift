@@ -25,7 +25,7 @@ extension TerminatedSection: Presentable {
 
         section.appendSpacing(.inbetween)
 
-        client.fetch(query: GraphQL.HomeQuery())
+        client.fetch(query: GiraffeGraphQL.HomeQuery())
             .onValue { data in
                 titleLabel.value = L10n.HomeTab.terminatedWelcomeTitle(data.member.firstName ?? "")
             }

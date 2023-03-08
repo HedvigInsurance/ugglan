@@ -21,7 +21,7 @@ class SlackBot {
         memberDetails: MemberDetails
     ) -> Future<Bool> {
         client.fetch(
-            query: GraphQL.SlackDetailsQuery()
+            query: GiraffeGraphQL.SlackDetailsQuery()
         )
         .compactMap { result in
             var request = URLRequest(url: self.url)

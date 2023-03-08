@@ -185,7 +185,7 @@ extension Home: Presentable {
 
         bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
             .mapLatestToFuture { _ in
-                self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
+                self.client.fetch(query: GiraffeGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
             }
             .nil()
 

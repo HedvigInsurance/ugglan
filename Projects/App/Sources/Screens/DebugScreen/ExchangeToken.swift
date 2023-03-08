@@ -33,7 +33,7 @@ struct ExchangeToken: View {
                         ?? ""
 
                     client.perform(
-                        mutation: GraphQL.ExchangeTokenMutation(
+                        mutation: GiraffeGraphQL.ExchangeTokenMutation(
                             exchangeToken: exchangeToken.removingPercentEncoding ?? ""
                         )
                     )

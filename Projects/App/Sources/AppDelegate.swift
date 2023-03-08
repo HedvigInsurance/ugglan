@@ -219,7 +219,7 @@ import hGraphQL
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
 
-        hGraphQL.log = Logger.builder
+        hGiraffeGraphQL.log = Logger.builder
             .sendNetworkInfo(true)
             .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
             .build()

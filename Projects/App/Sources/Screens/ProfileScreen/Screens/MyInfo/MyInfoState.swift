@@ -49,7 +49,7 @@ struct MyInfoState {
 
                     innerBag += self.client
                         .perform(
-                            mutation: GraphQL.UpdatePhoneNumberMutation(
+                            mutation: GiraffeGraphQL.UpdatePhoneNumberMutation(
                                 phoneNumber: phoneNumber
                             )
                         )
@@ -79,11 +79,11 @@ struct MyInfoState {
                     let innerBag = bag.innerBag()
 
                     innerBag += self.client
-                        .perform(mutation: GraphQL.UpdateEmailMutation(email: email))
+                        .perform(mutation: GiraffeGraphQL.UpdateEmailMutation(email: email))
                         .onValue { _ in completion(.success)
 
-                            self.store.update(query: GraphQL.MyInfoQuery()) {
-                                (data: inout GraphQL.MyInfoQuery.Data) in
+                            self.store.update(query: GiraffeGraphQL.MyInfoQuery()) {
+                                (data: inout GiraffeGraphQL.MyInfoQuery.Data) in
                                 data.member.email = email
                             }
                         }
@@ -111,7 +111,7 @@ struct MyInfoState {
     func loadData() -> Disposable {
         let bag = DisposeBag()
 
-        let dataSignal = client.watch(query: GraphQL.MyInfoQuery(), cachePolicy: .returnCacheDataAndFetch)
+        let dataSignal = client.watch(query: GiraffeGraphQL.MyInfoQuery(), cachePolicy: .returnCacheDataAndFetch)
 
         bag += dataSignal.compactMap { $0.member.email }.bindTo(emailSignal)
         bag += dataSignal.compactMap { $0.member.phoneNumber }.bindTo(phoneNumberSignal)

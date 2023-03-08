@@ -12,10 +12,10 @@ public struct ApplyDiscount {
     @Inject var client: ApolloClient
 
     private let didRedeemValidCodeCallbacker = Callbacker<
-        GraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult
+        GiraffeGraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult
     >()
 
-    public var didRedeemValidCodeSignal: Signal<GraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult> {
+    public var didRedeemValidCodeSignal: Signal<GiraffeGraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult> {
         didRedeemValidCodeCallbacker.providedSignal
     }
 
@@ -104,7 +104,7 @@ extension ApplyDiscount: Presentable {
 
                         self.client
                             .perform(
-                                mutation: GraphQL.RedeemCodeMutation(
+                                mutation: GiraffeGraphQL.RedeemCodeMutation(
                                     code: discountCode,
                                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
                                 )

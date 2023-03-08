@@ -110,7 +110,7 @@ extension DirectDebitSetup: Presentable {
 
             webView.trackOnAppear(hAnalyticsEvent.screenView(screen: .connectPaymentTrustly))
 
-            bag += client.perform(mutation: GraphQL.StartDirectDebitRegistrationMutation()).valueSignal
+            bag += client.perform(mutation: GiraffeGraphQL.StartDirectDebitRegistrationMutation()).valueSignal
                 .compactMap { $0.startDirectDebitRegistration }
                 .onValue { startDirectDebitRegistration in
                     webView.load(URLRequest(url: URL(string: startDirectDebitRegistration)!))
@@ -186,11 +186,11 @@ extension DirectDebitSetup: Presentable {
 
                     switch type {
                     case .success:
-                        client.fetch(query: GraphQL.PayInMethodStatusQuery())
+                        client.fetch(query: GiraffeGraphQL.PayInMethodStatusQuery())
                             .onValue { _ in
                                 client.store.update(
-                                    query: GraphQL.PayInMethodStatusQuery()
-                                ) { (data: inout GraphQL.PayInMethodStatusQuery.Data) in
+                                    query: GiraffeGraphQL.PayInMethodStatusQuery()
+                                ) { (data: inout GiraffeGraphQL.PayInMethodStatusQuery.Data) in
                                     data.payinMethodStatus = .pending
                                 }
                             }
@@ -232,7 +232,7 @@ extension DirectDebitSetup: Presentable {
                 bag += NotificationCenter.default.signal(forName: .applicationWillTerminate)
                     .onValue { _ in
                         client
-                            .perform(mutation: GraphQL.CancelDirectDebitRequestMutation())
+                            .perform(mutation: GiraffeGraphQL.CancelDirectDebitRequestMutation())
                             .sink()
                     }
 

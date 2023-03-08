@@ -71,7 +71,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             return
                 client
                 .fetch(
-                    query: GraphQL.ClaimStatusCardsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+                    query: GiraffeGraphQL.ClaimStatusCardsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
                     cachePolicy: .fetchIgnoringCacheData
                 )
                 .compactMap {
@@ -84,7 +84,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case .fetchCommonClaims:
             return
                 client.fetch(
-                    query: GraphQL.CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                    query: GiraffeGraphQL.CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                 )
                 .map { data in
                     let commonClaims = data.commonClaims.map {

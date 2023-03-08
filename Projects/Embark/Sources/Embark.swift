@@ -172,7 +172,7 @@ extension Embark: Presentable {
 
         bag +=
             client.fetch(
-                query: GraphQL.EmbarkStoryQuery(
+                query: GiraffeGraphQL.EmbarkStoryQuery(
                     name: name,
                     locale: Localization.Locale.currentLocale.code
                 ),
@@ -181,7 +181,7 @@ extension Embark: Presentable {
             .valueSignal.compactMap { $0.embarkStory }
             .onValue { embarkStory in
                 client.perform(
-                    mutation: GraphQL.CreateQuoteCartMutation(
+                    mutation: GiraffeGraphQL.CreateQuoteCartMutation(
                         input: .init(
                             market: Localization.Locale.currentLocale.market.graphQL,
                             locale: Localization.Locale.currentLocale.code

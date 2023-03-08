@@ -25,7 +25,7 @@ extension ConnectPaymentCard: Presentable {
             }
         }
 
-        bag += client.watch(query: GraphQL.PayInMethodStatusQuery()).map { $0.payinMethodStatus }.distinct()
+        bag += client.watch(query: GiraffeGraphQL.PayInMethodStatusQuery()).map { $0.payinMethodStatus }.distinct()
             .onValueDisposePrevious { status -> Disposable? in let bag = DisposeBag()
 
                 if status == .needsSetup {

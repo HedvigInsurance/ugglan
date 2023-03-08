@@ -21,7 +21,7 @@ extension PaymentDetailsSection: Viewable {
         let bag = DisposeBag()
 
         let dataSignal = client.watch(
-            query: GraphQL.MyPaymentQuery(
+            query: GiraffeGraphQL.MyPaymentQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             ),
             cachePolicy: .returnCacheDataAndFetch
@@ -77,10 +77,10 @@ extension PaymentDetailsSection: Viewable {
 
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
                 self.store.update(
-                    query: GraphQL.MyPaymentQuery(
+                    query: GiraffeGraphQL.MyPaymentQuery(
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()
                     ),
-                    updater: { (data: inout GraphQL.MyPaymentQuery.Data) in
+                    updater: { (data: inout GiraffeGraphQL.MyPaymentQuery.Data) in
                         if let costFragment = result.cost?.fragments.costFragment {
                             data.insuranceCost?.fragments.costFragment = costFragment
                         }

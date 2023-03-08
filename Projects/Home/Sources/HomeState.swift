@@ -37,7 +37,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         case .fetchMemberState:
             return
                 client
-                .fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
+                .fetch(query: GiraffeGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
                 .map { data in
                     .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))
                 }
@@ -74,7 +74,7 @@ public enum MemberContractState: String, Codable, Equatable {
     case loading
 }
 
-extension GraphQL.HomeQuery.Data {
+extension GiraffeGraphQL.HomeQuery.Data {
     fileprivate var homeState: MemberContractState {
         if isFuture {
             return .future

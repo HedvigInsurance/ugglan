@@ -25,7 +25,7 @@ extension MyPayment: Presentable {
         store.send(.load)
 
         let dataSignal = client.watch(
-            query: GraphQL.MyPaymentQuery(
+            query: GiraffeGraphQL.MyPaymentQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             )
         )
@@ -40,7 +40,7 @@ extension MyPayment: Presentable {
             bag += scrollView.performEntryAnimation(
                 contentView: form,
                 onLoad: client.fetch(
-                    query: GraphQL.MyPaymentQuery(
+                    query: GiraffeGraphQL.MyPaymentQuery(
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()
                     )
                 ),

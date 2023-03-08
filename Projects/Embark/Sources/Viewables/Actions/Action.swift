@@ -10,7 +10,7 @@ import hGraphQL
 struct Action { let state: EmbarkState }
 
 struct ActionResponse {
-    let link: GraphQL.EmbarkLinkFragment
+    let link: GiraffeGraphQL.EmbarkLinkFragment
     let data: ActionResponseData
 }
 
@@ -21,7 +21,7 @@ struct ActionResponseData {
 }
 
 extension Action: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GiraffeGraphQL.EmbarkLinkFragment>) {
         let bag = DisposeBag()
 
         let outerContainer = UIStackView()
@@ -137,7 +137,7 @@ extension Action: Viewable {
 
                         let hasCallbackedSignal = ReadWriteSignal<Bool>(false)
 
-                        func performCallback(_ link: GraphQL.EmbarkLinkFragment) {
+                        func performCallback(_ link: GiraffeGraphQL.EmbarkLinkFragment) {
                             if !hasCallbackedSignal.value {
                                 hasCallbackedSignal.value = true
                                 callback(link)

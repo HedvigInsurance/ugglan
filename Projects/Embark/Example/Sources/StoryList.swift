@@ -54,7 +54,7 @@ extension StoryList: Presentable {
             )
         }
 
-        bag += client.fetch(query: GraphQL.EmbarkStoryNamesQuery()).valueSignal.map { $0.embarkStoryNames }
+        bag += client.fetch(query: GiraffeGraphQL.EmbarkStoryNamesQuery()).valueSignal.map { $0.embarkStoryNames }
             .compactMap { $0 }.map { $0.map { value in StringRow(value: value) } }
             .onValue { storyNames in tableKit.set(Table(rows: storyNames)) }
 

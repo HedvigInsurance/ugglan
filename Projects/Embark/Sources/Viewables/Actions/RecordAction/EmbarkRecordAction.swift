@@ -42,7 +42,7 @@ struct EmbarkRecorderTracking {
 }
 
 struct EmbarkRecordAction: View {
-    let data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.AudioRecorderDatum
+    let data: GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkAudioRecorderAction.AudioRecorderDatum
     var tracking: EmbarkRecorderTracking
     @ObservedObject var audioRecorder: AudioRecorder
     let onSubmit: (_ url: URL) -> Void

@@ -18,7 +18,7 @@ extension ImportantMessagesSection: Viewable {
         sectionView.dynamicStyle = .brandGroupedCaution
         outerSection.append(sectionView)
 
-        client.fetch(query: GraphQL.ImportantMessagesQuery(langCode: Localization.Locale.currentLocale.code))
+        client.fetch(query: GiraffeGraphQL.ImportantMessagesQuery(langCode: Localization.Locale.currentLocale.code))
             .compactMap { $0.importantMessages.first }.compactMap { $0 }
             .onValue { importantMessage in let row = RowView()
                 bag += row.append(

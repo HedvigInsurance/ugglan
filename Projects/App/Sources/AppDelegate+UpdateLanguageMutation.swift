@@ -25,7 +25,7 @@ extension AppDelegate {
         let locale = Localization.Locale.currentLocale
         let client: ApolloClient = Dependencies.shared.resolve()
         client.perform(
-            mutation: GraphQL.UpdateLanguageMutation(
+            mutation: GiraffeGraphQL.UpdateLanguageMutation(
                 language: locale.code,
                 pickedLocale: locale.asGraphQLLocale()
             )

@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public typealias Tooltip = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Tooltip
+public typealias Tooltip = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Tooltip
 
 struct EmbarkTooltips { let tooltips: [Tooltip] }
 

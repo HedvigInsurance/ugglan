@@ -7,7 +7,7 @@ import hGraphQL
 struct EmbarkMessages { let state: EmbarkState }
 
 extension EmbarkMessages: Viewable {
-    func parseMessage(message: GraphQL.MessageFragment) -> String? {
+    func parseMessage(message: GiraffeGraphQL.MessageFragment) -> String? {
         if message.expressions.isEmpty {
             return message.text
         }
@@ -15,7 +15,7 @@ extension EmbarkMessages: Viewable {
         return parse(message.expressions.map { $0.fragments.expressionFragment })
     }
 
-    func parse(_ expressions: [GraphQL.ExpressionFragment]) -> String? {
+    func parse(_ expressions: [GiraffeGraphQL.ExpressionFragment]) -> String? {
         guard
             let expression = expressions.first(where: { fragment in
                 self.state.store.passes(expression: fragment)
@@ -108,13 +108,13 @@ extension EmbarkMessages: Viewable {
         bag += state.edgePanGestureRecognizer?.signal(forState: .ended)
             .animated(style: .heavyBounce()) { view.transform = CGAffineTransform(translationX: 0, y: 0) }
 
-        let previousResponseSignal: ReadWriteSignal<(response: GraphQL.ResponseFragment?, passageName: String?)?> =
+        let previousResponseSignal: ReadWriteSignal<(response: GiraffeGraphQL.ResponseFragment?, passageName: String?)?> =
             ReadWriteSignal(
                 nil
             )
 
         let messagesDataSignal = state.currentPassageSignal.map {
-            passage -> [GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Message] in
+            passage -> [GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Message] in
             if passage?.api?.fragments.apiFragment != nil {
                 return []
             }
@@ -124,13 +124,13 @@ extension EmbarkMessages: Viewable {
 
         let responseDataSignal = state.currentPassageSignal.map { $0?.response.fragments.responseFragment }
 
-        func mapItems(item: GraphQL.ResponseFragment.AsEmbarkGroupedResponse.Item) -> String {
+        func mapItems(item: GiraffeGraphQL.ResponseFragment.AsEmbarkGroupedResponse.Item) -> String {
             let msgText = parse(item.expressions.map { $0.fragments.expressionFragment })
             let responseText = replacePlaceholders(message: msgText ?? item.text)
             return responseText
         }
 
-        func configureEach(each: GraphQL.ResponseFragment.AsEmbarkGroupedResponse.Each?) -> [String] {
+        func configureEach(each: GiraffeGraphQL.ResponseFragment.AsEmbarkGroupedResponse.Each?) -> [String] {
             guard let each = each else { return [] }
             let msgText = parse(each.content.expressions.map { $0.fragments.expressionFragment })
             let storeItems = state.store.getMultiActionItems(actionKey: each.key)

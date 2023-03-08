@@ -8,7 +8,7 @@ extension OfferStore {
     internal func requestQuoteCartSign(quoteCartId: String, ids: [String]) -> FiniteSignal<OfferAction>? {
         return self.client
             .perform(
-                mutation: GraphQL.SignQuoteCartMutation(
+                mutation: GiraffeGraphQL.SignQuoteCartMutation(
                     quoteCartId: quoteCartId,
                     quoteIds: ids,
                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
@@ -34,7 +34,7 @@ extension OfferStore {
             let encodedString = String(data: data, encoding: .utf8)
         else { return nil }
 
-        let mutation = GraphQL.QuoteCartEditQuoteMutation(
+        let mutation = GiraffeGraphQL.QuoteCartEditQuoteMutation(
             quoteCartId: id,
             quoteId: quoteVariant.id,
             payload: encodedString,

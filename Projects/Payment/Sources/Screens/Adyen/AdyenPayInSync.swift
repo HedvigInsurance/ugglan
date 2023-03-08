@@ -40,7 +40,7 @@ extension AdyenPayInSync: Presentable {
         return (
             viewController,
             FiniteSignal { callback in
-                client.fetch(query: GraphQL.ActivePaymentMethodsQuery())
+                client.fetch(query: GiraffeGraphQL.ActivePaymentMethodsQuery())
                     .onError({ error in
                         print(error)
                     })

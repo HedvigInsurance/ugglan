@@ -104,7 +104,7 @@ extension AttachGIFPane: Viewable {
 
         bag +=
             searchBarValue.mapLatestToFuture { value in
-                self.client.fetch(query: GraphQL.GifQuery(query: value))
+                self.client.fetch(query: GiraffeGraphQL.GifQuery(query: value))
             }
             .compactMap { data in data.gifs.compactMap { $0 } }
             .onValue { gifs in

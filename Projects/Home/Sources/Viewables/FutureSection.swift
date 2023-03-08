@@ -25,9 +25,9 @@ extension FutureSection: Viewable {
         bag += section.append(subtitleLabel)
 
         bag += combineLatest(
-            client.fetch(query: GraphQL.HomeQuery()).valueSignal,
+            client.fetch(query: GiraffeGraphQL.HomeQuery()).valueSignal,
             client.fetch(
-                query: GraphQL.HomeInsuranceProvidersQuery(
+                query: GiraffeGraphQL.HomeInsuranceProvidersQuery(
                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
                 )
             )

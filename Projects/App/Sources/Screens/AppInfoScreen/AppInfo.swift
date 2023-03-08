@@ -129,7 +129,7 @@ extension AppInfo: Presentable {
                 case .market: completion(.success(Localization.Locale.currentLocale.market.marketName))
                 case .version: completion(.success(Bundle.main.appVersion))
                 case .memberId:
-                    innerBag += client.fetch(query: GraphQL.MemberIdQuery()).valueSignal
+                    innerBag += client.fetch(query: GiraffeGraphQL.MemberIdQuery()).valueSignal
                         .compactMap { $0.member.id }
                         .onValue { memberId in completion(.success(memberId)) }
                 case .deviceId:
@@ -196,7 +196,7 @@ extension AppInfo: Presentable {
 
             bag +=
                 client.fetch(
-                    query: GraphQL.MemberDetailsQuery(),
+                    query: GiraffeGraphQL.MemberDetailsQuery(),
                     cachePolicy: .returnCacheDataElseFetch,
                     queue: .global(qos: .background)
                 )

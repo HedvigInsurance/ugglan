@@ -89,7 +89,7 @@ try! endpoints.forEach { name, endpoint in
         }
 
         let codegenOptions = ApolloCodegenOptions(
-            namespace: "GraphQL",
+            namespace: "\(name.capitalized)GraphQL",
             outputFormat: .multipleFiles(inFolderAtURL: folderUrl),
             urlToSchemaFile: cliFolderURL.appendingPathComponent("introspection_response.json")
         )
@@ -154,6 +154,15 @@ try! endpoints.forEach { name, endpoint in
             }
             .filter { !$0.lastPathComponent.contains("Types.graphql.swift") }
             .forEach { url in try? FileManager.default.removeItem(at: url) }
+            
+            allGeneratedFiles
+            .filter { $0.lastPathComponent.contains("Types.graphql.swift") }
+            .forEach { typesFileUrl in
+                let destination = typesFileUrl
+                    .deletingLastPathComponent()
+                    .appendingPathComponent("\(name.capitalized)Types.graphql.swift")
+                try! FileManager.default.moveItem(at: typesFileUrl, to: destination)
+            }
         }
 
         try? FileManager.default.removeItem(at: hGraphQLSymlinkUrl)

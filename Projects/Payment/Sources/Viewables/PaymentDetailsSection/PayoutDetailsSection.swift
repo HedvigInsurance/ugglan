@@ -21,7 +21,7 @@ extension PayoutDetailsSection: Viewable {
         section.isHidden = true
 
         let dataSignal = client.watch(
-            query: GraphQL.ActivePayoutMethodsQuery(),
+            query: GiraffeGraphQL.ActivePayoutMethodsQuery(),
             cachePolicy: .returnCacheDataAndFetch
         )
 

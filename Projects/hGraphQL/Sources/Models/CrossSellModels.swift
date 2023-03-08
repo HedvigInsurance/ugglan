@@ -12,7 +12,7 @@ public struct CrossSellInfo: Codable, Equatable {
 
     init(
         headerImageURL: URL,
-        _ data: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info
+        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info
     ) {
         self.title = data.displayName
         self.about = data.aboutSection
@@ -79,7 +79,7 @@ public struct CrossSell: Codable, Equatable {
     }
 
     init?(
-        _ data: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell
+        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell
     ) {
         title = data.title
         description = data.description
