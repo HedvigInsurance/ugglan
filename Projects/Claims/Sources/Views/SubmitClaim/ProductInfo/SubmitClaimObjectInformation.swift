@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import hCore
 import hCoreUI
@@ -64,12 +65,16 @@ public struct SubmitClaimObjectInformation: View {
                         hText(Localization.Locale.currentLocale.market.currencyCode)
                     }
 
-                    hTextField(masking: currencyMasking, value: $purchasePrice)
-                        .keyboardType(.default)
+                    TextField("", text: $purchasePrice)
                         .multilineTextAlignment(.trailing)
                         .padding(.trailing, 40)
-                        .padding(.top, 8.0)
-                        .border(.clear)
+                        .keyboardType(.numberPad)
+                        .onReceive(Just(purchasePrice)) { newValue in
+                            let filteredNumbers = newValue.filter { "0123456789".contains($0) }
+                            if filteredNumbers != newValue {
+                                self.purchasePrice = filteredNumbers
+                            }
+                        }
                 }
             }
             .frame(height: 64)
