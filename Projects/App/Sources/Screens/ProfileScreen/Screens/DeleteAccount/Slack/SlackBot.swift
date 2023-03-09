@@ -20,35 +20,37 @@ class SlackBot {
     func postSlackMessage(
         memberDetails: MemberDetails
     ) -> Future<Bool> {
-        giraffe.client.fetch(
-            query: GiraffeGraphQL.SlackDetailsQuery()
-        )
-        .compactMap { result in
-            var request = URLRequest(url: self.url)
-
-            request.httpMethod = "POST"
-            request.allHTTPHeaderFields = [
-                "Authorization": "Bearer xoxb-" + result.slackDetails.token,
-                "Content-Type": "application/json",
-            ]
-
-            let stagingSlackChannelId: String = "C03L32WF6JD"
-            let requestBody = self.generatePostMessageBody(
-                memberDetails: memberDetails,
-                channelID: Environment.current == .production ? result.slackDetails.channelId : stagingSlackChannelId
+        giraffe.client
+            .fetch(
+                query: GiraffeGraphQL.SlackDetailsQuery()
             )
+            .compactMap { result in
+                var request = URLRequest(url: self.url)
 
-            do {
-                request.httpBody = try JSONEncoder().encode(requestBody)
-            } catch let error {
-                throw SlackError.requestError(description: error.localizedDescription)
+                request.httpMethod = "POST"
+                request.allHTTPHeaderFields = [
+                    "Authorization": "Bearer xoxb-" + result.slackDetails.token,
+                    "Content-Type": "application/json",
+                ]
+
+                let stagingSlackChannelId: String = "C03L32WF6JD"
+                let requestBody = self.generatePostMessageBody(
+                    memberDetails: memberDetails,
+                    channelID: Environment.current == .production
+                        ? result.slackDetails.channelId : stagingSlackChannelId
+                )
+
+                do {
+                    request.httpBody = try JSONEncoder().encode(requestBody)
+                } catch let error {
+                    throw SlackError.requestError(description: error.localizedDescription)
+                }
+
+                return request
             }
-
-            return request
-        }
-        .flatMap {
-            self.slackNetworkRequest(request: $0)
-        }
+            .flatMap {
+                self.slackNetworkRequest(request: $0)
+            }
     }
 
     private func slackNetworkRequest(request: URLRequest) -> Future<Bool> {
