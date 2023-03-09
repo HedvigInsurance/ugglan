@@ -13,7 +13,7 @@ class ChatState {
     private let bag = DisposeBag()
     private let subscriptionBag = DisposeBag()
     private let editBag = DisposeBag()
-    @Inject private var client: ApolloClient
+    @Inject private var giraffe: hGiraffe
     private var handledGlobalIds: [GraphQLID] = []
     private var hasShownStatusMessage = false
     var allowNewMessageToast = true
@@ -24,7 +24,7 @@ class ChatState {
     let tableSignal: ReadSignal<Table<EmptySection, ChatListContent>>
     let filteredListSignal: ReadSignal<[ChatListContent]>
 
-    private func parseMessage(message: GraphQL.MessageData) -> [ChatListContent] {
+    private func parseMessage(message: GiraffeGraphQL.MessageData) -> [ChatListContent] {
         var result: [ChatListContent] = []
         let newMessage = Message(from: message, listSignal: filteredListSignal)
 
@@ -41,7 +41,7 @@ class ChatState {
         return result
     }
 
-    private func handleFirstMessage(message: GraphQL.MessageData) {
+    private func handleFirstMessage(message: GiraffeGraphQL.MessageData) {
         if message.body.asMessageBodyParagraph != nil {
             bag += Signal(after: TimeInterval(Double(message.header.pollingInterval) / 1000))
                 .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
@@ -75,13 +75,14 @@ class ChatState {
 
     func fetch(cachePolicy: CachePolicy = .returnCacheDataAndFetch, hasFetched: @escaping () -> Void = {}) {
         bag +=
-            client.fetch(
-                query: GraphQL.ChatMessagesQuery(),
+            giraffe.client
+            .fetch(
+                query: GiraffeGraphQL.ChatMessagesQuery(),
                 cachePolicy: cachePolicy,
                 queue: DispatchQueue.global(qos: .background)
             )
             .valueSignal
-            .compactMap(on: .concurrentBackground) { data -> [GraphQL.MessageData]? in
+            .compactMap(on: .concurrentBackground) { data -> [GiraffeGraphQL.MessageData]? in
                 data.messages.compactMap { message in message?.fragments.messageData }
             }
             .map { messages in
@@ -109,11 +110,12 @@ class ChatState {
             }
     }
 
-    @discardableResult func subscribe() -> CoreSignal<Plain.DropReadWrite, GraphQL.MessageData> {
+    @discardableResult func subscribe() -> CoreSignal<Plain.DropReadWrite, GiraffeGraphQL.MessageData> {
         subscriptionBag.dispose()
         let signal =
-            client.subscribe(
-                subscription: GraphQL.ChatMessagesSubscriptionSubscription(),
+            giraffe.client
+            .subscribe(
+                subscription: GiraffeGraphQL.ChatMessagesSubscriptionSubscription(),
                 queue: DispatchQueue.global(qos: .background)
             )
             .compactMap(on: .concurrentBackground) { $0.message.fragments.messageData }
@@ -136,16 +138,16 @@ class ChatState {
     func reset() {
         handledGlobalIds = []
         listSignal.value = []
-        bag += client.perform(mutation: GraphQL.TriggerResetChatMutation())
+        bag += giraffe.client.perform(mutation: GiraffeGraphQL.TriggerResetChatMutation())
             .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
     }
 
     func sendSingleSelectResponse(selectedValue: GraphQLID) {
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
             .onValue { globalId in
-                self.bag += self.client
+                self.bag += self.giraffe.client
                     .perform(
-                        mutation: GraphQL.SendChatSingleSelectResponseMutation(
+                        mutation: GiraffeGraphQL.SendChatSingleSelectResponseMutation(
                             globalId: globalId,
                             selectedValue: selectedValue
                         )
@@ -163,9 +165,9 @@ class ChatState {
             innerBag += self.currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
                 .take(first: 1)
                 .onValue { globalId in
-                    innerBag += self.client
+                    innerBag += self.giraffe.client
                         .perform(
-                            mutation: GraphQL.SendChatTextResponseMutation(
+                            mutation: GiraffeGraphQL.SendChatTextResponseMutation(
                                 globalId: globalId,
                                 text: text
                             )
@@ -184,9 +186,9 @@ class ChatState {
 
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
             .onValue { globalId in
-                self.bag += self.client
+                self.bag += self.giraffe.client
                     .perform(
-                        mutation: GraphQL.SendChatFileResponseMutation(
+                        mutation: GiraffeGraphQL.SendChatFileResponseMutation(
                             globalID: globalId,
                             key: key,
                             mimeType: mimeType
@@ -202,9 +204,9 @@ class ChatState {
 
         bag += currentMessageSignal.atOnce().take(first: 1).compactMap { $0?.globalId }
             .onValue { globalId in
-                self.bag += self.client
+                self.bag += self.giraffe.client
                     .upload(
-                        operation: GraphQL.SendChatAudioResponseMutation(
+                        operation: GiraffeGraphQL.SendChatAudioResponseMutation(
                             globalID: globalId,
                             file: "file"
                         ),
@@ -259,10 +261,10 @@ class ChatState {
                                     }
                                     .map { $0.1 }
 
-                                self.bag += self.client
+                                self.bag += self.giraffe.client
                                     .perform(
                                         mutation:
-                                            GraphQL.EditLastResponseMutation()
+                                            GiraffeGraphQL.EditLastResponseMutation()
                                     )
                                     .onValue { _ in self.fetch() }
                             } ?? DisposeBag()

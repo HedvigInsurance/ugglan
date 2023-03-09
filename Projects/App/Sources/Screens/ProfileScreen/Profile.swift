@@ -9,7 +9,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct Profile { @Inject var client: ApolloClient }
+struct Profile { @Inject var giraffe: hGiraffe }
 
 extension Profile: Presentable {
     func materialize() -> (UIViewController, Disposable) {
@@ -32,13 +32,13 @@ extension Profile: Presentable {
 
         form.appendSpacing(.custom(20))
 
-        let query = GraphQL.ProfileQuery()
+        let query = GiraffeGraphQL.ProfileQuery()
 
-        bag += client.watch(query: query).bindTo(profileSection.dataSignal)
+        bag += giraffe.client.watch(query: query).bindTo(profileSection.dataSignal)
 
         bag += viewController.install(form) { scrollView in
             let refreshControl = UIRefreshControl()
-            bag += self.client.refetchOnRefresh(query: query, refreshControl: refreshControl)
+            bag += self.giraffe.client.refetchOnRefresh(query: query, refreshControl: refreshControl)
 
             scrollView.refreshControl = refreshControl
             bag += scrollView.chainAllControlResponders(shouldLoop: true, returnKey: .next)

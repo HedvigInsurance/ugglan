@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct FutureSection { @Inject var client: ApolloClient }
+struct FutureSection { @Inject var giraffe: hGiraffe }
 
 extension FutureSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
@@ -25,13 +25,14 @@ extension FutureSection: Viewable {
         bag += section.append(subtitleLabel)
 
         bag += combineLatest(
-            client.fetch(query: GraphQL.HomeQuery()).valueSignal,
-            client.fetch(
-                query: GraphQL.HomeInsuranceProvidersQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+            giraffe.client.fetch(query: GiraffeGraphQL.HomeQuery()).valueSignal,
+            giraffe.client
+                .fetch(
+                    query: GiraffeGraphQL.HomeInsuranceProvidersQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    )
                 )
-            )
-            .valueSignal
+                .valueSignal
         )
         .onValue { homeData, insuranceProvidersData in
             if let contract = homeData.contracts.first(where: {

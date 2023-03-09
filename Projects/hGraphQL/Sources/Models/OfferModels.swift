@@ -1,7 +1,7 @@
 import Flow
 import Foundation
 
-public typealias OfferData = GraphQL.QuoteBundleQuery.Data
+public typealias OfferData = GiraffeGraphQL.QuoteBundleQuery.Data
 
 public enum CheckoutStatus: String, Codable {
     case pending = "PENDING"
@@ -10,7 +10,7 @@ public enum CheckoutStatus: String, Codable {
     case failed = "FAILED"
 
     init?(
-        status: GraphQL.CheckoutStatus?
+        status: GiraffeGraphQL.CheckoutStatus?
     ) {
         guard let status = status else {
             return nil
@@ -28,7 +28,7 @@ public struct QuoteCart: Codable, Equatable {
     public let paymentConnection: PaymentConnection?
 
     public init(
-        quoteCart: GraphQL.QuoteCartFragment
+        quoteCart: GiraffeGraphQL.QuoteCartFragment
     ) {
         self.offerBundle = .init(quoteCart: quoteCart)
         self.id = quoteCart.id
@@ -80,7 +80,7 @@ public struct OfferBundle: Codable, Equatable {
     }
 
     public init?(
-        quoteCart: GraphQL.QuoteCartFragment
+        quoteCart: GiraffeGraphQL.QuoteCartFragment
     ) {
         guard
             let bundle = quoteCart.bundle?.fragments.quoteBundleFragment
@@ -117,7 +117,7 @@ public struct QuoteVariant: Codable, Equatable {
     public let id: String
 
     public init(
-        variant: GraphQL.QuoteBundleFragment.PossibleVariation
+        variant: GiraffeGraphQL.QuoteBundleFragment.PossibleVariation
     ) {
         self.bundle = .init(bundle: variant.bundle)
         self.tag = variant.tag
@@ -126,10 +126,10 @@ public struct QuoteVariant: Codable, Equatable {
     }
 
     public init(
-        variant: GraphQL.QuoteBundleQuery.Data.QuoteBundle.PossibleVariation
+        variant: GiraffeGraphQL.QuoteBundleQuery.Data.QuoteBundle.PossibleVariation
     ) {
         self.bundle = .init(
-            bundle: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle(
+            bundle: GiraffeGraphQL.QuoteBundleFragment.PossibleVariation.Bundle(
                 unsafeResultMap: variant.bundle.resultMap
             )
         )
@@ -141,7 +141,7 @@ public struct QuoteVariant: Codable, Equatable {
 
 public struct QuoteBundle: Codable, Equatable {
     init(
-        bundle: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle
+        bundle: GiraffeGraphQL.QuoteBundleFragment.PossibleVariation.Bundle
     ) {
         appConfiguration = .init(config: bundle.appConfiguration)
         bundleCost = .init(cost: bundle.bundleCost.fragments.costFragment)
@@ -168,7 +168,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let title: AppConfigTitle
 
         public init(
-            config: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.AppConfiguration
+            config: GiraffeGraphQL.QuoteBundleFragment.PossibleVariation.Bundle.AppConfiguration
         ) {
             showCampaignManagement = config.showCampaignManagement
             showFaq = config.showFaq
@@ -205,7 +205,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let monthlyNet: MonetaryAmount
 
         public init(
-            cost: GraphQL.CostFragment
+            cost: GiraffeGraphQL.CostFragment
         ) {
             freeUntil = cost.freeUntil
             monthlyDiscount = .init(fragment: cost.monthlyDiscount.fragments.monetaryAmountFragment)
@@ -220,7 +220,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let id: String
 
         public init(
-            question: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.FrequentlyAskedQuestion
+            question: GiraffeGraphQL.QuoteBundleFragment.PossibleVariation.Bundle.FrequentlyAskedQuestion
         ) {
             id = question.id
             body = question.body
@@ -242,7 +242,7 @@ public struct QuoteBundle: Codable, Equatable {
         public let insuranceType: String?
 
         public init(
-            quote: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Quote
+            quote: GiraffeGraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Quote
         ) {
             id = quote.id
             ssn = quote.ssn
@@ -264,7 +264,7 @@ public struct QuoteBundle: Codable, Equatable {
         case unknown
 
         init(
-            fragment: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception
+            fragment: GiraffeGraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception
         ) {
             if let concurrent = fragment.asConcurrentInception {
                 self = .concurrent(inception: .init(inception: concurrent))
@@ -281,7 +281,7 @@ public struct QuoteBundle: Codable, Equatable {
             public let currentInsurer: CurrentInsurer?
 
             public init(
-                inception: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsConcurrentInception
+                inception: GiraffeGraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsConcurrentInception
             ) {
                 startDate = inception.startDate
                 correspondingQuotes = inception.correspondingQuoteIds
@@ -294,7 +294,7 @@ public struct QuoteBundle: Codable, Equatable {
             public let switchable: Bool?
 
             public init?(
-                insurer: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsConcurrentInception
+                insurer: GiraffeGraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsConcurrentInception
                     .CurrentInsurer?
             ) {
                 guard let insurer = insurer else { return nil }
@@ -303,7 +303,7 @@ public struct QuoteBundle: Codable, Equatable {
             }
 
             public init?(
-                insurer: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsIndependentInceptions
+                insurer: GiraffeGraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsIndependentInceptions
                     .Inception.CurrentInsurer?
             ) {
                 guard let insurer = insurer else { return nil }
@@ -322,7 +322,7 @@ public struct QuoteBundle: Codable, Equatable {
             }
 
             public init(
-                inception: GraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsIndependentInceptions
+                inception: GiraffeGraphQL.QuoteBundleFragment.PossibleVariation.Bundle.Inception.AsIndependentInceptions
                     .Inception
             ) {
                 startDate = inception.startDate

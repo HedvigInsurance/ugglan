@@ -4,9 +4,10 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct ChatTextView {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let chatState: ChatState
     let isHiddenSignal = ReadWriteSignal<Bool>(false)
 

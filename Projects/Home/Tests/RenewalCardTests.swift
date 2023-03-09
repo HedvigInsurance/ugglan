@@ -3,13 +3,13 @@ import Flow
 import Foundation
 import HomeTesting
 import SnapshotTesting
+import TestDependencies
 import Testing
 import TestingUtil
 import XCTest
 import hCore
 import hCoreUI
 import hGraphQL
-import TestDependencies
 
 @testable import Home
 
@@ -35,7 +35,7 @@ final class RenewalCardTests: XCTestCase {
 
         view.snp.makeConstraints { make in make.width.equalTo(400) }
 
-        apolloClient.fetch(query: GraphQL.HomeQuery()).delay(by: 0.1)
+        apolloClient.fetch(query: GiraffeGraphQL.HomeQuery()).delay(by: 0.1)
             .onValue { _ in assertions(view)
                 waitForApollo.fulfill()
             }

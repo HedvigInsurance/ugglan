@@ -4,8 +4,8 @@ import Foundation
 import hCore
 import hGraphQL
 
-typealias SearchType = GraphQL.AddressAutocompleteType
-typealias SuggestionData = GraphQL.AddressAutocompleteQuery.Data
+typealias SearchType = GiraffeGraphQL.AddressAutocompleteType
+typealias SuggestionData = GiraffeGraphQL.AddressAutocompleteQuery.Data
 typealias AddressSuggestion = SuggestionData.AutoCompleteAddress
 
 enum AddressStoreKeys: String, CaseIterable {
@@ -52,8 +52,8 @@ extension AddressSuggestion {
 
 extension AddressSuggestion: Equatable {
     public static func == (
-        lhs: GraphQL.AddressAutocompleteQuery.Data.AutoCompleteAddress,
-        rhs: GraphQL.AddressAutocompleteQuery.Data.AutoCompleteAddress
+        lhs: GiraffeGraphQL.AddressAutocompleteQuery.Data.AutoCompleteAddress,
+        rhs: GiraffeGraphQL.AddressAutocompleteQuery.Data.AutoCompleteAddress
     ) -> Bool {
         // Note: in the Web implementation, all fields are compared. Should be enough with just address though
         return lhs.address == rhs.address
@@ -61,7 +61,7 @@ extension AddressSuggestion: Equatable {
 }
 
 class AddressState {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     let pickedSuggestionSignal: ReadWriteSignal<AddressSuggestion?> = ReadWriteSignal(nil)
     let confirmedSuggestionSignal: ReadWriteSignal<AddressSuggestion?> = ReadWriteSignal(nil)
@@ -69,9 +69,9 @@ class AddressState {
 
     func getSuggestions(searchTerm: String, suggestion: AddressSuggestion?) -> Future<[AddressSuggestion]> {
         let queryParams = getApiQueryParams(searchTerm, suggestion)
-        return self.client
+        return self.giraffe.client
             .fetch(
-                query: GraphQL.AddressAutocompleteQuery(
+                query: GiraffeGraphQL.AddressAutocompleteQuery(
                     input: queryParams.apiQuery,
                     type: queryParams.searchType
                 )
@@ -134,9 +134,9 @@ class AddressState {
         if let previousSuggestion = previousSuggestion, suggestion == previousSuggestion {
             return Future(suggestion)
         }
-        return self.client
+        return self.giraffe.client
             .fetch(
-                query: GraphQL.AddressAutocompleteQuery(
+                query: GiraffeGraphQL.AddressAutocompleteQuery(
                     input: suggestion.address,
                     type: .apartment
                 )

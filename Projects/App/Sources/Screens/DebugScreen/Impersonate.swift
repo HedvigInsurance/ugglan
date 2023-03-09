@@ -1,13 +1,13 @@
 import Apollo
+import Authentication
 import Flow
 import Foundation
 import SwiftUI
 import hCore
 import hGraphQL
-import Authentication
 
 struct Impersonate {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     @PresentableStore var store: UgglanStore
     @PresentableStore var authenticationStore: AuthenticationStore
 
@@ -32,15 +32,18 @@ struct Impersonate {
 
     func impersonate(with url: URL) {
         guard let authorizationCode = getAuthorizationCode(from: url) else { return }
-        
+
         let bag = DisposeBag()
-        
-        bag += authenticationStore.onAction(.navigationAction(action: .authSuccess), {
-            ApplicationState.preserveState(.impersonation)
-            UIApplication.shared.appDelegate.presentMainJourney()
-            bag.dispose()
-        })
-        
+
+        bag += authenticationStore.onAction(
+            .navigationAction(action: .authSuccess),
+            {
+                ApplicationState.preserveState(.impersonation)
+                UIApplication.shared.appDelegate.presentMainJourney()
+                bag.dispose()
+            }
+        )
+
         authenticationStore.send(.exchange(code: authorizationCode))
     }
 }

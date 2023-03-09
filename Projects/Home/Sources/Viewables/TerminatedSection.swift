@@ -10,7 +10,7 @@ import hCoreUI
 import hGraphQL
 
 struct TerminatedSection<ClaimsContent: View> {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     var claimsContent: ClaimsContent
 }
 
@@ -25,7 +25,7 @@ extension TerminatedSection: Presentable {
 
         section.appendSpacing(.inbetween)
 
-        client.fetch(query: GraphQL.HomeQuery())
+        giraffe.client.fetch(query: GiraffeGraphQL.HomeQuery())
             .onValue { data in
                 titleLabel.value = L10n.HomeTab.terminatedWelcomeTitle(data.member.firstName ?? "")
             }

@@ -1,6 +1,6 @@
 import Foundation
 
-typealias ClaimStatusCard = GraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
+typealias ClaimStatusCard = GiraffeGraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
 
 public struct Claim: Codable, Equatable, Identifiable {
     public init(
@@ -20,7 +20,7 @@ public struct Claim: Codable, Equatable, Identifiable {
     }
 
     internal init(
-        cardData: GraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
+        cardData: GiraffeGraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
     ) {
         self.id = cardData.id
         self.pills = cardData.pills.map {
@@ -195,7 +195,7 @@ public struct Claim: Codable, Equatable, Identifiable {
 public struct ClaimData {
     public let claims: [Claim]
     public init(
-        cardData: GraphQL.ClaimStatusCardsQuery.Data
+        cardData: GiraffeGraphQL.ClaimStatusCardsQuery.Data
     ) {
         claims = cardData.claimsStatusCards.map { .init(cardData: $0) }
     }

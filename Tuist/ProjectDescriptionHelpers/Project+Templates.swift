@@ -99,8 +99,7 @@ extension Project {
         var projectTargets: [Target] = []
 
         if targets.contains(.framework) {
-            let sources: SourceFilesList =
-                includesGraphQL ? ["Sources/**/*.swift", "GraphQL/**/*.swift"] : ["Sources/**/*.swift"]
+            let sources: SourceFilesList = "Sources/**/*.swift"
 
             let frameworkTarget = Target(
                 name: name,

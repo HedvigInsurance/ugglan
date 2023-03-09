@@ -5,12 +5,13 @@ import Foundation
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct SingleSelectList: Hashable, Equatable {
     let id = UUID()
     let options: [SingleSelectOption]
     let chatState: ChatState
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let navigateCallbacker: Callbacker<NavigationEvent>
 
     static func == (lhs: Self, rhs: Self) -> Bool { lhs.id == rhs.id }

@@ -10,7 +10,7 @@ import hGraphQL
 struct AttachGIFPane {
     let isOpenSignal: ReadWriteSignal<Bool>
     let chatState: ChatState
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     init(
         isOpenSignal: ReadWriteSignal<Bool>,
@@ -104,7 +104,7 @@ extension AttachGIFPane: Viewable {
 
         bag +=
             searchBarValue.mapLatestToFuture { value in
-                self.client.fetch(query: GraphQL.GifQuery(query: value))
+                self.giraffe.client.fetch(query: GiraffeGraphQL.GifQuery(query: value))
             }
             .compactMap { data in data.gifs.compactMap { $0 } }
             .onValue { gifs in

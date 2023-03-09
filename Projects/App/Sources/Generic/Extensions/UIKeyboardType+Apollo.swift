@@ -4,7 +4,7 @@ import UIKit
 import hGraphQL
 
 extension UIKeyboardType {
-    static func from(_ keyboardType: GraphQL.KeyboardType?) -> UIKeyboardType? {
+    static func from(_ keyboardType: GiraffeGraphQL.KeyboardType?) -> UIKeyboardType? {
         guard let keyboardType = keyboardType else { return nil }
 
         switch keyboardType {

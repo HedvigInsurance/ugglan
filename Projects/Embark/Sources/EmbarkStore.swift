@@ -122,7 +122,7 @@ class EmbarkStore {
         }
     }
 
-    func passes(expression: GraphQL.BasicExpressionFragment) -> Bool {
+    func passes(expression: GiraffeGraphQL.BasicExpressionFragment) -> Bool {
         if let binaryExpression = expression.asEmbarkExpressionBinary {
             switch binaryExpression.expressionBinaryType {
             case .equals: return getValueWithNull(key: binaryExpression.key) == binaryExpression.value
@@ -166,7 +166,7 @@ class EmbarkStore {
         return false
     }
 
-    func passes(expression: GraphQL.ExpressionFragment) -> Bool {
+    func passes(expression: GiraffeGraphQL.ExpressionFragment) -> Bool {
         if let multiple = expression.asEmbarkExpressionMultiple {
             switch multiple.expressionMultipleType {
             case .and:
@@ -188,11 +188,11 @@ class EmbarkStore {
         return passes(expression: expression.fragments.basicExpressionFragment)
     }
 
-    func passes(expression: GraphQL.MessageFragment.Expression) -> Bool {
+    func passes(expression: GiraffeGraphQL.MessageFragment.Expression) -> Bool {
         passes(expression: expression.fragments.expressionFragment)
     }
 
-    func shouldRedirectTo(redirect: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Redirect) -> String? {
+    func shouldRedirectTo(redirect: GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Redirect) -> String? {
         if let unaryExpression = redirect.fragments.embarkRedirectSingle.asEmbarkRedirectUnaryExpression {
             if unaryExpression.unaryType == .always { return unaryExpression.to }
         }

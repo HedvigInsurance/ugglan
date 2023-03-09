@@ -11,7 +11,7 @@ import hCoreUI
 import hGraphQL
 
 public struct Home<ClaimsContent: View, CommonClaims: View> {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     var claimsContent: ClaimsContent
     var commonClaims: CommonClaims
 
@@ -185,7 +185,7 @@ extension Home: Presentable {
 
         bag += NotificationCenter.default.signal(forName: UIApplication.didBecomeActiveNotification)
             .mapLatestToFuture { _ in
-                self.client.fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
+                self.giraffe.client.fetch(query: GiraffeGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
             }
             .nil()
 

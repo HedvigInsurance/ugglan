@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 public struct ClaimsInfoPager {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     @PresentableStore var store: ClaimsStore
 
     public init() {
@@ -32,21 +32,22 @@ extension ClaimsInfoPager: Presentable {
 
         let (viewController, future) = pager.materialize()
 
-        client.fetch(
-            query: GraphQL.HowClaimsWorkQuery(
-                locale: Localization.Locale.currentLocale.asGraphQLLocale()
-            )
-        )
-        .onValue { data in
-            pager.pages = data.howClaimsWork.map {
-                ContentIconPagerItem(
-                    title: nil,
-                    paragraph: $0.body,
-                    icon: $0.illustration.fragments.iconFragment
+        giraffe.client
+            .fetch(
+                query: GiraffeGraphQL.HowClaimsWorkQuery(
+                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
                 )
-                .pagerItem
+            )
+            .onValue { data in
+                pager.pages = data.howClaimsWork.map {
+                    ContentIconPagerItem(
+                        title: nil,
+                        paragraph: $0.body,
+                        icon: $0.illustration.fragments.iconFragment
+                    )
+                    .pagerItem
+                }
             }
-        }
 
         return (
             viewController,

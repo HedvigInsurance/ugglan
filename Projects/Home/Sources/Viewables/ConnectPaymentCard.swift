@@ -9,7 +9,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ConnectPaymentCard { @Inject var client: ApolloClient }
+struct ConnectPaymentCard { @Inject var giraffe: hGiraffe }
 
 extension ConnectPaymentCard: Presentable {
     func materialize() -> (UIStackView, Disposable) {
@@ -25,7 +25,8 @@ extension ConnectPaymentCard: Presentable {
             }
         }
 
-        bag += client.watch(query: GraphQL.PayInMethodStatusQuery()).map { $0.payinMethodStatus }.distinct()
+        bag += giraffe.client.watch(query: GiraffeGraphQL.PayInMethodStatusQuery()).map { $0.payinMethodStatus }
+            .distinct()
             .onValueDisposePrevious { status -> Disposable? in let bag = DisposeBag()
 
                 if status == .needsSetup {

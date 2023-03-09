@@ -6,7 +6,7 @@ import UIKit
 import hCore
 import hGraphQL
 
-struct PaymentHeaderNextCharge { @Inject var client: ApolloClient }
+struct PaymentHeaderNextCharge { @Inject var giraffe: hGiraffe }
 
 extension PaymentHeaderNextCharge: Viewable {
     func materialize(events _: ViewableEvents) -> (UIView, Disposable) {
@@ -26,8 +26,9 @@ extension PaymentHeaderNextCharge: Viewable {
         contentContainer.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
 
         bag +=
-            client.watch(
-                query: GraphQL.MyPaymentQuery(
+            giraffe.client
+            .watch(
+                query: GiraffeGraphQL.MyPaymentQuery(
                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
                 )
             )

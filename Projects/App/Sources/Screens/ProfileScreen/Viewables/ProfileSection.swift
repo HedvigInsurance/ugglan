@@ -7,7 +7,7 @@ import hCore
 import hGraphQL
 
 struct ProfileSection {
-    let dataSignal: ReadWriteSignal<GraphQL.ProfileQuery.Data?> = ReadWriteSignal(nil)
+    let dataSignal: ReadWriteSignal<GiraffeGraphQL.ProfileQuery.Data?> = ReadWriteSignal(nil)
     let presentingViewController: UIViewController
 }
 

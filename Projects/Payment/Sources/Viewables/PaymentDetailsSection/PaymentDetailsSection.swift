@@ -9,8 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct PaymentDetailsSection {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
     let presentingViewController: UIViewController
 
     init(presentingViewController: UIViewController) { self.presentingViewController = presentingViewController }
@@ -20,8 +19,8 @@ extension PaymentDetailsSection: Viewable {
     func materialize(events _: ViewableEvents) -> (SectionView, Disposable) {
         let bag = DisposeBag()
 
-        let dataSignal = client.watch(
-            query: GraphQL.MyPaymentQuery(
+        let dataSignal = giraffe.client.watch(
+            query: GiraffeGraphQL.MyPaymentQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             ),
             cachePolicy: .returnCacheDataAndFetch
@@ -76,11 +75,11 @@ extension PaymentDetailsSection: Viewable {
         bag += applyDiscountButtonRow.onSelect.onValue { _ in let applyDiscount = ApplyDiscount()
 
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
-                self.store.update(
-                    query: GraphQL.MyPaymentQuery(
+                self.giraffe.store.update(
+                    query: GiraffeGraphQL.MyPaymentQuery(
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()
                     ),
-                    updater: { (data: inout GraphQL.MyPaymentQuery.Data) in
+                    updater: { (data: inout GiraffeGraphQL.MyPaymentQuery.Data) in
                         if let costFragment = result.cost?.fragments.costFragment {
                             data.insuranceCost?.fragments.costFragment = costFragment
                         }

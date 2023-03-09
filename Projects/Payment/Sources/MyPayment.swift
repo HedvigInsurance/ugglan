@@ -11,7 +11,7 @@ import hCoreUI
 import hGraphQL
 
 public struct MyPayment {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     @PresentableStore var store: PaymentStore
     let urlScheme: String
 
@@ -24,8 +24,8 @@ extension MyPayment: Presentable {
 
         store.send(.load)
 
-        let dataSignal = client.watch(
-            query: GraphQL.MyPaymentQuery(
+        let dataSignal = giraffe.client.watch(
+            query: GiraffeGraphQL.MyPaymentQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             )
         )
@@ -39,8 +39,8 @@ extension MyPayment: Presentable {
         bag += viewController.install(form) { scrollView in
             bag += scrollView.performEntryAnimation(
                 contentView: form,
-                onLoad: client.fetch(
-                    query: GraphQL.MyPaymentQuery(
+                onLoad: giraffe.client.fetch(
+                    query: GiraffeGraphQL.MyPaymentQuery(
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()
                     )
                 ),

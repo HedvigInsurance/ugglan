@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct PayoutDetailsSection {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let urlScheme: String
 }
 
@@ -20,8 +20,8 @@ extension PayoutDetailsSection: Viewable {
         let section = SectionView(header: L10n.PaymentScreen.payoutSectionTitle, footer: nil)
         section.isHidden = true
 
-        let dataSignal = client.watch(
-            query: GraphQL.ActivePayoutMethodsQuery(),
+        let dataSignal = giraffe.client.watch(
+            query: GiraffeGraphQL.ActivePayoutMethodsQuery(),
             cachePolicy: .returnCacheDataAndFetch
         )
 

@@ -97,7 +97,7 @@ public enum ContractAction: ActionProtocol {
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     public override func effects(
         _ getState: @escaping () -> ContractState,
@@ -105,15 +105,14 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
     ) -> FiniteSignal<ContractAction>? {
         switch action {
         case .fetchContractBundles:
-            return
-                client.fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+            return giraffe.client
+                .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                 .valueThenEndSignal
                 .map { activeContractBundles in
                     ContractAction.setContractBundles(activeContractBundles: activeContractBundles)
                 }
         case .fetchContracts:
-            return
-                client.fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+            return giraffe.client.fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                 .valueThenEndSignal
                 .filter { contracts in
                     contracts != getState().contracts

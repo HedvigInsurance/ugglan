@@ -7,6 +7,21 @@ import UIKit
 import authlib
 import hAnalytics
 
+public struct hApollo {
+    public let giraffe: hGiraffe
+    public let octopus: hOctopus
+}
+
+public struct hGiraffe {
+    public let client: ApolloClient
+    public let store: ApolloStore
+}
+
+public struct hOctopus {
+    public let client: ApolloClient
+    public let store: ApolloStore
+}
+
 extension ApolloClient {
     public static var acceptLanguageHeader: String = ""
     public static var bundle: Bundle?
@@ -49,7 +64,7 @@ extension ApolloClient {
         }
     }
 
-    public static func createClient() -> (ApolloStore, ApolloClient) {
+    static func createGiraffeClient() -> hGiraffe {
         let environment = Environment.current
 
         let httpAdditionalHeaders = headers()
@@ -65,7 +80,7 @@ extension ApolloClient {
 
         let requestChainTransport = RequestChainNetworkTransport(
             interceptorProvider: networkInterceptorProvider,
-            endpointURL: environment.endpointURL
+            endpointURL: environment.giraffeEndpointURL
         )
 
         let clientName = "iOS:\(bundle?.bundleIdentifier ?? "")"
@@ -74,7 +89,7 @@ extension ApolloClient {
         requestChainTransport.clientVersion = appVersion
 
         let websocketNetworkTransport = WebSocketTransport(
-            websocket: WebSocket(request: URLRequest(url: environment.wsEndpointURL), protocol: .graphql_ws),
+            websocket: WebSocket(request: URLRequest(url: environment.giraffeWSEndpointURL), protocol: .graphql_ws),
             clientName: clientName,
             clientVersion: appVersion,
             connectingPayload: httpAdditionalHeaders as GraphQLMap
@@ -87,7 +102,43 @@ extension ApolloClient {
 
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
 
-        return (store, client)
+        return hGiraffe(client: client, store: store)
+    }
+
+    static func createOctopusClient() -> hOctopus {
+        let environment = Environment.current
+
+        let httpAdditionalHeaders = headers()
+
+        let store = ApolloStore(cache: ApolloClient.cache)
+
+        let networkInterceptorProvider = NetworkInterceptorProvider(
+            store: store,
+            acceptLanguageHeader: acceptLanguageHeader,
+            userAgent: userAgent,
+            deviceIdentifier: getDeviceIdentifier()
+        )
+
+        let requestChainTransport = RequestChainNetworkTransport(
+            interceptorProvider: networkInterceptorProvider,
+            endpointURL: environment.octopusEndpointURL
+        )
+
+        let clientName = "iOS:\(bundle?.bundleIdentifier ?? "")"
+
+        requestChainTransport.clientName = clientName
+        requestChainTransport.clientVersion = appVersion
+
+        let client = ApolloClient(networkTransport: requestChainTransport, store: store)
+
+        return hOctopus(client: client, store: store)
+    }
+
+    public static func createClient() -> hApollo {
+        return hApollo(
+            giraffe: createGiraffeClient(),
+            octopus: createOctopusClient()
+        )
     }
 
     public static func deleteToken() {
@@ -158,7 +209,7 @@ extension ApolloClient {
         KeychainHelper.standard.save(token, key: "oAuthorizationToken")
     }
 
-    public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
+    public static func initClients() -> Future<hApollo> {
         Future { completion in
             let result = self.createClient()
             completion(.success(result))
