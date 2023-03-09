@@ -13,23 +13,24 @@ extension WhatsNewPager: FutureConditional {
     var lastNewsSeen: String { ApplicationState.getLastNewsSeen() }
 
     func getPages() -> Future<[PagerItem]> {
-        giraffe.client.fetch(
-            query: GiraffeGraphQL.WhatsNewQuery(
-                locale: Localization.Locale.currentLocale.asGraphQLLocale(),
-                sinceVersion: lastNewsSeen
-            )
-        )
-        .compactMap { $0.news }
-        .map { news in
-            news.map {
-                ContentIconPagerItem(
-                    title: $0.title,
-                    paragraph: $0.paragraph,
-                    icon: $0.illustration.fragments.iconFragment
+        giraffe.client
+            .fetch(
+                query: GiraffeGraphQL.WhatsNewQuery(
+                    locale: Localization.Locale.currentLocale.asGraphQLLocale(),
+                    sinceVersion: lastNewsSeen
                 )
-                .pagerItem
+            )
+            .compactMap { $0.news }
+            .map { news in
+                news.map {
+                    ContentIconPagerItem(
+                        title: $0.title,
+                        paragraph: $0.paragraph,
+                        icon: $0.illustration.fragments.iconFragment
+                    )
+                    .pagerItem
+                }
             }
-        }
     }
 
     func condition() -> Future<Bool> {

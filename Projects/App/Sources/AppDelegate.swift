@@ -217,12 +217,12 @@ import hGraphQL
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
-        
+
         hGraphQL.log = Logger.builder
             .sendNetworkInfo(true)
             .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
             .build()
-        
+
         setupSession()
 
         log.info("Starting app")
