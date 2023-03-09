@@ -122,14 +122,6 @@ public enum Environment: Hashable {
         }
     }
 
-    public var octopusWSEndpointURL: URL {
-        switch self {
-        case .staging: return URL(string: "wss://apollo-router.dev.hedvigit.com/")!
-        case .production: return URL(string: "wss://apollo-router.dev.hedvigit.com/")!
-        case let .custom(_, wsEndpointURL, _, _): return wsEndpointURL
-        }
-    }
-
     public var assetsEndpointURL: URL {
         switch self {
         case .staging: return URL(string: "https://graphql.dev.hedvigit.com")!

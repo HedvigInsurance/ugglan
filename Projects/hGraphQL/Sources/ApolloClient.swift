@@ -129,19 +129,7 @@ extension ApolloClient {
         requestChainTransport.clientName = clientName
         requestChainTransport.clientVersion = appVersion
 
-        let websocketNetworkTransport = WebSocketTransport(
-            websocket: WebSocket(request: URLRequest(url: environment.octopusWSEndpointURL), protocol: .graphql_ws),
-            clientName: clientName,
-            clientVersion: appVersion,
-            connectingPayload: httpAdditionalHeaders as GraphQLMap
-        )
-
-        let splitNetworkTransport = SplitNetworkTransport(
-            uploadingNetworkTransport: requestChainTransport,
-            webSocketNetworkTransport: websocketNetworkTransport
-        )
-
-        let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
+        let client = ApolloClient(networkTransport: requestChainTransport, store: store)
 
         return hOctopus(client: client, store: store)
     }
