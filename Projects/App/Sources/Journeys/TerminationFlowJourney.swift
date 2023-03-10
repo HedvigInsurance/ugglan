@@ -3,10 +3,10 @@ import Presentation
 import hCore
 
 extension AppJourney {
-    static var terminationFlow: some JourneyPresentation {
+    static func terminationFlow(contractId: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: SetTerminationDate(),
+            rootView: SetTerminationDate(contractId: contractId),
             style: .modal
         ) {
             action in

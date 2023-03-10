@@ -6,6 +6,7 @@ import hCore
 import hGraphQL
 
 public struct ContractState: StateProtocol {
+
     public init() {}
 
     public var hasLoadedContractBundlesOnce = false
@@ -13,6 +14,7 @@ public struct ContractState: StateProtocol {
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
+    public var terminations: TerminationStartFlow? = nil
 
     func contractForId(_ id: String) -> Contract? {
         if let inBundleContract = contractBundles.flatMap({ $0.contracts })
@@ -90,14 +92,17 @@ public enum ContractAction: ActionProtocol {
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 
-    case goToTerminationFlow
-    //    case goToTerminationSuccess
+    case goToTerminationFlow(contractId: String)
     case sendTermination
     case dismissTerminationFlow
-}
 
+    case startTermination(contractId: String)
+    case setTerminationDetails(setTerminationDetails: TerminationStartFlow)
+}
+/* TODO: BREAK INTO DIFFERENT FUNTIONS? */
 public final class ContractStore: StateStore<ContractState, ContractAction> {
     @Inject var giraffe: hGiraffe
+    @Inject var octopus: hOctopus
 
     public override func effects(
         _ getState: @escaping () -> ContractState,
@@ -136,6 +141,45 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .setFocusedCrossSell(focusedCrossSell: crossSell)
             ]
             .emitEachThenEnd
+
+        case .startTermination(let contractId):
+
+            return FiniteSignal { callback in
+                self.octopus.client
+                    .perform(
+                        mutation: OctopusGraphQL.FlowTerminationStartMutation(contractId: contractId)
+                    )
+                    .onValue { data in
+                        guard let data = data.flowTerminationStart.currentStep.asFlowTerminationDateStep else {
+                            return
+                        }
+
+                        [
+                            .goToTerminationFlow(contractId: contractId),
+                            .setTerminationDetails(
+                                setTerminationDetails:
+                                    TerminationStartFlow(
+                                        id: data.id,
+                                        minDate: data.minDate,
+                                        maxDate: data.maxDate
+                                    )
+                            ),
+                        ]
+                        .forEach { element in
+                            callback(.value(element))
+                        }
+                    }
+
+                return NilDisposer()
+            }
+
+        // case .continueTermination
+        // if FlowTerminationFailedStep:
+        // - id
+        // else if FlowTerminationSuccessStep:
+        // show erroe screen
+        // id, terminationFate, surveyURL
+
         default:
             break
         }
@@ -173,10 +217,29 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .flatMap { $0 }
         case .resetSignedCrossSells:
             newState.signedCrossSells = []
+
+        case .setTerminationDetails(let terminationDetails):
+            newState.terminations = terminationDetails
+
         default:
             break
         }
 
         return newState
+    }
+}
+
+extension FiniteSignal {
+    func emitEachThenEnd<Element>() -> FiniteSignal<Element> where Value == [Element] {
+        FiniteSignal { callback in
+            let bag = DisposeBag()
+            bag += self.onValue({ value in
+                value.forEach { element in
+                    callback(.value(element))
+                }
+            })
+            callback(.end)
+            return bag
+        }
     }
 }
