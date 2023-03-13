@@ -177,9 +177,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         }
                     }
                     .onError { error in
-
+                        log.error("Error: \(error)")
                     }
-
                 return NilDisposer()
             }
 
@@ -224,8 +223,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         }
                     }
                     .onError { error in
+                        log.error("Error: \(error)")
                     }
-
                 return NilDisposer()
             }
 

@@ -46,6 +46,8 @@ extension AppJourney {
             action in
             if case .dismissTerminationFlow = action {
                 DismissJourney()
+            } else if case .goToFreeTextChat = action {
+                DismissJourney()
             }
         }
         .withDismissButton
