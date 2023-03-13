@@ -219,6 +219,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                             .forEach { element in
                                 callback(.value(element))
                             }
+                        } else {
+                            return
                         }
                     }
                     .onError { error in

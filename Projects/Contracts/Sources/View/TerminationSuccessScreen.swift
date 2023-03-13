@@ -38,7 +38,7 @@ public struct TerminationSuccessScreen: View {
         hButton.LargeButtonFilled {
             store.send(.dismissTerminationFlow)
         } content: {
-            hText(L10.generalDoneButton, style: .body)
+            hText(L10n.generalDoneButton, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
         }
         .frame(maxWidth: .infinity, alignment: .bottom)
