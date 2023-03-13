@@ -180,12 +180,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
 
         case .sendTerminationDate(let terminationDate, let contextInput):
 
-            // else if FlowTerminationSuccessStep:
-            // show erroe screen
-            // id, terminationFate, surveyURL
-
-            /* TODO: BLIR FEL MED TERMINATIONDATE */
-
             let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: terminationDate)
 
             return FiniteSignal { callback in
