@@ -182,16 +182,16 @@ public struct TerminationStartFlow: Codable, Hashable, Equatable {
     public init(
         id: String,
         minDate: String,
-        maxDate: String
+        maxDate: String?
     ) {
         self.id = id
         self.minDate = minDate
-        self.maxDate = maxDate
+        self.maxDate = maxDate ?? ""
     }
 
     public let id: String
     public let minDate: String
-    public let maxDate: String
+    public let maxDate: String?
 
 }
 

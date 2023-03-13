@@ -168,7 +168,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                                     TerminationStartFlow(
                                         id: dateStep.id,
                                         minDate: dateStep.minDate,
-                                        maxDate: dateStep.maxDate
+                                        maxDate: dateStep.maxDate ?? ""
                                     )
                             ),
                         ]
