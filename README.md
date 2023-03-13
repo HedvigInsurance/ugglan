@@ -31,12 +31,6 @@ Hedvig is a new approach to insurance currently available in Sweden, Norway and 
 6. Open workspace
 
    `open Ugglan.xcworkspace`
-
-## Provision new devices
-
-1. Add device UDID to devices.txt
-2. `fastlane ios provision`
-3. Trigger new build for latest commit on `main` by clicking `re-run` in Github Actions
    
 ## Formatting
 
