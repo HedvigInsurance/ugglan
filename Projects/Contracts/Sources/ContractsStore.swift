@@ -102,7 +102,7 @@ public enum ContractAction: ActionProtocol {
     case setTerminationDetails(setTerminationDetails: TerminationStartFlow)
     case sendTerminationDate(terminationDateInput: String, contextInput: String)
 }
-/* TODO: BREAK INTO DIFFERENT FUNTIONS? */
+
 public final class ContractStore: StateStore<ContractState, ContractAction> {
     @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
