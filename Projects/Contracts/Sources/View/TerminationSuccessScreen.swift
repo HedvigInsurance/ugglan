@@ -3,10 +3,17 @@ import hCore
 import hCoreUI
 
 public struct TerminationSuccessScreen: View {
-    @State private var terminationDate = Date()
     @PresentableStore var store: ContractStore
+    let terminationDate: String
+    let surveyURL: String
 
-    public init() {}
+    public init(
+        terminationDate: String,
+        surveyURL: String
+    ) {
+        self.terminationDate = terminationDate
+        self.surveyURL = surveyURL
+    }
 
     public var body: some View {
 
@@ -21,7 +28,7 @@ public struct TerminationSuccessScreen: View {
                 .padding(.leading, 16)
                 .padding([.bottom, .top], 10)
 
-            hText(L10n.terminationSuccessfulText(formatAndPrintDate(), "Hedvig"), style: .body)
+            hText(L10n.terminationSuccessfulText(terminationDate, "Hedvig"), style: .body)
                 .foregroundColor(hLabelColor.secondary)
                 .padding([.leading, .trailing], 16)
                 .padding(.bottom, 300)
@@ -38,21 +45,10 @@ public struct TerminationSuccessScreen: View {
         .padding([.leading, .trailing], 16)
         .padding(.bottom, 40)
     }
-
-    func formatAndPrintDate() -> String {
-        let formatter = DateFormatter()
-        let myString = formatter.string(from: terminationDate)
-        let yourDate = formatter.date(from: myString)
-        formatter.dateFormat = "dd-MM-yyyy"
-        let myStringDate = formatter.string(from: yourDate!)
-
-        return (myStringDate)
-    }
-
 }
 
-struct TerminationSuccessScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        TerminationSuccessScreen()
-    }
-}
+//struct TerminationSuccessScreen_Previews: PreviewProvider {
+//    static var previews: some View {
+//        TerminationSuccessScreen()
+//    }
+//}

@@ -62,6 +62,7 @@ public enum CrossSellingFAQListNavigationAction: ActionProtocol {
 }
 
 public enum ContractAction: ActionProtocol {
+
     // fetch everything
     case fetch
 
@@ -92,12 +93,14 @@ public enum ContractAction: ActionProtocol {
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 
-    case goToTerminationFlow(contractId: String)
-    case sendTermination
+    case goToTerminationFlow(contractId: String, contextInput: String)
+    case sendTermination(terminationDate: String, contextInput: String, surveyUrl: String)
     case dismissTerminationFlow
+    case terminationFail
 
     case startTermination(contractId: String)
     case setTerminationDetails(setTerminationDetails: TerminationStartFlow)
+    case sendTerminationDate(terminationDateInput: String, contextInput: String)
 }
 /* TODO: BREAK INTO DIFFERENT FUNTIONS? */
 public final class ContractStore: StateStore<ContractState, ContractAction> {
@@ -150,18 +153,20 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         mutation: OctopusGraphQL.FlowTerminationStartMutation(contractId: contractId)
                     )
                     .onValue { data in
-                        guard let data = data.flowTerminationStart.currentStep.asFlowTerminationDateStep else {
+                        guard let dateStep = data.flowTerminationStart.currentStep.asFlowTerminationDateStep else {
                             return
                         }
 
+                        let context = data.flowTerminationStart.context
+
                         [
-                            .goToTerminationFlow(contractId: contractId),
+                            .goToTerminationFlow(contractId: contractId, contextInput: context),
                             .setTerminationDetails(
                                 setTerminationDetails:
                                     TerminationStartFlow(
-                                        id: data.id,
-                                        minDate: data.minDate,
-                                        maxDate: data.maxDate
+                                        id: dateStep.id,
+                                        minDate: dateStep.minDate,
+                                        maxDate: dateStep.maxDate
                                     )
                             ),
                         ]
@@ -173,12 +178,55 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 return NilDisposer()
             }
 
-        // case .continueTermination
-        // if FlowTerminationFailedStep:
-        // - id
-        // else if FlowTerminationSuccessStep:
-        // show erroe screen
-        // id, terminationFate, surveyURL
+        case .sendTerminationDate(let terminationDate, let contextInput):
+
+            // else if FlowTerminationSuccessStep:
+            // show erroe screen
+            // id, terminationFate, surveyURL
+
+            /* TODO: BLIR FEL MED TERMINATIONDATE */
+
+            let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: terminationDate)
+
+            return FiniteSignal { callback in
+                self.octopus.client
+                    .perform(
+                        mutation: OctopusGraphQL.FlowTerminationDateNextMutation(
+                            context: contextInput,
+                            input: terminationDateInput
+                        )
+                    )
+                    .onValue { data in
+
+                        if let data = data.flowTerminationDateNext.currentStep.asFlowTerminationSuccessStep {
+
+                            let surveyURL = data.surveyUrl
+
+                            [
+                                .sendTermination(
+                                    terminationDate: terminationDate,
+                                    contextInput: contextInput,
+                                    surveyUrl: surveyURL
+                                )
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
+
+                        } else if let data = data.flowTerminationDateNext.currentStep.asFlowTerminationFailedStep {
+                            [
+                                .terminationFail
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
+                        }
+                    }
+                    .onError { error in
+                    }
+
+                return NilDisposer()
+            }
 
         default:
             break
