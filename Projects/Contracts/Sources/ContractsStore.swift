@@ -150,7 +150,9 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
-                        mutation: OctopusGraphQL.FlowTerminationStartMutation(contractId: contractId)
+                        mutation: OctopusGraphQL.FlowTerminationStartMutation(
+                            input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId)
+                        )
                     )
                     .onValue { data in
                         guard let dateStep = data.flowTerminationStart.currentStep.asFlowTerminationDateStep else {
@@ -173,6 +175,9 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         .forEach { element in
                             callback(.value(element))
                         }
+                    }
+                    .onError { error in
+
                     }
 
                 return NilDisposer()
