@@ -4,11 +4,11 @@ import hCoreUI
 
 public struct TerminationSuccessScreen: View {
     @PresentableStore var store: ContractStore
-    let terminationDate: String
+    let terminationDate: Date
     let surveyURL: String
 
     public init(
-        terminationDate: String,
+        terminationDate: Date,
         surveyURL: String
     ) {
         self.terminationDate = terminationDate
@@ -28,7 +28,7 @@ public struct TerminationSuccessScreen: View {
                 .padding(.leading, 16)
                 .padding([.bottom, .top], 10)
 
-            hText(L10n.terminationSuccessfulText(terminationDate, "Hedvig"), style: .body)
+            hText(L10n.terminationSuccessfulText(formatAndPrintDate(), "Hedvig"), style: .body)
                 .foregroundColor(hLabelColor.secondary)
                 .padding([.leading, .trailing], 16)
                 .padding(.bottom, 300)
@@ -45,10 +45,11 @@ public struct TerminationSuccessScreen: View {
         .padding([.leading, .trailing], 16)
         .padding(.bottom, 40)
     }
-}
 
-//struct TerminationSuccessScreen_Previews: PreviewProvider {
-//    static var previews: some View {
-//        TerminationSuccessScreen()
-//    }
-//}
+    func formatAndPrintDate() -> String {
+        let dateFormatter = DateFormatter()
+
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        return dateFormatter.string(from: terminationDate)
+    }
+}

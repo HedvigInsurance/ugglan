@@ -94,13 +94,13 @@ public enum ContractAction: ActionProtocol {
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 
     case goToTerminationFlow(contractId: String, contextInput: String)
-    case sendTermination(terminationDate: String, contextInput: String, surveyUrl: String)
+    case sendTermination(terminationDate: Date, contextInput: String, surveyUrl: String)
     case dismissTerminationFlow
     case terminationFail
 
     case startTermination(contractId: String)
     case setTerminationDetails(setTerminationDetails: TerminationStartFlow)
-    case sendTerminationDate(terminationDateInput: String, contextInput: String)
+    case sendTerminationDate(terminationDateInput: Date, contextInput: String)
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {
@@ -184,7 +184,11 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
 
         case .sendTerminationDate(let terminationDate, let contextInput):
 
-            let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: terminationDate)
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let inputDateToString = dateFormatter.string(from: terminationDate)
+
+            let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
 
             return FiniteSignal { callback in
                 self.octopus.client
