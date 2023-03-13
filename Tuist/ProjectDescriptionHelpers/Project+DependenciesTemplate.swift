@@ -20,6 +20,8 @@ public enum ExternalDependencies: CaseIterable {
     case reveal
     case datadog
     case hAnalytics
+    case odysseyKit
+    case authlib
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -52,7 +54,7 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/HedvigInsurance/Form",
-                    .exact("3.0.9")
+                    .exact("3.1.0")
                 )
             ]
         case .presentation:
@@ -93,7 +95,15 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.10.0"))]
         case .hAnalytics:
             return [
-                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.260.0"))
+                .package(url: "https://github.com/HedvigInsurance/hAnalytics.git", .exact("0.279.0"))
+            ]
+        case .odysseyKit:
+            return [
+                .package(url: "https://github.com/HedvigInsurance/OdysseyKit.git", .exact("1.251.0"))
+            ]
+        case .authlib:
+            return [
+                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("0.0.20"))
             ]
         }
     }
@@ -158,6 +168,14 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(product: "hAnalytics")
             ]
+        case .odysseyKit:
+            return [
+                .package(product: "OdysseyKit")
+            ]
+        case .authlib:
+            return [
+                .package(product: "authlib")
+            ]
         }
     }
 }
@@ -214,7 +232,7 @@ extension Project {
                     platform: .iOS,
                     product: .framework,
                     bundleId: "com.hedvig.\(name)",
-                    deploymentTarget: .iOS(targetVersion: "12.0", devices: [.iphone, .ipad]),
+                    deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],

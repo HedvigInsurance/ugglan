@@ -6,9 +6,9 @@ import hCore
 import hGraphQL
 
 public class ExtraBuildingRow {
-    let data: ReadWriteSignal<GraphQL.ExtraBuildingFragment>
+    let data: ReadWriteSignal<GiraffeGraphQL.ExtraBuildingFragment>
 
-    public init(data: ReadWriteSignal<GraphQL.ExtraBuildingFragment>) { self.data = data }
+    public init(data: ReadWriteSignal<GiraffeGraphQL.ExtraBuildingFragment>) { self.data = data }
 }
 
 extension ExtraBuildingRow: Viewable {

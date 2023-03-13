@@ -12,7 +12,7 @@ public struct CrossSellInfo: Codable, Equatable {
 
     init(
         headerImageURL: URL,
-        _ data: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info
+        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info
     ) {
         self.title = data.displayName
         self.about = data.aboutSection
@@ -36,6 +36,7 @@ public struct CrossSell: Codable, Equatable {
     public var buttonText: String
     public var embarkStoryName: String?
     public var notificationType: String
+    public var webActionURL: String?
     public var info: CrossSellInfo?
     public var hasBeenSeen: Bool {
         didSet {
@@ -59,6 +60,7 @@ public struct CrossSell: Codable, Equatable {
         blurHash: String,
         buttonText: String,
         embarkStoryName: String? = nil,
+        webActionURL: String? = nil,
         hasBeenSeen: Bool = false,
         typeOfContract: String,
         info: CrossSellInfo?
@@ -70,13 +72,14 @@ public struct CrossSell: Codable, Equatable {
         self.blurHash = blurHash
         self.buttonText = buttonText
         self.embarkStoryName = embarkStoryName
+        self.webActionURL = webActionURL
         self.hasBeenSeen = hasBeenSeen
         self.typeOfContract = typeOfContract
         self.info = info
     }
 
     init?(
-        _ data: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell
+        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell
     ) {
         title = data.title
         description = data.description
@@ -93,6 +96,7 @@ public struct CrossSell: Codable, Equatable {
         hasBeenSeen = UserDefaults.standard.bool(
             forKey: Self.hasBeenSeenKey(typeOfContract: data.contractType.rawValue)
         )
+        webActionURL = data.action.asCrossSellWeb?.url
         typeOfContract = data.contractType.rawValue
         info = CrossSellInfo(headerImageURL: parsedImageURL, data.info)
     }

@@ -4,6 +4,7 @@ import Foundation
 import Presentation
 import SnapshotTesting
 import SwiftUI
+import TestDependencies
 import Testing
 import TestingUtil
 import XCTest
@@ -32,10 +33,7 @@ class HomeTests: XCTestCase {
             Journey(
                 Home(
                     claimsContent: EmptyView(),
-                    commonClaims: EmptyView(),
-                    {
-
-                    }
+                    commonClaims: EmptyView()
                 ),
                 options: [
                     .defaults, .prefersLargeTitles(true),
@@ -48,7 +46,7 @@ class HomeTests: XCTestCase {
 
         let waitForApollo = expectation(description: "wait for apollo")
 
-        apolloClient.fetch(query: GraphQL.HomeQuery()).delay(by: 0.5)
+        apolloClient.fetch(query: GiraffeGraphQL.HomeQuery()).delay(by: 0.5)
             .onValue { _ in assertions(window)
                 waitForApollo.fulfill()
                 self.bag.dispose()

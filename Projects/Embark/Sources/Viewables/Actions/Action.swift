@@ -10,7 +10,7 @@ import hGraphQL
 struct Action { let state: EmbarkState }
 
 struct ActionResponse {
-    let link: GraphQL.EmbarkLinkFragment
+    let link: GiraffeGraphQL.EmbarkLinkFragment
     let data: ActionResponseData
 }
 
@@ -21,7 +21,7 @@ struct ActionResponseData {
 }
 
 extension Action: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GiraffeGraphQL.EmbarkLinkFragment>) {
         let bag = DisposeBag()
 
         let outerContainer = UIStackView()
@@ -137,7 +137,7 @@ extension Action: Viewable {
 
                         let hasCallbackedSignal = ReadWriteSignal<Bool>(false)
 
-                        func performCallback(_ link: GraphQL.EmbarkLinkFragment) {
+                        func performCallback(_ link: GiraffeGraphQL.EmbarkLinkFragment) {
                             if !hasCallbackedSignal.value {
                                 hasCallbackedSignal.value = true
                                 callback(link)
@@ -209,32 +209,6 @@ extension Action: Viewable {
                                 state: self.state
                             )
                             innerBag += view.addArranged(inputSet).onValue(performCallback)
-                        } else if let externalInsuranceProviderAction = actionData?
-                            .asEmbarkExternalInsuranceProviderAction
-                        {
-                            innerBag +=
-                                view.addArranged(
-                                    InsuranceProviderAction(
-                                        state: self.state,
-                                        data: .external(
-                                            externalInsuranceProviderAction
-                                        )
-                                    )
-                                )
-                                .onValue(performCallback)
-                        } else if let previousInsuranceProviderAction = actionData?
-                            .asEmbarkPreviousInsuranceProviderAction
-                        {
-                            innerBag +=
-                                view.addArranged(
-                                    InsuranceProviderAction(
-                                        state: self.state,
-                                        data: .previous(
-                                            previousInsuranceProviderAction
-                                        )
-                                    )
-                                )
-                                .onValue(performCallback)
                         } else if let multiAction = actionData?.asEmbarkMultiAction {
                             innerBag +=
                                 view.addArranged(

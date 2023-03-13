@@ -4,7 +4,10 @@ import Presentation
 import UIKit
 import hCore
 
-struct Launch { let completeAnimationCallbacker = Callbacker<Void>() }
+struct Launch {
+    let completeAnimationCallbacker = Callbacker<Void>()
+    static let shared = Launch()
+}
 
 extension Launch: Presentable {
     func materialize() -> (UIView, Future<Void>) {

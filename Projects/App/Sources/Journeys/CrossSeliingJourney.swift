@@ -21,8 +21,6 @@ extension AppJourney {
                 ContinueJourney()
             case let .signed(_, startDates):
                 CrossSellingSigned.journey(startDate: startDates.first?.value)
-            case .openCheckout:
-                AppJourney.offerCheckout
             case .signedQuoteCart:
                 DismissJourney()
             }
@@ -37,6 +35,8 @@ extension AppJourney {
                     AppJourney.crossSellingEmbarkJourney(name: name, style: .default)
                 case .chat:
                     AppJourney.freeTextChat().withDismissButton
+                case let .web(url):
+                    AppJourney.webRedirect(url: url)
                 }
             }
     }

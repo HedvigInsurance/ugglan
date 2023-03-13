@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import HomeTesting
 import SnapshotTesting
+import TestDependencies
 import Testing
 import TestingUtil
 import XCTest
@@ -34,7 +35,7 @@ final class RenewalCardTests: XCTestCase {
 
         view.snp.makeConstraints { make in make.width.equalTo(400) }
 
-        apolloClient.fetch(query: GraphQL.HomeQuery()).delay(by: 0.1)
+        apolloClient.fetch(query: GiraffeGraphQL.HomeQuery()).delay(by: 0.1)
             .onValue { _ in assertions(view)
                 waitForApollo.fulfill()
             }
@@ -44,20 +45,20 @@ final class RenewalCardTests: XCTestCase {
 
     func testDoesShowCard() {
         perform(.makeActiveWithMultipleRenewals()) { view in XCTAssertNotEqual(view.subviews.count, 0)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 
     func testDoesShowSingleCard() {
         perform(.makeActiveWithRenewal()) { view in XCTAssertNotEqual(view.subviews.count, 0)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 
     func testDoesShowMultipleSingleCards() {
         perform(.makeActiveWithMultipleRenewalsOnSeparateDates()) { view in
             XCTAssertNotEqual(view.subviews.count, 0)
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 

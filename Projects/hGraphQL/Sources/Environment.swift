@@ -1,4 +1,5 @@
 import Foundation
+import authlib
 
 public enum Environment: Hashable {
     case production
@@ -89,7 +90,7 @@ public enum Environment: Hashable {
         return targetEnvironment
     }
 
-    public var endpointURL: URL {
+    public var giraffeEndpointURL: URL {
         switch self {
         case .staging: return URL(string: "https://graphql.dev.hedvigit.com/graphql")!
         case .production: return URL(string: "https://giraffe.hedvig.com/graphql")!
@@ -97,7 +98,23 @@ public enum Environment: Hashable {
         }
     }
 
-    public var wsEndpointURL: URL {
+    public var octopusEndpointURL: URL {
+        switch self {
+        case .staging: return URL(string: "https://apollo-router.dev.hedvigit.com/")!
+        case .production: return URL(string: "https://apollo-router.prod.hedvigit.com/")!
+        case let .custom(endpointUrl, _, _, _): return endpointUrl
+        }
+    }
+
+    public var odysseyApiURL: URL {
+        switch self {
+        case .staging: return URL(string: "https://odyssey.dev.hedvigit.com")!
+        case .production: return URL(string: "https://odyssey.prod.hedvigit.com")!
+        case .custom: return URL(string: "https://odyssey.dev.hedvigit.com")!
+        }
+    }
+
+    public var giraffeWSEndpointURL: URL {
         switch self {
         case .staging: return URL(string: "wss://graphql.dev.hedvigit.com/subscriptions")!
         case .production: return URL(string: "wss://giraffe.hedvig.com/subscriptions")!
@@ -112,11 +129,20 @@ public enum Environment: Hashable {
         case let .custom(_, _, assetsUrl, _): return assetsUrl
         }
     }
+
     public var webBaseURL: URL {
         switch self {
         case .staging: return URL(string: "https://www.dev.hedvigit.com")!
         case .production: return URL(string: "https://www.hedvig.com")!
         case let .custom(_, _, _, webBaseURL): return webBaseURL
+        }
+    }
+
+    public var authEnvironment: AuthEnvironment {
+        switch self {
+        case .staging: return .staging
+        case .production: return .production
+        case .custom(_, _, _, _): return .staging
         }
     }
 }

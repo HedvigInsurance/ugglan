@@ -8,9 +8,10 @@ import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct PostOnboarding {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     typealias Content = ReusableSignalViewable<ImageTextAction<TableAction>, TableAction>
 
     enum TableAction { case payment, push, pushSkip }
@@ -111,7 +112,7 @@ extension PostOnboarding: Presentable {
         return (
             viewController,
             Signal { callback in
-                bag += client.isSwitchingInsurance.onValue { isSwitching in
+                bag += giraffe.client.isSwitchingInsurance.onValue { isSwitching in
                     let (table, disposable) = self.makeTable(isSwitching: isSwitching) { action in
                         switch action {
                         case .payment:

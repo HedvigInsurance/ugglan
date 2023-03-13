@@ -10,7 +10,7 @@ import hGraphQL
 struct AttachFilePane {
     let isOpenSignal: ReadWriteSignal<Bool>
     let chatState: ChatState
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     init(
         isOpenSignal: ReadWriteSignal<Bool>,
@@ -27,21 +27,22 @@ struct FileUpload {
     let fileName: String
 
     func upload() -> Future<(key: String, bucket: String)> {
-        let client: ApolloClient = Dependencies.shared.resolve()
+        let giraffe: hGiraffe = Dependencies.shared.resolve()
 
         let file = GraphQLFile(fieldName: "file", originalName: fileName, mimeType: mimeType, data: data)
 
         return Future { completion in
-            client.upload(
-                operation: GraphQL.UploadFileMutation(file: "image"),
-                files: [file],
-                queue: DispatchQueue.global(qos: .background)
-            )
-            .onValue { data in let key = data.uploadFile.key
-                let bucket = data.uploadFile.bucket
-                completion(.success((key, bucket)))
-            }
-            .disposable
+            giraffe.client
+                .upload(
+                    operation: GiraffeGraphQL.UploadFileMutation(file: "image"),
+                    files: [file],
+                    queue: DispatchQueue.global(qos: .background)
+                )
+                .onValue { data in let key = data.uploadFile.key
+                    let bucket = data.uploadFile.bucket
+                    completion(.success((key, bucket)))
+                }
+                .disposable
         }
     }
 }

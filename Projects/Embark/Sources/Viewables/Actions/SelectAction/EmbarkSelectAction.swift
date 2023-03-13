@@ -7,21 +7,23 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-typealias EmbarkSelectActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction
+typealias EmbarkSelectActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction
 
 struct EmbarkSelectAction {
     let state: EmbarkState
     let data: EmbarkSelectActionData
     @ReadWriteState private var isSelectOptionLoading = false
 
-    func handleClick(option: EmbarkSelectActionData.SelectActionDatum.Option) -> Future<GraphQL.EmbarkLinkFragment>? {
+    func handleClick(
+        option: EmbarkSelectActionData.SelectActionDatum.Option
+    ) -> Future<GiraffeGraphQL.EmbarkLinkFragment>? {
         if isSelectOptionLoading {
             return nil
         }
 
         $isSelectOptionLoading.value = true
 
-        let optionFuture: Future<(GraphQL.EmbarkLinkFragment, ActionResponseData)> = {
+        let optionFuture: Future<(GiraffeGraphQL.EmbarkLinkFragment, ActionResponseData)> = {
             let result = ActionResponseData(
                 keys: option.keys,
                 values: option.values,
@@ -63,7 +65,7 @@ struct EmbarkSelectAction {
 }
 
 extension EmbarkSelectAction: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GiraffeGraphQL.EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
         view.spacing = 10

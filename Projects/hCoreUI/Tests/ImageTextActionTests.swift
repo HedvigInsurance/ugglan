@@ -4,6 +4,7 @@ import Foundation
 import SnapshotTesting
 import Testing
 import XCTest
+import TestDependencies
 
 @testable import hCoreUI
 
@@ -39,7 +40,7 @@ final class ImageTextActionTests: XCTestCase {
 
         bag += viewController.install(imageTextAction).nil()
 
-        assertSnapshot(matching: viewController, as: .image(on: .iPhoneX))
+        ciAssertSnapshot(matching: viewController, as: .image(on: .iPhoneX))
 
         bag.dispose()
     }
@@ -69,7 +70,7 @@ final class ImageTextActionTests: XCTestCase {
 
         bag += viewController.install(imageTextAction).nil()
 
-        assertSnapshot(matching: viewController, as: .image(on: .iPhoneX))
+        ciAssertSnapshot(matching: viewController, as: .image(on: .iPhoneX))
 
         bag.dispose()
     }

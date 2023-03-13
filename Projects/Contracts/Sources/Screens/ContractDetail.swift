@@ -136,8 +136,21 @@ struct ContractDetail: View {
                         .animation(.interpolatingSpring(stiffness: 300, damping: 70))
                 }
             }
+
+            if hAnalyticsExperiment.terminationFlow {
+                hButton.SmallButtonText {
+                    store.send(.goToTerminationFlow)
+                } content: {
+                    hText(L10n.cancelSubscriptionButton, style: .body)
+                        .foregroundColor(hTintColor.red)
+
+                }
+                .padding(.top, 0)
+                .padding(.bottom, 39)
+            }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
+
     }
 }
 

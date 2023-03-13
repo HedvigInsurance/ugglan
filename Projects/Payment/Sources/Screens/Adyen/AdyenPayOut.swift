@@ -12,7 +12,7 @@ import hGraphQL
 extension AdyenMethodsList {
     static var payOutOptions: Future<AdyenOptions> {
         let client: ApolloClient = Dependencies.shared.resolve()
-        return client.fetch(query: GraphQL.AdyenAvailableMethodsQuery())
+        return client.fetch(query: GiraffeGraphQL.AdyenAvailableMethodsQuery())
             .compactMap { data in
                 guard
                     let paymentMethodsData = data.availablePayoutMethods.paymentMethodsResponse
@@ -30,8 +30,7 @@ extension AdyenMethodsList {
 }
 
 struct AdyenPayOut: Presentable {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
@@ -41,10 +40,10 @@ struct AdyenPayOut: Presentable {
                 let json = String(data: jsonData, encoding: .utf8)
             else { return }
 
-            self.client
+            self.giraffe.client
                 .perform(
-                    mutation: GraphQL.AdyenTokenizePayoutDetailsMutation(
-                        request: GraphQL.TokenizationRequest(
+                    mutation: GiraffeGraphQL.AdyenTokenizePayoutDetailsMutation(
+                        request: GiraffeGraphQL.TokenizationRequest(
                             paymentMethodDetails: json,
                             channel: .ios,
                             returnUrl: "\(urlScheme)://adyen"
@@ -67,8 +66,8 @@ struct AdyenPayOut: Presentable {
                     }
                 }
         } onSuccess: {
-            store.update(query: GraphQL.ActivePayoutMethodsQuery()) {
-                (data: inout GraphQL.ActivePayoutMethodsQuery.Data) in
+            giraffe.store.update(query: GiraffeGraphQL.ActivePayoutMethodsQuery()) {
+                (data: inout GiraffeGraphQL.ActivePayoutMethodsQuery.Data) in
                 data.activePayoutMethods = .init(status: .pending)
             }
         }

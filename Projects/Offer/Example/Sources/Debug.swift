@@ -83,11 +83,11 @@ struct Debug: View {
                 .onTap {
                     openDataCollection(locale: .en_SE) {
                         SubscriptionMock(
-                            GraphQL.DataCollectionSubscription.self,
+                            GiraffeGraphQL.DataCollectionSubscription.self,
                             timeline: { operation in
                                 TimelineEntry(
                                     after: 2,
-                                    data: GraphQL.DataCollectionSubscription.Data(
+                                    data: GiraffeGraphQL.DataCollectionSubscription.Data(
                                         dataCollectionStatusV2: .init(
                                             extraInformation: .makeSwedishBankIdExtraInfo(
                                                 autoStartToken: nil,
@@ -143,26 +143,13 @@ extension Debug {
 
 extension Debug {
     @GraphQLMockBuilder var sharedMocks: some GraphQLMock {
-        MutationMock(GraphQL.ChangeStartDateMutation.self, duration: 2) { operation in
-            if operation.startDate
-                == Calendar.current.date(byAdding: .day, value: 3, to: Date())?
-                .localDateString
-            {
-                throw MockError.failed
-            }
 
-            return
-                GraphQL.ChangeStartDateMutation.Data(
-                    editQuote: .makeCompleteQuote(startDate: operation.startDate)
-                )
-        }
-
-        MutationMock(GraphQL.RedeemDiscountCodeMutation.self, duration: 2) { operation in
+        MutationMock(GiraffeGraphQL.RedeemDiscountCodeMutation.self, duration: 2) { operation in
             if operation.code == "hello" {
                 throw MockError.failed
             }
 
-            let mockData = GraphQL.RedeemDiscountCodeMutation.Data(
+            let mockData = GiraffeGraphQL.RedeemDiscountCodeMutation.Data(
                 redeemCodeV2: .makeSuccessfulRedeemResult(
                     cost:
                         .init(
@@ -181,8 +168,8 @@ extension Debug {
             return mockData
         }
 
-        MutationMock(GraphQL.RemoveDiscountMutation.self, duration: 2) { _ in
-            let mockData = GraphQL.RemoveDiscountMutation.Data(
+        MutationMock(GiraffeGraphQL.RemoveDiscountMutation.self, duration: 2) { _ in
+            let mockData = GiraffeGraphQL.RemoveDiscountMutation.Data(
                 removeDiscountCode: .init(
                     cost: .init(
                         monthlyDiscount: .init(amount: "0", currency: "SEK"),
@@ -196,11 +183,11 @@ extension Debug {
         }
 
         SubscriptionMock(
-            GraphQL.SignStatusSubscription.self,
+            GiraffeGraphQL.SignStatusSubscription.self,
             timeline: { operation in
                 TimelineEntry(
                     after: 0,
-                    data: GraphQL.SignStatusSubscription.Data(
+                    data: GiraffeGraphQL.SignStatusSubscription.Data(
                         signStatus: .init(
                             status: .init(
                                 collectStatus: .init(
@@ -214,7 +201,7 @@ extension Debug {
                 )
                 TimelineEntry(
                     after: 5,
-                    data: GraphQL.SignStatusSubscription.Data(
+                    data: GiraffeGraphQL.SignStatusSubscription.Data(
                         signStatus: .init(
                             status: .init(
                                 collectStatus: .init(
@@ -228,7 +215,7 @@ extension Debug {
                 )
                 TimelineEntry(
                     after: 10,
-                    data: GraphQL.SignStatusSubscription.Data(
+                    data: GiraffeGraphQL.SignStatusSubscription.Data(
                         signStatus: .init(
                             status: .init(
                                 collectStatus: .init(
@@ -242,17 +229,5 @@ extension Debug {
                 )
             }
         )
-
-        MutationMock(GraphQL.RemoveStartDateMutation.self) { _ in
-            GraphQL.RemoveStartDateMutation.Data(
-                removeStartDate: .makeCompleteQuote(startDate: nil)
-            )
-        }
-
-        MutationMock(GraphQL.CheckoutUpdateMutation.self, duration: 2) { operation in
-            GraphQL.CheckoutUpdateMutation.Data(
-                editQuote: .makeCompleteQuote(email: operation.email, ssn: operation.ssn)
-            )
-        }
     }
 }

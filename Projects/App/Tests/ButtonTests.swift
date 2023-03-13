@@ -4,6 +4,7 @@ import UIKit
 import XCTest
 import hCore
 import hCoreUI
+import TestDependencies
 
 @testable import Ugglan
 
@@ -16,6 +17,6 @@ class ButtonTests: XCTestCase {
     func testChatButton() {
         let chatButton = ChatButton(presentingViewController: UIViewController())
 
-        materializeViewable(chatButton) { view in assertSnapshot(matching: view, as: .image) }
+        materializeViewable(chatButton) { view in ciAssertSnapshot(matching: view, as: .image) }
     }
 }

@@ -11,7 +11,7 @@ import hCoreUI
 import hGraphQL
 
 struct Chat {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let reloadChatCallbacker = Callbacker<Void>()
     let chatState = ChatState.shared
 
@@ -60,8 +60,6 @@ enum ChatResult {
                         ContinueJourney()
                     case let .menu(action):
                         action.journey
-                    case .openCheckout:
-                        AppJourney.offerCheckout
                     case .signedQuoteCart:
                         DismissJourney()
                     }

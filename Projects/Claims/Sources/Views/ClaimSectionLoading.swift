@@ -3,6 +3,7 @@ import Flow
 import Foundation
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -34,13 +35,15 @@ struct ClaimSectionLoading: View {
     public func startClaimsButton(_ claims: [Claim]) -> some View {
         if claims.count > 0 {
             hButton.LargeButtonOutlined {
-                store.send(.submitNewClaim)
+                hAnalyticsEvent.beginClaim(screen: .home).send()
+                store.send(.submitNewClaim(from: .generic))
             } content: {
                 L10n.Home.OpenClaim.startNewClaimButton.hText()
             }
         } else {
             hButton.LargeButtonFilled {
-                store.send(.submitNewClaim)
+                hAnalyticsEvent.beginClaim(screen: .home).send()
+                store.send(.submitNewClaim(from: .generic))
             } content: {
                 hText(L10n.HomeTab.claimButtonText)
             }

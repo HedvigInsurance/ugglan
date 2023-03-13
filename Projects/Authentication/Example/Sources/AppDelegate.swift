@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         application.setup()
 
         ApolloClient.createMock {
-            MutationMock(GraphQL.VerifyLoginOtpAttemptMutation.self, duration: 2) { operation in
+            MutationMock(GiraffeGraphQL.VerifyLoginOtpAttemptMutation.self, duration: 2) { operation in
                 if operation.otp == "000000" {
                     return .init(loginVerifyOtpAttempt: .makeVerifyOtpLoginAttemptError(errorCode: "fail"))
                 } else {
@@ -27,11 +27,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
 
-            MutationMock(GraphQL.CreateLoginOtpAttemptMutation.self, duration: 2) { _ in
+            MutationMock(GiraffeGraphQL.CreateLoginOtpAttemptMutation.self, duration: 2) { _ in
                 .init(loginCreateOtpAttempt: UUID().uuidString)
             }
 
-            MutationMock(GraphQL.ResendLoginOtpMutation.self, duration: 2) { _ in
+            MutationMock(GiraffeGraphQL.ResendLoginOtpMutation.self, duration: 2) { _ in
                 .init(loginResendOtp: UUID().uuidString)
             }
         }

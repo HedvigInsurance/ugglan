@@ -3,10 +3,10 @@ import Flow
 import Foundation
 
 extension ApolloClient {
-    public func fetchActiveContractBundles(locale: GraphQL.Locale) -> Future<[ActiveContractBundle]> {
+    public func fetchActiveContractBundles(locale: GiraffeGraphQL.Locale) -> Future<[ActiveContractBundle]> {
         return
             self.fetch(
-                query: GraphQL.ActiveContractBundlesQuery(
+                query: GiraffeGraphQL.ActiveContractBundlesQuery(
                     locale: locale
                 ),
                 cachePolicy: .fetchIgnoringCacheData,
@@ -18,10 +18,10 @@ extension ApolloClient {
             .map(on: .main) { $0 }
     }
 
-    public func fetchContracts(locale: GraphQL.Locale) -> Future<[Contract]> {
+    public func fetchContracts(locale: GiraffeGraphQL.Locale) -> Future<[Contract]> {
         return
             self.fetch(
-                query: GraphQL.ContractsQuery(
+                query: GiraffeGraphQL.ContractsQuery(
                     locale: locale
                 ),
                 cachePolicy: .fetchIgnoringCacheData,

@@ -1,5 +1,6 @@
 import Foundation
 import SnapshotTesting
+import TestDependencies
 import Testing
 import XCTest
 import hGraphQL
@@ -15,11 +16,11 @@ final class SelectActionOptionTests: XCTestCase {
     func testSelectActionOption() {
         let selectActionOption = EmbarkSelectActionOption(
             state: .init(),
-            data: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction
+            data: GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkSelectAction
                 .SelectActionDatum.Option(
                     keys: ["test"],
                     values: ["test"],
-                    link: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+                    link: GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
                         .AsEmbarkSelectAction.SelectActionDatum.Option.Link(
                             name: "somewhere",
                             hidden: false,
@@ -31,7 +32,7 @@ final class SelectActionOptionTests: XCTestCase {
         materializeViewable(selectActionOption) { view in
             view.snp.makeConstraints { make in make.width.equalTo(150) }
 
-            assertSnapshot(matching: view, as: .image)
+            ciAssertSnapshot(matching: view, as: .image)
         }
     }
 }

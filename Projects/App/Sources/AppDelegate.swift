@@ -1,6 +1,7 @@
 import Adyen
 import AdyenActions
 import Apollo
+import Authentication
 import CoreDependencies
 import Datadog
 import DatadogCrashReporting
@@ -12,6 +13,7 @@ import Flow
 import Form
 import Foundation
 import Hero
+import OdysseyKit
 import Offer
 import Payment
 import Presentation
@@ -29,11 +31,6 @@ import hGraphQL
     #endif
 #endif
 
-let log = Logger.builder
-    .sendNetworkInfo(true)
-    .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
-    .build()
-
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let window: UIWindow = {
@@ -42,12 +39,8 @@ let log = Logger.builder
         return window
     }()
 
-    func logout(token: String?) {
-        hAnalyticsEvent.loggedOut().send()
-        bag.dispose()
-
+    func presentMainJourney() {
         ApolloClient.cache = InMemoryNormalizedCache()
-        ApolloClient.deleteToken()
 
         // remove all persisted state
         globalPresentableStoreContainer.deletePersistanceContainer()
@@ -55,17 +48,24 @@ let log = Logger.builder
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()
 
-        if let token = token {
-            ApolloClient.saveToken(token: token)
-        }
+        self.setupSession()
 
-        setupSession()
-
-        bag += ApolloClient.initAndRegisterClient()
+        self.bag += ApolloClient.initAndRegisterClient()
             .onValue { _ in
                 ChatState.shared = ChatState()
                 self.bag += self.window.present(AppJourney.main)
             }
+    }
+
+    func logout() {
+        hAnalyticsEvent.loggedOut().send()
+        bag.dispose()
+
+        let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
+        authenticationStore.send(.logout)
+
+        ApolloClient.deleteToken()
+        self.presentMainJourney()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -103,21 +103,6 @@ let log = Logger.builder
             }
     }
 
-    func setToken(_ token: String) {
-        ApolloClient.cache = InMemoryNormalizedCache()
-        ApolloClient.saveToken(token: token)
-
-        ApolloClient.initAndRegisterClient()
-            .always {
-                ChatState.shared = ChatState()
-                self.bag +=
-                    self
-                    .window.present(
-                        AppJourney.loggedIn
-                    )
-            }
-    }
-
     func registerForPushNotifications() -> Future<Void> {
         Future { completion in
             UNUserNotificationCenter.current()
@@ -150,6 +135,11 @@ let log = Logger.builder
     }
 
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
+        if url.relativePath.contains("login-failure") {
+            let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
+            authenticationStore.send(.loginFailure)
+        }
+
         let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
 
         if adyenRedirect { return adyenRedirect }
@@ -209,9 +199,7 @@ let log = Logger.builder
                 ApolloClient.initAndRegisterClient()
                     .always {
                         ChatState.shared = ChatState()
-                        DispatchQueue.main.async {
-                            self.updateLanguageMutation()
-                        }
+                        self.performUpdateLanguage()
                     }
             }
 
@@ -229,6 +217,12 @@ let log = Logger.builder
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
+
+        hGraphQL.log = Logger.builder
+            .sendNetworkInfo(true)
+            .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
+            .build()
+
         setupSession()
 
         log.info("Starting app")
@@ -238,11 +232,32 @@ let log = Logger.builder
 
         FirebaseApp.configure()
 
-        let launch = Launch()
-
-        let (launchView, launchFuture) = launch.materialize()
+        let (launchView, launchFuture) = Launch.shared.materialize()
         window.rootView.addSubview(launchView)
         launchView.layer.zPosition = .greatestFiniteMagnitude - 2
+
+        forceLogoutHook = {
+            DispatchQueue.main.async {
+                launchView.removeFromSuperview()
+
+                ApplicationState.preserveState(.marketPicker)
+
+                ApplicationContext.shared.hasFinishedBootstrapping = true
+                Launch.shared.completeAnimationCallbacker.callAll()
+
+                UIApplication.shared.appDelegate.logout()
+
+                let toast = Toast(
+                    symbol: .icon(hCoreUIAssets.infoShield.image),
+                    body: L10n.forceLogoutMessageTitle,
+                    subtitle: L10n.forceLogoutMessageSubtitle,
+                    textColor: .black,
+                    backgroundColor: .brand(.regularCaution)
+                )
+
+                Toasts.shared.displayToast(toast: toast)
+            }
+        }
 
         window.rootViewController = UIViewController()
         window.makeKeyAndVisible()
@@ -254,29 +269,8 @@ let log = Logger.builder
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
 
-        trackNotificationPermission()
-
-        self.setupHAnalyticsExperiments()
-
-        bag += ApplicationContext.shared.$hasLoadedExperiments.take(first: 1)
-            .onValue { isLoaded in
-                guard isLoaded else { return }
-                self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-                    .atValue { _ in
-                        Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
-
-                        AnalyticsCoordinator().setUserId()
-
-                        self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
-                            .filter(predicate: { hasLoaded in hasLoaded })
-                            .onValue { _ in
-                                self.bag += self.window.present(AppJourney.main)
-                                launch.completeAnimationCallbacker.callAll()
-                            }
-                    }
-            }
-
-        bag += launchFuture.valueSignal.onValue { _ in launchView.removeFromSuperview()
+        bag += launchFuture.valueSignal.onValue { _ in
+            launchView.removeFromSuperview()
             ApplicationContext.shared.hasFinishedBootstrapping = true
 
             if Environment.hasOverridenDefault {
@@ -300,16 +294,42 @@ let log = Logger.builder
             }
         }
 
+        ApolloClient.migrateOldTokenIfNeeded()
+            .onValue { _ in
+                self.trackNotificationPermission()
+                self.setupHAnalyticsExperiments()
+
+                self.bag += ApplicationContext.shared.$hasLoadedExperiments
+                    .atOnce()
+                    .onValue { isLoaded in
+                        guard isLoaded else { return }
+                        self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
+                            .atValue { _ in
+                                self.initOdyssey()
+
+                                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+
+                                AnalyticsCoordinator().setUserId()
+
+                                self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
+                                    .filter(predicate: { hasLoaded in hasLoaded })
+                                    .onValue { _ in
+                                        self.bag += self.window.present(AppJourney.main)
+                                    }
+                            }
+                    }
+            }
+
         return true
     }
 }
 
 extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
-        Self.initClient()
-            .onValue { store, client in
-                Dependencies.shared.add(module: Module { store })
-                Dependencies.shared.add(module: Module { client })
+        Self.initClients()
+            .onValue { hApollo in
+                Dependencies.shared.add(module: Module { hApollo.giraffe })
+                Dependencies.shared.add(module: Module { hApollo.octopus })
             }
             .toVoid()
     }

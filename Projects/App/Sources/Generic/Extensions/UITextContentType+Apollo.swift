@@ -4,7 +4,7 @@ import UIKit
 import hGraphQL
 
 extension UITextContentType {
-    static func from(_ textContentType: GraphQL.TextContentType?) -> UITextContentType? {
+    static func from(_ textContentType: GiraffeGraphQL.TextContentType?) -> UITextContentType? {
         guard let textContentType = textContentType else { return nil }
 
         switch textContentType {

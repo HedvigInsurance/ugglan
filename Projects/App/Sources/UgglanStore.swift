@@ -17,80 +17,21 @@ public enum UgglanAction: ActionProtocol {
     case setSelectedTabIndex(index: Int)
     case makeTabActive(deeplink: DeepLink)
     case showLoggedIn
-    case openClaims
-    case exchangePaymentLink(link: String)
-    case exchangePaymentToken(token: String)
-    case validateAuthToken
-    case exchangeFailed
     case didAcceptHonestyPledge
     case openChat
     case sendAccountDeleteRequest(details: MemberDetails)
+    case businessModelDetail
+    case aboutBusinessModel
 }
 
 public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
-    @Inject var client: ApolloClient
-
-    private func performTokenExchange(with token: String) -> FiniteSignal<UgglanAction> {
-        return
-            client.perform(
-                mutation: GraphQL.ExchangeTokenMutation(
-                    exchangeToken: token.removingPercentEncoding ?? ""
-                )
-            )
-            .valueThenEndSignal
-            .atValue(on: .main) { _ in
-
-            }
-            .delay(by: 0.25)
-            .compactMap(on: .main) { response in
-                guard
-                    let token = response.exchangeToken
-                        .asExchangeTokenSuccessResponse?
-                        .token
-                else { return .exchangeFailed }
-
-                ApplicationState.preserveState(.impersonation)
-                UIApplication.shared.appDelegate.logout(token: token)
-                return nil
-            }
-    }
+    @Inject var giraffe: hGiraffe
 
     public override func effects(
         _ getState: @escaping () -> UgglanState,
         _ action: UgglanAction
     ) -> FiniteSignal<UgglanAction>? {
         switch action {
-        case let .exchangePaymentLink(link):
-            let afterHashbang = link.split(separator: "#").last
-            let exchangeToken =
-                afterHashbang?.replacingOccurrences(of: "exchange-token=", with: "")
-                ?? ""
-
-            return performTokenExchange(with: exchangeToken)
-        case let .exchangePaymentToken(token):
-            return performTokenExchange(with: token)
-        case .validateAuthToken:
-            return client.fetch(query: GraphQL.MemberIdQuery())
-                .valueThenEndSignal
-                .atError(on: .main) { error in
-                    log.error(error.localizedDescription)
-                    ApplicationState.preserveState(.marketPicker)
-                    UIApplication.shared.appDelegate.logout(token: nil)
-                    let toast = Toast(
-                        symbol: .icon(hCoreUIAssets.infoShield.image),
-                        body: L10n.forceLogoutMessageTitle,
-                        subtitle: L10n.forceLogoutMessageSubtitle,
-                        textColor: .black,
-                        backgroundColor: .brand(.regularCaution)
-                    )
-
-                    Toasts.shared.displayToast(toast: toast)
-                }
-                .compactMap { $0.member.id }
-                .compactMap(on: .main) { _ in
-                    return nil
-                }
-
         default:
             break
         }
@@ -104,8 +45,6 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
         switch action {
         case let .setSelectedTabIndex(tabIndex):
             newState.selectedTabIndex = tabIndex
-        case .openClaims:
-            break
         default:
             break
         }

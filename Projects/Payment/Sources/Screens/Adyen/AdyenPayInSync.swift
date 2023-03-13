@@ -10,7 +10,7 @@ import hCoreUI
 import hGraphQL
 
 struct AdyenPayInSync {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     let setupType: PaymentSetup.SetupType
     let urlScheme: String
@@ -40,7 +40,7 @@ extension AdyenPayInSync: Presentable {
         return (
             viewController,
             FiniteSignal { callback in
-                client.fetch(query: GraphQL.ActivePaymentMethodsQuery())
+                giraffe.client.fetch(query: GiraffeGraphQL.ActivePaymentMethodsQuery())
                     .onError({ error in
                         print(error)
                     })

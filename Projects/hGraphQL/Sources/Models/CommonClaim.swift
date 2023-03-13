@@ -6,8 +6,12 @@ public struct CommonClaim: Codable, Equatable {
     public let displayTitle: String
     public let layout: Layout
 
+    public enum CommonClaimItemType: String {
+        case phone = "PHONE"
+    }
+
     public init(
-        claim: GraphQL.CommonClaimsQuery.Data.CommonClaim
+        claim: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim
     ) {
         self.id = claim.id
         self.displayTitle = claim.title
@@ -20,7 +24,7 @@ public struct CommonClaim: Codable, Equatable {
         public var emergency: Emergency?
 
         public init(
-            layout: GraphQL.CommonClaimsQuery.Data.CommonClaim.Layout
+            layout: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim.Layout
         ) {
             if let emergency = layout.asEmergency {
                 self.emergency = Emergency(title: emergency.title, color: emergency.color.rawValue)

@@ -12,9 +12,9 @@ extension AppJourney {
             ContinueJourney()
         }
         .onPresent {
-            let client: ApolloClient = Dependencies.shared.resolve()
+            let giraffe: hGiraffe = Dependencies.shared.resolve()
 
-            client.perform(mutation: GraphQL.TriggerFreeTextChatMutation())
+            giraffe.client.perform(mutation: GiraffeGraphQL.TriggerFreeTextChatMutation())
                 .onValue { _ in
                     chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
                         chat.chatState.subscribe()
@@ -34,9 +34,9 @@ extension AppJourney {
             ContinueJourney()
         }
         .onPresent {
-            let client: ApolloClient = Dependencies.shared.resolve()
+            let giraffe: hGiraffe = Dependencies.shared.resolve()
 
-            client.perform(mutation: GraphQL.TriggerFreeTextChatMutation())
+            giraffe.client.perform(mutation: GiraffeGraphQL.TriggerFreeTextChatMutation())
                 .onValue { _ in
                     chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
                         chat.chatState.subscribe()

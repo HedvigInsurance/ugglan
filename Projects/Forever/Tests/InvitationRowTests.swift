@@ -5,6 +5,7 @@ import SnapshotTesting
 import Testing
 import XCTest
 import hCoreUI
+import TestDependencies
 
 @testable import Forever
 
@@ -37,7 +38,7 @@ final class InvitationRowTests: XCTestCase {
 
         tableKit.table = Table(rows: [invitationRow])
 
-        assertSnapshot(matching: tableKit.view, as: .image)
+        ciAssertSnapshot(matching: tableKit.view, as: .image)
 
         bag.dispose()
     }
@@ -53,7 +54,7 @@ final class InvitationRowTests: XCTestCase {
 
         tableKit.table = Table(rows: [invitationRow])
 
-        assertSnapshot(matching: tableKit.view, as: .image)
+        ciAssertSnapshot(matching: tableKit.view, as: .image)
 
         bag.dispose()
     }
@@ -69,7 +70,7 @@ final class InvitationRowTests: XCTestCase {
 
         tableKit.table = Table(rows: [invitationRow])
 
-        assertSnapshot(matching: tableKit.view, as: .image)
+        ciAssertSnapshot(matching: tableKit.view, as: .image)
 
         bag.dispose()
     }
@@ -85,7 +86,7 @@ final class InvitationRowTests: XCTestCase {
 
         tableKit.table = Table(rows: [invitationRow])
 
-        assertSnapshot(matching: tableKit.view, as: .image)
+        ciAssertSnapshot(matching: tableKit.view, as: .image)
 
         bag.dispose()
     }

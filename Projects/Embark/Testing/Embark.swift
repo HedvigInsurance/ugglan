@@ -38,8 +38,8 @@ public struct Debug {
 }
 
 extension EmbarkStory {
-    fileprivate static func makeFor(component: Debug.Component) -> GraphQL.EmbarkStoryQuery.Data {
-        var action: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action?
+    fileprivate static func makeFor(component: Debug.Component) -> GiraffeGraphQL.EmbarkStoryQuery.Data {
+        var action: GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action?
 
         switch component {
         case .multiAction:
@@ -52,7 +52,7 @@ extension EmbarkStory {
             action = embarkAudioRecorderAction
         }
 
-        let passage = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage(
+        let passage = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage(
             id: "asd123",
             name: "Enter Address",
             externalRedirect: nil,
@@ -72,22 +72,27 @@ extension EmbarkStory {
             action: action
         )
 
-        let mockedStory = GraphQL.EmbarkStoryQuery.Data.EmbarkStory(
+        let mockedStory = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory(
             id: "asd",
             startPassage: "asd123",
             name: "Mocked Story",
             passages: [passage]
         )
 
-        let mockedData = GraphQL.EmbarkStoryQuery.Data(embarkStory: mockedStory)
+        let mockedData = GiraffeGraphQL.EmbarkStoryQuery.Data(embarkStory: mockedStory)
 
         return mockedData
     }
 
-    fileprivate static let datePickerAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
-        .makeEmbarkDatePickerAction(component: "", next: .init(name: "", hidden: false, label: ""), storeKey: "", label: "Access Date")
+    fileprivate static let datePickerAction = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+        .makeEmbarkDatePickerAction(
+            component: "",
+            next: .init(name: "", hidden: false, label: ""),
+            storeKey: "",
+            label: "Access Date"
+        )
 
-    fileprivate static let mockedMultiAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+    fileprivate static let mockedMultiAction = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
         .makeEmbarkMultiAction(
             multiActionData: .init(
                 addLabel: "Add Building",
@@ -101,7 +106,7 @@ extension EmbarkStory {
             component: ""
         )
 
-    fileprivate static let embarkNumberComponent = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+    fileprivate static let embarkNumberComponent = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
         .AsEmbarkMultiAction.MultiActionDatum.Component.makeEmbarkMultiActionNumberAction(
             numberActionData: .init(
                 placeholder: "478",
@@ -110,7 +115,7 @@ extension EmbarkStory {
             )
         )
 
-    fileprivate static let embarkDropDownComponent = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+    fileprivate static let embarkDropDownComponent = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
         .AsEmbarkMultiAction.MultiActionDatum.Component.makeEmbarkDropdownAction(
             dropDownActionData: .init(
                 label: "Building Type",
@@ -128,7 +133,7 @@ extension EmbarkStory {
             )
         )
 
-    fileprivate static let embarkSwitchComponent = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+    fileprivate static let embarkSwitchComponent = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
         .AsEmbarkMultiAction.MultiActionDatum.Component.makeEmbarkSwitchAction(
             switchActionData:
                 .init(
@@ -138,7 +143,7 @@ extension EmbarkStory {
                 )
         )
 
-    fileprivate static let embarkNumberAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+    fileprivate static let embarkNumberAction = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
         .makeEmbarkNumberAction(
             component: "",
             numberActionData: .init(
@@ -148,10 +153,14 @@ extension EmbarkStory {
             )
         )
 
-    fileprivate static let embarkAudioRecorderAction = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+    fileprivate static let embarkAudioRecorderAction = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
         .makeEmbarkAudioRecorderAction(
             component: "audioRec",
-            audioRecorderData: .init(storeKey: "key", label: "Continue", next: .init(name: "mock", hidden: false, label: "mock"))
+            audioRecorderData: .init(
+                storeKey: "key",
+                label: "Continue",
+                next: .init(name: "mock", hidden: false, label: "mock")
+            )
         )
 }
 

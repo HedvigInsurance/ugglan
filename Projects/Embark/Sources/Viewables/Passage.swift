@@ -8,10 +8,10 @@ import hGraphQL
 
 struct Passage { let state: EmbarkState }
 
-typealias EmbarkPassage = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
+typealias EmbarkPassage = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
 
 extension Passage: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GiraffeGraphQL.EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
         view.distribution = .equalSpacing

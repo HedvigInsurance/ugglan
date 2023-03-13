@@ -54,6 +54,7 @@ public struct CrossSellingDetail: View {
 public enum CrossSellingDetailResult {
     case embark(name: String)
     case chat
+    case web(url: URL)
 }
 
 extension CrossSellingDetail {
@@ -76,6 +77,8 @@ extension CrossSellingDetail {
                 CrossSellingCoverageDetail(crossSell: self.crossSell).journey(next)
             } else if case .crossSellingFAQListNavigation(action: .list) = action {
                 CrossSellingFAQList(crossSell: self.crossSell).journey(next)
+            } else if case let .crossSellWebAction(url) = action {
+                next(.web(url: url))
             }
         }
         .configureTitle(crossSell.title)

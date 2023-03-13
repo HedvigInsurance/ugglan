@@ -5,6 +5,7 @@ import Photos
 import UIKit
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct FilePickerHeader { var uploadFileDelegate = Delegate<FileUpload, Future<(key: String, bucket: String)>>() }
 

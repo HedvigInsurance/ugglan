@@ -4,6 +4,7 @@ import Form
 import Foundation
 import HomeTesting
 import SnapshotTesting
+import TestDependencies
 import Testing
 import TestingUtil
 import XCTest
@@ -39,10 +40,10 @@ final class ImportantMessagesSectionTest: XCTestCase {
         )
         self.bag += bag
 
-        apolloClient.fetch(query: GraphQL.ImportantMessagesQuery(langCode: "")).delay(by: 0.1)
+        apolloClient.fetch(query: GiraffeGraphQL.ImportantMessagesQuery(langCode: "")).delay(by: 0.1)
             .onValue { _ in view.snp.makeConstraints { make in make.width.equalTo(400) }
 
-                assertSnapshot(matching: view, as: .image)
+                ciAssertSnapshot(matching: view, as: .image)
                 waitForApollo.fulfill()
             }
 

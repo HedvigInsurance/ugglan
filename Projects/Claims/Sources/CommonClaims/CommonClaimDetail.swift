@@ -46,17 +46,10 @@ extension CommonClaimDetail: Presentable {
         topCardContentView.isLayoutMarginsRelativeArrangement = true
         topCard.addSubview(topCardContentView)
 
-        topCardContentView.snp.makeConstraints { make in make.top.bottom.trailing.leading.equalToSuperview() }
-
-        let icon = RemoteVectorIcon(claim.icon, threaded: true)
-        bag += topCardContentView.addArranged(
-            icon.alignedTo(
-                .leading,
-                configure: { iconView in
-                    iconView.snp.makeConstraints { make in make.height.width.equalTo(40) }
-                }
-            )
-        )
+        topCardContentView.snp.makeConstraints { make in
+            make.bottom.trailing.leading.equalToSuperview()
+            make.top.equalTo(40)
+        }
 
         let layoutTitle = MultilineLabel(value: self.layoutTitle, style: .brand(.title2(color: .primary)))
         bag += topCardContentView.addArranged(layoutTitle)
@@ -74,7 +67,17 @@ extension CommonClaimDetail: Presentable {
             let store: ClaimsStore = self.get()
 
             bag += claimButton.onTapSignal.onValue {
-                store.send(.submitNewClaim)
+                hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
+
+                if claim.id == "25" {
+                    if let url = URL(
+                        string: "https://apps.apple.com/se/app/firstvet-veterin%C3%A4r-i-mobilen/id1155459157"
+                    ) {
+                        UIApplication.shared.open(url)
+                    }
+                } else {
+                    store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
+                }
             }
 
             bag += view.addArranged(BulletPointTable(bulletPoints: bulletPoints))

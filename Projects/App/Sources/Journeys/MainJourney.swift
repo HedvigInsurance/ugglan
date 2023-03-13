@@ -1,3 +1,4 @@
+import Authentication
 import Flow
 import Foundation
 import Market
@@ -12,15 +13,21 @@ extension AppJourney {
     static var main: some JourneyPresentation {
         GroupJourney {
             if hAnalyticsExperiment.updateNecessary {
-                AppJourney.updateApp
+                AppJourney.updateApp.onPresent {
+                    Launch.shared.completeAnimationCallbacker.callAll()
+                }
             } else {
                 switch ApplicationState.currentState {
                 case .onboardingChat, .onboarding, .offer:
                     AppJourney.marketPicker
                 case .loggedIn:
-                    AppJourney.loggedIn
+                    AppJourney.loggedIn.onPresent {
+                        Launch.shared.completeAnimationCallbacker.callAll()
+                    }
                 case .impersonation:
-                    AppJourney.impersonationSettings
+                    AppJourney.impersonationSettings.onPresent {
+                        Launch.shared.completeAnimationCallbacker.callAll()
+                    }
                 default:
                     AppJourney.marketPicker
                 }
@@ -29,6 +36,13 @@ extension AppJourney {
         .onAction(UgglanStore.self) { action in
             if action == .showLoggedIn {
                 AppJourney.loggedIn
+            }
+        }
+        .onAction(AuthenticationStore.self) { action in
+            if action == .navigationAction(action: .impersonation) {
+                AppJourney.impersonationSettings.onPresent {
+                    Launch.shared.completeAnimationCallbacker.callAll()
+                }
             }
         }
     }

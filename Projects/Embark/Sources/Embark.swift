@@ -10,7 +10,7 @@ import hCoreUI
 import hGraphQL
 
 public struct Embark {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let name: String
     public let menu: Menu?
     let state: EmbarkState
@@ -170,9 +170,9 @@ extension Embark: Presentable {
 
         activityIndicator.snp.makeConstraints { make in make.center.equalToSuperview() }
 
-        bag +=
-            client.fetch(
-                query: GraphQL.EmbarkStoryQuery(
+        bag += giraffe.client
+            .fetch(
+                query: GiraffeGraphQL.EmbarkStoryQuery(
                     name: name,
                     locale: Localization.Locale.currentLocale.code
                 ),
@@ -180,22 +180,23 @@ extension Embark: Presentable {
             )
             .valueSignal.compactMap { $0.embarkStory }
             .onValue { embarkStory in
-                client.perform(
-                    mutation: GraphQL.CreateQuoteCartMutation(
-                        input: .init(
-                            market: Localization.Locale.currentLocale.market.graphQL,
-                            locale: Localization.Locale.currentLocale.code
+                giraffe.client
+                    .perform(
+                        mutation: GiraffeGraphQL.CreateQuoteCartMutation(
+                            input: .init(
+                                market: Localization.Locale.currentLocale.market.graphQL,
+                                locale: Localization.Locale.currentLocale.code
+                            )
                         )
                     )
-                )
-                .onValue { quoteCartCreate in
-                    activityIndicator.removeFromSuperview()
-                    self.state.quoteCartId = quoteCartCreate.createQuoteCart.id
-                    self.state.storySignal.value = embarkStory
-                    self.state.passagesSignal.value = embarkStory.passages
-                    self.state.startPassageIDSignal.value = embarkStory.startPassage
-                    self.state.restart()
-                }
+                    .onValue { quoteCartCreate in
+                        activityIndicator.removeFromSuperview()
+                        self.state.quoteCartId = quoteCartCreate.createQuoteCart.id
+                        self.state.storySignal.value = embarkStory
+                        self.state.passagesSignal.value = embarkStory.passages
+                        self.state.startPassageIDSignal.value = embarkStory.startPassage
+                        self.state.restart()
+                    }
             }
 
         bag += edgePanGestureRecognizer.signal(forState: .ended)

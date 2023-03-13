@@ -15,8 +15,8 @@ import hGraphQL
 extension AppDelegate: MessagingDelegate {
     func registerFCMToken(_ token: String) {
         bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 })
-            .onValue { _ in let client: ApolloClient = Dependencies.shared.resolve()
-                client.perform(mutation: GraphQL.RegisterPushTokenMutation(pushToken: token))
+            .onValue { _ in let giraffe: hGiraffe = Dependencies.shared.resolve()
+                giraffe.client.perform(mutation: GiraffeGraphQL.RegisterPushTokenMutation(pushToken: token))
                     .onValue { data in
                         if data.registerPushToken != nil {
                             log.info("Did register push token for user")

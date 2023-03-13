@@ -6,8 +6,13 @@ import hGraphQL
 
 public class ForeverServiceGraphQL: ForeverService {
     public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
-        client.perform(mutation: GraphQL.ForeverUpdateDiscountCodeMutation(code: value)).valueSignal
-            .map { data in let updateReferralCampaignCode = data.updateReferralCampaignCode
+        giraffe.client
+            .perform(
+                mutation: GiraffeGraphQL.ForeverUpdateDiscountCodeMutation(code: value)
+            )
+            .valueSignal
+            .map { data -> Either<Void, ForeverChangeCodeError> in
+                let updateReferralCampaignCode = data.updateReferralCampaignCode
 
                 if updateReferralCampaignCode.asCodeAlreadyTaken != nil {
                     return .right(ForeverChangeCodeError.nonUnique)
@@ -22,10 +27,10 @@ public class ForeverServiceGraphQL: ForeverService {
                         )
                     )
                 } else if updateReferralCampaignCode.asSuccessfullyUpdatedCode != nil {
-                    self.store.withinReadWriteTransaction(
+                    self.giraffe.store.withinReadWriteTransaction(
                         { transaction in
-                            try transaction.update(query: GraphQL.ForeverQuery()) {
-                                (data: inout GraphQL.ForeverQuery.Data) in
+                            try transaction.update(query: GiraffeGraphQL.ForeverQuery()) {
+                                (data: inout GiraffeGraphQL.ForeverQuery.Data) in
                                 data.referralInformation.campaign.code = value
                             }
                         },
@@ -41,7 +46,7 @@ public class ForeverServiceGraphQL: ForeverService {
     }
 
     public var dataSignal: ReadSignal<ForeverData?> {
-        client.watch(query: GraphQL.ForeverQuery())
+        giraffe.client.watch(query: GiraffeGraphQL.ForeverQuery())
             .map { data -> ForeverData in
                 let grossAmount = data.referralInformation.costReducedIndefiniteDiscount?.monthlyGross
                 let grossAmountMonetary = MonetaryAmount(
@@ -148,11 +153,10 @@ public class ForeverServiceGraphQL: ForeverService {
     }
 
     public func refetch() {
-        client.fetch(query: GraphQL.ForeverQuery(), cachePolicy: .fetchIgnoringCacheData).sink()
+        giraffe.client.fetch(query: GiraffeGraphQL.ForeverQuery(), cachePolicy: .fetchIgnoringCacheData).sink()
     }
 
     public init() {}
 
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
 }

@@ -4,7 +4,23 @@ import Disk
 import Flow
 import Foundation
 import UIKit
+import authlib
 import hAnalytics
+
+public struct hApollo {
+    public let giraffe: hGiraffe
+    public let octopus: hOctopus
+}
+
+public struct hGiraffe {
+    public let client: ApolloClient
+    public let store: ApolloStore
+}
+
+public struct hOctopus {
+    public let client: ApolloClient
+    public let store: ApolloStore
+}
 
 extension ApolloClient {
     public static var acceptLanguageHeader: String = ""
@@ -20,8 +36,16 @@ extension ApolloClient {
 
     public static var cache = InMemoryNormalizedCache()
 
-    public static func headers(token: String?) -> [String: String] {
-        ["Authorization": token ?? "", "Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
+    public static func headers() -> [String: String] {
+        if let token = ApolloClient.retreiveToken() {
+            return [
+                "Authorization": token.accessToken,
+                "Accept-Language": acceptLanguageHeader,
+                "User-Agent": userAgent,
+            ]
+        }
+
+        return ["Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
     }
 
     public static func getDeviceIdentifier() -> String {
@@ -40,16 +64,15 @@ extension ApolloClient {
         }
     }
 
-    public static func createClient(token: String?) -> (ApolloStore, ApolloClient) {
+    static func createGiraffeClient() -> hGiraffe {
         let environment = Environment.current
 
-        let httpAdditionalHeaders = headers(token: token)
+        let httpAdditionalHeaders = headers()
 
         let store = ApolloStore(cache: ApolloClient.cache)
 
         let networkInterceptorProvider = NetworkInterceptorProvider(
             store: store,
-            token: token ?? "",
             acceptLanguageHeader: acceptLanguageHeader,
             userAgent: userAgent,
             deviceIdentifier: getDeviceIdentifier()
@@ -57,7 +80,7 @@ extension ApolloClient {
 
         let requestChainTransport = RequestChainNetworkTransport(
             interceptorProvider: networkInterceptorProvider,
-            endpointURL: environment.endpointURL
+            endpointURL: environment.giraffeEndpointURL
         )
 
         let clientName = "iOS:\(bundle?.bundleIdentifier ?? "")"
@@ -66,7 +89,7 @@ extension ApolloClient {
         requestChainTransport.clientVersion = appVersion
 
         let websocketNetworkTransport = WebSocketTransport(
-            websocket: WebSocket(request: URLRequest(url: environment.wsEndpointURL), protocol: .graphql_ws),
+            websocket: WebSocket(request: URLRequest(url: environment.giraffeWSEndpointURL), protocol: .graphql_ws),
             clientName: clientName,
             clientVersion: appVersion,
             connectingPayload: httpAdditionalHeaders as GraphQLMap
@@ -79,77 +102,116 @@ extension ApolloClient {
 
         let client = ApolloClient(networkTransport: splitNetworkTransport, store: store)
 
-        return (store, client)
+        return hGiraffe(client: client, store: store)
+    }
+
+    static func createOctopusClient() -> hOctopus {
+        let environment = Environment.current
+
+        let httpAdditionalHeaders = headers()
+
+        let store = ApolloStore(cache: ApolloClient.cache)
+
+        let networkInterceptorProvider = NetworkInterceptorProvider(
+            store: store,
+            acceptLanguageHeader: acceptLanguageHeader,
+            userAgent: userAgent,
+            deviceIdentifier: getDeviceIdentifier()
+        )
+
+        let requestChainTransport = RequestChainNetworkTransport(
+            interceptorProvider: networkInterceptorProvider,
+            endpointURL: environment.octopusEndpointURL
+        )
+
+        let clientName = "iOS:\(bundle?.bundleIdentifier ?? "")"
+
+        requestChainTransport.clientName = clientName
+        requestChainTransport.clientVersion = appVersion
+
+        let client = ApolloClient(networkTransport: requestChainTransport, store: store)
+
+        return hOctopus(client: client, store: store)
+    }
+
+    public static func createClient() -> hApollo {
+        return hApollo(
+            giraffe: createGiraffeClient(),
+            octopus: createOctopusClient()
+        )
     }
 
     public static func deleteToken() {
-        KeychainHelper.standard.delete(key: "authorizationToken")
+        KeychainHelper.standard.delete(key: "oAuthorizationToken")
     }
 
-    public static func retreiveToken() -> AuthorizationToken? {
+    public static func retreiveToken() -> OAuthorizationToken? {
+        KeychainHelper.standard.read(key: "oAuthorizationToken", type: OAuthorizationToken.self)
+    }
+
+    public static func retreiveMigratableToken() -> AuthorizationToken? {
         KeychainHelper.standard.read(key: "authorizationToken", type: AuthorizationToken.self)
     }
 
-    public static func saveToken(token: String) {
-        let authorizationToken = AuthorizationToken(token: token)
-        KeychainHelper.standard.save(authorizationToken, key: "authorizationToken")
+    public static func deleteMigratableToken() {
+        KeychainHelper.standard.delete(key: "authorizationToken")
     }
 
-    public static func createClientFromNewSession() -> Future<(ApolloStore, ApolloClient)> {
-        let campaign = GraphQL.CampaignInput(source: nil, medium: nil, term: nil, content: nil, name: nil)
-        let mutation = GraphQL.CreateSessionMutation(campaign: campaign, trackingId: nil)
+    public static func migrateOldTokenIfNeeded() -> Future<Void> {
+        Future { completion in
+            if let migrateableToken = retreiveMigratableToken() {
+                NetworkAuthRepository(
+                    environment: Environment.current.authEnvironment,
+                    additionalHttpHeaders: ApolloClient.headers(),
+                    callbacks: Callbacks(successUrl: "", failureUrl: "")
+                )
+                .migrateOldToken(token: migrateableToken.token) { result, _ in
+                    if let success = result as? AuthTokenResultSuccess {
+                        ApolloClient.handleAuthTokenSuccessResult(result: success)
+                    } else {
+                        forceLogoutHook()
+                    }
 
-        return Future { completion in let (_, client) = self.createClient(token: nil)
+                    deleteMigratableToken()
 
-            client.perform(mutation: mutation) { result in
-                switch result {
-                case let .success(result):
-                    guard let data = result.data else { return }
-
-                    self.saveToken(token: data.createSession)
-
-                    let result = self.createClient(token: data.createSession)
-
-                    completion(.success(result))
-                case let .failure(error): completion(.failure(error))
+                    completion(.success)
                 }
+            } else {
+                completion(.success)
             }
 
-            return Disposer { _ = client }
+            return NilDisposer()
         }
     }
 
-    public static func initClient() -> Future<(ApolloStore, ApolloClient)> {
+    public static func handleAuthTokenSuccessResult(result: AuthTokenResultSuccess) {
+        let accessTokenExpirationDate = Date()
+            .addingTimeInterval(
+                Double(result.accessToken.expiryInSeconds)
+            )
+
+        let refreshTokenExpirationDate = Date()
+            .addingTimeInterval(
+                Double(result.refreshToken.expiryInSeconds)
+            )
+
+        ApolloClient.saveToken(
+            token: OAuthorizationToken(
+                accessToken: result.accessToken.token,
+                accessTokenExpirationDate: accessTokenExpirationDate,
+                refreshToken: result.refreshToken.token,
+                refreshTokenExpirationDate: refreshTokenExpirationDate
+            )
+        )
+    }
+
+    public static func saveToken(token: OAuthorizationToken) {
+        KeychainHelper.standard.save(token, key: "oAuthorizationToken")
+    }
+
+    public static func initClients() -> Future<hApollo> {
         Future { completion in
-            guard let keychainToken = self.retreiveToken() else {
-                // If Keychain has no entry, check back on disk and migrate that data to Keychain
-                // This is due to the fact that existing installs might rely on disk for tokens
-                guard
-                    let diskToken = try? Disk.retrieve(
-                        "authorization-token.json",
-                        from: .applicationSupport,
-                        as: AuthorizationToken.self
-                    )
-                else {
-                    // If disk also has no entry, then it's a new install on this device
-                    return self.createClientFromNewSession()
-                        .onResult { result in
-                            switch result {
-                            case let .success(result): completion(.success(result))
-                            case let .failure(error): completion(.failure(error))
-                            }
-                        }
-                        .disposable
-                }
-
-                saveToken(token: diskToken.token)
-                try? Disk.remove("authorization-token.json", from: .applicationSupport)
-                let result = self.createClient(token: diskToken.token)
-                completion(.success(result))
-                return NilDisposer()
-            }
-
-            let result = self.createClient(token: keychainToken.token)
+            let result = self.createClient()
             completion(.success(result))
             return NilDisposer()
         }

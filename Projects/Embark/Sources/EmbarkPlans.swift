@@ -10,13 +10,13 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public typealias EmbarkStory = GraphQL.ChoosePlanQuery.Data.EmbarkStory
+public typealias EmbarkStory = GiraffeGraphQL.ChoosePlanQuery.Data.EmbarkStory
 
 public struct EmbarkPlans {
     @Inject
-    var client: ApolloClient
+    var giraffe: hGiraffe
     let menu: Menu?
-    let plansSignal = ReadWriteSignal<[GraphQL.ChoosePlanQuery.Data.EmbarkStory]>([])
+    let plansSignal = ReadWriteSignal<[GiraffeGraphQL.ChoosePlanQuery.Data.EmbarkStory]>([])
     @ReadWriteState var selectedIndex = 0
 
     var selectedPlan: ReadSignal<EmbarkStory?> {
@@ -110,7 +110,8 @@ extension EmbarkPlans: Presentable {
             }
         }
 
-        bag += client.fetch(query: GraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue))
+        bag += giraffe.client
+            .fetch(query: GiraffeGraphQL.ChoosePlanQuery(locale: Localization.Locale.currentLocale.rawValue))
             .valueSignal
             .compactMap {
                 $0.embarkStories
@@ -181,7 +182,7 @@ extension EmbarkPlans: Presentable {
     }
 }
 
-extension GraphQL.ChoosePlanQuery.Data.EmbarkStory {
+extension GiraffeGraphQL.ChoosePlanQuery.Data.EmbarkStory {
     fileprivate var discount: String? { metadata.compactMap { $0.asEmbarkStoryMetadataEntryPill }.first?.pill }
 
     fileprivate var gradientViewPreset: GradientView.Preset? {
@@ -198,7 +199,7 @@ extension GraphQL.ChoosePlanQuery.Data.EmbarkStory {
 }
 
 extension hAnalyticsExperiment {
-    public static var embarkStoryType: GraphQL.EmbarkStoryType {
+    public static var embarkStoryType: GiraffeGraphQL.EmbarkStoryType {
         if hAnalyticsExperiment.useQuoteCart {
             return .appOnboardingQuoteCart
         } else {

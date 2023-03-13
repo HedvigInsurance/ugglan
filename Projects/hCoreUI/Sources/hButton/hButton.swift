@@ -251,7 +251,7 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         VStack {
-            Label(configuration: configuration).contentShape(Rectangle())
+            Label(configuration: configuration)
         }
         .buttonSizeModifier(size)
         .background(Color.clear)
@@ -259,6 +259,7 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
         .clipShape(RoundedRectangle(cornerRadius: .defaultCornerRadius))
         .modifier(OverlayModifier(configuration: configuration))
         .modifier(OpacityModifier())
+        .contentShape(Rectangle())
     }
 }
 
@@ -325,6 +326,7 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
         .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
         .cornerRadius(.defaultCornerRadius)
         .modifier(OpacityModifier())
+        .contentShape(Rectangle())
     }
 }
 

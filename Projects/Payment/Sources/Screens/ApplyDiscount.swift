@@ -9,13 +9,15 @@ import hCoreUI
 import hGraphQL
 
 public struct ApplyDiscount {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     private let didRedeemValidCodeCallbacker = Callbacker<
-        GraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult
+        GiraffeGraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult
     >()
 
-    public var didRedeemValidCodeSignal: Signal<GraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult> {
+    public var didRedeemValidCodeSignal:
+        Signal<GiraffeGraphQL.RedeemCodeMutation.Data.RedeemCodeV2.AsSuccessfulRedeemResult>
+    {
         didRedeemValidCodeCallbacker.providedSignal
     }
 
@@ -102,9 +104,9 @@ extension ApplyDiscount: Presentable {
                             loadableSubmitButton.isLoadingSignal.value = false
                         }
 
-                        self.client
+                        self.giraffe.client
                             .perform(
-                                mutation: GraphQL.RedeemCodeMutation(
+                                mutation: GiraffeGraphQL.RedeemCodeMutation(
                                     code: discountCode,
                                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
                                 )

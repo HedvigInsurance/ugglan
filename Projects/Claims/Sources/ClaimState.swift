@@ -1,5 +1,6 @@
 import Apollo
 import Flow
+import Odyssey
 import Presentation
 import hCore
 import hGraphQL
@@ -25,7 +26,7 @@ public struct ClaimsState: StateProtocol {
 
 public enum ClaimsAction: ActionProtocol {
     case openFreeTextChat
-    case submitNewClaim
+    case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
     case setClaims(claims: [Claim])
     case fetchCommonClaims
@@ -33,10 +34,30 @@ public enum ClaimsAction: ActionProtocol {
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
+    case odysseyRedirect(url: String)
+}
+
+public enum ClaimsOrigin: Codable, Equatable {
+    case generic
+    case commonClaims(id: String)
+
+    public var initialScopeValues: ScopeValues {
+        let scopeValues = ScopeValues()
+        switch self {
+        case let .commonClaims(id):
+            scopeValues.setValue(
+                key: CommonClaimIdScopeValueKey.shared,
+                value: id
+            )
+        default:
+            break
+        }
+        return scopeValues
+    }
 }
 
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     @Inject var store: ApolloStore
 
     public override func effects(
@@ -47,10 +68,12 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case .openFreeTextChat:
             return nil
         case .fetchClaims:
-            return
-                client
+            return giraffe
+                .client
                 .fetch(
-                    query: GraphQL.ClaimStatusCardsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+                    query: GiraffeGraphQL.ClaimStatusCardsQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    ),
                     cachePolicy: .fetchIgnoringCacheData
                 )
                 .compactMap {
@@ -62,8 +85,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 .valueThenEndSignal
         case .fetchCommonClaims:
             return
-                client.fetch(
-                    query: GraphQL.CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                giraffe.client
+                .fetch(
+                    query: GiraffeGraphQL.CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                 )
                 .map { data in
                     let commonClaims = data.commonClaims.map {
@@ -81,23 +105,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         var newState = state
 
         switch action {
-        case .openFreeTextChat:
-            break
-        case .fetchClaims:
-            break
-        case .fetchCommonClaims:
-            break
-        case .openHowClaimsWork:
-            break
-        case .openCommonClaimDetail:
-            break
         case let .setClaims(claims):
             newState.claims = claims
         case let .setCommonClaims(commonClaims):
             newState.commonClaims = commonClaims
-        case .openClaimDetails:
-            break
-        case .submitNewClaim:
+        default:
             break
         }
 

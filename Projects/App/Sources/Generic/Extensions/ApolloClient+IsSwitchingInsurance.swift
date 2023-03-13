@@ -8,7 +8,7 @@ import hGraphQL
 extension ApolloClient {
     var isSwitchingInsurance: Future<Bool> {
         fetch(
-            query: GraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+            query: GiraffeGraphQL.ContractsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
             cachePolicy: .fetchIgnoringCacheData
         )
         .map { data -> Bool in

@@ -6,7 +6,8 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-typealias EmbarkDatePickerActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkDatePickerAction
+typealias EmbarkDatePickerActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+    .AsEmbarkDatePickerAction
 
 struct EmbarkDatePickerAction {
     let state: EmbarkState
@@ -14,7 +15,7 @@ struct EmbarkDatePickerAction {
 }
 
 extension EmbarkDatePickerAction: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GiraffeGraphQL.EmbarkLinkFragment>) {
         let bag = DisposeBag()
 
         let mainView = UIStackView()
