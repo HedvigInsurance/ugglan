@@ -36,9 +36,18 @@ public struct TerminationSuccessScreen: View {
         .padding(.bottom, -100)
 
         hButton.LargeButtonFilled {
+
+            var surveyToURL: URL? {
+                return URL(string: surveyURL)
+            }
+
+            if let surveyToURL {
+                UIApplication.shared.open(surveyToURL)
+            }
+
             store.send(.dismissTerminationFlow)
         } content: {
-            hText("Done", style: .body)
+            hText(L10n.terminationOpenSurveyLabel, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
         }
         .frame(maxWidth: .infinity, alignment: .bottom)
@@ -46,9 +55,3 @@ public struct TerminationSuccessScreen: View {
         .padding(.bottom, 40)
     }
 }
-
-//struct TerminationSuccessScreen_Previews: PreviewProvider {
-//    static var previews: some View {
-//        TerminationSuccessScreen()
-//    }
-//}
