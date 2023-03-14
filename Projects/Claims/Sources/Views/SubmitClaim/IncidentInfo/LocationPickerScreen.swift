@@ -12,35 +12,34 @@ public struct LocationPickerScreen: View {
 
     public var body: some View {
         hForm {
-            hText(L10n.Claims.Incident.Screen.location, style: .title1)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-
             hSection {
                 hRow {
-                    hText("Hemma")
+                    hText(L10n.Claims.Location.At.home, style: .body)
                         .foregroundColor(hLabelColor.primary)
                 }
                 .onTap {
-                    chosenLocation = "Hemma"
+                    chosenLocation = L10n.Claims.Location.At.home
                     store.send(.dissmissNewClaimFlow)
                 }
                 hRow {
-                    hText("I Sverige")
+                    hText(L10n.Claims.Location.In.Home.country, style: .body)
                         .foregroundColor(hLabelColor.primary)
                 }
                 .onTap {
-                    chosenLocation = "I Sverige"
+                    chosenLocation = L10n.Claims.Location.In.Home.country
                     store.send(.dissmissNewClaimFlow)
                 }
                 hRow {
-                    hText("Utomlands")
+                    hText(L10n.Claim.Location.abroad, style: .body)
                         .foregroundColor(hLabelColor.primary)
                 }
                 .onTap {
-                    chosenLocation = "Utomlands"
+                    chosenLocation = L10n.Claim.Location.abroad
                     store.send(.dissmissNewClaimFlow)
                 }
+            }
+            .withHeader {
+                hText(L10n.Claims.Incident.Screen.location, style: .title1)
             }
         }
     }

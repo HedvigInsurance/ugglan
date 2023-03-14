@@ -15,31 +15,35 @@ public struct DamamagePickerScreen: View {
 
             hSection {
                 hRow {
-                    hText("Front")
+                    hText(L10n.Claims.Item.Problem.Broken.front, style: .body)
+                        .foregroundColor(hLabelColor.primary)
                 }
                 .onTap {
-                    chosenDamage = "Front"
+                    chosenDamage = L10n.Claims.Item.Problem.Broken.front
                     store.send(.dissmissNewClaimFlow)
                 }
                 hRow {
-                    hText("Back")
+                    hText(L10n.Claims.Item.Problem.Broken.back, style: .body)
+                        .foregroundColor(hLabelColor.primary)
                 }
                 .onTap {
-                    chosenDamage = "Back"
+                    chosenDamage = L10n.Claims.Item.Problem.Broken.back
                     store.send(.dissmissNewClaimFlow)
                 }
                 hRow {
-                    hText("Water Damage")
+                    hText(L10n.Claims.Item.Problem.Water.damage, style: .body)
+                        .foregroundColor(hLabelColor.primary)
                 }
                 .onTap {
-                    chosenDamage = "Water Damage"
+                    chosenDamage = L10n.Claims.Item.Problem.Water.damage
                     store.send(.dissmissNewClaimFlow)
                 }
                 hRow {
-                    hText("Other")
+                    hText(L10n.Claims.Item.Problem.Broken.other, style: .body)
+                        .foregroundColor(hLabelColor.primary)
                 }
                 .onTap {
-                    chosenDamage = "Other"
+                    chosenDamage = L10n.Claims.Item.Problem.Broken.other
                     store.send(.dissmissNewClaimFlow)
                 }
             }

@@ -10,20 +10,19 @@ public struct DatePickerScreen: View {
 
     public var body: some View {
         hForm {
-            hText(L10n.Claims.Incident.Screen.Date.Of.incident, style: .title1)
-                .foregroundColor(hLabelColor.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-
             hSection {
                 DatePicker(
-                    "Incident Date",
+                    L10n.Claims.Item.Screen.Date.Of.Incident.button,
                     selection: self.$dateOfOccurrence,
                     displayedComponents: [.date]
                 )
                 .datePickerStyle(.graphical)
                 .padding([.leading, .trailing], 16)
                 .padding([.top], 5)
+            }
+            .withHeader {
+                hText(L10n.Claims.Incident.Screen.Date.Of.incident, style: .title1)
+                    .foregroundColor(hLabelColor.primary)
             }
         }
         .hFormAttachToBottom {
