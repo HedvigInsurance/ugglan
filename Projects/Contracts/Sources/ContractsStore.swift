@@ -99,7 +99,7 @@ public enum ContractAction: ActionProtocol {
     case terminationFail
 
     case startTermination(contractId: String)
-    case setTerminationDetails(setTerminationDetails: TerminationStartFlow)
+    case setTerminationDetails(details: TerminationStartFlow)
     case sendTerminationDate(terminationDateInput: Date, contextInput: String)
 }
 
@@ -164,7 +164,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         [
                             .goToTerminationFlow(contractId: contractId, contextInput: context),
                             .setTerminationDetails(
-                                setTerminationDetails:
+                                details:
                                     TerminationStartFlow(
                                         id: dateStep.id,
                                         minDate: dateStep.minDate,

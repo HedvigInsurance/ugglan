@@ -52,7 +52,7 @@ public struct SetTerminationDate: View {
                 ) { contract in
 
                     DatePicker(
-                        "Termination Date",
+                        L10n.terminationDateText,
                         selection: self.$terminationDate,
                         in: convertDateFormat(
                             inputDate: contract?.minDate ?? ""
