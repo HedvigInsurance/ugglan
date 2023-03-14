@@ -42,7 +42,7 @@ public struct SubmitClaimEditSummaryScreen: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .padding([.leading, .trailing], -16) /* TODO: Possible to make this better? */
+                    .padding([.leading, .trailing], -16)
                     .padding([.bottom, .top], -11)
                 }
 
@@ -61,7 +61,7 @@ public struct SubmitClaimEditSummaryScreen: View {
             }
 
             hSection(
-                header: hText("Product info", style: .subheadline) /* TODO: Change Text */
+                header: hText(L10n.Claims.Item.Screen.title, style: .subheadline)
                     .foregroundColor(hLabelColor.secondary)
             ) {
                 hRow {
@@ -107,7 +107,7 @@ public struct SubmitClaimEditSummaryScreen: View {
                             hText(L10n.Claims.Item.Screen.Purchase.Price.button)
                                 .foregroundColor(hLabelColor.primary)
                             Spacer()
-                            hText(Localization.Locale.currentLocale.market.currencyCode) /* TODO: ADD EDITTEXT */
+                            hText(Localization.Locale.currentLocale.market.currencyCode)
                                 .foregroundColor(hLabelColor.secondary)
                         }
 
@@ -126,7 +126,7 @@ public struct SubmitClaimEditSummaryScreen: View {
 
                 hRow {
                     HStack {
-                        hText("Damage") /* TODO: CHANGE THIS TO TEXTKEY */
+                        hText(L10n.Claims.Item.Screen.Damage.button)
                             .foregroundColor(hLabelColor.primary)
                         Spacer()
                         hText("Only front")

@@ -93,7 +93,6 @@ struct BlurredProgressOverlay<Content: View>: View {
         if colorScheme == .dark {
             hTintColor.yellowOne.opacity(0.25)
         } else {
-            //            hTintColor.yellowThree
             hTintColor.yellowTwo
         }
     }
@@ -109,7 +108,6 @@ struct BlurredProgressOverlay<Content: View>: View {
         if colorScheme == .dark {
             hTintColor.lavenderOne.opacity(0.25)
         } else {
-            //            hTintColor.lavenderThree
             hTintColor.lavenderTwo
         }
     }
