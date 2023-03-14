@@ -15,7 +15,7 @@ public struct UpcomingRenewal: Codable, Equatable {
     let draftCertificateUrl: String?
 
     public init(
-        upcomingRenewal: GraphQL.HomeQuery.Data.Contract.UpcomingRenewal?
+        upcomingRenewal: GiraffeGraphQL.HomeQuery.Data.Contract.UpcomingRenewal?
     ) {
         self.renewalDate = upcomingRenewal?.renewalDate
         self.draftCertificateUrl = upcomingRenewal?.draftCertificateUrl
@@ -27,7 +27,7 @@ public struct Contract: Codable, Equatable {
     var displayName: String
 
     public init(
-        contract: GraphQL.HomeQuery.Data.Contract
+        contract: GiraffeGraphQL.HomeQuery.Data.Contract
     ) {
         if contract.upcomingRenewal != nil {
             upcomingRenewal = UpcomingRenewal(upcomingRenewal: contract.upcomingRenewal)
@@ -98,7 +98,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         case .fetchImportantMessages:
             return
                 client
-                .fetch(query: GraphQL.ImportantMessagesQuery(langCode: Localization.Locale.currentLocale.code))
+                .fetch(query: GiraffeGraphQL.ImportantMessagesQuery(langCode: Localization.Locale.currentLocale.code))
                 .compactMap { $0.importantMessages.first }
                 .compactMap { $0 }
                 .map { data in
@@ -108,7 +108,7 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         case .fetchMemberState:
             return
                 client
-                .fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
+                .fetch(query: GiraffeGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
                 .map { data in
                     .setMemberContractState(
                         state: .init(state: data.homeState, name: data.member.firstName),
@@ -120,11 +120,11 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
             return
                 client
                 .fetch(
-                    query: GraphQL.HomeInsuranceProvidersQuery(
+                    query: GiraffeGraphQL.HomeInsuranceProvidersQuery(
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()
                     )
                 )
-                .join(with: client.fetch(query: GraphQL.HomeQuery()))
+                .join(with: client.fetch(query: GiraffeGraphQL.HomeQuery()))
                 .map { insuranceProviderData, homeData in
                     if let contract = homeData.contracts.first(where: {
                         $0.status.asActiveInFutureStatus != nil || $0.status.asPendingStatus != nil
@@ -180,7 +180,7 @@ public enum MemberContractState: String, Codable, Equatable {
     case loading
 }
 
-extension GraphQL.HomeQuery.Data {
+extension GiraffeGraphQL.HomeQuery.Data {
     fileprivate var homeState: MemberContractState {
         if isFuture {
             return .future

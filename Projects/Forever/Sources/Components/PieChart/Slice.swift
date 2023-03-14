@@ -21,7 +21,7 @@ struct Slice: Shape {
             path.addArc(
                 center: center,
                 radius: width * 0.5,
-                startAngle: Angle(degrees: -90.0) + Angle(degrees: percentagePerSlice * startSlices * 360),
+                startAngle: Angle(degrees: -90.0) + Angle(degrees: percentagePerSlice * startSlices * 360.0),
                 endAngle: Angle(degrees: -90.0)
                     + Angle(
                         degrees: 360 * percentagePerSlice

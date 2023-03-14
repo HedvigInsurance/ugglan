@@ -24,7 +24,7 @@ struct ProfileView: View {
             primaryButton: .cancel(Text(L10n.logoutAlertActionCancel)),
             secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
                 ApplicationState.preserveState(.marketPicker)
-                UIApplication.shared.appDelegate.logout(token: nil)
+                UIApplication.shared.appDelegate.logout()
             }
         )
     }
@@ -124,11 +124,6 @@ extension ProfileView {
                 ) { _ in
                     DismissJourney()
                 }
-            } else if case .openCharity = action {
-                Journey(
-                    Charity(),
-                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-                )
             } else if case .openPayment = action {
                 resultJourney(.openPayment)
             } else if case .openAppInformation = action {

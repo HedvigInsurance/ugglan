@@ -13,7 +13,7 @@ import hGraphQL
 extension AdyenMethodsList {
     static var payInOptions: Future<AdyenOptions> {
         let client: ApolloClient = Dependencies.shared.resolve()
-        return client.fetch(query: GraphQL.AdyenAvailableMethodsQuery())
+        return client.fetch(query: GiraffeGraphQL.AdyenAvailableMethodsQuery())
             .compactMap { data in
                 guard
                     let paymentMethodsData = data.availablePaymentMethods.paymentMethodsResponse
@@ -54,8 +54,8 @@ public struct AdyenPayIn: Presentable {
 
             self.client
                 .perform(
-                    mutation: GraphQL.AdyenTokenizePaymentDetailsMutation(
-                        input: GraphQL.ConnectPaymentInput(
+                    mutation: GiraffeGraphQL.AdyenTokenizePaymentDetailsMutation(
+                        input: GiraffeGraphQL.ConnectPaymentInput(
                             paymentMethodDetails: json,
                             channel: .ios,
                             returnUrl: "\(urlScheme)://adyen",
@@ -67,7 +67,7 @@ public struct AdyenPayIn: Presentable {
                     if let data = data.paymentConnectionConnectPayment.asConnectPaymentFinished {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             client.fetch(
-                                query: GraphQL.ActivePaymentMethodsQuery(),
+                                query: GiraffeGraphQL.ActivePaymentMethodsQuery(),
                                 cachePolicy: .fetchIgnoringCacheData
                             )
                             .sink()
@@ -89,8 +89,8 @@ public struct AdyenPayIn: Presentable {
                 }
         } onSuccess: {
             store.withinReadWriteTransaction { transaction in
-                try? transaction.update(query: GraphQL.PayInMethodStatusQuery()) {
-                    (data: inout GraphQL.PayInMethodStatusQuery.Data) in
+                try? transaction.update(query: GiraffeGraphQL.PayInMethodStatusQuery()) {
+                    (data: inout GiraffeGraphQL.PayInMethodStatusQuery.Data) in
                     data.payinMethodStatus = .active
                 }
             }
@@ -99,7 +99,7 @@ public struct AdyenPayIn: Presentable {
 
             // refetch to refresh UI
             Future().delay(by: 0.5)
-                .flatMapResult { _ in client.fetch(query: GraphQL.ActivePaymentMethodsQuery()) }
+                .flatMapResult { _ in client.fetch(query: GiraffeGraphQL.ActivePaymentMethodsQuery()) }
                 .sink()
         }
         .materialize()

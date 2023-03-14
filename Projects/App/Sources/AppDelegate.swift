@@ -181,8 +181,6 @@ import hGraphQL
     }
 
     func setupSession() {
-        Analytics.setAnalyticsCollectionEnabled(false)
-
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
         }

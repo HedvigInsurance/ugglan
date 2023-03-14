@@ -22,7 +22,7 @@ public enum PaymentAction: ActionProtocol {
     case setConnectionID(id: String)
 }
 
-public typealias PayinMethodStatus = GraphQL.PayinMethodStatus
+public typealias PayinMethodStatus = GiraffeGraphQL.PayinMethodStatus
 extension PayinMethodStatus: Codable {}
 
 public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
@@ -49,9 +49,9 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
                 }
                 .valueThenEndSignal
         case .fetchPayInMethodStatus:
-            return
-                client
-                .fetch(query: GraphQL.PayInMethodStatusQuery(), cachePolicy: .fetchIgnoringCacheData)
+            return giraffe
+                .client
+                .fetch(query: GiraffeGraphQL.PayInMethodStatusQuery(), cachePolicy: .fetchIgnoringCacheData)
                 .map { data in
                     .setPayInMethodStatus(status: data.payinMethodStatus)
                 }

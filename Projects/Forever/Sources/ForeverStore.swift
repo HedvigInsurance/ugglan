@@ -48,7 +48,7 @@ public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
     ) -> FiniteSignal<ForeverAction>? {
         switch action {
         case .fetch:
-            return client.fetch(query: GraphQL.ForeverQuery())
+            return client.fetch(query: GiraffeGraphQL.ForeverQuery())
                 .valueThenEndSignal
                 .map { data in
                     let grossAmount = data.referralInformation.costReducedIndefiniteDiscount?.monthlyGross

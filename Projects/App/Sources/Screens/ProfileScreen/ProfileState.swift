@@ -34,7 +34,7 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
         case .fetchProfileState:
             return
                 client
-                .fetch(query: GraphQL.ProfileQuery(), cachePolicy: .fetchIgnoringCacheData)
+                .fetch(query: GiraffeGraphQL.ProfileQuery(), cachePolicy: .fetchIgnoringCacheData)
                 .map { data in
                     let name = (data.member.firstName ?? "") + " " + (data.member.lastName ?? "")
                     let charity = data.cashback?.name ?? ""
