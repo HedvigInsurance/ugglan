@@ -23,27 +23,25 @@ public struct SubmitClaimEditSummaryScreen: View {
                     .foregroundColor(hLabelColor.secondary)
             ) {
                 hRow {
-                    hButton.SmallButtonText {
-                        store.send(.openDatePicker)
-                    } content: {
-                        HStack(spacing: 0) {
-                            hText(L10n.Claims.Item.Screen.Date.Of.Incident.button)
-                                .foregroundColor(hLabelColor.primary)
-                            Spacer()
+                    hText(L10n.Claims.Item.Screen.Date.Of.Incident.button)
+                        .foregroundColor(hLabelColor.primary)
 
-                            HStack(spacing: 0) {
-                                hText("19 Apr 2022")
-                                    .foregroundColor(hLabelColor.primary).colorScheme(.light)
-                                    .padding([.top, .bottom], 11)
-                                    .padding([.trailing, .leading], 12)
-                            }
-                            .background(hGrayscaleColor.one)
-                            .cornerRadius(.defaultCornerRadius)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .withCustomAccessory {
+
+                    Spacer()
+
+                    HStack(spacing: 0) {
+                        hText("19 Apr 2022")
+                            .foregroundColor(hLabelColor.primary).colorScheme(.light)
+                            .padding([.top, .bottom], 11)
+                            .padding([.trailing, .leading], 12)
                     }
-                    .padding([.leading, .trailing], -16)
-                    .padding([.bottom, .top], -11)
+                    .background(hGrayscaleColor.one)
+                    .cornerRadius(.defaultCornerRadius)
+                }
+                .onTap {
+                    store.send(.openDatePicker)
                 }
 
                 hRow {
@@ -78,27 +76,24 @@ public struct SubmitClaimEditSummaryScreen: View {
                 }
 
                 hRow {
-                    hButton.SmallButtonText {
-                        store.send(.openDatePicker)
-                    } content: {
-                        HStack(spacing: 0) {
-                            hText(L10n.Claims.Item.Screen.Date.Of.Purchase.button)
-                                .foregroundColor(hLabelColor.primary)
-                            Spacer()
+                    hText(L10n.Claims.Item.Screen.Date.Of.Purchase.button)
+                        .foregroundColor(hLabelColor.primary)
+                }
+                .withCustomAccessory {
 
-                            HStack(spacing: 0) {
-                                hText("Jan 2022")
-                                    .foregroundColor(hLabelColor.primary).colorScheme(.light)
-                                    .padding([.top, .bottom], 11)
-                                    .padding([.trailing, .leading], 12)
-                            }
-                            .background(hGrayscaleColor.one)
-                            .cornerRadius(.defaultCornerRadius)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Spacer()
+
+                    HStack(spacing: 0) {
+                        hText("Jan 2022")
+                            .foregroundColor(hLabelColor.primary).colorScheme(.light)
+                            .padding([.top, .bottom], 11)
+                            .padding([.trailing, .leading], 12)
                     }
-                    .padding([.leading, .trailing], -16) /* TODO: Possible to make this better? */
-                    .padding([.bottom, .top], -11)
+                    .background(hGrayscaleColor.one)
+                    .cornerRadius(.defaultCornerRadius)
+                }
+                .onTap {
+                    store.send(.openDatePicker)
                 }
 
                 hRow {
