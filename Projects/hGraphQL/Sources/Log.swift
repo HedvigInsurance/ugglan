@@ -71,7 +71,7 @@ extension Logging {
     ///   - error: `Error` instance to be logged with its properties
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
-    public func info(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil){
+    public func info(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         info(message, error: error, attributes: attributes)
     }
 

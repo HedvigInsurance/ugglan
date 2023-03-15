@@ -65,11 +65,12 @@ public struct AdyenPayIn: Presentable {
                 .onValue { data in
                     if let data = data.paymentConnectionConnectPayment.asConnectPaymentFinished {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            self.giraffe.client.fetch(
-                                query: GiraffeGraphQL.ActivePaymentMethodsQuery(),
-                                cachePolicy: .fetchIgnoringCacheData
-                            )
-                            .sink()
+                            self.giraffe.client
+                                .fetch(
+                                    query: GiraffeGraphQL.ActivePaymentMethodsQuery(),
+                                    cachePolicy: .fetchIgnoringCacheData
+                                )
+                                .sink()
                         }
                         paymentStore.send(.setConnectionID(id: data.paymentTokenId))
                         onResult(.success(.make(())))
