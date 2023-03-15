@@ -23,8 +23,7 @@ public enum ProfileAction: ActionProtocol {
 }
 
 public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
 
     public override func effects(
         _ getState: @escaping () -> ProfileState,
@@ -33,7 +32,8 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
         switch action {
         case .fetchProfileState:
             return
-                client
+                giraffe
+                .client
                 .fetch(query: GiraffeGraphQL.ProfileQuery(), cachePolicy: .fetchIgnoringCacheData)
                 .map { data in
                     let name = (data.member.firstName ?? "") + " " + (data.member.lastName ?? "")

@@ -60,6 +60,12 @@ extension AppJourney {
                 AppJourney.crossSellingJourney(crossSell: crossSell)
             case let .openCrossSellingEmbark(name):
                 AppJourney.crossSellingEmbarkJourney(name: name, style: .detented(.large))
+            case .terminationFlow:
+                AppJourney.terminationFlow
+            case .terminationSuccessFlow:
+                AppJourney.sendTermination()
+            case let .openCrossSellingWebUrl(url):
+                AppJourney.webRedirect(url: url)
             }
         }
         .onTabSelected {
@@ -135,13 +141,13 @@ extension AppJourney {
             .sendActionImmediately(ProfileStore.self, .fetchProfileState)
             .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
-            .onAction(UgglanStore.self) { action in
+            .onAction(UgglanStore.self, { action in
                 if action == .openChat {
                     AppJourney.freeTextChat().withDismissButton
                 } else if action == .openClaims {
-                    AppJourney.claimJourney
+                    AppJourney.claimJourney(from: .generic)
                 }
-            }
+            })
         }
         .onPresent {
             ApplicationState.preserveState(.loggedIn)
@@ -171,7 +177,7 @@ extension JourneyPresentation {
     public var claimStoreRedirectFromHome: some JourneyPresentation {
         onAction(HomeStore.self) { action in
             if case .openClaim = action {
-                AppJourney.claimJourney
+                AppJourney.claimJourney(from: .generic)
             }
         }
     }
@@ -181,7 +187,7 @@ extension JourneyPresentation {
             if case let .openClaimDetails(claim) = action {
                 AppJourney.claimDetailJourney(claim: claim)
             } else if case .submitNewClaim = action {
-                AppJourney.claimJourney
+                AppJourney.claimJourney(from: .generic)
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat()
             } else if case .openHowClaimsWork = action {

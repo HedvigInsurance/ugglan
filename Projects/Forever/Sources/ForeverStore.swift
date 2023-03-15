@@ -40,7 +40,7 @@ public indirect enum ForeverAction: ActionProtocol {
 }
 
 public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     public override func effects(
         _ getState: @escaping () -> ForeverState,
@@ -48,7 +48,7 @@ public final class ForeverStore: StateStore<ForeverState, ForeverAction> {
     ) -> FiniteSignal<ForeverAction>? {
         switch action {
         case .fetch:
-            return client.fetch(query: GiraffeGraphQL.ForeverQuery())
+            return giraffe.client.fetch(query: GiraffeGraphQL.ForeverQuery())
                 .valueThenEndSignal
                 .map { data in
                     let grossAmount = data.referralInformation.costReducedIndefiniteDiscount?.monthlyGross

@@ -85,8 +85,7 @@ public enum FutureStatus: Codable, Equatable {
 }
 
 public final class HomeStore: StateStore<HomeState, HomeAction> {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
 
     public override func effects(
         _ getState: @escaping () -> HomeState,
@@ -97,7 +96,8 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
             return nil
         case .fetchImportantMessages:
             return
-                client
+                giraffe
+                .client
                 .fetch(query: GiraffeGraphQL.ImportantMessagesQuery(langCode: Localization.Locale.currentLocale.code))
                 .compactMap { $0.importantMessages.first }
                 .compactMap { $0 }
@@ -107,7 +107,8 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                 .valueThenEndSignal
         case .fetchMemberState:
             return
-                client
+                giraffe
+                .client
                 .fetch(query: GiraffeGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
                 .map { data in
                     .setMemberContractState(
@@ -118,13 +119,14 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                 .valueThenEndSignal
         case .fetchFutureStatus:
             return
-                client
+                giraffe
+                .client
                 .fetch(
                     query: GiraffeGraphQL.HomeInsuranceProvidersQuery(
                         locale: Localization.Locale.currentLocale.asGraphQLLocale()
                     )
                 )
-                .join(with: client.fetch(query: GiraffeGraphQL.HomeQuery()))
+                .join(with: giraffe.client.fetch(query: GiraffeGraphQL.HomeQuery()))
                 .map { insuranceProviderData, homeData in
                     if let contract = homeData.contracts.first(where: {
                         $0.status.asActiveInFutureStatus != nil || $0.status.asPendingStatus != nil

@@ -33,8 +33,7 @@ extension AdyenMethodsList {
 public struct AdyenPayIn: Presentable {
     @PresentableStore var paymentStore: PaymentStore
 
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
@@ -52,7 +51,7 @@ public struct AdyenPayIn: Presentable {
                 let json = String(data: jsonData, encoding: .utf8)
             else { return }
 
-            self.client
+            self.giraffe.client
                 .perform(
                     mutation: GiraffeGraphQL.AdyenTokenizePaymentDetailsMutation(
                         input: GiraffeGraphQL.ConnectPaymentInput(
@@ -66,7 +65,7 @@ public struct AdyenPayIn: Presentable {
                 .onValue { data in
                     if let data = data.paymentConnectionConnectPayment.asConnectPaymentFinished {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            client.fetch(
+                            self.giraffe.client.fetch(
                                 query: GiraffeGraphQL.ActivePaymentMethodsQuery(),
                                 cachePolicy: .fetchIgnoringCacheData
                             )
@@ -88,7 +87,7 @@ public struct AdyenPayIn: Presentable {
                     }
                 }
         } onSuccess: {
-            store.withinReadWriteTransaction { transaction in
+            giraffe.store.withinReadWriteTransaction { transaction in
                 try? transaction.update(query: GiraffeGraphQL.PayInMethodStatusQuery()) {
                     (data: inout GiraffeGraphQL.PayInMethodStatusQuery.Data) in
                     data.payinMethodStatus = .active
@@ -99,7 +98,7 @@ public struct AdyenPayIn: Presentable {
 
             // refetch to refresh UI
             Future().delay(by: 0.5)
-                .flatMapResult { _ in client.fetch(query: GiraffeGraphQL.ActivePaymentMethodsQuery()) }
+                .flatMapResult { _ in self.giraffe.client.fetch(query: GiraffeGraphQL.ActivePaymentMethodsQuery()) }
                 .sink()
         }
         .materialize()
