@@ -37,13 +37,10 @@ public struct TerminationSuccessScreen: View {
 
         hButton.LargeButtonFilled {
 
-            var surveyToURL: URL? {
-                return URL(string: surveyURL)
-            }
-
-            if let surveyToURL {
+            if let surveyToURL = URL(string: surveyURL) {
                 UIApplication.shared.open(surveyToURL)
             }
+
         } content: {
             hText(L10n.terminationOpenSurveyLabel, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
