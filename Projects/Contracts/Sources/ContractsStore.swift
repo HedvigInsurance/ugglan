@@ -94,15 +94,15 @@ public enum ContractAction: ActionProtocol {
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 
     case goToTerminationFlow(contractId: String, contextInput: String)
-    case sendTermination(terminationDate: String, contextInput: String, surveyUrl: String)
+    case sendTermination(terminationDate: Date, contextInput: String, surveyUrl: String)
     case dismissTerminationFlow
     case terminationFail
 
     case startTermination(contractId: String)
-    case setTerminationDetails(setTerminationDetails: TerminationStartFlow)
-    case sendTerminationDate(terminationDateInput: String, contextInput: String)
+    case setTerminationDetails(details: TerminationStartFlow)
+    case sendTerminationDate(terminationDateInput: Date, contextInput: String)
 }
-/* TODO: BREAK INTO DIFFERENT FUNTIONS? */
+
 public final class ContractStore: StateStore<ContractState, ContractAction> {
     @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
@@ -164,11 +164,11 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         [
                             .goToTerminationFlow(contractId: contractId, contextInput: context),
                             .setTerminationDetails(
-                                setTerminationDetails:
+                                details:
                                     TerminationStartFlow(
                                         id: dateStep.id,
                                         minDate: dateStep.minDate,
-                                        maxDate: dateStep.maxDate
+                                        maxDate: dateStep.maxDate ?? ""
                                     )
                             ),
                         ]
@@ -177,15 +177,18 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         }
                     }
                     .onError { error in
-
+                        log.error("Error: \(error)")
                     }
-
                 return NilDisposer()
             }
 
         case .sendTerminationDate(let terminationDate, let contextInput):
 
-            let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: terminationDate)
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let inputDateToString = dateFormatter.string(from: terminationDate)
+
+            let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
 
             return FiniteSignal { callback in
                 self.octopus.client
@@ -219,11 +222,13 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                             .forEach { element in
                                 callback(.value(element))
                             }
+                        } else {
+                            return
                         }
                     }
                     .onError { error in
+                        log.error("Error: \(error)")
                     }
-
                 return NilDisposer()
             }
 

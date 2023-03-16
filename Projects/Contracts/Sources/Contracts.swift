@@ -94,7 +94,7 @@ public enum ContractsResult {
     case openCrossSellingDetail(crossSell: CrossSell)
     case openCrossSellingEmbark(name: String)
     case terminationFlow(contractId: String, contextInput: String)
-    case terminationSuccessFlow(terminationdate: String, surveyURL: String)
+    case terminationSuccessFlow(terminationdate: Date, surveyURL: String)
     case openCrossSellingWebUrl(url: URL)
 }
 

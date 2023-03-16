@@ -49,14 +49,14 @@ public struct SetTerminationDate: View {
                     getter: { state in
                         state.terminations
                     }
-                ) { contract in
+                ) { termination in
 
                     DatePicker(
-                        "Termination Date",
+                        L10n.terminationDateText,
                         selection: self.$terminationDate,
                         in: convertDateFormat(
-                            inputDate: contract?.minDate ?? ""
-                        )...convertDateFormat(inputDate: contract?.maxDate ?? ""),
+                            inputDate: termination?.minDate ?? ""
+                        )...convertDateFormat(inputDate: termination?.maxDate ?? ""),
                         displayedComponents: [.date]
                     )
                     .datePickerStyle(.graphical)
@@ -72,15 +72,7 @@ public struct SetTerminationDate: View {
 
             VStack {
                 hButton.LargeButtonFilled {
-
-                    let dateFormatter = DateFormatter()
-
-                    dateFormatter.timeStyle = DateFormatter.Style.none
-                    dateFormatter.dateStyle = DateFormatter.Style.short
-                    dateFormatter.dateFormat = "yyyy-MM-dd"
-                    let newString = dateFormatter.string(from: terminationDate)
-
-                    store.send(.sendTerminationDate(terminationDateInput: newString, contextInput: context))
+                    store.send(.sendTerminationDate(terminationDateInput: terminationDate, contextInput: context))
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
@@ -97,14 +89,11 @@ public struct SetTerminationDate: View {
     func formatAndPrintDate() -> String {
         let dateFormatter = DateFormatter()
 
-        dateFormatter.timeStyle = DateFormatter.Style.none
-        dateFormatter.dateStyle = DateFormatter.Style.short
         dateFormatter.dateFormat = "dd-MM-yyyy"
         return dateFormatter.string(from: terminationDate)
     }
 
     func convertDateFormat(inputDate: String) -> Date {
-
         let dateFormatter = DateFormatter()
 
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -114,9 +103,3 @@ public struct SetTerminationDate: View {
         return dateString
     }
 }
-
-//struct SetTerminationDate_Previews: PreviewProvider {
-//    static var previews: some View {
-//        SetTerminationDate()
-//    }
-//}

@@ -1,4 +1,5 @@
 import Contracts
+import Foundation
 import Presentation
 import hCore
 
@@ -10,7 +11,7 @@ extension AppJourney {
             style: .modal
         ) {
             action in
-            if case .sendTermination(let terminationDate, let context, let surveyURL) = action {
+            if case .sendTermination(let terminationDate, _, let surveyURL) = action {
                 sendTermination(terminationDate: terminationDate, surveyURL: surveyURL)
             } else if case .terminationFail = action {
                 terminationFail()
@@ -20,7 +21,7 @@ extension AppJourney {
         .withDismissButton
     }
 
-    static func sendTermination(terminationDate: String, surveyURL: String) -> some JourneyPresentation {
+    static func sendTermination(terminationDate: Date, surveyURL: String) -> some JourneyPresentation {
 
         HostingJourney(
             ContractStore.self,
@@ -45,6 +46,8 @@ extension AppJourney {
         ) {
             action in
             if case .dismissTerminationFlow = action {
+                DismissJourney()
+            } else if case .goToFreeTextChat = action {
                 DismissJourney()
             }
         }

@@ -10,20 +10,41 @@ public struct TerminationFailScreen: View {
     public var body: some View {
 
         hForm {
-            hText(L10n.terminationNotSuccessfulTitle, style: .title1)
-                .frame(maxWidth: .infinity, alignment: .center)
-        }
-        .frame(maxWidth: .infinity, alignment: .center)
+            Image(uiImage: hCoreUIAssets.warningTriangle.image)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 16)
+                .padding([.bottom, .top], 4)
 
-        hButton.LargeButtonFilled {
-            store.send(.dismissTerminationFlow)
-        } content: {
-            hText(L10n.generalCloseButton, style: .body)
-                .foregroundColor(hLabelColor.primary.inverted)
+            hText(L10n.terminationNotSuccessfulTitle, style: .title2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 16)
+                .padding(.bottom, 4)
+
+            hText(L10n.somethingWentWrong, style: .body)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 16)
         }
-        .frame(maxWidth: .infinity, alignment: .bottom)
-        .padding([.leading, .trailing], 16)
-        .padding(.bottom, 40)
+        .frame(maxWidth: .infinity, alignment: .leading)
+
+        .hFormAttachToBottom {
+
+            VStack {
+                hButton.LargeButtonOutlined {
+                    store.send(.dismissTerminationFlow)
+                } content: {
+                    hText(L10n.generalCloseButton, style: .body)
+                        .foregroundColor(hLabelColor.primary)
+                }
+                .padding(.bottom, 4)
+                hButton.LargeButtonFilled {
+                    store.send(.goToFreeTextChat)
+                } content: {
+                    hText(L10n.MovingUwFailure.buttonText, style: .body)
+                        .foregroundColor(hLabelColor.primary.inverted)
+                }
+            }
+            .padding([.leading, .trailing], 16)
+        }
     }
 }
 
