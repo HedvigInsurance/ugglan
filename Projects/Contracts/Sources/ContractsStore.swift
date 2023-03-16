@@ -280,18 +280,3 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         return newState
     }
 }
-
-extension FiniteSignal {
-    func emitEachThenEnd<Element>() -> FiniteSignal<Element> where Value == [Element] {
-        FiniteSignal { callback in
-            let bag = DisposeBag()
-            bag += self.onValue({ value in
-                value.forEach { element in
-                    callback(.value(element))
-                }
-            })
-            callback(.end)
-            return bag
-        }
-    }
-}

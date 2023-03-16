@@ -18,7 +18,7 @@ extension AppJourney {
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
-        .withDismissButton
+        .withJourneyDismissButton
     }
 
     static func sendTermination(terminationDate: Date, surveyURL: String) -> some JourneyPresentation {
@@ -33,8 +33,8 @@ extension AppJourney {
                 DismissJourney()
             }
         }
-        .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
+        .withJourneyDismissButton
     }
 
     static func terminationFail() -> some JourneyPresentation {

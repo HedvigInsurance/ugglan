@@ -28,7 +28,7 @@ public struct TerminationSuccessScreen: View {
                 .padding(.leading, 16)
                 .padding([.bottom, .top], 10)
 
-            hText(L10n.terminationSuccessfulText(formatAndPrintDate(), "Hedvig"), style: .body)
+            hText(L10n.terminationSuccessfulText(formatAndPrintDate(), L10n.hedvigNameText), style: .body)
                 .foregroundColor(hLabelColor.secondary)
                 .padding([.leading, .trailing], 16)
                 .padding(.bottom, 300)
@@ -36,9 +36,13 @@ public struct TerminationSuccessScreen: View {
         .padding(.bottom, -100)
 
         hButton.LargeButtonFilled {
-            store.send(.dismissTerminationFlow)
+
+            if let surveyToURL = URL(string: surveyURL) {
+                UIApplication.shared.open(surveyToURL)
+            }
+
         } content: {
-            hText(L10n.generalDoneButton, style: .body)
+            hText(L10n.terminationOpenSurveyLabel, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
         }
         .frame(maxWidth: .infinity, alignment: .bottom)
