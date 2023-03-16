@@ -1,5 +1,4 @@
 import Foundation
-import hGraphQL
 
 public final class OdysseyNetworkClient {
     let sessionClient: URLSession
