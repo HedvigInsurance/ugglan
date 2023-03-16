@@ -1,16 +1,27 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct SetTerminationDate: View {
     @State private var terminationDate = Date()
     @PresentableStore var store: ContractStore
 
-    public init() {}
+    var contractId: String
+    let context: String
+
+    public init(
+        contractId: String,
+        context: String
+    ) {
+        self.contractId = contractId
+        self.context = context
+    }
 
     public var body: some View {
 
         hForm {
+
             HStack(spacing: 0) {
                 hText(L10n.setTerminationDateText, style: .body)
                     .padding([.trailing, .leading], 12)
@@ -33,14 +44,27 @@ public struct SetTerminationDate: View {
                     }
                 }
 
-                DatePicker(
-                    "Termination Date",
-                    selection: self.$terminationDate,
-                    displayedComponents: [.date]
-                )
-                .datePickerStyle(.graphical)
-                .padding(.leading, 16)
-                .padding([.top], 5)
+                PresentableStoreLens(
+                    ContractStore.self,
+                    getter: { state in
+                        state.terminations
+                    }
+                ) { termination in
+
+                    DatePicker(
+                        L10n.terminationDateText,
+                        selection: self.$terminationDate,
+                        in: convertDateFormat(
+                            inputDate: termination?.minDate ?? ""
+                        )...convertDateFormat(inputDate: termination?.maxDate ?? ""),
+                        displayedComponents: [.date]
+                    )
+                    .datePickerStyle(.graphical)
+                    .padding(.leading, 16)
+                    .padding([.top], 5)
+
+                }
+
             }
             .padding(.top, UIScreen.main.bounds.height / 12)
         }
@@ -48,7 +72,7 @@ public struct SetTerminationDate: View {
 
             VStack {
                 hButton.LargeButtonFilled {
-                    store.send(.sendTermination)
+                    store.send(.sendTerminationDate(terminationDateInput: terminationDate, contextInput: context))
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
@@ -65,15 +89,17 @@ public struct SetTerminationDate: View {
     func formatAndPrintDate() -> String {
         let dateFormatter = DateFormatter()
 
-        dateFormatter.timeStyle = DateFormatter.Style.none
-        dateFormatter.dateStyle = DateFormatter.Style.short
         dateFormatter.dateFormat = "dd-MM-yyyy"
         return dateFormatter.string(from: terminationDate)
     }
-}
 
-struct SetTerminationDate_Previews: PreviewProvider {
-    static var previews: some View {
-        SetTerminationDate()
+    func convertDateFormat(inputDate: String) -> Date {
+        let dateFormatter = DateFormatter()
+
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        guard let dateString = dateFormatter.date(from: inputDate) else {
+            return Date()
+        }
+        return dateString
     }
 }

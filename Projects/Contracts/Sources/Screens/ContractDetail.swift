@@ -139,9 +139,9 @@ struct ContractDetail: View {
 
             if hAnalyticsExperiment.terminationFlow {
                 hButton.SmallButtonText {
-                    store.send(.goToTerminationFlow)
+                    store.send(.startTermination(contractId: id))
                 } content: {
-                    hText(L10n.cancelSubscriptionButton, style: .body)
+                    hText(L10n.terminationButton, style: .body)
                         .foregroundColor(hTintColor.red)
 
                 }

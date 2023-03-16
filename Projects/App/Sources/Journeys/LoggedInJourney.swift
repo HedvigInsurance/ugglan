@@ -58,10 +58,10 @@ extension AppJourney {
                 AppJourney.crossSellingJourney(crossSell: crossSell)
             case let .openCrossSellingEmbark(name):
                 AppJourney.crossSellingEmbarkJourney(name: name, style: .detented(.large))
-            case .terminationFlow:
-                AppJourney.terminationFlow
-            case .terminationSuccessFlow:
-                AppJourney.sendTermination()
+            case let .terminationFlow(contractId, contextInput):
+                AppJourney.terminationFlow(contractId: contractId, context: contextInput)
+            case .terminationSuccessFlow(let terminationDate, let surveyURL):
+                AppJourney.sendTermination(terminationDate: terminationDate, surveyURL: surveyURL)
             case let .openCrossSellingWebUrl(url):
                 AppJourney.webRedirect(url: url)
             }

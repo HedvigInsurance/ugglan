@@ -6,6 +6,7 @@ import hCore
 import hGraphQL
 
 public struct ContractState: StateProtocol {
+
     public init() {}
 
     public var hasLoadedContractBundlesOnce = false
@@ -13,6 +14,7 @@ public struct ContractState: StateProtocol {
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
+    public var terminations: TerminationStartFlow? = nil
 
     func contractForId(_ id: String) -> Contract? {
         if let inBundleContract = contractBundles.flatMap({ $0.contracts })
@@ -60,6 +62,7 @@ public enum CrossSellingFAQListNavigationAction: ActionProtocol {
 }
 
 public enum ContractAction: ActionProtocol {
+
     // fetch everything
     case fetch
 
@@ -90,14 +93,19 @@ public enum ContractAction: ActionProtocol {
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 
-    case goToTerminationFlow
-    //    case goToTerminationSuccess
-    case sendTermination
+    case goToTerminationFlow(contractId: String, contextInput: String)
+    case sendTermination(terminationDate: Date, contextInput: String, surveyUrl: String)
     case dismissTerminationFlow
+    case terminationFail
+
+    case startTermination(contractId: String)
+    case setTerminationDetails(details: TerminationStartFlow)
+    case sendTerminationDate(terminationDateInput: Date, contextInput: String)
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {
     @Inject var giraffe: hGiraffe
+    @Inject var octopus: hOctopus
 
     public override func effects(
         _ getState: @escaping () -> ContractState,
@@ -136,6 +144,94 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .setFocusedCrossSell(focusedCrossSell: crossSell)
             ]
             .emitEachThenEnd
+
+        case .startTermination(let contractId):
+
+            return FiniteSignal { callback in
+                self.octopus.client
+                    .perform(
+                        mutation: OctopusGraphQL.FlowTerminationStartMutation(
+                            input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId)
+                        )
+                    )
+                    .onValue { data in
+                        guard let dateStep = data.flowTerminationStart.currentStep.asFlowTerminationDateStep else {
+                            return
+                        }
+
+                        let context = data.flowTerminationStart.context
+
+                        [
+                            .goToTerminationFlow(contractId: contractId, contextInput: context),
+                            .setTerminationDetails(
+                                details:
+                                    TerminationStartFlow(
+                                        id: dateStep.id,
+                                        minDate: dateStep.minDate,
+                                        maxDate: dateStep.maxDate ?? ""
+                                    )
+                            ),
+                        ]
+                        .forEach { element in
+                            callback(.value(element))
+                        }
+                    }
+                    .onError { error in
+                        log.error("Error: \(error)")
+                    }
+                return NilDisposer()
+            }
+
+        case .sendTerminationDate(let terminationDate, let contextInput):
+
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let inputDateToString = dateFormatter.string(from: terminationDate)
+
+            let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
+
+            return FiniteSignal { callback in
+                self.octopus.client
+                    .perform(
+                        mutation: OctopusGraphQL.FlowTerminationDateNextMutation(
+                            context: contextInput,
+                            input: terminationDateInput
+                        )
+                    )
+                    .onValue { data in
+
+                        if let data = data.flowTerminationDateNext.currentStep.asFlowTerminationSuccessStep {
+
+                            let surveyURL = data.surveyUrl
+
+                            [
+                                .sendTermination(
+                                    terminationDate: terminationDate,
+                                    contextInput: contextInput,
+                                    surveyUrl: surveyURL
+                                )
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
+
+                        } else if let data = data.flowTerminationDateNext.currentStep.asFlowTerminationFailedStep {
+                            [
+                                .terminationFail
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
+                        } else {
+                            return
+                        }
+                    }
+                    .onError { error in
+                        log.error("Error: \(error)")
+                    }
+                return NilDisposer()
+            }
+
         default:
             break
         }
@@ -173,10 +269,29 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .flatMap { $0 }
         case .resetSignedCrossSells:
             newState.signedCrossSells = []
+
+        case .setTerminationDetails(let terminationDetails):
+            newState.terminations = terminationDetails
+
         default:
             break
         }
 
         return newState
+    }
+}
+
+extension FiniteSignal {
+    func emitEachThenEnd<Element>() -> FiniteSignal<Element> where Value == [Element] {
+        FiniteSignal { callback in
+            let bag = DisposeBag()
+            bag += self.onValue({ value in
+                value.forEach { element in
+                    callback(.value(element))
+                }
+            })
+            callback(.end)
+            return bag
+        }
     }
 }
