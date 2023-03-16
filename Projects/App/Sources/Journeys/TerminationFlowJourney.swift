@@ -30,7 +30,7 @@ extension AppJourney {
         ) {
             action in
             if case .dismissTerminationFlow = action {
-                PopJourney()
+                DismissJourney()
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
