@@ -42,7 +42,7 @@ public struct SubmitClaimContactScreen: View {
                 .padding([.leading, .trailing], 16)
 
                 hButton.LargeButtonFilled {
-                    store.send(.submitClaimOccuranceScreen)
+                    store.send(.submitClaimPhoneNumber(phoneNumberInput: "0712345678"))  //?
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)

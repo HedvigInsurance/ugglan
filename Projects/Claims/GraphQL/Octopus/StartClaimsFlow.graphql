@@ -1,0 +1,68 @@
+mutation FlowClaimStart($input: FlowClaimStartInput!) {
+  flowClaimStart(input: $input) {
+    context
+    currentStep {
+      id
+      ... on FlowClaimAudioRecordingStep {
+        questions
+      }
+      ... on FlowClaimDateOfOccurrenceStep {
+        maxDate
+        dateOfOccurrence
+      }
+      ... on FlowClaimLocationStep {
+        location
+        options {
+          displayName
+          value
+        }
+      }
+      ... on FlowClaimSuccessStep {
+        id
+      }
+      ... on FlowClaimPhoneNumberStep {
+        id
+        phoneNumber
+      }
+      ... on FlowClaimFailedStep {
+        id
+      }
+      ... on FlowClaimSingleItemStep {
+        availableItemBrands {
+          displayName
+          itemBrandId
+          itemTypeId
+        }
+        availableItemModels {
+          itemBrandId
+          imageUrl
+          displayName
+          itemModelId
+          itemTypeId
+        }
+        availableItemProblems {
+          displayName
+          itemProblemId
+        }
+        preferredCurrency
+        purchaseDate
+        purchasePrice {
+          amount
+          currencyCode
+        }
+        selectedItemBrand
+        selectedItemModel
+        selectedItemProblems
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+

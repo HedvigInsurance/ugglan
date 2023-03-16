@@ -13,6 +13,7 @@ import hCoreUI
 import hGraphQL
 
 extension AppJourney {
+
     static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
         HostingJourney(
             UgglanStore.self,
@@ -62,21 +63,30 @@ extension AppJourney {
     }
 
     static func startSubmitClaimsFlow(from origin: ClaimsOrigin) -> some JourneyPresentation {
+
         HostingJourney(
             UgglanStore.self,
             rootView: HonestyPledge(),
             style: .modal
         ) {
+
             action in
             if case .didAcceptHonestyPledge = action {
-                submitClaimContractScreen(from: origin)
+                PopJourney()  //?
+                    .onPresent {
+                        @PresentableStore var store: ClaimsStore
+                        store.send(.startClaim(from: origin))
+                    }
             }
         }
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func submitClaimContractScreen(from origin: ClaimsOrigin) -> some JourneyPresentation {
+    static func submitClaimPhoneNumberScreen(
+        from origin: ClaimsOrigin,
+        contextInput: String
+    ) -> some JourneyPresentation {  //delete origin?
 
         HostingJourney(
             ClaimsStore.self,
@@ -84,15 +94,25 @@ extension AppJourney {
             style: .modal
         ) {
             action in
-            if case .submitClaimOccuranceScreen = action {
-                submitClaimOccurranceScreen(from: origin)
+            if case let .submitClaimPhoneNumber(phoneNumberInput) = action {
+                PopJourney()  //?
+                    .onPresent {
+                        @PresentableStore var store: ClaimsStore
+                        store.send(
+                            .claimNextPhoneNumber(from: origin, phoneNumber: phoneNumberInput, context: contextInput)
+                        )  //add context
+                    }
             }
         }
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func submitClaimOccurranceScreen(from origin: ClaimsOrigin) -> some JourneyPresentation {
+    static func submitClaimOccurranceScreen(
+        from origin: ClaimsOrigin,
+        dateOfOccurrence: Date?,
+        contextInput: String
+    ) -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
@@ -102,25 +122,31 @@ extension AppJourney {
 
             action in
             if case .openDatePicker = action {
-                openDatePickerScreen()
+                openDatePickerScreen(from: origin, context: contextInput)
             } else if case .openLocationPicker = action {
-                openLocationScreen()
-            } else if case .submitClaimAudioRecordingOrInfo = action {
+                openLocationScreen(from: origin, context: contextInput)
+            }  //else if case let .submitClaimDateOfOccurrence(dateOfOccurrence, context) = action {
 
-                switch origin {
-                /* TODO: ADD SELECTION BETWEEN BROKEN COMPUTER AND PHONE */
-                case .generic:
-                    openAudioRecordingSceen()
-                case .commonClaims:
-                    openObjectInformation()
-                }
-            }
+            //   PopJourney() //?
+            //                .onPresent {
+            //                    @PresentableStore var store: ClaimsStore
+            //                    store.send(.claimNextDateOfOccurrence(dateOfOccurrence: dateOfOccurrence, context: contextInput)) //add context
+            //                }
+
+            //                switch origin {
+            //                    /* TODO: ADD SELECTION BETWEEN BROKEN COMPUTER AND PHONE */
+            //                case .generic:
+            //                    openAudioRecordingSceen()
+            //                case .commonClaims:
+            //                    openObjectInformation()
+            //                }
+            //            }
         }
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openDatePickerScreen() -> some JourneyPresentation {
+    static func openDatePickerScreen(from origin: ClaimsOrigin, context: String) -> some JourneyPresentation {  //claims origin?
 
         HostingJourney(
             ClaimsStore.self,
@@ -128,15 +154,29 @@ extension AppJourney {
             style: .modal
         ) {
             action in
-            if case .dissmissNewClaimFlow = action {
-                PopJourney()
+            if case let .submitClaimDateOfOccurrence(dateOfOccurrence) = action {
+
+                PopJourney()  //?
+                    .onPresent {
+                        @PresentableStore var store: ClaimsStore
+
+                        store.send(
+                            .claimNextDateOfOccurrence(
+                                from: origin,
+                                dateOfOccurrence: dateOfOccurrence,
+                                context: context
+                            )
+                        )  //add context
+                        //                    submitClaimOccurranceScreen(from: origin, contextInput: context, dateOfOccurrence: dateOfOccurrence)
+
+                    }
             }
         }
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openLocationScreen() -> some JourneyPresentation {
+    static func openLocationScreen(from origin: ClaimsOrigin, context: String) -> some JourneyPresentation {  //claims origin?
 
         HostingJourney(
             ClaimsStore.self,
@@ -144,8 +184,15 @@ extension AppJourney {
             style: .modal
         ) {
             action in
-            if case .dissmissNewClaimFlow = action {
-                PopJourney()
+            if case let .submitClaimLocation(location) = action {  //change
+
+                PopJourney()  //?
+                    .onPresent {
+                        @PresentableStore var store: ClaimsStore
+                        store.send(.claimNextLocation(location: location, context: context))  //add context
+                        //                    store.send(.claimNextLocation(location: "", context: "")) //add context //change
+                    }
+                //                PopJourney()
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
@@ -224,7 +271,8 @@ extension AppJourney {
             if case .openSummaryScreen = action {
                 openSummaryScreen()
             } else if case .openDatePicker = action {
-                openDatePickerScreen()
+                //                openDatePickerScreen(from: ClaimsOrigin)
+                openLocationScreen()
             } else if case .openLocationPicker = action {
                 openLocationScreen()
             } else if case .openDamagePickerScreen = action {
@@ -265,7 +313,8 @@ extension AppJourney {
             if case .openLocationPicker = action {
                 openLocationScreen()
             } else if case .openDatePicker = action {
-                openDatePickerScreen()
+                //                openDatePickerScreen(from: <#ClaimsOrigin#>)
+                openLocationScreen()
             } else if case .openDamagePickerScreen = action {
                 openDamagePickerScreen()
             } else if case .openModelPicker = action {

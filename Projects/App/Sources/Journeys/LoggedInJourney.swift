@@ -154,7 +154,9 @@ extension AppJourney {
 }
 
 extension JourneyPresentation {
+
     public var configureClaimsNavigation: some JourneyPresentation {
+
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {
                 AppJourney.claimDetailJourney(claim: claim)
@@ -170,6 +172,10 @@ extension JourneyPresentation {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
+            } else if case let .openPhoneNumberScreen(origin, contextInput) = action {
+                AppJourney.submitClaimPhoneNumberScreen(from: origin, contextInput: contextInput)
+            } else if case let .openDateOfOccurrenceScreen(origin, date, contextInput) = action {
+                AppJourney.submitClaimOccurranceScreen(from: origin, dateOfOccurrence: date, contextInput: contextInput)
             }
         }
     }

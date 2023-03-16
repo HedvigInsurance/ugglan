@@ -54,7 +54,7 @@ public struct SubmitClaimEditSummaryScreen: View {
                     }
                 }
                 .onTap {
-                    store.send(.openLocationPicker)
+                    store.send(.openLocationPicker(context: ""))
                 }
             }
 

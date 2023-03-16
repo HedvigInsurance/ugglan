@@ -30,7 +30,8 @@ public struct DatePickerScreen: View {
             VStack {
 
                 hButton.LargeButtonFilled {
-                    store.send(.dissmissNewClaimFlow)
+                    //                    store.send(.dissmissNewClaimFlow)
+                    store.send(.submitClaimDateOfOccurrence(dateOfOccurrence: dateOfOccurrence))
                 } content: {
                     hText(L10n.generalSaveButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)

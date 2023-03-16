@@ -1,0 +1,63 @@
+mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: FlowContext!) {
+  flowClaimPhoneNumberNext(input: $input, context: $context) {
+    context
+    currentStep {
+      ... on FlowClaimAudioRecordingStep {
+        id
+        questions
+      }
+      ... on FlowClaimDateOfOccurrenceStep {
+        dateOfOccurrence
+        id
+        maxDate
+      }
+      ... on FlowClaimFailedStep {
+        id
+      }
+      ... on FlowClaimLocationStep {
+        id
+        location
+        options {
+          displayName
+          value
+        }
+      }
+      ... on FlowClaimPhoneNumberStep {
+        id
+        phoneNumber
+      }
+      ... on FlowClaimSingleItemStep {
+        availableItemBrands {
+          displayName
+          itemBrandId
+          itemTypeId
+        }
+        availableItemModels {
+          displayName
+          imageUrl
+          itemBrandId
+          itemModelId
+          itemTypeId
+        }
+        availableItemProblems {
+          displayName
+          itemProblemId
+        }
+        id
+        preferredCurrency
+        purchaseDate
+        purchasePrice {
+          amount
+          currencyCode
+        }
+        selectedItemBrand
+        selectedItemModel
+        selectedItemProblems
+      }
+      ... on FlowClaimSuccessStep {
+        id
+      }
+      id
+    }
+  }
+}

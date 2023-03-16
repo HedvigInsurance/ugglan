@@ -76,7 +76,8 @@ extension CommonClaimDetail: Presentable {
                         UIApplication.shared.open(url)
                     }
                 } else {
-                    store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
+                    //                    store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
+                    store.send(.startClaim(from: .commonClaims(id: claim.id)))
                 }
             }
 

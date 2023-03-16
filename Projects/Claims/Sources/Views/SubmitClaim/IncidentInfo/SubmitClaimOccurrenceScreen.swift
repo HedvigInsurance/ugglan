@@ -5,7 +5,8 @@ import hCoreUI
 public struct SubmitClaimOccurrenceScreen: View {
     @PresentableStore var store: ClaimsStore
 
-    public init() {}
+    public init() {
+    }
 
     public var body: some View {
 
@@ -22,8 +23,23 @@ public struct SubmitClaimOccurrenceScreen: View {
 
                     Spacer()
 
-                    Image(uiImage: hCoreUIAssets.calendar.image)
-                        .foregroundColor(hLabelColor.primary)
+                    PresentableStoreLens(
+                        ClaimsStore.self,
+                        getter: { state in
+                            state.newClaims
+                        }
+                    ) { claim in
+
+                        if claim?.dateOfOccurrence != "" {
+                            hText(claim?.dateOfOccurrence ?? "")
+                                .foregroundColor(hLabelColor.primary)
+                        } else {
+                            Image(uiImage: hCoreUIAssets.calendar.image)
+                                .foregroundColor(hLabelColor.primary)
+                        }
+
+                    }
+
                 }
             }
             .frame(height: 64)
@@ -35,7 +51,7 @@ public struct SubmitClaimOccurrenceScreen: View {
             .hShadow()
 
             hButton.SmallButtonText {
-                store.send(.openLocationPicker)
+                store.send(.openLocationPicker(context: ""))
             } content: {
 
                 HStack(spacing: 0) {
@@ -62,7 +78,8 @@ public struct SubmitClaimOccurrenceScreen: View {
         .hFormAttachToBottom {
 
             hButton.LargeButtonFilled {
-                store.send(.submitClaimAudioRecordingOrInfo)
+                //                store.send(.submitClaimDateOfOccurrence(dateOfOccurrence: Date(), context: "")) //change!
+                store.send(.openDatePicker)
             } content: {
                 hText(L10n.generalContinueButton, style: .body)
                     .foregroundColor(hLabelColor.primary.inverted)
@@ -72,6 +89,15 @@ public struct SubmitClaimOccurrenceScreen: View {
         }
 
     }
+
+    func dateToString(date: Date) -> String {
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let dateString = dateFormatter.string(from: date)
+        return dateString
+    }
+
 }
 
 struct SubmitClaimOccurranceScreen_Previews: PreviewProvider {
