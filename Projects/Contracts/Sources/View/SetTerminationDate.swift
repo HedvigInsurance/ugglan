@@ -49,14 +49,14 @@ public struct SetTerminationDate: View {
                     getter: { state in
                         state.terminations
                     }
-                ) { contract in
+                ) { termination in
 
                     DatePicker(
                         L10n.terminationDateText,
                         selection: self.$terminationDate,
                         in: convertDateFormat(
-                            inputDate: contract?.minDate ?? ""
-                        )...convertDateFormat(inputDate: contract?.maxDate ?? ""),
+                            inputDate: termination?.minDate ?? ""
+                        )...convertDateFormat(inputDate: termination?.maxDate ?? ""),
                         displayedComponents: [.date]
                     )
                     .datePickerStyle(.graphical)
