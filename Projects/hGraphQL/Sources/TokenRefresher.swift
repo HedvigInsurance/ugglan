@@ -15,10 +15,6 @@ public class TokenRefresher {
         return Date().addingTimeInterval(60) > token.accessTokenExpirationDate
     }
 
-    public func getAccessToken() -> String? {
-        return ApolloClient.retreiveToken()?.accessToken
-    }
-
     public func refreshIfNeeded() -> Future<Void> {
         guard let token = ApolloClient.retreiveToken() else {
             return Future(result: .success)
