@@ -5,7 +5,6 @@ import authlib
 
 public class TokenRefresher {
     public static let shared = TokenRefresher()
-
     var isRefreshing: ReadWriteSignal<Bool> = ReadWriteSignal(false)
 
     var needRefresh: Bool {
@@ -16,11 +15,14 @@ public class TokenRefresher {
         return Date().addingTimeInterval(60) > token.accessTokenExpirationDate
     }
 
+    public func getAccessToken() -> String? {
+        return ApolloClient.retreiveToken()?.accessToken
+    }
+
     public func refreshIfNeeded() -> Future<Void> {
         guard let token = ApolloClient.retreiveToken() else {
             return Future(result: .success)
         }
-
         return Future { completion in
             let bag = DisposeBag()
 

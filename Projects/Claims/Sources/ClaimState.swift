@@ -8,7 +8,7 @@ import hGraphQL
 public struct ClaimsState: StateProtocol {
     var claims: [Claim]? = nil
     var commonClaims: [CommonClaim]? = nil
-
+    var entryPointCommonClaims: [ClaimEntryPointResponseModel]? = nil
     public init() {}
 
     public var hasActiveClaims: Bool {
@@ -31,6 +31,9 @@ public enum ClaimsAction: ActionProtocol {
     case setClaims(claims: [Claim])
     case fetchCommonClaims
     case setCommonClaims(commonClaims: [CommonClaim])
+    case fetchCommonClaimsForSelection
+    case setCommonClaimsForSelection(commonClaims: [ClaimEntryPointResponseModel])
+    case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
@@ -59,6 +62,7 @@ public enum ClaimsOrigin: Codable, Equatable {
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     @Inject var giraffe: hGiraffe
     @Inject var store: ApolloStore
+    @Inject var getEntryPointsClaimsClient: GetEntryPointsClaimsClient
 
     public override func effects(
         _ getState: @escaping () -> ClaimsState,
@@ -96,6 +100,12 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     return .setCommonClaims(commonClaims: commonClaims)
                 }
                 .valueThenEndSignal
+        case .fetchCommonClaimsForSelection:
+            return try! getEntryPointsClaimsClient.execute()
+                .map({ claims in
+                    return .setCommonClaimsForSelection(commonClaims: claims)
+                })
+                .valueThenEndSignal
         default:
             return nil
         }
@@ -109,10 +119,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.claims = claims
         case let .setCommonClaims(commonClaims):
             newState.commonClaims = commonClaims
+        case let .setCommonClaimsForSelection(commonClaims):
+            newState.entryPointCommonClaims = commonClaims
         default:
             break
         }
-
         return newState
     }
 }
