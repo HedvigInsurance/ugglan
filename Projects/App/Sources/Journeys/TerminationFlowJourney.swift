@@ -1,32 +1,53 @@
 import Contracts
+import Foundation
 import Presentation
 import hCore
 
 extension AppJourney {
-    static var terminationFlow: some JourneyPresentation {
+    static func terminationFlow(contractId: String, context: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: SetTerminationDate(),
+            rootView: SetTerminationDate(contractId: contractId, context: context),
             style: .modal
         ) {
             action in
-            if case .sendTermination = action {
-                sendTermination()
+            if case .sendTermination(let terminationDate, _, let surveyURL) = action {
+                sendTermination(terminationDate: terminationDate, surveyURL: surveyURL)
+            } else if case .terminationFail = action {
+                terminationFail()
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
-        .withDismissButton
+        .withJourneyDismissButton
     }
 
-    static func sendTermination() -> some JourneyPresentation {
+    static func sendTermination(terminationDate: Date, surveyURL: String) -> some JourneyPresentation {
 
         HostingJourney(
             ContractStore.self,
-            rootView: TerminationSuccessScreen(),
+            rootView: TerminationSuccessScreen(terminationDate: terminationDate, surveyURL: surveyURL),
             style: .modal
         ) {
             action in
             if case .dismissTerminationFlow = action {
+                DismissJourney()
+            }
+        }
+        .setScrollEdgeNavigationBarAppearanceToStandard
+        .withJourneyDismissButton
+    }
+
+    static func terminationFail() -> some JourneyPresentation {
+
+        HostingJourney(
+            ContractStore.self,
+            rootView: TerminationFailScreen(),
+            style: .modal
+        ) {
+            action in
+            if case .dismissTerminationFlow = action {
+                DismissJourney()
+            } else if case .goToFreeTextChat = action {
                 DismissJourney()
             }
         }
