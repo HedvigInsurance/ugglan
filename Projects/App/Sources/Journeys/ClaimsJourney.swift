@@ -34,12 +34,40 @@ extension AppJourney {
             }
     }
 
+    @JourneyBuilder
     static func claimJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        hAnalyticsEvent.claimFlowType(
-            claimType: hAnalyticsExperiment.odysseyClaims ? .automation : .manual
-        )
-        .send()
-        return AppJourney.claimsJourneyPledgeAndNotificationWrapper(from: origin) { redirect in
+        GroupJourney { context in
+            switch origin {
+            case .generic:
+                HostingJourney(
+                    ClaimsStore.self,
+                    rootView: SelectCommonClaim(),
+                    style: .detented(.large),
+                    options: [
+                        .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
+                        .allowSwipeDismissAlways,
+                    ]
+                ) { action in
+                    if case let .commonClaimOriginSelected(origin) = action {
+                        startClaimsJourney(from: origin)
+                    }
+                }
+                .withDismissButton
+            case .commonClaims:
+                startClaimsJourney(from: origin)
+            }
+        }
+        .onPresent {
+            hAnalyticsEvent.claimFlowType(
+                claimType: hAnalyticsExperiment.odysseyClaims ? .automation : .manual
+            )
+            .send()
+        }
+    }
+
+    @JourneyBuilder
+    private static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
+        AppJourney.claimsJourneyPledgeAndNotificationWrapper(from: origin) { redirect in
             switch redirect {
             case .chat:
                 AppJourney.claimsChat()
