@@ -1,3 +1,5 @@
+import Combine
+import Contracts
 import SwiftUI
 import hCore
 import hCoreUI
@@ -5,8 +7,13 @@ import hCoreUI
 public struct SubmitClaimContactScreen: View {
 
     @PresentableStore var store: ClaimsStore
+    @State var phoneNumber: String
 
-    public init() {}
+    public init(
+        phoneNumber: String
+    ) {
+        self.phoneNumber = phoneNumber
+    }
 
     public var body: some View {
 
@@ -29,8 +36,19 @@ public struct SubmitClaimContactScreen: View {
             VStack {
                 HStack {
                     VStack {
-                        hText("0712345678", style: .title2) /* TODO: CHANGE */
+
+                        TextField(phoneNumber, text: $phoneNumber)
+                            .font(.title2)
                             .foregroundColor(hLabelColor.primary)
+                            .multilineTextAlignment(.center)
+                            .keyboardType(.numberPad)
+                            .onReceive(Just(phoneNumber)) { newValue in
+                                let filteredNumbers = newValue.filter { "0123456789".contains($0) }
+                                if filteredNumbers != newValue {
+                                    self.phoneNumber = filteredNumbers
+                                }
+                            }
+
                         hText(L10n.phoneNumberRowTitle, style: .footnote)
                             .foregroundColor(hLabelColor.primary)
                     }
@@ -42,7 +60,7 @@ public struct SubmitClaimContactScreen: View {
                 .padding([.leading, .trailing], 16)
 
                 hButton.LargeButtonFilled {
-                    store.send(.submitClaimPhoneNumber(phoneNumberInput: "0712345678"))  //?
+                    store.send(.submitClaimPhoneNumber(phoneNumberInput: phoneNumber))
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
@@ -51,11 +69,5 @@ public struct SubmitClaimContactScreen: View {
                 .padding([.leading, .trailing], 16)
             }
         }
-    }
-}
-
-struct SubmitClaimContactScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        SubmitClaimContactScreen()
     }
 }

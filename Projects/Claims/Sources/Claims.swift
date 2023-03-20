@@ -15,22 +15,6 @@ public struct Claims {
     public init() {}
 }
 
-/* NEW*/
-public struct NewClaim: Codable, Hashable, Equatable {
-
-    public init(
-        dateOfOccurrence: String,
-        location: String
-    ) {
-        self.dateOfOccurrence = dateOfOccurrence
-        self.location = location
-    }
-
-    public let dateOfOccurrence: String
-    public let location: String
-
-}
-
 extension Claims: View {
     func fetch() {
         store.send(.fetchClaims)

@@ -1,5 +1,5 @@
-mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: FlowContext!) {
-  flowClaimPhoneNumberNext(input: $input, context: $context) {
+mutation ClaimsFlowAudioRecording($input: FlowClaimAudioRecordingInput!, $context: FlowContext!) {
+  flowClaimAudioRecordingNext(input: $input, context: $context) {
     context
     currentStep {
       id
@@ -48,8 +48,8 @@ mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: Flo
           id
           ... on FlowClaimAutomaticAutogiroPayout {
             amount {
-              currencyCode
               amount
+              currencyCode
             }
             displayName
             id
@@ -79,16 +79,16 @@ mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: Flo
           itemBrandId
           itemTypeId
         }
-        availableItemProblems {
-          displayName
-          itemProblemId
-        }
         availableItemModels {
           displayName
           imageUrl
           itemBrandId
           itemModelId
           itemTypeId
+        }
+        availableItemProblems {
+          displayName
+          itemProblemId
         }
         id
         preferredCurrency
@@ -105,6 +105,5 @@ mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: Flo
         id
       }
     }
-    id
   }
 }

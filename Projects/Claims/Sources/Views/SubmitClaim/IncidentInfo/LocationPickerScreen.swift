@@ -4,49 +4,36 @@ import hCoreUI
 
 public struct LocationPickerScreen: View {
     @PresentableStore var store: ClaimsStore
-    @State var chosenLocation: String
 
-    public init() {
-        chosenLocation = ""
-    }
+    public init() {}
 
     public var body: some View {
         hForm {
             hSection {
-                hRow {
-                    hText(L10n.Claims.Location.At.home, style: .body)
-                        .foregroundColor(hLabelColor.primary)
-                }
-                .onTap {
-                    chosenLocation = L10n.Claims.Location.At.home
-                    store.send(.dissmissNewClaimFlow)
-                }
-                hRow {
-                    hText(L10n.Claims.Location.In.Home.country, style: .body)
-                        .foregroundColor(hLabelColor.primary)
-                }
-                .onTap {
-                    chosenLocation = L10n.Claims.Location.In.Home.country
-                    store.send(.dissmissNewClaimFlow)
-                }
-                hRow {
-                    hText(L10n.Claim.Location.abroad, style: .body)
-                        .foregroundColor(hLabelColor.primary)
-                }
-                .onTap {
-                    chosenLocation = L10n.Claim.Location.abroad
-                    store.send(.dissmissNewClaimFlow)
+
+                PresentableStoreLens(
+                    ClaimsStore.self,
+                    getter: { state in
+                        state.newClaims
+                    }
+                ) { claim in
+
+                    let data = claim.listOfLocation
+
+                    ForEach(data ?? [NewClaimsInfo(displayValue: "", value: "")], id: \.self) { element in
+                        hRow {
+                            hText(element.displayValue, style: .body)
+                                .foregroundColor(hLabelColor.primary)
+                        }
+                        .onTap {
+                            store.send(.submitClaimLocation(displayValue: element.displayValue, value: element.value))
+                        }
+                    }
                 }
             }
             .withHeader {
                 hText(L10n.Claims.Incident.Screen.location, style: .title1)
             }
         }
-    }
-}
-
-struct LocationPickerScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        LocationPickerScreen()
     }
 }

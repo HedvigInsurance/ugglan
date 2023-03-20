@@ -99,7 +99,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 return
                             }
                             onSubmit(url)
-                            store.send(.openSuccessScreen)
+                            store.send(.submitAudioRecording(audioURL: url))
                         } content: {
                             hText(L10n.generalContinueButton)
                         }
