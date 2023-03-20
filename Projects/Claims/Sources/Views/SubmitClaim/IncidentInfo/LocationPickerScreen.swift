@@ -14,7 +14,7 @@ public struct LocationPickerScreen: View {
                 PresentableStoreLens(
                     ClaimsStore.self,
                     getter: { state in
-                        state.newClaims
+                        state.newClaim
                     }
                 ) { claim in
 

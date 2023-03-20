@@ -21,6 +21,7 @@ public struct Model: Decodable, Encodable, Equatable, Hashable {
 
 public struct NewClaim: Codable, Equatable {
 
+    public let id: String
     public var dateOfOccurrence: String?
     public var location: NewClaimsInfo?
     public var listOfLocation: [NewClaimsInfo]?
@@ -34,69 +35,7 @@ public struct NewClaim: Codable, Equatable {
     public var chosenBrand: Brand?
     public var chosenDamages: [NewClaimsInfo]?
 
-    init(
-        dateOfOccurrence: String
-    ) {
-        self.dateOfOccurrence = dateOfOccurrence
-    }
-
-    init(
-        location: NewClaimsInfo
-    ) {
-        self.location = location
-    }
-
-    init(
-        listOfLocation: [NewClaimsInfo]
-    ) {
-        self.listOfLocation = listOfLocation
-    }
-
-    init(
-        listOfModels: [Model]
-    ) {
-        self.listOfModels = listOfModels
-    }
-
-    init(
-        filteredListOfModels: [Model]
-    ) {
-        self.filteredListOfModels = filteredListOfModels
-    }
-
-    init(
-        listOfDamage: [NewClaimsInfo]
-    ) {
-        self.listOfDamage = listOfDamage
-    }
-
-    init(
-        listOfBrands: [Brand]
-    ) {
-        self.listOfBrands = listOfBrands
-    }
-
-    init(
-        dateOfPurchase: Date
-    ) {
-        self.dateOfPurchase = dateOfPurchase
-    }
-
-    init(
-        priceOfPurchase: Double
-    ) {
-        self.priceOfPurchase = priceOfPurchase
-    }
-
-    init(
-        chosenBrand: Brand
-    ) {
-        self.chosenBrand = chosenBrand
-    }
-
-    init(
-        chosenModel: Model
-    ) {
-        self.chosenModel = chosenModel
+    init(id: String) {
+        self.id = id
     }
 }

@@ -24,6 +24,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import Claims
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -328,8 +329,10 @@ extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
         Self.initClients()
             .onValue { hApollo in
+                let odysseyNetworkClient = OdysseyNetworkClient()
                 Dependencies.shared.add(module: Module { hApollo.giraffe })
                 Dependencies.shared.add(module: Module { hApollo.octopus })
+                Dependencies.shared.add(module: Module { () -> FileUploaderClient in odysseyNetworkClient })
             }
             .toVoid()
     }

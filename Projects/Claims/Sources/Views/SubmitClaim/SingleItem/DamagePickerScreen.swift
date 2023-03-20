@@ -19,7 +19,7 @@ public struct DamamagePickerScreen: View {
                 PresentableStoreLens(
                     ClaimsStore.self,
                     getter: { state in
-                        state.newClaims
+                        state.newClaim 
                     }
                 ) { claim in
 

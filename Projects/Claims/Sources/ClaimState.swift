@@ -10,7 +10,7 @@ import hGraphQL
 public struct ClaimsState: StateProtocol {
     var claims: [Claim]? = nil
     var commonClaims: [CommonClaim]? = nil
-    var newClaims: NewClaim = NewClaim(listOfLocation: [])
+    var newClaim: NewClaim = .init(id: "")
 
     public init() {}
 
@@ -72,6 +72,7 @@ public enum ClaimsAction: ActionProtocol {
     case openAudioRecordingScreen(context: String)
 
     case startClaim(from: ClaimsOrigin)
+    case setNewClaim(from: NewClaim)
     case claimNextPhoneNumber(phoneNumber: String, context: String)
     case claimNextDateOfOccurrence(dateOfOccurrence: Date, context: String)
     case claimNextLocation(displayName: String, displayValue: String, context: String)
@@ -115,7 +116,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
     @Inject var store: ApolloStore
-
+    @Inject var fileUploaderClient: FileUploaderClient
+    
     public override func effects(
         _ getState: @escaping () -> ClaimsState,
         _ action: ClaimsAction
@@ -163,7 +165,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         mutation: OctopusGraphQL.FlowClaimStartMutation(input: startInput)  // 5dddcab9-a0fc-4cb7-94f3-2785693e8803
                     )
                     .onValue { data in
-
+                        let id = data.flowClaimStart.id
                         let contextInput = data.flowClaimStart.context
                         let data = data.flowClaimStart.currentStep
 
@@ -172,6 +174,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             let phoneNumber = dataStep.phoneNumber
 
                             [
+                                .setNewClaim(from: NewClaim(id: id)),
                                 .openPhoneNumberScreen(context: contextInput, phoneNumber: phoneNumber)
                             ]
                             .forEach { element in
@@ -333,8 +336,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case let .claimNextDateOfOccurrenceAndLocation(contextInput):
 
-            let location = state.newClaims.location?.value
-            let date = state.newClaims.dateOfOccurrence
+            let location = state.newClaim.location?.value
+            let date = state.newClaim.dateOfOccurrence
 
             let dateAndLocationInput = OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationInput(
                 dateOfOccurrence: date,
@@ -394,92 +397,100 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             }
 
         case let .claimNextAudioRecording(audioURL, contextInput):
-
-            let path: String = audioURL.path
-            let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(audioUrl: path)
-
             return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.ClaimsFlowAudioRecordingMutation(
-                            input: audioInput,
-                            context: contextInput
-                        )
-                    )
-                    .onValue { data in
-
-                        let context = data.flowClaimAudioRecordingNext.context
-                        let data = data.flowClaimAudioRecordingNext.currentStep
-
-                        if let dataStep = data.asFlowClaimSuccessStep {
-
-                            [
-                                .openSuccessScreen(
-                                    context: context
+                do {
+                    let data = try Data(contentsOf: audioURL).base64EncodedData()
+                    let name = audioURL.lastPathComponent
+                    let uploadFile = UploadFile(data: data, name: name, mimeType: "audio/m4a")
+                    try self.fileUploaderClient.upload(flowId: self.state.newClaim.id, file: uploadFile).onValue({ responseModel in
+                        let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(audioUrl: responseModel.audioUrl)
+                        self.octopus.client
+                            .perform(
+                                mutation: OctopusGraphQL.ClaimsFlowAudioRecordingMutation(
+                                    input: audioInput,
+                                    context: contextInput
                                 )
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
+                            )
+                            .onValue { data in
+
+                                let context = data.flowClaimAudioRecordingNext.context
+                                let data = data.flowClaimAudioRecordingNext.currentStep
+
+                                if let dataStep = data.asFlowClaimSuccessStep {
+
+                                    [
+                                        .openSuccessScreen(
+                                            context: context
+                                        )
+                                    ]
+                                    .forEach { element in
+                                        callback(.value(element))
+                                    }
+
+                                } else if let dataStep = data.asFlowClaimFailedStep {
+
+                                } else if let dataStep = data.asFlowClaimSingleItemStep {
+
+                                    let damages = dataStep.availableItemProblems
+                                    var dispValuesDamages: [NewClaimsInfo] = []
+
+                                    for element in damages ?? [] {
+                                        let list = NewClaimsInfo(displayValue: element.displayName, value: "")  //?
+                                        dispValuesDamages.append(list)
+                                    }
+
+                                    let models = dataStep.availableItemModels
+                                    var dispValuesModels: [Model] = []
+
+                                    for element in models ?? [] {
+                                        let list = Model(
+                                            displayName: element.displayName,
+                                            itemBrandId: element.itemBrandId,
+                                            itemModelId: element.itemModelId,
+                                            itemTypeID: element.itemTypeId
+                                        )
+                                        dispValuesModels.append(list)
+                                    }
+
+                                    let brands = dataStep.availableItemBrands
+                                    var dispValuesBrands: [Brand] = []
+
+                                    for element in brands ?? [] {
+                                        let list = Brand(displayName: element.displayName, itemBrandId: element.itemBrandId)
+                                        dispValuesBrands.append(list)
+                                    }
+
+                                    [
+                                        .setSingleItemLists(
+                                            brands: dispValuesBrands,
+                                            models: dispValuesModels,
+                                            damages: dispValuesDamages
+                                        ),
+                                        .openSingleItemScreen(
+                                            context: context
+                                        ),
+                                    ]
+                                    .forEach { element in
+                                        callback(.value(element))
+                                    }
+                                }
                             }
-
-                        } else if let dataStep = data.asFlowClaimFailedStep {
-
-                        } else if let dataStep = data.asFlowClaimSingleItemStep {
-
-                            let damages = dataStep.availableItemProblems
-                            var dispValuesDamages: [NewClaimsInfo] = []
-
-                            for element in damages ?? [] {
-                                let list = NewClaimsInfo(displayValue: element.displayName, value: "")  //?
-                                dispValuesDamages.append(list)
-                            }
-
-                            let models = dataStep.availableItemModels
-                            var dispValuesModels: [Model] = []
-
-                            for element in models ?? [] {
-                                let list = Model(
-                                    displayName: element.displayName,
-                                    itemBrandId: element.itemBrandId,
-                                    itemModelId: element.itemModelId,
-                                    itemTypeID: element.itemTypeId
-                                )
-                                dispValuesModels.append(list)
-                            }
-
-                            let brands = dataStep.availableItemBrands
-                            var dispValuesBrands: [Brand] = []
-
-                            for element in brands ?? [] {
-                                let list = Brand(displayName: element.displayName, itemBrandId: element.itemBrandId)
-                                dispValuesBrands.append(list)
-                            }
-
-                            [
-                                .setSingleItemLists(
-                                    brands: dispValuesBrands,
-                                    models: dispValuesModels,
-                                    damages: dispValuesDamages
-                                ),
-                                .openSingleItemScreen(
-                                    context: context
-                                ),
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
-                        }
-                    }
+                    }).onError({ error in
+                        
+                    })
+                }catch let error {
+                  _ = error
+                }
 
                 return NilDisposer()
             }
 
         case let .claimNextSingleItem(contextInput, purchasePrice):
 
-            let itemBrandIdInput = state.newClaims.chosenModel?.itemBrandId ?? ""
-            let itemModelInput = state.newClaims.chosenModel?.displayName ?? ""
-            let itemProblemsInput = state.newClaims.chosenDamages
-            let purchaseDate = state.newClaims.dateOfPurchase
+            let itemBrandIdInput = state.newClaim.chosenModel?.itemBrandId ?? ""
+            let itemModelInput = state.newClaim.chosenModel?.displayName ?? ""
+            let itemProblemsInput = state.newClaim.chosenDamages
+            let purchaseDate = state.newClaim.dateOfPurchase
 
             var problemsToString: [String] = []
 
@@ -554,49 +565,50 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.claims = claims
         case let .setCommonClaims(commonClaims):
             newState.commonClaims = commonClaims
-
+        case let .setNewClaim(clame):
+            newState.newClaim = clame
         case let .setNewLocation(location):
-            let dateOfOccurrence = newState.newClaims.dateOfOccurrence
-            newState.newClaims.dateOfOccurrence = dateOfOccurrence
-            newState.newClaims.location = location
+            let dateOfOccurrence = newState.newClaim.dateOfOccurrence
+            newState.newClaim.dateOfOccurrence = dateOfOccurrence
+            newState.newClaim.location = location
 
         case let .setNewDate(dateOfOccurrence):
-            let location = newState.newClaims.location
-            newState.newClaims.location = location
-            newState.newClaims.dateOfOccurrence = dateOfOccurrence
+            let location = newState.newClaim.location
+            newState.newClaim.location = location
+            newState.newClaim.dateOfOccurrence = dateOfOccurrence
 
         case let .setListOfLocations(locations):
-            newState.newClaims.location = nil
-            newState.newClaims.dateOfOccurrence = nil
-            newState.newClaims.chosenModel = nil
-            newState.newClaims.chosenBrand = nil
-            newState.newClaims.chosenDamages = nil
-            newState.newClaims.dateOfPurchase = nil
-            newState.newClaims.priceOfPurchase = nil
-            newState.newClaims.listOfLocation = locations
+            newState.newClaim.location = nil
+            newState.newClaim.dateOfOccurrence = nil
+            newState.newClaim.chosenModel = nil
+            newState.newClaim.chosenBrand = nil
+            newState.newClaim.chosenDamages = nil
+            newState.newClaim.dateOfPurchase = nil
+            newState.newClaim.priceOfPurchase = nil
+            newState.newClaim.listOfLocation = locations
 
         case let .setSingleItemLists(brands, models, damages):
-            newState.newClaims.listOfDamage = damages
-            newState.newClaims.listOfBrands = brands
-            newState.newClaims.listOfModels = models
+            newState.newClaim.listOfDamage = damages
+            newState.newClaim.listOfBrands = brands
+            newState.newClaim.listOfModels = models
 
         case let .setSingleItemDamage(damages):
-            newState.newClaims.chosenDamages = damages
+            newState.newClaim.chosenDamages = damages
 
         case let .setSingleItemModel(model):
-            newState.newClaims.chosenModel = model
+            newState.newClaim.chosenModel = model
 
         case let .setPurchasePrice(priceOfPurchase):
-            newState.newClaims.priceOfPurchase = priceOfPurchase
+            newState.newClaim.priceOfPurchase = priceOfPurchase
 
         case let .setSingleItemPurchaseDate(purchaseDate):
-            newState.newClaims.dateOfPurchase = purchaseDate
+            newState.newClaim.dateOfPurchase = purchaseDate
 
         case let .setSingleItemBrand(brand):
-            newState.newClaims.chosenModel = nil
-            newState.newClaims.chosenBrand = brand
+            newState.newClaim.chosenModel = nil
+            newState.newClaim.chosenBrand = brand
 
-            let modelList = newState.newClaims.listOfModels
+            let modelList = newState.newClaim.listOfModels
             var filteredModelList: [Model] = []
 
             for model in modelList ?? [] {
@@ -605,7 +617,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 }
             }
 
-            newState.newClaims.filteredListOfModels = filteredModelList
+            newState.newClaim.filteredListOfModels = filteredModelList
 
         default:
             break

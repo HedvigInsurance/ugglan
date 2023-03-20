@@ -24,11 +24,11 @@ public struct SubmitClaimOccurrenceScreen: View {
                     PresentableStoreLens(
                         ClaimsStore.self,
                         getter: { state in
-                            state.newClaims
+                            state.newClaim
                         }
                     ) { claim in
 
-                        if claim.dateOfOccurrence != nil {
+                        if let dateOfOccurrence = claim.dateOfOccurrence {
                             hText(claim.dateOfOccurrence ?? "")
                                 .foregroundColor(hLabelColor.primary)
                         } else {
@@ -60,7 +60,7 @@ public struct SubmitClaimOccurrenceScreen: View {
                     PresentableStoreLens(
                         ClaimsStore.self,
                         getter: { state in
-                            state.newClaims
+                            state.newClaim
                         }
                     ) { claim in
 

@@ -1,6 +1,7 @@
 mutation FlowClaimStart($input: FlowClaimStartInput!) {
   flowClaimStart(input: $input) {
     context
+    id
     currentStep {
       id
       ... on FlowClaimAudioRecordingStep {

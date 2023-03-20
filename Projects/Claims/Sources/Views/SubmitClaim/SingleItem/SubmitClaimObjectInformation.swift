@@ -21,7 +21,7 @@ public struct SubmitClaimObjectInformation: View {
             PresentableStoreLens(
                 ClaimsStore.self,
                 getter: { state in
-                    state.newClaims
+                    state.newClaim
                 }
             ) { claim in
 
@@ -62,7 +62,7 @@ public struct SubmitClaimObjectInformation: View {
             PresentableStoreLens(
                 ClaimsStore.self,
                 getter: { state in
-                    state.newClaims
+                    state.newClaim
                 }
             ) { claim in
 
@@ -129,7 +129,7 @@ public struct SubmitClaimObjectInformation: View {
             PresentableStoreLens(
                 ClaimsStore.self,
                 getter: { state in
-                    state.newClaims
+                    state.newClaim
                 }
             ) { claim in
 

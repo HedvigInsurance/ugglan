@@ -15,7 +15,7 @@ public struct BrandPickerScreen: View {
                 PresentableStoreLens(
                     ClaimsStore.self,
                     getter: { state in
-                        state.newClaims
+                        state.newClaim
                     }
                 ) { claim in
 
@@ -46,7 +46,7 @@ public struct ModelPickerScreen: View {
         PresentableStoreLens(
             ClaimsStore.self,
             getter: { state in
-                state.newClaims
+                state.newClaim
             }
         ) { claim in
 

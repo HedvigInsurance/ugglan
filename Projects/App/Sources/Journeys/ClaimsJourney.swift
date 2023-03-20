@@ -280,7 +280,6 @@ extension AppJourney {
         ) {
             action in
             if case let .submitAudioRecording(audioURL) = action {
-
                 PopJourney()
                     .onPresent {
                         @PresentableStore var store: ClaimsStore
