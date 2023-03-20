@@ -10,31 +10,43 @@ public struct SelectCommonClaim: View {
         PresentableStoreLens(
             ClaimsStore.self,
             getter: { state in
-                state.entryPointCommonClaims ?? []
-            },
-            setter: { _ in
-                .fetchCommonClaimsForSelection
+                state.entryPointCommonClaims
             }
-        ) { entryPointCommonClaims, _ in
-            hForm {
-                hSection {
-                    ForEach(entryPointCommonClaims, id: \.id) { claimType in
-                        hRow {
-                            hText(claimType.displayName)
-                        }
-                        .onTap {
-                            store.send(
-                                .commonClaimOriginSelected(commonClaim: ClaimsOrigin.commonClaims(id: claimType.id))
-                            )
+        ) { entryPointCommonClaims in
+            ZStack {
+                switch entryPointCommonClaims {
+                case .loading:
+                    ActivityIndicator(style: .large)
+                case let .error(message):
+                    RetryView(title: message, retryTitle: L10n.generalRetry) {
+                        store.send(.fetchCommonClaimsForSelection)
+                    }
+                    .padding(16)
+                case let .success(entryPointCommonClaims):
+                    hSection {
+                        ForEach(entryPointCommonClaims, id: \.id) { claimType in
+                            hRow {
+                                hText(claimType.displayName)
+                            }
+                            .onTap {
+                                store.send(
+                                    .commonClaimOriginSelected(commonClaim: ClaimsOrigin.commonClaims(id: claimType.id))
+                                )
+                            }
                         }
                     }
-                }
-                .withHeader {
-                    hText(L10n.claimTriagingTitle, style: .prominentTitle)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity, alignment: .center)
+                    .withHeader {
+                        hText(L10n.claimTriagingTitle, style: .prominentTitle)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+
                 }
             }
         }
+        .onAppear {
+            store.send(.fetchCommonClaimsForSelection)
+        }
+        .animation(.spring(), value: UUID())
     }
 }

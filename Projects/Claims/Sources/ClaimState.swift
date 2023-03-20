@@ -8,7 +8,7 @@ import hGraphQL
 public struct ClaimsState: StateProtocol {
     var claims: [Claim]? = nil
     var commonClaims: [CommonClaim]? = nil
-    var entryPointCommonClaims: [ClaimEntryPointResponseModel]? = nil
+    var entryPointCommonClaims: LoadingWrapper<[ClaimEntryPointResponseModel], String> = .loading
     public init() {}
 
     public var hasActiveClaims: Bool {
@@ -32,7 +32,7 @@ public enum ClaimsAction: ActionProtocol {
     case fetchCommonClaims
     case setCommonClaims(commonClaims: [CommonClaim])
     case fetchCommonClaimsForSelection
-    case setCommonClaimsForSelection(commonClaims: [ClaimEntryPointResponseModel])
+    case setCommonClaimsForSelection(LoadingWrapper<[ClaimEntryPointResponseModel], String>)
     case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
@@ -101,9 +101,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 }
                 .valueThenEndSignal
         case .fetchCommonClaimsForSelection:
-            return try! getEntryPointsClaimsClient.execute()
+            self.send(.setCommonClaimsForSelection(.loading))
+            return getEntryPointsClaimsClient.execute()
                 .map({ claims in
-                    return .setCommonClaimsForSelection(commonClaims: claims)
+                    return .setCommonClaimsForSelection(.success(claims))
+                })
+                .onError({ error in
+                    self.send(.setCommonClaimsForSelection(.error(error.localizedDescription)))
                 })
                 .valueThenEndSignal
         default:
@@ -113,7 +117,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
     public override func reduce(_ state: ClaimsState, _ action: ClaimsAction) -> ClaimsState {
         var newState = state
-
         switch action {
         case let .setClaims(claims):
             newState.claims = claims

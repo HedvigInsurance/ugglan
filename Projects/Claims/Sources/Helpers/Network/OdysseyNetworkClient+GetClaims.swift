@@ -3,11 +3,11 @@ import Foundation
 import hGraphQL
 
 public protocol GetEntryPointsClaimsClient {
-    func execute() throws -> Future<[ClaimEntryPointResponseModel]>
+    func execute() -> Future<[ClaimEntryPointResponseModel]>
 }
 
 extension OdysseyNetworkClient: GetEntryPointsClaimsClient {
-    public func execute() throws -> Future<[ClaimEntryPointResponseModel]> {
+    public func execute() -> Future<[ClaimEntryPointResponseModel]> {
         return Future { [weak self] completion in
             OdysseyRequest.getCommonClaimsForSelection.asRequest
                 .onValue { request in

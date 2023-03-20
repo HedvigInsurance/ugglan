@@ -1,4 +1,6 @@
 import Foundation
+import UIKit
+import hCore
 
 public final class OdysseyNetworkClient {
     let sessionClient: URLSession
@@ -9,7 +11,14 @@ public final class OdysseyNetworkClient {
 
     func handleResponse<T>(data: Data?, response: URLResponse?, error: Error?) throws -> T? where T: Decodable {
         if let error = error {
-            throw OdysseyNetworkError.networkError(message: error.localizedDescription)
+            if let error = error as? URLError {
+                switch error.code {
+                case .notConnectedToInternet:
+                    throw OdysseyNetworkError.networkError(message: L10n.HomeTab.errorBody)
+                default:
+                    throw OdysseyNetworkError.networkError(message: L10n.HomeTab.errorBody)
+                }
+            }
         }
 
         guard let httpResponse = response as? HTTPURLResponse,
