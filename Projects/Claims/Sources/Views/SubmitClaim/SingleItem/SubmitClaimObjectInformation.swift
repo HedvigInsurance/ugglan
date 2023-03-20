@@ -39,13 +39,16 @@ public struct SubmitClaimObjectInformation: View {
                     if claim.chosenModel != nil {
                         hText(claim.chosenModel?.displayName ?? "")
                             .foregroundColor(hLabelColor.primary)
+                    } else if claim.chosenBrand != nil {
+                        hText(claim.chosenBrand?.displayName ?? "")
+                            .foregroundColor(hLabelColor.primary)
                     } else {
                         hText(L10n.Claim.Location.choose)
                             .foregroundColor(hLabelColor.primary)
                     }
                 }
                 .onTap {
-                    store.send(.openModelPicker)
+                    store.send(.openBrandPicker)
                 }
             }
             .frame(height: 64)

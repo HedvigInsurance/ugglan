@@ -11,7 +11,6 @@ public struct ClaimsState: StateProtocol {
     var claims: [Claim]? = nil
     var commonClaims: [CommonClaim]? = nil
     var newClaims: NewClaim = NewClaim(listOfLocation: [])
-    //    var singleItem: SingleItem? = nil
 
     public init() {}
 
@@ -57,19 +56,19 @@ public enum ClaimsAction: ActionProtocol {
     case submitSingleItem(purchasePrice: Double)
     case submitDamage(damage: [NewClaimsInfo])
     case claimNextDamage(damages: NewClaimsInfo)
-    case submitBrandAndModel(brand: Brand, model: Model)
+    case submitModel(model: Model)
     case submitBrand(brand: Brand)
 
-    case openModelPicker
     case openSuccessScreen(context: String)
     case openSingleItemScreen(context: String)
     case openSummaryScreen
     case openSummaryEditScreen
     case openDamagePickerScreen
+    case openModelPicker
+    case openBrandPicker
     case openCheckoutNoRepairScreen
     case openCheckoutTransferringScreen
     case openCheckoutTransferringDoneScreen
-
     case openAudioRecordingScreen(context: String)
 
     case startClaim(from: ClaimsOrigin)
@@ -87,9 +86,9 @@ public enum ClaimsAction: ActionProtocol {
     case setSingleItemLists(brands: [Brand], models: [Model], damages: [NewClaimsInfo])
     case setSingleItemModel(modelName: Model)
     case setSingleItemPriceOfPurchase(purchasePrice: Double)
-    case setDamage(damages: [NewClaimsInfo])
-    case setSingleItemBrandAndModel(model: Model)
+    case setSingleItemDamage(damages: [NewClaimsInfo])
     case setSingleItemPurchaseDate(purchaseDate: Date)
+    case setSingleItemBrand(brand: Brand)
 }
 
 public enum ClaimsOrigin: Codable, Equatable {
@@ -211,7 +210,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         let context = data.flowClaimPhoneNumberNext.context
                         let data = data.flowClaimPhoneNumberNext.currentStep
 
-                        if let dataStep = data.asFlowClaimDateOfOccurrenceStep {  //?
+                        if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
 
                             [
                                 .openDateOfOccurrenceScreen(
@@ -517,6 +516,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     )
                     .onValue { data in
 
+                        let data = data.flowClaimSingleItemNext.currentStep
+
                         [
                             .setPurchasePrice(
                                 priceOfPurchase: purchasePrice
@@ -525,7 +526,18 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         .forEach { element in
                             callback(.value(element))
                         }
+
+                        if let dataStep = data.asFlowClaimFailedStep {
+
+                        }
+
                     }
+                    .onError { error in
+
+                        print(error)
+
+                    }
+
                 return NilDisposer()
             }
 
@@ -557,6 +569,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.newClaims.location = nil
             newState.newClaims.dateOfOccurrence = nil
             newState.newClaims.chosenModel = nil
+            newState.newClaims.chosenBrand = nil
             newState.newClaims.chosenDamages = nil
             newState.newClaims.dateOfPurchase = nil
             newState.newClaims.priceOfPurchase = nil
@@ -567,10 +580,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.newClaims.listOfBrands = brands
             newState.newClaims.listOfModels = models
 
-        case let .setDamage(damages):
+        case let .setSingleItemDamage(damages):
             newState.newClaims.chosenDamages = damages
 
-        case let .setSingleItemBrandAndModel(model):
+        case let .setSingleItemModel(model):
             newState.newClaims.chosenModel = model
 
         case let .setPurchasePrice(priceOfPurchase):
@@ -578,6 +591,21 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case let .setSingleItemPurchaseDate(purchaseDate):
             newState.newClaims.dateOfPurchase = purchaseDate
+
+        case let .setSingleItemBrand(brand):
+            newState.newClaims.chosenModel = nil
+            newState.newClaims.chosenBrand = brand
+
+            let modelList = newState.newClaims.listOfModels
+            var filteredModelList: [Model] = []
+
+            for model in modelList ?? [] {
+                if model.itemBrandId == brand.itemBrandId {
+                    filteredModelList.append(model)
+                }
+            }
+
+            newState.newClaims.filteredListOfModels = filteredModelList
 
         default:
             break

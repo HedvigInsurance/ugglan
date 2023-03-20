@@ -72,7 +72,7 @@ extension AppJourney {
 
             action in
             if case .didAcceptHonestyPledge = action {
-                PopJourney()  //?
+                PopJourney()
                     .onPresent {
                         @PresentableStore var store: ClaimsStore
                         store.send(.startClaim(from: origin))
@@ -217,26 +217,35 @@ extension AppJourney {
         ) {
             action in
             if case let .submitBrand(brand) = action {
-                openModelPickerScreen(context: context, brand: brand)
+
+                openModelPickerScreen(context: context)
+                    .onPresent {
+                        @PresentableStore var store: ClaimsStore
+                        store.send(.setSingleItemBrand(brand: brand))
+                        PopJourney()
+                    }
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openModelPickerScreen(context: String, brand: Brand) -> some JourneyPresentation {
+    static func openModelPickerScreen(context: String) -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
-            rootView: ModelPickerScreen(selectedBrand: brand),
+            rootView: ModelPickerScreen(),
             style: .modal
         ) {
             action in
-            if case let .submitBrandAndModel(brand, model) = action {
-                PopJourney()
+            if case let .submitModel(model) = action {
+                // POPJourney() ?
+                openSingleItemScreen(context: context)
                     .onPresent {
                         @PresentableStore var store: ClaimsStore
                         store.send(.setSingleItemModel(modelName: model))
                     }
+            } else if case .dissmissNewClaimFlow = action {
+                openSingleItemScreen(context: context)
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
@@ -255,7 +264,7 @@ extension AppJourney {
                 PopJourney()
                     .onPresent {
                         @PresentableStore var store: ClaimsStore
-                        store.send(.setDamage(damages: damages))
+                        store.send(.setSingleItemDamage(damages: damages))
                     }
             }
         }
@@ -321,7 +330,12 @@ extension AppJourney {
                 openDatePickerScreenForPurchasPrice(context: context)
             } else if case .openDamagePickerScreen = action {
                 openDamagePickerScreen(context: context)
-            } else if case .openModelPicker = action {
+            } else if case .openBrandPicker = action {
+
+                //                PopJourney()
+                //                    .onPresent {
+                //                        openBrandPickerScreen(context: context) //?
+                //                    }
                 openBrandPickerScreen(context: context)
             }
         }

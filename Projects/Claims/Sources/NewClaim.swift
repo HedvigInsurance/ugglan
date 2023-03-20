@@ -26,10 +26,12 @@ public struct NewClaim: Codable, Equatable {
     public var listOfLocation: [NewClaimsInfo]?
     public var listOfDamage: [NewClaimsInfo]?
     public var listOfModels: [Model]?
+    public var filteredListOfModels: [Model]?
     public var listOfBrands: [Brand]?
     public var dateOfPurchase: Date?
     public var priceOfPurchase: Double?
     public var chosenModel: Model?
+    public var chosenBrand: Brand?
     public var chosenDamages: [NewClaimsInfo]?
 
     init(
@@ -57,6 +59,12 @@ public struct NewClaim: Codable, Equatable {
     }
 
     init(
+        filteredListOfModels: [Model]
+    ) {
+        self.filteredListOfModels = filteredListOfModels
+    }
+
+    init(
         listOfDamage: [NewClaimsInfo]
     ) {
         self.listOfDamage = listOfDamage
@@ -78,5 +86,17 @@ public struct NewClaim: Codable, Equatable {
         priceOfPurchase: Double
     ) {
         self.priceOfPurchase = priceOfPurchase
+    }
+
+    init(
+        chosenBrand: Brand
+    ) {
+        self.chosenBrand = chosenBrand
+    }
+
+    init(
+        chosenModel: Model
+    ) {
+        self.chosenModel = chosenModel
     }
 }

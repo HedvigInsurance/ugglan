@@ -38,13 +38,8 @@ public struct BrandPickerScreen: View {
 
 public struct ModelPickerScreen: View {
     @PresentableStore var store: ClaimsStore
-    let selectedBrand: Brand
 
-    public init(
-        selectedBrand: Brand
-    ) {
-        self.selectedBrand = selectedBrand
-    }
+    public init() {}
 
     public var body: some View {
 
@@ -55,25 +50,22 @@ public struct ModelPickerScreen: View {
             }
         ) { claim in
 
-            let models = claim.listOfModels
-            var array: [Model] = []
+            let filteredModels = claim.filteredListOfModels
 
-            //            for brand in models {
-            //                array.append(brand)
-            //            }
+            if filteredModels?.count ?? 0 > 0 {
 
-            ForEach(models ?? [], id: \.self) { model in
-
-                if model.itemBrandId == selectedBrand.itemBrandId {
+                ForEach(filteredModels ?? [], id: \.self) { model in
 
                     hRow {
                         hText(model.displayName, style: .body)
                             .foregroundColor(hLabelColor.primary)
                     }
                     .onTap {
-                        store.send(.submitBrandAndModel(brand: selectedBrand, model: model))
+                        store.send(.submitModel(model: model))
                     }
                 }
+            } else {
+                let _ = store.send(.dissmissNewClaimFlow)
             }
         }
     }
