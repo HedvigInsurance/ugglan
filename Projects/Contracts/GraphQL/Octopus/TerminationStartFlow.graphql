@@ -1,0 +1,20 @@
+mutation FlowTerminationStart($input: FlowTerminationStartInput!) {
+  flowTerminationStart(input: $input) {
+    context
+    currentStep {
+      ... on FlowTerminationDateStep {
+        id
+        maxDate
+        minDate
+      }
+      ... on FlowTerminationSuccessStep {
+        id
+        surveyUrl
+        terminationDate
+      }
+      ... on FlowTerminationFailedStep {
+        id
+      }
+    }
+  }
+}

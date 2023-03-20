@@ -3,10 +3,17 @@ import hCore
 import hCoreUI
 
 public struct TerminationSuccessScreen: View {
-    @State private var terminationDate = Date()
     @PresentableStore var store: ContractStore
+    let terminationDate: Date
+    let surveyURL: String
 
-    public init() {}
+    public init(
+        terminationDate: Date,
+        surveyURL: String
+    ) {
+        self.terminationDate = terminationDate
+        self.surveyURL = surveyURL
+    }
 
     public var body: some View {
 
@@ -21,7 +28,7 @@ public struct TerminationSuccessScreen: View {
                 .padding(.leading, 16)
                 .padding([.bottom, .top], 10)
 
-            hText(L10n.terminationSuccessfulText(formatAndPrintDate(), "Hedvig"), style: .body)
+            hText(L10n.terminationSuccessfulText(formatAndPrintDate(), L10n.hedvigNameText), style: .body)
                 .foregroundColor(hLabelColor.secondary)
                 .padding([.leading, .trailing], 16)
                 .padding(.bottom, 300)
@@ -29,9 +36,13 @@ public struct TerminationSuccessScreen: View {
         .padding(.bottom, -100)
 
         hButton.LargeButtonFilled {
-            store.send(.dismissTerminationFlow)
+
+            if let surveyToURL = URL(string: surveyURL) {
+                UIApplication.shared.open(surveyToURL)
+            }
+
         } content: {
-            hText("Done", style: .body)
+            hText(L10n.terminationOpenSurveyLabel, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
         }
         .frame(maxWidth: .infinity, alignment: .bottom)
@@ -40,19 +51,9 @@ public struct TerminationSuccessScreen: View {
     }
 
     func formatAndPrintDate() -> String {
-        let formatter = DateFormatter()
-        let myString = formatter.string(from: terminationDate)
-        let yourDate = formatter.date(from: myString)
-        formatter.dateFormat = "dd-MM-yyyy"
-        let myStringDate = formatter.string(from: yourDate!)
+        let dateFormatter = DateFormatter()
 
-        return (myStringDate)
-    }
-
-}
-
-struct TerminationSuccessScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        TerminationSuccessScreen()
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        return dateFormatter.string(from: terminationDate)
     }
 }
