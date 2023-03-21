@@ -10,15 +10,8 @@ public final class OdysseyNetworkClient {
     }
 
     func handleResponse<T>(data: Data?, response: URLResponse?, error: Error?) throws -> T? where T: Decodable {
-        if let error = error {
-            if let error = error as? URLError {
-                switch error.code {
-                case .notConnectedToInternet:
-                    throw OdysseyNetworkError.networkError(message: L10n.HomeTab.errorBody)
-                default:
-                    throw OdysseyNetworkError.networkError(message: L10n.HomeTab.errorBody)
-                }
-            }
+        if error != nil {
+            throw OdysseyNetworkError.networkError(message: L10n.General.errorBody)
         }
 
         guard let httpResponse = response as? HTTPURLResponse,
