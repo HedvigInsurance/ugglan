@@ -43,7 +43,7 @@ public struct TerminationFailScreen: View {
                         .foregroundColor(hLabelColor.primary.inverted)
                 }
             }
-            .padding([.leading, .trailing], 16)
+            .padding([.leading, .trailing, .bottom], 16)
         }
     }
 }
