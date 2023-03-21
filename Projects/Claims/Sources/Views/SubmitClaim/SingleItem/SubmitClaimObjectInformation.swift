@@ -11,10 +11,6 @@ public struct SubmitClaimObjectInformation: View {
         purchasePrice = ""
     }
 
-    var currencyMasking: Masking {
-        Masking(type: .digits)
-    }
-
     public var body: some View {
         hForm {
 
@@ -24,6 +20,10 @@ public struct SubmitClaimObjectInformation: View {
                     state.newClaim
                 }
             ) { claim in
+
+                /* ONLY IF ENTRYPOINT == BROKEN COMPUTER*/
+
+                //                if
 
                 hRow {
 
@@ -148,7 +148,7 @@ public struct SubmitClaimObjectInformation: View {
 
                         if claim.chosenDamages!.count <= 2 {
                             ForEach(claim.chosenDamages ?? [], id: \.self) { element in
-                                hText(" " + element.displayValue)
+                                hText(" " + element.displayName)
                                     .foregroundColor(hLabelColor.primary)
                             }
                         } else {

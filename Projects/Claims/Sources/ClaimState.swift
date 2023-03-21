@@ -54,8 +54,8 @@ public enum ClaimsAction: ActionProtocol {
     case submitOccuranceAndLocation
     case submitAudioRecording(audioURL: URL)
     case submitSingleItem(purchasePrice: Double)
-    case submitDamage(damage: [NewClaimsInfo])
-    case claimNextDamage(damages: NewClaimsInfo)
+    case submitDamage(damage: [Damage])
+    case claimNextDamage(damages: Damage)
     case submitModel(model: Model)
     case submitBrand(brand: Brand)
 
@@ -84,10 +84,10 @@ public enum ClaimsAction: ActionProtocol {
     case setNewDate(dateOfOccurrence: String?)
     case setListOfLocations(displayValues: [NewClaimsInfo])
     case setPurchasePrice(priceOfPurchase: Double)
-    case setSingleItemLists(brands: [Brand], models: [Model], damages: [NewClaimsInfo])
+    case setSingleItemLists(brands: [Brand], models: [Model], damages: [Damage])
     case setSingleItemModel(modelName: Model)
     case setSingleItemPriceOfPurchase(purchasePrice: Double)
-    case setSingleItemDamage(damages: [NewClaimsInfo])
+    case setSingleItemDamage(damages: [Damage])
     case setSingleItemPurchaseDate(purchaseDate: Date)
     case setSingleItemBrand(brand: Brand)
 }
@@ -435,10 +435,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                     } else if let dataStep = data.asFlowClaimSingleItemStep {
 
                                         let damages = dataStep.availableItemProblems
-                                        var dispValuesDamages: [NewClaimsInfo] = []
+                                        var dispValuesDamages: [Damage] = []
 
                                         for element in damages ?? [] {
-                                            let list = NewClaimsInfo(displayValue: element.displayName, value: "")  //?
+                                            let list = Damage(
+                                                displayName: element.displayName,
+                                                itemProblemId: element.itemProblemId
+                                            )
                                             dispValuesDamages.append(list)
                                         }
 
@@ -495,7 +498,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .claimNextSingleItem(contextInput, purchasePrice):
 
             let itemBrandIdInput = state.newClaim.chosenModel?.itemBrandId ?? ""
-            let itemModelIdInput = state.newClaim.chosenModel?.displayName ?? ""
+            let itemModelIdInput = state.newClaim.chosenModel?.itemModelId ?? ""
             let itemTypeIdInput = state.newClaim.chosenModel?.itemTypeID ?? ""
             let itemProblemsInput = state.newClaim.chosenDamages
             let purchaseDate = state.newClaim.dateOfPurchase
@@ -503,7 +506,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             var problemsToString: [String] = []
 
             for element in itemProblemsInput ?? [] {
-                problemsToString.append(element.displayValue)
+                problemsToString.append(element.itemProblemId)
             }
 
             let dateFormatter = DateFormatter()
@@ -517,11 +520,18 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     itemModelId: itemModelIdInput
                 )
 
+                //                singleItemInput = OctopusGraphQL.FlowClaimSingleItemInput(
+                //                    purchasePrice: purchasePrice,
+                //                    purchaseDate: dateString,
+                //                    itemProblemIds: problemsToString,
+                //                    itemModelInput: flowClaimItemModelInput
+                //                        //                customName: Optional<String?>
+                //                )
+
                 singleItemInput = OctopusGraphQL.FlowClaimSingleItemInput(
-                    purchasePrice: purchasePrice,
-                    purchaseDate: dateString,
-                    itemProblemIds: problemsToString,
-                    //                    itemBrandInput: flowClaimItemBrandInput,
+                    purchasePrice: 9000,
+                    purchaseDate: "2020-01-01",
+                    itemProblemIds: [],
                     itemModelInput: flowClaimItemModelInput
                         //                customName: Optional<String?>
                 )
@@ -537,7 +547,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     purchaseDate: dateString,
                     itemProblemIds: problemsToString,
                     itemBrandInput: flowClaimItemBrandInput
-                        //                  itemModelInput: flowClaimItemModelInput
                         //                  customName: Optional<String?>
                 )
             }
@@ -566,6 +575,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         if let dataStep = data.asFlowClaimFailedStep {
 
                             print("fails")
+
+                        } else if let dataStep = data.asFlowClaimSummaryStep {
+
+                            print("SUMMARY")
 
                         }
 

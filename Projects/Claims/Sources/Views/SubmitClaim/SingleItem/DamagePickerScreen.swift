@@ -6,8 +6,7 @@ import hCoreUI
 
 public struct DamamagePickerScreen: View {
     @PresentableStore var store: ClaimsStore
-    @State var selectedDamages: [NewClaimsInfo] = []
-    @State var isSelected: Bool = false
+    @State var selectedDamages: [Damage] = []
 
     public init() {}
 
@@ -19,7 +18,7 @@ public struct DamamagePickerScreen: View {
                 PresentableStoreLens(
                     ClaimsStore.self,
                     getter: { state in
-                        state.newClaim 
+                        state.newClaim
                     }
                 ) { claim in
 
@@ -27,22 +26,24 @@ public struct DamamagePickerScreen: View {
 
                     ForEach(damage ?? [], id: \.self) { element in
                         hRow {
-                            hText(element.displayValue, style: .body)
+                            hText(element.displayName, style: .body)
                                 .foregroundColor(hLabelColor.primary)
-                            //                            if isDone {
+                            //                            //                            if isDone {
+                            //                            //
+                            //                            //                            }
+                            //                            //                            Image(systemName: "checkmark")
+                            //                        }
+
+                            //                        .withCustomAccessory {
+                            //                            //add checkmark image if selected?
                             //
-                            //                            }
-                            //                            Image(systemName: "checkmark")
                         }
-
-                        //                        .withCustomAccessory {
-                        //                            //add checkmark image if selected?
-                        //
-                        //                        }
                         .onTap {
-                            //                            element.isDone.toggle()
 
-                            let newDamage = NewClaimsInfo(displayValue: element.displayValue, value: element.value)
+                            let newDamage = Damage(
+                                displayName: element.displayName,
+                                itemProblemId: element.itemProblemId
+                            )
 
                             if !selectedDamages.contains(newDamage) {
                                 selectedDamages.append(newDamage)

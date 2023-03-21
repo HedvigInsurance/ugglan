@@ -19,13 +19,18 @@ public struct Model: Decodable, Encodable, Equatable, Hashable {
     public var itemTypeID: String
 }
 
+public struct Damage: Decodable, Encodable, Equatable, Hashable {
+    public var displayName: String
+    public var itemProblemId: String
+}
+
 public struct NewClaim: Codable, Equatable {
 
     public let id: String
     public var dateOfOccurrence: String?
     public var location: NewClaimsInfo?
     public var listOfLocation: [NewClaimsInfo]?
-    public var listOfDamage: [NewClaimsInfo]?
+    public var listOfDamage: [Damage]?
     public var listOfModels: [Model]?
     public var filteredListOfModels: [Model]?
     public var listOfBrands: [Brand]?
@@ -33,9 +38,11 @@ public struct NewClaim: Codable, Equatable {
     public var priceOfPurchase: Double?
     public var chosenModel: Model?
     public var chosenBrand: Brand?
-    public var chosenDamages: [NewClaimsInfo]?
+    public var chosenDamages: [Damage]?
 
-    init(id: String) {
+    init(
+        id: String
+    ) {
         self.id = id
     }
 }
