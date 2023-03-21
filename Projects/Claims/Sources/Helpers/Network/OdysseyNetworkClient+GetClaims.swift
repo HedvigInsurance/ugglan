@@ -8,9 +8,10 @@ public protocol GetEntryPointsClaimsClient {
 
 extension OdysseyNetworkClient: GetEntryPointsClaimsClient {
     public func execute() -> Future<[ClaimEntryPointResponseModel]> {
-        return Future { [weak self] completion in
+        return Future {completion in
+            let bag = DisposeBag()
             OdysseyRequest.getCommonClaimsForSelection.asRequest
-                .onValue { request in
+                .onValue {  [weak self]  request in
                     let task = self?.sessionClient
                         .dataTask(
                             with: request,
@@ -24,9 +25,10 @@ extension OdysseyNetworkClient: GetEntryPointsClaimsClient {
                                 }
                             }
                         )
+                    bag += Disposer { task?.cancel()}
                     task?.resume()
                 }
-            return NilDisposer()
+            return bag
         }
     }
 }
