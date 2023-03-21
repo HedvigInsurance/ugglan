@@ -30,8 +30,7 @@ public struct SetTerminationDate: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(hBackgroundColor.tertiary)
             .cornerRadius(12)
-            .padding(.leading, 16)
-            .padding(.trailing, 32)
+            .padding([.leading, .trailing], 16)
             .padding(.top, 20)
 
             hSection {
@@ -59,14 +58,13 @@ public struct SetTerminationDate: View {
                         )...convertDateFormat(inputDate: termination?.maxDate ?? ""),
                         displayedComponents: [.date]
                     )
+                    .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
                     .datePickerStyle(.graphical)
-                    .padding(.leading, 16)
-                    .padding([.top], 5)
-
+                    .padding([.leading, .trailing], 16)
+                    .padding(.top, 5)
                 }
 
             }
-            .padding(.top, UIScreen.main.bounds.height / 12)
         }
         .hFormAttachToBottom {
 
