@@ -13,16 +13,16 @@ public struct SelectCommonClaim: View {
                 state.entryPointCommonClaims
             }
         ) { entryPointCommonClaims in
-            ZStack {
-                switch entryPointCommonClaims {
-                case .loading:
-                    ActivityIndicator(style: .large)
-                case let .error(message):
-                    RetryView(title: message, retryTitle: L10n.generalRetry) {
-                        store.send(.fetchCommonClaimsForSelection)
-                    }
-                    .padding(16)
-                case let .success(entryPointCommonClaims):
+            switch entryPointCommonClaims {
+            case .loading:
+                ActivityIndicator(style: .large)
+            case let .error(message):
+                RetryView(title: message, retryTitle: L10n.generalRetry) {
+                    store.send(.fetchCommonClaimsForSelection)
+                }
+                .padding(16)
+            case let .success(entryPointCommonClaims):
+                hForm {
                     hSection {
                         ForEach(entryPointCommonClaims, id: \.id) { claimType in
                             hRow {
@@ -40,7 +40,6 @@ public struct SelectCommonClaim: View {
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
-
                 }
             }
         }
