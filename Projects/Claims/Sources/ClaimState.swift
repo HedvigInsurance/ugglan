@@ -117,7 +117,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     @Inject var octopus: hOctopus
     @Inject var store: ApolloStore
     @Inject var fileUploaderClient: FileUploaderClient
-    
+
     public override func effects(
         _ getState: @escaping () -> ClaimsState,
         _ action: ClaimsAction
@@ -175,7 +175,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                             [
                                 .setNewClaim(from: NewClaim(id: id)),
-                                .openPhoneNumberScreen(context: contextInput, phoneNumber: phoneNumber)
+                                .openPhoneNumberScreen(context: contextInput, phoneNumber: phoneNumber),
                             ]
                             .forEach { element in
                                 callback(.value(element))
@@ -402,84 +402,91 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     let data = try Data(contentsOf: audioURL).base64EncodedData()
                     let name = audioURL.lastPathComponent
                     let uploadFile = UploadFile(data: data, name: name, mimeType: "audio/m4a")
-                    try self.fileUploaderClient.upload(flowId: self.state.newClaim.id, file: uploadFile).onValue({ responseModel in
-                        let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(audioUrl: responseModel.audioUrl)
-                        self.octopus.client
-                            .perform(
-                                mutation: OctopusGraphQL.ClaimsFlowAudioRecordingMutation(
-                                    input: audioInput,
-                                    context: contextInput
-                                )
+                    try self.fileUploaderClient.upload(flowId: self.state.newClaim.id, file: uploadFile)
+                        .onValue({ responseModel in
+                            let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
+                                audioUrl: responseModel.audioUrl
                             )
-                            .onValue { data in
+                            self.octopus.client
+                                .perform(
+                                    mutation: OctopusGraphQL.ClaimsFlowAudioRecordingMutation(
+                                        input: audioInput,
+                                        context: contextInput
+                                    )
+                                )
+                                .onValue { data in
 
-                                let context = data.flowClaimAudioRecordingNext.context
-                                let data = data.flowClaimAudioRecordingNext.currentStep
+                                    let context = data.flowClaimAudioRecordingNext.context
+                                    let data = data.flowClaimAudioRecordingNext.currentStep
 
-                                if let dataStep = data.asFlowClaimSuccessStep {
+                                    if let dataStep = data.asFlowClaimSuccessStep {
 
-                                    [
-                                        .openSuccessScreen(
-                                            context: context
-                                        )
-                                    ]
-                                    .forEach { element in
-                                        callback(.value(element))
-                                    }
+                                        [
+                                            .openSuccessScreen(
+                                                context: context
+                                            )
+                                        ]
+                                        .forEach { element in
+                                            callback(.value(element))
+                                        }
 
-                                } else if let dataStep = data.asFlowClaimFailedStep {
+                                    } else if let dataStep = data.asFlowClaimFailedStep {
 
-                                } else if let dataStep = data.asFlowClaimSingleItemStep {
+                                    } else if let dataStep = data.asFlowClaimSingleItemStep {
 
-                                    let damages = dataStep.availableItemProblems
-                                    var dispValuesDamages: [NewClaimsInfo] = []
+                                        let damages = dataStep.availableItemProblems
+                                        var dispValuesDamages: [NewClaimsInfo] = []
 
-                                    for element in damages ?? [] {
-                                        let list = NewClaimsInfo(displayValue: element.displayName, value: "")  //?
-                                        dispValuesDamages.append(list)
-                                    }
+                                        for element in damages ?? [] {
+                                            let list = NewClaimsInfo(displayValue: element.displayName, value: "")  //?
+                                            dispValuesDamages.append(list)
+                                        }
 
-                                    let models = dataStep.availableItemModels
-                                    var dispValuesModels: [Model] = []
+                                        let models = dataStep.availableItemModels
+                                        var dispValuesModels: [Model] = []
 
-                                    for element in models ?? [] {
-                                        let list = Model(
-                                            displayName: element.displayName,
-                                            itemBrandId: element.itemBrandId,
-                                            itemModelId: element.itemModelId,
-                                            itemTypeID: element.itemTypeId
-                                        )
-                                        dispValuesModels.append(list)
-                                    }
+                                        for element in models ?? [] {
+                                            let list = Model(
+                                                displayName: element.displayName,
+                                                itemBrandId: element.itemBrandId,
+                                                itemModelId: element.itemModelId,
+                                                itemTypeID: element.itemTypeId
+                                            )
+                                            dispValuesModels.append(list)
+                                        }
 
-                                    let brands = dataStep.availableItemBrands
-                                    var dispValuesBrands: [Brand] = []
+                                        let brands = dataStep.availableItemBrands
+                                        var dispValuesBrands: [Brand] = []
 
-                                    for element in brands ?? [] {
-                                        let list = Brand(displayName: element.displayName, itemBrandId: element.itemBrandId)
-                                        dispValuesBrands.append(list)
-                                    }
+                                        for element in brands ?? [] {
+                                            let list = Brand(
+                                                displayName: element.displayName,
+                                                itemBrandId: element.itemBrandId
+                                            )
+                                            dispValuesBrands.append(list)
+                                        }
 
-                                    [
-                                        .setSingleItemLists(
-                                            brands: dispValuesBrands,
-                                            models: dispValuesModels,
-                                            damages: dispValuesDamages
-                                        ),
-                                        .openSingleItemScreen(
-                                            context: context
-                                        ),
-                                    ]
-                                    .forEach { element in
-                                        callback(.value(element))
+                                        [
+                                            .setSingleItemLists(
+                                                brands: dispValuesBrands,
+                                                models: dispValuesModels,
+                                                damages: dispValuesDamages
+                                            ),
+                                            .openSingleItemScreen(
+                                                context: context
+                                            ),
+                                        ]
+                                        .forEach { element in
+                                            callback(.value(element))
+                                        }
                                     }
                                 }
-                            }
-                    }).onError({ error in
-                        
-                    })
-                }catch let error {
-                  _ = error
+                        })
+                        .onError({ error in
+
+                        })
+                } catch let error {
+                    _ = error
                 }
 
                 return NilDisposer()
@@ -488,7 +495,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .claimNextSingleItem(contextInput, purchasePrice):
 
             let itemBrandIdInput = state.newClaim.chosenModel?.itemBrandId ?? ""
-            let itemModelInput = state.newClaim.chosenModel?.displayName ?? ""
+            let itemModelIdInput = state.newClaim.chosenModel?.displayName ?? ""
+            let itemTypeIdInput = state.newClaim.chosenModel?.itemTypeID ?? ""
             let itemProblemsInput = state.newClaim.chosenDamages
             let purchaseDate = state.newClaim.dateOfPurchase
 
@@ -498,24 +506,41 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 problemsToString.append(element.displayValue)
             }
 
-            let flowClaimItemBrandInput = OctopusGraphQL.FlowClaimItemBrandInput(
-                itemTypeId: "",
-                itemBrandId: itemBrandIdInput
-            )
-            let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(itemModelId: itemModelInput)
-
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
             let dateString = dateFormatter.string(from: purchaseDate ?? Date())
 
-            let singleItemInput = OctopusGraphQL.FlowClaimSingleItemInput(
-                purchasePrice: purchasePrice,
-                purchaseDate: dateString,
-                itemProblemIds: problemsToString,
-                itemBrandInput: flowClaimItemBrandInput,
-                itemModelInput: flowClaimItemModelInput
-                    //                customName: Optional<String?>
-            )
+            var singleItemInput: OctopusGraphQL.FlowClaimSingleItemInput
+
+            if itemModelIdInput != "" {
+                let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
+                    itemModelId: itemModelIdInput
+                )
+
+                singleItemInput = OctopusGraphQL.FlowClaimSingleItemInput(
+                    purchasePrice: purchasePrice,
+                    purchaseDate: dateString,
+                    itemProblemIds: problemsToString,
+                    //                    itemBrandInput: flowClaimItemBrandInput,
+                    itemModelInput: flowClaimItemModelInput
+                        //                customName: Optional<String?>
+                )
+
+            } else {
+                let flowClaimItemBrandInput = OctopusGraphQL.FlowClaimItemBrandInput(
+                    itemTypeId: itemTypeIdInput,
+                    itemBrandId: itemBrandIdInput
+                )
+
+                singleItemInput = OctopusGraphQL.FlowClaimSingleItemInput(
+                    purchasePrice: purchasePrice,
+                    purchaseDate: dateString,
+                    itemProblemIds: problemsToString,
+                    itemBrandInput: flowClaimItemBrandInput
+                        //                  itemModelInput: flowClaimItemModelInput
+                        //                  customName: Optional<String?>
+                )
+            }
 
             return FiniteSignal { callback in
                 self.octopus.client
@@ -539,6 +564,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         }
 
                         if let dataStep = data.asFlowClaimFailedStep {
+
+                            print("fails")
 
                         }
 
