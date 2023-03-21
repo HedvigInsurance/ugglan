@@ -46,6 +46,6 @@ public struct SelectCommonClaim: View {
         .onAppear {
             store.send(.fetchCommonClaimsForSelection)
         }
-        .animation(.spring(), value: UUID())
+        .presentableStoreLensAnimation(.easeInOut)
     }
 }
