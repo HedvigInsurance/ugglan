@@ -21,9 +21,8 @@ public struct SubmitClaimObjectInformation: View {
                 }
             ) { claim in
 
-                /* ONLY IF ENTRYPOINT == BROKEN COMPUTER*/
-
-                //                if
+                /* TODO: ONLY IF ENTRYPOINT == BROKEN COMPUTER*/
+                //                if state.newClaim.id == ?
 
                 hRow {
 
@@ -153,22 +152,32 @@ public struct SubmitClaimObjectInformation: View {
                             }
                         } else {
 
-                            //                            let arraySlice = claim.chosenDamages?.prefix(2)
-                            //                            let damagesToShow = Array(arrayLiteral: arraySlice)
+                            var counter = 0
 
-                            //                            var test2 = claim.chosenDamages[0..<1]
+                            let damage1 = Damage(displayName: "a", itemProblemId: "")
+                            let damage2 = Damage(displayName: "b", itemProblemId: "")
+                            let damage3 = Damage(displayName: "c", itemProblemId: "")
+                            var array: [Damage] = [damage1, damage2, damage3]
 
-                            //                            ForEach(arraySlice , id: \.self) { element in
-                            //////                                hText(" " + element.displayValue)
-                            ////                                hText("" + element)
-                            //////                                        .foregroundColor(hLabelColor.primary)
-                            //                            }
+                            ForEach(array ?? [], id: \.self) { element in
+                                //                            ForEach(claim.chosenDamages ?? [], id: \.self) { element in
+                                if counter < 2 {
+                                    hText(element.displayName)
+                                        .foregroundColor(hLabelColor.primary)
+                                }
+                                if counter == 0 {
+                                    hText(", ")
+                                        .foregroundColor(hLabelColor.primary)
+                                }
+                                let _ = counter += 1
+                            }
                             hText("...")
+                                .foregroundColor(hLabelColor.primary)
+
                         }
                     } else {
                         hText(L10n.Claim.Location.choose)
                             .foregroundColor(hLabelColor.primary)
-
                     }
                 }
                 .onTap {

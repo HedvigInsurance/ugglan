@@ -61,7 +61,7 @@ public enum ClaimsAction: ActionProtocol {
 
     case openSuccessScreen(context: String)
     case openSingleItemScreen(context: String)
-    case openSummaryScreen
+    case openSummaryScreen(context: String)
     case openSummaryEditScreen
     case openDamagePickerScreen
     case openModelPicker
@@ -79,10 +79,11 @@ public enum ClaimsAction: ActionProtocol {
     case claimNextDateOfOccurrenceAndLocation(context: String)
     case claimNextAudioRecording(audioURL: URL, context: String)
     case claimNextSingleItem(context: String, purchasePrice: Double)
+    case claimNextSummary(context: String)
 
-    case setNewLocation(location: NewClaimsInfo?)
+    case setNewLocation(location: Location?)
     case setNewDate(dateOfOccurrence: String?)
-    case setListOfLocations(displayValues: [NewClaimsInfo])
+    case setListOfLocations(displayValues: [Location])
     case setPurchasePrice(priceOfPurchase: Double)
     case setSingleItemLists(brands: [Brand], models: [Model], damages: [Damage])
     case setSingleItemModel(modelName: Model)
@@ -157,12 +158,12 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case let .startClaim(claimsOrigin):
 
-            let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: "5dddcab9-a0fc-4cb7-94f3-2785693e8803")  //need to be UUID
+            let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: "5dddcab9-a0fc-4cb7-94f3-2785693e8803")
 
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
-                        mutation: OctopusGraphQL.FlowClaimStartMutation(input: startInput)  // 5dddcab9-a0fc-4cb7-94f3-2785693e8803
+                        mutation: OctopusGraphQL.FlowClaimStartMutation(input: startInput)
                     )
                     .onValue { data in
                         let id = data.flowClaimStart.id
@@ -230,10 +231,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                             let possibleLocations = dataStep.locationStep.options
 
-                            var dispValues: [NewClaimsInfo] = []
+                            var dispValues: [Location] = []
 
                             for element in possibleLocations {
-                                let list = NewClaimsInfo(displayValue: element.displayName, value: element.value)
+                                let list = Location(displayValue: element.displayName, value: element.value)
                                 dispValues.append(list)
                             }
 
@@ -258,10 +259,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             }
         case let .claimNextDateOfOccurrence(dateOfOccurrence, contextInput):
 
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let dateString = dateFormatter.string(from: dateOfOccurrence)
-
+            let dateString = state.newClaim.formatDateToString(date: dateOfOccurrence)
             var dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
 
             return FiniteSignal { callback in
@@ -317,7 +315,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         let context = data.flowClaimLocationNext.context
 
                         [
-                            .setNewLocation(location: NewClaimsInfo(displayValue: displayValue, value: value))
+                            .setNewLocation(location: Location(displayValue: displayValue, value: value))
                         ]
                         .forEach { element in
                             callback(.value(element))
@@ -497,59 +495,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case let .claimNextSingleItem(contextInput, purchasePrice):
 
-            let itemBrandIdInput = state.newClaim.chosenModel?.itemBrandId ?? ""
-            let itemModelIdInput = state.newClaim.chosenModel?.itemModelId ?? ""
-            let itemTypeIdInput = state.newClaim.chosenModel?.itemTypeID ?? ""
-            let itemProblemsInput = state.newClaim.chosenDamages
-            let purchaseDate = state.newClaim.dateOfPurchase
-
-            var problemsToString: [String] = []
-
-            for element in itemProblemsInput ?? [] {
-                problemsToString.append(element.itemProblemId)
-            }
-
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let dateString = dateFormatter.string(from: purchaseDate ?? Date())
-
-            var singleItemInput: OctopusGraphQL.FlowClaimSingleItemInput
-
-            if itemModelIdInput != "" {
-                let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
-                    itemModelId: itemModelIdInput
-                )
-
-                //                singleItemInput = OctopusGraphQL.FlowClaimSingleItemInput(
-                //                    purchasePrice: purchasePrice,
-                //                    purchaseDate: dateString,
-                //                    itemProblemIds: problemsToString,
-                //                    itemModelInput: flowClaimItemModelInput
-                //                        //                customName: Optional<String?>
-                //                )
-
-                singleItemInput = OctopusGraphQL.FlowClaimSingleItemInput(
-                    purchasePrice: 9000,
-                    purchaseDate: "2020-01-01",
-                    itemProblemIds: [],
-                    itemModelInput: flowClaimItemModelInput
-                        //                customName: Optional<String?>
-                )
-
-            } else {
-                let flowClaimItemBrandInput = OctopusGraphQL.FlowClaimItemBrandInput(
-                    itemTypeId: itemTypeIdInput,
-                    itemBrandId: itemBrandIdInput
-                )
-
-                singleItemInput = OctopusGraphQL.FlowClaimSingleItemInput(
-                    purchasePrice: purchasePrice,
-                    purchaseDate: dateString,
-                    itemProblemIds: problemsToString,
-                    itemBrandInput: flowClaimItemBrandInput
-                        //                  customName: Optional<String?>
-                )
-            }
+            let singleItemInput = state.newClaim.returnSingleItemInfo(purchasePrice: purchasePrice)
 
             return FiniteSignal { callback in
                 self.octopus.client
@@ -561,12 +507,14 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     )
                     .onValue { data in
 
+                        let context = data.flowClaimSingleItemNext.context
                         let data = data.flowClaimSingleItemNext.currentStep
 
                         [
                             .setPurchasePrice(
                                 priceOfPurchase: purchasePrice
-                            )
+                            ),
+                            .openSummaryScreen(context: context),
                         ]
                         .forEach { element in
                             callback(.value(element))
@@ -574,11 +522,16 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                         if let dataStep = data.asFlowClaimFailedStep {
 
-                            print("fails")
-
                         } else if let dataStep = data.asFlowClaimSummaryStep {
 
-                            print("SUMMARY")
+                            [
+                                .openSummaryScreen(
+                                    context: context
+                                )
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
 
                         }
 
@@ -588,9 +541,33 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         print(error)
 
                     }
-
                 return NilDisposer()
             }
+
+        //        case let .claimNextSummary(contextInput):
+        //
+        //            let dateOfOccurrence = state.newClaim.dateOfOccurrence
+        //            let location = state.newClaim.location
+
+        //            let summaryInput = state.newClaim.returnSummaryInformation()
+        //
+        //            return FiniteSignal { callback in
+        //                self.octopus.client
+        //                    .perform(
+        //        mutation: OctopusGraphQL.ClaimsFlow    .ClaimsFlowSummaryMutation(input: summaryInput, context: contextInput)
+        //                    )
+        //                    .onValue { data in
+        //
+        //                    }
+        //                return NilDisposer()
+
+        //        case let .summaryScreen(contextInput, purchasePrice):
+
+        //        case let .summary edit screen (contextInput, purchasePrice):
+
+        //        case let .summary edit screen (contextInput, purchasePrice):
+
+        //        case let .summary edit screen (contextInput, purchasePrice):
 
         default:
             return nil

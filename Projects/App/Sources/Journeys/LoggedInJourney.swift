@@ -182,6 +182,8 @@ extension JourneyPresentation {
                 AppJourney.openSuccessSceen()
             } else if case let .openSingleItemScreen(contextInput) = action {
                 AppJourney.openSingleItemScreen(context: contextInput)
+            } else if case let .openSummaryScreen(contextInput) = action {
+                AppJourney.openSummaryScreen(context: contextInput)
             }
         }
     }

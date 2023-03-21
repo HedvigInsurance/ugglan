@@ -341,7 +341,7 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openSummaryScreen() -> some JourneyPresentation {
+    static func openSummaryScreen(context: String) -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
@@ -349,9 +349,7 @@ extension AppJourney {
             style: .modal
         ) {
             action in
-            if case .openSummaryEditScreen = action {
-                openSummaryEditScreen()
-            } else if case .openCheckoutNoRepairScreen = action {
+            if case .openCheckoutNoRepairScreen = action {
                 openCheckoutNoRepairScreen()
             }
         }
@@ -359,7 +357,7 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openSummaryEditScreen() -> some JourneyPresentation {
+    static func openSummaryEditScreen(context: String) -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,

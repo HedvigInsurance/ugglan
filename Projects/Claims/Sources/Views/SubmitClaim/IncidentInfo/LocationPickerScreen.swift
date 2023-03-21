@@ -20,7 +20,7 @@ public struct LocationPickerScreen: View {
 
                     let data = claim.listOfLocation
 
-                    ForEach(data ?? [NewClaimsInfo(displayValue: "", value: "")], id: \.self) { element in
+                    ForEach(data ?? [Location(displayValue: "", value: "")], id: \.self) { element in
                         hRow {
                             hText(element.displayValue, style: .body)
                                 .foregroundColor(hLabelColor.primary)
