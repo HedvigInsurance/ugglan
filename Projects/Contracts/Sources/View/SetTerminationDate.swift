@@ -21,15 +21,14 @@ public struct SetTerminationDate: View {
     public var body: some View {
 
         hForm {
-
             HStack(spacing: 0) {
                 hText(L10n.setTerminationDateText, style: .body)
-                    .padding([.trailing, .leading], 12)
+                    .padding([.leading, .trailing], 12)
                     .padding([.top, .bottom], 16)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             .background(hBackgroundColor.tertiary)
             .cornerRadius(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding([.leading, .trailing], 16)
             .padding(.top, 20)
 

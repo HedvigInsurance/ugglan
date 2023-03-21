@@ -8,7 +8,8 @@ extension AppJourney {
         HostingJourney(
             ContractStore.self,
             rootView: SetTerminationDate(contractId: contractId, context: context),
-            style: .modal
+            style: .default,
+            options: .defaults
         ) {
             action in
             if case .sendTermination(let terminationDate, _, let surveyURL) = action {
@@ -26,7 +27,8 @@ extension AppJourney {
         HostingJourney(
             ContractStore.self,
             rootView: TerminationSuccessScreen(terminationDate: terminationDate, surveyURL: surveyURL),
-            style: .modal
+            style: .default,
+            options: .defaults
         ) {
             action in
             if case .dismissTerminationFlow = action {
@@ -42,7 +44,7 @@ extension AppJourney {
         HostingJourney(
             ContractStore.self,
             rootView: TerminationFailScreen(),
-            style: .modal
+            style: .default
         ) {
             action in
             if case .dismissTerminationFlow = action {
