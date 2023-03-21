@@ -49,8 +49,8 @@ mutation ClaimsFlowSingleItem($input: FlowClaimSingleItemInput!, $context: FlowC
           id
           ... on FlowClaimAutomaticAutogiroPayout {
             amount {
-              amount
               currencyCode
+              amount
             }
             displayName
             id
@@ -66,8 +66,8 @@ mutation ClaimsFlowSingleItem($input: FlowClaimSingleItemInput!, $context: FlowC
         }
         id
         payoutAmount {
-          currencyCode
           amount
+          currencyCode
         }
         price {
           amount
@@ -104,6 +104,50 @@ mutation ClaimsFlowSingleItem($input: FlowClaimSingleItemInput!, $context: FlowC
       }
       ... on FlowClaimSuccessStep {
         id
+      }
+      ... on FlowClaimSummaryStep {
+        dateOfOccurrenceStep {
+          dateOfOccurrence
+          id
+          maxDate
+        }
+        id
+        locationStep {
+          options {
+            displayName
+            value
+          }
+          location
+          id
+        }
+        singleItemStep {
+          availableItemBrands {
+            displayName
+            itemBrandId
+            itemTypeId
+          }
+          availableItemModels {
+            displayName
+            imageUrl
+            itemBrandId
+            itemModelId
+            itemTypeId
+          }
+          availableItemProblems {
+            displayName
+            itemProblemId
+          }
+          id
+          preferredCurrency
+          purchaseDate
+          purchasePrice {
+            amount
+            currencyCode
+          }
+          selectedItemBrand
+          selectedItemModel
+          selectedItemProblems
+        }
       }
     }
   }
