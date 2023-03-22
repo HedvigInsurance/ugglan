@@ -58,6 +58,7 @@ public enum ClaimsAction: ActionProtocol {
     case submitModel(model: Model)
     case submitBrand(brand: Brand)
     case submitSummary
+    case submitSingleItemCheckout
 
     case openSuccessScreen(context: String)
     case openSingleItemScreen(context: String)
@@ -192,13 +193,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                         } else if let dataStep = data.asFlowClaimFailedStep {
 
-                            /* REMOVE WHEN FIXED */
-                            [
-                                .openPhoneNumberScreen(context: context, phoneNumber: "07777777")
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
                         } else if let dataStep = data.asFlowClaimSuccessStep {
 
                         }
@@ -262,14 +256,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     }
                     .onError { error in
                         print(error)
-
-                        /* REMOVE WHEN FIXED */
-                        [
-                            .openDateOfOccurrenceScreen(context: "context")
-                        ]
-                        .forEach { element in
-                            callback(.value(element))
-                        }
                     }
                 return NilDisposer()
 
@@ -583,25 +569,26 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return NilDisposer()
             }
 
-        //        case let .claimNextSummary(contextInput):
-        //
-        //            let dateOfOccurrence = state.newClaim.dateOfOccurrence
-        //            let location = state.newClaim.location
+        case let .claimNextSummary(contextInput):
 
-        //            let summaryInput = state.newClaim.returnSummaryInformation()
-        //
-        //            return FiniteSignal { callback in
-        //                self.octopus.client
-        //                    .perform(
-        //        mutation: OctopusGraphQL.ClaimsFlow    .ClaimsFlowSummaryMutation(input: summaryInput, context: contextInput)
-        //                    )
-        //                    .onValue { data in
-        //
-        //                    }
-        //                return NilDisposer()
+            let dateOfOccurrence = state.newClaim.dateOfOccurrence
+            let location = state.newClaim.location
 
-        //        case let .singleItemCheckout edit screen (contextInput, purchasePrice):
-        //        case let .summary edit screen (contextInput, purchasePrice):
+            let summaryInput = state.newClaim.returnSummaryInformation()
+
+            return FiniteSignal { callback in
+                self.octopus.client
+                    .perform(
+                        mutation: OctopusGraphQL.ClaimsFlowSummaryMutation(input: summaryInput, context: contextInput)
+                    )
+                    .onValue { data in
+
+                    }
+                return NilDisposer()
+            }
+
+        //                case let .singleItemCheckout edit screen (contextInput, purchasePrice):
+        //                case let .summary edit screen (contextInput, purchasePrice):
 
         case let .claimNextSingleItemCheckout(contextInput):
 

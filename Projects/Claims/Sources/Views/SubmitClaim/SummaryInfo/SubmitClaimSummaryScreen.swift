@@ -60,7 +60,7 @@ public struct SubmitClaimSummaryScreen: View {
                     }
 
                     hButton.SmallButtonOutlined {
-                        //                        store.send(.openSummaryEditScreencontext: String)
+                        store.send(.openSummaryEditScreen(context: ""))
                     } content: {
                         hText(L10n.Claims.Edit.button)
                     }

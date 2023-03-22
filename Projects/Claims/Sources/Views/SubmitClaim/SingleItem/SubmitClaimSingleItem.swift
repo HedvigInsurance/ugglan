@@ -62,15 +62,16 @@ public struct SubmitClaimSingleItem: View {
                         Spacer()
                     }
                 }
-                //                .withCustomAccessory {
-                //                    if claim.dateOfPurchase != nil {
-                //
-                //                        hText(convertDateToString(date: claim.dateOfPurchase ?? Date()))
-                //                            .foregroundColor(hLabelColor.primary)
-                //                    } else {
-                //                        Image(uiImage: hCoreUIAssets.calendar.image)
-                //                    }
-                //                }
+                .withCustomAccessory {
+                    //                    if claim.dateOfPurchase != nil {
+                    //
+                    //                        hText(convertDateToString(date: claim.dateOfPurchase ?? Date()))
+                    //                            .foregroundColor(hLabelColor.primary)
+                    //                    }
+                    //                        else {
+                    Image(uiImage: hCoreUIAssets.calendar.image)
+                    //                    }
+                }
                 .onTap {
                     store.send(.openDatePicker)
                 }
@@ -110,57 +111,55 @@ public struct SubmitClaimSingleItem: View {
                     .padding(.top, 20)
                     .hShadow()
                 }
+                //                if claim.listOfDamages != nil {
+                //
+                hRow {
+                    HStack {
 
-                //                    if claim.listOfDamages != nil {
-                //
-                //                        hRow {
-                //                            HStack {
-                //
-                //                                hText(L10n.Claims.Item.Screen.Damage.button)
-                //                                    .foregroundColor(hLabelColor.secondary)
-                //
-                //                                Spacer()
-                //
-                //                            }
-                //                        }
-                //                        .withCustomAccessory {
-                //                            if claim.chosenDamages != nil {
-                //
-                //                                if claim.chosenDamages!.count <= 2 {
-                //                                    ForEach(claim.chosenDamages ?? [], id: \.self) { element in
-                //                                        hText(element.displayName)
-                //                                            .foregroundColor(hLabelColor.primary)
-                //                                    }
-                //                                } else {
-                //
-                //                                    var counter = 0
-                //
-                //                                    ForEach(claim.chosenDamages ?? [], id: \.self) { element in
-                //                                        if counter < 2 {
-                //                                            hText(element.displayName)
-                //                                                .foregroundColor(hLabelColor.primary)
-                //                                        }
-                //                                        let _ = counter += 1
-                //                                    }
-                //                                    hText("...")
-                //                                        .foregroundColor(hLabelColor.primary)
-                //                                }
-                //                            } else {
-                //                                hText(L10n.Claim.Location.choose)
-                //                                    .foregroundColor(hLabelColor.primary)
-                //                            }
-                //                        }
-                //                        .onTap {
-                //                            store.send(.openDamagePickerScreen)
-                //                        }
-                //                        .frame(height: 64)
-                //                        .background(hBackgroundColor.tertiary)
-                //                        .cornerRadius(.defaultCornerRadius)
-                //                        .padding(.leading, 16)
-                //                        .padding(.trailing, 16)
-                //                        .padding(.top, 20)
-                //                        .hShadow()
+                        hText(L10n.Claims.Item.Screen.Damage.button)
+                            .foregroundColor(hLabelColor.secondary)
+
+                        Spacer()
+
+                    }
+                }
+                .withCustomAccessory {
+                    //                        if claim.chosenDamages != nil {
+                    //                            if claim.chosenDamages!.count <= 2 {
+                    //                                ForEach(claim.chosenDamages ?? [], id: \.self) { element in
+                    //                                    hText(element.displayName)
+                    //                                        .foregroundColor(hLabelColor.primary)
+                    //                                }
+                    //                            }
+                    //                                else {
+                    //
+                    //                                var counter = 0
+                    //
+                    //                                ForEach(claim.chosenDamages ?? [], id: \.self) { element in
+                    //                                    if counter < 2 {
+                    //                                        hText(element.displayName)
+                    //                                            .foregroundColor(hLabelColor.primary)
+                    //                                    }
+                    //                                    let _ = counter += 1
+                    //                                }
+                    //                                hText("...")
+                    //                                    .foregroundColor(hLabelColor.primary)
+                    //                            }
+                    //                        } else {
+                    //                            hText(L10n.Claim.Location.choose)
+                    //                                .foregroundColor(hLabelColor.primary)
+                }
                 //                    }
+                .onTap {
+                    store.send(.openDamagePickerScreen)
+                }
+                .frame(height: 64)
+                .background(hBackgroundColor.tertiary)
+                .cornerRadius(.defaultCornerRadius)
+                .padding(.leading, 16)
+                .padding(.trailing, 16)
+                .padding(.top, 20)
+                .hShadow()
                 //                }
             }
         }
