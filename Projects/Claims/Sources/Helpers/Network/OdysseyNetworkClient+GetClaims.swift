@@ -11,13 +11,13 @@ extension OdysseyNetworkClient: GetEntryPointsClaimsClient {
         return Future {completion in
             let bag = DisposeBag()
             OdysseyRequest.getCommonClaimsForSelection.asRequest
-                .onValue {  [weak self]  request in
-                    let task = self?.sessionClient
+                .onValue { request in
+                    let task = self.sessionClient
                         .dataTask(
                             with: request,
                             completionHandler: { (data, response, error) in
                                 do {
-                                    let data: [ClaimEntryPointResponseModel]? = try self?
+                                    let data: [ClaimEntryPointResponseModel]? = try self
                                         .handleResponse(data: data, response: response, error: error)
                                     completion(.success(data ?? []))
                                 } catch let error {
@@ -25,8 +25,8 @@ extension OdysseyNetworkClient: GetEntryPointsClaimsClient {
                                 }
                             }
                         )
-                    bag += Disposer { task?.cancel()}
-                    task?.resume()
+                    bag += Disposer { task.cancel()}
+                    task.resume()
                 }
             return bag
         }

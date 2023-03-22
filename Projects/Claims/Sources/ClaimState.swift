@@ -62,7 +62,6 @@ public enum ClaimsOrigin: Codable, Equatable {
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     @Inject var giraffe: hGiraffe
     @Inject var store: ApolloStore
-    @Inject var getEntryPointsClaimsClient: GetEntryPointsClaimsClient
 
     public override func effects(
         _ getState: @escaping () -> ClaimsState,
@@ -102,6 +101,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 .valueThenEndSignal
         case .fetchCommonClaimsForSelection:
             self.send(.setCommonClaimsForSelection(.loading))
+            let getEntryPointsClaimsClient: GetEntryPointsClaimsClient = Dependencies.shared.resolve()
             return getEntryPointsClaimsClient.execute()
                 .map({ claims in
                     return .setCommonClaimsForSelection(.success(claims))
