@@ -7,6 +7,7 @@ import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
+import Claims
 
 struct SlideTrack: View {
     var shouldAnimate: Bool

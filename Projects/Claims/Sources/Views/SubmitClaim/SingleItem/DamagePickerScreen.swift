@@ -7,7 +7,7 @@ import hCoreUI
 public struct DamamagePickerScreen: View {
     @PresentableStore var store: ClaimsStore
     @State var selectedDamages: [Damage] = []
-
+    
     public init() {}
 
     public var body: some View {
@@ -28,30 +28,23 @@ public struct DamamagePickerScreen: View {
                         hRow {
                             hText(element.displayName, style: .body)
                                 .foregroundColor(hLabelColor.primary)
-                            //                            //                            if isDone {
-                            //                            //
-                            //                            //                            }
-                            //                            //                            Image(systemName: "checkmark")
-                            //                        }
-
-                            //                        .withCustomAccessory {
-                            //                            //add checkmark image if selected?
-                            //
                         }
+                        .withSelectedAccessory(selectedDamages.contains(element))
                         .onTap {
-
                             let newDamage = Damage(
                                 displayName: element.displayName,
                                 itemProblemId: element.itemProblemId
                             )
 
-                            if !selectedDamages.contains(newDamage) {
-                                selectedDamages.append(newDamage)
-                            } else {
-                                let index = selectedDamages.firstIndex(of: newDamage)
+                            withAnimation {
+                                if !selectedDamages.contains(newDamage) {
+                                    selectedDamages.append(newDamage)
+                                } else {
+                                    let index = selectedDamages.firstIndex(of: newDamage)
 
-                                if let index = index {
-                                    selectedDamages.remove(at: index)
+                                    if let index = index {
+                                        selectedDamages.remove(at: index)
+                                    }
                                 }
                             }
                         }
@@ -60,12 +53,14 @@ public struct DamamagePickerScreen: View {
             }
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonFilled  {
+            hButton.LargeButtonFilled {
                 store.send(.submitDamage(damage: selectedDamages))
             } content: {
                 hText(L10n.generalContinueButton)
             }
             .padding([.leading, .trailing], 16)
+        }.onAppear {
+            self.selectedDamages = store.state.newClaim.chosenDamages ?? []
         }
     }
 }

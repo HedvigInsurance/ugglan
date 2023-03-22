@@ -172,19 +172,20 @@ extension JourneyPresentation {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
-            } else if case let .openPhoneNumberScreen(contextInput, phoneNumber) = action {
-                AppJourney.submitClaimPhoneNumberScreen(contextInput: contextInput, phoneNumber: phoneNumber)
-            } else if case let .openDateOfOccurrenceScreen(contextInput) = action {
-                AppJourney.submitClaimOccurranceScreen(context: contextInput)
-            } else if case let .openAudioRecordingScreen(contextInput) = action {
-                AppJourney.openAudioRecordingSceen(context: contextInput)
-            } else if case .openSuccessScreen = action {
-                AppJourney.openSuccessSceen()
-            } else if case let .openSingleItemScreen(contextInput) = action {
-                AppJourney.openSingleItemScreen(context: contextInput)
-            } else if case let .openSummaryScreen(contextInput) = action {
-                AppJourney.openSummaryScreen(context: contextInput)
             }
+//            else if case let .openPhoneNumberScreen(contextInput, phoneNumber) = action {
+//                AppJourney.submitClaimPhoneNumberScreen(contextInput: contextInput, phoneNumber: phoneNumber)
+//            } else if case let .openDateOfOccurrenceScreen(contextInput) = action {
+//                AppJourney.submitClaimOccurranceScreen(context: contextInput)
+//            } else if case let .openAudioRecordingScreen(contextInput) = action {
+//                AppJourney.openAudioRecordingSceen(context: contextInput)
+//            } else if case .openSuccessScreen = action {
+//                AppJourney.openSuccessSceen()
+//            } else if case let .openSingleItemScreen(contextInput) = action {
+//                AppJourney.openSingleItemScreen(context: contextInput)
+//            } else if case let .openSummaryScreen(contextInput) = action {
+//                AppJourney.openSummaryScreen(context: contextInput)
+//            }
         }
     }
 

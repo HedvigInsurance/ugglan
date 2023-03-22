@@ -484,7 +484,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                 }
                         })
                         .onError({ error in
-
+                            let ss = ""
                         })
                 } catch let error {
                     _ = error
