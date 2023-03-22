@@ -184,6 +184,10 @@ extension JourneyPresentation {
                 AppJourney.openSingleItemScreen(context: contextInput)
             } else if case let .openSummaryScreen(contextInput) = action {
                 AppJourney.openSummaryScreen(context: contextInput)
+            } else if case let .openSummaryEditScreen(contextInput) = action {
+                AppJourney.openSummaryEditScreen(context: contextInput)
+            } else if case let .openCheckoutNoRepairScreen(contextInput) = action {
+                AppJourney.openCheckoutNoRepairScreen(context: contextInput)
             }
         }
     }

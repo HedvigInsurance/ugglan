@@ -2,76 +2,106 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-//import Combine
-
 public struct DamamagePickerScreen: View {
     @PresentableStore var store: ClaimsStore
     @State var selectedDamages: [Damage] = []
 
-    public init() {}
+    public init() {
+    }
 
     public var body: some View {
-        hForm {
 
-            hSection {
+        PresentableStoreLens(
+            ClaimsStore.self,
+            getter: { state in
+                state.newClaim
+            }
+        ) { claim in
 
-                PresentableStoreLens(
-                    ClaimsStore.self,
-                    getter: { state in
-                        state.newClaim
-                    }
-                ) { claim in
+            let damages = claim.listOfDamage
 
-                    let damage = claim.listOfDamage
+            hForm {
+                hSection {
+                    ForEach(damages ?? [], id: \.self) { damage in
 
-                    ForEach(damage ?? [], id: \.self) { element in
-                        hRow {
-                            hText(element.displayName, style: .body)
-                                .foregroundColor(hLabelColor.primary)
-                            //                            //                            if isDone {
-                            //                            //
-                            //                            //                            }
-                            //                            //                            Image(systemName: "checkmark")
-                            //                        }
-
-                            //                        .withCustomAccessory {
-                            //                            //add checkmark image if selected?
-                            //
-                        }
-                        .onTap {
-
-                            let newDamage = Damage(
-                                displayName: element.displayName,
-                                itemProblemId: element.itemProblemId
-                            )
-
-                            if !selectedDamages.contains(newDamage) {
-                                selectedDamages.append(newDamage)
+                        MultipleSelectionRow(
+                            selectedDamage: damage,
+                            selectedDamages: selectedDamages,
+                            isSelected: self.selectedDamages.contains(damage)
+                        ) {
+                            if self.selectedDamages.contains(damage) {
+                                self.selectedDamages.removeAll(where: { $0 == damage })
                             } else {
-                                let index = selectedDamages.firstIndex(of: newDamage)
-
-                                if let index = index {
-                                    selectedDamages.remove(at: index)
-                                }
+                                self.selectedDamages.append(damage)
                             }
                         }
                     }
                 }
             }
-        }
-        .hFormAttachToBottom {
-            hButton.LargeButtonFilled  {
-                store.send(.submitDamage(damage: selectedDamages))
-            } content: {
-                hText(L10n.generalContinueButton)
-            }
-            .padding([.leading, .trailing], 16)
+            //            .hFormAttachToBottom {
+            //                hButton.LargeButtonFilled  {
+            //                    store.send(.submitDamage(damage: selectedDamages))
+            //                } content: {
+            //                    hText(L10n.generalContinueButton)
+            //                }
+            //                .padding([.leading, .trailing], 16)
+            //            }
         }
     }
 }
 
-struct DamamagePickerScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        DamamagePickerScreen()
+struct MultipleSelectionRow: View {
+    @PresentableStore var store: ClaimsStore
+    let selectedDamage: Damage
+    @State var selectedDamages: [Damage]
+    var isSelected: Bool
+    var action: () -> Void
+
+    var body: some View {
+
+        hButton.SmallButtonText(action: self.action) {
+            HStack {
+                hRow {
+                    hText(selectedDamage.displayName, style: .body)
+                        .foregroundColor(hLabelColor.primary)
+
+                    if self.isSelected {
+                        Spacer()
+                        Image(systemName: "checkmark") /* TODO: CHANGE IMAGE */
+
+                        let newDamage = Damage(
+                            displayName: selectedDamage.displayName,
+                            itemProblemId: selectedDamage.itemProblemId
+                        )
+
+                        if let _ = !selectedDamages.contains(newDamage) {
+                            let _ = selectedDamages.append(newDamage)
+                        } else {
+                            let index = selectedDamages.firstIndex(of: newDamage)
+
+                            if let index = index {
+                                let _ = selectedDamages.remove(at: index)
+                            }
+                        }
+
+                        PresentableStoreLens(
+                            ClaimsStore.self,
+                            getter: { state in
+                                state.newClaim
+                            },
+                            setter: { value in
+                                .setSingleItemDamage(damages: value.chosenDamages ?? selectedDamages)
+                            }
+                        ) { value, setter in
+
+                            //                                .setSingleItemDamage(damages: selectedDamages)
+                            //                            let _ = print("damages: ", claim.chosenDamages)
+                            //                            value(.setSingleItemDamage(damages: selectedDamages))
+
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -50,7 +50,6 @@ public enum ClaimsAction: ActionProtocol {
 
     case submitClaimDateOfOccurrence(dateOfOccurrence: Date)
     case submitClaimLocation(displayValue: String, value: String)
-
     case submitOccuranceAndLocation
     case submitAudioRecording(audioURL: URL)
     case submitSingleItem(purchasePrice: Double)
@@ -58,15 +57,16 @@ public enum ClaimsAction: ActionProtocol {
     case claimNextDamage(damages: Damage)
     case submitModel(model: Model)
     case submitBrand(brand: Brand)
+    case submitSummary
 
     case openSuccessScreen(context: String)
     case openSingleItemScreen(context: String)
     case openSummaryScreen(context: String)
-    case openSummaryEditScreen
+    case openSummaryEditScreen(context: String)
     case openDamagePickerScreen
     case openModelPicker
     case openBrandPicker
-    case openCheckoutNoRepairScreen
+    case openCheckoutNoRepairScreen(context: String)
     case openCheckoutTransferringScreen
     case openCheckoutTransferringDoneScreen
     case openAudioRecordingScreen(context: String)
@@ -80,6 +80,7 @@ public enum ClaimsAction: ActionProtocol {
     case claimNextAudioRecording(audioURL: URL, context: String)
     case claimNextSingleItem(context: String, purchasePrice: Double)
     case claimNextSummary(context: String)
+    case claimNextSingleItemCheckout(context: String)
 
     case setNewLocation(location: Location?)
     case setNewDate(dateOfOccurrence: String?)
@@ -91,6 +92,7 @@ public enum ClaimsAction: ActionProtocol {
     case setSingleItemDamage(damages: [Damage])
     case setSingleItemPurchaseDate(purchaseDate: Date)
     case setSingleItemBrand(brand: Brand)
+    case setPayoutAmount(payoutAmount: Payout)
 }
 
 public enum ClaimsOrigin: Codable, Equatable {
@@ -167,7 +169,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     )
                     .onValue { data in
                         let id = data.flowClaimStart.id
-                        let contextInput = data.flowClaimStart.context
+                        let context = data.flowClaimStart.context
                         let data = data.flowClaimStart.currentStep
 
                         if let dataStep = data.asFlowClaimPhoneNumberStep {
@@ -176,7 +178,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                             [
                                 .setNewClaim(from: NewClaim(id: id)),
-                                .openPhoneNumberScreen(context: contextInput, phoneNumber: phoneNumber),
+                                .openPhoneNumberScreen(context: context, phoneNumber: phoneNumber),
                             ]
                             .forEach { element in
                                 callback(.value(element))
@@ -190,6 +192,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                         } else if let dataStep = data.asFlowClaimFailedStep {
 
+                            /* REMOVE WHEN FIXED */
+                            [
+                                .openPhoneNumberScreen(context: context, phoneNumber: "07777777")
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
                         } else if let dataStep = data.asFlowClaimSuccessStep {
 
                         }
@@ -253,6 +262,14 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     }
                     .onError { error in
                         print(error)
+
+                        /* REMOVE WHEN FIXED */
+                        [
+                            .openDateOfOccurrenceScreen(context: "context")
+                        ]
+                        .forEach { element in
+                            callback(.value(element))
+                        }
                     }
                 return NilDisposer()
 
@@ -370,6 +387,14 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                         } else if let dataStep = data.asFlowClaimFailedStep {
 
+                            /* REMOVE WHEN FIXED */
+                            [
+                                .openAudioRecordingScreen(context: context)
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
+
                         } else if let dataStep = data.asFlowClaimSingleItemStep {
 
                         } else if let dataStep = data.asFlowClaimSuccessStep {
@@ -429,6 +454,14 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                         }
 
                                     } else if let dataStep = data.asFlowClaimFailedStep {
+
+                                        /* REMOVE WHEN FIXED */
+                                        [
+                                            .openSingleItemScreen(context: context)
+                                        ]
+                                        .forEach { element in
+                                            callback(.value(element))
+                                        }
 
                                     } else if let dataStep = data.asFlowClaimSingleItemStep {
 
@@ -508,9 +541,17 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     .onValue { data in
 
                         let context = data.flowClaimSingleItemNext.context
+                        let payoutAmount = data.flowClaimSingleItemNext.currentStep.asFlowClaimSingleItemCheckoutStep?
+                            .payoutAmount
                         let data = data.flowClaimSingleItemNext.currentStep
 
                         [
+                            .setPayoutAmount(
+                                payoutAmount: Payout(
+                                    amount: payoutAmount?.amount ?? 0,
+                                    currencyCode: payoutAmount?.currencyCode.rawValue ?? ""
+                                )
+                            ),
                             .setPurchasePrice(
                                 priceOfPurchase: purchasePrice
                             ),
@@ -532,9 +573,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             .forEach { element in
                                 callback(.value(element))
                             }
-
                         }
-
                     }
                     .onError { error in
 
@@ -561,14 +600,47 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         //                    }
         //                return NilDisposer()
 
-        //        case let .summaryScreen(contextInput, purchasePrice):
-
+        //        case let .singleItemCheckout edit screen (contextInput, purchasePrice):
         //        case let .summary edit screen (contextInput, purchasePrice):
 
-        //        case let .summary edit screen (contextInput, purchasePrice):
+        case let .claimNextSingleItemCheckout(contextInput):
 
-        //        case let .summary edit screen (contextInput, purchasePrice):
+            let claimSingleItemCheckoutInput = state.newClaim.returnSingleItemCheckoutInfo()
 
+            return FiniteSignal { callback in
+                self.octopus.client
+                    .perform(
+                        mutation: OctopusGraphQL.ClaimsFlowSingleItemCheckoutMutation(
+                            input: claimSingleItemCheckoutInput,
+                            context: contextInput
+                        )
+                    )
+                    .onValue { data in
+
+                        let context = data.flowClaimSingleItemCheckoutNext.context
+                        let data = data.flowClaimSingleItemCheckoutNext.currentStep
+
+                        if let dataStep = data.asFlowClaimFailedStep {
+
+                            /* REMOVE WHEN WORKING */
+                            [
+                                .openSummaryScreen(context: context)
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
+                        } else if let dataStep = data.asFlowClaimSuccessStep {
+                            [
+                                .openCheckoutTransferringScreen
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
+                        }
+
+                    }
+                return NilDisposer()
+            }
         default:
             return nil
         }
@@ -602,6 +674,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.newClaim.chosenDamages = nil
             newState.newClaim.dateOfPurchase = nil
             newState.newClaim.priceOfPurchase = nil
+            newState.newClaim.payoutAmount = nil
             newState.newClaim.listOfLocation = locations
 
         case let .setSingleItemLists(brands, models, damages):
@@ -633,8 +706,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     filteredModelList.append(model)
                 }
             }
-
             newState.newClaim.filteredListOfModels = filteredModelList
+
+        case let .setPayoutAmount(payoutAmount):
+            newState.newClaim.payoutAmount = payoutAmount
 
         default:
             break

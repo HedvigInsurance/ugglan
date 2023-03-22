@@ -25,6 +25,11 @@ public struct Damage: Decodable, Encodable, Equatable, Hashable {
     public var itemProblemId: String
 }
 
+public struct Payout: Decodable, Encodable, Equatable, Hashable {
+    public var amount: Double
+    public var currencyCode: String
+}
+
 public struct NewClaim: Codable, Equatable {
 
     public let id: String
@@ -41,6 +46,7 @@ public struct NewClaim: Codable, Equatable {
     public var chosenBrand: Brand?
     public var chosenDamages: [Damage]?
     public var customName: String?
+    public var payoutAmount: Payout?
 
     init(
         id: String
@@ -90,6 +96,15 @@ public struct NewClaim: Codable, Equatable {
                 customName: customName  //check
             )
         }
+    }
+
+    public func returnSingleItemCheckoutInfo() -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput {
+
+        let automaticAutogiroInput = OctopusGraphQL.FlowClaimAutomaticAutogiroPayoutInput(amount: 0)
+
+        return OctopusGraphQL.FlowClaimSingleItemCheckoutInput(
+            automaticAutogiro: automaticAutogiroInput
+        )
     }
 
     public func formatDateToString(date: Date) -> String {

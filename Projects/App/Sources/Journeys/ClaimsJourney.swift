@@ -262,12 +262,13 @@ extension AppJourney {
             if case let .submitDamage(damages) = action {
 
                 PopJourney()
-                    .onPresent {
-                        @PresentableStore var store: ClaimsStore
-                        store.send(.setSingleItemDamage(damages: damages))
-                    }
+                //                    .onPresent {
+                //                        @PresentableStore var store: ClaimsStore
+                //                        store.send(.setSingleItemDamage(damages: damages))
+                //                    }
             }
         }
+        .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -313,7 +314,7 @@ extension AppJourney {
 
         HostingJourney(
             ClaimsStore.self,
-            rootView: SubmitClaimObjectInformation(),
+            rootView: SubmitClaimSingleItem(),
             style: .modal
         ) {
             action in
@@ -349,9 +350,15 @@ extension AppJourney {
             style: .modal
         ) {
             action in
+            /* if press edit --> go to edit screen */
             if case .openCheckoutNoRepairScreen = action {
-                openCheckoutNoRepairScreen()
+                /* if press edit --> go to singleItemCheckout */
+                // set new values from edit summary screen
+                openCheckoutNoRepairScreen(context: context)
             }
+            //            else if case .submitSummary = action {
+            //                .claimNextSummary(context: context)
+            //            }
         }
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
@@ -366,6 +373,9 @@ extension AppJourney {
         ) {
             action in
             if case .openLocationPicker = action {
+
+                /* --> send values and set new ones */
+
                 //                openLocationScreen()
                 openDamagePickerScreen(context: "")
                 //            } else if case .openDatePicker = action {
@@ -383,7 +393,7 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
+    static func openCheckoutNoRepairScreen(context: String) -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
