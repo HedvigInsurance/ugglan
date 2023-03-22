@@ -16,6 +16,7 @@ public struct DatePickerScreen: View {
                     selection: self.$dateOfOccurrence,
                     displayedComponents: [.date]
                 )
+                .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
                 .datePickerStyle(.graphical)
                 .padding([.leading, .trailing], 16)
                 .padding([.top], 5)

@@ -12,7 +12,6 @@ public struct DamamagePickerScreen: View {
 
     public var body: some View {
         hForm {
-
             hSection {
 
                 PresentableStoreLens(

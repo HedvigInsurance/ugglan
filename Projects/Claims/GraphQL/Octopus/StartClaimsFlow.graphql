@@ -1,31 +1,76 @@
 mutation FlowClaimStart($input: FlowClaimStartInput!) {
   flowClaimStart(input: $input) {
     context
-    id
     currentStep {
       id
       ... on FlowClaimAudioRecordingStep {
+        id
         questions
       }
+      ... on FlowClaimDateOfOccurrencePlusLocationStep {
+        dateOfOccurrenceStep {
+          dateOfOccurrence
+          id
+          maxDate
+        }
+        id
+        locationStep {
+          id
+          location
+          options {
+            displayName
+            value
+          }
+        }
+      }
       ... on FlowClaimDateOfOccurrenceStep {
-        maxDate
         dateOfOccurrence
+        id
+        maxDate
+      }
+      ... on FlowClaimFailedStep {
+        id
       }
       ... on FlowClaimLocationStep {
+        id
         location
         options {
           displayName
           value
         }
       }
-      ... on FlowClaimSuccessStep {
-        id
-      }
       ... on FlowClaimPhoneNumberStep {
         id
         phoneNumber
       }
-      ... on FlowClaimFailedStep {
+      ... on FlowClaimSingleItemCheckoutStep {
+        availableCheckoutMethods {
+          id
+          ... on FlowClaimAutomaticAutogiroPayout {
+            amount {
+              amount
+              currencyCode
+            }
+            displayName
+            id
+          }
+        }
+        deductible {
+          amount
+          currencyCode
+        }
+        depreciation {
+          currencyCode
+          amount
+        }
+        price {
+          amount
+          currencyCode
+        }
+        payoutAmount {
+          amount
+          currencyCode
+        }
         id
       }
       ... on FlowClaimSingleItemStep {
@@ -35,9 +80,9 @@ mutation FlowClaimStart($input: FlowClaimStartInput!) {
           itemTypeId
         }
         availableItemModels {
-          itemBrandId
-          imageUrl
           displayName
+          imageUrl
+          itemBrandId
           itemModelId
           itemTypeId
         }
@@ -45,25 +90,66 @@ mutation FlowClaimStart($input: FlowClaimStartInput!) {
           displayName
           itemProblemId
         }
-        preferredCurrency
-        purchaseDate
-        purchasePrice {
-          amount
-          currencyCode
-        }
-        selectedItemBrand
-        selectedItemModel
         selectedItemProblems
+        selectedItemModel
+        selectedItemBrand
+        purchasePrice {
+          currencyCode
+          amount
+        }
+        purchaseDate
+        preferredCurrency
+        id
+      }
+      ... on FlowClaimSuccessStep {
+        id
+      }
+      ... on FlowClaimSummaryStep {
+        dateOfOccurrenceStep {
+          dateOfOccurrence
+          id
+          maxDate
+        }
+        id
+        locationStep {
+          options {
+            displayName
+            value
+          }
+          location
+          id
+        }
+        singleItemStep {
+          availableItemModels {
+            displayName
+            imageUrl
+            itemBrandId
+            itemModelId
+            itemTypeId
+          }
+          availableItemBrands {
+            displayName
+            itemTypeId
+            itemBrandId
+          }
+          availableItemProblems {
+            displayName
+            itemProblemId
+          }
+          selectedItemProblems
+          selectedItemModel
+          selectedItemBrand
+          purchasePrice {
+            currencyCode
+            amount
+          }
+          purchaseDate
+          preferredCurrency
+          id
+        }
       }
     }
+    id
   }
 }
-
-
-
-
-
-
-
-
 
