@@ -63,59 +63,58 @@ extension AppJourney {
     }
 
     static func startSubmitClaimsFlow(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        HostingJourney(rootView: HonestyPledge(), style: .detented(.scrollViewContentSize))
-            .onAction(
-                ClaimsStore.self,
-                { action in
-                    if case let .openPhoneNumberScreen(contextInput, phoneNumber) = action {
-                        AppJourney.submitClaimPhoneNumberScreen(contextInput: contextInput, phoneNumber: phoneNumber)
-                    } else if case let .openDateOfOccurrenceScreen(contextInput) = action {
-                        AppJourney.submitClaimOccurranceScreen(context: contextInput)
-                    } else if case let .openAudioRecordingScreen(contextInput) = action {
-                        AppJourney.openAudioRecordingSceen(context: contextInput)
-                    } else if case .openSuccessScreen = action {
-                        AppJourney.openSuccessSceen()
-                    } else if case let .openSingleItemScreen(contextInput) = action {
-                        AppJourney.openSingleItemScreen(context: contextInput)
-                    } else if case let .openSummaryScreen(contextInput) = action {
-                        AppJourney.openSummaryScreen(context: contextInput)
-                    } else if case .openBrandPicker = action {
-                        AppJourney.openBrandPickerScreen()
-                    } else if case .openDamagePickerScreen = action {
-                        openDamagePickerScreen()
-                    }
-                }
-            )
-            .onAction(UgglanStore.self) { action, _ in
-                if case .didAcceptHonestyPledge = action {
-                    @PresentableStore var store: ClaimsStore
-                    store.send(.startClaim(from: origin))
-                }
+        HostingJourney(ClaimsStore.self, rootView: HonestyPledge(), style: .detented(.scrollViewContentSize)) { action in
+            getScreenForAction(for: action)
+        }
+        .onAction(UgglanStore.self) { action, _ in
+            if case .didAcceptHonestyPledge = action {
+                @PresentableStore var store: ClaimsStore
+                store.send(.startClaim(from: origin))
             }
+        }
     }
-
     static func submitClaimPhoneNumberScreen(
         contextInput: String,
         phoneNumber: String
     ) -> some JourneyPresentation {
-
-        HostingJourney(
-            rootView: SubmitClaimContactScreen(phoneNumber: phoneNumber),
-            style: .detented(.large, modally: false)
-        )
-        .onAction(
-            ClaimsStore.self,
-            { action, _ in
+        HostingJourney(ClaimsStore.self,
+                       rootView: SubmitClaimContactScreen(phoneNumber: phoneNumber),
+                       style: .detented(.large, modally: false)) { action in
+            getScreenForAction(for: action)
+        }.onAction(ClaimsStore.self) { action, _ in
+            if case let .submitClaimPhoneNumber(phoneNumberInput) = action {
                 @PresentableStore var store: ClaimsStore
-                if case let .submitClaimPhoneNumber(phoneNumberInput) = action {
-                    store.send(
-                        .claimNextPhoneNumber(phoneNumber: phoneNumberInput, context: contextInput)
-                    )
-                }
+                store.send(
+                    .claimNextPhoneNumber(phoneNumber: phoneNumberInput, context: contextInput)
+                )
             }
-        )
-        .withDismissButton
+        }
         .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+    
+    @JourneyBuilder
+    private static func getScreenForAction(for action: ClaimsAction) -> some JourneyPresentation {
+        if case let .openPhoneNumberScreen(contextInput, phoneNumber) = action {
+            AppJourney.submitClaimPhoneNumberScreen(contextInput: contextInput, phoneNumber: phoneNumber).withJourneyDismissButton
+        } else if case let .openDateOfOccurrenceScreen(contextInput) = action {
+            AppJourney.submitClaimOccurranceScreen(context: contextInput).withJourneyDismissButton
+        } else if case let .openAudioRecordingScreen(contextInput) = action {
+            AppJourney.openAudioRecordingSceen(context: contextInput).withJourneyDismissButton
+        } else if case .openSuccessScreen = action {
+            AppJourney.openSuccessSceen()
+        } else if case let .openSingleItemScreen(contextInput) = action {
+            AppJourney.openSingleItemScreen(context: contextInput)
+        } else if case let .openSummaryScreen(contextInput) = action {
+            AppJourney.openSummaryScreen(context: contextInput)
+        } else if case .openBrandPicker = action {
+            AppJourney.openBrandPickerScreen()
+        } else if case .openDamagePickerScreen = action {
+            openDamagePickerScreen()
+        } else if case let .openSummaryEditScreen(context) = action {
+            AppJourney.openSummaryEditScreen(context: context)
+        } else if case let .openCheckoutNoRepairScreen(contextInput) = action {
+            AppJourney.openCheckoutNoRepairScreen(context: contextInput)
+        }
     }
 
     static func submitClaimOccurranceScreen(context: String) -> some JourneyPresentation {
@@ -129,6 +128,8 @@ extension AppJourney {
                 openDatePickerScreen(context: context)
             } else if case .openLocationPicker = action {
                 openLocationScreen(context: context)
+            }else {
+                getScreenForAction(for: action)
             }
         }
         .onAction(
@@ -142,7 +143,6 @@ extension AppJourney {
                 }
             }
         )
-        .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -169,7 +169,6 @@ extension AppJourney {
                     }
             }
         }
-        .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -191,7 +190,6 @@ extension AppJourney {
                     }
             }
         }
-        .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -228,8 +226,11 @@ extension AppJourney {
                         @PresentableStore var store: ClaimsStore
                         store.send(.setSingleItemBrand(brand: brand))
                     }
+            }else {
+                getScreenForAction(for: action)
             }
         }
+        .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -264,33 +265,32 @@ extension AppJourney {
             style: .default
         ) {
             action in
-            if case let .setSingleItemDamage(damages) = action {
+            if case let .setSingleItemDamage(_) = action {
                 PopJourney()
-                    .onPresent {
-                        @PresentableStore var store: ClaimsStore
-                        store.send(.setSingleItemDamage(damages: damages))
-                    }
+            }else {
+                getScreenForAction(for: action)
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func openAudioRecordingSceen(context: String) -> some JourneyPresentation {
-        HostingJourney(rootView: SubmitClaimAudioRecordingScreen())
-            .onAction(
-                ClaimsStore.self,
-                { action, _ in
-                    if case let .submitAudioRecording(audioURL) = action {
-                        @PresentableStore var store: ClaimsStore
-                        store.send(.claimNextAudioRecording(audioURL: audioURL, context: context))
-                    }
+        HostingJourney(ClaimsStore.self, rootView: SubmitClaimAudioRecordingScreen()) { action in
+            getScreenForAction(for: action)
+        }
+        .onAction(
+            ClaimsStore.self,
+            { action, _ in
+                if case let .submitAudioRecording(audioURL) = action {
+                    @PresentableStore var store: ClaimsStore
+                    store.send(.claimNextAudioRecording(audioURL: audioURL, context: context))
                 }
-            )
-            .setScrollEdgeNavigationBarAppearanceToStandard
+            }
+        )
+        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func openSuccessSceen() -> some JourneyPresentation {
-
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimSuccessScreen(),
@@ -301,6 +301,8 @@ extension AppJourney {
                 DismissJourney()
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat()
+            }else {
+                getScreenForAction(for: action)
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
@@ -310,11 +312,13 @@ extension AppJourney {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimSingleItem(),
-            style: .modal
+            style: .default
         ) {
             action in
             if case .openDatePicker = action {
                 openDatePickerScreenForPurchasPrice(context: context)
+            } else {
+                getScreenForAction(for: action)
             }
         }
         .onAction(
@@ -343,6 +347,8 @@ extension AppJourney {
                 // .claimNextSummary(context: context
                 // from claimsNextSummary --> add all the edited info and go to SingleItemCheckout
                 openCheckoutNoRepairScreen(context: context)
+            } else {
+                getScreenForAction(for: action)
             }
         }
         .withDismissButton
@@ -358,6 +364,8 @@ extension AppJourney {
             action in
             if case .openLocationPicker = action {
                 openLocationScreen(context: context)
+            } else {
+                getScreenForAction(for: action)
             }
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
@@ -380,6 +388,8 @@ extension AppJourney {
                         @PresentableStore var store: ClaimsStore
                         store.send(.claimNextSingleItemCheckout(context: context))
                     }
+            } else {
+                getScreenForAction(for: action)
             }
         }
         .withDismissButton
@@ -398,6 +408,8 @@ extension AppJourney {
                 openCheckoutTransferringDoneScreen()
             } else if case .dissmissNewClaimFlow = action {
                 PopJourney()
+            } else {
+                getScreenForAction(for: action)
             }
         }
     }
@@ -412,6 +424,8 @@ extension AppJourney {
             action in
             if case .dissmissNewClaimFlow = action {
                 DismissJourney()
+            } else {
+                getScreenForAction(for: action)
             }
         }
     }

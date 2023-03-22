@@ -218,7 +218,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         let data = data.flowClaimPhoneNumberNext.currentStep
 
                         if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
-
                             [
                                 .openDateOfOccurrenceScreen(
                                     context: context
@@ -511,7 +510,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                 return NilDisposer()
             }
-
+        case let .submitDamage(damages):
+            return FiniteSignal { callback in
+                callback(.value(.setSingleItemDamage(damages: damages)))
+                return NilDisposer()
+            }
         case let .claimNextSingleItem(contextInput, purchasePrice):
 
             let singleItemInput = state.newClaim.returnSingleItemInfo(purchasePrice: purchasePrice)
@@ -694,7 +697,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 }
             }
             newState.newClaim.filteredListOfModels = filteredModelList
-
+        case let .setSingleItemDamage(damages):
+            newState.newClaim.chosenDamages = damages
         case let .setPayoutAmount(payoutAmount):
             newState.newClaim.payoutAmount = payoutAmount
 
