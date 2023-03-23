@@ -353,13 +353,6 @@ extension AppJourney {
                 openCheckoutNoRepairScreen(context: context)
             } else {
                 getScreenForAction(for: action)
-                //=======
-                //                PopJourney()
-                //                    .onPresent {
-                //                        @PresentableStore var store: ClaimsStore
-                //                        store.send(.claimNextSummary(context: context)) //maybe need to send in something else?
-                //                    }
-                //>>>>>>> Stashed changes
             }
         }
         .onAction(
