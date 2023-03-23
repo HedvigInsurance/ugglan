@@ -17,43 +17,12 @@ public struct SubmitClaimSummaryScreen: View {
         ) { claim in
 
             hForm {
-                VStack(spacing: 0) {
-                    hText("Broken phone", style: .title3) /* TODO: CHANGE */
-                        .padding(.top, UIScreen.main.bounds.size.height / 5)
+                VStack {
 
-                    HStack {
-                        Image(uiImage: hCoreUIAssets.calendar.image)
-                            .resizable()
-                            .frame(width: 12.0, height: 12.0)
-                            .foregroundColor(.secondary)
-                        hText(claim.dateOfOccurrence ?? "")
-                            .padding(.top, 2)
-                            .foregroundColor(.secondary)
-                    }
-
-                    HStack {
-                        Image(uiImage: hCoreUIAssets.location.image)
-                            .foregroundColor(hLabelColor.secondary)
-                        hText(claim.location?.displayValue ?? "")
-                            .padding(.top, 2)
-                            .foregroundColor(.secondary)
-                    }
-
-                    if claim.chosenModel != nil {
-                        hText(claim.chosenModel?.displayName ?? "")
-                            .padding(.top, 40)
-                    } else {
-                        hText(claim.chosenBrand?.displayName ?? "")
-                            .padding(.top, 40)
-                    }
-                    hText(
-                        L10n.summaryPurchaseDescription(
-                            claim.dateOfPurchase?.localDateString ?? "",
-                            Int(claim.priceOfPurchase ?? 0)
-                        )
-                    )
-                    .padding(.top, 2)
-
+                    displayTitleField(claim: claim)
+                    displayDateAndLocationOfOccurrenceField(claim: claim)
+                    displayModelField(claim: claim)
+                    displayDateOfPurchase(claim: claim)
                     displayDamageField(claim: claim)
 
                     hButton.SmallButtonOutlined {
@@ -72,6 +41,59 @@ public struct SubmitClaimSummaryScreen: View {
                 }
                 .padding([.leading, .trailing], 16)
             }
+        }
+    }
+
+    @ViewBuilder func displayModelField(claim: NewClaim) -> some View {
+
+        if claim.chosenModel != nil {
+            hText(claim.chosenModel?.displayName ?? "")
+                .padding(.top, 40)
+        } else if claim.chosenBrand != nil {
+            hText(claim.chosenBrand?.displayName ?? "")
+                .padding(.top, 40)
+        }
+    }
+
+    @ViewBuilder func displayDateOfPurchase(claim: NewClaim) -> some View {
+
+        hText(
+            L10n.summaryPurchaseDescription(
+                claim.dateOfPurchase?.localDateString ?? "",
+                Int(claim.priceOfPurchase ?? 0)
+            )
+        )
+        .padding(.top, 2)
+    }
+
+    @ViewBuilder func displayDateAndLocationOfOccurrenceField(claim: NewClaim) -> some View {
+        HStack {
+            Image(uiImage: hCoreUIAssets.calendar.image)
+                .resizable()
+                .frame(width: 12.0, height: 12.0)
+                .foregroundColor(.secondary)
+            hText(claim.dateOfOccurrence ?? "")
+                .padding(.top, 2)
+                .foregroundColor(.secondary)
+        }
+
+        HStack {
+            Image(uiImage: hCoreUIAssets.location.image)
+                .foregroundColor(hLabelColor.secondary)
+            hText(claim.location?.displayValue ?? "")
+                .padding(.top, 2)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    @ViewBuilder func displayTitleField(claim: NewClaim) -> some View {
+
+        if claim.chosenModel != nil {
+            hText(claim.chosenModel?.itemTypeID ?? "", style: .title3) /* TODO: CHANGE? */
+                .padding(.top, UIScreen.main.bounds.size.height / 5)
+        } else if claim.chosenBrand != nil {
+            hText(claim.chosenBrand?.itemTypeId ?? "", style: .title3) /* TODO: CHANGE? */
+                .padding(.top, UIScreen.main.bounds.size.height / 5)
         }
     }
 

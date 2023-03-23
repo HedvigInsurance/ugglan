@@ -282,18 +282,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         .forEach { element in
                             callback(.value(element))
                         }
-
-                        let data = data.flowClaimDateOfOccurrenceNext.currentStep
-
-                        if let dataStep = data.asFlowClaimAudioRecordingStep {
-
-                        } else if let dataStep = data.asFlowClaimFailedStep {
-
-                        } else if let dataStep = data.asFlowClaimLocationStep {
-
-                        } else {
-
-                        }
                     }
                     .onError { error in
                         print(error)
@@ -321,14 +309,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         ]
                         .forEach { element in
                             callback(.value(element))
-                        }
-
-                        let data = data.flowClaimLocationNext.currentStep
-
-                        if let dataStep = data.asFlowClaimSingleItemStep {
-
-                        } else if let dataStep = data.asFlowClaimAudioRecordingStep {
-
                         }
                     }
                 return NilDisposer()
@@ -440,9 +420,22 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                                     } else if let dataStep = data.asFlowClaimSingleItemStep {
 
+                                        let selectedProblems = dataStep.selectedItemProblems
+
                                         let damages = dataStep.availableItemProblems
                                         let models = dataStep.availableItemModels
                                         let brands = dataStep.availableItemBrands
+
+                                        var selectedDamages: [Damage] = []
+
+                                        for element in selectedProblems ?? [] {
+                                            selectedDamages.append(
+                                                Damage(
+                                                    displayName: element.displayValue,
+                                                    itemProblemId: element.displayValue
+                                                )
+                                            )
+                                        }
 
                                         var dispValuesDamages: [Damage] = []
 
@@ -477,6 +470,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                         }
 
                                         [
+                                            .setSingleItemDamage(damages: selectedDamages),
                                             .setSingleItemLists(
                                                 brands: dispValuesBrands,
                                                 models: dispValuesModels,
@@ -506,6 +500,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 callback(.value(.setSingleItemDamage(damages: damages)))
                 return NilDisposer()
             }
+
         case let .claimNextSingleItem(contextInput, purchasePrice):
 
             let singleItemInput = state.newClaim.returnSingleItemInfo(purchasePrice: purchasePrice)
@@ -521,17 +516,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     .onValue { data in
 
                         let context = data.flowClaimSingleItemNext.context
-                        let payoutAmount = data.flowClaimSingleItemNext.currentStep.asFlowClaimSingleItemCheckoutStep?
-                            .payoutAmount
                         let data = data.flowClaimSingleItemNext.currentStep
 
                         [
-                            .setPayoutAmount(
-                                payoutAmount: Payout(
-                                    amount: payoutAmount?.amount ?? 0,
-                                    currencyCode: payoutAmount?.currencyCode.rawValue ?? ""
-                                )
-                            ),
                             .setPurchasePrice(
                                 priceOfPurchase: purchasePrice
                             ),
@@ -556,9 +543,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         }
                     }
                     .onError { error in
-
                         print(error)
-
                     }
                 return NilDisposer()
             }
@@ -567,7 +552,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
             let dateOfOccurrence = state.newClaim.dateOfOccurrence
             let location = state.newClaim.location
-
             let summaryInput = state.newClaim.returnSummaryInformation()
 
             return FiniteSignal { callback in
@@ -590,29 +574,29 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             }
                         } else if let dataStep = data.asFlowClaimSingleItemCheckoutStep {
 
+                            let payoutAmount = dataStep.payoutAmount
+
                             [
+                                .setPayoutAmount(
+                                    payoutAmount: Payout(
+                                        amount: payoutAmount.amount ?? 0,
+                                        currencyCode: payoutAmount.currencyCode.rawValue ?? ""
+                                    )
+                                ),
                                 .claimNextSingleItemCheckout(
                                     context: context
-                                )
+                                ),
                             ]
                             .forEach { element in
                                 callback(.value(element))
                             }
 
                         } else if let dataStep = data.asFlowClaimFailedStep {
-                            //
-                            //                            [
-                            //                                .claimNextSingleItemCheckout(
-                            //                                    context: context
-                            //                                )
-                            //                            ]
-                            //                            .forEach { element in
-                            //                                callback(.value(element))
-                            //                            }
+
                         }
                     }
                     .onError { error in
-
+                        print(error)
                     }
                 return NilDisposer()
             }
@@ -637,6 +621,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         if let dataStep = data.asFlowClaimFailedStep {
 
                         } else if let dataStep = data.asFlowClaimSuccessStep {
+                            [
+                                .openCheckoutTransferringScreen
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
+                        } else {
                             [
                                 .openCheckoutTransferringScreen
                             ]
@@ -714,8 +705,14 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 }
             }
             newState.newClaim.filteredListOfModels = filteredModelList
+
         case let .setSingleItemDamage(damages):
-            newState.newClaim.chosenDamages = damages
+            //add to previous
+            //            let prevDamages = newState.newClaim.chosenDamages
+            for damage in damages {
+                newState.newClaim.chosenDamages?.append(damage)
+            }
+
         case let .setPayoutAmount(payoutAmount):
             newState.newClaim.payoutAmount = payoutAmount
 
