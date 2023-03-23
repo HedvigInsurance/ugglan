@@ -78,8 +78,8 @@ public struct NewClaim: Codable, Equatable {
         return OctopusGraphQL.FlowClaimSingleItemInput(
             purchasePrice: purchasePrice,
             purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
-            //            itemProblemIds: ["BROKEN", "BROKEN_FRONT"],
-            itemProblemIds: problemsToString,
+            itemProblemIds: ["BROKEN", "BROKEN_FRONT"],
+            //            itemProblemIds: [problemsToString],
             itemModelInput: flowClaimItemModelInput,
             customName: customName  //check
         )

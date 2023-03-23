@@ -583,9 +583,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                         currencyCode: payoutAmount.currencyCode.rawValue ?? ""
                                     )
                                 ),
-                                .claimNextSingleItemCheckout(
-                                    context: context
-                                ),
+                                .openCheckoutNoRepairScreen(context: context),
+                                //                                .claimNextSingleItemCheckout(
+                                //                                    context: context
+                                //                                ),
                             ]
                             .forEach { element in
                                 callback(.value(element))
@@ -681,7 +682,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.newClaim.listOfModels = models
 
         case let .setSingleItemDamage(damages):
-            newState.newClaim.chosenDamages = damages
+            //            newState.newClaim.chosenDamages = damages
+            for damage in damages {
+                newState.newClaim.chosenDamages?.append(damage)
+            }
 
         case let .setSingleItemModel(model):
             newState.newClaim.chosenModel = model
@@ -706,12 +710,12 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             }
             newState.newClaim.filteredListOfModels = filteredModelList
 
-        case let .setSingleItemDamage(damages):
-            //add to previous
-            //            let prevDamages = newState.newClaim.chosenDamages
-            for damage in damages {
-                newState.newClaim.chosenDamages?.append(damage)
-            }
+        //        case let .setSingleItemDamage(damages):
+        //            //add to previous
+        //            //            let prevDamages = newState.newClaim.chosenDamages
+        //            for damage in damages {
+        //                newState.newClaim.chosenDamages?.append(damage)
+        //            }
 
         case let .setPayoutAmount(payoutAmount):
             newState.newClaim.payoutAmount = payoutAmount
