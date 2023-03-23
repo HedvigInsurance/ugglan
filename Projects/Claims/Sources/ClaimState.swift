@@ -60,7 +60,7 @@ public enum ClaimsAction: ActionProtocol {
     case submitSummary
     case submitSingleItemCheckout
 
-    case openSuccessScreen(context: String)
+    case openSuccessScreen
     case openSingleItemScreen(context: String)
     case openSummaryScreen(context: String)
     case openSummaryEditScreen(context: String)
@@ -430,9 +430,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                     if let dataStep = data.asFlowClaimSuccessStep {
 
                                         [
-                                            .openSuccessScreen(
-                                                context: context
-                                            )
+                                            .openSuccessScreen
                                         ]
                                         .forEach { element in
                                             callback(.value(element))
@@ -440,17 +438,12 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                                     } else if let dataStep = data.asFlowClaimFailedStep {
 
-                                        /* REMOVE WHEN FIXED */
-                                        [
-                                            .openSingleItemScreen(context: context)
-                                        ]
-                                        .forEach { element in
-                                            callback(.value(element))
-                                        }
-
                                     } else if let dataStep = data.asFlowClaimSingleItemStep {
 
                                         let damages = dataStep.availableItemProblems
+                                        let models = dataStep.availableItemModels
+                                        let brands = dataStep.availableItemBrands
+
                                         var dispValuesDamages: [Damage] = []
 
                                         for element in damages ?? [] {
@@ -461,7 +454,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                             dispValuesDamages.append(list)
                                         }
 
-                                        let models = dataStep.availableItemModels
                                         var dispValuesModels: [Model] = []
 
                                         for element in models ?? [] {
@@ -474,7 +466,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                             dispValuesModels.append(list)
                                         }
 
-                                        let brands = dataStep.availableItemBrands
                                         var dispValuesBrands: [Brand] = []
 
                                         for element in brands ?? [] {
@@ -586,12 +577,45 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     )
                     .onValue { data in
 
+                        let context = data.flowClaimSummaryNext.context
+                        let data = data.flowClaimSummaryNext.currentStep
+
+                        if let dataStep = data.asFlowClaimSuccessStep {
+
+                            [
+                                .openSuccessScreen
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
+                        } else if let dataStep = data.asFlowClaimSingleItemCheckoutStep {
+
+                            [
+                                .claimNextSingleItemCheckout(
+                                    context: context
+                                )
+                            ]
+                            .forEach { element in
+                                callback(.value(element))
+                            }
+
+                        } else if let dataStep = data.asFlowClaimFailedStep {
+                            //
+                            //                            [
+                            //                                .claimNextSingleItemCheckout(
+                            //                                    context: context
+                            //                                )
+                            //                            ]
+                            //                            .forEach { element in
+                            //                                callback(.value(element))
+                            //                            }
+                        }
+                    }
+                    .onError { error in
+
                     }
                 return NilDisposer()
             }
-
-        //                case let .singleItemCheckout edit screen (contextInput, purchasePrice):
-        //                case let .summary edit screen (contextInput, purchasePrice):
 
         case let .claimNextSingleItemCheckout(contextInput):
 
@@ -612,13 +636,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                         if let dataStep = data.asFlowClaimFailedStep {
 
-                            /* REMOVE WHEN WORKING */
-                            [
-                                .openSummaryScreen(context: context)
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
                         } else if let dataStep = data.asFlowClaimSuccessStep {
                             [
                                 .openCheckoutTransferringScreen

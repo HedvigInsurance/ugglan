@@ -7,7 +7,7 @@ import hCoreUI
 public struct DamamagePickerScreen: View {
     @PresentableStore var store: ClaimsStore
     @State var selectedDamages: [Damage] = []
-    
+
     public init() {}
 
     public var body: some View {
@@ -58,14 +58,9 @@ public struct DamamagePickerScreen: View {
                 hText(L10n.generalContinueButton)
             }
             .padding([.leading, .trailing], 16)
-        }.onAppear {
+        }
+        .onAppear {
             self.selectedDamages = store.state.newClaim.chosenDamages ?? []
         }
-    }
-}
-
-struct DamamagePickerScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        DamamagePickerScreen()
     }
 }

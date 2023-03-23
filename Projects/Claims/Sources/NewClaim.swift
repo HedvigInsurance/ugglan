@@ -69,10 +69,10 @@ public struct NewClaim: Codable, Equatable {
 
         var singleItemInput: OctopusGraphQL.FlowClaimSingleItemInput
 
-        //        if itemModelIdInput != "" {
-        //            let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
-        //                itemModelId: itemModelIdInput  //"Apple iPhone 12" or itemModelIdInput "83a5d315-42a0-4373-8b84-42377f2877b8"
-        //            )
+        //        if itemModelIdInput != "" || itemModelIdInput != nil { //check
+        //                    let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
+        //                        itemModelId: itemModelIdInput  //"Apple iPhone 12" or itemModelIdInput "83a5d315-42a0-4373-8b84-42377f2877b8"
+        //                    )
 
         let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
             itemModelId: "83a5d315-42a0-4373-8b84-42377f2877b8"
@@ -87,10 +87,10 @@ public struct NewClaim: Codable, Equatable {
         //            )
 
         return OctopusGraphQL.FlowClaimSingleItemInput(
-            purchasePrice: 6000,
-            purchaseDate: "2020-01-01",
-            itemProblemIds: ["BROKEN_FRONT"],
-            itemModelInput: flowClaimItemModelInput,  //check
+            purchasePrice: purchasePrice,
+            purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
+            itemProblemIds: problemsToString,
+            itemModelInput: flowClaimItemModelInput,
             customName: customName  //check
         )
         //
@@ -145,15 +145,30 @@ public struct NewClaim: Codable, Equatable {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let dateString = dateFormatter.string(from: dateOfPurchase ?? Date())
 
+        //        return OctopusGraphQL.FlowClaimSummaryInput(
+        //            dateOfOccurrence: dateOfOccurrence,
+        //            location: self.location?.displayValue,
+        //            purchasePrice: self.priceOfPurchase,
+        //            purchaseDate: dateString,
+        //            itemProblemIds: damagesToString,
+        //            itemBrandInput: chosenBrandInput,
+        //            itemModelInput: modelIdInput,
+        //            customName: self.customName
+        //        )
+
+        let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
+            itemModelId: "83a5d315-42a0-4373-8b84-42377f2877b8"
+        )
+
         return OctopusGraphQL.FlowClaimSummaryInput(
-            dateOfOccurrence: dateOfOccurrence,
-            location: self.location?.displayValue,
-            purchasePrice: self.priceOfPurchase,
-            purchaseDate: dateString,
-            itemProblemIds: damagesToString,
-            itemBrandInput: chosenBrandInput,
-            itemModelInput: modelIdInput,
-            customName: self.customName
+            dateOfOccurrence: nil,
+            location: nil,
+            purchasePrice: nil,
+            purchaseDate: nil,
+            itemProblemIds: nil,
+            //            itemBrandInput: nil,
+            itemModelInput: nil
+                //            customName: nil
         )
     }
 }

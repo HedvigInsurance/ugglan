@@ -54,10 +54,7 @@ public struct SubmitClaimSummaryScreen: View {
                     )
                     .padding(.top, 2)
 
-                    ForEach(claim.chosenDamages ?? [], id: \.self) { damage in
-                        hText(L10n.summarySelectedProblemDescription(damage.displayName))
-                            .padding(.top, 2)
-                    }
+                    displayDamageField(claim: claim)
 
                     hButton.SmallButtonOutlined {
                         store.send(.openSummaryEditScreen(context: ""))
@@ -75,6 +72,37 @@ public struct SubmitClaimSummaryScreen: View {
                 }
                 .padding([.leading, .trailing], 16)
             }
+        }
+    }
+
+    @ViewBuilder func displayDamageField(claim: NewClaim) -> some View {
+
+        /* TODO: FIX */
+
+        if claim.chosenDamages != nil {
+            if claim.chosenDamages!.count <= 2 {
+                ForEach(claim.chosenDamages ?? [], id: \.self) { damage in
+                    hText(L10n.summarySelectedProblemDescription(damage.displayName))
+                        .foregroundColor(hLabelColor.primary)
+                        .padding(.top, 2)
+                }
+            } else {
+
+                var counter = 0
+
+                ForEach(claim.chosenDamages ?? [], id: \.self) { damage in
+                    if counter < 2 {
+                        hText(damage.displayName)
+                            .foregroundColor(hLabelColor.primary)
+                    }
+                    let _ = counter += 1
+                }
+                hText("...")
+                    .foregroundColor(hLabelColor.primary)
+            }
+        } else {
+            hText(L10n.Claim.Location.choose)
+                .foregroundColor(hLabelColor.primary)
         }
     }
 }
