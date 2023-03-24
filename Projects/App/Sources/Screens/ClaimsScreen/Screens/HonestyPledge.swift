@@ -12,6 +12,7 @@ import Claims
 struct SlideTrack: View {
     var shouldAnimate: Bool
     var labelOpacity: Double
+    @Binding var didFinished: Bool
 
     var body: some View {
         ZStack {
@@ -19,7 +20,7 @@ struct SlideTrack: View {
                 L10n.claimsPledgeSlideLabel.hText(.body)
             }
             .frame(maxWidth: .infinity)
-            .opacity(labelOpacity)
+            .opacity(didFinished ? 0 : labelOpacity)
             .animation(shouldAnimate && labelOpacity == 1 ? .easeInOut : nil)
         }
         .frame(height: 50)
@@ -48,25 +49,30 @@ struct DraggerGeometryEffect: GeometryEffect {
 struct SlideDragger: View {
     var shouldAnimate: Bool
     var dragOffsetX: CGFloat
-    static var size = CGSize(width: 50, height: 50)
+    @Binding var didFinished: Bool
+    static let size = CGSize(width: 50, height: 50)
 
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
-                ZStack {
-                    Image(uiImage: Asset.continue.image)
+                ZStack(alignment: .leading) {
+                    ZStack {
+                        Image(uiImage: Asset.continue.image)
+                    }
+                    .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
+                    .background(hTintColor.lavenderOne)
+                    .clipShape(Circle())
+                    .scaleEffect(didFinished ? 1.2 : 1)
+                    .animation(didFinished ? Animation.spring().repeatForever(autoreverses: true) : nil)
                 }
-                .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
-                .background(hTintColor.lavenderOne)
-                .clipShape(Circle())
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .modifier(
-                DraggerGeometryEffect(
-                    dragOffsetX: dragOffsetX,
-                    draggerSize: SlideDragger.size
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .modifier(
+                    DraggerGeometryEffect(
+                        dragOffsetX: didFinished ? geo.size.width : dragOffsetX,
+                        draggerSize: SlideDragger.size
+                    )
                 )
-            )
+            }
             .animation(shouldAnimate && dragOffsetX == 0 ? .spring() : nil)
         }
     }
@@ -75,8 +81,8 @@ struct SlideDragger: View {
 struct DidAcceptPledgeNotifier: View {
     var canNotify: Bool
     var dragOffsetX: CGFloat
-
-    @State var hasNotifiedStore = false
+    
+    @Binding var hasNotifiedStore: Bool
     @PresentableStore var store: UgglanStore
 
     var body: some View {
@@ -96,7 +102,7 @@ struct DidAcceptPledgeNotifier: View {
 struct SlideToConfirm: View {
     @State var hasDraggedOnce = false
     @GestureState var dragOffsetX: CGFloat = 0
-
+    @State var draggedTillTheEnd = false
     var labelOpacity: Double {
         1 - (Double(max(dragOffsetX, 0)) / 100)
     }
@@ -105,17 +111,20 @@ struct SlideToConfirm: View {
         ZStack(alignment: .leading) {
             SlideTrack(
                 shouldAnimate: hasDraggedOnce,
-                labelOpacity: labelOpacity
+                labelOpacity: labelOpacity,
+                didFinished: $draggedTillTheEnd
             )
             SlideDragger(
                 shouldAnimate: hasDraggedOnce,
-                dragOffsetX: dragOffsetX
+                dragOffsetX: dragOffsetX,
+                didFinished: $draggedTillTheEnd
             )
         }
         .background(
             DidAcceptPledgeNotifier(
                 canNotify: hasDraggedOnce,
-                dragOffsetX: dragOffsetX
+                dragOffsetX: dragOffsetX,
+                hasNotifiedStore: $draggedTillTheEnd
             )
         )
         .gesture(

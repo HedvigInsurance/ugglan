@@ -63,9 +63,8 @@ extension AppJourney {
     }
 
     static func startSubmitClaimsFlow(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        HostingJourney(ClaimsStore.self, rootView: HonestyPledge(), style: .detented(.scrollViewContentSize)) {
-            action in
-            getScreenForAction(for: action)
+        HostingJourney(ClaimsStore.self, rootView: LoadingViewWithContent(.startClaim(from: origin)) {HonestyPledge()}, style: .detented(.scrollViewContentSize)) { action in
+            getScreenForAction(for: action).hidesBackButton
         }
         .onAction(UgglanStore.self) { action, _ in
             if case .didAcceptHonestyPledge = action {
@@ -112,8 +111,6 @@ extension AppJourney {
             AppJourney.openSingleItemScreen(context: contextInput)
         } else if case let .openSummaryScreen(contextInput) = action {
             AppJourney.openSummaryScreen(context: contextInput)
-        } else if case .openBrandPicker = action {
-            AppJourney.openBrandPickerScreen()
         } else if case .openDamagePickerScreen = action {
             openDamagePickerScreen()
         } else if case let .openSummaryEditScreen(context) = action {
@@ -220,10 +217,10 @@ extension AppJourney {
     }
 
     static func openBrandPickerScreen() -> some JourneyPresentation {
-
         HostingJourney(
             ClaimsStore.self,
-            rootView: BrandPickerScreen()
+            rootView: BrandPickerScreen(),
+            options: .autoPopSelfAndSuccessors
         ) {
             action in
             if case let .submitBrand(brand) = action {
@@ -235,7 +232,11 @@ extension AppJourney {
             } else {
                 getScreenForAction(for: action)
             }
-        }
+        }.onAction(ClaimsStore.self, { action, pre in
+            if case .setSingleItemModel(_) = action {
+                pre.bag.dispose()
+            }
+        })
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
@@ -247,19 +248,19 @@ extension AppJourney {
             rootView: ModelPickerScreen()
         ) {
             action in
-            if case .setSingleItemModel(_) = action {
-                DismissJourney()
-            }
+            ContinueJourney()
         }
         .onAction(
             ClaimsStore.self,
             { action, pre in
                 if case let .submitModel(model) = action {
                     @PresentableStore var store: ClaimsStore
+                    pre.bag.dispose()
                     store.send(.setSingleItemModel(modelName: model))
                 }
             }
         )
+        .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -323,6 +324,8 @@ extension AppJourney {
             action in
             if case .openDatePicker = action {
                 openDatePickerScreenForPurchasPrice(context: context)
+            } else if case .openBrandPicker = action {
+                openBrandPickerScreen()
             } else {
                 getScreenForAction(for: action)
             }
@@ -377,6 +380,8 @@ extension AppJourney {
             action in
             if case .openLocationPicker = action {
                 openLocationScreen(context: context)
+            }else if case .dissmissNewClaimFlow = action {
+                PopJourney()
             } else {
                 getScreenForAction(for: action)
             }
@@ -553,3 +558,5 @@ extension JourneyPresentation {
         }
     }
 }
+
+

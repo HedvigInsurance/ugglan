@@ -47,7 +47,7 @@ public struct NewClaim: Codable, Equatable {
     public var chosenDamages: [Damage]?
     public var customName: String?
     public var payoutAmount: Payout?
-
+    
     init(
         id: String
     ) {

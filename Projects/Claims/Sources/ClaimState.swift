@@ -11,9 +11,14 @@ public struct ClaimsState: StateProtocol {
     var claims: [Claim]? = nil
     var commonClaims: [CommonClaim]? = nil
     var newClaim: NewClaim = .init(id: "")
+    var loadingStates: [String: LoadingState<String>] = [:]
 
     public init() {}
 
+    private enum CodingKeys : String, CodingKey {
+        case claims, commonClaims, newClaim
+    }
+    
     public var hasActiveClaims: Bool {
         if let claims = claims {
             return
@@ -24,6 +29,82 @@ public struct ClaimsState: StateProtocol {
                 .isEmpty
         }
         return false
+    }
+}
+
+public enum LoadingState<T>: Codable & Equatable where T: Codable & Equatable {
+    case loading
+    case error(error:T)
+}
+
+extension ClaimsAction: Hashable {
+    public func hash(into hasher: inout Hasher) {
+
+        let value: Int =  {
+            switch self {
+            case .openFreeTextChat: return 1
+            case .submitNewClaim: return 2
+            case .fetchClaims: return 3
+            case .setClaims: return 4
+            case .fetchCommonClaims: return 5
+            case .setCommonClaims: return 6
+            case .openCommonClaimDetail: return 7
+            case .openHowClaimsWork: return 8
+            case .openClaimDetails: return 9
+            case .odysseyRedirect: return 10
+            case .dissmissNewClaimFlow: return 11
+            case .openPhoneNumberScreen: return 12
+            case .submitClaimPhoneNumber: return 13
+            case .openDateOfOccurrenceScreen: return 14
+            case .openLocationPicker: return 15
+            case .openDatePicker: return 16
+            case .submitClaimDateOfOccurrence: return 17
+            case .submitClaimLocation: return 18
+            case .submitOccuranceAndLocation: return 19
+            case .submitAudioRecording: return 20
+            case .submitSingleItem: return 21
+            case .submitDamage: return 22
+            case .claimNextDamage: return 23
+            case .submitModel: return 24
+            case .submitBrand: return 25
+            case .submitSummary: return 26
+            case .submitSingleItemCheckout: return 27
+            case .openSuccessScreen: return 28
+            case .openSingleItemScreen: return 29
+            case .openSummaryScreen: return 30
+            case .openSummaryEditScreen: return 31
+            case .openDamagePickerScreen: return 32
+            case .openModelPicker: return 33
+            case .openBrandPicker: return 34
+            case .openCheckoutNoRepairScreen: return 35
+            case .openCheckoutTransferringScreen: return 36
+            case .openCheckoutTransferringDoneScreen: return 37
+            case .openAudioRecordingScreen: return 38
+            case .startClaim: return 39
+            case .setNewClaim: return 40
+            case .claimNextPhoneNumber: return 41
+            case .claimNextDateOfOccurrence: return 42
+            case .claimNextLocation: return 43
+            case .claimNextDateOfOccurrenceAndLocation: return 44
+            case .claimNextAudioRecording: return 45
+            case .claimNextSingleItem: return 46
+            case .claimNextSummary: return 47
+            case .claimNextSingleItemCheckout: return 48
+            case .setNewLocation: return 49
+            case .setNewDate: return 50
+            case .setListOfLocations: return 51
+            case .setPurchasePrice: return 52
+            case .setSingleItemLists: return 53
+            case .setSingleItemModel: return 54
+            case .setSingleItemPriceOfPurchase: return 55
+            case .setSingleItemDamage: return 56
+            case .setSingleItemPurchaseDate: return 57
+            case .setSingleItemBrand: return 58
+            case .setPayoutAmount: return 59
+            case .setLoadingState: return 60
+            }
+        }()
+        hasher.combine("\(value)")
     }
 }
 
@@ -71,7 +152,7 @@ public enum ClaimsAction: ActionProtocol {
     case openCheckoutTransferringScreen
     case openCheckoutTransferringDoneScreen
     case openAudioRecordingScreen(context: String)
-
+    
     case startClaim(from: ClaimsOrigin)
     case setNewClaim(from: NewClaim)
     case claimNextPhoneNumber(phoneNumber: String, context: String)
@@ -94,6 +175,15 @@ public enum ClaimsAction: ActionProtocol {
     case setSingleItemPurchaseDate(purchaseDate: Date)
     case setSingleItemBrand(brand: Brand)
     case setPayoutAmount(payoutAmount: Payout)
+    case setLoadingState(action: String, state: LoadingState<String>?)
+    
+}
+
+public enum ScreenType: Codable & Equatable{
+    case honestyPledge
+    case submitClaimOccurrence
+    case submitClaimContact
+    case submitClaimAudioRecording
 }
 
 public enum ClaimsOrigin: Codable, Equatable {
@@ -126,6 +216,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         _ getState: @escaping () -> ClaimsState,
         _ action: ClaimsAction
     ) -> FiniteSignal<ClaimsAction>? {
+        let actionValue = "\(action.hashValue)"
+        print(action)
         switch action {
         case .openFreeTextChat:
             return nil
@@ -160,9 +252,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 .valueThenEndSignal
 
         case let .startClaim(claimsOrigin):
-
+            self.send(.setLoadingState(action: actionValue, state: .loading))
             let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: "5dddcab9-a0fc-4cb7-94f3-2785693e8803")
-
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
@@ -172,38 +263,36 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         let id = data.flowClaimStart.id
                         let context = data.flowClaimStart.context
                         let data = data.flowClaimStart.currentStep
-
+                        var actions = [ClaimsAction]()
+                        
                         if let dataStep = data.asFlowClaimPhoneNumberStep {
-
+                            
                             let phoneNumber = dataStep.phoneNumber
-
-                            [
-                                .setNewClaim(from: NewClaim(id: id)),
-                                .openPhoneNumberScreen(context: context, phoneNumber: phoneNumber),
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
-
+                            actions.append(.setNewClaim(from: NewClaim(id: id)))
+                            actions.append(.openPhoneNumberScreen(context: context, phoneNumber: phoneNumber))
                         } else if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
-
+                            
                         } else if let dataStep = data.asFlowClaimAudioRecordingStep {
-
+                            
                         } else if let dataStep = data.asFlowClaimLocationStep {
-
+                            
                         } else if let dataStep = data.asFlowClaimFailedStep {
-
+                            
                         } else if let dataStep = data.asFlowClaimSuccessStep {
-
+                            
                         }
+                        actions.append(.setLoadingState(action: actionValue, state: nil))
+                        actions.forEach { element in
+                            callback(.value(element))
+                        }
+                    }.onError { error in
+                        callback(.value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))))
                     }
                 return NilDisposer()
             }
-
         case let .claimNextPhoneNumber(phoneNumberInput, contextInput):
-
+            self.send(.setLoadingState(action: actionValue, state: .loading))
             var phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
-
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
@@ -213,20 +302,12 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         )
                     )
                     .onValue { data in
-
+                        
                         let context = data.flowClaimPhoneNumberNext.context
                         let data = data.flowClaimPhoneNumberNext.currentStep
-
+                        var actions = [ClaimsAction]()
                         if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
-                            [
-                                .openDateOfOccurrenceScreen(
-                                    context: context
-                                )
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
-
+                            actions.append(.openDateOfOccurrenceScreen(context: context))
                         } else if let dataStep = data.asFlowClaimFailedStep {
 
                         } else if let dataStep = data.asFlowClaimDateOfOccurrencePlusLocationStep {
@@ -239,22 +320,19 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                 let list = Location(displayValue: element.displayName, value: element.value)
                                 dispValues.append(list)
                             }
-
-                            [
-                                .setListOfLocations(displayValues: dispValues),
-                                .openDateOfOccurrenceScreen(
-                                    context: context
-                                ),
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
+                            actions.append(contentsOf: [.setListOfLocations(displayValues: dispValues),
+                                            .openDateOfOccurrenceScreen(context: context)])
+                            
                         } else {
 
                         }
+                        actions.append(.setLoadingState(action: actionValue, state: nil))
+                        actions.forEach { element in
+                            callback(.value(element))
+                        }
                     }
                     .onError { error in
-                        print(error)
+                        callback(.value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))))
                     }
                 return NilDisposer()
 
@@ -315,7 +393,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             }
 
         case let .claimNextDateOfOccurrenceAndLocation(contextInput):
-
+            self.send(.setLoadingState(action: actionValue, state: .loading))
             let location = state.newClaim.location?.value
             let date = state.newClaim.dateOfOccurrence
 
@@ -336,55 +414,33 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                         let context = data.flowClaimDateOfOccurrencePlusLocationNext.context
                         let data = data.flowClaimDateOfOccurrencePlusLocationNext.currentStep
-
+                        var actions = [ClaimsAction]()
                         if let data = data.asFlowClaimAudioRecordingStep {
-
-                            [
-                                .openAudioRecordingScreen(
-                                    context: context
-                                )
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
-
+                            actions.append(.openAudioRecordingScreen(context: context))
                         } else if let dataStep = data.asFlowClaimSingleItemStep {
 
                         } else if let dataStep = data.asFlowClaimFailedStep {
-
                             /* REMOVE WHEN FIXED */
-                            [
-                                .openAudioRecordingScreen(context: context)
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
-
+                            actions.append(.openAudioRecordingScreen(context: context))
                         } else if let dataStep = data.asFlowClaimSingleItemStep {
 
                         } else if let dataStep = data.asFlowClaimSuccessStep {
 
                         } else if let dataStep = data.asFlowClaimPhoneNumberStep {
-
-                            [
-                                .openAudioRecordingScreen(
-                                    context: context
-                                )
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
+                            actions.append(.openAudioRecordingScreen(context: context))
                         }
-
+                        actions.append(.setLoadingState(action: actionValue, state: nil))
+                        actions.forEach({callback(.value($0))})
                     }
                     .onError { error in
-
+                        callback(.value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))))
                     }
                 return NilDisposer()
 
             }
 
         case let .claimNextAudioRecording(audioURL, contextInput):
+            self.send(.setLoadingState(action: actionValue, state: .loading))
             return FiniteSignal { callback in
                 do {
                     let data = try Data(contentsOf: audioURL).base64EncodedData()
@@ -406,22 +462,12 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                                     let context = data.flowClaimAudioRecordingNext.context
                                     let data = data.flowClaimAudioRecordingNext.currentStep
-
+                                    var actions = [ClaimsAction]()
                                     if let dataStep = data.asFlowClaimSuccessStep {
-
-                                        [
-                                            .openSuccessScreen
-                                        ]
-                                        .forEach { element in
-                                            callback(.value(element))
-                                        }
-
-                                    } else if let dataStep = data.asFlowClaimFailedStep {
-
+                                        actions.append(.openSuccessScreen)
                                     } else if let dataStep = data.asFlowClaimSingleItemStep {
 
                                         let selectedProblems = dataStep.selectedItemProblems
-
                                         let damages = dataStep.availableItemProblems
                                         let models = dataStep.availableItemModels
                                         let brands = dataStep.availableItemBrands
@@ -470,7 +516,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                         }
 
                                         [
-                                            .setSingleItemDamage(damages: selectedDamages),
                                             .setSingleItemLists(
                                                 brands: dispValuesBrands,
                                                 models: dispValuesModels,
@@ -484,13 +529,15 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                             callback(.value(element))
                                         }
                                     }
+                                    actions.append(.setLoadingState(action: actionValue, state: nil))
+                                    actions.forEach({callback(.value($0))})
                                 }
                         })
                         .onError({ error in
-                            let ss = ""
+                            callback(.value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))))
                         })
                 } catch let error {
-                    _ = error
+                    callback(.value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))))
                 }
 
                 return NilDisposer()
@@ -502,7 +549,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             }
 
         case let .claimNextSingleItem(contextInput, purchasePrice):
-
+            self.send(.setLoadingState(action: actionValue, state: .loading))
             let singleItemInput = state.newClaim.returnSingleItemInfo(purchasePrice: purchasePrice)
 
             return FiniteSignal { callback in
@@ -514,42 +561,30 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         )
                     )
                     .onValue { data in
-
+                        
                         let context = data.flowClaimSingleItemNext.context
                         let data = data.flowClaimSingleItemNext.currentStep
-
-                        [
-                            .setPurchasePrice(
-                                priceOfPurchase: purchasePrice
-                            ),
-                            .openSummaryScreen(context: context),
-                        ]
-                        .forEach { element in
-                            callback(.value(element))
-                        }
-
+                        var actions = [ClaimsAction]()
+                        actions.append(.setPurchasePrice(priceOfPurchase: purchasePrice))
+                        actions.append(.openSummaryScreen(context: context))
                         if let dataStep = data.asFlowClaimFailedStep {
-
+                            
                         } else if let dataStep = data.asFlowClaimSummaryStep {
-
-                            [
-                                .openSummaryScreen(
-                                    context: context
-                                )
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
+                            actions.append(.openSummaryScreen(context: context))
                         }
+                        actions.append(.setLoadingState(action: actionValue, state: nil))
+                        actions.forEach({callback(.value($0))})
                     }
                     .onError { error in
+
                         print(error)
+
                     }
                 return NilDisposer()
             }
-
+            
         case let .claimNextSummary(contextInput):
-
+            
             let dateOfOccurrence = state.newClaim.dateOfOccurrence
             let location = state.newClaim.location
             let summaryInput = state.newClaim.returnSummaryInformation()
@@ -709,17 +744,16 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 }
             }
             newState.newClaim.filteredListOfModels = filteredModelList
-
-        //        case let .setSingleItemDamage(damages):
-        //            //add to previous
-        //            //            let prevDamages = newState.newClaim.chosenDamages
-        //            for damage in damages {
-        //                newState.newClaim.chosenDamages?.append(damage)
-        //            }
-
+        case let .setSingleItemDamage(damages):
+            newState.newClaim.chosenDamages = damages
         case let .setPayoutAmount(payoutAmount):
             newState.newClaim.payoutAmount = payoutAmount
-
+        case let .setLoadingState(action, state):
+            if let state {
+                newState.loadingStates[action] = state
+            }else{
+                newState.loadingStates.removeValue(forKey: action)
+            }
         default:
             break
         }

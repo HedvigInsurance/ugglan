@@ -28,106 +28,107 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 
     public var body: some View {
-
-        hForm {
-
-            HStack(spacing: 0) {
-                hText(L10n.Message.Claims.Record.short)
-                    .foregroundColor(hLabelColor.primary)
-                    .padding([.trailing, .leading], 12)
-                    .padding([.top, .bottom], 16)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(hBackgroundColor.tertiary)
-            .cornerRadius(12)
-            .padding(.leading, 16)
-            .padding(.trailing, 32)
-            .padding(.top, 20)
-            .hShadow()
-
-            HStack(spacing: 0) {
-                hText(L10n.Message.Claims.Record.message1)
-                    .foregroundColor(hLabelColor.primary)
-                    .padding([.trailing, .leading], 12)
-                    .padding([.top, .bottom], 16)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(hBackgroundColor.tertiary)
-            .cornerRadius(12)
-            .padding(.leading, 16)
-            .padding(.trailing, 32)
-            .hShadow()
-
-            HStack(spacing: 0) {
-                hText(L10n.Message.Claims.Record.message4)
-                    .foregroundColor(hLabelColor.primary)
-                    .padding([.trailing, .leading], 12)
-                    .padding([.top, .bottom], 16)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(hBackgroundColor.tertiary)
-            .cornerRadius(12)
-            .padding(.leading, 16)
-            .padding(.trailing, 32)
-            .hShadow()
-
-            HStack(spacing: 0) {
-                hText(L10n.Message.Claims.Record.message3)
-                    .foregroundColor(hLabelColor.primary)
-                    .padding([.trailing, .leading], 12)
-                    .padding([.top, .bottom], 16)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(hBackgroundColor.tertiary)
-            .cornerRadius(12)
-            .padding(.leading, 16)
-            .padding(.trailing, 32)
-            .hShadow()
-
-        }
-        .hFormAttachToBottom {
-
-            ZStack(alignment: .bottom) {
-
-                if let recording = audioRecorder.recording {
-                    VStack(spacing: 12) {
-
-                        TrackPlayer(audioPlayer: audioPlayer)
-
-                        hButton.LargeButtonFilled {
-                            guard let url = audioRecorder.recording?.url else {
-                                return
-                            }
-                            onSubmit(url)
-                            store.send(.submitAudioRecording(audioURL: url))
-                        } content: {
-                            hText(L10n.generalContinueButton)
-                        }
-                        hButton.LargeButtonText {
-                            withAnimation(.spring()) {
-                                audioRecorder.restart()
-                            }
-                        } content: {
-                            hText(L10n.embarkRecordAgain)
-                        }
-                    }
-                    .transition(.move(edge: .bottom))
-                } else {
-
-                    RecordButton(isRecording: audioRecorder.isRecording) {
-                        if audioRecorder.isRecording {
-                        } else {
-                        }
-
-                        withAnimation(.spring()) {
-                            audioRecorder.toggleRecording()
-                        }
-                    }
-                    .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300)))
-                    .padding(.top, UIScreen.main.bounds.size.height / 1.7)
+        LoadingViewWithContent(.claimNextAudioRecording(audioURL: self.audioPlayer.url, context: "")) {
+            hForm {
+                
+                HStack(spacing: 0) {
+                    hText(L10n.Message.Claims.Record.short)
+                        .foregroundColor(hLabelColor.primary)
+                        .padding([.trailing, .leading], 12)
+                        .padding([.top, .bottom], 16)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(hBackgroundColor.tertiary)
+                .cornerRadius(12)
+                .padding(.leading, 16)
+                .padding(.trailing, 32)
+                .padding(.top, 20)
+                .hShadow()
+                
+                HStack(spacing: 0) {
+                    hText(L10n.Message.Claims.Record.message1)
+                        .foregroundColor(hLabelColor.primary)
+                        .padding([.trailing, .leading], 12)
+                        .padding([.top, .bottom], 16)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(hBackgroundColor.tertiary)
+                .cornerRadius(12)
+                .padding(.leading, 16)
+                .padding(.trailing, 32)
+                .hShadow()
+                
+                HStack(spacing: 0) {
+                    hText(L10n.Message.Claims.Record.message4)
+                        .foregroundColor(hLabelColor.primary)
+                        .padding([.trailing, .leading], 12)
+                        .padding([.top, .bottom], 16)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(hBackgroundColor.tertiary)
+                .cornerRadius(12)
+                .padding(.leading, 16)
+                .padding(.trailing, 32)
+                .hShadow()
+                
+                HStack(spacing: 0) {
+                    hText(L10n.Message.Claims.Record.message3)
+                        .foregroundColor(hLabelColor.primary)
+                        .padding([.trailing, .leading], 12)
+                        .padding([.top, .bottom], 16)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(hBackgroundColor.tertiary)
+                .cornerRadius(12)
+                .padding(.leading, 16)
+                .padding(.trailing, 32)
+                .hShadow()
+                
             }
-            .environmentObject(audioRecorder)
+            .hFormAttachToBottom {
+                
+                ZStack(alignment: .bottom) {
+                    
+                    if let recording = audioRecorder.recording {
+                        VStack(spacing: 12) {
+                            
+                            TrackPlayer(audioPlayer: audioPlayer)
+                            
+                            hButton.LargeButtonFilled {
+                                guard let url = audioRecorder.recording?.url else {
+                                    return
+                                }
+                                onSubmit(url)
+                                store.send(.submitAudioRecording(audioURL: url))
+                            } content: {
+                                hText(L10n.generalContinueButton)
+                            }
+                            hButton.LargeButtonText {
+                                withAnimation(.spring()) {
+                                    audioRecorder.restart()
+                                }
+                            } content: {
+                                hText(L10n.embarkRecordAgain)
+                            }
+                        }
+                        .transition(.move(edge: .bottom))
+                    } else {
+                        
+                        RecordButton(isRecording: audioRecorder.isRecording) {
+                            if audioRecorder.isRecording {
+                            } else {
+                            }
+                            
+                            withAnimation(.spring()) {
+                                audioRecorder.toggleRecording()
+                            }
+                        }
+                        .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300)))
+                        .padding(.top, UIScreen.main.bounds.size.height / 1.7)
+                    }
+                }
+                .environmentObject(audioRecorder)
+            }
         }
     }
 }

@@ -10,29 +10,29 @@ public struct SubmitClaimSingleItem: View {
     public init() {}
 
     public var body: some View {
-
-        hForm {
-
-            PresentableStoreLens(
-                ClaimsStore.self,
-                getter: { state in
-                    state.newClaim
+        LoadingViewWithContent(.claimNextSingleItem(context: "", purchasePrice: 0)) {
+            hForm {
+                
+                PresentableStoreLens(
+                    ClaimsStore.self,
+                    getter: { state in
+                        state.newClaim
+                    }
+                ) { claim in
+                    displayBrandAndModelField(claim: claim)
+                    displayDateField(claim: claim)
+                    displayPurchasePriceField()
+                    displayDamageField(claim: claim)
                 }
-            ) { claim in
-
-                displayBrandAndModelField(claim: claim)
-                displayDateField(claim: claim)
-                displayPurchasePriceField()
-                displayDamageField(claim: claim)
             }
-        }
-        .hFormAttachToBottom {
-            hButton.LargeButtonFilled {
-                store.send(.submitSingleItem(purchasePrice: Double(purchasePrice) ?? 0))
-            } content: {
-                hText(L10n.generalContinueButton)
+            .hFormAttachToBottom {
+                hButton.LargeButtonFilled {
+                    store.send(.submitSingleItem(purchasePrice: Double(purchasePrice) ?? 0))
+                } content: {
+                    hText(L10n.generalContinueButton)
+                }
+                .padding([.leading, .trailing], 16)
             }
-            .padding([.leading, .trailing], 16)
         }
     }
 

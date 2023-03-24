@@ -8,97 +8,95 @@ public struct SubmitClaimOccurrenceScreen: View {
     public init() {}
 
     public var body: some View {
-
-        hForm {
-            hButton.SmallButtonText {
-                store.send(.openDatePicker)
-            } content: {
-
-                HStack(spacing: 0) {
-                    hText(L10n.Claims.Incident.Screen.Date.Of.incident)
-                        .foregroundColor(hLabelColor.primary)
-                        .padding([.top, .bottom], 16)
-
-                    Spacer()
-
-                    PresentableStoreLens(
-                        ClaimsStore.self,
-                        getter: { state in
-                            state.newClaim
-                        }
-                    ) { claim in
-
-                        if let dateOfOccurrence = claim.dateOfOccurrence {
-                            hText(claim.dateOfOccurrence ?? "")
-                                .foregroundColor(hLabelColor.primary)
-                        } else {
-                            Image(uiImage: hCoreUIAssets.calendar.image)
-                                .foregroundColor(hLabelColor.primary)
-                        }
-                    }
-                }
-            }
-            .frame(height: 64)
-            .background(hBackgroundColor.tertiary)
-            .cornerRadius(12)
-            .padding(.leading, 16)
-            .padding(.trailing, 16)
-            .padding(.top, 20)
-            .hShadow()
-
-            hButton.SmallButtonText {
-                store.send(.openLocationPicker(context: ""))
-            } content: {
-
-                HStack(spacing: 0) {
-                    hText(L10n.Claims.Incident.Screen.location)
-                        .foregroundColor(hLabelColor.primary)
-                        .padding([.top, .bottom], 16)
-
-                    Spacer()
-
-                    PresentableStoreLens(
-                        ClaimsStore.self,
-                        getter: { state in
-                            state.newClaim
-                        }
-                    ) { claim in
-
-                        if claim.location != nil {
-                            hText(claim.location?.displayValue ?? "")
-                                .foregroundColor(hLabelColor.primary)
-                        } else {
-                            hText(L10n.Claim.Location.choose)
-                                .foregroundColor(hLabelColor.primary)
+        LoadingViewWithContent(.claimNextDateOfOccurrenceAndLocation(context: "")) {
+            hForm {
+                hButton.SmallButtonText {
+                    store.send(.openDatePicker)
+                } content: {
+                    
+                    HStack(spacing: 0) {
+                        hText(L10n.Claims.Incident.Screen.Date.Of.incident)
+                            .foregroundColor(hLabelColor.primary)
+                            .padding([.top, .bottom], 16)
+                        
+                        Spacer()
+                        
+                        PresentableStoreLens(
+                            ClaimsStore.self,
+                            getter: { state in
+                                state.newClaim
+                            }
+                        ) { claim in
+                            
+                            if let dateOfOccurrence = claim.dateOfOccurrence {
+                                hText(claim.dateOfOccurrence ?? "")
+                                    .foregroundColor(hLabelColor.primary)
+                            } else {
+                                Image(uiImage: hCoreUIAssets.calendar.image)
+                                    .foregroundColor(hLabelColor.primary)
+                            }
                         }
                     }
                 }
+                .frame(height: 64)
+                .background(hBackgroundColor.tertiary)
+                .cornerRadius(12)
+                .padding(.leading, 16)
+                .padding(.trailing, 16)
+                .padding(.top, 20)
+                .hShadow()
+                
+                hButton.SmallButtonText {
+                    store.send(.openLocationPicker(context: ""))
+                } content: {
+                    
+                    HStack(spacing: 0) {
+                        hText(L10n.Claims.Incident.Screen.location)
+                            .foregroundColor(hLabelColor.primary)
+                            .padding([.top, .bottom], 16)
+                        
+                        Spacer()
+                        
+                        PresentableStoreLens(
+                            ClaimsStore.self,
+                            getter: { state in
+                                state.newClaim
+                            }
+                        ) { claim in
+                            
+                            if claim.location != nil {
+                                hText(claim.location?.displayValue ?? "")
+                                    .foregroundColor(hLabelColor.primary)
+                            } else {
+                                hText(L10n.Claim.Location.choose)
+                                    .foregroundColor(hLabelColor.primary)
+                            }
+                        }
+                    }
+                }
+                .frame(height: 64)
+                .background(hBackgroundColor.tertiary)
+                .cornerRadius(12)
+                .padding(.leading, 16)
+                .padding(.trailing, 16)
+                .padding(.top, 20)
+                .hShadow()
+                
             }
-            .frame(height: 64)
-            .background(hBackgroundColor.tertiary)
-            .cornerRadius(12)
-            .padding(.leading, 16)
-            .padding(.trailing, 16)
-            .padding(.top, 20)
-            .hShadow()
-
-        }
-
-        .hFormAttachToBottom {
-
-            hButton.LargeButtonFilled {
-
-                store.send(.submitOccuranceAndLocation)
-
-                store.send(.dissmissNewClaimFlow)
-            } content: {
-                hText(L10n.generalContinueButton, style: .body)
-                    .foregroundColor(hLabelColor.primary.inverted)
+            
+            .hFormAttachToBottom {
+                
+                hButton.LargeButtonFilled {
+                    store.send(.submitOccuranceAndLocation)
+                    store.send(.dissmissNewClaimFlow)
+                } content: {
+                    hText(L10n.generalContinueButton, style: .body)
+                        .foregroundColor(hLabelColor.primary.inverted)
+                }
+                .frame(maxWidth: .infinity, alignment: .bottom)
+                .padding([.leading, .trailing], 16)
             }
-            .frame(maxWidth: .infinity, alignment: .bottom)
-            .padding([.leading, .trailing], 16)
         }
-
     }
 
     func dateToString(date: Date) -> String {
