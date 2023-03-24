@@ -100,8 +100,8 @@ extension ClaimsAction: Hashable {
             case .setSingleItemDamage: return 56
             case .setSingleItemPurchaseDate: return 57
             case .setSingleItemBrand: return 58
-            case .setPayoutAmount: return 59
             case .setLoadingState: return 60
+            case .setPayoutAmountDeductibleDepreciation: return 61
             }
         }()
         hasher.combine("\(value)")
@@ -125,7 +125,7 @@ public enum ClaimsAction: ActionProtocol {
     case openPhoneNumberScreen(context: String, phoneNumber: String)
     case submitClaimPhoneNumber(phoneNumberInput: String)
 
-    case openDateOfOccurrenceScreen(context: String)
+    case openDateOfOccurrenceScreen(context: String, maxDate: String)
     case openLocationPicker(context: String)
     case openDatePicker
 
@@ -142,7 +142,7 @@ public enum ClaimsAction: ActionProtocol {
     case submitSingleItemCheckout
 
     case openSuccessScreen
-    case openSingleItemScreen(context: String)
+    case openSingleItemScreen(context: String, maxDate: String)
     case openSummaryScreen(context: String)
     case openSummaryEditScreen(context: String)
     case openDamagePickerScreen
@@ -174,8 +174,8 @@ public enum ClaimsAction: ActionProtocol {
     case setSingleItemDamage(damages: [Damage])
     case setSingleItemPurchaseDate(purchaseDate: Date)
     case setSingleItemBrand(brand: Brand)
-    case setPayoutAmount(payoutAmount: Payout)
     case setLoadingState(action: String, state: LoadingState<String>?)
+    case setPayoutAmountDeductibleDepreciation(payoutAmount: Payout, deductible: Payout, depreciation: Payout)
 }
 
 public enum ScreenType: Codable & Equatable {
@@ -266,9 +266,12 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                         if let dataStep = data.asFlowClaimPhoneNumberStep {
 
+                            let stepId = dataStep.id
                             let phoneNumber = dataStep.phoneNumber
+
                             actions.append(.setNewClaim(from: NewClaim(id: id)))
                             actions.append(.openPhoneNumberScreen(context: context, phoneNumber: phoneNumber))
+
                         } else if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
 
                         } else if let dataStep = data.asFlowClaimAudioRecordingStep {
@@ -310,12 +313,23 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         let context = data.flowClaimPhoneNumberNext.context
                         let data = data.flowClaimPhoneNumberNext.currentStep
                         var actions = [ClaimsAction]()
+
                         if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
-                            actions.append(.openDateOfOccurrenceScreen(context: context))
+
+                            let dateOfOccurrenceMaxDate = dataStep.maxDate
+
+                            actions.append(
+                                .openDateOfOccurrenceScreen(context: context, maxDate: dateOfOccurrenceMaxDate)
+                            )
+
                         } else if let dataStep = data.asFlowClaimFailedStep {
 
                         } else if let dataStep = data.asFlowClaimDateOfOccurrencePlusLocationStep {
 
+                            let stepId = dataStep.id
+                            let dateOfOccurrenceStep = dataStep.dateOfOccurrenceStep.dateOfOccurrence
+                            let dateOfOccurrenceMaxDate = dataStep.dateOfOccurrenceStep.maxDate
+                            let locationStep = dataStep.locationStep.location
                             let possibleLocations = dataStep.locationStep.options
 
                             var dispValues: [Location] = []
@@ -326,7 +340,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             }
                             actions.append(contentsOf: [
                                 .setListOfLocations(displayValues: dispValues),
-                                .openDateOfOccurrenceScreen(context: context),
+                                .openDateOfOccurrenceScreen(context: context, maxDate: dateOfOccurrenceMaxDate),
                             ])
 
                         } else {
@@ -529,13 +543,15 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                         }
 
                                         [
+                                            .setSingleItemDamage(damages: selectedDamages),
                                             .setSingleItemLists(
                                                 brands: dispValuesBrands,
                                                 models: dispValuesModels,
                                                 damages: dispValuesDamages
                                             ),
                                             .openSingleItemScreen(
-                                                context: context
+                                                context: context,
+                                                maxDate: "2023-03-03" /* TODO: FIX? */
                                             ),
                                         ]
                                         .forEach { element in
@@ -619,6 +635,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     .onValue { data in
 
                         let context = data.flowClaimSummaryNext.context
+
                         let data = data.flowClaimSummaryNext.currentStep
 
                         if let dataStep = data.asFlowClaimSuccessStep {
@@ -629,21 +646,35 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             .forEach { element in
                                 callback(.value(element))
                             }
+
                         } else if let dataStep = data.asFlowClaimSingleItemCheckoutStep {
 
                             let payoutAmount = dataStep.payoutAmount
+                            let deductible = dataStep.deductible
+                            let depreciation = dataStep.depreciation
+                            let price = dataStep.price
+                            //                            dataStep.availableCheckoutMethods
+                            //                            dataStep.id
 
                             [
-                                .setPayoutAmount(
-                                    payoutAmount: Payout(
-                                        amount: payoutAmount.amount ?? 0,
-                                        currencyCode: payoutAmount.currencyCode.rawValue ?? ""
-                                    )
+                                .setPayoutAmountDeductibleDepreciation(
+                                    payoutAmount:
+                                        Payout(
+                                            amount: payoutAmount.amount,
+                                            currencyCode: payoutAmount.currencyCode.rawValue
+                                        ),
+                                    deductible:
+                                        Payout(
+                                            amount: deductible.amount,
+                                            currencyCode: deductible.currencyCode.rawValue
+                                        ),
+                                    depreciation:
+                                        Payout(
+                                            amount: depreciation.amount,
+                                            currencyCode: depreciation.currencyCode.rawValue
+                                        )
                                 ),
                                 .openCheckoutNoRepairScreen(context: context),
-                                //                                .claimNextSingleItemCheckout(
-                                //                                    context: context
-                                //                                ),
                             ]
                             .forEach { element in
                                 callback(.value(element))
@@ -739,10 +770,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.newClaim.listOfModels = models
 
         case let .setSingleItemDamage(damages):
-            //            newState.newClaim.chosenDamages = damages
-            for damage in damages {
-                newState.newClaim.chosenDamages?.append(damage)
-            }
+            newState.newClaim.chosenDamages = damages
 
         case let .setSingleItemModel(model):
             newState.newClaim.chosenModel = model
@@ -766,20 +794,34 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 }
             }
             newState.newClaim.filteredListOfModels = filteredModelList
-        case let .setSingleItemDamage(damages):
-            newState.newClaim.chosenDamages = damages
-        case let .setPayoutAmount(payoutAmount):
-            newState.newClaim.payoutAmount = payoutAmount
+
         case let .setLoadingState(action, state):
             if let state {
                 newState.loadingStates[action] = state
             } else {
                 newState.loadingStates.removeValue(forKey: action)
             }
+
+        case let .setPayoutAmountDeductibleDepreciation(payoutAmount, deductible, depreciation):
+            newState.newClaim.payoutAmount = payoutAmount
+            newState.newClaim.deductible = deductible
+            newState.newClaim.depreciation = depreciation
+
         default:
             break
         }
 
         return newState
     }
+
 }
+
+//protocol NextClaimSteps {
+//    func get()
+//}
+//
+//extension OctopusGraphQL.FlowClaimStartMutation.Data: NextClaimSteps {
+//    func get() {
+//
+//    }
+//}

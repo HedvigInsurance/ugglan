@@ -32,7 +32,6 @@ public struct SubmitClaimSummaryScreen: View {
                     //                    }
                     //                    .padding(.top, 25)
                 }
-                .padding(.top, 300)
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {

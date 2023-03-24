@@ -6,11 +6,14 @@ public struct DatePickerScreen: View {
     @State private var dateOfOccurrence = Date()
     @PresentableStore var store: ClaimsStore
     let title: String
+    var maxDate: String
 
     public init(
-        title: String
+        title: String,
+        maxDate: String
     ) {
         self.title = title
+        self.maxDate = maxDate
     }
 
     public var body: some View {
@@ -19,6 +22,7 @@ public struct DatePickerScreen: View {
                 DatePicker(
                     L10n.Claims.Item.Screen.Date.Of.Incident.button,
                     selection: self.$dateOfOccurrence,
+                    in: ...(stringToDate(dateString: maxDate) ?? Date()),
                     displayedComponents: [.date]
                 )
                 .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
@@ -53,10 +57,17 @@ public struct DatePickerScreen: View {
             }
         }
     }
+
+    func stringToDate(dateString: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = dateFormatter.date(from: dateString) ?? Date()
+        return date
+    }
 }
 
 struct DatePickerView_Previews: PreviewProvider {
     static var previews: some View {
-        DatePickerScreen(title: "")
+        DatePickerScreen(title: "", maxDate: "")
     }
 }

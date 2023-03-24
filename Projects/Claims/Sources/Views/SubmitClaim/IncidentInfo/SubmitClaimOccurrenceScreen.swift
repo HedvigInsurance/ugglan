@@ -13,21 +13,21 @@ public struct SubmitClaimOccurrenceScreen: View {
                 hButton.SmallButtonText {
                     store.send(.openDatePicker)
                 } content: {
-                    
+
                     HStack(spacing: 0) {
                         hText(L10n.Claims.Incident.Screen.Date.Of.incident)
                             .foregroundColor(hLabelColor.primary)
                             .padding([.top, .bottom], 16)
-                        
+
                         Spacer()
-                        
+
                         PresentableStoreLens(
                             ClaimsStore.self,
                             getter: { state in
                                 state.newClaim
                             }
                         ) { claim in
-                            
+
                             if let dateOfOccurrence = claim.dateOfOccurrence {
                                 hText(claim.dateOfOccurrence ?? "")
                                     .foregroundColor(hLabelColor.primary)
@@ -45,25 +45,25 @@ public struct SubmitClaimOccurrenceScreen: View {
                 .padding(.trailing, 16)
                 .padding(.top, 20)
                 .hShadow()
-                
+
                 hButton.SmallButtonText {
                     store.send(.openLocationPicker(context: ""))
                 } content: {
-                    
+
                     HStack(spacing: 0) {
                         hText(L10n.Claims.Incident.Screen.location)
                             .foregroundColor(hLabelColor.primary)
                             .padding([.top, .bottom], 16)
-                        
+
                         Spacer()
-                        
+
                         PresentableStoreLens(
                             ClaimsStore.self,
                             getter: { state in
                                 state.newClaim
                             }
                         ) { claim in
-                            
+
                             if claim.location != nil {
                                 hText(claim.location?.displayValue ?? "")
                                     .foregroundColor(hLabelColor.primary)
@@ -81,11 +81,11 @@ public struct SubmitClaimOccurrenceScreen: View {
                 .padding(.trailing, 16)
                 .padding(.top, 20)
                 .hShadow()
-                
+
             }
-            
+
             .hFormAttachToBottom {
-                
+
                 hButton.LargeButtonFilled {
                     store.send(.submitOccuranceAndLocation)
                     store.send(.dissmissNewClaimFlow)
@@ -100,7 +100,6 @@ public struct SubmitClaimOccurrenceScreen: View {
     }
 
     func dateToString(date: Date) -> String {
-
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let dateString = dateFormatter.string(from: date)

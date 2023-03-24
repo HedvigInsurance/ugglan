@@ -68,42 +68,34 @@ public struct NewClaim: Codable, Equatable {
             problemsToString.append(element.itemProblemId)
         }
 
-        //        if itemModelIdInput != "" || itemModelIdInput != nil { //check
-        //                    let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
-        //                        itemModelId: itemBrandModelIdInput  //"Apple iPhone 12" or itemModelIdInput "83a5d315-42a0-4373-8b84-42377f2877b8"
-        //                    )
+        if itemModelIdInput != "" {
+            let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
+                itemModelId: itemModelIdInput
+            )
 
-        let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
-            itemModelId: "83a5d315-42a0-4373-8b84-42377f2877b8"
-        )
+            return OctopusGraphQL.FlowClaimSingleItemInput(
+                purchasePrice: purchasePrice,
+                purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
+                itemProblemIds: problemsToString,
+                itemModelInput: flowClaimItemModelInput,
+                customName: customName  //check
+            )
 
-        return OctopusGraphQL.FlowClaimSingleItemInput(
-            purchasePrice: purchasePrice,
-            purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
-            itemProblemIds: problemsToString,
-            itemModelInput: flowClaimItemModelInput,
-            customName: customName  //check
-        )
+        } else {
 
-        //        } else {
-        //                    let flowClaimItemBrandInput = OctopusGraphQL.FlowClaimItemBrandInput(
-        //                        itemTypeId: itemBrandTypeIdInput,
-        //                        itemBrandId: itemBrandIdInput
-        //                    )
+            let flowClaimItemBrandInput = OctopusGraphQL.FlowClaimItemBrandInput(
+                itemTypeId: itemBrandTypeIdInput,
+                itemBrandId: itemBrandIdInput
+            )
 
-        //        let flowClaimItemBrandInput = OctopusGraphQL.FlowClaimItemBrandInput(
-        //                            itemTypeId: "PHONE",
-        //                            itemBrandId: "APPLE_IPHONE"
-        //                        )
-        //
-        //                    return OctopusGraphQL.FlowClaimSingleItemInput(
-        //                        purchasePrice: purchasePrice,
-        //                        purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
-        //                        itemProblemIds: ["BROKEN", "BROKEN_"], //need to add broken
-        //                        itemBrandInput: flowClaimItemBrandInput,
-        //                        customName: customName  //check
-        //                    )
-        //        }
+            return OctopusGraphQL.FlowClaimSingleItemInput(
+                purchasePrice: purchasePrice,
+                purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
+                itemProblemIds: problemsToString,
+                itemBrandInput: flowClaimItemBrandInput,
+                customName: customName  //check
+            )
+        }
     }
 
     public func returnSingleItemCheckoutInfo() -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput {
@@ -152,9 +144,6 @@ public struct NewClaim: Codable, Equatable {
         //            customName: self.customName
         //        )
 
-        let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
-            itemModelId: "83a5d315-42a0-4373-8b84-42377f2877b8"
-        )
         //        return OctopusGraphQL.FlowClaimSummaryInput(
         //            dateOfOccurrence: dateOfOccurrence,
         //            location: location?.displayValue,

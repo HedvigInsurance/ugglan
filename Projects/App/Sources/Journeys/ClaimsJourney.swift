@@ -105,14 +105,14 @@ extension AppJourney {
         if case let .openPhoneNumberScreen(contextInput, phoneNumber) = action {
             AppJourney.submitClaimPhoneNumberScreen(contextInput: contextInput, phoneNumber: phoneNumber)
                 .withJourneyDismissButton
-        } else if case let .openDateOfOccurrenceScreen(contextInput) = action {
-            AppJourney.submitClaimOccurranceScreen(context: contextInput).withJourneyDismissButton
+        } else if case let .openDateOfOccurrenceScreen(contextInput, maxDate) = action {
+            AppJourney.submitClaimOccurranceScreen(context: contextInput, maxDate: maxDate).withJourneyDismissButton
         } else if case let .openAudioRecordingScreen(contextInput, questions) = action {
             AppJourney.openAudioRecordingSceen(context: contextInput, questions: questions).withJourneyDismissButton
         } else if case .openSuccessScreen = action {
             AppJourney.openSuccessScreen()
-        } else if case let .openSingleItemScreen(contextInput) = action {
-            AppJourney.openSingleItemScreen(context: contextInput)
+        } else if case let .openSingleItemScreen(contextInput, maxDate) = action {
+            AppJourney.openSingleItemScreen(context: contextInput, maxDate: maxDate)
         } else if case let .openSummaryScreen(contextInput) = action {
             AppJourney.openSummaryScreen(context: contextInput)
         } else if case .openDamagePickerScreen = action {
@@ -122,7 +122,7 @@ extension AppJourney {
         }
     }
 
-    static func submitClaimOccurranceScreen(context: String) -> some JourneyPresentation {
+    static func submitClaimOccurranceScreen(context: String, maxDate: String) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimOccurrenceScreen(),
@@ -130,7 +130,7 @@ extension AppJourney {
         ) {
             action in
             if case .openDatePicker = action {
-                openDatePickerScreen(context: context)
+                openDatePickerScreen(context: context, maxDate: maxDate)
             } else if case .openLocationPicker = action {
                 openLocationScreen(context: context)
             } else {
@@ -151,11 +151,11 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openDatePickerScreen(context: String) -> some JourneyPresentation {
+    static func openDatePickerScreen(context: String, maxDate: String) -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
-            rootView: DatePickerScreen(title: L10n.Claims.Incident.Screen.Date.Of.incident),
+            rootView: DatePickerScreen(title: L10n.Claims.Incident.Screen.Date.Of.incident, maxDate: maxDate),
             style: .default
         ) {
             action in
@@ -177,11 +177,11 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openDatePickerScreenForPurchasePrice(context: String) -> some JourneyPresentation {
+    static func openDatePickerScreenForPurchasePrice(context: String, maxDate: String) -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
-            rootView: DatePickerScreen(title: L10n.Claims.Item.Screen.Date.Of.Purchase.button),
+            rootView: DatePickerScreen(title: L10n.Claims.Item.Screen.Date.Of.Purchase.button, maxDate: maxDate),
             style: .default
         ) {
             action in
@@ -321,7 +321,7 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openSingleItemScreen(context: String) -> some JourneyPresentation {
+    static func openSingleItemScreen(context: String, maxDate: String) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimSingleItem(),
@@ -329,7 +329,7 @@ extension AppJourney {
         ) {
             action in
             if case .openDatePicker = action {
-                openDatePickerScreenForPurchasePrice(context: context)
+                openDatePickerScreenForPurchasePrice(context: context, maxDate: maxDate)
             } else if case .openBrandPicker = action {
                 openBrandPickerScreen()
             } else {
