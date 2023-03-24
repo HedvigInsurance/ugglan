@@ -60,7 +60,7 @@ public struct SubmitClaimSummaryScreen: View {
         hText(
             L10n.summaryPurchaseDescription(
                 claim.dateOfPurchase?.localDateString ?? "",
-                Int(claim.priceOfPurchase ?? 0)
+                Int(claim.priceOfPurchase?.amount ?? 0)
             ) + " " + (claim.payoutAmount?.currencyCode ?? "")
         )
         .padding(.top, 2)

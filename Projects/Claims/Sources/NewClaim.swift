@@ -25,7 +25,7 @@ public struct Damage: Decodable, Encodable, Equatable, Hashable {
     public var itemProblemId: String
 }
 
-public struct Payout: Decodable, Encodable, Equatable, Hashable {
+public struct Amount: Decodable, Encodable, Equatable, Hashable {
     public var amount: Double
     public var currencyCode: String
 }
@@ -41,14 +41,15 @@ public struct NewClaim: Codable, Equatable {
     public var filteredListOfModels: [Model]?
     public var listOfBrands: [Brand]?
     public var dateOfPurchase: Date?
-    public var priceOfPurchase: Double?
+    public var priceOfPurchase: Amount?
     public var chosenModel: Model?
     public var chosenBrand: Brand?
     public var chosenDamages: [Damage]?
     public var customName: String?
-    public var payoutAmount: Payout?
-    public var deductible: Payout?
-    public var depreciation: Payout?
+    public var payoutAmount: Amount?
+    public var deductible: Amount?
+    public var depreciation: Amount?
+    public var prefferedCurrency: String?
 
     init(
         id: String
@@ -114,6 +115,13 @@ public struct NewClaim: Codable, Equatable {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let dateString = dateFormatter.string(from: date)
         return dateString
+    }
+
+    public func formatStringToDate(dateString: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let date = dateFormatter.date(from: dateString) ?? Date()
+        return date
     }
 
     public func returnSummaryInformation() -> OctopusGraphQL.FlowClaimSummaryInput {

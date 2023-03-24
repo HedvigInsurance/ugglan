@@ -71,7 +71,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
 
-                hText(String(claim.priceOfPurchase ?? 0) + " " + String(claim.payoutAmount?.currencyCode ?? ""))
+                hText(String(claim.priceOfPurchase?.amount ?? 0) + " " + String(claim.payoutAmount?.currencyCode ?? ""))
                     .foregroundColor(hLabelColor.secondary)
             }
         }

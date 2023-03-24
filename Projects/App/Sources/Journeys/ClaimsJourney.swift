@@ -122,7 +122,7 @@ extension AppJourney {
         }
     }
 
-    static func submitClaimOccurranceScreen(context: String, maxDate: String) -> some JourneyPresentation {
+    static func submitClaimOccurranceScreen(context: String, maxDate: Date) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimOccurrenceScreen(),
@@ -151,7 +151,7 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openDatePickerScreen(context: String, maxDate: String) -> some JourneyPresentation {
+    static func openDatePickerScreen(context: String, maxDate: Date) -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
@@ -177,7 +177,7 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openDatePickerScreenForPurchasePrice(context: String, maxDate: String) -> some JourneyPresentation {
+    static func openDatePickerScreenForPurchasePrice(context: String, maxDate: Date) -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
@@ -321,7 +321,7 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openSingleItemScreen(context: String, maxDate: String) -> some JourneyPresentation {
+    static func openSingleItemScreen(context: String, maxDate: Date) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimSingleItem(),

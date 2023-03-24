@@ -102,6 +102,7 @@ extension ClaimsAction: Hashable {
             case .setSingleItemBrand: return 58
             case .setLoadingState: return 60
             case .setPayoutAmountDeductibleDepreciation: return 61
+            case .setPrefferedCurrency: return 62
             }
         }()
         hasher.combine("\(value)")
@@ -125,7 +126,7 @@ public enum ClaimsAction: ActionProtocol {
     case openPhoneNumberScreen(context: String, phoneNumber: String)
     case submitClaimPhoneNumber(phoneNumberInput: String)
 
-    case openDateOfOccurrenceScreen(context: String, maxDate: String)
+    case openDateOfOccurrenceScreen(context: String, maxDate: Date)
     case openLocationPicker(context: String)
     case openDatePicker
 
@@ -142,7 +143,7 @@ public enum ClaimsAction: ActionProtocol {
     case submitSingleItemCheckout
 
     case openSuccessScreen
-    case openSingleItemScreen(context: String, maxDate: String)
+    case openSingleItemScreen(context: String, maxDate: Date)
     case openSummaryScreen(context: String)
     case openSummaryEditScreen(context: String)
     case openDamagePickerScreen
@@ -167,7 +168,7 @@ public enum ClaimsAction: ActionProtocol {
     case setNewLocation(location: Location?)
     case setNewDate(dateOfOccurrence: String?)
     case setListOfLocations(displayValues: [Location])
-    case setPurchasePrice(priceOfPurchase: Double)
+    case setPurchasePrice(priceOfPurchase: Amount)
     case setSingleItemLists(brands: [Brand], models: [Model], damages: [Damage])
     case setSingleItemModel(modelName: Model)
     case setSingleItemPriceOfPurchase(purchasePrice: Double)
@@ -175,7 +176,8 @@ public enum ClaimsAction: ActionProtocol {
     case setSingleItemPurchaseDate(purchaseDate: Date)
     case setSingleItemBrand(brand: Brand)
     case setLoadingState(action: String, state: LoadingState<String>?)
-    case setPayoutAmountDeductibleDepreciation(payoutAmount: Payout, deductible: Payout, depreciation: Payout)
+    case setPayoutAmountDeductibleDepreciation(payoutAmount: Amount, deductible: Amount, depreciation: Amount)
+    case setPrefferedCurrency(currency: String)
 }
 
 public enum ScreenType: Codable & Equatable {
@@ -266,7 +268,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                         if let dataStep = data.asFlowClaimPhoneNumberStep {
 
-                            let stepId = dataStep.id
                             let phoneNumber = dataStep.phoneNumber
 
                             actions.append(.setNewClaim(from: NewClaim(id: id)))
@@ -317,18 +318,23 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
 
                             let dateOfOccurrenceMaxDate = dataStep.maxDate
+                            let maxDateToDate = self.state.newClaim.formatStringToDate(
+                                dateString: dateOfOccurrenceMaxDate
+                            )
 
                             actions.append(
-                                .openDateOfOccurrenceScreen(context: context, maxDate: dateOfOccurrenceMaxDate)
+                                .openDateOfOccurrenceScreen(context: context, maxDate: maxDateToDate)
                             )
 
                         } else if let dataStep = data.asFlowClaimFailedStep {
 
                         } else if let dataStep = data.asFlowClaimDateOfOccurrencePlusLocationStep {
 
-                            let stepId = dataStep.id
                             let dateOfOccurrenceStep = dataStep.dateOfOccurrenceStep.dateOfOccurrence
                             let dateOfOccurrenceMaxDate = dataStep.dateOfOccurrenceStep.maxDate
+                            let maxDateToDate = self.state.newClaim.formatStringToDate(
+                                dateString: dateOfOccurrenceMaxDate
+                            )
                             let locationStep = dataStep.locationStep.location
                             let possibleLocations = dataStep.locationStep.options
 
@@ -340,7 +346,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             }
                             actions.append(contentsOf: [
                                 .setListOfLocations(displayValues: dispValues),
-                                .openDateOfOccurrenceScreen(context: context, maxDate: dateOfOccurrenceMaxDate),
+                                .openDateOfOccurrenceScreen(context: context, maxDate: maxDateToDate),
                             ])
 
                         } else {
@@ -492,7 +498,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                     var actions = [ClaimsAction]()
                                     if let dataStep = data.asFlowClaimSuccessStep {
                                         actions.append(.openSuccessScreen)
+
                                     } else if let dataStep = data.asFlowClaimSingleItemStep {
+
+                                        let prefferedCurrency = dataStep.preferredCurrency  //for purchasePrice
 
                                         let selectedProblems = dataStep.selectedItemProblems
                                         let damages = dataStep.availableItemProblems
@@ -551,7 +560,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                             ),
                                             .openSingleItemScreen(
                                                 context: context,
-                                                maxDate: "2023-03-03" /* TODO: FIX? */
+                                                maxDate: Date()
                                             ),
                                         ]
                                         .forEach { element in
@@ -602,8 +611,19 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                         let context = data.flowClaimSingleItemNext.context
                         let data = data.flowClaimSingleItemNext.currentStep
+
+                        let prefferedCurrency = data.asFlowClaimSingleItemStep?.preferredCurrency.rawValue
+
                         var actions = [ClaimsAction]()
-                        actions.append(.setPurchasePrice(priceOfPurchase: purchasePrice))
+                        actions.append(
+                            .setPurchasePrice(
+                                priceOfPurchase:
+                                    Amount(
+                                        amount: purchasePrice,
+                                        currencyCode: prefferedCurrency ?? ""
+                                    )
+                            )
+                        )
                         actions.append(.openSummaryScreen(context: context))
                         if let dataStep = data.asFlowClaimFailedStep {
 
@@ -635,7 +655,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     .onValue { data in
 
                         let context = data.flowClaimSummaryNext.context
-
                         let data = data.flowClaimSummaryNext.currentStep
 
                         if let dataStep = data.asFlowClaimSuccessStep {
@@ -652,24 +671,29 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             let payoutAmount = dataStep.payoutAmount
                             let deductible = dataStep.deductible
                             let depreciation = dataStep.depreciation
-                            let price = dataStep.price
-                            //                            dataStep.availableCheckoutMethods
-                            //                            dataStep.id
+                            let purchasePricePriceToShow = dataStep.price
 
                             [
+                                .setPurchasePrice(
+                                    priceOfPurchase:
+                                        Amount(
+                                            amount: purchasePricePriceToShow.amount,
+                                            currencyCode: purchasePricePriceToShow.currencyCode.rawValue
+                                        )
+                                ),
                                 .setPayoutAmountDeductibleDepreciation(
                                     payoutAmount:
-                                        Payout(
+                                        Amount(
                                             amount: payoutAmount.amount,
                                             currencyCode: payoutAmount.currencyCode.rawValue
                                         ),
                                     deductible:
-                                        Payout(
+                                        Amount(
                                             amount: deductible.amount,
                                             currencyCode: deductible.currencyCode.rawValue
                                         ),
                                     depreciation:
-                                        Payout(
+                                        Amount(
                                             amount: depreciation.amount,
                                             currencyCode: depreciation.currencyCode.rawValue
                                         )
@@ -681,7 +705,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             }
 
                         } else if let dataStep = data.asFlowClaimFailedStep {
-
                         }
                     }
                     .onError { error in
@@ -806,6 +829,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.newClaim.payoutAmount = payoutAmount
             newState.newClaim.deductible = deductible
             newState.newClaim.depreciation = depreciation
+
+        case let .setPrefferedCurrency(currency):
+            newState.newClaim.prefferedCurrency = currency
 
         default:
             break

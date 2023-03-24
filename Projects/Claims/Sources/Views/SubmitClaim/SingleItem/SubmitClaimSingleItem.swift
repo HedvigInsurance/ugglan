@@ -12,7 +12,7 @@ public struct SubmitClaimSingleItem: View {
     public var body: some View {
         LoadingViewWithContent(.claimNextSingleItem(context: "", purchasePrice: 0)) {
             hForm {
-                
+
                 PresentableStoreLens(
                     ClaimsStore.self,
                     getter: { state in
@@ -21,7 +21,7 @@ public struct SubmitClaimSingleItem: View {
                 ) { claim in
                     displayBrandAndModelField(claim: claim)
                     displayDateField(claim: claim)
-                    displayPurchasePriceField()
+                    displayPurchasePriceField(claim: claim)
                     displayDamageField(claim: claim)
                 }
             }
@@ -158,14 +158,14 @@ public struct SubmitClaimSingleItem: View {
         }
     }
 
-    @ViewBuilder func displayPurchasePriceField() -> some View {
+    @ViewBuilder func displayPurchasePriceField(claim: NewClaim) -> some View {
         hRow {
             ZStack {
                 HStack {
                     hText(L10n.Claims.Item.Screen.Purchase.Price.button)
                         .foregroundColor(hLabelColor.secondary)
                     Spacer()
-                    hText(Localization.Locale.currentLocale.market.currencyCode)
+                    hText(claim.prefferedCurrency ?? "")
                 }
 
                 TextField("", text: $purchasePrice)
