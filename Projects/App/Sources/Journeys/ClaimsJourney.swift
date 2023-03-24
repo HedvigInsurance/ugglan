@@ -63,7 +63,11 @@ extension AppJourney {
     }
 
     static func startSubmitClaimsFlow(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        HostingJourney(ClaimsStore.self, rootView: LoadingViewWithContent(.startClaim(from: origin)) {HonestyPledge()}, style: .detented(.scrollViewContentSize)) { action in
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: LoadingViewWithContent(.startClaim(from: origin)) { HonestyPledge() },
+            style: .detented(.scrollViewContentSize)
+        ) { action in
             getScreenForAction(for: action).hidesBackButton
         }
         .onAction(UgglanStore.self) { action, _ in
@@ -103,8 +107,8 @@ extension AppJourney {
                 .withJourneyDismissButton
         } else if case let .openDateOfOccurrenceScreen(contextInput) = action {
             AppJourney.submitClaimOccurranceScreen(context: contextInput).withJourneyDismissButton
-        } else if case let .openAudioRecordingScreen(contextInput) = action {
-            AppJourney.openAudioRecordingSceen(context: contextInput).withJourneyDismissButton
+        } else if case let .openAudioRecordingScreen(contextInput, questions) = action {
+            AppJourney.openAudioRecordingSceen(context: contextInput, questions: questions).withJourneyDismissButton
         } else if case .openSuccessScreen = action {
             AppJourney.openSuccessScreen()
         } else if case let .openSingleItemScreen(contextInput) = action {
@@ -113,8 +117,6 @@ extension AppJourney {
             AppJourney.openSummaryScreen(context: contextInput)
         } else if case .openDamagePickerScreen = action {
             openDamagePickerScreen()
-        } else if case let .openSummaryEditScreen(context) = action {
-            AppJourney.openSummaryEditScreen(context: context)
         } else if case let .openCheckoutNoRepairScreen(contextInput) = action {
             AppJourney.openCheckoutNoRepairScreen(context: contextInput)
         }
@@ -153,7 +155,7 @@ extension AppJourney {
 
         HostingJourney(
             ClaimsStore.self,
-            rootView: DatePickerScreen(),
+            rootView: DatePickerScreen(title: L10n.Claims.Incident.Screen.Date.Of.incident),
             style: .default
         ) {
             action in
@@ -175,11 +177,11 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openDatePickerScreenForPurchasPrice(context: String) -> some JourneyPresentation {
+    static func openDatePickerScreenForPurchasePrice(context: String) -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
-            rootView: DatePickerScreen(),
+            rootView: DatePickerScreen(title: L10n.Claims.Item.Screen.Date.Of.Purchase.button),
             style: .default
         ) {
             action in
@@ -232,11 +234,15 @@ extension AppJourney {
             } else {
                 getScreenForAction(for: action)
             }
-        }.onAction(ClaimsStore.self, { action, pre in
-            if case .setSingleItemModel(_) = action {
-                pre.bag.dispose()
+        }
+        .onAction(
+            ClaimsStore.self,
+            { action, pre in
+                if case .setSingleItemModel(_) = action {
+                    pre.bag.dispose()
+                }
             }
-        })
+        )
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
@@ -272,7 +278,7 @@ extension AppJourney {
             style: .default
         ) {
             action in
-            if case let .setSingleItemDamage(_) = action {
+            if case .setSingleItemDamage(_) = action {
                 PopJourney()
             } else {
                 getScreenForAction(for: action)
@@ -281,8 +287,8 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openAudioRecordingSceen(context: String) -> some JourneyPresentation {
-        HostingJourney(ClaimsStore.self, rootView: SubmitClaimAudioRecordingScreen()) { action in
+    static func openAudioRecordingSceen(context: String, questions: [String]) -> some JourneyPresentation {
+        HostingJourney(ClaimsStore.self, rootView: SubmitClaimAudioRecordingScreen(questions: questions)) { action in
             getScreenForAction(for: action)
         }
         .onAction(
@@ -323,7 +329,7 @@ extension AppJourney {
         ) {
             action in
             if case .openDatePicker = action {
-                openDatePickerScreenForPurchasPrice(context: context)
+                openDatePickerScreenForPurchasePrice(context: context)
             } else if case .openBrandPicker = action {
                 openBrandPickerScreen()
             } else {
@@ -380,7 +386,7 @@ extension AppJourney {
             action in
             if case .openLocationPicker = action {
                 openLocationScreen(context: context)
-            }else if case .dissmissNewClaimFlow = action {
+            } else if case .dissmissNewClaimFlow = action {
                 PopJourney()
             } else {
                 getScreenForAction(for: action)
@@ -399,17 +405,21 @@ extension AppJourney {
             action in
             if case .openCheckoutTransferringScreen = action {
                 openCheckoutTransferringScreen()
-            } else if case .submitSingleItemCheckout = action {
-
-                PopJourney()
-                    .onPresent {
-                        @PresentableStore var store: ClaimsStore
-                        store.send(.claimNextSingleItemCheckout(context: context))
-                    }
+            } else if case .claimNextSummary = action {
+                openCheckoutTransferringScreen()
             } else {
                 getScreenForAction(for: action)
             }
         }
+        .onAction(
+            ClaimsStore.self,
+            { action, _ in
+                if case .submitSummary = action {
+                    @PresentableStore var store: ClaimsStore
+                    store.send(.claimNextSingleItemCheckout(context: context))
+                }
+            }
+        )
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
@@ -558,5 +568,3 @@ extension JourneyPresentation {
         }
     }
 }
-
-

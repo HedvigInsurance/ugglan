@@ -11,10 +11,14 @@ public struct SubmitClaimAudioRecordingScreen: View {
     @PresentableStore var store: ClaimsStore
     @ObservedObject var audioPlayer: AudioPlayer
     @ObservedObject var audioRecorder: AudioRecorder
+    let questions: [String]
 
     let onSubmit: (_ url: URL) -> Void
 
-    public init() {
+    public init(
+        questions: [String]
+    ) {
+        self.questions = questions
 
         let url = URL(
             string: "https://www.bing.com/az/hprichbg/rb/AdobeSantaFe_EN-US4037753534_1920x1080.jpg"
@@ -30,70 +34,79 @@ public struct SubmitClaimAudioRecordingScreen: View {
     public var body: some View {
         LoadingViewWithContent(.claimNextAudioRecording(audioURL: self.audioPlayer.url, context: "")) {
             hForm {
-                
-                HStack(spacing: 0) {
-                    hText(L10n.Message.Claims.Record.short)
-                        .foregroundColor(hLabelColor.primary)
-                        .padding([.trailing, .leading], 12)
-                        .padding([.top, .bottom], 16)
+
+                ForEach(questions, id: \.self) { question in
+                    HStack(spacing: 0) {
+                        hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                            .foregroundColor(hLabelColor.primary)
+                            .padding([.trailing, .leading], 12)
+                            .padding([.top, .bottom], 16)
+                    }
+
+                    //                HStack(spacing: 0) {
+                    //                    hText(L10n.Message.Claims.Record.short)
+                    //                        .foregroundColor(hLabelColor.primary)
+                    //                        .padding([.trailing, .leading], 12)
+                    //                        .padding([.top, .bottom], 16)
+                    //                }
+                    //                .frame(maxWidth: .infinity, alignment: .leading)
+                    //                .background(hBackgroundColor.tertiary)
+                    //                .cornerRadius(12)
+                    //                .padding(.leading, 16)
+                    //                .padding(.trailing, 32)
+                    //                .padding(.top, 20)
+                    //                .hShadow()
+                    //
+                    //                HStack(spacing: 0) {
+                    //                    hText(L10n.Message.Claims.Record.message1)
+                    //                        .foregroundColor(hLabelColor.primary)
+                    //                        .padding([.trailing, .leading], 12)
+                    //                        .padding([.top, .bottom], 16)
+                    //                }
+                    //                .frame(maxWidth: .infinity, alignment: .leading)
+                    //                .background(hBackgroundColor.tertiary)
+                    //                .cornerRadius(12)
+                    //                .padding(.leading, 16)
+                    //                .padding(.trailing, 32)
+                    //                .hShadow()
+                    //
+                    //                HStack(spacing: 0) {
+                    //                    hText(L10n.Message.Claims.Record.message4)
+                    //                        .foregroundColor(hLabelColor.primary)
+                    //                        .padding([.trailing, .leading], 12)
+                    //                        .padding([.top, .bottom], 16)
+                    //                }
+                    //                .frame(maxWidth: .infinity, alignment: .leading)
+                    //                .background(hBackgroundColor.tertiary)
+                    //                .cornerRadius(12)
+                    //                .padding(.leading, 16)
+                    //                .padding(.trailing, 32)
+                    //                .hShadow()
+                    //
+                    //                HStack(spacing: 0) {
+                    //                    hText(L10n.Message.Claims.Record.message3)
+                    //                        .foregroundColor(hLabelColor.primary)
+                    //                        .padding([.trailing, .leading], 12)
+                    //                        .padding([.top, .bottom], 16)
+                    //                }
+                    //                .frame(maxWidth: .infinity, alignment: .leading)
+                    //                .background(hBackgroundColor.tertiary)
+                    //                .cornerRadius(12)
+                    //                .padding(.leading, 16)
+                    //                .padding(.trailing, 32)
+                    //                .hShadow()
+
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(12)
-                .padding(.leading, 16)
-                .padding(.trailing, 32)
-                .padding(.top, 20)
-                .hShadow()
-                
-                HStack(spacing: 0) {
-                    hText(L10n.Message.Claims.Record.message1)
-                        .foregroundColor(hLabelColor.primary)
-                        .padding([.trailing, .leading], 12)
-                        .padding([.top, .bottom], 16)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(12)
-                .padding(.leading, 16)
-                .padding(.trailing, 32)
-                .hShadow()
-                
-                HStack(spacing: 0) {
-                    hText(L10n.Message.Claims.Record.message4)
-                        .foregroundColor(hLabelColor.primary)
-                        .padding([.trailing, .leading], 12)
-                        .padding([.top, .bottom], 16)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(12)
-                .padding(.leading, 16)
-                .padding(.trailing, 32)
-                .hShadow()
-                
-                HStack(spacing: 0) {
-                    hText(L10n.Message.Claims.Record.message3)
-                        .foregroundColor(hLabelColor.primary)
-                        .padding([.trailing, .leading], 12)
-                        .padding([.top, .bottom], 16)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(12)
-                .padding(.leading, 16)
-                .padding(.trailing, 32)
-                .hShadow()
-                
             }
             .hFormAttachToBottom {
-                
+
                 ZStack(alignment: .bottom) {
-                    
+
                     if let recording = audioRecorder.recording {
                         VStack(spacing: 12) {
-                            
+
                             TrackPlayer(audioPlayer: audioPlayer)
-                            
+
                             hButton.LargeButtonFilled {
                                 guard let url = audioRecorder.recording?.url else {
                                     return
@@ -113,12 +126,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         }
                         .transition(.move(edge: .bottom))
                     } else {
-                        
+
                         RecordButton(isRecording: audioRecorder.isRecording) {
                             if audioRecorder.isRecording {
                             } else {
                             }
-                            
+
                             withAnimation(.spring()) {
                                 audioRecorder.toggleRecording()
                             }
@@ -135,6 +148,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
 struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimAudioRecordingScreen()
+        SubmitClaimAudioRecordingScreen(questions: [""])
     }
 }

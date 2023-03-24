@@ -15,10 +15,10 @@ public struct ClaimsState: StateProtocol {
 
     public init() {}
 
-    private enum CodingKeys : String, CodingKey {
+    private enum CodingKeys: String, CodingKey {
         case claims, commonClaims, newClaim
     }
-    
+
     public var hasActiveClaims: Bool {
         if let claims = claims {
             return
@@ -34,13 +34,13 @@ public struct ClaimsState: StateProtocol {
 
 public enum LoadingState<T>: Codable & Equatable where T: Codable & Equatable {
     case loading
-    case error(error:T)
+    case error(error: T)
 }
 
 extension ClaimsAction: Hashable {
     public func hash(into hasher: inout Hasher) {
 
-        let value: Int =  {
+        let value: Int = {
             switch self {
             case .openFreeTextChat: return 1
             case .submitNewClaim: return 2
@@ -151,8 +151,8 @@ public enum ClaimsAction: ActionProtocol {
     case openCheckoutNoRepairScreen(context: String)
     case openCheckoutTransferringScreen
     case openCheckoutTransferringDoneScreen
-    case openAudioRecordingScreen(context: String)
-    
+    case openAudioRecordingScreen(context: String, questions: [String])
+
     case startClaim(from: ClaimsOrigin)
     case setNewClaim(from: NewClaim)
     case claimNextPhoneNumber(phoneNumber: String, context: String)
@@ -176,10 +176,9 @@ public enum ClaimsAction: ActionProtocol {
     case setSingleItemBrand(brand: Brand)
     case setPayoutAmount(payoutAmount: Payout)
     case setLoadingState(action: String, state: LoadingState<String>?)
-    
 }
 
-public enum ScreenType: Codable & Equatable{
+public enum ScreenType: Codable & Equatable {
     case honestyPledge
     case submitClaimOccurrence
     case submitClaimContact
@@ -264,29 +263,34 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         let context = data.flowClaimStart.context
                         let data = data.flowClaimStart.currentStep
                         var actions = [ClaimsAction]()
-                        
+
                         if let dataStep = data.asFlowClaimPhoneNumberStep {
-                            
+
                             let phoneNumber = dataStep.phoneNumber
                             actions.append(.setNewClaim(from: NewClaim(id: id)))
                             actions.append(.openPhoneNumberScreen(context: context, phoneNumber: phoneNumber))
                         } else if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
-                            
+
                         } else if let dataStep = data.asFlowClaimAudioRecordingStep {
-                            
+
                         } else if let dataStep = data.asFlowClaimLocationStep {
-                            
+
                         } else if let dataStep = data.asFlowClaimFailedStep {
-                            
+
                         } else if let dataStep = data.asFlowClaimSuccessStep {
-                            
+
                         }
                         actions.append(.setLoadingState(action: actionValue, state: nil))
                         actions.forEach { element in
                             callback(.value(element))
                         }
-                    }.onError { error in
-                        callback(.value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))))
+                    }
+                    .onError { error in
+                        callback(
+                            .value(
+                                .setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))
+                            )
+                        )
                     }
                 return NilDisposer()
             }
@@ -302,7 +306,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         )
                     )
                     .onValue { data in
-                        
+
                         let context = data.flowClaimPhoneNumberNext.context
                         let data = data.flowClaimPhoneNumberNext.currentStep
                         var actions = [ClaimsAction]()
@@ -320,9 +324,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                 let list = Location(displayValue: element.displayName, value: element.value)
                                 dispValues.append(list)
                             }
-                            actions.append(contentsOf: [.setListOfLocations(displayValues: dispValues),
-                                            .openDateOfOccurrenceScreen(context: context)])
-                            
+                            actions.append(contentsOf: [
+                                .setListOfLocations(displayValues: dispValues),
+                                .openDateOfOccurrenceScreen(context: context),
+                            ])
+
                         } else {
 
                         }
@@ -332,7 +338,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         }
                     }
                     .onError { error in
-                        callback(.value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))))
+                        callback(
+                            .value(
+                                .setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))
+                            )
+                        )
                     }
                 return NilDisposer()
 
@@ -414,26 +424,29 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                         let context = data.flowClaimDateOfOccurrencePlusLocationNext.context
                         let data = data.flowClaimDateOfOccurrencePlusLocationNext.currentStep
+
                         var actions = [ClaimsAction]()
                         if let data = data.asFlowClaimAudioRecordingStep {
-                            actions.append(.openAudioRecordingScreen(context: context))
+                            let questions = data.questions
+                            actions.append(.openAudioRecordingScreen(context: context, questions: questions))
                         } else if let dataStep = data.asFlowClaimSingleItemStep {
 
                         } else if let dataStep = data.asFlowClaimFailedStep {
-                            /* REMOVE WHEN FIXED */
-                            actions.append(.openAudioRecordingScreen(context: context))
                         } else if let dataStep = data.asFlowClaimSingleItemStep {
 
                         } else if let dataStep = data.asFlowClaimSuccessStep {
 
                         } else if let dataStep = data.asFlowClaimPhoneNumberStep {
-                            actions.append(.openAudioRecordingScreen(context: context))
                         }
                         actions.append(.setLoadingState(action: actionValue, state: nil))
-                        actions.forEach({callback(.value($0))})
+                        actions.forEach({ callback(.value($0)) })
                     }
                     .onError { error in
-                        callback(.value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))))
+                        callback(
+                            .value(
+                                .setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))
+                            )
+                        )
                     }
                 return NilDisposer()
 
@@ -530,14 +543,23 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                         }
                                     }
                                     actions.append(.setLoadingState(action: actionValue, state: nil))
-                                    actions.forEach({callback(.value($0))})
+                                    actions.forEach({ callback(.value($0)) })
                                 }
                         })
                         .onError({ error in
-                            callback(.value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))))
+                            callback(
+                                .value(
+                                    .setLoadingState(
+                                        action: actionValue,
+                                        state: .error(error: error.localizedDescription)
+                                    )
+                                )
+                            )
                         })
                 } catch let error {
-                    callback(.value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))))
+                    callback(
+                        .value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription)))
+                    )
                 }
 
                 return NilDisposer()
@@ -561,19 +583,19 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         )
                     )
                     .onValue { data in
-                        
+
                         let context = data.flowClaimSingleItemNext.context
                         let data = data.flowClaimSingleItemNext.currentStep
                         var actions = [ClaimsAction]()
                         actions.append(.setPurchasePrice(priceOfPurchase: purchasePrice))
                         actions.append(.openSummaryScreen(context: context))
                         if let dataStep = data.asFlowClaimFailedStep {
-                            
+
                         } else if let dataStep = data.asFlowClaimSummaryStep {
                             actions.append(.openSummaryScreen(context: context))
                         }
                         actions.append(.setLoadingState(action: actionValue, state: nil))
-                        actions.forEach({callback(.value($0))})
+                        actions.forEach({ callback(.value($0)) })
                     }
                     .onError { error in
 
@@ -582,9 +604,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     }
                 return NilDisposer()
             }
-            
+
         case let .claimNextSummary(contextInput):
-            
+
             let dateOfOccurrence = state.newClaim.dateOfOccurrence
             let location = state.newClaim.location
             let summaryInput = state.newClaim.returnSummaryInformation()
@@ -751,7 +773,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .setLoadingState(action, state):
             if let state {
                 newState.loadingStates[action] = state
-            }else{
+            } else {
                 newState.loadingStates.removeValue(forKey: action)
             }
         default:

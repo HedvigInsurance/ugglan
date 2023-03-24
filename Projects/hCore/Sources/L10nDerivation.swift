@@ -12,6 +12,16 @@ public struct L10nDerivation {
     public let key: String
     public let args: [TranslationArgumentable]
 
+    public init(
+        table: String,
+        key: String,
+        args: [TranslationArgumentable]
+    ) {
+        self.table = table
+        self.key = key
+        self.args = args
+    }
+
     /// render the text key again, useful if you have changed the language during runtime
     public func render() -> String { L10n.tr(table, key, args) }
 }

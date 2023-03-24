@@ -47,7 +47,9 @@ public struct NewClaim: Codable, Equatable {
     public var chosenDamages: [Damage]?
     public var customName: String?
     public var payoutAmount: Payout?
-    
+    public var deductible: Payout?
+    public var depreciation: Payout?
+
     init(
         id: String
     ) {
@@ -78,8 +80,7 @@ public struct NewClaim: Codable, Equatable {
         return OctopusGraphQL.FlowClaimSingleItemInput(
             purchasePrice: purchasePrice,
             purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
-            itemProblemIds: ["BROKEN", "BROKEN_FRONT"],
-            //            itemProblemIds: [problemsToString],
+            itemProblemIds: problemsToString,
             itemModelInput: flowClaimItemModelInput,
             customName: customName  //check
         )
@@ -102,7 +103,6 @@ public struct NewClaim: Codable, Equatable {
         //                        itemBrandInput: flowClaimItemBrandInput,
         //                        customName: customName  //check
         //                    )
-
         //        }
     }
 

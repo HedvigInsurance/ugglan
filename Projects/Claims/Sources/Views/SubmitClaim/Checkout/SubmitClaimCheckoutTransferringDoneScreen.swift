@@ -29,9 +29,20 @@ public struct SubmitClaimCheckoutTransferringDoneScreen: View {
 
                     VStack(spacing: 16) {
 
-                        Image(uiImage: hCoreUIAssets.circularCheckmark.image) /* TODO: CHANGE TO FILLED? */
-                        hText("3 020 kr", style: .title1) /* TODO: CHANGE */
+                        Image(uiImage: hCoreUIAssets.circularCheckmark.image)
+                        PresentableStoreLens(
+                            ClaimsStore.self,
+                            getter: { state in
+                                state.newClaim
+                            }
+                        ) { claim in
+                            hText(
+                                String(claim.payoutAmount?.amount ?? 0) + " "
+                                    + (claim.payoutAmount?.currencyCode ?? ""),
+                                style: .title1
+                            )
                             .foregroundColor(hLabelColor.primary)
+                        }
                         hText(L10n.Claims.Payout.Success.message, style: .footnote)
                             .foregroundColor(hLabelColor.primary)
 

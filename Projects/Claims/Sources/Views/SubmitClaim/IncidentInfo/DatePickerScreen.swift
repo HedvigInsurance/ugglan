@@ -5,8 +5,13 @@ import hCoreUI
 public struct DatePickerScreen: View {
     @State private var dateOfOccurrence = Date()
     @PresentableStore var store: ClaimsStore
+    let title: String
 
-    public init() {}
+    public init(
+        title: String
+    ) {
+        self.title = title
+    }
 
     public var body: some View {
         hForm {
@@ -22,7 +27,7 @@ public struct DatePickerScreen: View {
                 .padding([.top], 5)
             }
             .withHeader {
-                hText(L10n.Claims.Incident.Screen.Date.Of.incident, style: .title1)
+                hText(title, style: .title1)
                     .foregroundColor(hLabelColor.primary)
             }
         }
@@ -52,6 +57,6 @@ public struct DatePickerScreen: View {
 
 struct DatePickerView_Previews: PreviewProvider {
     static var previews: some View {
-        DatePickerScreen()
+        DatePickerScreen(title: "")
     }
 }

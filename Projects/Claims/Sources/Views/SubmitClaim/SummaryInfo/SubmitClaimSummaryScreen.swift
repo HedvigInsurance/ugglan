@@ -17,7 +17,7 @@ public struct SubmitClaimSummaryScreen: View {
         ) { claim in
 
             hForm {
-                VStack {
+                VStack(alignment: .center) {
 
                     displayTitleField(claim: claim)
                     displayDateAndLocationOfOccurrenceField(claim: claim)
@@ -25,13 +25,14 @@ public struct SubmitClaimSummaryScreen: View {
                     displayDateOfPurchase(claim: claim)
                     displayDamageField(claim: claim)
 
-                    hButton.SmallButtonOutlined {
-                        store.send(.openSummaryEditScreen(context: ""))
-                    } content: {
-                        hText(L10n.Claims.Edit.button)
-                    }
-                    .padding(.top, 25)
+                    //                    hButton.SmallButtonOutlined {
+                    //                        store.send(.openSummaryEditScreen(context: ""))
+                    //                    } content: {
+                    //                        hText(L10n.Claims.Edit.button)
+                    //                    }
+                    //                    .padding(.top, 25)
                 }
+                .padding(.top, 300)
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
@@ -61,7 +62,7 @@ public struct SubmitClaimSummaryScreen: View {
             L10n.summaryPurchaseDescription(
                 claim.dateOfPurchase?.localDateString ?? "",
                 Int(claim.priceOfPurchase ?? 0)
-            )
+            ) + " " + (claim.payoutAmount?.currencyCode ?? "")
         )
         .padding(.top, 2)
     }

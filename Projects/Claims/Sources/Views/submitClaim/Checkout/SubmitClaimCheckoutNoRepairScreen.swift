@@ -9,79 +9,46 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
 
     public var body: some View {
         hForm {
-            hSection {
-                hRow {
-                    HStack {
-                        hText(L10n.Claims.Payout.Purchase.price)
-                            .foregroundColor(hLabelColor.primary)
-                        Spacer()
-                        hText("13 499 kr")
-                            .foregroundColor(hLabelColor.secondary)
-                    }
+
+            PresentableStoreLens(
+                ClaimsStore.self,
+                getter: { state in
+                    state.newClaim
                 }
-                .padding([.leading, .trailing], -20)
+            ) { claim in
 
-                hRow {
-                    HStack {
-                        hText(L10n.Claims.Payout.Age.deduction)
-                            .foregroundColor(hLabelColor.primary)
-                        Spacer()
-                        hText("- 2 000 kr")
-                            .foregroundColor(hLabelColor.secondary)
-                    }
+                hSection {
+                    displayPriceFields(claim: claim)
                 }
-                .padding([.leading, .trailing], -20)
-
-                hRow {
-                    HStack {
-                        hText(L10n.Claims.Payout.Age.deductable)
-                            .foregroundColor(hLabelColor.primary)
-                        Spacer()
-                        hText("- 1 500 kr")
-                            .foregroundColor(hLabelColor.secondary)
-                    }
-                }
-                .padding([.leading, .trailing], -20)
-
-                hRow {
-                    HStack {
-                        hText(L10n.Claims.Payout.total)
-                            .foregroundColor(hLabelColor.primary)
-                        Spacer()
-                        hText("9 999 kr")
-                    }
-                }
-                .padding([.leading, .trailing], -20)
-                .foregroundColor(hLabelColor.secondary)
-            }
-            .withHeader {
-                hText(L10n.Claims.Payout.Summary.subtitle, style: .title3)
-                    .foregroundColor(hLabelColor.primary)
-            }
-            .sectionContainerStyle(.transparent)
-
-            hSection {
-                hRow {
-                    hText(L10n.Claims.Payout.Method.autogiro, style: .headline)
-                        .foregroundColor(hLabelColor.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, 4)
-
-                }
-                .frame(height: 64)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(.defaultCornerRadius)
-
-            }
-            .withHeader {
-
-                HStack(spacing: 0) {
-                    hText(L10n.Claims.Payout.Summary.method, style: .title3)
+                .withHeader {
+                    hText(L10n.Claims.Payout.Summary.subtitle, style: .title3)
                         .foregroundColor(hLabelColor.primary)
                 }
-                .padding(.top, 50)
-                .padding(.bottom, 10)
+                .sectionContainerStyle(.transparent)
+
+                hSection {
+                    hRow {
+                        hText(L10n.Claims.Payout.Method.autogiro, style: .headline)
+                            .foregroundColor(hLabelColor.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.bottom, 4)
+
+                    }
+                    .frame(height: 64)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(hBackgroundColor.tertiary)
+                    .cornerRadius(.defaultCornerRadius)
+
+                }
+                .withHeader {
+
+                    HStack(spacing: 0) {
+                        hText(L10n.Claims.Payout.Summary.method, style: .title3)
+                            .foregroundColor(hLabelColor.primary)
+                    }
+                    .padding(.top, 50)
+                    .padding(.bottom, 10)
+                }
             }
         }
         .hFormAttachToBottom {
@@ -95,6 +62,59 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             .padding([.leading, .trailing], 16)
 
         }
+    }
+
+    @ViewBuilder func displayPriceFields(claim: NewClaim) -> some View {
+        hRow {
+            HStack {
+                hText(L10n.Claims.Payout.Purchase.price)
+                    .foregroundColor(hLabelColor.primary)
+                Spacer()
+
+                hText(String(claim.priceOfPurchase ?? 0) + " " + String(claim.payoutAmount?.currencyCode ?? ""))
+                    .foregroundColor(hLabelColor.secondary)
+            }
+        }
+        .padding([.leading, .trailing], -20)
+
+        hRow {
+            HStack {
+                hText(L10n.Claims.Payout.Age.deduction)
+                    .foregroundColor(hLabelColor.primary)
+                Spacer()
+
+                hText(
+                    "- " + String(claim.depreciation?.amount ?? 0) + " "
+                        + String(claim.payoutAmount?.currencyCode ?? "")
+                )
+                .foregroundColor(hLabelColor.secondary)
+            }
+        }
+        .padding([.leading, .trailing], -20)
+
+        hRow {
+            HStack {
+                hText(L10n.Claims.Payout.Age.deductable)
+                    .foregroundColor(hLabelColor.primary)
+                Spacer()
+                hText(
+                    "- " + String(claim.deductible?.amount ?? 0) + " " + String(claim.payoutAmount?.currencyCode ?? "")
+                )
+                .foregroundColor(hLabelColor.secondary)
+            }
+        }
+        .padding([.leading, .trailing], -20)
+
+        hRow {
+            HStack {
+                hText(L10n.Claims.Payout.total)
+                    .foregroundColor(hLabelColor.primary)
+                Spacer()
+                hText(String(claim.payoutAmount?.amount ?? 0) + " " + String(claim.payoutAmount?.currencyCode ?? ""))
+            }
+        }
+        .padding([.leading, .trailing], -20)
+        .foregroundColor(hLabelColor.secondary)
     }
 }
 
