@@ -10,7 +10,7 @@ import hGraphQL
 public struct ClaimsState: StateProtocol {
     var claims: [Claim]? = nil
     var commonClaims: [CommonClaim]? = nil
-    var newClaim: NewClaim = .init(id: "")
+    var newClaim: NewClaim = .init(id: "", context: "")
     var loadingStates: [String: LoadingState<String>] = [:]
 
     public init() {}
@@ -39,73 +39,12 @@ public enum LoadingState<T>: Codable & Equatable where T: Codable & Equatable {
 
 extension ClaimsAction: Hashable {
     public func hash(into hasher: inout Hasher) {
-
-        let value: Int = {
-            switch self {
-            case .openFreeTextChat: return 1
-            case .submitNewClaim: return 2
-            case .fetchClaims: return 3
-            case .setClaims: return 4
-            case .fetchCommonClaims: return 5
-            case .setCommonClaims: return 6
-            case .openCommonClaimDetail: return 7
-            case .openHowClaimsWork: return 8
-            case .openClaimDetails: return 9
-            case .odysseyRedirect: return 10
-            case .dissmissNewClaimFlow: return 11
-            case .openPhoneNumberScreen: return 12
-            case .submitClaimPhoneNumber: return 13
-            case .openDateOfOccurrenceScreen: return 14
-            case .openLocationPicker: return 15
-            case .openDatePicker: return 16
-            case .submitClaimDateOfOccurrence: return 17
-            case .submitClaimLocation: return 18
-            case .submitOccuranceAndLocation: return 19
-            case .submitAudioRecording: return 20
-            case .submitSingleItem: return 21
-            case .submitDamage: return 22
-            case .claimNextDamage: return 23
-            case .submitModel: return 24
-            case .submitBrand: return 25
-            case .submitSummary: return 26
-            case .submitSingleItemCheckout: return 27
-            case .openSuccessScreen: return 28
-            case .openSingleItemScreen: return 29
-            case .openSummaryScreen: return 30
-            case .openSummaryEditScreen: return 31
-            case .openDamagePickerScreen: return 32
-            case .openModelPicker: return 33
-            case .openBrandPicker: return 34
-            case .openCheckoutNoRepairScreen: return 35
-            case .openCheckoutTransferringScreen: return 36
-            case .openCheckoutTransferringDoneScreen: return 37
-            case .openAudioRecordingScreen: return 38
-            case .startClaim: return 39
-            case .setNewClaim: return 40
-            case .claimNextPhoneNumber: return 41
-            case .claimNextDateOfOccurrence: return 42
-            case .claimNextLocation: return 43
-            case .claimNextDateOfOccurrenceAndLocation: return 44
-            case .claimNextAudioRecording: return 45
-            case .claimNextSingleItem: return 46
-            case .claimNextSummary: return 47
-            case .claimNextSingleItemCheckout: return 48
-            case .setNewLocation: return 49
-            case .setNewDate: return 50
-            case .setListOfLocations: return 51
-            case .setPurchasePrice: return 52
-            case .setSingleItemLists: return 53
-            case .setSingleItemModel: return 54
-            case .setSingleItemPriceOfPurchase: return 55
-            case .setSingleItemDamage: return 56
-            case .setSingleItemPurchaseDate: return 57
-            case .setSingleItemBrand: return 58
-            case .setLoadingState: return 60
-            case .setPayoutAmountDeductibleDepreciation: return 61
-            case .setPrefferedCurrency: return 62
-            }
-        }()
-        hasher.combine("\(value)")
+        switch self {
+        case .submitAudioRecording:
+            hasher.combine("submitAudioRecording")
+        default:
+            hasher.combine("\(try! JSONEncoder().encode(self))")
+        }
     }
 }
 
@@ -123,11 +62,11 @@ public enum ClaimsAction: ActionProtocol {
 
     case dissmissNewClaimFlow
 
-    case openPhoneNumberScreen(context: String, phoneNumber: String)
+    case openPhoneNumberScreen(phoneNumber: String)
     case submitClaimPhoneNumber(phoneNumberInput: String)
 
-    case openDateOfOccurrenceScreen(context: String, maxDate: Date)
-    case openLocationPicker(context: String)
+    case openDateOfOccurrenceScreen(maxDate: Date)
+    case openLocationPicker
     case openDatePicker
 
     case submitClaimDateOfOccurrence(dateOfOccurrence: Date)
@@ -143,27 +82,26 @@ public enum ClaimsAction: ActionProtocol {
     case submitSingleItemCheckout
 
     case openSuccessScreen
-    case openSingleItemScreen(context: String, maxDate: Date)
-    case openSummaryScreen(context: String)
-    case openSummaryEditScreen(context: String)
+    case openSingleItemScreen(maxDate: Date)
+    case openSummaryScreen
+    case openSummaryEditScreen
     case openDamagePickerScreen
     case openModelPicker
     case openBrandPicker
-    case openCheckoutNoRepairScreen(context: String)
+    case openCheckoutNoRepairScreen
     case openCheckoutTransferringScreen
     case openCheckoutTransferringDoneScreen
-    case openAudioRecordingScreen(context: String, questions: [String])
+    case openAudioRecordingScreen(questions: [String])
 
     case startClaim(from: ClaimsOrigin)
     case setNewClaim(from: NewClaim)
-    case claimNextPhoneNumber(phoneNumber: String, context: String)
-    case claimNextDateOfOccurrence(dateOfOccurrence: Date, context: String)
-    case claimNextLocation(displayName: String, displayValue: String, context: String)
-    case claimNextDateOfOccurrenceAndLocation(context: String)
-    case claimNextAudioRecording(audioURL: URL, context: String)
-    case claimNextSingleItem(context: String, purchasePrice: Double)
-    case claimNextSummary(context: String)
-    case claimNextSingleItemCheckout(context: String)
+    case claimNextPhoneNumber(phoneNumber: String)
+    case claimNextDateOfOccurrence(dateOfOccurrence: Date)
+    case claimNextLocation(displayName: String, displayValue: String)
+    case claimNextDateOfOccurrenceAndLocation
+    case claimNextSingleItem(purchasePrice: Double)
+    case claimNextSummary
+    case claimNextSingleItemCheckout
 
     case setNewLocation(location: Location?)
     case setNewDate(dateOfOccurrence: String?)
@@ -178,13 +116,7 @@ public enum ClaimsAction: ActionProtocol {
     case setLoadingState(action: String, state: LoadingState<String>?)
     case setPayoutAmountDeductibleDepreciation(payoutAmount: Amount, deductible: Amount, depreciation: Amount)
     case setPrefferedCurrency(currency: String)
-}
-
-public enum ScreenType: Codable & Equatable {
-    case honestyPledge
-    case submitClaimOccurrence
-    case submitClaimContact
-    case submitClaimAudioRecording
+    case setNewClaimContext(context: String)
 }
 
 public enum ClaimsOrigin: Codable, Equatable {
@@ -218,7 +150,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         _ action: ClaimsAction
     ) -> FiniteSignal<ClaimsAction>? {
         let actionValue = "\(action.hashValue)"
-        print(action)
+        let newClaimContext = state.newClaim.context
         switch action {
         case .openFreeTextChat:
             return nil
@@ -265,14 +197,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         let context = data.flowClaimStart.context
                         let data = data.flowClaimStart.currentStep
                         var actions = [ClaimsAction]()
-
                         if let dataStep = data.asFlowClaimPhoneNumberStep {
 
                             let phoneNumber = dataStep.phoneNumber
-
-                            actions.append(.setNewClaim(from: NewClaim(id: id)))
-                            actions.append(.openPhoneNumberScreen(context: context, phoneNumber: phoneNumber))
-
+                            actions.append(.setNewClaim(from: NewClaim(id: id, context: context)))
+                            actions.append(.openPhoneNumberScreen(phoneNumber: phoneNumber))
                         } else if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
 
                         } else if let dataStep = data.asFlowClaimAudioRecordingStep {
@@ -298,7 +227,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     }
                 return NilDisposer()
             }
-        case let .claimNextPhoneNumber(phoneNumberInput, contextInput):
+        case let .claimNextPhoneNumber(phoneNumberInput):
             self.send(.setLoadingState(action: actionValue, state: .loading))
             var phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
             return FiniteSignal { callback in
@@ -306,15 +235,14 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     .perform(
                         mutation: OctopusGraphQL.ClaimsFlowPhoneNumberMutation(
                             input: phoneNumber,
-                            context: contextInput
+                            context: newClaimContext
                         )
                     )
                     .onValue { data in
-
+                        var actions = [ClaimsAction]()
                         let context = data.flowClaimPhoneNumberNext.context
                         let data = data.flowClaimPhoneNumberNext.currentStep
-                        var actions = [ClaimsAction]()
-
+                        actions.append(.setNewClaimContext(context: context))
                         if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
 
                             let dateOfOccurrenceMaxDate = dataStep.maxDate
@@ -323,13 +251,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             )
 
                             actions.append(
-                                .openDateOfOccurrenceScreen(context: context, maxDate: maxDateToDate)
+                                .openDateOfOccurrenceScreen(maxDate: maxDateToDate)
                             )
-
                         } else if let dataStep = data.asFlowClaimFailedStep {
 
                         } else if let dataStep = data.asFlowClaimDateOfOccurrencePlusLocationStep {
-
                             let dateOfOccurrenceStep = dataStep.dateOfOccurrenceStep.dateOfOccurrence
                             let dateOfOccurrenceMaxDate = dataStep.dateOfOccurrenceStep.maxDate
                             let maxDateToDate = self.state.newClaim.formatStringToDate(
@@ -346,7 +272,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             }
                             actions.append(contentsOf: [
                                 .setListOfLocations(displayValues: dispValues),
-                                .openDateOfOccurrenceScreen(context: context, maxDate: maxDateToDate),
+                                .openDateOfOccurrenceScreen(maxDate: maxDateToDate),
                             ])
 
                         } else {
@@ -365,9 +291,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         )
                     }
                 return NilDisposer()
-
+                
             }
-        case let .claimNextDateOfOccurrence(dateOfOccurrence, contextInput):
+        case let .claimNextDateOfOccurrence(dateOfOccurrence):
 
             let dateString = state.newClaim.formatDateToString(date: dateOfOccurrence)
             var dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
@@ -377,17 +303,14 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     .perform(
                         mutation: OctopusGraphQL.ClaimsFlowDateOfOccurrenceMutation(
                             input: dateOfOccurrenceInput,
-                            context: contextInput
+                            context: newClaimContext
                         )
                     )
                     .onValue { data in
-
-                        let context = data.flowClaimDateOfOccurrenceNext.context
-
-                        [
-                            .setNewDate(dateOfOccurrence: dateString)
-                        ]
-                        .forEach { element in
+                        var actions = [ClaimsAction]()
+                        actions.append(.setNewClaimContext(context: data.flowClaimDateOfOccurrenceNext.context))
+                        actions.append(.setNewDate(dateOfOccurrence: dateString))
+                        actions.forEach { element in
                             callback(.value(element))
                         }
                     }
@@ -399,30 +322,29 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
             }
 
-        case let .claimNextLocation(displayValue, value, contextInput):
+        case let .claimNextLocation(displayValue, value):
 
             let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: value)
 
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
-                        mutation: OctopusGraphQL.ClaimsFlowLocationMutation(input: locationInput, context: contextInput)
+                        mutation: OctopusGraphQL.ClaimsFlowLocationMutation(input: locationInput, context: newClaimContext)
                     )
                     .onValue { data in
 
-                        let context = data.flowClaimLocationNext.context
+                        var actions = [ClaimsAction]()
+                        actions.append(.setNewClaimContext(context: data.flowClaimLocationNext.context))
+                        actions.append(.setNewLocation(location: Location(displayValue: displayValue, value: value)))
 
-                        [
-                            .setNewLocation(location: Location(displayValue: displayValue, value: value))
-                        ]
-                        .forEach { element in
+                        actions.forEach { element in
                             callback(.value(element))
                         }
                     }
                 return NilDisposer()
             }
 
-        case let .claimNextDateOfOccurrenceAndLocation(contextInput):
+        case .claimNextDateOfOccurrenceAndLocation:
             self.send(.setLoadingState(action: actionValue, state: .loading))
             let location = state.newClaim.location?.value
             let date = state.newClaim.dateOfOccurrence
@@ -437,18 +359,18 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     .perform(
                         mutation: OctopusGraphQL.ClaimsFlowDateOfOccurrencePlusLocationMutation(
                             input: dateAndLocationInput,
-                            context: contextInput
+                            context: newClaimContext
                         )
                     )
                     .onValue { data in
+                        var actions = [ClaimsAction]()
+                        actions.append(.setNewClaimContext(context: data.flowClaimDateOfOccurrencePlusLocationNext.context))
 
-                        let context = data.flowClaimDateOfOccurrencePlusLocationNext.context
                         let data = data.flowClaimDateOfOccurrencePlusLocationNext.currentStep
 
-                        var actions = [ClaimsAction]()
                         if let data = data.asFlowClaimAudioRecordingStep {
                             let questions = data.questions
-                            actions.append(.openAudioRecordingScreen(context: context, questions: questions))
+                            actions.append(.openAudioRecordingScreen(questions: questions))
                         } else if let dataStep = data.asFlowClaimSingleItemStep {
 
                         } else if let dataStep = data.asFlowClaimFailedStep {
@@ -472,7 +394,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
             }
 
-        case let .claimNextAudioRecording(audioURL, contextInput):
+        case let .submitAudioRecording(audioURL):
             self.send(.setLoadingState(action: actionValue, state: .loading))
             return FiniteSignal { callback in
                 do {
@@ -488,14 +410,15 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                 .perform(
                                     mutation: OctopusGraphQL.ClaimsFlowAudioRecordingMutation(
                                         input: audioInput,
-                                        context: contextInput
+                                        context: newClaimContext
                                     )
                                 )
                                 .onValue { data in
 
                                     let context = data.flowClaimAudioRecordingNext.context
-                                    let data = data.flowClaimAudioRecordingNext.currentStep
                                     var actions = [ClaimsAction]()
+                                    actions.append(.setNewClaimContext(context: context))
+                                    let data = data.flowClaimAudioRecordingNext.currentStep
                                     if let dataStep = data.asFlowClaimSuccessStep {
                                         actions.append(.openSuccessScreen)
 
@@ -559,7 +482,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                                 damages: dispValuesDamages
                                             ),
                                             .openSingleItemScreen(
-                                                context: context,
                                                 maxDate: Date()
                                             ),
                                         ]
@@ -595,7 +517,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return NilDisposer()
             }
 
-        case let .claimNextSingleItem(contextInput, purchasePrice):
+        case let .claimNextSingleItem(purchasePrice):
             self.send(.setLoadingState(action: actionValue, state: .loading))
             let singleItemInput = state.newClaim.returnSingleItemInfo(purchasePrice: purchasePrice)
 
@@ -604,17 +526,17 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     .perform(
                         mutation: OctopusGraphQL.ClaimsFlowSingleItemMutation(
                             input: singleItemInput,
-                            context: contextInput
+                            context: newClaimContext
                         )
                     )
                     .onValue { data in
 
                         let context = data.flowClaimSingleItemNext.context
                         let data = data.flowClaimSingleItemNext.currentStep
-
                         let prefferedCurrency = data.asFlowClaimSingleItemStep?.preferredCurrency.rawValue
 
                         var actions = [ClaimsAction]()
+                        actions.append(.setNewClaimContext(context: context))
                         actions.append(
                             .setPurchasePrice(
                                 priceOfPurchase:
@@ -624,11 +546,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                     )
                             )
                         )
-                        actions.append(.openSummaryScreen(context: context))
                         if let dataStep = data.asFlowClaimFailedStep {
-
+                            let ss = ""
                         } else if let dataStep = data.asFlowClaimSummaryStep {
-                            actions.append(.openSummaryScreen(context: context))
+                            actions.append(.openSummaryScreen)
                         }
                         actions.append(.setLoadingState(action: actionValue, state: nil))
                         actions.forEach({ callback(.value($0)) })
@@ -641,7 +562,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return NilDisposer()
             }
 
-        case let .claimNextSummary(contextInput):
+        case let .claimNextSummary:
 
             let dateOfOccurrence = state.newClaim.dateOfOccurrence
             let location = state.newClaim.location
@@ -650,24 +571,18 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
-                        mutation: OctopusGraphQL.ClaimsFlowSummaryMutation(input: summaryInput, context: contextInput)
+                        mutation: OctopusGraphQL.ClaimsFlowSummaryMutation(input: summaryInput, context: newClaimContext)
                     )
                     .onValue { data in
 
                         let context = data.flowClaimSummaryNext.context
+                        var actions = [ClaimsAction]()
+                        actions.append(.setNewClaimContext(context: context))
+                        
                         let data = data.flowClaimSummaryNext.currentStep
-
                         if let dataStep = data.asFlowClaimSuccessStep {
-
-                            [
-                                .openSuccessScreen
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
-
+                            actions.append(.openSuccessScreen)
                         } else if let dataStep = data.asFlowClaimSingleItemCheckoutStep {
-
                             let payoutAmount = dataStep.payoutAmount
                             let deductible = dataStep.deductible
                             let depreciation = dataStep.depreciation
@@ -698,13 +613,17 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                             currencyCode: depreciation.currencyCode.rawValue
                                         )
                                 ),
-                                .openCheckoutNoRepairScreen(context: context),
+                                .openCheckoutNoRepairScreen,
                             ]
                             .forEach { element in
                                 callback(.value(element))
                             }
-
                         } else if let dataStep = data.asFlowClaimFailedStep {
+                        }
+                        
+                        
+                        actions.forEach { element in
+                            callback(.value(element))
                         }
                     }
                     .onError { error in
@@ -713,7 +632,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return NilDisposer()
             }
 
-        case let .claimNextSingleItemCheckout(contextInput):
+        case let .claimNextSingleItemCheckout:
 
             let claimSingleItemCheckoutInput = state.newClaim.returnSingleItemCheckoutInfo()
 
@@ -722,30 +641,26 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     .perform(
                         mutation: OctopusGraphQL.ClaimsFlowSingleItemCheckoutMutation(
                             input: claimSingleItemCheckoutInput,
-                            context: contextInput
+                            context: newClaimContext
                         )
                     )
                     .onValue { data in
-
+                        
                         let context = data.flowClaimSingleItemCheckoutNext.context
+                        var actions = [ClaimsAction]()
+                        actions.append(.setNewClaimContext(context: context))
                         let data = data.flowClaimSingleItemCheckoutNext.currentStep
 
                         if let dataStep = data.asFlowClaimFailedStep {
 
                         } else if let dataStep = data.asFlowClaimSuccessStep {
-                            [
-                                .openCheckoutTransferringScreen
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
+                            actions.append(.openCheckoutTransferringScreen)
                         } else {
-                            [
-                                .openCheckoutTransferringScreen
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
+                            actions.append(.openCheckoutTransferringScreen)
+                        }
+                        
+                        actions.forEach { element in
+                            callback(.value(element))
                         }
 
                     }
@@ -794,7 +709,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case let .setSingleItemDamage(damages):
             newState.newClaim.chosenDamages = damages
-
         case let .setSingleItemModel(model):
             newState.newClaim.chosenModel = model
 
@@ -824,7 +738,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             } else {
                 newState.loadingStates.removeValue(forKey: action)
             }
-
         case let .setPayoutAmountDeductibleDepreciation(payoutAmount, deductible, depreciation):
             newState.newClaim.payoutAmount = payoutAmount
             newState.newClaim.deductible = deductible
@@ -833,6 +746,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .setPrefferedCurrency(currency):
             newState.newClaim.prefferedCurrency = currency
 
+        case let .setNewClaimContext(context):
+            newState.newClaim.context = context
         default:
             break
         }

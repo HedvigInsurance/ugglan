@@ -9,7 +9,6 @@ public struct DamamagePickerScreen: View {
     @State var selectedDamages: [Damage] = []
 
     public init() {}
-
     public var body: some View {
         hForm {
             hSection {
@@ -53,7 +52,7 @@ public struct DamamagePickerScreen: View {
         }
         .hFormAttachToBottom {
             hButton.LargeButtonFilled {
-                store.send(.submitDamage(damage: selectedDamages))
+                store.send(.submitDamage(damage: store.state.newClaim.listOfDamage?.filter({selectedDamages.contains($0)}) ?? []))
             } content: {
                 hText(L10n.generalContinueButton)
             }

@@ -366,6 +366,10 @@ public struct hLabelColor {
             dark: Color(hexString: "FAFAFA").opacity(0.56)
         )
     }
+    
+    public static var placeholder: some hColor {
+        primary.opacity(0.5)
+    }
 
     public static var tertiary: some hColor {
         hColorScheme(

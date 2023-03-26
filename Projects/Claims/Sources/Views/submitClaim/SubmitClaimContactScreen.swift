@@ -16,7 +16,7 @@ public struct SubmitClaimContactScreen: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(.claimNextPhoneNumber(phoneNumber: phoneNumber, context: "")) {
+        LoadingViewWithContent(.claimNextPhoneNumber(phoneNumber: phoneNumber)) {
             hForm {
                 HStack(spacing: 0) {
                     hText(L10n.Message.Claims.Ask.phone, style: .body)

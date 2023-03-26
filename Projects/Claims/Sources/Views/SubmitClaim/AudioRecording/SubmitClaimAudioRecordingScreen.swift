@@ -32,7 +32,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(.claimNextAudioRecording(audioURL: self.audioPlayer.url, context: "")) {
+        LoadingViewWithContent(.submitAudioRecording(audioURL: self.audioPlayer.url)) {
             hForm {
 
                 ForEach(questions, id: \.self) { question in

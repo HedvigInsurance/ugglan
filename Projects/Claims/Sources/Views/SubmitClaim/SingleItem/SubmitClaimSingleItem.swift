@@ -10,7 +10,7 @@ public struct SubmitClaimSingleItem: View {
     public init() {}
 
     public var body: some View {
-        LoadingViewWithContent(.claimNextSingleItem(context: "", purchasePrice: 0)) {
+        LoadingViewWithContent(.claimNextSingleItem(purchasePrice: Double(purchasePrice) ?? 0)) {
             hForm {
 
                 PresentableStoreLens(
@@ -57,7 +57,7 @@ public struct SubmitClaimSingleItem: View {
                         .foregroundColor(hLabelColor.primary)
                 } else {
                     hText(L10n.Claim.Location.choose)
-                        .foregroundColor(hLabelColor.primary)
+                        .foregroundColor(hLabelColor.placeholder)
                 }
             }
             .onTap {
@@ -108,7 +108,6 @@ public struct SubmitClaimSingleItem: View {
     @ViewBuilder func displayDamageField(claim: NewClaim) -> some View {
 
         if claim.listOfDamage != nil {
-
             hRow {
                 HStack {
 
@@ -120,29 +119,10 @@ public struct SubmitClaimSingleItem: View {
                 }
             }
             .withCustomAccessory {
-                if claim.chosenDamages != nil {
-                    if claim.chosenDamages!.count <= 2 {
-                        ForEach(claim.chosenDamages ?? [], id: \.self) { element in
-                            hText(element.displayName)
-                                .foregroundColor(hLabelColor.primary)
-                        }
-                    } else {
-
-                        var counter = 0
-
-                        ForEach(claim.chosenDamages ?? [], id: \.self) { element in
-                            if counter < 2 {
-                                hText(element.displayName)
-                                    .foregroundColor(hLabelColor.primary)
-                            }
-                            let _ = counter += 1
-                        }
-                        hText("...")
-                            .foregroundColor(hLabelColor.primary)
-                    }
+                if let chosenDamages = claim.getChoosenDamages() {
+                    hText(chosenDamages).foregroundColor(hLabelColor.primary)
                 } else {
-                    hText(L10n.Claim.Location.choose)
-                        .foregroundColor(hLabelColor.primary)
+                    hText(L10n.Claim.Location.choose).foregroundColor(hLabelColor.placeholder)
                 }
             }
             .onTap {
