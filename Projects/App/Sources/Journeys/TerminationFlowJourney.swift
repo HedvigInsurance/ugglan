@@ -8,7 +8,7 @@ extension AppJourney {
         HostingJourney(
             ContractStore.self,
             rootView: SetTerminationDate(contractId: contractId, context: context),
-            style: .modal
+            style: .modally()
         ) {
             action in
             if case .sendTermination(let terminationDate, _, let surveyURL) = action {
@@ -22,11 +22,10 @@ extension AppJourney {
     }
 
     static func sendTermination(terminationDate: Date, surveyURL: String) -> some JourneyPresentation {
-
         HostingJourney(
             ContractStore.self,
             rootView: TerminationSuccessScreen(terminationDate: terminationDate, surveyURL: surveyURL),
-            style: .modal
+            style: .default
         ) {
             action in
             if case .dismissTerminationFlow = action {
@@ -42,7 +41,7 @@ extension AppJourney {
         HostingJourney(
             ContractStore.self,
             rootView: TerminationFailScreen(),
-            style: .modal
+            style: .default
         ) {
             action in
             if case .dismissTerminationFlow = action {
@@ -51,7 +50,7 @@ extension AppJourney {
                 DismissJourney()
             }
         }
-        .withDismissButton
+        .withJourneyDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 }
