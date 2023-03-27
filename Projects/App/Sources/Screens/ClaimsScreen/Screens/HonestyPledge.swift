@@ -173,12 +173,13 @@ struct HonestyPledge: View {
 
 extension HonestyPledge {
     static func journey<Next: JourneyPresentation>(
+        style: PresentationStyle,
         @JourneyBuilder _ next: @escaping () -> Next
     ) -> some JourneyPresentation {
         HostingJourney(
             UgglanStore.self,
             rootView: HonestyPledge(),
-            style: .detented(.scrollViewContentSize),
+            style: style,
             options: [
                 .defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
                 .allowSwipeDismissAlways,

@@ -12,7 +12,7 @@ public struct ClaimsState: StateProtocol {
     var commonClaims: [CommonClaim]? = nil
     var newClaim: NewClaim = .init(id: "", context: "")
     var loadingStates: [String: LoadingState<String>] = [:]
-
+    var entryPointCommonClaims: LoadingWrapper<[ClaimEntryPointResponseModel], String> = .loading
     public init() {}
 
     private enum CodingKeys: String, CodingKey {
@@ -55,6 +55,9 @@ public enum ClaimsAction: ActionProtocol {
     case setClaims(claims: [Claim])
     case fetchCommonClaims
     case setCommonClaims(commonClaims: [CommonClaim])
+    case fetchCommonClaimsForSelection
+    case setCommonClaimsForSelection(LoadingWrapper<[ClaimEntryPointResponseModel], String>)
+    case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
@@ -93,7 +96,7 @@ public enum ClaimsAction: ActionProtocol {
     case openCheckoutTransferringDoneScreen
     case openAudioRecordingScreen(questions: [String])
 
-    case startClaim(from: ClaimsOrigin)
+    case startClaim(from: String)
     case setNewClaim(from: NewClaim)
     case claimNextPhoneNumber(phoneNumber: String)
     case claimNextDateOfOccurrence(dateOfOccurrence: Date)
@@ -136,6 +139,16 @@ public enum ClaimsOrigin: Codable, Equatable {
         }
         return scopeValues
     }
+    
+    public var id: String {
+        switch self {
+        case .generic:
+            return ""
+        case .commonClaims(let id):
+            return id
+        }
+    }
+    
 }
 
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
@@ -183,40 +196,17 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     return .setCommonClaims(commonClaims: commonClaims)
                 }
                 .valueThenEndSignal
-
-        case let .startClaim(claimsOrigin):
+        case let .startClaim(id):
             self.send(.setLoadingState(action: actionValue, state: .loading))
-            let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: "5dddcab9-a0fc-4cb7-94f3-2785693e8803")
+            let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: id)
             return FiniteSignal { callback in
+                var disposeBag = DisposeBag()
                 self.octopus.client
                     .perform(
                         mutation: OctopusGraphQL.FlowClaimStartMutation(input: startInput)
                     )
                     .onValue { data in
-                        let id = data.flowClaimStart.id
-                        let context = data.flowClaimStart.context
-                        let data = data.flowClaimStart.currentStep
-                        var actions = [ClaimsAction]()
-                        if let dataStep = data.asFlowClaimPhoneNumberStep {
-
-                            let phoneNumber = dataStep.phoneNumber
-                            actions.append(.setNewClaim(from: NewClaim(id: id, context: context)))
-                            actions.append(.openPhoneNumberScreen(phoneNumber: phoneNumber))
-                        } else if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
-
-                        } else if let dataStep = data.asFlowClaimAudioRecordingStep {
-
-                        } else if let dataStep = data.asFlowClaimLocationStep {
-
-                        } else if let dataStep = data.asFlowClaimFailedStep {
-
-                        } else if let dataStep = data.asFlowClaimSuccessStep {
-
-                        }
-                        actions.append(.setLoadingState(action: actionValue, state: nil))
-                        actions.forEach { element in
-                            callback(.value(element))
-                        }
+                        data.handleActions(for: action, and: callback)
                     }
                     .onError { error in
                         callback(
@@ -666,6 +656,17 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     }
                 return NilDisposer()
             }
+        case .fetchCommonClaimsForSelection:
+            self.send(.setCommonClaimsForSelection(.loading))
+            let getEntryPointsClaimsClient: GetEntryPointsClaimsClient = Dependencies.shared.resolve()
+            return getEntryPointsClaimsClient.execute()
+                .map({ claims in
+                    return .setCommonClaimsForSelection(.success(claims))
+                })
+                .onError({ error in
+                    self.send(.setCommonClaimsForSelection(.error(error.localizedDescription)))
+                })
+                .valueThenEndSignal
         default:
             return nil
         }
@@ -673,7 +674,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
     public override func reduce(_ state: ClaimsState, _ action: ClaimsAction) -> ClaimsState {
         var newState = state
-
         switch action {
         case let .setClaims(claims):
             newState.claims = claims
@@ -748,21 +748,44 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case let .setNewClaimContext(context):
             newState.newClaim.context = context
+        case let .setCommonClaimsForSelection(commonClaims):
+            newState.entryPointCommonClaims = commonClaims
         default:
             break
         }
-
         return newState
     }
 
 }
 
-//protocol NextClaimSteps {
-//    func get()
-//}
+protocol NextClaimSteps {
+    func handleActions(for action: ClaimsAction, and callback: (Event<ClaimsAction>) -> Void)
+}
 //
-//extension OctopusGraphQL.FlowClaimStartMutation.Data: NextClaimSteps {
-//    func get() {
-//
-//    }
-//}
+extension OctopusGraphQL.FlowClaimStartMutation.Data: NextClaimSteps {
+    func handleActions(for action: ClaimsAction, and callback: (Event<ClaimsAction>) -> Void) {
+        let id = self.flowClaimStart.id
+        let context = self.flowClaimStart.context
+        let data = self.flowClaimStart.currentStep
+        var actions = [ClaimsAction]()
+        if let dataStep = data.asFlowClaimPhoneNumberStep {
+            let phoneNumber = dataStep.phoneNumber
+            actions.append(.setNewClaim(from: NewClaim(id: id, context: context)))
+            actions.append(.openPhoneNumberScreen(phoneNumber: phoneNumber))
+        } else if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
+            
+        } else if let dataStep = data.asFlowClaimAudioRecordingStep {
+            
+        } else if let dataStep = data.asFlowClaimLocationStep {
+            
+        } else if let dataStep = data.asFlowClaimFailedStep {
+            
+        } else if let dataStep = data.asFlowClaimSuccessStep {
+            
+        }
+        actions.append(.setLoadingState(action: "\(action.hashValue)", state: nil))
+        actions.forEach { element in
+            callback(.value(element))
+        }
+    }
+}

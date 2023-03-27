@@ -5,6 +5,7 @@ import hGraphQL
 
 enum OdysseyRequest {
     case uploadAudioFile(flowId: String, file: UploadFile)
+    case getCommonClaimsForSelection
 
     var baseUrl: URL {
         return Environment.current.odysseyApiURL
@@ -14,6 +15,8 @@ enum OdysseyRequest {
         switch self {
         case .uploadAudioFile:
             return "POST"
+        case .getCommonClaimsForSelection:
+            return "GET"
         }
     }
 
@@ -32,6 +35,11 @@ enum OdysseyRequest {
                 mimeType: file.mimeType
             )
             request = multipartFormDataRequest.asURLRequest()
+        case .getCommonClaimsForSelection:
+            var baseUrlString = baseUrl.absoluteString
+            baseUrlString.append("/api/entrypoints?limit=10")
+            let url = URL(string: baseUrlString)!
+            request = URLRequest(url: url)
         }
         request.httpMethod = self.methodType
         return Future { completion in
