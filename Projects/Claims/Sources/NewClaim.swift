@@ -45,7 +45,6 @@ public struct NewClaim: Codable, Equatable {
     public var chosenModel: Model?
     public var chosenBrand: Brand?
     public var chosenDamages: [Damage]?
-    public var customName: String?
     public var payoutAmount: Amount?
     public var deductible: Amount?
     public var depreciation: Amount?
@@ -82,7 +81,6 @@ public struct NewClaim: Codable, Equatable {
                 purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
                 itemProblemIds: problemsToString,
                 itemModelInput: flowClaimItemModelInput
-                    //                customName: customName  //check
             )
 
         } else {
@@ -97,7 +95,6 @@ public struct NewClaim: Codable, Equatable {
                 purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
                 itemProblemIds: problemsToString,
                 itemBrandInput: flowClaimItemBrandInput
-                    //                customName: customName  //check
             )
         }
     }

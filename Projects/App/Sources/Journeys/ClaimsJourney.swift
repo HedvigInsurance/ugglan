@@ -374,24 +374,6 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openSummaryEditScreen() -> some JourneyPresentation {
-
-        HostingJourney(
-            ClaimsStore.self,
-            rootView: SubmitClaimEditSummaryScreen()
-        ) {
-            action in
-            if case .openLocationPicker = action {
-                openLocationScreen()
-            } else if case .dissmissNewClaimFlow = action {
-                PopJourney()
-            } else {
-                getScreenForAction(for: action)
-            }
-        }
-        .setScrollEdgeNavigationBarAppearanceToStandard
-    }
-
     static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
 
         HostingJourney(
@@ -411,9 +393,9 @@ extension AppJourney {
         .onAction(
             ClaimsStore.self,
             { action, _ in
-                if case .submitSummary = action {
+                if case .submitSingleItemCheckout = action {
                     @PresentableStore var store: ClaimsStore
-                    store.send(.claimNextSingleItemCheckout)
+                    store.send(.openCheckoutTransferringScreen)
                 }
             }
         )
@@ -431,12 +413,19 @@ extension AppJourney {
             action in
             if case .openCheckoutTransferringDoneScreen = action {
                 openCheckoutTransferringDoneScreen()
-            } else if case .dissmissNewClaimFlow = action {
-                PopJourney()
             } else {
                 getScreenForAction(for: action)
             }
         }
+        .onAction(
+            ClaimsStore.self,
+            { action, _ in
+                if case .submitTransferringFunds = action {
+                    @PresentableStore var store: ClaimsStore
+                    store.send(.claimNextSingleItemCheckout)
+                }
+            }
+        )
     }
 
     static func openCheckoutTransferringDoneScreen() -> some JourneyPresentation {
@@ -453,6 +442,24 @@ extension AppJourney {
                 getScreenForAction(for: action)
             }
         }
+    }
+
+    static func openSummaryEditScreen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimEditSummaryScreen()
+        ) {
+            action in
+            if case .openLocationPicker = action {
+                openLocationScreen()
+            } else if case .dissmissNewClaimFlow = action {
+                PopJourney()
+            } else {
+                getScreenForAction(for: action)
+            }
+        }
+        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     @JourneyBuilder

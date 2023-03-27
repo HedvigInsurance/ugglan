@@ -83,6 +83,7 @@ public enum ClaimsAction: ActionProtocol {
     case submitBrand(brand: Brand)
     case submitSummary
     case submitSingleItemCheckout
+    case submitTransferringFunds
 
     case openSuccessScreen
     case openSingleItemScreen(maxDate: Date)
@@ -471,7 +472,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                                         [
                                             .setPrefferedCurrency(currency: prefferedCurrency.rawValue),
-                                            .setSingleItemDamage(damages: selectedDamages),
+                                            //                                            .setSingleItemDamage(damages: selectedDamages),
                                             .setSingleItemLists(
                                                 brands: dispValuesBrands,
                                                 models: dispValuesModels,
@@ -517,8 +518,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             self.send(.setLoadingState(action: actionValue, state: .loading))
             let singleItemInput = state.newClaim.returnSingleItemInfo(purchasePrice: purchasePrice)
             let mutation = OctopusGraphQL.ClaimsFlowSingleItemMutation(
-                input: singleItemInput,
-                context: state.newClaim.context
+                context: state.newClaim.context,
+                input: singleItemInput
             )
             return FiniteSignal { callback in
                 self.octopus.client
@@ -582,6 +583,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         let data = data.flowClaimSummaryNext.currentStep
                         if let dataStep = data.asFlowClaimSuccessStep {
                             actions.append(.openSuccessScreen)
+
                         } else if let dataStep = data.asFlowClaimSingleItemCheckoutStep {
                             let payoutAmount = dataStep.payoutAmount
                             let deductible = dataStep.deductible
@@ -653,15 +655,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         if let dataStep = data.asFlowClaimFailedStep {
 
                         } else if let dataStep = data.asFlowClaimSuccessStep {
-                            actions.append(.openCheckoutTransferringScreen)
-                        } else {
-                            actions.append(.openCheckoutTransferringScreen)
+
+                            actions.append(.openCheckoutTransferringDoneScreen)
                         }
 
                         actions.forEach { element in
                             callback(.value(element))
                         }
-
                     }
                 return NilDisposer()
             }
@@ -718,6 +718,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case let .setSingleItemDamage(damages):
             newState.newClaim.chosenDamages = damages
+
         case let .setSingleItemModel(model):
             newState.newClaim.chosenModel = model
 
@@ -764,7 +765,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         }
         return newState
     }
-
 }
 
 protocol NextClaimSteps {

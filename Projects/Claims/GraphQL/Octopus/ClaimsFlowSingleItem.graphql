@@ -1,7 +1,6 @@
-mutation ClaimsFlowSingleItem($input: FlowClaimSingleItemInput!, $context: FlowContext!) {
-  flowClaimSingleItemNext(input: $input, context: $context) {
+mutation ClaimsFlowSingleItem($context: FlowContext!, $input: FlowClaimSingleItemInput!) {
+  flowClaimSingleItemNext(context: $context, input: $input) {
     context
-    id
     currentStep {
       id
       ... on FlowClaimAudioRecordingStep {
@@ -11,8 +10,8 @@ mutation ClaimsFlowSingleItem($input: FlowClaimSingleItemInput!, $context: FlowC
       ... on FlowClaimDateOfOccurrencePlusLocationStep {
         dateOfOccurrenceStep {
           dateOfOccurrence
-          id
           maxDate
+          id
         }
         id
         locationStep {
@@ -46,15 +45,15 @@ mutation ClaimsFlowSingleItem($input: FlowClaimSingleItemInput!, $context: FlowC
       }
       ... on FlowClaimSingleItemCheckoutStep {
         availableCheckoutMethods {
-          id
           ... on FlowClaimAutomaticAutogiroPayout {
             amount {
-              currencyCode
               amount
+              currencyCode
             }
             displayName
             id
           }
+          id
         }
         deductible {
           amount
@@ -66,8 +65,8 @@ mutation ClaimsFlowSingleItem($input: FlowClaimSingleItemInput!, $context: FlowC
         }
         id
         payoutAmount {
-          amount
           currencyCode
+          amount
         }
         price {
           amount
@@ -81,8 +80,8 @@ mutation ClaimsFlowSingleItem($input: FlowClaimSingleItemInput!, $context: FlowC
           itemTypeId
         }
         availableItemModels {
-          displayName
           imageUrl
+          displayName
           itemBrandId
           itemModelId
           itemTypeId
@@ -98,9 +97,9 @@ mutation ClaimsFlowSingleItem($input: FlowClaimSingleItemInput!, $context: FlowC
           amount
           currencyCode
         }
-        selectedItemBrand
-        selectedItemModel
         selectedItemProblems
+        selectedItemModel
+        selectedItemBrand
       }
       ... on FlowClaimSuccessStep {
         id
@@ -108,14 +107,14 @@ mutation ClaimsFlowSingleItem($input: FlowClaimSingleItemInput!, $context: FlowC
       ... on FlowClaimSummaryStep {
         dateOfOccurrenceStep {
           dateOfOccurrence
-          id
           maxDate
+          id
         }
         id
         locationStep {
           options {
-            displayName
             value
+            displayName
           }
           location
           id
@@ -133,22 +132,23 @@ mutation ClaimsFlowSingleItem($input: FlowClaimSingleItemInput!, $context: FlowC
             itemModelId
             itemTypeId
           }
+          id
           availableItemProblems {
             displayName
             itemProblemId
           }
-          id
           preferredCurrency
           purchaseDate
           purchasePrice {
-            amount
             currencyCode
+            amount
           }
-          selectedItemBrand
-          selectedItemModel
           selectedItemProblems
+          selectedItemModel
+          selectedItemBrand
         }
       }
     }
+    id
   }
 }

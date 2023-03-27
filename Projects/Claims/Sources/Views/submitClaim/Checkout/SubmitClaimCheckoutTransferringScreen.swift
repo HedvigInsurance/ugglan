@@ -60,8 +60,8 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                     withAnimation {
                         hasActionCompleted = true
                     }
-                    await delay(5)
-                    store.send(.openCheckoutTransferringDoneScreen)
+                    await delay(2)
+                    store.send(.submitTransferringFunds)
                 }
             }
         }
