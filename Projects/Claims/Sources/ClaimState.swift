@@ -201,7 +201,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             self.send(.setLoadingState(action: actionValue, state: .loading))
             let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: id)
             return FiniteSignal { callback in
-                var disposeBag = DisposeBag()
                 self.octopus.client
                     .perform(
                         mutation: OctopusGraphQL.FlowClaimStartMutation(input: startInput)
@@ -288,7 +287,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
             let dateString = state.newClaim.formatDateToString(date: dateOfOccurrence)
             var dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
-
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
@@ -420,7 +418,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
                                     } else if let dataStep = data.asFlowClaimSingleItemStep {
 
-                                        let prefferedCurrency = dataStep.preferredCurrency  //for purchasePrice
+                                        let prefferedCurrency = dataStep.preferredCurrency
 
                                         let selectedProblems = dataStep.selectedItemProblems
                                         let damages = dataStep.availableItemProblems
@@ -465,14 +463,14 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                         for element in brands ?? [] {
                                             let list = Brand(
                                                 displayName: element.displayName,
-                                                itemBrandId: element.itemBrandId
+                                                itemBrandId: element.itemBrandId,
+                                                itemTypeId: element.itemTypeId
                                             )
                                             dispValuesBrands.append(list)
                                         }
 
                                         [
                                             .setPrefferedCurrency(currency: prefferedCurrency.rawValue),
-                                            //                                            .setSingleItemDamage(damages: selectedDamages),
                                             .setSingleItemLists(
                                                 brands: dispValuesBrands,
                                                 models: dispValuesModels,
@@ -770,7 +768,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 protocol NextClaimSteps {
     func handleActions(for action: ClaimsAction, and callback: (Event<ClaimsAction>) -> Void)
 }
-//
+
 extension OctopusGraphQL.FlowClaimStartMutation.Data: NextClaimSteps {
     func handleActions(for action: ClaimsAction, and callback: (Event<ClaimsAction>) -> Void) {
         let id = self.flowClaimStart.id
