@@ -202,6 +202,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             let phoneNumber = dataStep.phoneNumber
                             actions.append(.setNewClaim(from: NewClaim(id: id, context: context)))
                             actions.append(.openPhoneNumberScreen(phoneNumber: phoneNumber))
+
                         } else if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
 
                         } else if let dataStep = data.asFlowClaimAudioRecordingStep {
@@ -291,7 +292,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         )
                     }
                 return NilDisposer()
-                
+
             }
         case let .claimNextDateOfOccurrence(dateOfOccurrence):
 
@@ -329,7 +330,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
-                        mutation: OctopusGraphQL.ClaimsFlowLocationMutation(input: locationInput, context: newClaimContext)
+                        mutation: OctopusGraphQL.ClaimsFlowLocationMutation(
+                            input: locationInput,
+                            context: newClaimContext
+                        )
                     )
                     .onValue { data in
 
@@ -364,7 +368,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     )
                     .onValue { data in
                         var actions = [ClaimsAction]()
-                        actions.append(.setNewClaimContext(context: data.flowClaimDateOfOccurrencePlusLocationNext.context))
+                        actions.append(
+                            .setNewClaimContext(context: data.flowClaimDateOfOccurrencePlusLocationNext.context)
+                        )
 
                         let data = data.flowClaimDateOfOccurrencePlusLocationNext.currentStep
 
@@ -475,6 +481,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                         }
 
                                         [
+                                            .setPrefferedCurrency(currency: prefferedCurrency.rawValue),
                                             .setSingleItemDamage(damages: selectedDamages),
                                             .setSingleItemLists(
                                                 brands: dispValuesBrands,
@@ -525,8 +532,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 self.octopus.client
                     .perform(
                         mutation: OctopusGraphQL.ClaimsFlowSingleItemMutation(
-                            input: singleItemInput,
-                            context: newClaimContext
+                            context: newClaimContext,
+                            input: singleItemInput
                         )
                     )
                     .onValue { data in
@@ -549,6 +556,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         if let dataStep = data.asFlowClaimFailedStep {
                             let ss = ""
                         } else if let dataStep = data.asFlowClaimSummaryStep {
+
                             actions.append(.openSummaryScreen)
                         }
                         actions.append(.setLoadingState(action: actionValue, state: nil))
@@ -571,14 +579,17 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
-                        mutation: OctopusGraphQL.ClaimsFlowSummaryMutation(input: summaryInput, context: newClaimContext)
+                        mutation: OctopusGraphQL.ClaimsFlowSummaryMutation(
+                            input: summaryInput,
+                            context: newClaimContext
+                        )
                     )
                     .onValue { data in
 
                         let context = data.flowClaimSummaryNext.context
                         var actions = [ClaimsAction]()
                         actions.append(.setNewClaimContext(context: context))
-                        
+
                         let data = data.flowClaimSummaryNext.currentStep
                         if let dataStep = data.asFlowClaimSuccessStep {
                             actions.append(.openSuccessScreen)
@@ -620,8 +631,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             }
                         } else if let dataStep = data.asFlowClaimFailedStep {
                         }
-                        
-                        
+
                         actions.forEach { element in
                             callback(.value(element))
                         }
@@ -645,7 +655,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         )
                     )
                     .onValue { data in
-                        
+
                         let context = data.flowClaimSingleItemCheckoutNext.context
                         var actions = [ClaimsAction]()
                         actions.append(.setNewClaimContext(context: context))
@@ -658,7 +668,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         } else {
                             actions.append(.openCheckoutTransferringScreen)
                         }
-                        
+
                         actions.forEach { element in
                             callback(.value(element))
                         }
