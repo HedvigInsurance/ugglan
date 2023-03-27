@@ -13,7 +13,7 @@ import hCoreUI
 import hGraphQL
 
 extension AppJourney {
-    
+
     static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
         HostingJourney(
             UgglanStore.self,
@@ -25,7 +25,7 @@ extension AppJourney {
         .inlineTitle()
         .configureTitle(L10n.ClaimStatus.title)
     }
-    
+
     static func claimsInfoJourney() -> some JourneyPresentation {
         Journey(ClaimsInfoPager())
             .onAction(ClaimsStore.self) { action in
@@ -34,10 +34,10 @@ extension AppJourney {
                 }
             }
     }
-    
+
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        if true {
+        if hAnalyticsExperiment.claimsFlow {
             showCommonClaimIfNeeded(origin: origin) { newOrigin in
                 honestyPledge(from: newOrigin)
                 //                {
@@ -50,7 +50,8 @@ extension AppJourney {
                 ////                            getScreenForAction(for: action)
                 ////                        }
                 //                    }
-            }.hidesBackButton
+            }
+            .hidesBackButton
         } else if hAnalyticsExperiment.odysseyClaims {
             showCommonClaimIfNeeded(origin: origin) { newOrigin in
                 odysseyClaims(from: newOrigin)
@@ -92,7 +93,7 @@ extension AppJourney {
             }
         }
     }
-    
+
     private static func submitClaimPhoneNumberScreen(
         phoneNumber: String
     ) -> some JourneyPresentation {
@@ -113,12 +114,12 @@ extension AppJourney {
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     @JourneyBuilder
     private static func getScreenForAction(for action: ClaimsAction) -> some JourneyPresentation {
         if case let .openPhoneNumberScreen(phoneNumber) = action {
             AppJourney.submitClaimPhoneNumberScreen(phoneNumber: phoneNumber).withJourneyDismissButton
-        }else if case let .openDateOfOccurrenceScreen(maxDate) = action {
+        } else if case let .openDateOfOccurrenceScreen(maxDate) = action {
             AppJourney.submitClaimOccurranceScreen(maxDate: maxDate).withJourneyDismissButton
         } else if case let .openAudioRecordingScreen(questions) = action {
             AppJourney.openAudioRecordingSceen(questions: questions).withJourneyDismissButton
@@ -162,7 +163,7 @@ extension AppJourney {
         )
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openDatePickerScreen(maxDate: Date) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
@@ -171,11 +172,11 @@ extension AppJourney {
         ) {
             action in
             if case let .submitClaimDateOfOccurrence(dateOfOccurrence) = action {
-                
+
                 PopJourney()
                     .onPresent {
                         @PresentableStore var store: ClaimsStore
-                        
+
                         store.send(
                             .claimNextDateOfOccurrence(dateOfOccurrence: dateOfOccurrence)
                         )
@@ -184,7 +185,7 @@ extension AppJourney {
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openDatePickerScreenForPurchasePrice(maxDate: Date) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
@@ -204,9 +205,9 @@ extension AppJourney {
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openLocationScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             ClaimsStore.self,
             rootView: LocationPickerScreen(),
@@ -214,7 +215,7 @@ extension AppJourney {
         ) {
             action in
             if case let .submitClaimLocation(displayName, value) = action {
-                
+
                 PopJourney()
                     .onPresent {
                         @PresentableStore var store: ClaimsStore
@@ -224,7 +225,7 @@ extension AppJourney {
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openBrandPickerScreen() -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
@@ -253,9 +254,9 @@ extension AppJourney {
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openModelPickerScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             ClaimsStore.self,
             rootView: ModelPickerScreen()
@@ -276,9 +277,9 @@ extension AppJourney {
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openDamagePickerScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             ClaimsStore.self,
             rootView: DamamagePickerScreen(),
@@ -293,14 +294,14 @@ extension AppJourney {
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openAudioRecordingSceen(questions: [String]) -> some JourneyPresentation {
         HostingJourney(ClaimsStore.self, rootView: SubmitClaimAudioRecordingScreen(questions: questions)) { action in
             getScreenForAction(for: action)
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
@@ -344,7 +345,7 @@ extension AppJourney {
         )
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openSummaryScreen() -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
@@ -372,9 +373,9 @@ extension AppJourney {
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openSummaryEditScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimEditSummaryScreen()
@@ -390,9 +391,9 @@ extension AppJourney {
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimCheckoutNoRepairScreen(),
@@ -419,9 +420,9 @@ extension AppJourney {
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
-    
+
     static func openCheckoutTransferringScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimCheckoutTransferringScreen(),
@@ -437,9 +438,9 @@ extension AppJourney {
             }
         }
     }
-    
+
     static func openCheckoutTransferringDoneScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimCheckoutTransferringDoneScreen(),
@@ -453,7 +454,7 @@ extension AppJourney {
             }
         }
     }
-    
+
     @JourneyBuilder
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
         @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney
@@ -465,39 +466,40 @@ extension AppJourney {
             }
         }
     }
-    
+
     @JourneyBuilder
     private static func showCommonClaimIfNeeded(
         origin: ClaimsOrigin,
-        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation) -> some JourneyPresentation {
-            switch origin {
-            case .generic:
-                HostingJourney(
-                    ClaimsStore.self,
-                    rootView: SelectCommonClaim(),
-                    style: .detented(.large),
-                    options: [
-                        .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
-                        .allowSwipeDismissAlways,
-                    ]
-                ) { action in
-                    if case let .commonClaimOriginSelected(origin) = action {
-                        GroupJourney { context in
-                            switch origin {
-                            case .generic:
-                                ContinueJourney()
-                            case let .commonClaims(id):
-                                redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                            }
+        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
+    ) -> some JourneyPresentation {
+        switch origin {
+        case .generic:
+            HostingJourney(
+                ClaimsStore.self,
+                rootView: SelectCommonClaim(),
+                style: .detented(.large),
+                options: [
+                    .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
+                    .allowSwipeDismissAlways,
+                ]
+            ) { action in
+                if case let .commonClaimOriginSelected(origin) = action {
+                    GroupJourney { context in
+                        switch origin {
+                        case .generic:
+                            ContinueJourney()
+                        case let .commonClaims(id):
+                            redirectJourney(ClaimsOrigin.commonClaims(id: id))
                         }
                     }
                 }
-                .withDismissButton
-            case .commonClaims:
-                redirectJourney(origin)
             }
+            .withDismissButton
+        case .commonClaims:
+            redirectJourney(origin)
         }
-    
+    }
+
     static func odysseyClaims(from origin: ClaimsOrigin) -> some JourneyPresentation {
         return OdysseyRoot(
             name: "mainRouter",
@@ -525,7 +527,7 @@ extension AppJourney {
                             guard let url = URL(string: urlString), url.isHTTP else {
                                 return
                             }
-                            
+
                             if UIApplication.shared.canOpenURL(url) {
                                 UIApplication.shared.open(url)
                             }
@@ -534,7 +536,7 @@ extension AppJourney {
             }
         }
     }
-    
+
     static func commonClaimDetailJourney(claim: CommonClaim) -> some JourneyPresentation {
         Journey(
             CommonClaimDetail(claim: claim),
@@ -585,7 +587,7 @@ extension JourneyPresentation {
     func sendActionOnDismiss<S: Store>(_ storeType: S.Type, _ action: S.Action) -> Self {
         return self.onDismiss {
             let store: S = self.presentable.get()
-            
+
             store.send(action)
         }
     }
