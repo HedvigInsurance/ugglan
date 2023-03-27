@@ -234,6 +234,7 @@ extension AppJourney {
         ) {
             action in
             if case let .submitBrand(brand) = action {
+
                 openModelPickerScreen()
                     .onPresent {
                         @PresentableStore var store: ClaimsStore
@@ -247,6 +248,8 @@ extension AppJourney {
             ClaimsStore.self,
             { action, pre in
                 if case .setSingleItemModel(_) = action {
+                    pre.bag.dispose()
+                } else if case .dissmissNewClaimFlow = action {
                     pre.bag.dispose()
                 }
             }
@@ -271,6 +274,8 @@ extension AppJourney {
                     @PresentableStore var store: ClaimsStore
                     pre.bag.dispose()
                     store.send(.setSingleItemModel(modelName: model))
+                } else if case .dissmissNewClaimFlow = action {
+                    pre.bag.dispose()
                 }
             }
         )
