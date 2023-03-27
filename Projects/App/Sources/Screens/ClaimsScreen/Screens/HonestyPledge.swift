@@ -1,3 +1,4 @@
+import Claims
 import Combine
 import Flow
 import Foundation
@@ -7,7 +8,6 @@ import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
-import Claims
 
 struct SlideTrack: View {
     var shouldAnimate: Bool
@@ -62,8 +62,6 @@ struct SlideDragger: View {
                     .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
                     .background(hTintColor.lavenderOne)
                     .clipShape(Circle())
-                    .scaleEffect(didFinished ? 1.2 : 1)
-                    .animation(didFinished ? Animation.spring().repeatForever(autoreverses: true) : nil)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .modifier(
@@ -81,7 +79,7 @@ struct SlideDragger: View {
 struct DidAcceptPledgeNotifier: View {
     var canNotify: Bool
     var dragOffsetX: CGFloat
-    
+
     @Binding var hasNotifiedStore: Bool
     @PresentableStore var store: UgglanStore
 
@@ -146,6 +144,9 @@ struct SlideToConfirm: View {
                     hasDraggedOnce = true
                 })
         )
+        .onAppear {
+            self.draggedTillTheEnd = false
+        }
     }
 }
 

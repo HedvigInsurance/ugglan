@@ -71,8 +71,20 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
 
-                hText(String(claim.priceOfPurchase?.amount ?? 0) + " " + String(claim.payoutAmount?.currencyCode ?? ""))
+                if checkIfNotDecimal(value: claim.priceOfPurchase?.amount ?? 0) {
+
+                    hText(
+                        formatDoubleWithoutDecimal(value: claim.priceOfPurchase?.amount ?? 0) + " "
+                            + String(claim.payoutAmount?.currencyCode ?? "")
+                    )
                     .foregroundColor(hLabelColor.secondary)
+                } else {
+                    hText(
+                        formatDoubleWithDecimal(value: claim.priceOfPurchase?.amount ?? 0) + " "
+                            + String(claim.payoutAmount?.currencyCode ?? "")
+                    )
+                    .foregroundColor(hLabelColor.secondary)
+                }
             }
         }
         .padding([.leading, .trailing], -20)
@@ -83,11 +95,20 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
 
-                hText(
-                    "- " + String(claim.depreciation?.amount ?? 0) + " "
-                        + String(claim.payoutAmount?.currencyCode ?? "")
-                )
-                .foregroundColor(hLabelColor.secondary)
+                if checkIfNotDecimal(value: claim.priceOfPurchase?.amount ?? 0) {
+
+                    hText(
+                        "- " + formatDoubleWithoutDecimal(value: claim.depreciation?.amount ?? 0.0) + " "
+                            + String(claim.deductible?.currencyCode ?? "")
+                    )
+                    .foregroundColor(hLabelColor.secondary)
+                } else {
+                    hText(
+                        "- " + String(claim.depreciation?.amount ?? 0) + " "
+                            + String(claim.deductible?.currencyCode ?? "")
+                    )
+                    .foregroundColor(hLabelColor.secondary)
+                }
             }
         }
         .padding([.leading, .trailing], -20)
@@ -97,10 +118,20 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 hText(L10n.Claims.Payout.Age.deductable)
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
-                hText(
-                    "- " + String(claim.deductible?.amount ?? 0) + " " + String(claim.payoutAmount?.currencyCode ?? "")
-                )
-                .foregroundColor(hLabelColor.secondary)
+
+                if checkIfNotDecimal(value: claim.priceOfPurchase?.amount ?? 0) {
+                    hText(
+                        "- " + formatDoubleWithoutDecimal(value: claim.deductible?.amount ?? 0) + " "
+                            + String(claim.payoutAmount?.currencyCode ?? "")
+                    )
+                    .foregroundColor(hLabelColor.secondary)
+                } else {
+                    hText(
+                        "- " + String(claim.deductible?.amount ?? 0) + " "
+                            + String(claim.depreciation?.currencyCode ?? "")
+                    )
+                    .foregroundColor(hLabelColor.secondary)
+                }
             }
         }
         .padding([.leading, .trailing], -20)
@@ -110,11 +141,46 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 hText(L10n.Claims.Payout.total)
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
-                hText(String(claim.payoutAmount?.amount ?? 0) + " " + String(claim.payoutAmount?.currencyCode ?? ""))
+                if checkIfNotDecimal(value: claim.priceOfPurchase?.amount ?? 0) {
+                    hText(
+                        formatDoubleWithoutDecimal(value: claim.payoutAmount?.amount ?? 0.0) + " "
+                            + String(claim.payoutAmount?.currencyCode ?? "")
+                    )
+                } else {
+                    hText(
+                        String(claim.payoutAmount?.amount ?? 0) + " " + String(claim.payoutAmount?.currencyCode ?? "")
+                    )
+                }
             }
         }
         .padding([.leading, .trailing], -20)
         .foregroundColor(hLabelColor.secondary)
+    }
+
+    func checkIfNotDecimal(value: Double) -> Bool {
+        if value.truncatingRemainder(dividingBy: 1) == 0 {
+            return true
+        }
+        return false
+    }
+
+    func formatDoubleWithoutDecimal(value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.groupingSeparator = " "
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 0
+        return formatter.string(for: value) ?? ""
+    }
+
+    func formatDoubleWithDecimal(value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.groupingSeparator = " "
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 1
+        formatter.maximumFractionDigits = 2
+        formatter.decimalSeparator = "."
+        return formatter.string(for: value) ?? ""
     }
 }
 
