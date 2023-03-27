@@ -2,8 +2,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-//import Combine
-
 public struct DamamagePickerScreen: View {
     @PresentableStore var store: ClaimsStore
     @State var selectedDamages: [Damage] = []
@@ -52,7 +50,11 @@ public struct DamamagePickerScreen: View {
         }
         .hFormAttachToBottom {
             hButton.LargeButtonFilled {
-                store.send(.submitDamage(damage: store.state.newClaim.listOfDamage?.filter({selectedDamages.contains($0)}) ?? []))
+                store.send(
+                    .submitDamage(
+                        damage: store.state.newClaim.listOfDamage?.filter({ selectedDamages.contains($0) }) ?? []
+                    )
+                )
             } content: {
                 hText(L10n.generalContinueButton)
             }

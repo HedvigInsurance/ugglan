@@ -38,6 +38,7 @@ extension AppJourney {
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
         if hAnalyticsExperiment.claimsFlow {
+
             showCommonClaimIfNeeded(origin: origin) { newOrigin in
                 honestyPledge(from: newOrigin)
                 //                {
@@ -176,13 +177,20 @@ extension AppJourney {
                 PopJourney()
                     .onPresent {
                         @PresentableStore var store: ClaimsStore
-
                         store.send(
                             .claimNextDateOfOccurrence(dateOfOccurrence: dateOfOccurrence)
                         )
                     }
             }
         }
+        .onAction(
+            ClaimsStore.self,
+            { action, pre in
+                if case .dissmissNewClaimFlow = action {
+                    pre.bag.dispose()
+                }
+            }
+        )
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -203,6 +211,14 @@ extension AppJourney {
                     }
             }
         }
+        .onAction(
+            ClaimsStore.self,
+            { action, pre in
+                if case .dissmissNewClaimFlow = action {
+                    pre.bag.dispose()
+                }
+            }
+        )
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -215,7 +231,6 @@ extension AppJourney {
         ) {
             action in
             if case let .submitClaimLocation(displayName, value) = action {
-
                 PopJourney()
                     .onPresent {
                         @PresentableStore var store: ClaimsStore
