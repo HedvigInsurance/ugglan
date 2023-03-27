@@ -35,50 +35,65 @@ extension AppJourney {
             }
     }
     
-    static func claimJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        
-        hAnalyticsEvent.claimFlowType(
-            claimType: hAnalyticsExperiment.odysseyClaims ? .automation : .manual
-        )
-        .send()
-        
-        return AppJourney.claimsJourneyPledgeAndNotificationWrapper(from: origin) { redirect in
-            switch redirect {
-            case .chat:
-                AppJourney.claimsChat()
-                    .hidesBackButton
-                    .withJourneyDismissButton
-            case .close:
-                DismissJourney()
-            case .menu:
-                ContinueJourney()
-            case .mailingList:
-                DismissJourney()
-            case .offer:
-                DismissJourney()
-            case .quoteCartOffer:
-                DismissJourney()
+    @JourneyBuilder
+    static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
+        if true {
+            showCommonClaimIfNeeded(origin: origin) { newOrigin in
+                honestyPledge(from: newOrigin)
+                //                {
+                //                    AppJourney.notificationJourney {
+                //                        AppJourney.getScreenForAction(for: .openPhoneNumberScreen(phoneNumber: ""))
+                ////                        ContinueJourney().onPresent {
+                ////                            let store: ClaimsStore = globalPresentableStoreContainer.get()
+                ////                            store.send(.startClaim(from: newOrigin.id))
+                ////                        }.onAction(ClaimsStore.self) { action in
+                ////                            getScreenForAction(for: action)
+                ////                        }
+                //                    }
+            }.hidesBackButton
+        } else if hAnalyticsExperiment.odysseyClaims {
+            showCommonClaimIfNeeded(origin: origin) { newOrigin in
+                odysseyClaims(from: newOrigin)
+            }
+        } else {
+            claimsJourneyPledgeAndNotificationWrapper { redirect in
+                switch redirect {
+                case .chat:
+                    AppJourney.claimsChat()
+                        .hidesBackButton
+                        .withJourneyDismissButton
+                case .close:
+                    DismissJourney()
+                case .menu:
+                    ContinueJourney()
+                case .mailingList:
+                    DismissJourney()
+                case .offer:
+                    DismissJourney()
+                case .quoteCartOffer:
+                    DismissJourney()
+                }
             }
         }
     }
-    
-    static func startSubmitClaimsFlow(from origin: ClaimsOrigin) -> some JourneyPresentation {
+
+    private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
-            rootView: LoadingViewWithContent(.startClaim(from: origin)) { HonestyPledge() },
-            style: .detented(.scrollViewContentSize)
+            rootView: LoadingViewWithContent(.startClaim(from: origin.id)) { HonestyPledge() },
+            style: .detented(.scrollViewContentSize, modally: false)
         ) { action in
             getScreenForAction(for: action).hidesBackButton
         }
         .onAction(UgglanStore.self) { action, _ in
             if case .didAcceptHonestyPledge = action {
                 @PresentableStore var store: ClaimsStore
-                store.send(.startClaim(from: origin))
+                store.send(.startClaim(from: origin.id))
             }
         }
     }
     
-    static func submitClaimPhoneNumberScreen(
+    private static func submitClaimPhoneNumberScreen(
         phoneNumber: String
     ) -> some JourneyPresentation {
         HostingJourney(
@@ -102,8 +117,7 @@ extension AppJourney {
     @JourneyBuilder
     private static func getScreenForAction(for action: ClaimsAction) -> some JourneyPresentation {
         if case let .openPhoneNumberScreen(phoneNumber) = action {
-            AppJourney.submitClaimPhoneNumberScreen(phoneNumber: phoneNumber)
-                .withJourneyDismissButton
+            AppJourney.submitClaimPhoneNumberScreen(phoneNumber: phoneNumber).withJourneyDismissButton
         }else if case let .openDateOfOccurrenceScreen(maxDate) = action {
             AppJourney.submitClaimOccurranceScreen(maxDate: maxDate).withJourneyDismissButton
         } else if case let .openAudioRecordingScreen(questions) = action {
@@ -442,21 +456,47 @@ extension AppJourney {
     
     @JourneyBuilder
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
-        from origin: ClaimsOrigin,
         @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney
     ) -> some JourneyPresentation {
-        if hAnalyticsExperiment.odysseyClaims {
-            odysseyClaims(from: origin).withJourneyDismissButton
-        } else {
-            HonestyPledge.journey {
-                AppJourney.notificationJourney {
-                    let embark = Embark(name: "claims")
-                    AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
-                }
-                .withJourneyDismissButton
+        HonestyPledge.journey(style: .detented(.scrollViewContentSize)) {
+            AppJourney.notificationJourney {
+                let embark = Embark(name: "claims")
+                AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
             }
         }
     }
+    
+    @JourneyBuilder
+    private static func showCommonClaimIfNeeded(
+        origin: ClaimsOrigin,
+        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation) -> some JourneyPresentation {
+            switch origin {
+            case .generic:
+                HostingJourney(
+                    ClaimsStore.self,
+                    rootView: SelectCommonClaim(),
+                    style: .detented(.large),
+                    options: [
+                        .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
+                        .allowSwipeDismissAlways,
+                    ]
+                ) { action in
+                    if case let .commonClaimOriginSelected(origin) = action {
+                        GroupJourney { context in
+                            switch origin {
+                            case .generic:
+                                ContinueJourney()
+                            case let .commonClaims(id):
+                                redirectJourney(ClaimsOrigin.commonClaims(id: id))
+                            }
+                        }
+                    }
+                }
+                .withDismissButton
+            case .commonClaims:
+                redirectJourney(origin)
+            }
+        }
     
     static func odysseyClaims(from origin: ClaimsOrigin) -> some JourneyPresentation {
         return OdysseyRoot(

@@ -52,7 +52,6 @@ struct ClaimSectionLoading: View {
     }
 
     var body: some View {
-
         PresentableStoreLens(
             ClaimsStore.self,
             getter: { state in

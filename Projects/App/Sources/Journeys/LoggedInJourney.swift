@@ -161,11 +161,7 @@ extension JourneyPresentation {
             if case let .openClaimDetails(claim) = action {
                 AppJourney.claimDetailJourney(claim: claim)
             } else if case let .submitNewClaim(origin) = action {
-                if hAnalyticsExperiment.claimsFlow {
-                    AppJourney.startSubmitClaimsFlow(from: origin)
-                } else {
-                    AppJourney.claimJourney(from: origin)
-                }
+                AppJourney.startClaimsJourney(from: origin)
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat()
             } else if case .openHowClaimsWork = action {
