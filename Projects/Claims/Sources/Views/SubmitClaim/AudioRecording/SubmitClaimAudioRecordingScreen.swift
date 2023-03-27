@@ -104,7 +104,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
                     if let recording = audioRecorder.recording {
                         VStack(spacing: 12) {
-
                             TrackPlayer(audioPlayer: audioPlayer)
 
                             hButton.LargeButtonFilled {
@@ -125,6 +124,10 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             }
                         }
                         .transition(.move(edge: .bottom))
+                        .onAppear {
+                            self.audioPlayer.url = recording.url
+                        }
+
                     } else {
 
                         RecordButton(isRecording: audioRecorder.isRecording) {

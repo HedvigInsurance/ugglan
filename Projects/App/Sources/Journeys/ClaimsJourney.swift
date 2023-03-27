@@ -38,7 +38,6 @@ extension AppJourney {
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
         if hAnalyticsExperiment.claimsFlow {
-
             showCommonClaimIfNeeded(origin: origin) { newOrigin in
                 honestyPledge(from: newOrigin)
                 //                {

@@ -41,16 +41,16 @@ extension AppDelegate {
     func setupHAnalyticsExperiments(numberOfTries: Int = 0) {
         log.info("Started loading hAnlyticsExperiments")
         hAnalyticsExperiment.load { success in
-            if success {
-                DefaultStyling.installCustom()
-                log.info("Successfully loaded hAnlyticsExperiments")
-                ApplicationContext.shared.hasLoadedExperiments = true
-            } else {
-                log.info("Failed loading hAnlyticsExperiments, retries in \(numberOfTries * 100) ms")
-                DispatchQueue.main.asyncAfter(deadline: .now() + (Double(numberOfTries) * 0.1)) {
-                    self.setupHAnalyticsExperiments(numberOfTries: numberOfTries + 1)
-                }
-            }
+            //            if success {
+            DefaultStyling.installCustom()
+            log.info("Successfully loaded hAnlyticsExperiments")
+            ApplicationContext.shared.hasLoadedExperiments = true
+            //            } else {
+            //                log.info("Failed loading hAnlyticsExperiments, retries in \(numberOfTries * 100) ms")
+            //                DispatchQueue.main.asyncAfter(deadline: .now() + (Double(numberOfTries) * 0.1)) {
+            //                    self.setupHAnalyticsExperiments(numberOfTries: numberOfTries + 1)
+            //                }
+            //            }
         }
     }
 }

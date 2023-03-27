@@ -14,7 +14,6 @@ class AudioPlayer: NSObject, ObservableObject {
 
     let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
     var audioPlayer: AVPlayer?
-    let url: URL
     let sampleHeights: [Int]
 
     enum PlaybackState: Equatable {
@@ -32,6 +31,12 @@ class AudioPlayer: NSObject, ObservableObject {
     }
 
     private(set) var progress: Double = 0 {
+        didSet {
+            objectWillChange.send(self)
+        }
+    }
+
+    var url: URL {
         didSet {
             objectWillChange.send(self)
         }

@@ -5,7 +5,6 @@ import hCoreUI
 
 class AudioRecorder: ObservableObject {
     private let filename = "claim-recording.m4a"
-
     private(set) var isRecording = false {
         didSet {
             objectWillChange.send(self)

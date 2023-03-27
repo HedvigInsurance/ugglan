@@ -200,100 +200,24 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .startClaim(id):
             self.send(.setLoadingState(action: actionValue, state: .loading))
             let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: id)
-            return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.FlowClaimStartMutation(input: startInput)
-                    )
-                    .onValue { data in
-                        data.handleActions(for: action, and: callback)
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))
-                            )
-                        )
-                    }
-                return NilDisposer()
-            }
+            let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput)
+            return mutation.getFuture(action: action, store: self)
         case let .claimNextPhoneNumber(phoneNumberInput):
             self.send(.setLoadingState(action: actionValue, state: .loading))
-            var phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
-            return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.ClaimsFlowPhoneNumberMutation(
-                            input: phoneNumber,
-                            context: newClaimContext
-                        )
-                    )
-                    .onValue { data in
-                        var actions = [ClaimsAction]()
-                        let context = data.flowClaimPhoneNumberNext.context
-                        let data = data.flowClaimPhoneNumberNext.currentStep
-                        actions.append(.setNewClaimContext(context: context))
-                        if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
-
-                            let dateOfOccurrenceMaxDate = dataStep.maxDate
-                            let maxDateToDate = self.state.newClaim.formatStringToDate(
-                                dateString: dateOfOccurrenceMaxDate
-                            )
-
-                            actions.append(
-                                .openDateOfOccurrenceScreen(maxDate: maxDateToDate)
-                            )
-                        } else if let dataStep = data.asFlowClaimFailedStep {
-
-                        } else if let dataStep = data.asFlowClaimDateOfOccurrencePlusLocationStep {
-                            let dateOfOccurrenceStep = dataStep.dateOfOccurrenceStep.dateOfOccurrence
-                            let dateOfOccurrenceMaxDate = dataStep.dateOfOccurrenceStep.maxDate
-                            let maxDateToDate = self.state.newClaim.formatStringToDate(
-                                dateString: dateOfOccurrenceMaxDate
-                            )
-                            let locationStep = dataStep.locationStep.location
-                            let possibleLocations = dataStep.locationStep.options
-
-                            var dispValues: [Location] = []
-
-                            for element in possibleLocations {
-                                let list = Location(displayValue: element.displayName, value: element.value)
-                                dispValues.append(list)
-                            }
-                            actions.append(contentsOf: [
-                                .setListOfLocations(displayValues: dispValues),
-                                .openDateOfOccurrenceScreen(maxDate: maxDateToDate),
-                            ])
-
-                        } else {
-
-                        }
-                        actions.append(.setLoadingState(action: actionValue, state: nil))
-                        actions.forEach { element in
-                            callback(.value(element))
-                        }
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))
-                            )
-                        )
-                    }
-                return NilDisposer()
-
-            }
+            let phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
+            let mutation = OctopusGraphQL.ClaimsFlowPhoneNumberMutation(input: phoneNumber, context: newClaimContext)
+            return mutation.getFuture(action: action, store: self)
         case let .claimNextDateOfOccurrence(dateOfOccurrence):
-
             let dateString = state.newClaim.formatDateToString(date: dateOfOccurrence)
-            var dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
+            let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
+            let mutation = OctopusGraphQL.ClaimsFlowDateOfOccurrenceMutation(
+                input: dateOfOccurrenceInput,
+                context: newClaimContext
+            )  //ClaimsFlowDateOfOccurrenceMutation(
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
-                        mutation: OctopusGraphQL.ClaimsFlowDateOfOccurrenceMutation(
-                            input: dateOfOccurrenceInput,
-                            context: newClaimContext
-                        )
+                        mutation: mutation
                     )
                     .onValue { data in
                         var actions = [ClaimsAction]()
@@ -310,7 +234,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return NilDisposer()
 
             }
-
         case let .claimNextLocation(displayValue, value):
 
             let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: value)
@@ -345,148 +268,33 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 dateOfOccurrence: date,
                 location: location
             )
-
-            return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.ClaimsFlowDateOfOccurrencePlusLocationMutation(
-                            input: dateAndLocationInput,
-                            context: newClaimContext
-                        )
-                    )
-                    .onValue { data in
-                        var actions = [ClaimsAction]()
-                        actions.append(
-                            .setNewClaimContext(context: data.flowClaimDateOfOccurrencePlusLocationNext.context)
-                        )
-
-                        let data = data.flowClaimDateOfOccurrencePlusLocationNext.currentStep
-
-                        if let data = data.asFlowClaimAudioRecordingStep {
-                            let questions = data.questions
-                            actions.append(.openAudioRecordingScreen(questions: questions))
-                        } else if let dataStep = data.asFlowClaimSingleItemStep {
-
-                        } else if let dataStep = data.asFlowClaimFailedStep {
-                        } else if let dataStep = data.asFlowClaimSingleItemStep {
-
-                        } else if let dataStep = data.asFlowClaimSuccessStep {
-
-                        } else if let dataStep = data.asFlowClaimPhoneNumberStep {
-                        }
-                        actions.append(.setLoadingState(action: actionValue, state: nil))
-                        actions.forEach({ callback(.value($0)) })
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(action: actionValue, state: .error(error: error.localizedDescription))
-                            )
-                        )
-                    }
-                return NilDisposer()
-
-            }
-
+            let mutation = OctopusGraphQL.ClaimsFlowDateOfOccurrencePlusLocationMutation(
+                input: dateAndLocationInput,
+                context: newClaimContext
+            )
+            return mutation.getFuture(action: action, store: self)
         case let .submitAudioRecording(audioURL):
             self.send(.setLoadingState(action: actionValue, state: .loading))
             return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
                 do {
                     let data = try Data(contentsOf: audioURL).base64EncodedData()
                     let name = audioURL.lastPathComponent
                     let uploadFile = UploadFile(data: data, name: name, mimeType: "audio/m4a")
-                    try self.fileUploaderClient.upload(flowId: self.state.newClaim.id, file: uploadFile)
+                    disposeBag += try self.fileUploaderClient.upload(flowId: self.state.newClaim.id, file: uploadFile)
                         .onValue({ responseModel in
+                            //todo
                             let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
                                 audioUrl: responseModel.audioUrl
                             )
-                            self.octopus.client
-                                .perform(
-                                    mutation: OctopusGraphQL.ClaimsFlowAudioRecordingMutation(
-                                        input: audioInput,
-                                        context: newClaimContext
-                                    )
-                                )
-                                .onValue { data in
-
-                                    let context = data.flowClaimAudioRecordingNext.context
-                                    var actions = [ClaimsAction]()
-                                    actions.append(.setNewClaimContext(context: context))
-                                    let data = data.flowClaimAudioRecordingNext.currentStep
-                                    if let dataStep = data.asFlowClaimSuccessStep {
-                                        actions.append(.openSuccessScreen)
-
-                                    } else if let dataStep = data.asFlowClaimSingleItemStep {
-
-                                        let prefferedCurrency = dataStep.preferredCurrency
-
-                                        let selectedProblems = dataStep.selectedItemProblems
-                                        let damages = dataStep.availableItemProblems
-                                        let models = dataStep.availableItemModels
-                                        let brands = dataStep.availableItemBrands
-
-                                        var selectedDamages: [Damage] = []
-
-                                        for element in selectedProblems ?? [] {
-                                            selectedDamages.append(
-                                                Damage(
-                                                    displayName: element.displayValue,
-                                                    itemProblemId: element.displayValue
-                                                )
-                                            )
-                                        }
-
-                                        var dispValuesDamages: [Damage] = []
-
-                                        for element in damages ?? [] {
-                                            let list = Damage(
-                                                displayName: element.displayName,
-                                                itemProblemId: element.itemProblemId
-                                            )
-                                            dispValuesDamages.append(list)
-                                        }
-
-                                        var dispValuesModels: [Model] = []
-
-                                        for element in models ?? [] {
-                                            let list = Model(
-                                                displayName: element.displayName,
-                                                itemBrandId: element.itemBrandId,
-                                                itemModelId: element.itemModelId,
-                                                itemTypeID: element.itemTypeId
-                                            )
-                                            dispValuesModels.append(list)
-                                        }
-
-                                        var dispValuesBrands: [Brand] = []
-
-                                        for element in brands ?? [] {
-                                            let list = Brand(
-                                                displayName: element.displayName,
-                                                itemBrandId: element.itemBrandId,
-                                                itemTypeId: element.itemTypeId
-                                            )
-                                            dispValuesBrands.append(list)
-                                        }
-
-                                        [
-                                            .setPrefferedCurrency(currency: prefferedCurrency.rawValue),
-                                            .setSingleItemLists(
-                                                brands: dispValuesBrands,
-                                                models: dispValuesModels,
-                                                damages: dispValuesDamages
-                                            ),
-                                            .openSingleItemScreen(
-                                                maxDate: Date()
-                                            ),
-                                        ]
-                                        .forEach { element in
-                                            callback(.value(element))
-                                        }
-                                    }
-                                    actions.append(.setLoadingState(action: actionValue, state: nil))
-                                    actions.forEach({ callback(.value($0)) })
-                                }
+                            let mutation = OctopusGraphQL.ClaimsFlowAudioRecordingMutation(
+                                input: audioInput,
+                                context: newClaimContext
+                            )
+                            disposeBag += mutation.getFuture(action: action, store: self)?
+                                .onValue({ action in
+                                    callback(.value(action))
+                                })
                         })
                         .onError({ error in
                             callback(
@@ -498,13 +306,14 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                 )
                             )
                         })
+                        .disposable
                 } catch let error {
                     callback(
                         .value(.setLoadingState(action: actionValue, state: .error(error: error.localizedDescription)))
                     )
                 }
 
-                return NilDisposer()
+                return disposeBag
             }
         case let .submitDamage(damages):
             return FiniteSignal { callback in
@@ -516,153 +325,26 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             self.send(.setLoadingState(action: actionValue, state: .loading))
             let singleItemInput = state.newClaim.returnSingleItemInfo(purchasePrice: purchasePrice)
             let mutation = OctopusGraphQL.ClaimsFlowSingleItemMutation(
-                context: state.newClaim.context,
-                input: singleItemInput
+                input: singleItemInput,
+                context: state.newClaim.context
             )
-            return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: mutation
-                    )
-                    .onValue { data in
-
-                        let context = data.flowClaimSingleItemNext.context
-                        let data = data.flowClaimSingleItemNext.currentStep
-                        let prefferedCurrency = data.asFlowClaimSingleItemStep?.preferredCurrency.rawValue
-
-                        var actions = [ClaimsAction]()
-                        actions.append(.setNewClaimContext(context: context))
-                        actions.append(
-                            .setPurchasePrice(
-                                priceOfPurchase:
-                                    Amount(
-                                        amount: purchasePrice,
-                                        currencyCode: prefferedCurrency ?? ""
-                                    )
-                            )
-                        )
-                        if let dataStep = data.asFlowClaimFailedStep {
-                            let ss = ""
-                        } else if let dataStep = data.asFlowClaimSummaryStep {
-
-                            actions.append(.openSummaryScreen)
-                        }
-                        actions.append(.setLoadingState(action: actionValue, state: nil))
-                        actions.forEach({ callback(.value($0)) })
-                    }
-                    .onError { error in
-
-                        print(error)
-
-                    }
-                return NilDisposer()
-            }
-
-        case let .claimNextSummary:
-
+            return mutation.getFuture(action: action, store: self)
+        case .claimNextSummary:
             let dateOfOccurrence = state.newClaim.dateOfOccurrence
             let location = state.newClaim.location
             let summaryInput = state.newClaim.returnSummaryInformation()
-
-            return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.ClaimsFlowSummaryMutation(
-                            input: summaryInput,
-                            context: newClaimContext
-                        )
-                    )
-                    .onValue { data in
-
-                        let context = data.flowClaimSummaryNext.context
-                        var actions = [ClaimsAction]()
-                        actions.append(.setNewClaimContext(context: context))
-
-                        let data = data.flowClaimSummaryNext.currentStep
-                        if let dataStep = data.asFlowClaimSuccessStep {
-                            actions.append(.openSuccessScreen)
-
-                        } else if let dataStep = data.asFlowClaimSingleItemCheckoutStep {
-                            let payoutAmount = dataStep.payoutAmount
-                            let deductible = dataStep.deductible
-                            let depreciation = dataStep.depreciation
-                            let purchasePricePriceToShow = dataStep.price
-
-                            [
-                                .setPurchasePrice(
-                                    priceOfPurchase:
-                                        Amount(
-                                            amount: purchasePricePriceToShow.amount,
-                                            currencyCode: purchasePricePriceToShow.currencyCode.rawValue
-                                        )
-                                ),
-                                .setPayoutAmountDeductibleDepreciation(
-                                    payoutAmount:
-                                        Amount(
-                                            amount: payoutAmount.amount,
-                                            currencyCode: payoutAmount.currencyCode.rawValue
-                                        ),
-                                    deductible:
-                                        Amount(
-                                            amount: deductible.amount,
-                                            currencyCode: deductible.currencyCode.rawValue
-                                        ),
-                                    depreciation:
-                                        Amount(
-                                            amount: depreciation.amount,
-                                            currencyCode: depreciation.currencyCode.rawValue
-                                        )
-                                ),
-                                .openCheckoutNoRepairScreen,
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
-                        } else if let dataStep = data.asFlowClaimFailedStep {
-                        }
-
-                        actions.forEach { element in
-                            callback(.value(element))
-                        }
-                    }
-                    .onError { error in
-                        print(error)
-                    }
-                return NilDisposer()
-            }
-
-        case let .claimNextSingleItemCheckout:
-
+            let mutation = OctopusGraphQL.ClaimsFlowSummaryMutation(
+                input: summaryInput,
+                context: newClaimContext
+            )
+            return mutation.getFuture(action: action, store: self)
+        case .claimNextSingleItemCheckout:
             let claimSingleItemCheckoutInput = state.newClaim.returnSingleItemCheckoutInfo()
-
-            return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.ClaimsFlowSingleItemCheckoutMutation(
-                            input: claimSingleItemCheckoutInput,
-                            context: newClaimContext
-                        )
-                    )
-                    .onValue { data in
-
-                        let context = data.flowClaimSingleItemCheckoutNext.context
-                        var actions = [ClaimsAction]()
-                        actions.append(.setNewClaimContext(context: context))
-                        let data = data.flowClaimSingleItemCheckoutNext.currentStep
-
-                        if let dataStep = data.asFlowClaimFailedStep {
-
-                        } else if let dataStep = data.asFlowClaimSuccessStep {
-
-                            actions.append(.openCheckoutTransferringDoneScreen)
-                        }
-
-                        actions.forEach { element in
-                            callback(.value(element))
-                        }
-                    }
-                return NilDisposer()
-            }
+            let mutation = OctopusGraphQL.ClaimsFlowSingleItemCheckoutMutation(
+                input: claimSingleItemCheckoutInput,
+                context: newClaimContext
+            )
+            return mutation.getFuture(action: action, store: self)
         case .fetchCommonClaimsForSelection:
             self.send(.setCommonClaimsForSelection(.loading))
             let getEntryPointsClaimsClient: GetEntryPointsClaimsClient = Dependencies.shared.resolve()
@@ -766,11 +448,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 }
 
 protocol NextClaimSteps {
-    func handleActions(for action: ClaimsAction, and callback: (Event<ClaimsAction>) -> Void)
+    func handleActions(for action: ClaimsAction, and callback: (Event<ClaimsAction>) -> Void, and store: ClaimsStore)
 }
 
 extension OctopusGraphQL.FlowClaimStartMutation.Data: NextClaimSteps {
-    func handleActions(for action: ClaimsAction, and callback: (Event<ClaimsAction>) -> Void) {
+    func handleActions(for action: ClaimsAction, and callback: (Event<ClaimsAction>) -> Void, and store: ClaimsStore) {
         let id = self.flowClaimStart.id
         let context = self.flowClaimStart.context
         let data = self.flowClaimStart.currentStep
@@ -793,6 +475,311 @@ extension OctopusGraphQL.FlowClaimStartMutation.Data: NextClaimSteps {
         actions.append(.setLoadingState(action: "\(action.hashValue)", state: nil))
         actions.forEach { element in
             callback(.value(element))
+        }
+    }
+}
+
+extension OctopusGraphQL.ClaimsFlowPhoneNumberMutation.Data: NextClaimSteps {
+    func handleActions(for action: ClaimsAction, and callback: (Event<ClaimsAction>) -> Void, and store: ClaimsStore) {
+        var actions = [ClaimsAction]()
+        let context = self.flowClaimPhoneNumberNext.context
+        let data = self.flowClaimPhoneNumberNext.currentStep
+        actions.append(.setNewClaimContext(context: context))
+        if let dataStep = data.asFlowClaimDateOfOccurrenceStep {
+
+            let dateOfOccurrenceMaxDate = dataStep.maxDate
+            let maxDateToDate = store.state.newClaim.formatStringToDate(
+                dateString: dateOfOccurrenceMaxDate
+            )
+
+            actions.append(
+                .openDateOfOccurrenceScreen(maxDate: maxDateToDate)
+            )
+        } else if let dataStep = data.asFlowClaimFailedStep {
+
+        } else if let dataStep = data.asFlowClaimDateOfOccurrencePlusLocationStep {
+            let dateOfOccurrenceStep = dataStep.dateOfOccurrenceStep.dateOfOccurrence
+            let dateOfOccurrenceMaxDate = dataStep.dateOfOccurrenceStep.maxDate
+            let maxDateToDate = store.state.newClaim.formatStringToDate(
+                dateString: dateOfOccurrenceMaxDate
+            )
+            let locationStep = dataStep.locationStep.location
+            let possibleLocations = dataStep.locationStep.options
+
+            var dispValues: [Location] = []
+
+            for element in possibleLocations {
+                let list = Location(displayValue: element.displayName, value: element.value)
+                dispValues.append(list)
+            }
+            actions.append(contentsOf: [
+                .setListOfLocations(displayValues: dispValues),
+                .openDateOfOccurrenceScreen(maxDate: maxDateToDate),
+            ])
+
+        } else {
+
+        }
+        actions.append(.setLoadingState(action: "\(action.hashValue)", state: nil))
+        actions.forEach { element in
+            callback(.value(element))
+        }
+    }
+}
+
+extension OctopusGraphQL.ClaimsFlowDateOfOccurrencePlusLocationMutation.Data: NextClaimSteps {
+    func handleActions(
+        for action: ClaimsAction,
+        and callback: (Flow.Event<ClaimsAction>) -> Void,
+        and store: ClaimsStore
+    ) {
+        var actions = [ClaimsAction]()
+        actions.append(
+            .setNewClaimContext(context: self.flowClaimDateOfOccurrencePlusLocationNext.context)
+        )
+
+        let data = self.flowClaimDateOfOccurrencePlusLocationNext.currentStep
+
+        if let data = data.asFlowClaimAudioRecordingStep {
+            let questions = data.questions
+            actions.append(.openAudioRecordingScreen(questions: questions))
+        } else if let dataStep = data.asFlowClaimSingleItemStep {
+
+        } else if let dataStep = data.asFlowClaimFailedStep {
+
+        } else if let dataStep = data.asFlowClaimSingleItemStep {
+
+        } else if let dataStep = data.asFlowClaimSuccessStep {
+
+        } else if let dataStep = data.asFlowClaimPhoneNumberStep {
+
+        }
+        actions.append(.setLoadingState(action: "\(action.hashValue)", state: nil))
+        actions.forEach({ callback(.value($0)) })
+
+    }
+}
+
+extension OctopusGraphQL.ClaimsFlowSingleItemMutation.Data: NextClaimSteps {
+    func handleActions(
+        for action: ClaimsAction,
+        and callback: (Flow.Event<ClaimsAction>) -> Void,
+        and store: ClaimsStore
+    ) {
+        let context = self.flowClaimSingleItemNext.context
+        let data = self.flowClaimSingleItemNext.currentStep
+        let prefferedCurrency = data.asFlowClaimSingleItemStep?.preferredCurrency.rawValue
+        let price = data.asFlowClaimSingleItemStep?.purchasePrice?.amount
+
+        var actions = [ClaimsAction]()
+        actions.append(.setNewClaimContext(context: context))
+        actions.append(
+            .setPurchasePrice(
+                priceOfPurchase:
+                    Amount(
+                        amount: price ?? 0,
+                        currencyCode: prefferedCurrency ?? ""
+                    )
+            )
+        )
+        if let dataStep = data.asFlowClaimFailedStep {
+            let ss = ""
+        } else if let dataStep = data.asFlowClaimSummaryStep {
+
+            actions.append(.openSummaryScreen)
+        }
+        actions.append(.setLoadingState(action: "\(action.hashValue)", state: nil))
+        actions.forEach({ callback(.value($0)) })
+    }
+}
+
+extension OctopusGraphQL.ClaimsFlowAudioRecordingMutation.Data: NextClaimSteps {
+    func handleActions(
+        for action: ClaimsAction,
+        and callback: (Flow.Event<ClaimsAction>) -> Void,
+        and store: ClaimsStore
+    ) {
+        let context = self.flowClaimAudioRecordingNext.context
+        var actions = [ClaimsAction]()
+        actions.append(.setNewClaimContext(context: context))
+        let data = self.flowClaimAudioRecordingNext.currentStep
+        if let dataStep = data.asFlowClaimSuccessStep {
+            actions.append(.openSuccessScreen)
+        } else if let dataStep = data.asFlowClaimSingleItemStep {
+
+            let prefferedCurrency = dataStep.preferredCurrency  //for purchasePrice
+
+            let selectedProblems = dataStep.selectedItemProblems
+            let damages = dataStep.availableItemProblems
+            let models = dataStep.availableItemModels
+            let brands = dataStep.availableItemBrands
+
+            var selectedDamages: [Damage] = []
+
+            for element in selectedProblems ?? [] {
+                selectedDamages.append(
+                    Damage(
+                        displayName: element.displayValue,
+                        itemProblemId: element.displayValue
+                    )
+                )
+            }
+
+            var dispValuesDamages: [Damage] = []
+
+            for element in damages ?? [] {
+                let list = Damage(
+                    displayName: element.displayName,
+                    itemProblemId: element.itemProblemId
+                )
+                dispValuesDamages.append(list)
+            }
+
+            var dispValuesModels: [Model] = []
+
+            for element in models ?? [] {
+                let list = Model(
+                    displayName: element.displayName,
+                    itemBrandId: element.itemBrandId,
+                    itemModelId: element.itemModelId,
+                    itemTypeID: element.itemTypeId
+                )
+                dispValuesModels.append(list)
+            }
+
+            var dispValuesBrands: [Brand] = []
+
+            for element in brands ?? [] {
+                let list = Brand(
+                    displayName: element.displayName,
+                    itemBrandId: element.itemBrandId
+                )
+                dispValuesBrands.append(list)
+            }
+
+            [
+                .setPrefferedCurrency(currency: prefferedCurrency.rawValue),
+                //                                            .setSingleItemDamage(damages: selectedDamages),
+                .setSingleItemLists(
+                    brands: dispValuesBrands,
+                    models: dispValuesModels,
+                    damages: dispValuesDamages
+                ),
+                .openSingleItemScreen(
+                    maxDate: Date()
+                ),
+            ]
+            .forEach { element in
+                callback(.value(element))
+            }
+        }
+        actions.append(.setLoadingState(action: "\(action)", state: nil))
+        actions.forEach({ callback(.value($0)) })
+    }
+}
+extension OctopusGraphQL.ClaimsFlowSummaryMutation.Data: NextClaimSteps {
+    func handleActions(
+        for action: ClaimsAction,
+        and callback: (Flow.Event<ClaimsAction>) -> Void,
+        and store: ClaimsStore
+    ) {
+        let context = self.flowClaimSummaryNext.context
+        var actions = [ClaimsAction]()
+        actions.append(.setNewClaimContext(context: context))
+
+        let data = self.flowClaimSummaryNext.currentStep
+        if let dataStep = data.asFlowClaimSuccessStep {
+            actions.append(.openSuccessScreen)
+
+        } else if let dataStep = data.asFlowClaimSingleItemCheckoutStep {
+            let payoutAmount = dataStep.payoutAmount
+            let deductible = dataStep.deductible
+            let depreciation = dataStep.depreciation
+            let purchasePricePriceToShow = dataStep.price
+
+            [
+                .setPurchasePrice(
+                    priceOfPurchase:
+                        Amount(
+                            amount: purchasePricePriceToShow.amount,
+                            currencyCode: purchasePricePriceToShow.currencyCode.rawValue
+                        )
+                ),
+                .setPayoutAmountDeductibleDepreciation(
+                    payoutAmount:
+                        Amount(
+                            amount: payoutAmount.amount,
+                            currencyCode: payoutAmount.currencyCode.rawValue
+                        ),
+                    deductible:
+                        Amount(
+                            amount: deductible.amount,
+                            currencyCode: deductible.currencyCode.rawValue
+                        ),
+                    depreciation:
+                        Amount(
+                            amount: depreciation.amount,
+                            currencyCode: depreciation.currencyCode.rawValue
+                        )
+                ),
+                .openCheckoutNoRepairScreen,
+            ]
+            .forEach { element in
+                callback(.value(element))
+            }
+        } else if let dataStep = data.asFlowClaimFailedStep {
+        }
+
+        actions.forEach { element in
+            callback(.value(element))
+        }
+    }
+}
+
+extension OctopusGraphQL.ClaimsFlowSingleItemCheckoutMutation.Data: NextClaimSteps {
+    func handleActions(
+        for action: ClaimsAction,
+        and callback: (Flow.Event<ClaimsAction>) -> Void,
+        and store: ClaimsStore
+    ) {
+        let context = self.flowClaimSingleItemCheckoutNext.context
+        var actions = [ClaimsAction]()
+        actions.append(.setNewClaimContext(context: context))
+        let data = self.flowClaimSingleItemCheckoutNext.currentStep
+
+        if let dataStep = data.asFlowClaimFailedStep {
+
+        } else if let dataStep = data.asFlowClaimSuccessStep {
+
+            actions.append(.openCheckoutTransferringDoneScreen)
+        }
+
+        actions.forEach { element in
+            callback(.value(element))
+        }
+    }
+}
+
+extension GraphQLMutation {
+    func getFuture(action: ClaimsAction, store: ClaimsStore) -> FiniteSignal<ClaimsAction>?
+    where Self.Data: NextClaimSteps {
+        return FiniteSignal { callback in
+            let disposeBag = DisposeBag()
+            disposeBag += store.octopus.client.perform(mutation: self)
+                .onValue { value in
+                    value.handleActions(for: action, and: callback, and: store)
+                }
+                .onError { error in
+                    callback(
+                        .value(
+                            .setLoadingState(
+                                action: "\(action.hashValue)",
+                                state: .error(error: error.localizedDescription)
+                            )
+                        )
+                    )
+                }
+            return disposeBag
         }
     }
 }
