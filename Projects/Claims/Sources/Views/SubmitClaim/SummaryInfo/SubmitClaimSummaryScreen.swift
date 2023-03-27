@@ -44,14 +44,49 @@ public struct SubmitClaimSummaryScreen: View {
         }
     }
 
+    @ViewBuilder func displayTitleField(claim: NewClaim) -> some View {
+
+        if claim.chosenModel != nil {
+            hText(claim.chosenModel?.itemTypeID ?? "", style: .title3) /* TODO: CHANGE */
+                .padding(.top, UIScreen.main.bounds.size.height / 5)
+                .foregroundColor(hLabelColor.secondary)
+        } else if claim.chosenBrand != nil {
+            hText(claim.chosenBrand?.itemTypeId ?? "", style: .title3) /* TODO: CHANGE */
+                .padding(.top, UIScreen.main.bounds.size.height / 5)
+                .foregroundColor(hLabelColor.secondary)
+        }
+    }
+
+    @ViewBuilder func displayDateAndLocationOfOccurrenceField(claim: NewClaim) -> some View {
+        HStack {
+            Image(uiImage: hCoreUIAssets.calendar.image)
+                .resizable()
+                .frame(width: 12.0, height: 12.0)
+                .foregroundColor(.secondary)
+            hText(claim.dateOfOccurrence ?? "")
+                .padding(.top, 1)
+                .foregroundColor(.secondary)
+        }
+
+        HStack {
+            Image(uiImage: hCoreUIAssets.location.image)
+                .foregroundColor(hLabelColor.secondary)
+            hText(claim.location?.displayValue ?? "")
+                .padding(.top, 1)
+                .foregroundColor(.secondary)
+        }
+    }
+
     @ViewBuilder func displayModelField(claim: NewClaim) -> some View {
 
         if claim.chosenModel != nil {
             hText(claim.chosenModel?.displayName ?? "")
                 .padding(.top, 40)
+                .foregroundColor(hLabelColor.primary)
         } else if claim.chosenBrand != nil {
             hText(claim.chosenBrand?.displayName ?? "")
                 .padding(.top, 40)
+                .foregroundColor(hLabelColor.primary)
         }
     }
 
@@ -63,47 +98,19 @@ public struct SubmitClaimSummaryScreen: View {
                 Int(claim.priceOfPurchase?.amount ?? 0)
             ) + " " + (claim.payoutAmount?.currencyCode ?? "")
         )
-        .padding(.top, 2)
-    }
-
-    @ViewBuilder func displayDateAndLocationOfOccurrenceField(claim: NewClaim) -> some View {
-        HStack {
-            Image(uiImage: hCoreUIAssets.calendar.image)
-                .resizable()
-                .frame(width: 12.0, height: 12.0)
-                .foregroundColor(.secondary)
-            hText(claim.dateOfOccurrence ?? "")
-                .padding(.top, 2)
-                .foregroundColor(.secondary)
-        }
-
-        HStack {
-            Image(uiImage: hCoreUIAssets.location.image)
-                .foregroundColor(hLabelColor.secondary)
-            hText(claim.location?.displayValue ?? "")
-                .padding(.top, 2)
-                .foregroundColor(.secondary)
-        }
-    }
-
-    @ViewBuilder func displayTitleField(claim: NewClaim) -> some View {
-
-        if claim.chosenModel != nil {
-            hText(claim.chosenModel?.itemTypeID ?? "", style: .title3) /* TODO: CHANGE */
-                .padding(.top, UIScreen.main.bounds.size.height / 5)
-        } else if claim.chosenBrand != nil {
-            hText(claim.chosenBrand?.itemTypeId ?? "", style: .title3) /* TODO: CHANGE */
-                .padding(.top, UIScreen.main.bounds.size.height / 5)
-        }
+        .foregroundColor(hLabelColor.primary)
+        .padding(.top, 1)
     }
 
     @ViewBuilder func displayDamageField(claim: NewClaim) -> some View {
 
         if let chosenDamages = claim.getChoosenDamages() {
             hText(L10n.summarySelectedProblemDescription(chosenDamages)).foregroundColor(hLabelColor.primary)
+                .padding(.top, 1)
         } else {
             hText(L10n.Claim.Location.choose)
                 .foregroundColor(hLabelColor.primary)
+                .padding(.top, 1)
         }
     }
 }
