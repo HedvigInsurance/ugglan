@@ -89,39 +89,18 @@ public struct SubmitClaimSummaryScreen: View {
     @ViewBuilder func displayTitleField(claim: NewClaim) -> some View {
 
         if claim.chosenModel != nil {
-            hText(claim.chosenModel?.itemTypeID ?? "", style: .title3) /* TODO: CHANGE? */
+            hText(claim.chosenModel?.itemTypeID ?? "", style: .title3) /* TODO: CHANGE */
                 .padding(.top, UIScreen.main.bounds.size.height / 5)
         } else if claim.chosenBrand != nil {
-            hText(claim.chosenBrand?.itemTypeId ?? "", style: .title3) /* TODO: CHANGE? */
+            hText(claim.chosenBrand?.itemTypeId ?? "", style: .title3) /* TODO: CHANGE */
                 .padding(.top, UIScreen.main.bounds.size.height / 5)
         }
     }
 
     @ViewBuilder func displayDamageField(claim: NewClaim) -> some View {
 
-        /* TODO: FIX */
-
-        if claim.chosenDamages != nil {
-            if claim.chosenDamages!.count <= 2 {
-                ForEach(claim.chosenDamages ?? [], id: \.self) { damage in
-                    hText(L10n.summarySelectedProblemDescription(damage.displayName))
-                        .foregroundColor(hLabelColor.primary)
-                        .padding(.top, 2)
-                }
-            } else {
-
-                var counter = 0
-
-                ForEach(claim.chosenDamages ?? [], id: \.self) { damage in
-                    if counter < 2 {
-                        hText(damage.displayName)
-                            .foregroundColor(hLabelColor.primary)
-                    }
-                    let _ = counter += 1
-                }
-                hText("...")
-                    .foregroundColor(hLabelColor.primary)
-            }
+        if let chosenDamages = claim.getChoosenDamages() {
+            hText(L10n.summarySelectedProblemDescription(chosenDamages)).foregroundColor(hLabelColor.primary)
         } else {
             hText(L10n.Claim.Location.choose)
                 .foregroundColor(hLabelColor.primary)
