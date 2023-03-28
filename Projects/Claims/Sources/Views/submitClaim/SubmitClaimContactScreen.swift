@@ -36,7 +36,7 @@ public struct SubmitClaimContactScreen: View {
                 VStack {
                     HStack {
                         VStack {
-                            
+
                             TextField(phoneNumber, text: $phoneNumber)
                                 .font(.title2)
                                 .foregroundColor(hLabelColor.primary)
@@ -48,7 +48,7 @@ public struct SubmitClaimContactScreen: View {
                                         self.phoneNumber = filteredNumbers
                                     }
                                 }
-                            
+
                             hText(L10n.phoneNumberRowTitle, style: .footnote)
                                 .foregroundColor(hLabelColor.primary)
                         }
@@ -58,7 +58,7 @@ public struct SubmitClaimContactScreen: View {
                     .background(hBackgroundColor.tertiary)
                     .cornerRadius(12)
                     .padding([.leading, .trailing], 16)
-                    
+
                     hButton.LargeButtonFilled {
                         store.send(.submitClaimPhoneNumber(phoneNumberInput: phoneNumber))
                     } content: {
@@ -72,7 +72,6 @@ public struct SubmitClaimContactScreen: View {
         }
     }
 }
-
 
 public struct LoadingViewWithContent<Content: View>: View {
     var content: () -> Content
@@ -94,7 +93,7 @@ public struct LoadingViewWithContent<Content: View>: View {
                     state.loadingStates
                 }
             ) { loadingStates in
-                if let state = loadingStates["\(action.hashValue)"] {
+                if let state = loadingStates[action] {
                     switch state {
                     case .loading:
                         HStack {
@@ -109,8 +108,9 @@ public struct LoadingViewWithContent<Content: View>: View {
                     }
 
                 }
-            }.presentableStoreLensAnimation(.easeInOut)
+            }
+            .presentableStoreLensAnimation(.easeInOut)
         }
-        
+
     }
 }

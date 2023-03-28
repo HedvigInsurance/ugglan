@@ -145,7 +145,7 @@ public struct NewClaim: Codable, Equatable {
     }
 
     func getChoosenDamages() -> String? {
-        if let chosenDamages {
+        if let chosenDamages, !chosenDamages.isEmpty {
             var finalString = chosenDamages[0].displayName
             if chosenDamages.count > 1 {
                 finalString.append(", \(chosenDamages[1].displayName)")
