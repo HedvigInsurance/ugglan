@@ -458,21 +458,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .setSingleItemBrand(brand):
             newState.newClaim.chosenModel = nil
             newState.newClaim.chosenBrand = brand
-            //<<<<<<< Updated upstream
             newState.newClaim.filteredListOfModels = newState.newClaim.getListOfModels(for: brand)
-        //=======
-        //
-        //            let modelList = newState.newClaim.listOfModels
-        //            var filteredModelList: [Model] = []
-        //
-        //            for model in modelList ?? [] {
-        //                if model.itemBrandId == brand.itemBrandId {
-        //                    filteredModelList.append(model)
-        //                }
-        //            }
-        //            newState.newClaim.filteredListOfModels = filteredModelList
-        //
-        //>>>>>>> Stashed changes
+
         case let .setLoadingState(action, state):
             if let state {
                 newState.loadingStates[action] = state
