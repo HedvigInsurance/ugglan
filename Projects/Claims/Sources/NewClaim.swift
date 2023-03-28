@@ -154,4 +154,8 @@ public struct NewClaim: Codable, Equatable {
         }
         return nil
     }
+
+    func getListOfModels(for brand: Brand) -> [Model]? {
+        return listOfModels?.filter({ $0.itemBrandId == brand.itemBrandId })
+    }
 }

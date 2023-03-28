@@ -43,9 +43,6 @@ public struct SelectCommonClaim: View {
                 }
             }
         }
-        .onAppear {
-            store.send(.fetchCommonClaimsForSelection)
-        }
         .presentableStoreLensAnimation(.easeInOut)
     }
 }

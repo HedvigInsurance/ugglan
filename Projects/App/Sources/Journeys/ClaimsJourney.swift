@@ -51,7 +51,6 @@ extension AppJourney {
                 ////                        }
                 //                    }
             }
-            .hidesBackButton
         } else if hAnalyticsExperiment.odysseyClaims {
             showCommonClaimIfNeeded(origin: origin) { newOrigin in
                 odysseyClaims(from: newOrigin)
@@ -240,12 +239,18 @@ extension AppJourney {
         ) {
             action in
             if case let .submitBrand(brand) = action {
-
-                openModelPickerScreen()
-                    .onPresent {
-                        @PresentableStore var store: ClaimsStore
-                        store.send(.setSingleItemBrand(brand: brand))
-                    }
+                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                if store.state.shouldShowListOfModels(for: brand) {
+                    openModelPickerScreen()
+                        .onPresent {
+                            store.send(.setSingleItemBrand(brand: brand))
+                        }
+                } else {
+                    PopJourney()
+                        .onPresent {
+                            store.send(.setSingleItemBrand(brand: brand))
+                        }
+                }
             } else {
                 getScreenForAction(for: action)
             }
@@ -512,6 +517,10 @@ extension AppJourney {
                     }
                 }
             }
+            .onPresent({
+                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                store.send(.fetchCommonClaimsForSelection)
+            })
             .withDismissButton
         case .commonClaims:
             redirectJourney(origin)

@@ -30,6 +30,10 @@ public struct ClaimsState: StateProtocol {
         }
         return false
     }
+
+    public func shouldShowListOfModels(for brand: Brand) -> Bool {
+        return !(self.newClaim.getListOfModels(for: brand)?.isEmpty ?? true)
+    }
 }
 
 public enum LoadingState<T>: Codable & Equatable where T: Codable & Equatable {
@@ -449,17 +453,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .setSingleItemBrand(brand):
             newState.newClaim.chosenModel = nil
             newState.newClaim.chosenBrand = brand
-
-            let modelList = newState.newClaim.listOfModels
-            var filteredModelList: [Model] = []
-
-            for model in modelList ?? [] {
-                if model.itemBrandId == brand.itemBrandId {
-                    filteredModelList.append(model)
-                }
-            }
-            newState.newClaim.filteredListOfModels = filteredModelList
-
+            newState.newClaim.filteredListOfModels = newState.newClaim.getListOfModels(for: brand)
         case let .setLoadingState(action, state):
             if let state {
                 newState.loadingStates[action] = state
