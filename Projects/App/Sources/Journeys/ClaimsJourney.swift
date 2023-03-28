@@ -104,14 +104,6 @@ extension AppJourney {
         ) { action in
             getScreenForAction(for: action)
         }
-        .onAction(ClaimsStore.self) { action, _ in
-            if case let .submitClaimPhoneNumber(phoneNumberInput) = action {
-                @PresentableStore var store: ClaimsStore
-                store.send(
-                    .claimNextPhoneNumber(phoneNumber: phoneNumberInput)
-                )
-            }
-        }
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
