@@ -1,4 +1,5 @@
 import Claims
+import Contacts
 import Embark
 import Flow
 import Foundation
@@ -51,29 +52,28 @@ extension AppJourney {
                 ////                        }
                 //                    }
             }
-        } else if hAnalyticsExperiment.odysseyClaims {
-            showCommonClaimIfNeeded(origin: origin) { newOrigin in
-                odysseyClaims(from: newOrigin)
-            }
-        } else {
-            claimsJourneyPledgeAndNotificationWrapper { redirect in
-                switch redirect {
-                case .chat:
-                    AppJourney.claimsChat()
-                        .hidesBackButton
-                        .withJourneyDismissButton
-                case .close:
-                    DismissJourney()
-                case .menu:
-                    ContinueJourney()
-                case .mailingList:
-                    DismissJourney()
-                case .offer:
-                    DismissJourney()
-                case .quoteCartOffer:
-                    DismissJourney()
-                }
-            }
+            //        } else if hAnalyticsExperiment.odysseyClaims {
+            //            showCommonClaimIfNeeded(origin: origin) { newOrigin in
+            //                odysseyClaims(from: newOrigin)
+            //            }
+            //        } else {
+            //            claimsJourneyPledgeAndNotificationWrapper { redirect in
+            //                switch redirect {
+            //                case .chat:
+            //                    AppJourney.claimsChat()
+            //                        .hidesBackButton
+            //                        .withJourneyDismissButton
+            //                case .close:
+            //                    DismissJourney()
+            //                case .menu:
+            //                    ContinueJourney()
+            //                case .mailingList:
+            //                    DismissJourney()
+            //                case .offer:
+            //                    DismissJourney()
+            //                case .quoteCartOffer:
+            //                    DismissJourney()
+            //                }
         }
     }
 
@@ -458,6 +458,32 @@ extension AppJourney {
                 getScreenForAction(for: action)
             }
         }
+    }
+
+    static func openFailureScreen() -> some JourneyPresentation {
+
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: ClaimFailureScreen(),
+            style: .modally(presentationStyle: .fullScreen)
+        ) {
+            action in
+            if case .dissmissNewClaimFlow = action {
+                DismissJourney()
+            } else {
+                getScreenForAction(for: action)
+            }
+        }
+        .onAction(
+            ClaimsStore.self,
+            { action, pre in
+                if case let .dissmissNewClaimFlow = action {
+                    DismissJourney()
+                }
+            }
+        )
+        .withDismissButton
+        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func openSummaryEditScreen() -> some JourneyPresentation {

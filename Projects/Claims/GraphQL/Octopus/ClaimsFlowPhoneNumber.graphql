@@ -1,6 +1,7 @@
 mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: FlowContext!) {
   flowClaimPhoneNumberNext(input: $input, context: $context) {
     context
+    id
     currentStep {
       id
       ... on FlowClaimAudioRecordingStep {
@@ -18,8 +19,8 @@ mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: Flo
           id
           location
           options {
-            displayName
             value
+            displayName
           }
         }
       }
@@ -48,8 +49,8 @@ mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: Flo
           id
           ... on FlowClaimAutomaticAutogiroPayout {
             amount {
-              currencyCode
               amount
+              currencyCode
             }
             displayName
             id
@@ -65,12 +66,12 @@ mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: Flo
         }
         id
         payoutAmount {
-          amount
           currencyCode
+          amount
         }
         price {
-          amount
           currencyCode
+          amount
         }
       }
       ... on FlowClaimSingleItemStep {
@@ -79,16 +80,16 @@ mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: Flo
           itemBrandId
           itemTypeId
         }
-        availableItemProblems {
-          displayName
-          itemProblemId
-        }
         availableItemModels {
           displayName
           imageUrl
           itemBrandId
           itemModelId
           itemTypeId
+        }
+        availableItemProblems {
+          displayName
+          itemProblemId
         }
         id
         preferredCurrency
@@ -104,7 +105,50 @@ mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: Flo
       ... on FlowClaimSuccessStep {
         id
       }
+      ... on FlowClaimSummaryStep {
+        dateOfOccurrenceStep {
+          dateOfOccurrence
+          id
+          maxDate
+        }
+        id
+        locationStep {
+          id
+          location
+          options {
+            displayName
+            value
+          }
+        }
+        singleItemStep {
+          availableItemBrands {
+            displayName
+            itemBrandId
+            itemTypeId
+          }
+          availableItemModels {
+            displayName
+            imageUrl
+            itemBrandId
+            itemModelId
+            itemTypeId
+          }
+          availableItemProblems {
+            displayName
+            itemProblemId
+          }
+          selectedItemProblems
+          selectedItemModel
+          selectedItemBrand
+          purchasePrice {
+            currencyCode
+            amount
+          }
+          purchaseDate
+          preferredCurrency
+          id
+        }
+      }
     }
-    id
   }
 }

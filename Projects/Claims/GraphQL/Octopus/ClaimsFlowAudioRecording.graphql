@@ -104,6 +104,51 @@ mutation ClaimsFlowAudioRecording($input: FlowClaimAudioRecordingInput!, $contex
       ... on FlowClaimSuccessStep {
         id
       }
+      ... on FlowClaimSummaryStep {
+        dateOfOccurrenceStep {
+          dateOfOccurrence
+          id
+          maxDate
+        }
+        id
+        locationStep {
+          id
+          location
+          options {
+            displayName
+            value
+          }
+        }
+        singleItemStep {
+          availableItemBrands {
+            displayName
+            itemBrandId
+            itemTypeId
+          }
+          availableItemModels {
+            displayName
+            imageUrl
+            itemBrandId
+            itemModelId
+            itemTypeId
+          }
+          availableItemProblems {
+            displayName
+            itemProblemId
+          }
+          id
+          preferredCurrency
+          purchaseDate
+          purchasePrice {
+            amount
+            currencyCode
+          }
+          selectedItemBrand
+          selectedItemModel
+          selectedItemProblems
+        }
+      }
     }
+    id
   }
 }

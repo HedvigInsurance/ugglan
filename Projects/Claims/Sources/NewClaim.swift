@@ -50,6 +50,7 @@ public struct NewClaim: Codable, Equatable {
     public var depreciation: Amount?
     public var prefferedCurrency: String?
     public var context: String
+    public var maxDateOfoccurrance: String?
 
     init(
         id: String,

@@ -7,6 +7,22 @@ mutation ClaimsFlowLocation($input: FlowClaimLocationInput!, $context: FlowConte
         id
         questions
       }
+      ... on FlowClaimDateOfOccurrencePlusLocationStep {
+        dateOfOccurrenceStep {
+          maxDate
+          dateOfOccurrence
+          id
+        }
+        id
+        locationStep {
+          id
+          location
+          options {
+            value
+            displayName
+          }
+        }
+      }
       ... on FlowClaimDateOfOccurrenceStep {
         dateOfOccurrence
         id
@@ -28,22 +44,20 @@ mutation ClaimsFlowLocation($input: FlowClaimLocationInput!, $context: FlowConte
         phoneNumber
       }
       ... on FlowClaimSingleItemCheckoutStep {
-        deductible {
-          amount
-          amount
-          currencyCode
-          amount
-        }
         availableCheckoutMethods {
           id
           ... on FlowClaimAutomaticAutogiroPayout {
             amount {
-              amount
               currencyCode
+              amount
             }
-            displayName
             id
+            displayName
           }
+        }
+        deductible {
+          amount
+          currencyCode
         }
         depreciation {
           amount
@@ -51,12 +65,12 @@ mutation ClaimsFlowLocation($input: FlowClaimLocationInput!, $context: FlowConte
         }
         id
         payoutAmount {
-          amount
           currencyCode
+          amount
         }
         price {
-          amount
           currencyCode
+          amount
         }
       }
       ... on FlowClaimSingleItemStep {
@@ -72,11 +86,11 @@ mutation ClaimsFlowLocation($input: FlowClaimLocationInput!, $context: FlowConte
           itemModelId
           itemTypeId
         }
-        id
         availableItemProblems {
           displayName
           itemProblemId
         }
+        id
         preferredCurrency
         purchaseDate
         purchasePrice {
@@ -89,6 +103,50 @@ mutation ClaimsFlowLocation($input: FlowClaimLocationInput!, $context: FlowConte
       }
       ... on FlowClaimSuccessStep {
         id
+      }
+      ... on FlowClaimSummaryStep {
+        dateOfOccurrenceStep {
+          dateOfOccurrence
+          id
+          maxDate
+        }
+        id
+        locationStep {
+          options {
+            value
+            displayName
+          }
+          location
+          id
+        }
+        singleItemStep {
+          availableItemBrands {
+            displayName
+            itemBrandId
+            itemTypeId
+          }
+          availableItemModels {
+            displayName
+            imageUrl
+            itemBrandId
+            itemModelId
+            itemTypeId
+          }
+          availableItemProblems {
+            displayName
+            itemProblemId
+          }
+          id
+          preferredCurrency
+          purchaseDate
+          purchasePrice {
+            currencyCode
+            amount
+          }
+          selectedItemBrand
+          selectedItemModel
+          selectedItemProblems
+        }
       }
     }
   }
