@@ -277,9 +277,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 do {
-                    let data = try Data(contentsOf: audioURL).base64EncodedData()
+                    let data = try Data(contentsOf: audioURL)
                     let name = audioURL.lastPathComponent
-                    let uploadFile = UploadFile(data: data, name: name, mimeType: "audio/m4a")
+                    let uploadFile = UploadFile(data: data, name: name, mimeType: "audio/x-m4a")
                     disposeBag += try self.fileUploaderClient.upload(flowId: self.state.newClaim.id, file: uploadFile)
                         .onValue({ responseModel in
                             //todo
