@@ -1,6 +1,5 @@
-mutation ClaimsFlowDateOfOccurrencePlusLocation($input: FlowClaimDateOfOccurrencePlusLocationInput!, $context: FlowContext!) {
+mutation FlowClaimDateOfOccurrencePlusLocationNext($input: FlowClaimDateOfOccurrencePlusLocationInput!, $context: FlowContext!) {
   flowClaimDateOfOccurrencePlusLocationNext(input: $input, context: $context) {
-    context
     id
     currentStep {
       id
@@ -9,12 +8,12 @@ mutation ClaimsFlowDateOfOccurrencePlusLocation($input: FlowClaimDateOfOccurrenc
         questions
       }
       ... on FlowClaimDateOfOccurrencePlusLocationStep {
+        id
         dateOfOccurrenceStep {
-          dateOfOccurrence
           id
+          dateOfOccurrence
           maxDate
         }
-        id
         locationStep {
           id
           location
@@ -25,8 +24,8 @@ mutation ClaimsFlowDateOfOccurrencePlusLocation($input: FlowClaimDateOfOccurrenc
         }
       }
       ... on FlowClaimDateOfOccurrenceStep {
-        dateOfOccurrence
         id
+        dateOfOccurrence
         maxDate
       }
       ... on FlowClaimFailedStep {
@@ -45,18 +44,8 @@ mutation ClaimsFlowDateOfOccurrencePlusLocation($input: FlowClaimDateOfOccurrenc
         phoneNumber
       }
       ... on FlowClaimSingleItemCheckoutStep {
-        availableCheckoutMethods {
-          id
-          ... on FlowClaimAutomaticAutogiroPayout {
-            amount {
-              amount
-              currencyCode
-            }
-            displayName
-            id
-          }
-        }
-        deductible {
+        id
+        price {
           amount
           currencyCode
         }
@@ -64,91 +53,110 @@ mutation ClaimsFlowDateOfOccurrencePlusLocation($input: FlowClaimDateOfOccurrenc
           amount
           currencyCode
         }
-        id
-        payoutAmount {
-          currencyCode
+        deductible {
           amount
+          currencyCode
         }
-        price {
+        payoutAmount {
           amount
           currencyCode
+        }
+        availableCheckoutMethods {
+          id
         }
       }
       ... on FlowClaimSingleItemStep {
-        availableItemBrands {
-          displayName
-          itemBrandId
-          itemTypeId
-        }
-        availableItemModels {
-          displayName
-          imageUrl
-          itemBrandId
-          itemModelId
-          itemTypeId
-        }
-        availableItemProblems {
-          displayName
-          itemProblemId
-        }
         id
         preferredCurrency
-        purchaseDate
         purchasePrice {
           amount
           currencyCode
         }
-        selectedItemBrand
-        selectedItemModel
+        purchaseDate
         selectedItemProblems
+        availableItemProblems {
+          displayName
+          itemProblemId
+        }
+        selectedItemBrand
+        availableItemBrands {
+          displayName
+          itemTypeId
+          itemBrandId
+        }
+        selectedItemModel
+        availableItemModels {
+          displayName
+          imageUrl
+          itemTypeId
+          itemBrandId
+          itemModelId
+        }
+        customName
       }
       ... on FlowClaimSuccessStep {
         id
       }
       ... on FlowClaimSummaryStep {
+        id
+        title
         dateOfOccurrenceStep {
-          dateOfOccurrence
           id
+          dateOfOccurrence
           maxDate
         }
-        id
         locationStep {
-          location
           id
+          location
           options {
             displayName
             value
           }
         }
         singleItemStep {
-          availableItemBrands {
-            displayName
-            itemBrandId
-            itemTypeId
-          }
-          availableItemModels {
-            displayName
-            imageUrl
-            itemBrandId
-            itemModelId
-            itemTypeId
-          }
-          availableItemProblems {
-            itemProblemId
-            displayName
-          }
           id
           preferredCurrency
-          purchaseDate
           purchasePrice {
             amount
             currencyCode
           }
-          selectedItemBrand
-          selectedItemModel
+          purchaseDate
           selectedItemProblems
+          availableItemProblems {
+            displayName
+            itemProblemId
+          }
+          selectedItemBrand
+          availableItemBrands {
+            displayName
+            itemTypeId
+            itemBrandId
+          }
+          selectedItemModel
+          availableItemModels {
+            displayName
+            imageUrl
+            itemTypeId
+            itemBrandId
+            itemModelId
+          }
+          customName
         }
       }
+      ... on FlowTerminationDateStep {
+        id
+        minDate
+        maxDate
+      }
+      ... on FlowTerminationFailedStep {
+        id
+      }
+      ... on FlowTerminationSuccessStep {
+        id
+        terminationDate
+        surveyUrl
+      }
     }
+    context
   }
 }

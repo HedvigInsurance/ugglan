@@ -1,6 +1,6 @@
 mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
   flowClaimStart(input: $input, context: $context) {
-    context
+    id
     currentStep {
       id
       ... on FlowClaimAudioRecordingStep {
@@ -8,12 +8,12 @@ mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
         questions
       }
       ... on FlowClaimDateOfOccurrencePlusLocationStep {
+        id
         dateOfOccurrenceStep {
-          dateOfOccurrence
           id
+          dateOfOccurrence
           maxDate
         }
-        id
         locationStep {
           id
           location
@@ -24,8 +24,8 @@ mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
         }
       }
       ... on FlowClaimDateOfOccurrenceStep {
-        dateOfOccurrence
         id
+        dateOfOccurrence
         maxDate
       }
       ... on FlowClaimFailedStep {
@@ -44,18 +44,8 @@ mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
         phoneNumber
       }
       ... on FlowClaimSingleItemCheckoutStep {
-        availableCheckoutMethods {
-          id
-          ... on FlowClaimAutomaticAutogiroPayout {
-            amount {
-              currencyCode
-              amount
-            }
-            id
-            displayName
-          }
-        }
-        deductible {
+        id
+        price {
           amount
           currencyCode
         }
@@ -63,54 +53,58 @@ mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
           amount
           currencyCode
         }
-        id
-        payoutAmount {
-          currencyCode
+        deductible {
           amount
+          currencyCode
         }
-        price {
+        payoutAmount {
           amount
           currencyCode
+        }
+        availableCheckoutMethods {
+          id
         }
       }
       ... on FlowClaimSingleItemStep {
-        availableItemBrands {
-          displayName
-          itemBrandId
-          itemTypeId
-        }
-        availableItemModels {
-          displayName
-          imageUrl
-          itemBrandId
-          itemModelId
-          itemTypeId
-        }
-        availableItemProblems {
-          displayName
-          itemProblemId
-        }
         id
         preferredCurrency
-        purchaseDate
         purchasePrice {
           amount
           currencyCode
         }
-        selectedItemBrand
-        selectedItemModel
+        purchaseDate
         selectedItemProblems
+        availableItemProblems {
+          displayName
+          itemProblemId
+        }
+        selectedItemBrand
+        availableItemBrands {
+          displayName
+          itemTypeId
+          itemBrandId
+        }
+        selectedItemModel
+        availableItemModels {
+          displayName
+          imageUrl
+          itemTypeId
+          itemBrandId
+          itemModelId
+        }
+        customName
       }
       ... on FlowClaimSuccessStep {
         id
       }
       ... on FlowClaimSummaryStep {
+        id
+        title
         dateOfOccurrenceStep {
-          dateOfOccurrence
           id
+          dateOfOccurrence
           maxDate
         }
-        id
         locationStep {
           id
           location
@@ -120,35 +114,49 @@ mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
           }
         }
         singleItemStep {
-          availableItemBrands {
-            displayName
-            itemBrandId
-            itemTypeId
-          }
-          availableItemModels {
-            displayName
-            imageUrl
-            itemBrandId
-            itemModelId
-            itemTypeId
-          }
-          availableItemProblems {
-            displayName
-            itemProblemId
-          }
           id
           preferredCurrency
-          purchaseDate
           purchasePrice {
             amount
             currencyCode
           }
-          selectedItemBrand
-          selectedItemModel
+          purchaseDate
           selectedItemProblems
+          availableItemProblems {
+            displayName
+            itemProblemId
+          }
+          selectedItemBrand
+          availableItemBrands {
+            displayName
+            itemTypeId
+            itemBrandId
+          }
+          selectedItemModel
+          availableItemModels {
+            displayName
+            imageUrl
+            itemTypeId
+            itemBrandId
+            itemModelId
+          }
+          customName
         }
       }
+      ... on FlowTerminationDateStep {
+        id
+        minDate
+        maxDate
+      }
+      ... on FlowTerminationFailedStep {
+        id
+      }
+      ... on FlowTerminationSuccessStep {
+        id
+        terminationDate
+        surveyUrl
+      }
     }
-    id
+    context
   }
 }

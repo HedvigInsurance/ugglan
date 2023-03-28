@@ -127,6 +127,7 @@ public indirect enum ClaimsAction: ActionProtocol {
     case setPrefferedCurrency(currency: String)
     case setNewClaimContext(context: String)
     case setMaxDateOfOccurrence(maxDate: String)
+    case setProblemTitle(title: String)
 }
 
 public enum ClaimsOrigin: Codable, Equatable {
@@ -212,13 +213,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .claimNextPhoneNumber(phoneNumberInput):
             self.send(.setLoadingState(action: action, state: .loading))
             let phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
-            let mutation = OctopusGraphQL.ClaimsFlowPhoneNumberMutation(input: phoneNumber, context: newClaimContext)
+            let mutation = OctopusGraphQL.FlowClaimPhoneNumberNextMutation(input: phoneNumber, context: newClaimContext)
             return mutation.getFuture(action: action, store: self)
 
         case let .claimNextDateOfOccurrence(dateOfOccurrence):
             let dateString = state.newClaim.formatDateToString(date: dateOfOccurrence)
             let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
-            let mutation = OctopusGraphQL.ClaimsFlowDateOfOccurrenceMutation(
+            let mutation = OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation(
                 input: dateOfOccurrenceInput,
                 context: newClaimContext
             )
@@ -367,6 +368,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             )
 
                         case "FlowClaimSummaryStep":
+                            let title = data.currentStep.asFlowClaimSummaryStep?.title
+                            actions.append(.setProblemTitle(title: title ?? ""))
                             actions.append(.openSummaryScreen)
 
                         case "FlowClaimDateOfOccurrencePlusLocationStep":
@@ -427,7 +430,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
-                        mutation: OctopusGraphQL.ClaimsFlowLocationMutation(
+                        mutation: OctopusGraphQL.FlowClaimLocationNextMutation(
                             input: locationInput,
                             context: newClaimContext
                         )
@@ -573,6 +576,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             )
 
                         case "FlowClaimSummaryStep":
+                            let title = data.currentStep.asFlowClaimSummaryStep?.title
+                            actions.append(.setProblemTitle(title: title ?? ""))
                             actions.append(.openSummaryScreen)
 
                         case "FlowClaimDateOfOccurrencePlusLocationStep":
@@ -632,7 +637,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 dateOfOccurrence: date,
                 location: location
             )
-            let mutation = OctopusGraphQL.ClaimsFlowDateOfOccurrencePlusLocationMutation(
+            let mutation = OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation(
                 input: dateAndLocationInput,
                 context: newClaimContext
             )
@@ -652,7 +657,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
                                 audioUrl: responseModel.audioUrl
                             )
-                            let mutation = OctopusGraphQL.ClaimsFlowAudioRecordingMutation(
+                            let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
                                 input: audioInput,
                                 context: newClaimContext
                             )
@@ -689,9 +694,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .claimNextSingleItem(purchasePrice):
             self.send(.setLoadingState(action: action, state: .loading))
             let singleItemInput = state.newClaim.returnSingleItemInfo(purchasePrice: purchasePrice)
-            let mutation = OctopusGraphQL.ClaimsFlowSingleItemMutation(
-                context: state.newClaim.context,
-                input: singleItemInput
+            let mutation = OctopusGraphQL.FlowClaimSingleItemNextMutation(
+                input: singleItemInput,
+                context: state.newClaim.context
             )
             return FiniteSignal { callback in
                 self.octopus.client
@@ -851,6 +856,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             )
 
                         case "FlowClaimSummaryStep":
+                            let title = data.asFlowClaimSummaryStep?.title
+                            actions.append(.setProblemTitle(title: title ?? ""))
                             actions.append(.openSummaryScreen)
 
                         case "FlowClaimDateOfOccurrencePlusLocationStep":
@@ -911,14 +918,15 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             let dateOfOccurrence = state.newClaim.dateOfOccurrence
             let location = state.newClaim.location
             let summaryInput = state.newClaim.returnSummaryInformation()
-            let mutation = OctopusGraphQL.ClaimsFlowSummaryMutation(
+            let mutation = OctopusGraphQL.FlowClaimSummaryNextMutation(
                 input: summaryInput,
                 context: newClaimContext
             )
             return mutation.getFuture(action: action, store: self)
+
         case .claimNextSingleItemCheckout:
             let claimSingleItemCheckoutInput = state.newClaim.returnSingleItemCheckoutInfo()
-            let mutation = OctopusGraphQL.ClaimsFlowSingleItemCheckoutMutation(
+            let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
                 input: claimSingleItemCheckoutInput,
                 context: newClaimContext
             )
@@ -968,6 +976,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.newClaim.priceOfPurchase = nil
             newState.newClaim.payoutAmount = nil
             newState.newClaim.listOfLocation = locations
+            newState.newClaim.problemTitle = nil
+            newState.newClaim.deductible = nil
+            newState.newClaim.depreciation = nil
+            newState.newClaim.prefferedCurrency = nil
+            newState.newClaim.maxDateOfoccurrance = nil
 
         case let .setSingleItemLists(brands, models, damages):
             newState.newClaim.listOfDamage = damages
@@ -1012,6 +1025,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case let .setMaxDateOfOccurrence(maxDate):
             newState.newClaim.maxDateOfoccurrance = maxDate
+
+        case let .setProblemTitle(title):
+            newState.newClaim.problemTitle = title
 
         default:
             break
@@ -1165,6 +1181,8 @@ extension OctopusGraphQL.FlowClaimStartMutation.Data: NextClaimSteps {
             )
 
         case "FlowClaimSummaryStep":
+            let title = data.asFlowClaimSummaryStep?.title
+            actions.append(.setProblemTitle(title: title ?? ""))
             actions.append(.openSummaryScreen)
 
         case "FlowClaimDateOfOccurrencePlusLocationStep":
@@ -1208,7 +1226,7 @@ extension OctopusGraphQL.FlowClaimStartMutation.Data: NextClaimSteps {
     }
 }
 
-extension OctopusGraphQL.ClaimsFlowPhoneNumberMutation.Data: NextClaimSteps {
+extension OctopusGraphQL.FlowClaimPhoneNumberNextMutation.Data: NextClaimSteps {
     func handleActions(for action: ClaimsAction, and callback: (Event<ClaimsAction>) -> Void, and store: ClaimsStore) {
         var actions = [ClaimsAction]()
         let context = self.flowClaimPhoneNumberNext.context
@@ -1347,6 +1365,8 @@ extension OctopusGraphQL.ClaimsFlowPhoneNumberMutation.Data: NextClaimSteps {
             )
 
         case "FlowClaimSummaryStep":
+            let title = data.asFlowClaimSummaryStep?.title
+            actions.append(.setProblemTitle(title: title ?? ""))
             actions.append(.openSummaryScreen)
 
         case "FlowClaimDateOfOccurrencePlusLocationStep":
@@ -1390,7 +1410,7 @@ extension OctopusGraphQL.ClaimsFlowPhoneNumberMutation.Data: NextClaimSteps {
     }
 }
 
-extension OctopusGraphQL.ClaimsFlowDateOfOccurrencePlusLocationMutation.Data: NextClaimSteps {
+extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data: NextClaimSteps {
     func handleActions(
         for action: ClaimsAction,
         and callback: (Flow.Event<ClaimsAction>) -> Void,
@@ -1535,6 +1555,8 @@ extension OctopusGraphQL.ClaimsFlowDateOfOccurrencePlusLocationMutation.Data: Ne
             )
 
         case "FlowClaimSummaryStep":
+            let title = data.asFlowClaimSummaryStep?.title
+            actions.append(.setProblemTitle(title: title ?? ""))
             actions.append(.openSummaryScreen)
 
         case "FlowClaimDateOfOccurrencePlusLocationStep":
@@ -1578,7 +1600,7 @@ extension OctopusGraphQL.ClaimsFlowDateOfOccurrencePlusLocationMutation.Data: Ne
     }
 }
 
-extension OctopusGraphQL.ClaimsFlowAudioRecordingMutation.Data: NextClaimSteps {
+extension OctopusGraphQL.FlowClaimAudioRecordingNextMutation.Data: NextClaimSteps {
     func handleActions(
         for action: ClaimsAction,
         and callback: (Flow.Event<ClaimsAction>) -> Void,
@@ -1721,6 +1743,8 @@ extension OctopusGraphQL.ClaimsFlowAudioRecordingMutation.Data: NextClaimSteps {
             )
 
         case "FlowClaimSummaryStep":
+            let title = data.asFlowClaimSummaryStep?.title
+            actions.append(.setProblemTitle(title: title ?? ""))
             actions.append(.openSummaryScreen)
 
         case "FlowClaimDateOfOccurrencePlusLocationStep":
@@ -1764,7 +1788,7 @@ extension OctopusGraphQL.ClaimsFlowAudioRecordingMutation.Data: NextClaimSteps {
     }
 }
 
-extension OctopusGraphQL.ClaimsFlowSummaryMutation.Data: NextClaimSteps {
+extension OctopusGraphQL.FlowClaimSummaryNextMutation.Data: NextClaimSteps {
     func handleActions(
         for action: ClaimsAction,
         and callback: (Flow.Event<ClaimsAction>) -> Void,
@@ -1908,6 +1932,8 @@ extension OctopusGraphQL.ClaimsFlowSummaryMutation.Data: NextClaimSteps {
             )
 
         case "FlowClaimSummaryStep":
+            let title = data.asFlowClaimSummaryStep?.title
+            actions.append(.setProblemTitle(title: title ?? ""))
             actions.append(.openSummaryScreen)
 
         case "FlowClaimDateOfOccurrencePlusLocationStep":
@@ -1951,7 +1977,7 @@ extension OctopusGraphQL.ClaimsFlowSummaryMutation.Data: NextClaimSteps {
     }
 }
 
-extension OctopusGraphQL.ClaimsFlowSingleItemCheckoutMutation.Data: NextClaimSteps {
+extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation.Data: NextClaimSteps {
     func handleActions(
         for action: ClaimsAction,
         and callback: (Flow.Event<ClaimsAction>) -> Void,
@@ -2094,6 +2120,8 @@ extension OctopusGraphQL.ClaimsFlowSingleItemCheckoutMutation.Data: NextClaimSte
             )
 
         case "FlowClaimSummaryStep":
+            let title = data.asFlowClaimSummaryStep?.title
+            actions.append(.setProblemTitle(title: title ?? ""))
             actions.append(.openSummaryScreen)
 
         case "FlowClaimDateOfOccurrencePlusLocationStep":
