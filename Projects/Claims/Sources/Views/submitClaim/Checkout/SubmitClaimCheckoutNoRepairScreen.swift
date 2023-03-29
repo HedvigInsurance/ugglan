@@ -53,7 +53,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
         }
         .hFormAttachToBottom {
             hButton.LargeButtonFilled {
-                store.send(.submitSingleItemCheckout)
+                store.send(.openCheckoutTransferringScreen)
             } content: {
                 hText(L10n.Claims.Payout.Payout.label, style: .body)
                     .foregroundColor(hLabelColor.primary.inverted)

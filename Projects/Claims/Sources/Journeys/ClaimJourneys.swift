@@ -53,17 +53,6 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
-        .onAction(
-            ClaimsStore.self,
-            { action, _ in
-                if case .submitOccuranceAndLocation = action {
-                    @PresentableStore var store: ClaimsStore
-                    store.send(
-                        .claimNextDateOfOccurrenceAndLocation
-                    )
-                }
-            }
-        )
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -208,7 +197,6 @@ public class ClaimJourneys {
             ClaimsStore.self,
             { action, pre in
                 if case let .setSingleItemModel(_) = action {
-                    @PresentableStore var store: ClaimsStore
                     pre.bag.dispose()
                 } else if case .dissmissNewClaimFlow = action {
                     pre.bag.dispose()
@@ -320,15 +308,6 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
-        .onAction(
-            ClaimsStore.self,
-            { action, _ in
-                if case .submitSingleItemCheckout = action {
-                    @PresentableStore var store: ClaimsStore
-                    store.send(.openCheckoutTransferringScreen)
-                }
-            }
-        )
         .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
@@ -347,15 +326,6 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
-        .onAction(
-            ClaimsStore.self,
-            { action, _ in
-                if case .submitTransferringFunds = action {
-                    @PresentableStore var store: ClaimsStore
-                    store.send(.claimNextSingleItemCheckout)
-                }
-            }
-        )
     }
 
     static func openCheckoutTransferringDoneScreen() -> some JourneyPresentation {

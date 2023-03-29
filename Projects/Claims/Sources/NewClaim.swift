@@ -28,6 +28,13 @@ public struct Damage: Decodable, Encodable, Equatable, Hashable {
 public struct Amount: Decodable, Encodable, Equatable, Hashable {
     public var amount: Double
     public var currencyCode: String
+
+    init(
+        with moneyFragment: OctopusGraphQL.MoneyFragment
+    ) {
+        self.amount = moneyFragment.amount
+        self.currencyCode = moneyFragment.currencyCode.rawValue
+    }
 }
 
 public struct NewClaim: Codable, Equatable {
@@ -51,6 +58,7 @@ public struct NewClaim: Codable, Equatable {
     public var prefferedCurrency: String?
     public var context: String
     public var maxDateOfoccurrance: String?
+    public var problemTitle: String?
 
     init(
         id: String,

@@ -48,15 +48,9 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder func displayTitleField(claim: NewClaim) -> some View {
 
-        if claim.chosenModel != nil {
-            hText(claim.chosenModel?.itemTypeID ?? "", style: .title3) /* TODO: CHANGE */
-                .padding(.top, UIScreen.main.bounds.size.height / 5)
-                .foregroundColor(hLabelColor.secondary)
-        } else if claim.chosenBrand != nil {
-            hText(claim.chosenBrand?.itemTypeId ?? "", style: .title3) /* TODO: CHANGE */
-                .padding(.top, UIScreen.main.bounds.size.height / 5)
-                .foregroundColor(hLabelColor.secondary)
-        }
+        hText(claim.problemTitle ?? "", style: .title3)
+            .padding(.top, UIScreen.main.bounds.size.height / 5)
+            .foregroundColor(hLabelColor.secondary)
     }
 
     @ViewBuilder func displayDateAndLocationOfOccurrenceField(claim: NewClaim) -> some View {

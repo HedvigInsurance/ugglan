@@ -107,7 +107,6 @@ public struct LoadingViewWithContent<Content: View>: View {
                         RetryView(title: error, retryTitle: L10n.alertOk) {
                             store.send(.setLoadingState(action: action, state: nil))
                         }
-                        .fixedSize(horizontal: true, vertical: true)
                     }
 
                 }

@@ -1,136 +1,29 @@
 mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
   flowClaimStart(input: $input, context: $context) {
     id
+    ...FlowClaimFragment
     context
-    currentStep {
-      id
-      ...FlowClaimAudioRecordingStepFragment
-      ...FlowClaimDateOfOccurrencePlusLocationStepFragment
-      ...FlowClaimDateOfOccurrenceStep
-      ... on FlowClaimFailedStep {
-        id
-      }
-      ... on FlowClaimLocationStep {
-        id
-        location
-        options {
-          displayName
-          value
-        }
-      }
-      ... on FlowClaimPhoneNumberStep {
-        id
-        phoneNumber
-      }
-      ... on FlowClaimSingleItemCheckoutStep {
-        availableCheckoutMethods {
-          id
-          ... on FlowClaimAutomaticAutogiroPayout {
-            amount {
-              amount
-              currencyCode
-            }
-            displayName
-            id
-          }
-        }
-        deductible {
-          amount
-          currencyCode
-        }
-        depreciation {
-          amount
-          currencyCode
-        }
-        id
-        payoutAmount {
-          amount
-          currencyCode
-        }
-        price {
-          amount
-          currencyCode
-        }
-      }
-      ... on FlowClaimSingleItemStep {
-        availableItemBrands {
-          displayName
-          itemBrandId
-          itemTypeId
-        }
-        availableItemModels {
-          displayName
-          imageUrl
-          itemBrandId
-          itemModelId
-          itemTypeId
-        }
-        availableItemProblems {
-          displayName
-          itemProblemId
-        }
-        id
-        preferredCurrency
-        purchaseDate
-        purchasePrice {
-          amount
-          currencyCode
-        }
-        selectedItemBrand
-        selectedItemModel
-        selectedItemProblems
-      }
-      ... on FlowClaimSuccessStep {
-        id
-      }
-      ... on FlowClaimSummaryStep {
-        dateOfOccurrenceStep {
-          dateOfOccurrence
-          id
-          maxDate
-        }
-        id
-        locationStep {
-          id
-          location
-          options {
-            displayName
-            value
-          }
-        }
-        singleItemStep {
-          availableItemBrands {
-            displayName
-            itemBrandId
-            itemTypeId
-          }
-          availableItemModels {
-            displayName
-            imageUrl
-            itemBrandId
-            itemModelId
-            itemTypeId
-          }
-          availableItemProblems {
-            displayName
-            itemProblemId
-          }
-          id
-          preferredCurrency
-          purchaseDate
-          purchasePrice {
-            amount
-            currencyCode
-          }
-          selectedItemBrand
-          selectedItemModel
-          selectedItemProblems
-        }
-      }
-    }
   }
 }
 
+fragment FlowClaimFragment on Flow {
+  currentStep {
+    id
+    ...FlowClaimAudioRecordingStepFragment
+    ...FlowClaimDateOfOccurrencePlusLocationStepFragment
+    ...FlowClaimDateOfOccurrenceStepFragment
+    ...FlowClaimFailedStepFragment
+    ...FlowClaimLocationStepFragment
+    ...FlowClaimPhoneNumberStepFragment
+    ...FlowClaimSingleItemCheckoutStepFragment
+    ...FlowClaimSingleItemStepFragment
+    ...FlowClaimSuccessStepFragment
+    ...FlowClaimSummaryStepFragment
+    ...FlowTerminationDateStepFragment
+    ...FlowTerminationFailedStepFragment
+    ...FlowTerminationSuccessStepFragment
+  }
+}
 
 fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep{
     id
@@ -158,4 +51,137 @@ fragment FlowClaimDateOfOccurrenceStepFragment on FlowClaimDateOfOccurrenceStep 
     dateOfOccurrence
     id
     maxDate
+}
+
+fragment FlowClaimFailedStepFragment on FlowClaimFailedStep {
+    id
+}
+
+fragment FlowClaimLocationStepFragment on FlowClaimLocationStep {
+    id
+    location
+    options {
+        displayName
+        value
+    }
+}
+
+fragment FlowClaimPhoneNumberStepFragment on FlowClaimPhoneNumberStep {
+    id
+    phoneNumber
+}
+fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutStep {
+    id
+    price {
+        ...MoneyFragment
+    }
+    depreciation {
+        ...MoneyFragment
+    }
+    deductible {
+        ...MoneyFragment
+    }
+    payoutAmount {
+        ...MoneyFragment
+    }
+    availableCheckoutMethods {
+        id
+    }
+}
+
+fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
+    id
+    preferredCurrency
+    purchasePrice {
+        ...MoneyFragment
+    }
+    purchaseDate
+    selectedItemProblems
+    availableItemProblems {
+        displayName
+        itemProblemId
+    }
+    selectedItemBrand
+    availableItemBrands {
+        displayName
+        itemTypeId
+        itemBrandId
+    }
+    selectedItemModel
+    availableItemModels {
+        displayName
+        imageUrl
+        itemTypeId
+        itemBrandId
+        itemModelId
+    }
+    customName
+}
+
+
+fragment FlowClaimSuccessStepFragment on FlowClaimSuccessStep {
+    id
+}
+fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
+    id
+    title
+    dateOfOccurrenceStep {
+        id
+        dateOfOccurrence
+        maxDate
+    }
+    locationStep {
+        id
+        location
+        options {
+            displayName
+            value
+        }
+    }
+    singleItemStep {
+        id
+        preferredCurrency
+        purchasePrice {
+            ...MoneyFragment
+        }
+        purchaseDate
+        selectedItemProblems
+        availableItemProblems {
+            displayName
+            itemProblemId
+        }
+        selectedItemBrand
+        availableItemBrands {
+            displayName
+            itemTypeId
+            itemBrandId
+        }
+        selectedItemModel
+        availableItemModels {
+            displayName
+            imageUrl
+            itemTypeId
+            itemBrandId
+            itemModelId
+        }
+        customName
+    }
+}
+fragment FlowTerminationDateStepFragment on FlowTerminationDateStep {
+    id
+    minDate
+    maxDate
+}
+fragment FlowTerminationFailedStepFragment on FlowTerminationFailedStep {
+    id
+}
+fragment FlowTerminationSuccessStepFragment on FlowTerminationSuccessStep {
+    id
+    terminationDate
+    surveyUrl
+}
+
+fragment MoneyFragment on Money {
+    amount
+    currencyCode
 }

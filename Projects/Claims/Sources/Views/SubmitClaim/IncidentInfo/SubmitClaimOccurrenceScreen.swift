@@ -87,7 +87,7 @@ public struct SubmitClaimOccurrenceScreen: View {
             .hFormAttachToBottom {
 
                 hButton.LargeButtonFilled {
-                    store.send(.submitOccuranceAndLocation)
+                    store.send(.claimNextDateOfOccurrenceAndLocation)
                     store.send(.dissmissNewClaimFlow)
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)

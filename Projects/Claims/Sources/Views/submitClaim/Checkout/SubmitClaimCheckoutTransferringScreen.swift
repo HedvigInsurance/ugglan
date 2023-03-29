@@ -61,7 +61,7 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                         hasActionCompleted = true
                     }
                     await delay(2)
-                    store.send(.submitTransferringFunds)
+                    store.send(.claimNextSingleItemCheckout)
                 }
             }
         }

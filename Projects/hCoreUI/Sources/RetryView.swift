@@ -17,17 +17,21 @@ public struct RetryView: View {
     }
 
     public var body: some View {
-        hForm {
-            hText(L10n.somethingWentWrong)
-            hText(title, style: .body).multilineTextAlignment(.center)
-                .padding(20)
-            hButton.SmallButtonFilled {
-                action()
-            } content: {
-                hText(retryTitle)
+        //        hForm {
+        hSection {
+            Group {
+                hText(L10n.somethingWentWrong)
+                hText(title, style: .body).multilineTextAlignment(.center)
+                hButton.SmallButtonFilled {
+                    action()
+                } content: {
+                    hText(retryTitle)
+                }
             }
-            .padding(.horizontal, 10)
+            .padding(20)
         }
+        .hShadow()
+        //        }.hShadow()
         //        VStack {
         //            Spacer()
         //            hText(title, style: .body).multilineTextAlignment(.center)
