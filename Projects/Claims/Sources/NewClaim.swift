@@ -30,6 +30,13 @@ public struct Amount: Decodable, Encodable, Equatable, Hashable {
     public var currencyCode: String
 
     init(
+        amount: Double,
+        currencyCode: String
+    ) {
+        self.amount = amount
+        self.currencyCode = currencyCode
+    }
+    init(
         with moneyFragment: OctopusGraphQL.MoneyFragment
     ) {
         self.amount = moneyFragment.amount
@@ -52,6 +59,7 @@ public struct NewClaim: Codable, Equatable {
     public var chosenModel: Model?
     public var chosenBrand: Brand?
     public var chosenDamages: [Damage]?
+    public var defaultChosenDamages: [Damage]?
     public var payoutAmount: Amount?
     public var deductible: Amount?
     public var depreciation: Amount?
@@ -75,11 +83,11 @@ public struct NewClaim: Codable, Equatable {
         let itemModelIdInput = chosenModel?.itemModelId ?? ""
         let itemModelTypeIdInput = chosenModel?.itemTypeID ?? ""
 
-        var problemsToString: [String] = []
-        for element in chosenDamages ?? [] {
-            problemsToString.append(element.itemProblemId)
-        }
-
+        //        var problemsToString: [String] = chosenDamages?.map({$0.itemProblemId}) ?? []
+        //        for element in chosenDamages ?? [] {
+        //            problemsToString.append(element.itemProblemId)
+        //        }
+        let problemsIds = Array(Set(self.getChoosenDamages().map({ $0.itemProblemId })))
         if itemModelIdInput != "" {
             let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
                 itemModelId: itemModelIdInput
@@ -88,7 +96,7 @@ public struct NewClaim: Codable, Equatable {
             return OctopusGraphQL.FlowClaimSingleItemInput(
                 purchasePrice: purchasePrice,
                 purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
-                itemProblemIds: problemsToString,
+                itemProblemIds: problemsIds,
                 itemModelInput: flowClaimItemModelInput
             )
 
@@ -102,7 +110,7 @@ public struct NewClaim: Codable, Equatable {
             return OctopusGraphQL.FlowClaimSingleItemInput(
                 purchasePrice: purchasePrice,
                 purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
-                itemProblemIds: problemsToString,
+                itemProblemIds: problemsIds,
                 itemBrandInput: flowClaimItemBrandInput
             )
         }
@@ -153,8 +161,9 @@ public struct NewClaim: Codable, Equatable {
         return OctopusGraphQL.FlowClaimSummaryInput()
     }
 
-    func getChoosenDamages() -> String? {
-        if let chosenDamages, !chosenDamages.isEmpty {
+    func getChoosenDamagesAsText() -> String? {
+        let chosenDamages = self.chosenDamages ?? []
+        if !chosenDamages.isEmpty {
             var finalString = chosenDamages[0].displayName
             if chosenDamages.count > 1 {
                 finalString.append(", \(chosenDamages[1].displayName)")
@@ -178,5 +187,12 @@ public struct NewClaim: Codable, Equatable {
 
     func getModels() -> [Model] {
         return self.filteredListOfModels ?? []
+    }
+
+    func getChoosenDamages() -> [Damage] {
+        if chosenDamages?.isEmpty ?? true {
+            return defaultChosenDamages ?? []
+        }
+        return self.chosenDamages ?? []
     }
 }

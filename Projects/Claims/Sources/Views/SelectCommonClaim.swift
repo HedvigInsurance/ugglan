@@ -7,21 +7,13 @@ public struct SelectCommonClaim: View {
     @PresentableStore var store: ClaimsStore
     public init() {}
     public var body: some View {
-        PresentableStoreLens(
-            ClaimsStore.self,
-            getter: { state in
-                state.entryPointCommonClaims
-            }
-        ) { entryPointCommonClaims in
-            switch entryPointCommonClaims {
-            case .loading:
-                ActivityIndicator(style: .large)
-            case let .error(message):
-                RetryView(title: message, retryTitle: L10n.generalRetry) {
-                    store.send(.fetchCommonClaimsForSelection)
+        LoadingViewWithContent(.fetchCommonClaimsForSelection) {
+            PresentableStoreLens(
+                ClaimsStore.self,
+                getter: { state in
+                    state.entryPointCommonClaims
                 }
-                .padding(16)
-            case let .success(entryPointCommonClaims):
+            ) { entryPointCommonClaims in
                 hForm {
                     hSection {
                         ForEach(entryPointCommonClaims, id: \.id) { claimType in
@@ -42,7 +34,7 @@ public struct SelectCommonClaim: View {
                     }
                 }
             }
+            .presentableStoreLensAnimation(.easeInOut)
         }
-        .presentableStoreLensAnimation(.easeInOut)
     }
 }

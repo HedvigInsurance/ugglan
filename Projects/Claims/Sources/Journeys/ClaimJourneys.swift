@@ -22,6 +22,14 @@ public class ClaimJourneys {
                 openDamagePickerScreen()
             } else if case .openCheckoutNoRepairScreen = action {
                 openCheckoutNoRepairScreen()
+            } else if case .openFailureSceen = action {
+                showClaimFailureScreen()
+            } else if case .openSummaryEditScreen = action {
+                openSummaryEditScreen()
+            } else if case .claimNextSingleItemCheckout = action {
+                openCheckoutNoRepairScreen()
+            } else if case .openLocationPicker = action {
+                openLocationScreen()
             }
         }
     }
@@ -34,7 +42,11 @@ public class ClaimJourneys {
             rootView: SubmitClaimContactScreen(phoneNumber: phoneNumber),
             style: .detented(.large, modally: false)
         ) { action in
-            getScreenForAction(for: action)
+            if case .dissmissNewClaimFlow = action {
+                PopJourney()
+            } else {
+                getScreenForAction(for: action)
+            }
         }
     }
 
@@ -280,10 +292,8 @@ public class ClaimJourneys {
             style: .default
         ) {
             action in
-            if case .openSummaryEditScreen = action {
-                openSummaryEditScreen()
-            } else if case .claimNextSingleItemCheckout = action {
-                openCheckoutNoRepairScreen()
+            if case .dissmissNewClaimFlow = action {
+                PopJourney()
             } else {
                 getScreenForAction(for: action)
             }
@@ -328,7 +338,7 @@ public class ClaimJourneys {
         }
     }
 
-    static func openCheckoutTransferringDoneScreen() -> some JourneyPresentation {
+    private static func openCheckoutTransferringDoneScreen() -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
@@ -344,20 +354,14 @@ public class ClaimJourneys {
         }
     }
 
-    static func openSummaryEditScreen() -> some JourneyPresentation {
+    private static func openSummaryEditScreen() -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimEditSummaryScreen()
         ) {
             action in
-            if case .openLocationPicker = action {
-                openLocationScreen()
-            } else if case .dissmissNewClaimFlow = action {
-                PopJourney()
-            } else {
-                getScreenForAction(for: action)
-            }
+            getScreenForAction(for: action)
         }
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
@@ -398,4 +402,17 @@ public class ClaimJourneys {
             redirectJourney(origin)
         }
     }
+
+    private static func showClaimFailureScreen() -> some JourneyPresentation {
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: ClaimFailureScreen()
+        ) { action in
+            if case .dissmissNewClaimFlow = action {
+                DismissJourney()
+            }
+        }
+        .hidesBackButton
+    }
+
 }

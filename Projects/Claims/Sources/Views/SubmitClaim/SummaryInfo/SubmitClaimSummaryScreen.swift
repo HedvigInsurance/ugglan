@@ -100,7 +100,7 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder func displayDamageField(claim: NewClaim) -> some View {
 
-        if let chosenDamages = claim.getChoosenDamages() {
+        if let chosenDamages = claim.getChoosenDamagesAsText() {
             hText(L10n.summarySelectedProblemDescription(chosenDamages)).foregroundColor(hLabelColor.primary)
                 .padding(.top, 1)
         } else {

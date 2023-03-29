@@ -52,7 +52,7 @@ public struct DamamagePickerScreen: View {
             hButton.LargeButtonFilled {
                 store.send(
                     .submitDamage(
-                        damage: store.state.newClaim.listOfDamage?.filter({ selectedDamages.contains($0) }) ?? []
+                        damage: selectedDamages
                     )
                 )
             } content: {

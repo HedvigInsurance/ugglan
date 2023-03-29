@@ -119,7 +119,7 @@ public struct SubmitClaimSingleItem: View {
                 }
             }
             .withCustomAccessory {
-                if let chosenDamages = claim.getChoosenDamages() {
+                if let chosenDamages = claim.getChoosenDamagesAsText() {
                     hText(chosenDamages).foregroundColor(hLabelColor.primary)
                 } else {
                     hText(L10n.Claim.Location.choose).foregroundColor(hLabelColor.placeholder)
