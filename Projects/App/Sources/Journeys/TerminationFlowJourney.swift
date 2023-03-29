@@ -4,53 +4,103 @@ import Presentation
 import hCore
 
 extension AppJourney {
-    static func terminationFlow(contractId: String, context: String) -> some JourneyPresentation {
+
+    @JourneyBuilder
+    private static func getScreenForAction(for action: ContractAction) -> some JourneyPresentation {
+        if case let .openTerminationSuccess(terminationDateInput, surveyURL) = action {
+            AppJourney.openTerminationSuccessScreen(terminationDate: terminationDateInput, surveyURL: surveyURL)
+                .withJourneyDismissButton
+        } else if case let .openTerminationSetDateScreen(context) = action {
+            AppJourney.openSetTerminationDateScreen(context: context).withJourneyDismissButton
+        } else if case .openTerminationFailScreen = action {
+            AppJourney.openTerminationFailScreen()
+        } else if case .openTerminationUpdateAppScreen = action {
+            AppJourney.openUpdateAppTerminationScreen().withJourneyDismissButton
+        }
+    }
+
+    static func openSetTerminationDateScreen(context: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: SetTerminationDate(contractId: contractId, context: context),
-            style: .modally()
+            rootView: SetTerminationDate(),
+            style: .detented(.large, modally: false)
         ) {
             action in
-            if case .sendTermination(let terminationDate, _, let surveyURL) = action {
-                sendTermination(terminationDate: terminationDate, surveyURL: surveyURL)
-            } else if case .terminationFail = action {
-                terminationFail()
-            }
+            getScreenForAction(for: action)
         }
+        .onAction(
+            ContractStore.self,
+            { action, _ in
+                if case let .submitTerminationDate(terminationDate) = action {
+                    @PresentableStore var store: ContractStore
+                    store.send(.sendTerminationDate(terminationDateInput: terminationDate, contextInput: context))
+                }
+            }
+        )
         .setScrollEdgeNavigationBarAppearanceToStandard
         .withJourneyDismissButton
     }
 
-    static func sendTermination(terminationDate: Date, surveyURL: String) -> some JourneyPresentation {
+    static func openTerminationSuccessScreen(terminationDate: Date, surveyURL: String) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: TerminationSuccessScreen(terminationDate: terminationDate, surveyURL: surveyURL),
-            style: .default
+            style: .detented(.large, modally: false)
         ) {
             action in
-            if case .dismissTerminationFlow = action {
-                DismissJourney()
-            }
+            getScreenForAction(for: action)
         }
+        .onAction(
+            ContractStore.self,
+            { action, pre in
+                if case .dismissTerminationFlow = action {
+                    pre.bag.dispose()
+                }
+            }
+        )
         .setScrollEdgeNavigationBarAppearanceToStandard
-        .withJourneyDismissButton
     }
 
-    static func terminationFail() -> some JourneyPresentation {
-
+    static func openTerminationFailScreen() -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: TerminationFailScreen(),
-            style: .default
+            style: .detented(.large, modally: false)
         ) {
             action in
-            if case .dismissTerminationFlow = action {
-                DismissJourney()
-            } else if case .goToFreeTextChat = action {
-                DismissJourney()
-            }
+            getScreenForAction(for: action)
         }
-        .withJourneyDismissButton
+        .onAction(
+            ContractStore.self,
+            { action, pre in
+                if case .dismissTerminationFlow = action {
+                    pre.bag.dispose()
+                } else if case .goToFreeTextChat = action {
+                    pre.bag.dispose()  //?
+                }
+            }
+        )
         .setScrollEdgeNavigationBarAppearanceToStandard
+    }
+
+    static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: UpdateAppScreen(),
+            style: .detented(.large, modally: false)
+        ) {
+            action in
+            getScreenForAction(for: action)
+        }
+        .onAction(
+            ContractStore.self,
+            { action, pre in
+                if case .dismissTerminationFlow = action {
+                    pre.bag.dispose()
+                }
+            }
+        )
+        .setScrollEdgeNavigationBarAppearanceToStandard
+        .withJourneyDismissButton
     }
 }

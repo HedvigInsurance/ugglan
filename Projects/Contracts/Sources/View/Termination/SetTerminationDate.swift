@@ -7,15 +7,7 @@ public struct SetTerminationDate: View {
     @State private var terminationDate = Date()
     @PresentableStore var store: ContractStore
 
-    var contractId: String
-    let context: String
-
-    public init(
-        contractId: String,
-        context: String
-    ) {
-        self.contractId = contractId
-        self.context = context
+    public init() {
     }
 
     public var body: some View {
@@ -69,7 +61,7 @@ public struct SetTerminationDate: View {
 
             VStack {
                 hButton.LargeButtonFilled {
-                    store.send(.sendTerminationDate(terminationDateInput: terminationDate, contextInput: context))
+                    store.send(.submitTerminationDate(terminationDate: terminationDate))
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)

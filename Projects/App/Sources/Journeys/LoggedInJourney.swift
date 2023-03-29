@@ -58,12 +58,18 @@ extension AppJourney {
                 AppJourney.crossSellingJourney(crossSell: crossSell)
             case let .openCrossSellingEmbark(name):
                 AppJourney.crossSellingEmbarkJourney(name: name, style: .detented(.large))
-            case let .terminationFlow(contractId, contextInput):
-                AppJourney.terminationFlow(contractId: contractId, context: contextInput)
-            case let .terminationSuccessFlow(terminationDate, surveyURL):
-                AppJourney.sendTermination(terminationDate: terminationDate, surveyURL: surveyURL)
+            case let .terminationFlow(contextInput):
+                AppJourney.openSetTerminationDateScreen(context: contextInput)
+            case .openTerminationFailScreen:
+                AppJourney.openTerminationFailScreen()
+            case .openTerminationUpdateAppScreen:
+                AppJourney.openUpdateAppTerminationScreen()
             case let .openCrossSellingWebUrl(url):
                 AppJourney.webRedirect(url: url)
+            case let .terminationSuccessFlow(terminationdate, surveyURL):
+                AppJourney.openTerminationSuccessScreen(terminationDate: terminationdate, surveyURL: surveyURL)
+            case let .openTerminationSuccess(terminationDateInput, surveyURL):
+                AppJourney.openTerminationSuccessScreen(terminationDate: terminationDateInput, surveyURL: surveyURL)
             }
         }
         .onTabSelected {
