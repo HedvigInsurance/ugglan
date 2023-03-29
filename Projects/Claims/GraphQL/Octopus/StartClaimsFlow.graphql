@@ -1,33 +1,12 @@
 mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
   flowClaimStart(input: $input, context: $context) {
+    id
     context
     currentStep {
       id
-      ... on FlowClaimAudioRecordingStep {
-        id
-        questions
-      }
-      ... on FlowClaimDateOfOccurrencePlusLocationStep {
-        dateOfOccurrenceStep {
-          dateOfOccurrence
-          id
-          maxDate
-        }
-        id
-        locationStep {
-          id
-          location
-          options {
-            displayName
-            value
-          }
-        }
-      }
-      ... on FlowClaimDateOfOccurrenceStep {
-        dateOfOccurrence
-        id
-        maxDate
-      }
+      ...FlowClaimAudioRecordingStepFragment
+      ...FlowClaimDateOfOccurrencePlusLocationStepFragment
+      ...FlowClaimDateOfOccurrenceStep
       ... on FlowClaimFailedStep {
         id
       }
@@ -48,11 +27,11 @@ mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
           id
           ... on FlowClaimAutomaticAutogiroPayout {
             amount {
-              currencyCode
               amount
+              currencyCode
             }
-            id
             displayName
+            id
           }
         }
         deductible {
@@ -65,8 +44,8 @@ mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
         }
         id
         payoutAmount {
-          currencyCode
           amount
+          currencyCode
         }
         price {
           amount
@@ -149,6 +128,34 @@ mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
         }
       }
     }
-    id
   }
+}
+
+
+fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep{
+    id
+    questions
+}
+
+fragment FlowClaimDateOfOccurrencePlusLocationStepFragment on FlowClaimDateOfOccurrencePlusLocationStep {
+    dateOfOccurrenceStep {
+    dateOfOccurrence
+    id
+    maxDate
+    }
+    id
+    locationStep {
+        id
+        location
+        options {
+            displayName
+            value
+        }
+    }
+}
+
+fragment FlowClaimDateOfOccurrenceStepFragment on FlowClaimDateOfOccurrenceStep {
+    dateOfOccurrence
+    id
+    maxDate
 }

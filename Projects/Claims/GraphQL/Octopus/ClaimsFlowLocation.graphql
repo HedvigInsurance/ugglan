@@ -3,26 +3,8 @@ mutation ClaimsFlowLocation($input: FlowClaimLocationInput!, $context: FlowConte
     context
     currentStep {
       id
-      ... on FlowClaimAudioRecordingStep {
-        id
-        questions
-      }
-      ... on FlowClaimDateOfOccurrencePlusLocationStep {
-        dateOfOccurrenceStep {
-          maxDate
-          dateOfOccurrence
-          id
-        }
-        id
-        locationStep {
-          id
-          location
-          options {
-            value
-            displayName
-          }
-        }
-      }
+      ...FlowClaimAudioRecordingStepFragment
+      ...FlowClaimDateOfOccurrencePlusLocationStepFragment
       ... on FlowClaimDateOfOccurrenceStep {
         dateOfOccurrence
         id

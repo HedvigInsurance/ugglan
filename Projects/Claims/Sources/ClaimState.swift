@@ -30,10 +30,6 @@ public struct ClaimsState: StateProtocol {
         }
         return false
     }
-
-    public func shouldShowListOfModels(for brand: Brand) -> Bool {
-        return !(self.newClaim.getListOfModels(for: brand)?.isEmpty ?? true)
-    }
 }
 
 public enum LoadingState<T>: Codable & Equatable where T: Codable & Equatable {
@@ -83,9 +79,6 @@ public indirect enum ClaimsAction: ActionProtocol {
     case submitSingleItem(purchasePrice: Double)
     case submitDamage(damage: [Damage])
     case claimNextDamage(damages: Damage)
-    case submitModel(model: Model)
-    case submitBrand(brand: Brand)
-    case submitSummary
     case submitSingleItemCheckout
     case submitTransferringFunds
 
@@ -121,7 +114,7 @@ public indirect enum ClaimsAction: ActionProtocol {
     case setSingleItemPriceOfPurchase(purchasePrice: Double)
     case setSingleItemDamage(damages: [Damage])
     case setSingleItemPurchaseDate(purchaseDate: Date)
-    case setSingleItemBrand(brand: Brand)
+    case setItemBrand(brand: Brand)
     case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
     case setPayoutAmountDeductibleDepreciation(payoutAmount: Amount, deductible: Amount, depreciation: Amount)
     case setPrefferedCurrency(currency: String)
@@ -454,8 +447,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case let .setSingleItemPurchaseDate(purchaseDate):
             newState.newClaim.dateOfPurchase = purchaseDate
-
-        case let .setSingleItemBrand(brand):
+        case let .setItemBrand(brand):
             newState.newClaim.chosenModel = nil
             newState.newClaim.chosenBrand = brand
             newState.newClaim.filteredListOfModels = newState.newClaim.getListOfModels(for: brand)
@@ -501,7 +493,6 @@ extension OctopusGraphQL.FlowClaimStartMutation.Data: NextClaimSteps {
         let data = self.flowClaimStart.currentStep
         var actions = [ClaimsAction]()
         actions.append(.setNewClaim(from: NewClaim(id: id, context: context)))
-
         switch data.__typename {
 
         case "FlowClaimPhoneNumberStep":
@@ -1057,7 +1048,6 @@ extension OctopusGraphQL.ClaimsFlowAudioRecordingMutation.Data: NextClaimSteps {
         var actions = [ClaimsAction]()
         actions.append(.setNewClaimContext(context: context))
         let data = self.flowClaimAudioRecordingNext.currentStep
-
         switch data.__typename {
 
         case "FlowClaimPhoneNumberStep":
@@ -1430,7 +1420,6 @@ extension OctopusGraphQL.ClaimsFlowSingleItemCheckoutMutation.Data: NextClaimSte
         var actions = [ClaimsAction]()
         actions.append(.setNewClaimContext(context: context))
         let data = self.flowClaimSingleItemCheckoutNext.currentStep
-
         switch data.__typename {
 
         case "FlowClaimPhoneNumberStep":
@@ -1620,7 +1609,7 @@ extension GraphQLMutation {
                         .value(
                             .setLoadingState(
                                 action: action,
-                                state: .error(error: error.localizedDescription)
+                                state: .error(error: L10n.General.errorBody)
                             )
                         )
                     )

@@ -4,26 +4,8 @@ mutation ClaimsFlowPhoneNumber($input: FlowClaimPhoneNumberInput!, $context: Flo
     id
     currentStep {
       id
-      ... on FlowClaimAudioRecordingStep {
-        id
-        questions
-      }
-      ... on FlowClaimDateOfOccurrencePlusLocationStep {
-        dateOfOccurrenceStep {
-          dateOfOccurrence
-          id
-          maxDate
-        }
-        id
-        locationStep {
-          id
-          location
-          options {
-            value
-            displayName
-          }
-        }
-      }
+      ...FlowClaimAudioRecordingStepFragment
+      ...FlowClaimDateOfOccurrencePlusLocationStepFragment
       ... on FlowClaimDateOfOccurrenceStep {
         dateOfOccurrence
         id

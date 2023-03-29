@@ -8,38 +8,40 @@ public struct SubmitClaimSummaryScreen: View {
     public init() {}
 
     public var body: some View {
+        LoadingViewWithContent(.claimNextSummary) {
 
-        PresentableStoreLens(
-            ClaimsStore.self,
-            getter: { state in
-                state.newClaim
-            }
-        ) { claim in
-
-            hForm {
-                VStack(alignment: .center) {
-
-                    displayTitleField(claim: claim)
-                    displayDateAndLocationOfOccurrenceField(claim: claim)
-                    displayModelField(claim: claim)
-                    displayDateOfPurchase(claim: claim)
-                    displayDamageField(claim: claim)
-
-                    //                    hButton.SmallButtonOutlined {
-                    //                        store.send(.openSummaryEditScreen(context: ""))
-                    //                    } content: {
-                    //                        hText(L10n.Claims.Edit.button)
-                    //                    }
-                    //                    .padding(.top, 25)
+            PresentableStoreLens(
+                ClaimsStore.self,
+                getter: { state in
+                    state.newClaim
                 }
-            }
-            .hFormAttachToBottom {
-                hButton.LargeButtonFilled {
-                    store.send(.submitSummary)
-                } content: {
-                    hText(L10n.generalContinueButton)
+            ) { claim in
+
+                hForm {
+                    VStack(alignment: .center) {
+
+                        displayTitleField(claim: claim)
+                        displayDateAndLocationOfOccurrenceField(claim: claim)
+                        displayModelField(claim: claim)
+                        displayDateOfPurchase(claim: claim)
+                        displayDamageField(claim: claim)
+
+                        //                    hButton.SmallButtonOutlined {
+                        //                        store.send(.openSummaryEditScreen(context: ""))
+                        //                    } content: {
+                        //                        hText(L10n.Claims.Edit.button)
+                        //                    }
+                        //                    .padding(.top, 25)
+                    }
                 }
-                .padding([.leading, .trailing], 16)
+                .hFormAttachToBottom {
+                    hButton.LargeButtonFilled {
+                        store.send(.claimNextSummary)
+                    } content: {
+                        hText(L10n.generalContinueButton)
+                    }
+                    .padding([.leading, .trailing], 16)
+                }
             }
         }
     }

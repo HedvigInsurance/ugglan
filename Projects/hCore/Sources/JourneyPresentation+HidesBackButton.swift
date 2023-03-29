@@ -8,8 +8,9 @@ extension JourneyPresentation {
         addConfiguration { presenter in
             presenter.viewController.navigationItem.hidesBackButton = true
 
-            presenter.bag += presenter.viewController.view.didMoveToWindowSignal.onValue({ _ in
+            presenter.bag += presenter.viewController.view.didLayoutSignal.onValue({ _ in
                 presenter.viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+                presenter.viewController.navigationItem.hidesBackButton = true
             })
         }
     }
@@ -19,8 +20,9 @@ extension JourneyPresentation {
         addConfiguration { presenter in
             presenter.viewController.navigationItem.hidesBackButton = false
 
-            presenter.bag += presenter.viewController.view.didMoveToWindowSignal.onValue({ _ in
+            presenter.bag += presenter.viewController.view.didLayoutSignal.onValue({ _ in
                 presenter.viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+                presenter.viewController.navigationItem.hidesBackButton = false
             })
         }
     }

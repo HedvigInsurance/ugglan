@@ -4,26 +4,8 @@ mutation ClaimsFlowSummary($input: FlowClaimSummaryInput!, $context: FlowContext
     id
     currentStep {
       id
-      ... on FlowClaimAudioRecordingStep {
-        id
-        questions
-      }
-      ... on FlowClaimDateOfOccurrencePlusLocationStep {
-        dateOfOccurrenceStep {
-          dateOfOccurrence
-          id
-          maxDate
-        }
-        id
-        locationStep {
-          id
-          location
-          options {
-            displayName
-            value
-          }
-        }
-      }
+      ...FlowClaimAudioRecordingStepFragment
+      ...FlowClaimDateOfOccurrencePlusLocationStepFragment
       ... on FlowClaimDateOfOccurrenceStep {
         dateOfOccurrence
         id

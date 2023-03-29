@@ -159,4 +159,16 @@ public struct NewClaim: Codable, Equatable {
     func getListOfModels(for brand: Brand) -> [Model]? {
         return listOfModels?.filter({ $0.itemBrandId == brand.itemBrandId })
     }
+
+    func shouldShowListOfModels(for brand: Brand) -> Bool {
+        return !(self.getListOfModels(for: brand)?.isEmpty ?? true)
+    }
+
+    func getBrands() -> [Brand] {
+        return self.listOfBrands ?? []
+    }
+
+    func getModels() -> [Model] {
+        return self.filteredListOfModels ?? []
+    }
 }

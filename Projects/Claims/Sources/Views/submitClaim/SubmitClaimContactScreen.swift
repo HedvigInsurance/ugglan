@@ -104,7 +104,10 @@ public struct LoadingViewWithContent<Content: View>: View {
                         .cornerRadius(.defaultCornerRadius)
                         .edgesIgnoringSafeArea(.top)
                     case let .error(error):
-                        Text("")
+                        RetryView(title: error, retryTitle: L10n.alertOk) {
+                            store.send(.setLoadingState(action: action, state: nil))
+                        }
+                        .fixedSize(horizontal: true, vertical: true)
                     }
 
                 }
