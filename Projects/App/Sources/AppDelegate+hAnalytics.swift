@@ -16,7 +16,7 @@ extension AppDelegate {
             case .production:
                 return "https://hanalytics-production.herokuapp.com"
             case .custom, .staging:
-                return "https://hanalytics-staging.herokuapp.com"
+                return "https://hanalytics.dev.hedvigit.com"
             }
         }
         hAnalyticsNetworking.trackingId = { ApolloClient.getDeviceIdentifier() }
