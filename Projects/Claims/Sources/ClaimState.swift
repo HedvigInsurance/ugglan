@@ -438,8 +438,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case .claimNextSummary:
             send(.setLoadingState(action: action, state: .loading))
-            let dateOfOccurrence = state.newClaim.dateOfOccurrence
-            let location = state.newClaim.location
             let summaryInput = state.newClaim.returnSummaryInformation()
             let mutation = OctopusGraphQL.FlowClaimSummaryNextMutation(
                 input: summaryInput,
