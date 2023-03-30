@@ -66,8 +66,6 @@ extension AppJourney {
                 AppJourney.openUpdateAppTerminationScreen()
             case let .openCrossSellingWebUrl(url):
                 AppJourney.webRedirect(url: url)
-            case let .terminationSuccessFlow(terminationdate, surveyURL):
-                AppJourney.openTerminationSuccessScreen(terminationDate: terminationdate, surveyURL: surveyURL)
             case let .openTerminationSuccess(terminationDateInput, surveyURL):
                 AppJourney.openTerminationSuccessScreen(terminationDate: terminationDateInput, surveyURL: surveyURL)
             }
