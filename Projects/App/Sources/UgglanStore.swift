@@ -17,7 +17,6 @@ public enum UgglanAction: ActionProtocol {
     case setSelectedTabIndex(index: Int)
     case makeTabActive(deeplink: DeepLink)
     case showLoggedIn
-    case didAcceptHonestyPledge
     case openChat
     case sendAccountDeleteRequest(details: MemberDetails)
     case businessModelDetail

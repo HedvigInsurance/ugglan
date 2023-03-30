@@ -77,43 +77,35 @@ public struct NewClaim: Codable, Equatable {
     }
 
     public func returnSingleItemInfo(purchasePrice: Double) -> OctopusGraphQL.FlowClaimSingleItemInput {
-        let itemBrandIdInput = chosenBrand?.itemBrandId ?? ""
-        let itemBrandTypeIdInput = chosenBrand?.itemTypeId ?? ""
+        let itemBrandInput: OctopusGraphQL.FlowClaimItemBrandInput? = {
+            if chosenModel != nil {
+                return nil
+            }
+            guard let chosenBrand, let itemTypeId = chosenBrand.itemTypeId, let itemBrandId = chosenBrand.itemBrandId
+            else { return nil }
 
-        let itemModelIdInput = chosenModel?.itemModelId ?? ""
-        let itemModelTypeIdInput = chosenModel?.itemTypeID ?? ""
+            return OctopusGraphQL.FlowClaimItemBrandInput(
+                itemTypeId: itemTypeId,
+                itemBrandId: itemBrandId
+            )
 
-        //        var problemsToString: [String] = chosenDamages?.map({$0.itemProblemId}) ?? []
-        //        for element in chosenDamages ?? [] {
-        //            problemsToString.append(element.itemProblemId)
-        //        }
+        }()
+
+        let itemModelInput: OctopusGraphQL.FlowClaimItemModelInput? = {
+            guard let chosenModel else { return nil }
+            return OctopusGraphQL.FlowClaimItemModelInput(itemModelId: chosenModel.itemModelId)
+
+        }()
         let problemsIds = Array(Set(self.getChoosenDamages().map({ $0.itemProblemId })))
-        if itemModelIdInput != "" {
-            let flowClaimItemModelInput = OctopusGraphQL.FlowClaimItemModelInput(
-                itemModelId: itemModelIdInput
-            )
 
-            return OctopusGraphQL.FlowClaimSingleItemInput(
-                purchasePrice: purchasePrice,
-                purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
-                itemProblemIds: problemsIds,
-                itemModelInput: flowClaimItemModelInput
-            )
-
-        } else {
-
-            let flowClaimItemBrandInput = OctopusGraphQL.FlowClaimItemBrandInput(
-                itemTypeId: itemBrandTypeIdInput,
-                itemBrandId: itemBrandIdInput
-            )
-
-            return OctopusGraphQL.FlowClaimSingleItemInput(
-                purchasePrice: purchasePrice,
-                purchaseDate: formatDateToString(date: dateOfPurchase ?? Date()),
-                itemProblemIds: problemsIds,
-                itemBrandInput: flowClaimItemBrandInput
-            )
-        }
+        return OctopusGraphQL.FlowClaimSingleItemInput(
+            purchasePrice: purchasePrice == 0 ? nil : purchasePrice,
+            purchaseDate: formatDateToString(date: dateOfPurchase),
+            itemProblemIds: problemsIds,
+            itemBrandInput: itemBrandInput,
+            itemModelInput: itemModelInput,
+            customName: nil
+        )
     }
 
     public func returnSingleItemCheckoutInfo() -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput {
@@ -127,7 +119,8 @@ public struct NewClaim: Codable, Equatable {
         )
     }
 
-    public func formatDateToString(date: Date) -> String {
+    public func formatDateToString(date: Date?) -> String? {
+        guard let date else { return nil }
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let dateString = dateFormatter.string(from: date)

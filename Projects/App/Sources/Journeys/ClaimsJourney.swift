@@ -84,12 +84,14 @@ extension AppJourney {
             rootView: LoadingViewWithContent(.startClaim(from: origin.id)) { HonestyPledge() },
             style: .detented(.scrollViewContentSize, modally: false)
         ) { action in
-            ClaimJourneys.getScreenForAction(for: action).hidesBackButton
-        }
-        .onAction(UgglanStore.self) { action, _ in
             if case .didAcceptHonestyPledge = action {
-                @PresentableStore var store: ClaimsStore
-                store.send(.startClaim(from: origin.id))
+                ContinueJourney()
+                    .onPresent {
+                        @PresentableStore var store: ClaimsStore
+                        store.send(.startClaim(from: origin.id))
+                    }
+            } else {
+                ClaimJourneys.getScreenForAction(for: action).hidesBackButton
             }
         }
     }

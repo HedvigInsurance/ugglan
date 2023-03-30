@@ -81,8 +81,7 @@ struct DidAcceptPledgeNotifier: View {
     var dragOffsetX: CGFloat
 
     @Binding var hasNotifiedStore: Bool
-    @PresentableStore var store: UgglanStore
-
+    @PresentableStore var store: ClaimsStore
     var body: some View {
         GeometryReader { geo in
             Color.clear.onReceive(
@@ -152,7 +151,6 @@ struct SlideToConfirm: View {
 
 struct HonestyPledge: View {
     @PresentableStore var store: UgglanStore
-
     var body: some View {
         hForm {
             VStack {
@@ -178,7 +176,7 @@ extension HonestyPledge {
         @JourneyBuilder _ next: @escaping () -> Next
     ) -> some JourneyPresentation {
         HostingJourney(
-            UgglanStore.self,
+            ClaimsStore.self,
             rootView: HonestyPledge(),
             style: style,
             options: [

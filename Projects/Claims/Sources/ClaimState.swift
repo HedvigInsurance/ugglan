@@ -118,6 +118,7 @@ public indirect enum ClaimsAction: ActionProtocol {
     case setNewClaimContext(context: String)
     case setMaxDateOfOccurrence(maxDate: String)
     case setProblemTitle(title: String)
+    case didAcceptHonestyPledge
 }
 
 public enum ClaimsOrigin: Codable, Equatable {

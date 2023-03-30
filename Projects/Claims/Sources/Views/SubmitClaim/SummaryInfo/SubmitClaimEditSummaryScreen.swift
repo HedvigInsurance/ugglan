@@ -125,8 +125,8 @@ public struct SubmitClaimEditSummaryScreen: View {
             Spacer()
 
             HStack(spacing: 0) {
-                if claim.dateOfPurchase != nil {
-                    hText(claim.formatDateToString(date: claim.dateOfPurchase ?? Date()))
+                if let date = claim.formatDateToString(date: claim.dateOfPurchase) {
+                    hText(date)
                         .foregroundColor(hLabelColor.primary).colorScheme(.light)
                         .padding([.top, .bottom], 11)
                         .padding([.trailing, .leading], 12)
