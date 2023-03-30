@@ -42,6 +42,7 @@ public struct TerminationFailScreen: View {
                     hText(L10n.MovingUwFailure.buttonText, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
                 }
+                .padding(.bottom, 2)
             }
             .padding([.leading, .trailing, .bottom], 16)
         }

@@ -5,17 +5,12 @@ import hGraphQL
 
 public struct SetTerminationDate: View {
     @State private var terminationDate = Date()
-    @PresentableStore var store: ContractStore
-
-    var contractId: String
-    let context: String
+    let onSelected: (Date) -> Void
 
     public init(
-        contractId: String,
-        context: String
+        onSelected: @escaping (Date) -> Void
     ) {
-        self.contractId = contractId
-        self.context = context
+        self.onSelected = onSelected
     }
 
     public var body: some View {
@@ -69,7 +64,7 @@ public struct SetTerminationDate: View {
 
             VStack {
                 hButton.LargeButtonFilled {
-                    store.send(.sendTerminationDate(terminationDateInput: terminationDate, contextInput: context))
+                    onSelected(terminationDate)
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
@@ -85,7 +80,6 @@ public struct SetTerminationDate: View {
 
     func formatAndPrintDate() -> String {
         let dateFormatter = DateFormatter()
-
         dateFormatter.dateFormat = "dd-MM-yyyy"
         return dateFormatter.string(from: terminationDate)
     }

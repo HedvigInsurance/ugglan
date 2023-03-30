@@ -96,11 +96,16 @@ public enum ContractAction: ActionProtocol {
     case goToTerminationFlow(contractId: String, contextInput: String)
     case sendTermination(terminationDate: Date, contextInput: String, surveyUrl: String)
     case dismissTerminationFlow
-    case terminationFail
 
     case startTermination(contractId: String)
-    case setTerminationDetails(details: TerminationStartFlow)
     case sendTerminationDate(terminationDateInput: Date, contextInput: String)
+    case setTerminationDetails(details: TerminationStartFlow)
+
+    case openTerminationSuccess(terminationDateInput: Date, surveyURL: String)
+    case openTerminationSetDateScreen(context: String)
+    case openTerminationUpdateAppScreen
+    case openTerminationFailScreen
+    case submitTerminationDate(terminationDate: Date)
 }
 
 public final class ContractStore: StateStore<ContractState, ContractAction> {
@@ -155,26 +160,41 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         )
                     )
                     .onValue { data in
-                        guard let dateStep = data.flowTerminationStart.currentStep.asFlowTerminationDateStep else {
-                            return
-                        }
-
+                        let step = data.flowTerminationStart.currentStep
                         let context = data.flowTerminationStart.context
+                        var actions = [ContractAction]()
 
-                        [
-                            .goToTerminationFlow(contractId: contractId, contextInput: context),
-                            .setTerminationDetails(
-                                details:
-                                    TerminationStartFlow(
-                                        id: dateStep.id,
-                                        minDate: dateStep.minDate,
-                                        maxDate: dateStep.maxDate ?? ""
-                                    )
-                            ),
-                        ]
-                        .forEach { element in
-                            callback(.value(element))
+                        if let nextStep = step.asFlowTerminationDateStep {
+                            actions.append(.goToTerminationFlow(contractId: contractId, contextInput: context))
+                            actions.append(
+                                .setTerminationDetails(
+                                    details:
+                                        TerminationStartFlow(
+                                            id: nextStep.id,
+                                            minDate: nextStep.minDate,
+                                            maxDate: nextStep.maxDate
+                                        )
+                                )
+                            )
+                        } else if let nextStep = step.asFlowTerminationFailedStep {
+                            actions.append(.openTerminationFailScreen)
+                        } else if let nextStep = step.asFlowTerminationSuccessStep {
+                            let terminationDate = nextStep.terminationDate
+                            let surveyURL = nextStep.surveyUrl
+
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateFormat = "yyyy-MM-dd"
+                            if let date = dateFormatter.date(from: terminationDate ?? "") {
+                                actions.append(
+                                    .openTerminationSuccess(terminationDateInput: date, surveyURL: surveyURL)
+                                )
+                            } else {
+                                actions.append(.openTerminationFailScreen)
+                            }
+                        } else {
+                            actions.append(.openTerminationUpdateAppScreen)
                         }
+                        actions.forEach({ callback(.value($0)) })
                     }
                     .onError { error in
                         log.error("Error: \(error)")
@@ -187,7 +207,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
             let inputDateToString = dateFormatter.string(from: terminationDate)
-
             let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
 
             return FiniteSignal { callback in
@@ -199,32 +218,22 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         )
                     )
                     .onValue { data in
-
-                        if let data = data.flowTerminationDateNext.currentStep.asFlowTerminationSuccessStep {
-
-                            let surveyURL = data.surveyUrl
-
-                            [
-                                .sendTermination(
-                                    terminationDate: terminationDate,
-                                    contextInput: contextInput,
-                                    surveyUrl: surveyURL
-                                )
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
-
-                        } else if let data = data.flowTerminationDateNext.currentStep.asFlowTerminationFailedStep {
-                            [
-                                .terminationFail
-                            ]
-                            .forEach { element in
-                                callback(.value(element))
-                            }
+                        let context = data.flowTerminationDateNext.context
+                        var actions = [ContractAction]()
+                        let step = data.flowTerminationDateNext.currentStep
+                        if let nextStep = step.asFlowTerminationSuccessStep {
+                            let surveyURL = nextStep.surveyUrl
+                            actions.append(
+                                .openTerminationSuccess(terminationDateInput: terminationDate, surveyURL: surveyURL)
+                            )
+                        } else if let nextStep = step.asFlowTerminationFailedStep {
+                            actions.append(.openTerminationFailScreen)
+                        } else if let nextStep = step.asFlowTerminationDateStep {
+                            actions.append(.openTerminationSetDateScreen(context: context))
                         } else {
-                            return
+                            actions.append(.openTerminationUpdateAppScreen)
                         }
+                        actions.forEach({ callback(.value($0)) })
                     }
                     .onError { error in
                         log.error("Error: \(error)")
