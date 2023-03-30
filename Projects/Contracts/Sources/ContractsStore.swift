@@ -179,7 +179,18 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         } else if let nextStep = step.asFlowTerminationFailedStep {
                             actions.append(.openTerminationFailScreen)
                         } else if let nextStep = step.asFlowTerminationSuccessStep {
-                            actions.append(.openTerminationFailScreen)
+                            let terminationDate = nextStep.terminationDate
+                            let surveyURL = nextStep.surveyUrl
+
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateFormat = "yyyy-MM-dd"
+                            if let date = dateFormatter.date(from: terminationDate ?? "") {
+                                actions.append(
+                                    .openTerminationSuccess(terminationDateInput: date, surveyURL: surveyURL)
+                                )
+                            } else {
+                                actions.append(.openTerminationFailScreen)
+                            }
                         } else {
                             actions.append(.openTerminationUpdateAppScreen)
                         }
@@ -218,7 +229,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         } else if let nextStep = step.asFlowTerminationFailedStep {
                             actions.append(.openTerminationFailScreen)
                         } else if let nextStep = step.asFlowTerminationDateStep {
-                            actions.append(.openTerminationFailScreen)
+                            actions.append(.openTerminationSetDateScreen(context: context))
                         } else {
                             actions.append(.openTerminationUpdateAppScreen)
                         }
