@@ -13,7 +13,7 @@ extension AppJourney {
         } else if case let .openTerminationSetDateScreen(context) = action {
             AppJourney.openSetTerminationDateScreen(context: context).withJourneyDismissButton
         } else if case .openTerminationFailScreen = action {
-            AppJourney.openTerminationFailScreen()
+            AppJourney.openTerminationFailScreen().withJourneyDismissButton
         } else if case .openTerminationUpdateAppScreen = action {
             AppJourney.openUpdateAppTerminationScreen().withJourneyDismissButton
         }
@@ -30,15 +30,18 @@ extension AppJourney {
         }
         .onAction(
             ContractStore.self,
-            { action, _ in
+            { action, pre in
                 if case let .submitTerminationDate(terminationDate) = action {
                     @PresentableStore var store: ContractStore
                     store.send(.sendTerminationDate(terminationDateInput: terminationDate, contextInput: context))
+                } else if case .dismissTerminationFlow = action {
+                    pre.bag.dispose()
+                } else if case .goToFreeTextChat = action {
+                    pre.bag.dispose()
                 }
             }
         )
         .setScrollEdgeNavigationBarAppearanceToStandard
-        .withJourneyDismissButton
     }
 
     static func openTerminationSuccessScreen(terminationDate: Date, surveyURL: String) -> some JourneyPresentation {
@@ -54,6 +57,8 @@ extension AppJourney {
             ContractStore.self,
             { action, pre in
                 if case .dismissTerminationFlow = action {
+                    pre.bag.dispose()
+                } else if case .goToFreeTextChat = action {
                     pre.bag.dispose()
                 }
             }
@@ -76,11 +81,12 @@ extension AppJourney {
                 if case .dismissTerminationFlow = action {
                     pre.bag.dispose()
                 } else if case .goToFreeTextChat = action {
-                    pre.bag.dispose()  //?
+                    pre.bag.dispose()
                 }
             }
         )
         .setScrollEdgeNavigationBarAppearanceToStandard
+
     }
 
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
@@ -97,10 +103,11 @@ extension AppJourney {
             { action, pre in
                 if case .dismissTerminationFlow = action {
                     pre.bag.dispose()
+                } else if case .goToFreeTextChat = action {
+                    pre.bag.dispose()
                 }
             }
         )
         .setScrollEdgeNavigationBarAppearanceToStandard
-        .withJourneyDismissButton
     }
 }
