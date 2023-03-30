@@ -92,7 +92,12 @@ extension AppJourney {
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: UpdateAppScreen(),
+            rootView: UpdateAppScreen(
+                onSelected: {
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    store.send(.dismissTerminationFlow)
+                }
+            ),
             style: .detented(.large, modally: false)
         ) {
             action in

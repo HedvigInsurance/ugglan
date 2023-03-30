@@ -1,16 +1,27 @@
+import Claims
+import Combine
+import Contracts
+import Flow
+import Foundation
+import Presentation
 import SwiftUI
+import UIKit
+import hAnalytics
 import hCore
 import hCoreUI
 
 public struct UpdateAppScreen: View {
-    @PresentableStore var store: ContractStore
 
-    public init() {}
+    let onSelected: () -> Void
+
+    public init(
+        onSelected: @escaping () -> Void
+    ) {
+        self.onSelected = onSelected
+    }
 
     public var body: some View {
-
         hForm {
-
             Image(uiImage: hCoreUIAssets.warningTriangle.image)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 16)
@@ -35,14 +46,14 @@ public struct UpdateAppScreen: View {
                     ) {
                         UIApplication.shared.open(url)
                     }
-                    store.send(.dismissTerminationFlow)
+                    onSelected()
                 } content: {
                     hText(L10n.embarkUpdateAppButton, style: .body)
                         .foregroundColor(hLabelColor.primary)
                 }
                 .padding(.bottom, 4)
                 hButton.LargeButtonFilled {
-                    store.send(.dismissTerminationFlow)
+                    onSelected()
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
@@ -51,11 +62,5 @@ public struct UpdateAppScreen: View {
             }
             .padding([.leading, .trailing], 16)
         }
-    }
-}
-
-struct UpdateAppScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        UpdateAppScreen()
     }
 }
