@@ -1,35 +1,38 @@
 import Foundation
 import Presentation
 import hCore
+import hCoreUI
 
 public class ClaimJourneys {
     @JourneyBuilder
     public static func getScreenForAction(for action: ClaimsAction) -> some JourneyPresentation {
         GroupJourney {
             if case let .openPhoneNumberScreen(phoneNumber) = action {
-                submitClaimPhoneNumberScreen(phoneNumber: phoneNumber)  //.withJourneyDismissButton
+                submitClaimPhoneNumberScreen(phoneNumber: phoneNumber).withJourneyDismissButton
             } else if case let .openDateOfOccurrenceScreen(maxDate) = action {
                 submitClaimOccurranceScreen(maxDate: maxDate).withJourneyDismissButton
             } else if case let .openAudioRecordingScreen(questions) = action {
                 openAudioRecordingSceen(questions: questions).withJourneyDismissButton
             } else if case .openSuccessScreen = action {
-                openSuccessScreen().hidesBackButton
+                openSuccessScreen().hidesBackButton.withJourneyDismissButton
             } else if case let .openSingleItemScreen(maxDate) = action {
-                openSingleItemScreen(maxDate: maxDate)
+                openSingleItemScreen(maxDate: maxDate).withJourneyDismissButton
             } else if case .openSummaryScreen = action {
-                openSummaryScreen()
+                openSummaryScreen().withJourneyDismissButton
             } else if case .openDamagePickerScreen = action {
-                openDamagePickerScreen()
+                openDamagePickerScreen().withJourneyDismissButton
             } else if case .openCheckoutNoRepairScreen = action {
-                openCheckoutNoRepairScreen()
+                openCheckoutNoRepairScreen().withJourneyDismissButton
             } else if case .openFailureSceen = action {
-                showClaimFailureScreen()
+                showClaimFailureScreen().withJourneyDismissButton
             } else if case .openSummaryEditScreen = action {
-                openSummaryEditScreen()
+                openSummaryEditScreen().withJourneyDismissButton
             } else if case .claimNextSingleItemCheckout = action {
-                openCheckoutNoRepairScreen()
+                openCheckoutNoRepairScreen().withJourneyDismissButton
             } else if case .openLocationPicker = action {
-                openLocationScreen()
+                openLocationScreen().withJourneyDismissButton
+            } else if case .openUpdateAppScreen = action {
+                openUpdateAppTerminationScreen().hidesBackButton.withJourneyDismissButton
             }
         }
     }
@@ -181,7 +184,6 @@ public class ClaimJourneys {
                 }
             }
         )
-        .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -215,7 +217,6 @@ public class ClaimJourneys {
                 }
             }
         )
-        .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -298,7 +299,6 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
-        .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -318,7 +318,6 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
-        .withDismissButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
@@ -397,7 +396,6 @@ public class ClaimJourneys {
                 let store: ClaimsStore = globalPresentableStoreContainer.get()
                 store.send(.fetchCommonClaimsForSelection)
             })
-            .withDismissButton
         case .commonClaims:
             redirectJourney(origin)
         }
@@ -415,4 +413,19 @@ public class ClaimJourneys {
         .hidesBackButton
     }
 
+    static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: UpdateAppScreen(
+                onSelected: {
+                    let store: ClaimsStore = globalPresentableStoreContainer.get()
+                    store.send(.dissmissNewClaimFlow)
+                }
+            ),
+            style: .detented(.large, modally: true)
+        ) {
+            action in
+            getScreenForAction(for: action)
+        }
+    }
 }
