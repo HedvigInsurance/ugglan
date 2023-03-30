@@ -48,19 +48,28 @@ extension AppJourney {
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
-        Contracts.journey { action in
-            if case .movingFlow = action {
+        Contracts.journey { result in
+            switch result {
+            case .movingFlow:
                 AppJourney.movingFlow
-            } else if case .openFreeTextChat = action {
+            case .openFreeTextChat:
                 AppJourney.freeTextChat().withDismissButton
-            } else if case let .openCrossSellingDetail(crossSell) = action {
+            case let .openCrossSellingDetail(crossSell):
                 AppJourney.crossSellingJourney(crossSell: crossSell)
-            } else if case let .openCrossSellingEmbark(name) = action {
+            case let .openCrossSellingEmbark(name):
                 AppJourney.crossSellingEmbarkJourney(name: name, style: .detented(.large))
-            } else if case let .terminationFlow(contextInput) = action {
+            case let .terminationFlow(contextInput):
                 AppJourney.openSetTerminationDateScreen(context: contextInput)
-            } else if case let .openCrossSellingWebUrl(url) = action {
+            case .openTerminationFailScreen:
+                AppJourney.openTerminationFailScreen()
+            case .openTerminationUpdateAppScreen:
+                AppJourney.openUpdateAppTerminationScreen()
+            case let .openCrossSellingWebUrl(url):
                 AppJourney.webRedirect(url: url)
+            case let .terminationSuccessFlow(terminationdate, surveyURL):
+                AppJourney.openTerminationSuccessScreen(terminationDate: terminationdate, surveyURL: surveyURL)
+            case let .openTerminationSuccess(terminationDateInput, surveyURL):
+                AppJourney.openTerminationSuccessScreen(terminationDate: terminationDateInput, surveyURL: surveyURL)
             }
         }
         .onTabSelected {
