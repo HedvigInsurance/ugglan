@@ -6,41 +6,12 @@ import hGraphQL
 public struct SetTerminationDate: View {
     @State private var terminationDate = Date()
     let onSelected: (Date) -> Void
-    //    @PresentableStore var store: ContractStore
 
     public init(
         onSelected: @escaping (Date) -> Void
     ) {
         self.onSelected = onSelected
     }
-
-    //    public struct ItemPickerScreen<T>: View {
-    //        var items: [(object: T, displayName: String)]
-    //        let onSelected: (T) -> Void
-    //        public init(
-    //            items: [(object: T, displayName: String)],
-    //            onSelected: @escaping (T) -> Void
-    //        ) {
-    //            self.items = items
-    //            self.onSelected = onSelected
-    //        }
-    //
-    //        public var body: some View {
-    //            hForm {
-    //                hSection {
-    //                    ForEach(items, id: \.displayName) { item in
-    //                        hRow {
-    //                            hText(item.displayName, style: .body)
-    //                                .foregroundColor(hLabelColor.primary)
-    //                        }
-    //                        .onTap {
-    //                            onSelected(item.object)
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
 
     public var body: some View {
 
@@ -94,7 +65,6 @@ public struct SetTerminationDate: View {
             VStack {
                 hButton.LargeButtonFilled {
                     onSelected(terminationDate)
-                    //                    store.send(.submitTerminationDate(terminationDate: terminationDate))
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
