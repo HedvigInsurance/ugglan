@@ -2,6 +2,7 @@ import Contracts
 import Foundation
 import Presentation
 import hCore
+import hCoreUI
 
 extension AppJourney {
 
