@@ -96,7 +96,10 @@ extension JourneyPresentation {
                 presenter.dismisser(JourneyError.dismissed)
             }
 
-            viewController.navigationItem.rightBarButtonItem = closeButtonItem
+            //            viewController.navigationItem.rightBarButtonItem = closeButtonItem
+            presenter.bag += presenter.viewController.view.didLayoutSignal.onValue({ _ in
+                viewController.navigationItem.rightBarButtonItem = closeButtonItem
+            })
         }
     }
 }

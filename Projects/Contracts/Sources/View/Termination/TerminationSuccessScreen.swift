@@ -40,6 +40,7 @@ public struct TerminationSuccessScreen: View {
             if let surveyToURL = URL(string: surveyURL) {
                 UIApplication.shared.open(surveyToURL)
             }
+            store.send(.dismissTerminationFlow)
 
         } content: {
             hText(L10n.terminationOpenSurveyLabel, style: .body)
