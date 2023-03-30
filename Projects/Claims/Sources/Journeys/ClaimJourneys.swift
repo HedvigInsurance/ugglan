@@ -238,10 +238,13 @@ public class ClaimJourneys {
     }
 
     static func openAudioRecordingSceen(questions: [String]) -> some JourneyPresentation {
-        HostingJourney(ClaimsStore.self, rootView: SubmitClaimAudioRecordingScreen(questions: questions)) { action in
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SubmitClaimAudioRecordingScreen(questions: questions),
+            style: .detented(.large, modally: false)
+        ) { action in
             getScreenForAction(for: action)
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     private static func openSuccessScreen() -> some JourneyPresentation {
@@ -263,7 +266,7 @@ public class ClaimJourneys {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimSingleItem(),
-            style: .default
+            style: .detented(.large, modally: false)
         ) {
             action in
             if case .openDatePicker = action {
@@ -283,14 +286,13 @@ public class ClaimJourneys {
                 }
             }
         )
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     private static func openSummaryScreen() -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimSummaryScreen(),
-            style: .default
+            style: .detented(.large, modally: false)
         ) {
             action in
             if case .dissmissNewClaimFlow = action {
@@ -299,7 +301,6 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     private static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
@@ -307,7 +308,7 @@ public class ClaimJourneys {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimCheckoutNoRepairScreen(),
-            style: .default
+            style: .detented(.large, modally: false)
         ) {
             action in
             if case .openCheckoutTransferringScreen = action {
@@ -318,7 +319,6 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func openCheckoutTransferringScreen() -> some JourneyPresentation {
@@ -362,7 +362,6 @@ public class ClaimJourneys {
             action in
             getScreenForAction(for: action)
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     @JourneyBuilder
