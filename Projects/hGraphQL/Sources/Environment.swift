@@ -138,6 +138,10 @@ public enum Environment: Hashable {
         }
     }
 
+    public var appStoreURL: URL {
+        return URL(string: "https://apps.apple.com/se/app/hedvig/id1303668531")!
+    }
+
     public var authEnvironment: AuthEnvironment {
         switch self {
         case .staging: return .staging

@@ -1,5 +1,6 @@
 import SwiftUI
 import hCore
+import hGraphQL
 
 public struct UpdateAppScreen: View {
 
@@ -13,30 +14,26 @@ public struct UpdateAppScreen: View {
 
     public var body: some View {
         hForm {
-            Image(uiImage: hCoreUIAssets.warningTriangle.image)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-                .padding([.bottom, .top], 4)
+            Group {
+                Image(uiImage: hCoreUIAssets.warningTriangle.image)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding([.bottom, .top], 4)
 
-            hText(L10n.embarkUpdateAppTitle, style: .title2)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-                .padding(.bottom, 2)
+                hText(L10n.embarkUpdateAppTitle, style: .title2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, 2)
 
-            hText(L10n.embarkUpdateAppBody, style: .body)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
+                hText(L10n.embarkUpdateAppBody, style: .body)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.leading, 16)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .hFormAttachToBottom {
 
             VStack {
                 hButton.LargeButtonOutlined {
-                    if let url = URL(
-                        string: "https://apps.apple.com/se/app/hedvig/id1303668531"
-                    ) {
-                        UIApplication.shared.open(url)
-                    }
+                    UIApplication.shared.open(Environment.current.appStoreURL)
                     onSelected()
                 } content: {
                     hText(L10n.embarkUpdateAppButton, style: .body)
