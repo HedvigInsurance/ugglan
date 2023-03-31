@@ -93,7 +93,7 @@ public enum ContractAction: ActionProtocol {
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 
-    case goToTerminationFlow(contractId: String)
+    case openSetTerminationDateScreen(contractId: String)
     case sendTermination(terminationDate: Date, surveyUrl: String)
     case dismissTerminationFlow
 
@@ -107,7 +107,7 @@ public enum ContractAction: ActionProtocol {
     case deleteTermination
 
     case openTerminationSuccess
-    case openTerminationSetDateScreen(context: String)
+    case openTerminationSetDateScreen
     case openTerminationUpdateAppScreen
     case openTerminationFailScreen
     case openTerminationDeletionScreen
@@ -179,7 +179,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                                     maxDate: nextStep.maxDate
                                 )
                             )
-                            actions.append(.goToTerminationFlow(contractId: contractId))
+                            actions.append(.openSetTerminationDateScreen(contractId: contractId))
                         } else if let nextStep = step.asFlowTerminationFailedStep {
                             actions.append(.openTerminationFailScreen)
                         } else if let nextStep = step.asFlowTerminationSuccessStep {
@@ -196,9 +196,11 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                             } else {
                                 actions.append(.openTerminationFailScreen)
                             }
+                        }
 
-                        } else if let nextStep = step.asFlowTerminationDeletionStep {
+                        else if let nextStep = step.asFlowTerminationDeletionStep {
                             let disclaimer = nextStep.disclaimer
+                            actions.append(.setDisclaimer(disclaimer: disclaimer))
                             actions.append(.openTerminationDeletionScreen)
 
                         } else {
@@ -245,13 +247,11 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         } else if let nextStep = step.asFlowTerminationFailedStep {
                             actions.append(.openTerminationFailScreen)
                         } else if let nextStep = step.asFlowTerminationDateStep {
-                            actions.append(
-                                .openTerminationSetDateScreen(context: self.state.terminations.context ?? "")
-                            )
+                            actions.append(.openTerminationSetDateScreen)
                         } else if let nextStep = step.asFlowTerminationDeletionStep {
                             let disclaimer = nextStep.disclaimer
                             actions.append(.setDisclaimer(disclaimer: disclaimer))
-                            actions.append(.deleteTermination)
+                            actions.append(.openTerminationDeletionScreen)
 
                         } else {
                             actions.append(.openTerminationUpdateAppScreen)
@@ -264,20 +264,38 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 return NilDisposer()
             }
 
-        case let .deleteTermination:
+        case .deleteTermination:
 
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
                         mutation: OctopusGraphQL.FlowTerminationDeletionNextMutation(
-                            context: self.state.terminations.context ?? ""
+                            context: self.state.terminations.context
                         )
                     )
                     .onValue { data in
 
                         var actions = [ContractAction]()
                         let context = data.flowTerminationDeletionNext.context
+                        let step = data.flowTerminationDeletionNext.currentStep
                         actions.append(.setContext(context: context))
+
+                        if let nextStep = step.asFlowTerminationSuccessStep {
+                            let surveyURL = nextStep.surveyUrl
+                            actions.append(.openTerminationSuccess)
+                        } else if let nextStep = step.asFlowTerminationFailedStep {
+                            actions.append(.openTerminationFailScreen)
+                        } else if let nextStep = step.asFlowTerminationDateStep {
+                            actions.append(.openTerminationSetDateScreen)
+                        } else if let nextStep = step.asFlowTerminationDeletionStep {
+                            let disclaimer = nextStep.disclaimer
+                            actions.append(.setDisclaimer(disclaimer: disclaimer))
+                            actions.append(.openTerminationDeletionScreen)
+
+                        } else {
+                            actions.append(.openTerminationUpdateAppScreen)
+                        }
+                        actions.forEach({ callback(.value($0)) })
 
                     }
                     .onError { error in

@@ -66,8 +66,10 @@ extension AppJourney {
                 AppJourney.openUpdateAppTerminationScreen()
             case let .openCrossSellingWebUrl(url):
                 AppJourney.webRedirect(url: url)
-            case .openTerminationSuccess:
+            case .openTerminationSuccessScreen:
                 AppJourney.openTerminationSuccessScreen()
+            case .openTerminationDeletionScreen:
+                AppJourney.openTerminationDeletionScreen()
             }
         }
         .onTabSelected {

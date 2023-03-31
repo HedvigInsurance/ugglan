@@ -88,7 +88,7 @@ extension AppJourney {
     static func openTerminationDeletionScreen() -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: Termina(//                onSelected: {
+            rootView: TerminationDeleteScreen(  //                onSelected: {
                 //                    let store: ContractStore = globalPresentableStoreContainer.get()
                 //                    store.send(.dismissTerminationFlow)
                 //                }

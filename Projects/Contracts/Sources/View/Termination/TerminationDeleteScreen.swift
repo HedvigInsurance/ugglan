@@ -10,19 +10,29 @@ public struct TerminationDeleteScreen: View {
     public var body: some View {
 
         hForm {
-            Image(uiImage: hCoreUIAssets.warningTriangle.image)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-                .padding([.bottom, .top], 4)
 
-            hText(L10n.terminationNotSuccessfulTitle, style: .title2)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-                .padding(.bottom, 4)
+            PresentableStoreLens(
+                ContractStore.self,
+                getter: { state in
+                    state.terminations
+                }
+            ) { termination in
 
-            hText(L10n.somethingWentWrong, style: .body)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
+                Image(uiImage: hCoreUIAssets.warningTriangle.image)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 16)
+                    .padding([.bottom, .top], 4)
+
+                /* TODO: FIX TITLE HERE */
+                hText(L10n.terminationNotSuccessfulTitle, style: .title2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 16)
+                    .padding(.bottom, 4)
+
+                hText(termination.disclaimer ?? "", style: .body)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 16)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
 
