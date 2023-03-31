@@ -251,7 +251,7 @@ public class ClaimJourneys {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimSuccessScreen(),
-            style: .default
+            style: .detented(.large, modally: false)
         ) {
             action in
             if case .dissmissNewClaimFlow = action {
