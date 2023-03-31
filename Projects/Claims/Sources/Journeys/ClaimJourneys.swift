@@ -7,42 +7,44 @@ public class ClaimJourneys {
     @JourneyBuilder
     public static func getScreenForAction(for action: ClaimsAction) -> some JourneyPresentation {
         GroupJourney {
-            if case let .openPhoneNumberScreen(phoneNumber) = action {
-                submitClaimPhoneNumberScreen(phoneNumber: phoneNumber).withJourneyDismissButton
-            } else if case let .openDateOfOccurrenceScreen(maxDate) = action {
-                submitClaimOccurranceScreen(maxDate: maxDate).withJourneyDismissButton
-            } else if case let .openAudioRecordingScreen(questions) = action {
-                openAudioRecordingSceen(questions: questions).withJourneyDismissButton
-            } else if case .openSuccessScreen = action {
-                openSuccessScreen().hidesBackButton.withJourneyDismissButton
-            } else if case let .openSingleItemScreen(maxDate) = action {
-                openSingleItemScreen(maxDate: maxDate).withJourneyDismissButton
-            } else if case .openSummaryScreen = action {
-                openSummaryScreen().withJourneyDismissButton
-            } else if case .openDamagePickerScreen = action {
-                openDamagePickerScreen().withJourneyDismissButton
-            } else if case .openCheckoutNoRepairScreen = action {
-                openCheckoutNoRepairScreen().withJourneyDismissButton
-            } else if case .openFailureSceen = action {
-                showClaimFailureScreen().withJourneyDismissButton
-            } else if case .openSummaryEditScreen = action {
-                openSummaryEditScreen().withJourneyDismissButton
+            if case let .navigationAction(navigationAction) = action {
+                if case let .openPhoneNumberScreen(model) = navigationAction {
+                    submitClaimPhoneNumberScreen(model: model).withJourneyDismissButton
+                } else if case let .openDateOfOccurrenceScreen(maxDate) = navigationAction {
+                    submitClaimOccurranceScreen(maxDate: maxDate).withJourneyDismissButton
+                } else if case let .openAudioRecordingScreen(questions) = navigationAction {
+                    openAudioRecordingSceen(questions: questions).withJourneyDismissButton
+                } else if case .openSuccessScreen = navigationAction {
+                    openSuccessScreen().hidesBackButton.withJourneyDismissButton
+                } else if case let .openSingleItemScreen(maxDate) = navigationAction {
+                    openSingleItemScreen(maxDate: maxDate).withJourneyDismissButton
+                } else if case .openSummaryScreen = navigationAction {
+                    openSummaryScreen().withJourneyDismissButton
+                } else if case .openDamagePickerScreen = navigationAction {
+                    openDamagePickerScreen().withJourneyDismissButton
+                } else if case .openCheckoutNoRepairScreen = navigationAction {
+                    openCheckoutNoRepairScreen().withJourneyDismissButton
+                } else if case .openFailureSceen = navigationAction {
+                    showClaimFailureScreen().withJourneyDismissButton
+                } else if case .openSummaryEditScreen = navigationAction {
+                    openSummaryEditScreen().withJourneyDismissButton
+                } else if case .openLocationPicker = navigationAction {
+                    openLocationScreen().withJourneyDismissButton
+                } else if case .openUpdateAppScreen = navigationAction {
+                    openUpdateAppTerminationScreen().hidesBackButton.withJourneyDismissButton
+                } else if case .openCheckoutTransferringDoneScreen = navigationAction {
+                    openCheckoutTransferringDoneScreen()
+                }
             } else if case .claimNextSingleItemCheckout = action {
                 openCheckoutNoRepairScreen().withJourneyDismissButton
-            } else if case .openLocationPicker = action {
-                openLocationScreen().withJourneyDismissButton
-            } else if case .openUpdateAppScreen = action {
-                openUpdateAppTerminationScreen().hidesBackButton.withJourneyDismissButton
             }
         }
     }
 
-    private static func submitClaimPhoneNumberScreen(
-        phoneNumber: String
-    ) -> some JourneyPresentation {
+    private static func submitClaimPhoneNumberScreen(model: ClaimFlowPhoneNumberStepModel) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
-            rootView: SubmitClaimContactScreen(phoneNumber: phoneNumber),
+            rootView: SubmitClaimContactScreen(model: model),
             style: .detented(.large, modally: false)
         ) { action in
             if case .dissmissNewClaimFlow = action {
@@ -60,9 +62,9 @@ public class ClaimJourneys {
             style: .detented(.large, modally: false)
         ) {
             action in
-            if case .openDatePicker = action {
+            if case .navigationAction(.openDatePicker) = action {
                 openDatePickerScreen(maxDate: maxDate)
-            } else if case .openLocationPicker = action {
+            } else if case .navigationAction(.openLocationPicker) = action {
                 openLocationScreen()
             } else {
                 getScreenForAction(for: action)
@@ -269,9 +271,9 @@ public class ClaimJourneys {
             style: .detented(.large, modally: false)
         ) {
             action in
-            if case .openDatePicker = action {
+            if case .navigationAction(.openDatePicker) = action {
                 openDatePickerScreenForPurchasePrice(maxDate: maxDate)
-            } else if case .openBrandPicker = action {
+            } else if case .navigationAction(.openBrandPicker) = action {
                 openBrandPickerScreen()
             } else {
                 getScreenForAction(for: action)
@@ -311,7 +313,7 @@ public class ClaimJourneys {
             style: .detented(.large, modally: false)
         ) {
             action in
-            if case .openCheckoutTransferringScreen = action {
+            if case .navigationAction(.openCheckoutTransferringScreen) = action {
                 openCheckoutTransferringScreen()
             } else if case .claimNextSummary = action {
                 openCheckoutTransferringScreen()
@@ -329,11 +331,7 @@ public class ClaimJourneys {
             style: .modally(presentationStyle: .fullScreen)
         ) {
             action in
-            if case .openCheckoutTransferringDoneScreen = action {
-                openCheckoutTransferringDoneScreen()
-            } else {
-                getScreenForAction(for: action)
-            }
+            getScreenForAction(for: action)
         }
     }
 

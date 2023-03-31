@@ -9,12 +9,12 @@ public struct SubmitClaimContactScreen: View {
     @State var phoneNumber: String
 
     public init(
-        phoneNumber: String
+        model: ClaimFlowPhoneNumberStepModel
     ) {
-        self.phoneNumber = phoneNumber
+        self.phoneNumber = model.phoneNumber
     }
-
     public var body: some View {
+
         LoadingViewWithContent(.claimNextPhoneNumber(phoneNumber: phoneNumber)) {
             hForm {
                 HStack(spacing: 0) {
@@ -35,7 +35,6 @@ public struct SubmitClaimContactScreen: View {
                 VStack {
                     HStack {
                         VStack {
-
                             TextField(phoneNumber, text: $phoneNumber)
                                 .font(.title2)
                                 .foregroundColor(hLabelColor.primary)
@@ -47,7 +46,6 @@ public struct SubmitClaimContactScreen: View {
                                         self.phoneNumber = filteredNumbers
                                     }
                                 }
-
                             hText(L10n.phoneNumberRowTitle, style: .footnote)
                                 .foregroundColor(hLabelColor.primary)
                         }

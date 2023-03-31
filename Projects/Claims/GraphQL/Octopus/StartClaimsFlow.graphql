@@ -32,18 +32,11 @@ fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep{
 
 fragment FlowClaimDateOfOccurrencePlusLocationStepFragment on FlowClaimDateOfOccurrencePlusLocationStep {
     dateOfOccurrenceStep {
-    dateOfOccurrence
-    id
-    maxDate
+        ...FlowClaimDateOfOccurrenceStepFragment
     }
     id
     locationStep {
-        id
-        location
-        options {
-            displayName
-            value
-        }
+        ...FlowClaimLocationStepFragment
     }
 }
 
@@ -126,45 +119,13 @@ fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
     id
     title
     dateOfOccurrenceStep {
-        id
-        dateOfOccurrence
-        maxDate
+        ...FlowClaimDateOfOccurrenceStepFragment
     }
     locationStep {
-        id
-        location
-        options {
-            displayName
-            value
-        }
+        ...FlowClaimLocationStepFragment
     }
     singleItemStep {
-        id
-        preferredCurrency
-        purchasePrice {
-            ...MoneyFragment
-        }
-        purchaseDate
-        selectedItemProblems
-        availableItemProblems {
-            displayName
-            itemProblemId
-        }
-        selectedItemBrand
-        availableItemBrands {
-            displayName
-            itemTypeId
-            itemBrandId
-        }
-        selectedItemModel
-        availableItemModels {
-            displayName
-            imageUrl
-            itemTypeId
-            itemBrandId
-            itemModelId
-        }
-        customName
+        ...FlowClaimSingleItemStepFragment
     }
 }
 fragment FlowTerminationDateStepFragment on FlowTerminationDateStep {

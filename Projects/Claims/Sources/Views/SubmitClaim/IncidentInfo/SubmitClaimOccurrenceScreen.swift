@@ -11,7 +11,7 @@ public struct SubmitClaimOccurrenceScreen: View {
         LoadingViewWithContent(.claimNextDateOfOccurrenceAndLocation) {
             hForm {
                 hButton.SmallButtonText {
-                    store.send(.openDatePicker)
+                    store.send(.navigationAction(action: .openDatePicker))
                 } content: {
 
                     HStack(spacing: 0) {
@@ -47,7 +47,7 @@ public struct SubmitClaimOccurrenceScreen: View {
                 .hShadow()
 
                 hButton.SmallButtonText {
-                    store.send(.openLocationPicker)
+                    store.send(.navigationAction(action: .openLocationPicker))
                 } content: {
 
                     HStack(spacing: 0) {

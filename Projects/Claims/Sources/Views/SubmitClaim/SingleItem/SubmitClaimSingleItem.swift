@@ -61,7 +61,7 @@ public struct SubmitClaimSingleItem: View {
                 }
             }
             .onTap {
-                store.send(.openBrandPicker)
+                store.send(.navigationAction(action: .openBrandPicker))
             }
             .frame(height: 64)
             .background(hBackgroundColor.tertiary)
@@ -94,7 +94,7 @@ public struct SubmitClaimSingleItem: View {
             }
         }
         .onTap {
-            store.send(.openDatePicker)
+            store.send(.navigationAction(action: .openDatePicker))
         }
         .frame(height: 64)
         .background(hBackgroundColor.tertiary)
@@ -126,7 +126,7 @@ public struct SubmitClaimSingleItem: View {
                 }
             }
             .onTap {
-                store.send(.openDamagePickerScreen)
+                store.send(.navigationAction(action: .openDamagePickerScreen))
             }
             .frame(height: 64)
             .background(hBackgroundColor.tertiary)

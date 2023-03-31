@@ -1,0 +1,21 @@
+import Foundation
+import hGraphQL
+
+public protocol ClaimFlowStepModel: Codable, Equatable {}
+
+public struct ClaimFlowSummaryStepModel: ClaimFlowStepModel {
+    let id: String
+    var title: String
+    let shouldShowDateOfOccurence: Bool
+    let shouldShowLocation: Bool
+    let shouldShowSingleItem: Bool
+    init(
+        with data: OctopusGraphQL.FlowClaimSummaryStepFragment
+    ) {
+        self.id = data.id
+        self.title = data.title
+        self.shouldShowDateOfOccurence = true
+        self.shouldShowLocation = true
+        self.shouldShowSingleItem = data.singleItemStep != nil
+    }
+}

@@ -71,7 +71,7 @@ public struct SubmitClaimEditSummaryScreen: View {
             .cornerRadius(.defaultCornerRadius)
         }
         .onTap {
-            store.send(.openDatePicker)
+            store.send(.navigationAction(action: .openDatePicker))
         }
     }
 
@@ -87,7 +87,7 @@ public struct SubmitClaimEditSummaryScreen: View {
             }
         }
         .onTap {
-            store.send(.openLocationPicker)
+            store.send(.navigationAction(action: .openLocationPicker))
         }
     }
 
@@ -109,7 +109,7 @@ public struct SubmitClaimEditSummaryScreen: View {
             }
         }
         .onTap {
-            store.send(.openModelPicker)
+            store.send(.navigationAction(action: .openModelPicker))
         }
 
     }
@@ -136,7 +136,7 @@ public struct SubmitClaimEditSummaryScreen: View {
             .cornerRadius(.defaultCornerRadius)
         }
         .onTap {
-            store.send(.openDatePicker)
+            store.send(.navigationAction(action: .openDatePicker))
         }
 
     }
@@ -204,7 +204,7 @@ public struct SubmitClaimEditSummaryScreen: View {
             }
         }
         .onTap {
-            store.send(.openDamagePickerScreen)
+            store.send(.navigationAction(action: .openDamagePickerScreen))
         }
     }
 }
