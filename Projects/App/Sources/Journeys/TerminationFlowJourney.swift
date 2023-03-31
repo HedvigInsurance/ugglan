@@ -8,11 +8,11 @@ extension AppJourney {
 
     @JourneyBuilder
     private static func getScreenForAction(for action: ContractAction) -> some JourneyPresentation {
-        if case let .openTerminationSuccess(terminationDateInput, surveyURL) = action {
-            AppJourney.openTerminationSuccessScreen(terminationDate: terminationDateInput, surveyURL: surveyURL)
+        if case .openTerminationSuccess = action {
+            AppJourney.openTerminationSuccessScreen()
                 .withJourneyDismissButton.hidesBackButton
-        } else if case let .openTerminationSetDateScreen(context) = action {
-            AppJourney.openSetTerminationDateScreen(context: context).withJourneyDismissButton
+        } else if case .openTerminationSetDateScreen = action {
+            AppJourney.openSetTerminationDateScreen().withJourneyDismissButton
         } else if case .openTerminationFailScreen = action {
             AppJourney.openTerminationFailScreen().withJourneyDismissButton.hidesBackButton
         } else if case .openTerminationUpdateAppScreen = action {
@@ -21,17 +21,19 @@ extension AppJourney {
             DismissJourney()
         } else if case .goToFreeTextChat = action {
             DismissJourney()
+        } else if case .openTerminationDeletionScreen = action {
+            AppJourney.openTerminationDeletionScreen()
         }
     }
 
-    static func openSetTerminationDateScreen(context: String) -> some JourneyPresentation {
+    static func openSetTerminationDateScreen() -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
             rootView: SetTerminationDate(
                 onSelected: {
                     terminationDate in
                     let store: ContractStore = globalPresentableStoreContainer.get()
-                    store.send(.sendTerminationDate(terminationDateInput: terminationDate, contextInput: context))
+                    store.send(.sendTerminationDate(terminationDate: terminationDate))
                 }
             ),
             style: .detented(.large)
@@ -42,11 +44,11 @@ extension AppJourney {
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
-    static func openTerminationSuccessScreen(terminationDate: Date, surveyURL: String) -> some JourneyPresentation {
+    static func openTerminationSuccessScreen() -> some JourneyPresentation {
 
         HostingJourney(
             ContractStore.self,
-            rootView: TerminationSuccessScreen(terminationDate: terminationDate, surveyURL: surveyURL)
+            rootView: TerminationSuccessScreen()
         ) {
             action in
             getScreenForAction(for: action)
@@ -75,6 +77,22 @@ extension AppJourney {
                     store.send(.dismissTerminationFlow)
                 }
             ),
+            style: .detented(.large, modally: true)
+        ) {
+            action in
+            getScreenForAction(for: action)
+        }
+        .withJourneyDismissButton
+    }
+
+    static func openTerminationDeletionScreen() -> some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: Termina(//                onSelected: {
+                //                    let store: ContractStore = globalPresentableStoreContainer.get()
+                //                    store.send(.dismissTerminationFlow)
+                //                }
+                ),
             style: .detented(.large, modally: true)
         ) {
             action in

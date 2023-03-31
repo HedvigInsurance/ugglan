@@ -14,7 +14,7 @@ public struct ContractState: StateProtocol {
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
-    public var terminations: TerminationStartFlow? = nil
+    public var terminations: TerminationStartFlow = TerminationStartFlow(id: "", context: "")
 
     func contractForId(_ id: String) -> Contract? {
         if let inBundleContract = contractBundles.flatMap({ $0.contracts })
@@ -93,18 +93,24 @@ public enum ContractAction: ActionProtocol {
 
     case contractDetailNavigationAction(action: ContractDetailNavigationAction)
 
-    case goToTerminationFlow(contractId: String, contextInput: String)
-    case sendTermination(terminationDate: Date, contextInput: String, surveyUrl: String)
+    case goToTerminationFlow(contractId: String)
+    case sendTermination(terminationDate: Date, surveyUrl: String)
     case dismissTerminationFlow
 
     case startTermination(contractId: String)
-    case sendTerminationDate(terminationDateInput: Date, contextInput: String)
-    case setTerminationDetails(details: TerminationStartFlow)
+    case sendTerminationDate(terminationDate: Date)
+    case setTerminationDetails(id: String, minDate: String, maxDate: String?)
+    case setDisclaimer(disclaimer: String)
+    case setContext(context: String)
+    case setSurveyURL(surveyURL: String)
+    case setTerminationDate(date: Date)
+    case deleteTermination
 
-    case openTerminationSuccess(terminationDateInput: Date, surveyURL: String)
+    case openTerminationSuccess
     case openTerminationSetDateScreen(context: String)
     case openTerminationUpdateAppScreen
     case openTerminationFailScreen
+    case openTerminationDeletionScreen
     case submitTerminationDate(terminationDate: Date)
 }
 
@@ -163,34 +169,38 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         let step = data.flowTerminationStart.currentStep
                         let context = data.flowTerminationStart.context
                         var actions = [ContractAction]()
+                        actions.append(.setContext(context: context))
 
                         if let nextStep = step.asFlowTerminationDateStep {
-                            actions.append(.goToTerminationFlow(contractId: contractId, contextInput: context))
                             actions.append(
                                 .setTerminationDetails(
-                                    details:
-                                        TerminationStartFlow(
-                                            id: nextStep.id,
-                                            minDate: nextStep.minDate,
-                                            maxDate: nextStep.maxDate
-                                        )
+                                    id: nextStep.id,
+                                    minDate: nextStep.minDate,
+                                    maxDate: nextStep.maxDate
                                 )
                             )
+                            actions.append(.goToTerminationFlow(contractId: contractId))
                         } else if let nextStep = step.asFlowTerminationFailedStep {
                             actions.append(.openTerminationFailScreen)
                         } else if let nextStep = step.asFlowTerminationSuccessStep {
                             let terminationDate = nextStep.terminationDate
                             let surveyURL = nextStep.surveyUrl
+                            actions.append(.setSurveyURL(surveyURL: surveyURL))
 
-                            let dateFormatter = DateFormatter()
-                            dateFormatter.dateFormat = "yyyy-MM-dd"
-                            if let date = dateFormatter.date(from: terminationDate ?? "") {
-                                actions.append(
-                                    .openTerminationSuccess(terminationDateInput: date, surveyURL: surveyURL)
-                                )
+                            //                            let dateFormatter = DateFormatter()
+                            //                            dateFormatter.dateFormat = "yyyy-MM-dd"
+                            //                            if let date = dateFormatter.date(from: terminationDate ?? "") {
+                            if let date = self.state.terminations.convertStringToDate(dateString: terminationDate ?? "")
+                            {
+                                actions.append(.openTerminationSuccess)
                             } else {
                                 actions.append(.openTerminationFailScreen)
                             }
+
+                        } else if let nextStep = step.asFlowTerminationDeletionStep {
+                            let disclaimer = nextStep.disclaimer
+                            actions.append(.openTerminationDeletionScreen)
+
                         } else {
                             actions.append(.openTerminationUpdateAppScreen)
                         }
@@ -202,38 +212,73 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 return NilDisposer()
             }
 
-        case .sendTerminationDate(let terminationDate, let contextInput):
+        case let .sendTerminationDate(terminationDate):
+            var actions = [ContractAction]()
+            actions.append(.setTerminationDate(date: terminationDate))
 
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let inputDateToString = dateFormatter.string(from: terminationDate)
+            //            let dateFormatter = DateFormatter()
+            //            dateFormatter.dateFormat = "yyyy-MM-dd"
+            //            let inputDateToString = dateFormatter.string(from: terminationDate)
+            let terminationDate = self.state.terminations.terminationDate
+            let inputDateToString = self.state.terminations.convertDateToString(date: terminationDate ?? Date()) ?? ""
+
             let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
+            let context = self.state.terminations.context
 
             return FiniteSignal { callback in
                 self.octopus.client
                     .perform(
                         mutation: OctopusGraphQL.FlowTerminationDateNextMutation(
                             input: terminationDateInput,
-                            context: contextInput
+                            context: self.state.terminations.context
                         )
                     )
                     .onValue { data in
+
                         let context = data.flowTerminationDateNext.context
-                        var actions = [ContractAction]()
                         let step = data.flowTerminationDateNext.currentStep
+                        actions.append(.setContext(context: context))
+
                         if let nextStep = step.asFlowTerminationSuccessStep {
                             let surveyURL = nextStep.surveyUrl
-                            actions.append(
-                                .openTerminationSuccess(terminationDateInput: terminationDate, surveyURL: surveyURL)
-                            )
+                            actions.append(.openTerminationSuccess)
                         } else if let nextStep = step.asFlowTerminationFailedStep {
                             actions.append(.openTerminationFailScreen)
                         } else if let nextStep = step.asFlowTerminationDateStep {
-                            actions.append(.openTerminationSetDateScreen(context: context))
+                            actions.append(
+                                .openTerminationSetDateScreen(context: self.state.terminations.context ?? "")
+                            )
+                        } else if let nextStep = step.asFlowTerminationDeletionStep {
+                            let disclaimer = nextStep.disclaimer
+                            actions.append(.setDisclaimer(disclaimer: disclaimer))
+                            actions.append(.deleteTermination)
+
                         } else {
                             actions.append(.openTerminationUpdateAppScreen)
                         }
                         actions.forEach({ callback(.value($0)) })
+                    }
+                    .onError { error in
+                        log.error("Error: \(error)")
+                    }
+                return NilDisposer()
+            }
+
+        case let .deleteTermination:
+
+            return FiniteSignal { callback in
+                self.octopus.client
+                    .perform(
+                        mutation: OctopusGraphQL.FlowTerminationDeletionNextMutation(
+                            context: self.state.terminations.context ?? ""
+                        )
+                    )
+                    .onValue { data in
+
+                        var actions = [ContractAction]()
+                        let context = data.flowTerminationDeletionNext.context
+                        actions.append(.setContext(context: context))
+
                     }
                     .onError { error in
                         log.error("Error: \(error)")
@@ -279,8 +324,23 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         case .resetSignedCrossSells:
             newState.signedCrossSells = []
 
-        case .setTerminationDetails(let terminationDetails):
-            newState.terminations = terminationDetails
+        case let .setTerminationDetails(id, minDate, maxDate):
+            newState.terminations.id = id
+            newState.terminations.minDate = minDate
+            newState.terminations.maxDate = maxDate
+            newState.terminations.terminationDate = nil
+
+        case let .setDisclaimer(disclaimer):
+            newState.terminations.disclaimer = disclaimer
+
+        case let .setContext(context):
+            newState.terminations.context = context
+
+        case let .setSurveyURL(surveyURL):
+            newState.terminations.surveyURL = surveyURL
+
+        case let .setTerminationDate(date):
+            newState.terminations.terminationDate = date
 
         default:
             break

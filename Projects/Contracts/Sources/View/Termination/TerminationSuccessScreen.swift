@@ -4,57 +4,63 @@ import hCoreUI
 
 public struct TerminationSuccessScreen: View {
     @PresentableStore var store: ContractStore
-    let terminationDate: Date
-    let surveyURL: String
 
-    public init(
-        terminationDate: Date,
-        surveyURL: String
-    ) {
-        self.terminationDate = terminationDate
-        self.surveyURL = surveyURL
-    }
+    public init() {}
 
     public var body: some View {
 
-        hForm {
-            Image(uiImage: hCoreUIAssets.circularCheckmark.image)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-                .padding(.top, 81)
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: { state in
+                state.terminations
+            }
+        ) { termination in
 
-            hText(L10n.terminationSuccessfulTitle, style: .title1)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-                .padding([.bottom, .top], 10)
+            hForm {
+                Image(uiImage: hCoreUIAssets.circularCheckmark.image)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 16)
+                    .padding(.top, 81)
 
-            hText(L10n.terminationSuccessfulText(formatAndPrintDate(), L10n.hedvigNameText), style: .body)
+                hText(L10n.terminationSuccessfulTitle, style: .title1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 16)
+                    .padding([.bottom, .top], 10)
+
+                hText(
+                    L10n.terminationSuccessfulText(
+                        formatAndPrintDate(date: termination.terminationDate ?? Date()),
+                        L10n.hedvigNameText
+                    ),
+                    style: .body
+                )
                 .foregroundColor(hLabelColor.secondary)
                 .padding([.leading, .trailing], 16)
                 .padding(.bottom, 300)
-        }
-        .padding(.bottom, -100)
-
-        hButton.LargeButtonFilled {
-
-            if let surveyToURL = URL(string: surveyURL) {
-                UIApplication.shared.open(surveyToURL)
             }
-            store.send(.dismissTerminationFlow)
+            .padding(.bottom, -100)
 
-        } content: {
-            hText(L10n.terminationOpenSurveyLabel, style: .body)
-                .foregroundColor(hLabelColor.primary.inverted)
+            hButton.LargeButtonFilled {
+
+                if let surveyToURL = URL(string: termination.surveyURL) {
+                    UIApplication.shared.open(surveyToURL)
+                }
+                store.send(.dismissTerminationFlow)
+
+            } content: {
+                hText(L10n.terminationOpenSurveyLabel, style: .body)
+                    .foregroundColor(hLabelColor.primary.inverted)
+            }
+            .frame(maxWidth: .infinity, alignment: .bottom)
+            .padding([.leading, .trailing], 16)
+            .padding(.bottom, 40)
         }
-        .frame(maxWidth: .infinity, alignment: .bottom)
-        .padding([.leading, .trailing], 16)
-        .padding(.bottom, 40)
     }
 
-    func formatAndPrintDate() -> String {
+    func formatAndPrintDate(date: Date) -> String {
         let dateFormatter = DateFormatter()
 
         dateFormatter.dateFormat = "dd-MM-yyyy"
-        return dateFormatter.string(from: terminationDate)
+        return dateFormatter.string(from: date)
     }
 }

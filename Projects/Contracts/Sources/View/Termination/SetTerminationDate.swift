@@ -48,8 +48,8 @@ public struct SetTerminationDate: View {
                         L10n.terminationDateText,
                         selection: self.$terminationDate,
                         in: convertDateFormat(
-                            inputDate: termination?.minDate ?? ""
-                        )...convertDateFormat(inputDate: termination?.maxDate ?? ""),
+                            inputDate: termination.minDate ?? ""
+                        )...convertDateFormat(inputDate: termination.maxDate ?? ""),
                         displayedComponents: [.date]
                     )
                     .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
