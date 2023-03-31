@@ -243,6 +243,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
 
                         if let nextStep = step.asFlowTerminationSuccessStep {
                             let surveyURL = nextStep.surveyUrl
+                            actions.append(.setSurveyURL(surveyURL: surveyURL))
                             actions.append(.openTerminationSuccess)
                         } else if let nextStep = step.asFlowTerminationFailedStep {
                             actions.append(.openTerminationFailScreen)
@@ -282,6 +283,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
 
                         if let nextStep = step.asFlowTerminationSuccessStep {
                             let surveyURL = nextStep.surveyUrl
+                            actions.append(.setSurveyURL(surveyURL: surveyURL))
                             actions.append(.openTerminationSuccess)
                         } else if let nextStep = step.asFlowTerminationFailedStep {
                             actions.append(.openTerminationFailScreen)
