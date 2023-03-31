@@ -1,5 +1,5 @@
-mutation FlowTerminationDateNext($input: FlowTerminationDateInput!, $context: FlowContext!) {
-  flowTerminationDateNext(input: $input, context: $context) {
+mutation FlowTerminationDeletionNext($context: FlowContext!, $input: FlowTerminationDeletionInput) {
+  flowTerminationDeletionNext(context: $context, input: $input) {
     id
     currentStep {
       id

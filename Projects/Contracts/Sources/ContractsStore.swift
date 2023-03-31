@@ -213,8 +213,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 self.octopus.client
                     .perform(
                         mutation: OctopusGraphQL.FlowTerminationDateNextMutation(
-                            context: contextInput,
-                            input: terminationDateInput
+                            input: terminationDateInput,
+                            context: contextInput
                         )
                     )
                     .onValue { data in
