@@ -11,19 +11,13 @@ public struct SubmitClaimAudioRecordingScreen: View {
     @PresentableStore var store: ClaimsStore
     @ObservedObject var audioPlayer: AudioPlayer
     @ObservedObject var audioRecorder: AudioRecorder
-    let questions: [String]
 
     let onSubmit: (_ url: URL) -> Void
 
     public init(
-        questions: [String]
+        url: URL
     ) {
-        self.questions = questions
-
-        let url = URL(
-            string: "https://www.bing.com/az/hprichbg/rb/AdobeSantaFe_EN-US4037753534_1920x1080.jpg"
-        ) /* TODO: CHANGE URL */
-        audioPlayer = AudioPlayer(url: url!)
+        audioPlayer = AudioPlayer(url: url)
 
         audioRecorder = AudioRecorder()
 
@@ -34,12 +28,19 @@ public struct SubmitClaimAudioRecordingScreen: View {
     public var body: some View {
         LoadingViewWithContent(.submitAudioRecording(audioURL: self.audioPlayer.url)) {
             hForm {
-                ForEach(questions, id: \.self) { question in
-                    HStack(spacing: 0) {
-                        hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                            .foregroundColor(hLabelColor.primary)
-                            .padding([.trailing, .leading], 12)
-                            .padding([.top, .bottom], 16)
+                PresentableStoreLens(
+                    ClaimsStore.self,
+                    getter: { state in
+                        state.audioRecordingStep
+                    }
+                ) { audioRecordingStep in
+                    ForEach(audioRecordingStep?.questions ?? [], id: \.self) { question in
+                        HStack(spacing: 0) {
+                            hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                                .foregroundColor(hLabelColor.primary)
+                                .padding([.trailing, .leading], 12)
+                                .padding([.top, .bottom], 16)
+                        }
                     }
                 }
             }
@@ -97,6 +98,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
 struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimAudioRecordingScreen(questions: [""])
+        SubmitClaimAudioRecordingScreen(url: URL(string: "")!)
     }
 }

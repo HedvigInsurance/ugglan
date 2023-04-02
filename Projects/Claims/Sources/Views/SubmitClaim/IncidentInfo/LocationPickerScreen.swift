@@ -10,23 +10,22 @@ public struct LocationPickerScreen: View {
     public var body: some View {
         hForm {
             hSection {
-
                 PresentableStoreLens(
                     ClaimsStore.self,
                     getter: { state in
-                        state.newClaim
+                        state.locationStep
                     }
-                ) { claim in
-
-                    let data = claim.listOfLocation
-
-                    ForEach(data ?? [Location(displayValue: "", value: "")], id: \.self) { element in
-                        hRow {
-                            hText(element.displayValue, style: .body)
-                                .foregroundColor(hLabelColor.primary)
-                        }
-                        .onTap {
-                            store.send(.submitClaimLocation(displayValue: element.displayValue, value: element.value))
+                ) { locationStep in
+                    if let data = locationStep?.options {
+                        Text("")
+                        ForEach(data, id: \.value) { element in
+                            hRow {
+                                hText(element.displayName, style: .body)
+                                    .foregroundColor(hLabelColor.primary)
+                            }
+                            .onTap {
+                                store.send(.setNewLocation(location: element.value))
+                            }
                         }
                     }
                 }

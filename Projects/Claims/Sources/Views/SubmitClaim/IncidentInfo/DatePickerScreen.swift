@@ -5,15 +5,18 @@ import hCoreUI
 public struct DatePickerScreen: View {
     @State private var dateOfOccurrence = Date()
     @PresentableStore var store: ClaimsStore
+    let onSubmit: (Date) -> Void
     let title: String
     var maxDate: Date
 
     public init(
         title: String,
-        maxDate: Date
+        maxDate: Date,
+        onSubmit: @escaping (Date) -> Void
     ) {
         self.title = title
         self.maxDate = maxDate
+        self.onSubmit = onSubmit
     }
 
     public var body: some View {
@@ -40,7 +43,7 @@ public struct DatePickerScreen: View {
             VStack {
 
                 hButton.LargeButtonFilled {
-                    store.send(.submitClaimDateOfOccurrence(dateOfOccurrence: dateOfOccurrence))
+                    onSubmit(dateOfOccurrence)
                 } content: {
                     hText(L10n.generalSaveButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
@@ -61,6 +64,8 @@ public struct DatePickerScreen: View {
 
 struct DatePickerView_Previews: PreviewProvider {
     static var previews: some View {
-        DatePickerScreen(title: "", maxDate: Date())
+        DatePickerScreen(title: "", maxDate: Date()) { _ in
+
+        }
     }
 }

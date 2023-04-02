@@ -9,20 +9,25 @@ import hGraphQL
 public struct ClaimsState: StateProtocol {
     var claims: [Claim]? = nil
     var commonClaims: [CommonClaim]? = nil
-    var newClaim: NewClaim = .init(id: "", context: "")
+    var currentClaimId: String = ""
+    var currentClaimContext: String?
     var loadingStates: [ClaimsAction: LoadingState<String>] = [:]
     var entryPointCommonClaims: [ClaimEntryPointResponseModel] = []
 
-    var summaryStep: ClaimFlowSummaryStepModel?
-    var dateOfOccurenceStep: ClaimFlowDateOfOccurenceStepModel?
-    var locationStep: ClaimFlowLocationStepModel?
-    var singleItemStep: ClamFlowSingleItemStepModel?
-    var phoneNumberStep: ClaimFlowPhoneNumberStepModel?
-
+    var summaryStep: FlowClaimSummaryStepModel?
+    var dateOfOccurenceStep: FlowClaimDateOfOccurenceStepModel?
+    var locationStep: FlowClaimLocationStepModel?
+    var singleItemStep: FlowClamSingleItemStepModel?
+    var phoneNumberStep: FlowClaimPhoneNumberStepModel?
+    var dateOfOccurrencePlusLocationStep: FlowClaimDateOfOccurrencePlusLocationStepModel?
+    var singleItemCheckoutStep: FlowClaimSingleItemCheckoutStepModel?
+    var successStep: FlowClaimSuccessStepModel?
+    var failedStep: FlowClaimFailedStepModel?
+    var audioRecordingStep: FlowClaimAudioRecordingStepModel?
     public init() {}
 
     private enum CodingKeys: String, CodingKey {
-        case claims, commonClaims, newClaim
+        case claims, commonClaims
     }
 
     public var hasActiveClaims: Bool {

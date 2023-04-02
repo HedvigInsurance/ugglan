@@ -33,22 +33,23 @@ public struct SubmitClaimCheckoutTransferringDoneScreen: View {
                         PresentableStoreLens(
                             ClaimsStore.self,
                             getter: { state in
-                                state.newClaim
+                                state.singleItemCheckoutStep
                             }
-                        ) { claim in
-                            if checkIfNotDecimal(value: claim.priceOfPurchase?.amount ?? 0) {
+                        ) { singleItemCheckoutStep in
+                            if checkIfNotDecimal(value: singleItemCheckoutStep?.price.amount ?? 0) {
 
                                 hText(
-                                    formatDoubleWithoutDecimal(value: claim.payoutAmount?.amount ?? 0.0) + " "
-                                        + (claim.payoutAmount?.currencyCode ?? ""),
+                                    formatDoubleWithoutDecimal(value: singleItemCheckoutStep?.price.amount ?? 0.0) + " "
+                                        + (singleItemCheckoutStep?.price.currencyCode ?? ""),
                                     style: .title1
                                 )
                                 .foregroundColor(hLabelColor.primary)
 
                             } else {
                                 hText(
-                                    formatDoubleWithDecimal(value: claim.payoutAmount?.amount ?? 0) + " "
-                                        + (claim.payoutAmount?.currencyCode ?? ""),
+                                    formatDoubleWithDecimal(value: singleItemCheckoutStep?.payoutAmount.amount ?? 0)
+                                        + " "
+                                        + (singleItemCheckoutStep?.payoutAmount.currencyCode ?? ""),
                                     style: .title1
                                 )
                                 .foregroundColor(hLabelColor.primary)

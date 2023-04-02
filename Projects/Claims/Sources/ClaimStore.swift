@@ -17,7 +17,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         _ getState: @escaping () -> ClaimsState,
         _ action: ClaimsAction
     ) -> FiniteSignal<ClaimsAction>? {
-        let newClaimContext = state.newClaim.context
+        let newClaimContext = state.currentClaimContext ?? ""
         switch action {
         case .openFreeTextChat:
             return nil
@@ -51,7 +51,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 }
                 .valueThenEndSignal
         case let .startClaim(id):
-
             self.send(.setLoadingState(action: action, state: .loading))
             let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: id)
             let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput)
@@ -62,8 +61,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         callback(.value(.setNewClaimContext(context: data.flowClaimStart.context)))
                         callback(
                             .value(
-                                .setNewClaim(
-                                    from: NewClaim(id: data.flowClaimStart.id, context: data.flowClaimStart.context)
+                                .setNewClaimId(
+                                    with: data.flowClaimStart.id
                                 )
                             )
                         )
@@ -113,7 +112,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return disposeBag
             }
         case let .claimNextDateOfOccurrence(dateOfOccurrence):
-            let dateString = state.newClaim.formatDateToString(date: dateOfOccurrence)
+            let dateString = dateOfOccurrence.localDateString
             let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
             let mutation = OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation(
                 input: dateOfOccurrenceInput,
@@ -137,32 +136,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return NilDisposer()
             }
 
-        case let .claimNextLocation(displayValue, value):
-
-            let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: value)
-
-            return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.FlowClaimLocationNextMutation(
-                            input: locationInput,
-                            context: newClaimContext
-                        )
-                    )
-                    .onValue { data in
-                        var actions = [ClaimsAction]()
-                        actions.append(.setNewClaimContext(context: data.flowClaimLocationNext.context))
-                        actions.append(.setNewLocation(location: Location(displayValue: displayValue, value: value)))
-                        actions.append(.setLoadingState(action: action, state: nil))
-                        actions.forEach({ callback(.value($0)) })
-                    }
-                return NilDisposer()
-            }
-
         case .claimNextDateOfOccurrenceAndLocation:
             self.send(.setLoadingState(action: action, state: .loading))
-            let location = state.newClaim.location?.value
-            let date = state.newClaim.dateOfOccurrence
+            let location = state.locationStep?.getSelectedOption()?.value
+            let date = state.dateOfOccurenceStep?.dateOfOccurence
 
             let dateAndLocationInput = OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationInput(
                 dateOfOccurrence: date,
@@ -203,7 +180,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     let data = try Data(contentsOf: audioURL)
                     let name = audioURL.lastPathComponent
                     let uploadFile = UploadFile(data: data, name: name, mimeType: "audio/x-m4a")
-                    disposeBag += try self.fileUploaderClient.upload(flowId: self.state.newClaim.id, file: uploadFile)
+                    disposeBag += try self.fileUploaderClient
+                        .upload(flowId: self.state.currentClaimId, file: uploadFile)
                         .onValue({ responseModel in
                             //todo
                             let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
@@ -263,7 +241,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case let .claimNextSingleItem(purchasePrice):
             self.send(.setLoadingState(action: action, state: .loading))
-            let singleItemInput = state.newClaim.returnSingleItemInfo(purchasePrice: purchasePrice)
+            let singleItemInput = state.singleItemStep!.returnSingleItemInfo(purchasePrice: purchasePrice)
             let mutation = OctopusGraphQL.FlowClaimSingleItemNextMutation(
                 input: singleItemInput,
                 context: newClaimContext
@@ -277,12 +255,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         var actions = [ClaimsAction]()
                         actions.append(.setNewClaimContext(context: data.flowClaimSingleItemNext.context))
                         actions.append(
-                            .setPurchasePrice(
-                                priceOfPurchase: Amount(
-                                    amount: purchasePrice,
-                                    currencyCode: self.state.newClaim.prefferedCurrency ?? ""
-                                )
-                            )
+                            .setPurchasePrice(priceOfPurchase: purchasePrice)
                         )
                         data.flowClaimSingleItemNext.fragments.flowClaimFragment.executeNextStepActions(
                             for: action,
@@ -301,7 +274,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
 
         case .claimNextSummary:
             send(.setLoadingState(action: action, state: .loading))
-            let summaryInput = state.newClaim.returnSummaryInformation()
+            let summaryInput = OctopusGraphQL.FlowClaimSummaryInput()
             let mutation = OctopusGraphQL.FlowClaimSummaryNextMutation(
                 input: summaryInput,
                 context: newClaimContext
@@ -331,7 +304,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             }
         case .claimNextSingleItemCheckout:
             send(.setLoadingState(action: action, state: .loading))
-            let claimSingleItemCheckoutInput = state.newClaim.returnSingleItemCheckoutInfo()
+            let claimSingleItemCheckoutInput = state.singleItemCheckoutStep!.returnSingleItemCheckoutInfo()
             let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
                 input: claimSingleItemCheckoutInput,
                 context: newClaimContext
@@ -390,69 +363,57 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.claims = claims
         case let .setCommonClaims(commonClaims):
             newState.commonClaims = commonClaims
-        case let .setNewClaim(clame):
-            newState.newClaim = clame
+        case let .setNewClaimId(id):
+            newState.currentClaimId = id
         case let .setNewLocation(location):
-            let dateOfOccurrence = newState.newClaim.dateOfOccurrence
-            newState.newClaim.dateOfOccurrence = dateOfOccurrence
-            newState.newClaim.location = location
+            newState.locationStep?.location = location
         case let .setNewDate(dateOfOccurrence):
-            let location = newState.newClaim.location
-            newState.newClaim.location = location
-            newState.newClaim.dateOfOccurrence = dateOfOccurrence
-        case let .setListOfLocations(locations):
-            newState.newClaim.location = nil
-            newState.newClaim.dateOfOccurrence = nil
-            newState.newClaim.chosenModel = nil
-            newState.newClaim.chosenBrand = nil
-            newState.newClaim.chosenDamages = nil
-            newState.newClaim.dateOfPurchase = nil
-            newState.newClaim.priceOfPurchase = nil
-            newState.newClaim.payoutAmount = nil
-            newState.newClaim.listOfLocation = locations
-            newState.newClaim.deductible = nil
-            newState.newClaim.depreciation = nil
-            newState.newClaim.prefferedCurrency = nil
-            newState.newClaim.maxDateOfoccurrance = nil
-        case let .setSingleItemLists(brands, models, damages, defaultDamages):
-            newState.newClaim.listOfDamage = damages
-            newState.newClaim.defaultChosenDamages = defaultDamages
-            newState.newClaim.listOfBrands = brands
-            newState.newClaim.listOfModels = models
+            newState.dateOfOccurenceStep?.dateOfOccurence = dateOfOccurrence
         case let .setSingleItemDamage(damages):
-            newState.newClaim.chosenDamages = damages
+            newState.singleItemStep?.selectedItemProblems = damages
         case let .setSingleItemModel(model):
-            newState.newClaim.chosenModel = model
+            newState.singleItemStep?.selectedItemModel = model.itemModelId
         case let .setPurchasePrice(priceOfPurchase):
-            newState.newClaim.priceOfPurchase = priceOfPurchase
+            newState.singleItemStep?.purchasePrice = priceOfPurchase
         case let .setSingleItemPurchaseDate(purchaseDate):
-            newState.newClaim.dateOfPurchase = purchaseDate
+            newState.singleItemStep?.purchaseDate = purchaseDate.localDateStringWithToday
         case let .setItemBrand(brand):
-            newState.newClaim.chosenModel = nil
-            newState.newClaim.chosenBrand = brand
-            newState.newClaim.filteredListOfModels = newState.newClaim.getListOfModels(for: brand)
+            newState.singleItemStep?.selectedItemModel = nil
+            newState.singleItemStep?.selectedItemBrand = brand.itemBrandId
         case let .setLoadingState(action, state):
             if let state {
                 newState.loadingStates[action] = state
             } else {
                 newState.loadingStates.removeValue(forKey: action)
             }
-        case let .setPayoutAmountDeductibleDepreciation(payoutAmount, deductible, depreciation):
-            newState.newClaim.payoutAmount = payoutAmount
-            newState.newClaim.deductible = deductible
-            newState.newClaim.depreciation = depreciation
-        case let .setPrefferedCurrency(currency):
-            newState.newClaim.prefferedCurrency = currency
         case let .setNewClaimContext(context):
-            newState.newClaim.context = context
+            newState.currentClaimContext = context
         case let .setCommonClaimsForSelection(commonClaims):
             newState.entryPointCommonClaims = commonClaims
-        case let .setMaxDateOfOccurrence(maxDate):
-            newState.newClaim.maxDateOfoccurrance = maxDate
+        case let .submitAudioRecording(url):
+            newState.audioRecordingStep?.url = url
         case let .stepModelAction(action):
             switch action {
-            case .setPhoneNumber(let model):
+            case let .setPhoneNumber(model):
                 newState.phoneNumberStep = model
+            case let .setDateOfOccurrencePlusLocation(model):
+                newState.dateOfOccurrencePlusLocationStep = model
+            case let .setDateOfOccurence(model):
+                newState.dateOfOccurenceStep = model
+            case let .setLocation(model):
+                newState.locationStep = model
+            case let .setSingleItem(model):
+                newState.singleItemStep = model
+            case let .setSummaryStep(model):
+                newState.summaryStep = model
+            case let .setSingleItemCheckoutStep(model):
+                newState.singleItemCheckoutStep = model
+            case let .setFailedStep(model):
+                newState.failedStep = model
+            case let .setSuccessStep(model):
+                newState.successStep = model
+            case let .setAudioStep(model):
+                newState.audioRecordingStep = model
             }
         default:
             break
@@ -466,71 +427,44 @@ extension OctopusGraphQL.FlowClaimFragment {
         let currentStep = self.currentStep
         var actions = [ClaimsAction]()
         if let step = currentStep.fragments.flowClaimPhoneNumberStepFragment {
-            let model = ClaimFlowPhoneNumberStepModel(with: step)
+            let model = FlowClaimPhoneNumberStepModel(with: step)
             actions.append(.stepModelAction(action: .setPhoneNumber(model: model)))
             actions.append(.navigationAction(action: .openPhoneNumberScreen(model: model)))
-        } else if let step = currentStep.asFlowClaimAudioRecordingStep {
-            actions.append(.navigationAction(action: .openAudioRecordingScreen(questions: step.questions)))
-        } else if let step = currentStep.asFlowClaimSingleItemStep {
-            let selectedDamages: [Damage] = step.selectedItemProblems.map({
-                Damage(displayName: $0.displayValue, itemProblemId: $0.displayValue)
-            })
-            let damages: [Damage] =
-                step.availableItemProblems?
-                .map({ Damage(displayName: $0.displayName, itemProblemId: $0.itemProblemId) }) ?? []
-            let models: [Model] =
-                step.availableItemModels?
-                .map({
-                    Model(
-                        displayName: $0.displayName,
-                        itemBrandId: $0.itemBrandId,
-                        itemModelId: $0.itemModelId,
-                        itemTypeID: $0.itemTypeId
-                    )
-                }) ?? []
-            let brands: [Brand] =
-                step.availableItemBrands?.map({ Brand(displayName: $0.displayName, itemBrandId: $0.itemBrandId) }) ?? []
-            actions.append(.setPrefferedCurrency(currency: step.preferredCurrency.rawValue))
-            actions.append(
-                .setSingleItemLists(brands: brands, models: models, damages: damages, defaultDamages: selectedDamages)
-            )
+        } else if let step = currentStep.fragments.flowClaimAudioRecordingStepFragment {
+            actions.append(.stepModelAction(action: .setAudioStep(model: .init(with: step))))
+            actions.append(.navigationAction(action: .openAudioRecordingScreen))
+        } else if let step = currentStep.fragments.flowClaimSingleItemStepFragment {
+            actions.append(.stepModelAction(action: .setSingleItem(model: FlowClamSingleItemStepModel(with: step))))
             actions.append(.navigationAction(action: .openSingleItemScreen(maxDate: Date())))
-        } else if let step = currentStep.asFlowClaimSingleItemCheckoutStep {
-            actions.append(.setPurchasePrice(priceOfPurchase: Amount(with: step.price.fragments.moneyFragment)))
-            actions.append(
-                .setPayoutAmountDeductibleDepreciation(
-                    payoutAmount: Amount(with: step.payoutAmount.fragments.moneyFragment),
-                    deductible: Amount(with: step.deductible.fragments.moneyFragment),
-                    depreciation: Amount(with: step.depreciation.fragments.moneyFragment)
-                )
-            )
+        } else if let step = currentStep.fragments.flowClaimSingleItemCheckoutStepFragment {
+            actions.append(.stepModelAction(action: .setSingleItemCheckoutStep(model: .init(with: step))))
             actions.append(.navigationAction(action: .openCheckoutNoRepairScreen))
-        } else if let step = currentStep.asFlowClaimLocationStep {
-            let store: ClaimsStore = globalPresentableStoreContainer.get()
-            let maxDateToDate = store.state.newClaim.formatStringToDate(
-                dateString: store.state.newClaim.maxDateOfoccurrance ?? ""
-            )
-            actions.append(.navigationAction(action: .openDateOfOccurrenceScreen(maxDate: maxDateToDate)))
-        } else if let step = currentStep.asFlowClaimDateOfOccurrenceStep {
-            let store: ClaimsStore = globalPresentableStoreContainer.get()
-            let maxDateToDate = store.state.newClaim.formatStringToDate(dateString: step.maxDate)
-            actions.append(.setMaxDateOfOccurrence(maxDate: step.maxDate))
-            actions.append(.navigationAction(action: .openDateOfOccurrenceScreen(maxDate: maxDateToDate)))
-        } else if let step = currentStep.asFlowClaimSummaryStep {
+        } else if let step = currentStep.fragments.flowClaimLocationStepFragment {
+            actions.append(.stepModelAction(action: .setLocation(model: .init(with: step))))
+            actions.append(.navigationAction(action: .openDateOfOccurrenceScreen))
+        } else if let step = currentStep.fragments.flowClaimDateOfOccurrenceStepFragment {
+            actions.append(.stepModelAction(action: .setDateOfOccurence(model: .init(with: step))))
+            actions.append(.navigationAction(action: .openDateOfOccurrenceScreen))
+        } else if let step = currentStep.fragments.flowClaimSummaryStepFragment {
+            actions.append(.stepModelAction(action: .setSummaryStep(model: .init(with: step))))
             actions.append(.navigationAction(action: .openSummaryScreen))
-        } else if let step = currentStep.asFlowClaimDateOfOccurrencePlusLocationStep {
-            let store: ClaimsStore = globalPresentableStoreContainer.get()
-            let dateOfOccurrenceStep = step.dateOfOccurrenceStep.dateOfOccurrence
-            let dateOfOccurrenceMaxDate = step.dateOfOccurrenceStep.maxDate
-            let maxDateToDate = store.state.newClaim.formatStringToDate(dateString: dateOfOccurrenceMaxDate)
-            let locations = step.locationStep.options.map({ Location(displayValue: $0.displayName, value: $0.value) })
-
-            actions.append(.setMaxDateOfOccurrence(maxDate: dateOfOccurrenceMaxDate))
-            actions.append(.setListOfLocations(displayValues: locations))
-            actions.append(.navigationAction(action: .openDateOfOccurrenceScreen(maxDate: maxDateToDate)))
-        } else if let step = currentStep.asFlowClaimFailedStep {
+        } else if let step = currentStep.fragments.flowClaimDateOfOccurrencePlusLocationStepFragment {
+            let model = FlowClaimDateOfOccurrencePlusLocationStepModel(with: step)
+            let dateOfOccurence = FlowClaimDateOfOccurenceStepModel(
+                with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
+            )
+            let locationModel = FlowClaimLocationStepModel(
+                with: step.locationStep.fragments.flowClaimLocationStepFragment
+            )
+            actions.append(.stepModelAction(action: .setDateOfOccurrencePlusLocation(model: model)))
+            actions.append(.stepModelAction(action: .setDateOfOccurence(model: dateOfOccurence)))
+            actions.append(.stepModelAction(action: .setLocation(model: locationModel)))
+            actions.append(.navigationAction(action: .openDateOfOccurrenceScreen))
+        } else if let step = currentStep.fragments.flowClaimFailedStepFragment {
+            actions.append(.stepModelAction(action: .setFailedStep(model: .init(with: step))))
             actions.append(.navigationAction(action: .openFailureSceen))
-        } else if let step = currentStep.asFlowClaimSuccessStep {
+        } else if let step = currentStep.fragments.flowClaimSuccessStepFragment {
+            actions.append(.stepModelAction(action: .setSuccessStep(model: .init(with: step))))
             if case .claimNextSingleItemCheckout = action {
                 actions.append(.navigationAction(action: .openCheckoutTransferringDoneScreen))
             } else {

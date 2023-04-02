@@ -3,7 +3,6 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimCheckoutTransferringScreen: View {
-    @PresentableStore var store: ClaimsStore
     @State var hasActionCompleted: Bool = false
 
     public init() {}
@@ -60,8 +59,6 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                     withAnimation {
                         hasActionCompleted = true
                     }
-                    await delay(2)
-                    store.send(.claimNextSingleItemCheckout)
                 }
             }
         }

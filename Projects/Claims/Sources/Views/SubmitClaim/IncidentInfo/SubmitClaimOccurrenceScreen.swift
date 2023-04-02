@@ -10,26 +10,24 @@ public struct SubmitClaimOccurrenceScreen: View {
     public var body: some View {
         LoadingViewWithContent(.claimNextDateOfOccurrenceAndLocation) {
             hForm {
-                hButton.SmallButtonText {
-                    store.send(.navigationAction(action: .openDatePicker))
-                } content: {
 
-                    HStack(spacing: 0) {
-                        hText(L10n.Claims.Incident.Screen.Date.Of.incident)
-                            .foregroundColor(hLabelColor.primary)
-                            .padding([.top, .bottom], 16)
+                PresentableStoreLens(
+                    ClaimsStore.self,
+                    getter: { state in
+                        state.dateOfOccurenceStep
+                    }
+                ) { dateOfOccurenceStep in
+                    hButton.SmallButtonText {
+                        store.send(.navigationAction(action: .openDatePicker))
+                    } content: {
 
-                        Spacer()
-
-                        PresentableStoreLens(
-                            ClaimsStore.self,
-                            getter: { state in
-                                state.newClaim
-                            }
-                        ) { claim in
-
-                            if let dateOfOccurrence = claim.dateOfOccurrence {
-                                hText(claim.dateOfOccurrence ?? "")
+                        HStack(spacing: 0) {
+                            hText(L10n.Claims.Incident.Screen.Date.Of.incident)
+                                .foregroundColor(hLabelColor.primary)
+                                .padding([.top, .bottom], 16)
+                            Spacer()
+                            if let dateOfOccurrence = dateOfOccurenceStep?.dateOfOccurence {
+                                hText(dateOfOccurrence)
                                     .foregroundColor(hLabelColor.primary)
                             } else {
                                 Image(uiImage: hCoreUIAssets.calendar.image)
@@ -38,6 +36,7 @@ public struct SubmitClaimOccurrenceScreen: View {
                         }
                     }
                 }
+
                 .frame(height: 64)
                 .background(hBackgroundColor.tertiary)
                 .cornerRadius(12)
@@ -46,42 +45,41 @@ public struct SubmitClaimOccurrenceScreen: View {
                 .padding(.top, 20)
                 .hShadow()
 
-                hButton.SmallButtonText {
-                    store.send(.navigationAction(action: .openLocationPicker))
-                } content: {
+                PresentableStoreLens(
+                    ClaimsStore.self,
+                    getter: { state in
+                        state.locationStep
+                    }
+                ) { locationStep in
+                    hButton.SmallButtonText {
+                        store.send(.navigationAction(action: .openLocationPicker))
+                    } content: {
 
-                    HStack(spacing: 0) {
-                        hText(L10n.Claims.Incident.Screen.location)
-                            .foregroundColor(hLabelColor.primary)
-                            .padding([.top, .bottom], 16)
+                        HStack(spacing: 0) {
+                            hText(L10n.Claims.Incident.Screen.location)
+                                .foregroundColor(hLabelColor.primary)
+                                .padding([.top, .bottom], 16)
 
-                        Spacer()
-
-                        PresentableStoreLens(
-                            ClaimsStore.self,
-                            getter: { state in
-                                state.newClaim
-                            }
-                        ) { claim in
-
-                            if claim.location != nil {
-                                hText(claim.location?.displayValue ?? "")
+                            Spacer()
+                            if let location = locationStep?.getSelectedOption()?.displayName {
+                                hText(location.displayValue)
                                     .foregroundColor(hLabelColor.primary)
                             } else {
                                 hText(L10n.Claim.Location.choose)
                                     .foregroundColor(hLabelColor.primary)
                             }
+
                         }
                     }
-                }
-                .frame(height: 64)
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(12)
-                .padding(.leading, 16)
-                .padding(.trailing, 16)
-                .padding(.top, 20)
-                .hShadow()
+                    .frame(height: 64)
+                    .background(hBackgroundColor.tertiary)
+                    .cornerRadius(12)
+                    .padding(.leading, 16)
+                    .padding(.trailing, 16)
+                    .padding(.top, 20)
+                    .hShadow()
 
+                }
             }
 
             .hFormAttachToBottom {

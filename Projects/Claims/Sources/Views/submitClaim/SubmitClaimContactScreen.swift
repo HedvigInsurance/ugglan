@@ -9,7 +9,7 @@ public struct SubmitClaimContactScreen: View {
     @State var phoneNumber: String
 
     public init(
-        model: ClaimFlowPhoneNumberStepModel
+        model: FlowClaimPhoneNumberStepModel
     ) {
         self.phoneNumber = model.phoneNumber
     }

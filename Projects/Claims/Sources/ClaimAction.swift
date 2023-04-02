@@ -34,38 +34,28 @@ public indirect enum ClaimsAction: ActionProtocol {
 
     case dissmissNewClaimFlow
 
-    case submitClaimDateOfOccurrence(dateOfOccurrence: Date)
-    case submitClaimLocation(displayValue: String, value: String)
-
     case submitAudioRecording(audioURL: URL)
     case submitSingleItem(purchasePrice: Double)
-    case submitDamage(damage: [Damage])
-    case claimNextDamage(damages: Damage)
+    case submitDamage(damage: [String])
 
     case startClaim(from: String)
-    case setNewClaim(from: NewClaim)
+    case setNewClaimId(with: String)
     case claimNextPhoneNumber(phoneNumber: String)
     case claimNextDateOfOccurrence(dateOfOccurrence: Date)
-    case claimNextLocation(displayName: String, displayValue: String)
     case claimNextDateOfOccurrenceAndLocation
     case claimNextSingleItem(purchasePrice: Double)
     case claimNextSummary
     case claimNextSingleItemCheckout
 
-    case setNewLocation(location: Location?)
+    case setNewLocation(location: String?)
     case setNewDate(dateOfOccurrence: String?)
-    case setListOfLocations(displayValues: [Location])
-    case setPurchasePrice(priceOfPurchase: Amount)
-    case setSingleItemLists(brands: [Brand], models: [Model], damages: [Damage], defaultDamages: [Damage])
-    case setSingleItemModel(modelName: Model)
-    case setSingleItemDamage(damages: [Damage])
+    case setPurchasePrice(priceOfPurchase: Double)
+    case setSingleItemModel(modelName: ClaimFlowItemModelOptionModel)
+    case setSingleItemDamage(damages: [String])
     case setSingleItemPurchaseDate(purchaseDate: Date)
-    case setItemBrand(brand: Brand)
+    case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
     case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
-    case setPayoutAmountDeductibleDepreciation(payoutAmount: Amount, deductible: Amount, depreciation: Amount)
-    case setPrefferedCurrency(currency: String)
     case setNewClaimContext(context: String)
-    case setMaxDateOfOccurrence(maxDate: String)
     case didAcceptHonestyPledge
 
     case navigationAction(action: ClaimsNavigationAction)
@@ -73,9 +63,9 @@ public indirect enum ClaimsAction: ActionProtocol {
 }
 
 public enum ClaimsNavigationAction: ActionProtocol {
-    case openPhoneNumberScreen(model: ClaimFlowPhoneNumberStepModel)
-    case openDateOfOccurrenceScreen(maxDate: Date)
-    case openAudioRecordingScreen(questions: [String])
+    case openPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel)
+    case openDateOfOccurrenceScreen
+    case openAudioRecordingScreen
     case openLocationPicker
     case openDatePicker
     case openSuccessScreen
@@ -93,5 +83,15 @@ public enum ClaimsNavigationAction: ActionProtocol {
 }
 
 public enum ClaimsStepModelAction: ActionProtocol {
-    case setPhoneNumber(model: ClaimFlowPhoneNumberStepModel)
+    case setPhoneNumber(model: FlowClaimPhoneNumberStepModel)
+    case setDateOfOccurrencePlusLocation(model: FlowClaimDateOfOccurrencePlusLocationStepModel)
+    case setDateOfOccurence(model: FlowClaimDateOfOccurenceStepModel)
+    case setLocation(model: FlowClaimLocationStepModel)
+    case setSingleItem(model: FlowClamSingleItemStepModel)
+    case setSummaryStep(model: FlowClaimSummaryStepModel)
+    case setSingleItemCheckoutStep(model: FlowClaimSingleItemCheckoutStepModel)
+    case setSuccessStep(model: FlowClaimSuccessStepModel)
+    case setFailedStep(model: FlowClaimFailedStepModel)
+    case setAudioStep(model: FlowClaimAudioRecordingStepModel)
+
 }

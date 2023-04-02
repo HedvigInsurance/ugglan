@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-public struct ClaimFlowPhoneNumberStepModel: ClaimFlowStepModel {
+public struct FlowClaimPhoneNumberStepModel: FlowClaimStepModel {
     let id: String
     let phoneNumber: String
 

@@ -16,13 +16,13 @@ public struct SubmitClaimSingleItem: View {
                 PresentableStoreLens(
                     ClaimsStore.self,
                     getter: { state in
-                        state.newClaim
+                        state.singleItemStep
                     }
-                ) { claim in
-                    displayBrandAndModelField(claim: claim)
-                    displayDateField(claim: claim)
-                    displayPurchasePriceField(claim: claim)
-                    displayDamageField(claim: claim)
+                ) { singleItemStep in
+                    displayBrandAndModelField(singleItemStep: singleItemStep)
+                    displayDateField(claim: singleItemStep)
+                    displayPurchasePriceField(claim: singleItemStep)
+                    displayDamageField(claim: singleItemStep)
                 }
             }
             .hFormAttachToBottom {
@@ -36,9 +36,11 @@ public struct SubmitClaimSingleItem: View {
         }
     }
 
-    @ViewBuilder func displayBrandAndModelField(claim: NewClaim) -> some View {
+    @ViewBuilder func displayBrandAndModelField(singleItemStep: FlowClamSingleItemStepModel?) -> some View {
 
-        if claim.listOfModels != nil || claim.listOfBrands != nil {
+        if (singleItemStep?.availableItemModelOptions.count) ?? 0 > 0
+            || (singleItemStep?.availableItemBrandOptions.count) ?? 0 > 0
+        {
 
             hRow {
                 HStack {
@@ -49,11 +51,8 @@ public struct SubmitClaimSingleItem: View {
                 }
             }
             .withCustomAccessory {
-                if claim.chosenModel != nil {
-                    hText(claim.chosenModel?.displayName ?? "")
-                        .foregroundColor(hLabelColor.primary)
-                } else if claim.chosenBrand != nil {
-                    hText(claim.chosenBrand?.displayName ?? "")
+                if let brandName = singleItemStep?.getBrandOrModelName() {
+                    hText(brandName)
                         .foregroundColor(hLabelColor.primary)
                 } else {
                     hText(L10n.Claim.Location.choose)
@@ -73,7 +72,7 @@ public struct SubmitClaimSingleItem: View {
         }
     }
 
-    @ViewBuilder func displayDateField(claim: NewClaim) -> some View {
+    @ViewBuilder func displayDateField(claim: FlowClamSingleItemStepModel?) -> some View {
 
         hRow {
             HStack {
@@ -85,9 +84,9 @@ public struct SubmitClaimSingleItem: View {
             }
         }
         .withCustomAccessory {
-            if claim.dateOfPurchase != nil {
+            if let purchaseDate = claim?.purchaseDate {
 
-                hText(convertDateToString(date: claim.dateOfPurchase ?? Date()))
+                hText(purchaseDate)
                     .foregroundColor(hLabelColor.primary)
             } else {
                 Image(uiImage: hCoreUIAssets.calendar.image)
@@ -105,9 +104,9 @@ public struct SubmitClaimSingleItem: View {
         .hShadow()
     }
 
-    @ViewBuilder func displayDamageField(claim: NewClaim) -> some View {
+    @ViewBuilder func displayDamageField(claim: FlowClamSingleItemStepModel?) -> some View {
 
-        if claim.listOfDamage != nil {
+        if (claim?.selectedItemProblems) != nil {
             hRow {
                 HStack {
 
@@ -119,7 +118,7 @@ public struct SubmitClaimSingleItem: View {
                 }
             }
             .withCustomAccessory {
-                if let chosenDamages = claim.getChoosenDamagesAsText() {
+                if let chosenDamages = claim?.getChoosenDamagesAsText() {
                     hText(chosenDamages).foregroundColor(hLabelColor.primary)
                 } else {
                     hText(L10n.Claim.Location.choose).foregroundColor(hLabelColor.placeholder)
@@ -138,14 +137,14 @@ public struct SubmitClaimSingleItem: View {
         }
     }
 
-    @ViewBuilder func displayPurchasePriceField(claim: NewClaim) -> some View {
+    @ViewBuilder func displayPurchasePriceField(claim: FlowClamSingleItemStepModel?) -> some View {
         hRow {
             ZStack {
                 HStack {
                     hText(L10n.Claims.Item.Screen.Purchase.Price.button)
                         .foregroundColor(hLabelColor.secondary)
                     Spacer()
-                    hText(claim.prefferedCurrency ?? "")
+                    hText(claim?.prefferedCurrency ?? "")
                 }
 
                 TextField("", text: $purchasePrice)

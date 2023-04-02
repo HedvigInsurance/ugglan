@@ -13,12 +13,12 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             PresentableStoreLens(
                 ClaimsStore.self,
                 getter: { state in
-                    state.newClaim
+                    state.singleItemCheckoutStep
                 }
-            ) { claim in
+            ) { singleItemCheckoutStep in
 
                 hSection {
-                    displayPriceFields(claim: claim)
+                    displayPriceFields(checkoutStep: singleItemCheckoutStep)
                 }
                 .withHeader {
                     hText(L10n.Claims.Payout.Summary.subtitle, style: .title3)
@@ -64,24 +64,24 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
         }
     }
 
-    @ViewBuilder func displayPriceFields(claim: NewClaim) -> some View {
+    @ViewBuilder func displayPriceFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
         hRow {
             HStack {
                 hText(L10n.Claims.Payout.Purchase.price)
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
 
-                if checkIfNotDecimal(value: claim.priceOfPurchase?.amount ?? 0) {
+                if checkIfNotDecimal(value: checkoutStep?.price.amount ?? 0) {
 
                     hText(
-                        formatDoubleWithoutDecimal(value: claim.priceOfPurchase?.amount ?? 0) + " "
-                            + String(claim.payoutAmount?.currencyCode ?? "")
+                        formatDoubleWithoutDecimal(value: checkoutStep?.price.amount ?? 0) + " "
+                            + String(checkoutStep?.price.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
                 } else {
                     hText(
-                        formatDoubleWithDecimal(value: claim.priceOfPurchase?.amount ?? 0) + " "
-                            + String(claim.payoutAmount?.currencyCode ?? "")
+                        formatDoubleWithDecimal(value: checkoutStep?.payoutAmount.amount ?? 0) + " "
+                            + String(checkoutStep?.payoutAmount.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
                 }
@@ -95,17 +95,17 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
 
-                if checkIfNotDecimal(value: claim.priceOfPurchase?.amount ?? 0) {
+                if checkIfNotDecimal(value: checkoutStep?.deductible.amount ?? 0) {
 
                     hText(
-                        "- " + formatDoubleWithoutDecimal(value: claim.depreciation?.amount ?? 0.0) + " "
-                            + String(claim.deductible?.currencyCode ?? "")
+                        "- " + formatDoubleWithoutDecimal(value: checkoutStep?.deductible.amount ?? 0.0) + " "
+                            + String(checkoutStep?.deductible.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
                 } else {
                     hText(
-                        "- " + String(claim.depreciation?.amount ?? 0) + " "
-                            + String(claim.deductible?.currencyCode ?? "")
+                        "- " + String(checkoutStep?.depreciation.amount ?? 0) + " "
+                            + String(checkoutStep?.depreciation.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
                 }
@@ -119,16 +119,16 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
 
-                if checkIfNotDecimal(value: claim.priceOfPurchase?.amount ?? 0) {
+                if checkIfNotDecimal(value: checkoutStep?.deductible.amount ?? 0) {
                     hText(
-                        "- " + formatDoubleWithoutDecimal(value: claim.deductible?.amount ?? 0) + " "
-                            + String(claim.payoutAmount?.currencyCode ?? "")
+                        "- " + formatDoubleWithoutDecimal(value: checkoutStep?.deductible.amount ?? 0) + " "
+                            + String(checkoutStep?.deductible.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
                 } else {
                     hText(
-                        "- " + String(claim.deductible?.amount ?? 0) + " "
-                            + String(claim.depreciation?.currencyCode ?? "")
+                        "- " + String(checkoutStep?.deductible.amount ?? 0) + " "
+                            + String(checkoutStep?.deductible.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
                 }
@@ -141,14 +141,14 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 hText(L10n.Claims.Payout.total)
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
-                if checkIfNotDecimal(value: claim.priceOfPurchase?.amount ?? 0) {
+                if checkIfNotDecimal(value: checkoutStep?.price.amount ?? 0) {
                     hText(
-                        formatDoubleWithoutDecimal(value: claim.payoutAmount?.amount ?? 0.0) + " "
-                            + String(claim.payoutAmount?.currencyCode ?? "")
+                        formatDoubleWithoutDecimal(value: checkoutStep?.price.amount ?? 0.0) + " "
+                            + String(checkoutStep?.price.currencyCode ?? "")
                     )
                 } else {
                     hText(
-                        String(claim.payoutAmount?.amount ?? 0) + " " + String(claim.payoutAmount?.currencyCode ?? "")
+                        String(checkoutStep?.price.amount ?? 0) + " " + String(checkoutStep?.price.currencyCode ?? "")
                     )
                 }
             }

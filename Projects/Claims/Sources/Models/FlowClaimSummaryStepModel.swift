@@ -1,9 +1,9 @@
 import Foundation
 import hGraphQL
 
-public protocol ClaimFlowStepModel: Codable, Equatable {}
+public protocol FlowClaimStepModel: Codable, Equatable {}
 
-public struct ClaimFlowSummaryStepModel: ClaimFlowStepModel {
+public struct FlowClaimSummaryStepModel: FlowClaimStepModel {
     let id: String
     var title: String
     let shouldShowDateOfOccurence: Bool
