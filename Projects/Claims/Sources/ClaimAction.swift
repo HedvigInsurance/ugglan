@@ -43,6 +43,7 @@ public indirect enum ClaimsAction: ActionProtocol {
     case claimNextPhoneNumber(phoneNumber: String)
     case claimNextDateOfOccurrence(dateOfOccurrence: Date)
     case claimNextDateOfOccurrenceAndLocation
+    case claimNextLocation(location: String?)
     case claimNextSingleItem(purchasePrice: Double)
     case claimNextSummary
     case claimNextSingleItemCheckout
@@ -66,7 +67,7 @@ public enum ClaimsNavigationAction: ActionProtocol {
     case openPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel)
     case openDateOfOccurrenceScreen
     case openAudioRecordingScreen
-    case openLocationPicker
+    case openLocationPicker(type: LocationPickerType)
     case openDatePicker
     case openSuccessScreen
     case openSingleItemScreen(maxDate: Date)
@@ -80,6 +81,11 @@ public enum ClaimsNavigationAction: ActionProtocol {
     case openCheckoutTransferringDoneScreen
     case openFailureSceen
     case openUpdateAppScreen
+
+    public enum LocationPickerType: ActionProtocol {
+        case setLocation
+        case submitLocation
+    }
 }
 
 public enum ClaimsStepModelAction: ActionProtocol {

@@ -5,8 +5,6 @@ import hCoreUI
 public struct SubmitClaimOccurrenceScreen: View {
     @PresentableStore var store: ClaimsStore
 
-    public init() {}
-
     public var body: some View {
         LoadingViewWithContent(.claimNextDateOfOccurrenceAndLocation) {
             hForm {
@@ -52,7 +50,7 @@ public struct SubmitClaimOccurrenceScreen: View {
                     }
                 ) { locationStep in
                     hButton.SmallButtonText {
-                        store.send(.navigationAction(action: .openLocationPicker))
+                        store.send(.navigationAction(action: .openLocationPicker(type: .setLocation)))
                     } content: {
 
                         HStack(spacing: 0) {

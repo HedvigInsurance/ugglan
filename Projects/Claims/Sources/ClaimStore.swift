@@ -135,7 +135,33 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     }
                 return NilDisposer()
             }
-
+        case let .claimNextLocation(location):
+            self.send(.setLoadingState(action: action, state: .loading))
+            let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: location)
+            let mutation = OctopusGraphQL.FlowClaimLocationNextMutation(input: locationInput, context: newClaimContext)
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.octopus.client.perform(mutation: mutation)
+                    .onValue { data in
+                        callback(.value(.setNewClaimContext(context: data.flowClaimLocationNext.context)))
+                        data.flowClaimLocationNext.fragments.flowClaimFragment.executeNextStepActions(
+                            for: action,
+                            callback: callback
+                        )
+                        callback(.value(.setLoadingState(action: action, state: nil)))
+                    }
+                    .onError { error in
+                        callback(
+                            .value(
+                                .setLoadingState(
+                                    action: action,
+                                    state: .error(error: L10n.General.errorBody)
+                                )
+                            )
+                        )
+                    }
+                return disposeBag
+            }
         case .claimNextDateOfOccurrenceAndLocation:
             self.send(.setLoadingState(action: action, state: .loading))
             let location = state.locationStep?.getSelectedOption()?.value
@@ -441,7 +467,7 @@ extension OctopusGraphQL.FlowClaimFragment {
             actions.append(.navigationAction(action: .openCheckoutNoRepairScreen))
         } else if let step = currentStep.fragments.flowClaimLocationStepFragment {
             actions.append(.stepModelAction(action: .setLocation(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openDateOfOccurrenceScreen))
+            actions.append(.navigationAction(action: .openLocationPicker(type: .submitLocation)))
         } else if let step = currentStep.fragments.flowClaimDateOfOccurrenceStepFragment {
             actions.append(.stepModelAction(action: .setDateOfOccurence(model: .init(with: step))))
             actions.append(.navigationAction(action: .openDateOfOccurrenceScreen))
