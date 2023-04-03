@@ -8,48 +8,49 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
     public init() {}
 
     public var body: some View {
-
-        BlurredProgressOverlay {
-            ZStack(alignment: .center) {
-                VStack {
-                    Spacer()
-                        .scaleEffect(
-                            x: hasActionCompleted ? 2 : 1,
-                            y: hasActionCompleted ? 2 : 1,
-                            anchor: .center
-                        )
-                    Spacer()
-                }
-                .opacity(hasActionCompleted ? 0 : 1)
-                .animation(.spring(), value: hasActionCompleted)
-
-                VStack {
-                    Spacer()
-
-                    VStack(spacing: 16) {
-
-                        hText(L10n.Claims.Payout.Progress.title, style: .title2)
-
+        LoadingViewWithContent(.claimNextSummary) {
+            BlurredProgressOverlay {
+                ZStack(alignment: .center) {
+                    VStack {
+                        Spacer()
+                            .scaleEffect(
+                                x: hasActionCompleted ? 2 : 1,
+                                y: hasActionCompleted ? 2 : 1,
+                                anchor: .center
+                            )
+                        Spacer()
                     }
-                    .frame(maxHeight: .infinity, alignment: .top)
-                    .scaleEffect(
-                        x: hasActionCompleted ? 1 : 0.3,
-                        y: hasActionCompleted ? 1 : 0.3,
-                        anchor: .top
-                    )
+                    .opacity(hasActionCompleted ? 0 : 1)
+                    .animation(.spring(), value: hasActionCompleted)
 
-                    Spacer()
-                }
-                .opacity(hasActionCompleted ? 1 : 0)
-                .disabled(!hasActionCompleted)
-                .animation(
-                    .interpolatingSpring(
-                        stiffness: 170,
-                        damping: 15
+                    VStack {
+                        Spacer()
+
+                        VStack(spacing: 16) {
+
+                            hText(L10n.Claims.Payout.Progress.title, style: .title2)
+
+                        }
+                        .frame(maxHeight: .infinity, alignment: .top)
+                        .scaleEffect(
+                            x: hasActionCompleted ? 1 : 0.3,
+                            y: hasActionCompleted ? 1 : 0.3,
+                            anchor: .top
+                        )
+
+                        Spacer()
+                    }
+                    .opacity(hasActionCompleted ? 1 : 0)
+                    .disabled(!hasActionCompleted)
+                    .animation(
+                        .interpolatingSpring(
+                            stiffness: 170,
+                            damping: 15
+                        )
+                        .delay(0.25),
+                        value: hasActionCompleted
                     )
-                    .delay(0.25),
-                    value: hasActionCompleted
-                )
+                }
             }
         }
         .onAppear {

@@ -4,34 +4,47 @@ import hCore
 import hCoreUI
 
 public class ClaimJourneys {
+
     @JourneyBuilder
-    public static func getScreenForAction(for action: ClaimsAction) -> some JourneyPresentation {
+    public static func getScreenForAction(
+        for action: ClaimsAction,
+        withHidesBack: Bool = false
+    ) -> some JourneyPresentation {
+        if withHidesBack {
+            getScreen(for: action).hidesBackButton
+        } else {
+            getScreen(for: action).showsBackButton
+        }
+    }
+
+    @JourneyBuilder
+    static func getScreen(for action: ClaimsAction) -> some JourneyPresentation {
         GroupJourney {
             if case let .navigationAction(navigationAction) = action {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
-                    submitClaimPhoneNumberScreen(model: model).withJourneyDismissButton
+                    submitClaimPhoneNumberScreen(model: model).addDismissWithConfirmation()
                 } else if case .openDateOfOccurrenceScreen = navigationAction {
-                    submitClaimOccurranceScreen().withJourneyDismissButton
+                    submitClaimOccurranceScreen().addDismissWithConfirmation()
                 } else if case .openAudioRecordingScreen = navigationAction {
-                    openAudioRecordingSceen().withJourneyDismissButton
+                    openAudioRecordingSceen().addDismissWithConfirmation()
                 } else if case .openSuccessScreen = navigationAction {
-                    openSuccessScreen().hidesBackButton.withJourneyDismissButton
+                    openSuccessScreen().addDismissWithConfirmation()
                 } else if case let .openSingleItemScreen(maxDate) = navigationAction {
-                    openSingleItemScreen(maxDate: maxDate).withJourneyDismissButton
+                    openSingleItemScreen(maxDate: maxDate).addDismissWithConfirmation()
                 } else if case .openSummaryScreen = navigationAction {
-                    openSummaryScreen().withJourneyDismissButton
+                    openSummaryScreen().addDismissWithConfirmation()
                 } else if case .openDamagePickerScreen = navigationAction {
-                    openDamagePickerScreen().withJourneyDismissButton
+                    openDamagePickerScreen().addDismissWithConfirmation()
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
-                    openCheckoutNoRepairScreen().withJourneyDismissButton
+                    openCheckoutNoRepairScreen().addDismissWithConfirmation()
                 } else if case .openFailureSceen = navigationAction {
-                    showClaimFailureScreen().withJourneyDismissButton
+                    showClaimFailureScreen().addDismissWithConfirmation()
                 } else if case .openSummaryEditScreen = navigationAction {
-                    openSummaryEditScreen().withJourneyDismissButton
+                    openSummaryEditScreen().addDismissWithConfirmation()
                 } else if case .openLocationPicker = navigationAction {
-                    openLocationScreen().withJourneyDismissButton
+                    openLocationScreen().addDismissWithConfirmation()
                 } else if case .openUpdateAppScreen = navigationAction {
-                    openUpdateAppTerminationScreen().hidesBackButton.withJourneyDismissButton
+                    openUpdateAppTerminationScreen().addDismissWithConfirmation()
                 } else if case .openCheckoutTransferringDoneScreen = navigationAction {
                     openCheckoutTransferringDoneScreen()
                 }
@@ -242,6 +255,7 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
+        .hidesBackButton
         .setScrollEdgeNavigationBarAppearanceToStandard
     }
     private static func openSingleItemScreen(maxDate: Date) -> some JourneyPresentation {
@@ -362,7 +376,6 @@ public class ClaimJourneys {
                 style: .detented(.large),
                 options: [
                     .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
-                    .allowSwipeDismissAlways,
                 ]
             ) { action in
                 if case let .commonClaimOriginSelected(origin) = action {
@@ -411,5 +424,17 @@ public class ClaimJourneys {
             action in
             getScreenForAction(for: action)
         }
+        .hidesBackButton
+    }
+}
+
+extension JourneyPresentation {
+    func addDismissWithConfirmation() -> some JourneyPresentation {
+        self.withJourneyDismissButtonWithConfirmation(
+            withTitle: L10n.General.areYouSure,
+            andBody: L10n.Claims.Alert.body,
+            andCancelText: L10n.General.no,
+            andConfirmText: L10n.General.yes
+        )
     }
 }

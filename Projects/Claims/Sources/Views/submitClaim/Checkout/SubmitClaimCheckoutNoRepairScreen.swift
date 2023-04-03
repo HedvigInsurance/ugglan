@@ -65,96 +65,41 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
     }
 
     @ViewBuilder func displayPriceFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
+        displayField(withTitle: L10n.Claims.Payout.Purchase.price, andFor: checkoutStep?.price)
+        Divider()
+        displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation)
+        Divider()
+        displayField(withTitle: L10n.Claims.Payout.Age.deductable, andFor: checkoutStep?.deductible)
+        Divider()
+        displayField(withTitle: L10n.Claims.Payout.total, andFor: checkoutStep?.payoutAmount)
+            .foregroundColor(hLabelColor.primary)
+    }
+
+    @ViewBuilder
+    func displayField(withTitle title: String, andFor model: ClaimFlowMoneyModel?) -> some View {
         hRow {
             HStack {
-                hText(L10n.Claims.Payout.Purchase.price)
+                hText(title)
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
 
-                if checkIfNotDecimal(value: checkoutStep?.price.amount ?? 0) {
+                if checkIfNotDecimal(value: model?.amount ?? 0) {
 
                     hText(
-                        formatDoubleWithoutDecimal(value: checkoutStep?.price.amount ?? 0) + " "
-                            + String(checkoutStep?.price.currencyCode ?? "")
+                        formatDoubleWithoutDecimal(value: model?.amount ?? 0) + " "
+                            + String(model?.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
                 } else {
                     hText(
-                        formatDoubleWithDecimal(value: checkoutStep?.payoutAmount.amount ?? 0) + " "
-                            + String(checkoutStep?.payoutAmount.currencyCode ?? "")
+                        formatDoubleWithDecimal(value: model?.amount ?? 0) + " "
+                            + String(model?.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
                 }
             }
         }
         .padding([.leading, .trailing], -20)
-
-        hRow {
-            HStack {
-                hText(L10n.Claims.Payout.Age.deduction)
-                    .foregroundColor(hLabelColor.primary)
-                Spacer()
-
-                if checkIfNotDecimal(value: checkoutStep?.deductible.amount ?? 0) {
-
-                    hText(
-                        "- " + formatDoubleWithoutDecimal(value: checkoutStep?.deductible.amount ?? 0.0) + " "
-                            + String(checkoutStep?.deductible.currencyCode ?? "")
-                    )
-                    .foregroundColor(hLabelColor.secondary)
-                } else {
-                    hText(
-                        "- " + String(checkoutStep?.depreciation.amount ?? 0) + " "
-                            + String(checkoutStep?.depreciation.currencyCode ?? "")
-                    )
-                    .foregroundColor(hLabelColor.secondary)
-                }
-            }
-        }
-        .padding([.leading, .trailing], -20)
-
-        hRow {
-            HStack {
-                hText(L10n.Claims.Payout.Age.deductable)
-                    .foregroundColor(hLabelColor.primary)
-                Spacer()
-
-                if checkIfNotDecimal(value: checkoutStep?.deductible.amount ?? 0) {
-                    hText(
-                        "- " + formatDoubleWithoutDecimal(value: checkoutStep?.deductible.amount ?? 0) + " "
-                            + String(checkoutStep?.deductible.currencyCode ?? "")
-                    )
-                    .foregroundColor(hLabelColor.secondary)
-                } else {
-                    hText(
-                        "- " + String(checkoutStep?.deductible.amount ?? 0) + " "
-                            + String(checkoutStep?.deductible.currencyCode ?? "")
-                    )
-                    .foregroundColor(hLabelColor.secondary)
-                }
-            }
-        }
-        .padding([.leading, .trailing], -20)
-
-        hRow {
-            HStack {
-                hText(L10n.Claims.Payout.total)
-                    .foregroundColor(hLabelColor.primary)
-                Spacer()
-                if checkIfNotDecimal(value: checkoutStep?.price.amount ?? 0) {
-                    hText(
-                        formatDoubleWithoutDecimal(value: checkoutStep?.price.amount ?? 0.0) + " "
-                            + String(checkoutStep?.price.currencyCode ?? "")
-                    )
-                } else {
-                    hText(
-                        String(checkoutStep?.price.amount ?? 0) + " " + String(checkoutStep?.price.currencyCode ?? "")
-                    )
-                }
-            }
-        }
-        .padding([.leading, .trailing], -20)
-        .foregroundColor(hLabelColor.secondary)
     }
 
     func checkIfNotDecimal(value: Double) -> Bool {
