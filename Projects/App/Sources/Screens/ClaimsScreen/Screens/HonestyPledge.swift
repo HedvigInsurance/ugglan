@@ -181,7 +181,6 @@ extension HonestyPledge {
             style: style,
             options: [
                 .defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
-                .allowSwipeDismissAlways,
             ]
         ) { action in
             if case .didAcceptHonestyPledge = action {
