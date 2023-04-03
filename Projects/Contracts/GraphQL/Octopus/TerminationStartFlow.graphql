@@ -1,166 +1,38 @@
 mutation FlowTerminationStart($input: FlowTerminationStartInput!, $context: FlowContext) {
   flowTerminationStart(input: $input, context: $context) {
     id
-    currentStep {
-      id
-      ... on FlowClaimAudioRecordingStep {
-        id
-        questions
-      }
-      ... on FlowClaimDateOfOccurrencePlusLocationStep {
-        id
-        dateOfOccurrenceStep {
-          id
-          dateOfOccurrence
-          maxDate
-        }
-        locationStep {
-          id
-          location
-          options {
-            displayName
-            value
-          }
-        }
-      }
-      ... on FlowClaimDateOfOccurrenceStep {
-        id
-        dateOfOccurrence
-        maxDate
-      }
-      ... on FlowClaimFailedStep {
-        id
-      }
-      ... on FlowClaimLocationStep {
-        id
-        location
-        options {
-          displayName
-          value
-        }
-      }
-      ... on FlowClaimPhoneNumberStep {
-        id
-        phoneNumber
-      }
-      ... on FlowClaimSingleItemCheckoutStep {
-        id
-        price {
-          amount
-          currencyCode
-        }
-        depreciation {
-          amount
-          currencyCode
-        }
-        deductible {
-          amount
-          currencyCode
-        }
-        payoutAmount {
-          amount
-          currencyCode
-        }
-        availableCheckoutMethods {
-          id
-        }
-      }
-      ... on FlowClaimSingleItemStep {
-        id
-        preferredCurrency
-        purchasePrice {
-          amount
-          currencyCode
-        }
-        purchaseDate
-        selectedItemProblems
-        availableItemProblems {
-          displayName
-          itemProblemId
-        }
-        selectedItemBrand
-        availableItemBrands {
-          displayName
-          itemTypeId
-          itemBrandId
-        }
-        selectedItemModel
-        availableItemModels {
-          displayName
-          imageUrl
-          itemTypeId
-          itemBrandId
-          itemModelId
-        }
-        customName
-      }
-      ... on FlowClaimSuccessStep {
-        id
-      }
-      ... on FlowClaimSummaryStep {
-        id
-        title
-        dateOfOccurrenceStep {
-          id
-          dateOfOccurrence
-          maxDate
-        }
-        locationStep {
-          id
-          location
-          options {
-            displayName
-            value
-          }
-        }
-        singleItemStep {
-          id
-          preferredCurrency
-          purchasePrice {
-            amount
-            currencyCode
-          }
-          purchaseDate
-          selectedItemProblems
-          availableItemProblems {
-            displayName
-            itemProblemId
-          }
-          selectedItemBrand
-          availableItemBrands {
-            displayName
-            itemTypeId
-            itemBrandId
-          }
-          selectedItemModel
-          availableItemModels {
-            displayName
-            imageUrl
-            itemTypeId
-            itemBrandId
-            itemModelId
-          }
-          customName
-        }
-      }
-      ... on FlowTerminationDateStep {
-        id
-        minDate
-        maxDate
-      }
-      ... on FlowTerminationDeletionStep {
-        id
-        disclaimer
-      }
-      ... on FlowTerminationFailedStep {
-        id
-      }
-      ... on FlowTerminationSuccessStep {
-        id
-        terminationDate
-        surveyUrl
-      }
-    }
+    ...FlowTerminationFragment
     context
   }
+}
+
+fragment FlowTerminationFragment on Flow {
+  currentStep {
+    id
+	...FlowTerminationDateStepFragment
+	...FlowTerminationDeletionFragment
+	...FlowTerminationFailedFragment
+	...FlowTerminationSuccessFragment
+  }
+}
+
+fragment FlowTerminationDateStepFragment on FlowTerminationDateStep{
+     id
+     minDate
+     maxDate
+}
+
+fragment FlowTerminationDeletionFragment on FlowTerminationDeletionStep{
+	id
+	disclaimer
+}
+
+fragment FlowTerminationFailedFragment on FlowTerminationFailedStep{
+     id
+}
+
+fragment FlowTerminationSuccessFragment on FlowTerminationSuccessStep{
+     id
+     terminationDate
+     surveyUrl
 }

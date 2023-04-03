@@ -8,21 +8,25 @@ extension AppJourney {
 
     @JourneyBuilder
     private static func getScreenForAction(for action: ContractAction) -> some JourneyPresentation {
-        if case .openTerminationSuccess = action {
-            AppJourney.openTerminationSuccessScreen()
-                .withJourneyDismissButton.hidesBackButton
-        } else if case .openTerminationSetDateScreen = action {
-            AppJourney.openSetTerminationDateScreen().withJourneyDismissButton
-        } else if case .openTerminationFailScreen = action {
-            AppJourney.openTerminationFailScreen().withJourneyDismissButton.hidesBackButton
-        } else if case .openTerminationUpdateAppScreen = action {
-            AppJourney.openUpdateAppTerminationScreen().hidesBackButton
-        } else if case .dismissTerminationFlow = action {
-            DismissJourney()
-        } else if case .goToFreeTextChat = action {
-            DismissJourney()
-        } else if case .openTerminationDeletionScreen = action {
-            AppJourney.openTerminationDeletionScreen()
+        GroupJourney {
+            if case let .navigationAction(navigationAction) = action {
+                if case .openTerminationSuccessScreen = navigationAction {
+                    AppJourney.openTerminationSuccessScreen()
+                        .withJourneyDismissButton.hidesBackButton
+                } else if case .openTerminationSetDateScreen = navigationAction {
+                    AppJourney.openSetTerminationDateScreen().withJourneyDismissButton
+                } else if case .openTerminationFailScreen = navigationAction {
+                    AppJourney.openTerminationFailScreen().withJourneyDismissButton.hidesBackButton
+                } else if case .openTerminationUpdateAppScreen = navigationAction {
+                    AppJourney.openUpdateAppTerminationScreen().hidesBackButton
+                } else if case .openTerminationDeletionScreen = navigationAction {
+                    AppJourney.openTerminationDeletionScreen()
+                }
+            } else if case .dismissTerminationFlow = action {
+                DismissJourney()
+            } else if case .goToFreeTextChat = action {
+                DismissJourney()
+            }
         }
     }
 
@@ -88,11 +92,12 @@ extension AppJourney {
     static func openTerminationDeletionScreen() -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: TerminationDeleteScreen(  //                onSelected: {
-                //                    let store: ContractStore = globalPresentableStoreContainer.get()
-                //                    store.send(.dismissTerminationFlow)
-                //                }
-                ),
+            rootView: TerminationDeleteScreen(
+                onSelected: {
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    store.send(.deleteTermination)
+                }
+            ),
             style: .detented(.large, modally: true)
         ) {
             action in

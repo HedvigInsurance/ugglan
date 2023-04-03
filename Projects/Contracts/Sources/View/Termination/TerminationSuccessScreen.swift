@@ -12,7 +12,7 @@ public struct TerminationSuccessScreen: View {
         PresentableStoreLens(
             ContractStore.self,
             getter: { state in
-                state.terminations
+                state.successStep
             }
         ) { termination in
 
@@ -29,7 +29,7 @@ public struct TerminationSuccessScreen: View {
 
                 hText(
                     L10n.terminationSuccessfulText(
-                        formatAndPrintDate(date: termination.terminationDate ?? Date()),
+                        formatAndPrintDate(dateStringInput: termination?.terminationDate ?? ""),
                         L10n.hedvigNameText
                     ),
                     style: .body
@@ -42,7 +42,7 @@ public struct TerminationSuccessScreen: View {
 
             hButton.LargeButtonFilled {
 
-                if let surveyToURL = URL(string: termination.surveyURL) {
+                if let surveyToURL = URL(string: termination?.surveyUrl) {
                     UIApplication.shared.open(surveyToURL)
                 }
                 store.send(.dismissTerminationFlow)
@@ -57,10 +57,14 @@ public struct TerminationSuccessScreen: View {
         }
     }
 
-    func formatAndPrintDate(date: Date) -> String {
+    func formatAndPrintDate(dateStringInput: String) -> String {
+
         let dateFormatter = DateFormatter()
 
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let dateString = dateFormatter.date(from: dateStringInput) ?? Date()
+
         dateFormatter.dateFormat = "dd-MM-yyyy"
-        return dateFormatter.string(from: date)
+        return dateFormatter.string(from: dateString)
     }
 }

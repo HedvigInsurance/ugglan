@@ -4,8 +4,13 @@ import hCoreUI
 
 public struct TerminationDeleteScreen: View {
     @PresentableStore var store: ContractStore
+    let onSelected: () -> Void
 
-    public init() {}
+    public init(
+        onSelected: @escaping () -> Void
+    ) {
+        self.onSelected = onSelected
+    }
 
     public var body: some View {
 
@@ -14,7 +19,7 @@ public struct TerminationDeleteScreen: View {
             PresentableStoreLens(
                 ContractStore.self,
                 getter: { state in
-                    state.terminations
+                    state.terminationDeleteStep
                 }
             ) { termination in
 
@@ -23,13 +28,29 @@ public struct TerminationDeleteScreen: View {
                     .padding(.leading, 16)
                     .padding([.bottom, .top], 4)
 
-                /* TODO: FIX TITLE HERE */
-                hText(L10n.terminationNotSuccessfulTitle, style: .title2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 16)
-                    .padding(.bottom, 4)
+                PresentableStoreLens(
+                    ContractStore.self
+                ) { state in
+                    state.terminationContractId ?? ""
+                } _: { value in
 
-                hText(termination.disclaimer ?? "", style: .body)
+                    PresentableStoreLens(
+                        ContractStore.self
+                    ) { state in
+                        state.contractForId(value)
+                    } _: { value in
+
+                        hText(
+                            L10n.terminationContractDeletionAlertDescription("\"" + (value?.displayName ?? "") + "\""),
+                            style: .title2
+                        )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 16)
+                        .padding(.bottom, 4)
+                    }
+                }
+
+                hText(termination?.disclaimer ?? "", style: .body)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 16)
             }
@@ -41,15 +62,17 @@ public struct TerminationDeleteScreen: View {
             VStack {
                 hButton.LargeButtonOutlined {
                     store.send(.dismissTerminationFlow)
+                    //                    onSelected()
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)
                         .foregroundColor(hLabelColor.primary)
                 }
                 .padding(.bottom, 4)
                 hButton.LargeButtonFilled {
-                    store.send(.goToFreeTextChat)
+                    //                    store.send(.)
+                    onSelected()
                 } content: {
-                    hText(L10n.MovingUwFailure.buttonText, style: .body)
+                    hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
                 }
                 .padding(.bottom, 2)

@@ -177,40 +177,6 @@ public struct Contract: Codable, Hashable, Equatable {
     }
 }
 
-public struct TerminationStartFlow: Codable, Equatable, Hashable {
-
-    public var id: String
-    public var context: String
-    public var minDate: String?
-    public var maxDate: String?
-    public var disclaimer: String?
-    public var terminationDate: Date?
-    public var surveyURL: String?
-
-    public init(
-        id: String,
-        context: String
-    ) {
-        self.id = id
-        self.context = context
-    }
-
-    public func convertDateToString(date: Date) -> String? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        return dateFormatter.string(from: terminationDate ?? Date())
-    }
-
-    public func convertStringToDate(dateString: String) -> Date? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        guard let date = dateFormatter.date(from: dateString) else {
-            return Date()
-        }
-        return date
-    }
-}
-
 public struct UpcomingRenewal: Codable, Hashable {
     public let renewalDate: String?
     public let draftCertificateUrl: String?
