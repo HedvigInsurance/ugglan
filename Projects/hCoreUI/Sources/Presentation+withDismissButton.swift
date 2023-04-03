@@ -99,4 +99,51 @@ extension JourneyPresentation {
             viewController.navigationItem.rightBarButtonItem = closeButtonItem
         }
     }
+
+    public func withJourneyDismissButtonWithConfirmation(
+        withTitle title: String,
+        andBody body: String,
+        andCancelText cancelText: String,
+        andConfirmText confirmText: String
+    ) -> Self {
+        return addConfiguration { presenter in
+            let viewController = presenter.viewController
+            // move over any barButtonItems to the other side
+            if viewController.navigationItem.rightBarButtonItems != nil {
+                viewController.navigationItem.leftBarButtonItems =
+                    viewController.navigationItem.rightBarButtonItems
+            }
+
+            let closeButtonItem = UIBarButtonItem(
+                image: hCoreUIAssets.close.image,
+                style: .plain,
+                target: nil,
+                action: nil
+            )
+
+            presenter.bag += closeButtonItem.onValue { _ in
+
+                let alertJourney = Journey(
+                    Alert<Void>(
+                        title: title,
+                        message: body,
+                        actions: [
+                            .init(title: cancelText, action: { () }),
+                            .init(
+                                title: confirmText,
+                                style: .destructive,
+                                action: {
+                                    presenter.dismisser(JourneyError.dismissed)
+                                }
+                            ),
+                        ]
+                    )
+                )
+                viewController.present(alertJourney.presentable)
+            }
+
+            viewController.navigationItem.rightBarButtonItem = closeButtonItem
+
+        }
+    }
 }
