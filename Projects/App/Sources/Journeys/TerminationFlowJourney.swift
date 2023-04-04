@@ -12,13 +12,12 @@ extension AppJourney {
             if case let .navigationAction(navigationAction) = action {
                 if case .openTerminationSuccessScreen = navigationAction {
                     AppJourney.openTerminationSuccessScreen()
-                        .withJourneyDismissButton.hidesBackButton
                 } else if case .openTerminationSetDateScreen = navigationAction {
-                    AppJourney.openSetTerminationDateScreen().withJourneyDismissButton
+                    AppJourney.openSetTerminationDateScreen()
                 } else if case .openTerminationFailScreen = navigationAction {
-                    AppJourney.openTerminationFailScreen().withJourneyDismissButton.hidesBackButton
+                    AppJourney.openTerminationFailScreen()
                 } else if case .openTerminationUpdateAppScreen = navigationAction {
-                    AppJourney.openUpdateAppTerminationScreen().hidesBackButton
+                    AppJourney.openUpdateAppTerminationScreen()
                 } else if case .openTerminationDeletionScreen = navigationAction {
                     AppJourney.openTerminationDeletionScreen()
                 }
@@ -45,7 +44,7 @@ extension AppJourney {
             action in
             getScreenForAction(for: action)
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
+        .withJourneyDismissButton
     }
 
     static func openTerminationSuccessScreen() -> some JourneyPresentation {
@@ -57,7 +56,12 @@ extension AppJourney {
             action in
             getScreenForAction(for: action)
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
+        .withJourneyDismissButton
+        .hidesBackButton
+        .onDismiss {
+            @PresentableStore var store: ContractStore
+            store.send(.dismissTerminationFlow)
+        }
     }
 
     static func openTerminationFailScreen() -> some JourneyPresentation {
@@ -68,7 +72,8 @@ extension AppJourney {
             action in
             getScreenForAction(for: action)
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
+        .withJourneyDismissButton
+        .hidesBackButton
 
     }
 
@@ -87,6 +92,7 @@ extension AppJourney {
             getScreenForAction(for: action)
         }
         .withJourneyDismissButton
+        .hidesBackButton
     }
 
     static func openTerminationDeletionScreen() -> some JourneyPresentation {
