@@ -121,24 +121,33 @@ extension JourneyPresentation {
                 action: nil
             )
 
-            presenter.bag += closeButtonItem.onValue { _ in
+            let delegate = CustomAdaptivePresentationDelegate()
+            presenter.bag.hold(delegate)
 
+            viewController.customAdaptivePresentationDelegate = delegate
+            viewController.isModalInPresentation = true
+            let alert = Alert<Void>(
+                title: title,
+                message: body,
+                actions: [
+                    .init(title: cancelText, action: { () }),
+                    .init(
+                        title: confirmText,
+                        style: .destructive,
+                        action: {
+                            presenter.dismisser(JourneyError.dismissed)
+                        }
+                    ),
+                ]
+            )
+            presenter.bag += delegate.didAttemptToDismissSignal.onValue { _ in
+                viewController.present(alert)
+            }
+            presenter.bag += closeButtonItem.onValue { _ in
                 let alertJourney = Journey(
-                    Alert<Void>(
-                        title: title,
-                        message: body,
-                        actions: [
-                            .init(title: cancelText, action: { () }),
-                            .init(
-                                title: confirmText,
-                                style: .destructive,
-                                action: {
-                                    presenter.dismisser(JourneyError.dismissed)
-                                }
-                            ),
-                        ]
-                    )
+                    alert
                 )
+
                 viewController.present(alertJourney.presentable)
             }
 
