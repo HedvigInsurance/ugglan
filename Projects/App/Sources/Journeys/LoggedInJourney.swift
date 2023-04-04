@@ -60,16 +60,6 @@ extension AppJourney {
                 AppJourney.crossSellingEmbarkJourney(name: name, style: .detented(.large))
             case let .openCrossSellingWebUrl(url):
                 AppJourney.webRedirect(url: url)
-            case .openTerminationSuccessScreen:
-                AppJourney.openTerminationSuccessScreen()
-            case .openTerminationDeletionScreen:
-                AppJourney.openTerminationDeletionScreen()
-            case .openTerminationSetDateScreen:
-                AppJourney.openSetTerminationDateScreen()
-            case .openTerminationFailScreen:
-                AppJourney.openTerminationFailScreen()
-            case .openTerminationUpdateAppScreen:
-                AppJourney.openUpdateAppTerminationScreen()
             }
         }
         .onTabSelected {
@@ -140,7 +130,7 @@ extension AppJourney {
                 }
             )
             .sendActionImmediately(ContractStore.self, .fetch)
-            .sendActionImmediately(ClaimsStore.self, .fetchClaims)
+            //            .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
             .onAction(UgglanStore.self) { action in
                 if action == .openChat {

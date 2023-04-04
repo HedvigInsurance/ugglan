@@ -1,25 +1,24 @@
-import Contracts
 import Foundation
 import Presentation
 import hCore
 import hCoreUI
 
-extension AppJourney {
+public struct TerminationFlowJourney {
 
     @JourneyBuilder
-    private static func getScreenForAction(for action: ContractAction) -> some JourneyPresentation {
+    public static func getScreenForAction(for action: ContractAction) -> some JourneyPresentation {
         GroupJourney {
             if case let .navigationAction(navigationAction) = action {
                 if case .openTerminationSuccessScreen = navigationAction {
-                    AppJourney.openTerminationSuccessScreen()
+                    TerminationFlowJourney.openTerminationSuccessScreen()
                 } else if case .openTerminationSetDateScreen = navigationAction {
-                    AppJourney.openSetTerminationDateScreen()
+                    TerminationFlowJourney.openSetTerminationDateScreen()
                 } else if case .openTerminationFailScreen = navigationAction {
-                    AppJourney.openTerminationFailScreen()
+                    TerminationFlowJourney.openTerminationFailScreen()
                 } else if case .openTerminationUpdateAppScreen = navigationAction {
-                    AppJourney.openUpdateAppTerminationScreen()
+                    TerminationFlowJourney.openUpdateAppTerminationScreen()
                 } else if case .openTerminationDeletionScreen = navigationAction {
-                    AppJourney.openTerminationDeletionScreen()
+                    TerminationFlowJourney.openTerminationDeletionScreen()
                 }
             } else if case .dismissTerminationFlow = action {
                 DismissJourney()

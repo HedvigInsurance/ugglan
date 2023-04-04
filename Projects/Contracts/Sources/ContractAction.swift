@@ -78,6 +78,8 @@ public indirect enum ContractAction: ActionProtocol {
 
     case stepModelAction(action: TerminationStepModelAction)
     case navigationAction(action: TerminationNavigationAction)
+    case terminationInitialNavigation(action: TerminationNavigationAction)
+
 }
 
 public enum TerminationNavigationAction: ActionProtocol {

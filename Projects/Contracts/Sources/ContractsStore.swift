@@ -190,7 +190,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             case .setFailedStep(let model):
                 newState.failedStep = model
             }
-
         default:
             break
         }
@@ -203,30 +202,33 @@ extension OctopusGraphQL.FlowTerminationFragment {
     func executeNextStepActions(for action: ContractAction, callback: (Event<ContractAction>) -> Void) {
         let currentStep = self.currentStep
         var actions = [ContractAction]()
-
+        var navigationAction: TerminationNavigationAction?
         if let step = currentStep.fragments.flowTerminationDateStepFragment {
             let model = TerminationFlowDateNextStepModel(with: step)
             actions.append(.stepModelAction(action: .setTerminationDateStep(model: model)))
-            actions.append(.navigationAction(action: .openTerminationSetDateScreen))
-
+            navigationAction = .openTerminationSetDateScreen
         } else if let step = currentStep.fragments.flowTerminationDeletionFragment {
             let model = TerminationFlowDeletionNextModel(with: step)
             actions.append(.stepModelAction(action: .setTerminationDeletion(model: model)))
-            actions.append(.navigationAction(action: .openTerminationDeletionScreen))
-
+            navigationAction = .openTerminationDeletionScreen
         } else if let step = currentStep.fragments.flowTerminationFailedFragment {
             let model = TerminationFlowFailedNextModel(with: step)
             actions.append(.stepModelAction(action: .setFailedStep(model: model)))
-            actions.append(.navigationAction(action: .openTerminationFailScreen))
+            navigationAction = .openTerminationFailScreen
 
         } else if let step = currentStep.fragments.flowTerminationSuccessFragment {
             let model = TerminationFlowSuccessNextModel(with: step)
             actions.append(.stepModelAction(action: .setSuccessStep(model: model)))
-            actions.append(.navigationAction(action: .openTerminationSuccessScreen))
+            navigationAction = .openTerminationSuccessScreen
         } else {
-            actions.append(.navigationAction(action: .openTerminationUpdateAppScreen))
+            navigationAction = .openTerminationUpdateAppScreen
         }
-
+        if let navigationAction {
+            actions.append(.navigationAction(action: navigationAction))
+            if case .startTermination = action {
+                actions.append(.terminationInitialNavigation(action: navigationAction))
+            }
+        }
         actions.forEach { action in
             callback(.value(action))
         }

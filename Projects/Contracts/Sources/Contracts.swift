@@ -93,12 +93,6 @@ public enum ContractsResult {
     case openFreeTextChat
     case openCrossSellingDetail(crossSell: CrossSell)
     case openCrossSellingEmbark(name: String)
-    //    case terminationFlow
-    case openTerminationSuccessScreen
-    case openTerminationFailScreen
-    case openTerminationUpdateAppScreen
-    case openTerminationDeletionScreen
-    case openTerminationSetDateScreen
     case openCrossSellingWebUrl(url: URL)
 }
 
@@ -135,15 +129,17 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case let .navigationAction(navigationAction) = action {
-                if case .openTerminationSetDateScreen = navigationAction {
-                    resultJourney(.openTerminationSetDateScreen)
+            } else if case let .terminationInitialNavigation(navigationAction) = action {
+                if case .openTerminationSuccessScreen = navigationAction {
+                    TerminationFlowJourney.openTerminationSuccessScreen()
+                } else if case .openTerminationSetDateScreen = navigationAction {
+                    TerminationFlowJourney.openSetTerminationDateScreen()
+                } else if case .openTerminationFailScreen = navigationAction {
+                    TerminationFlowJourney.openTerminationFailScreen()
                 } else if case .openTerminationUpdateAppScreen = navigationAction {
-                    resultJourney(.openTerminationUpdateAppScreen)
+                    TerminationFlowJourney.openUpdateAppTerminationScreen()
                 } else if case .openTerminationDeletionScreen = navigationAction {
-                    resultJourney(.openTerminationDeletionScreen)
-                } else if case .openTerminationSuccessScreen = navigationAction {
-                    resultJourney(.openTerminationSuccessScreen)
+                    TerminationFlowJourney.openTerminationDeletionScreen()
                 }
             }
         }
