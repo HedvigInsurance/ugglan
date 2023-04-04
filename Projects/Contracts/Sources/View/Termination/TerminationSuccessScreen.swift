@@ -58,13 +58,7 @@ public struct TerminationSuccessScreen: View {
     }
 
     func formatAndPrintDate(dateStringInput: String) -> String {
-
-        let dateFormatter = DateFormatter()
-
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let dateString = dateFormatter.date(from: dateStringInput) ?? Date()
-
-        dateFormatter.dateFormat = "dd-MM-yyyy"
-        return dateFormatter.string(from: dateString)
+        let date = dateStringInput.localDateToDate ?? Date()
+        return date.localDateStringDayFirst ?? ""
     }
 }

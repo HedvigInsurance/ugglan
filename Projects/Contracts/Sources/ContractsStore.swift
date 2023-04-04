@@ -76,10 +76,8 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
 
         case let .sendTerminationDate(terminationDate):
             self.send(.setLoadingState(action: action, state: .loading))
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let inputDateToString = dateFormatter.string(from: terminationDate)
 
+            let inputDateToString = terminationDate.localDateString ?? ""
             let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
 
             let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
@@ -183,11 +181,11 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             switch step {
             case let .setTerminationDateStep(model):
                 newState.terminationDateStep = model
-            case .setTerminationDeletion(let model):
+            case let .setTerminationDeletion(model):
                 newState.terminationDeleteStep = model
-            case .setSuccessStep(let model):
+            case let .setSuccessStep(model):
                 newState.successStep = model
-            case .setFailedStep(let model):
+            case let .setFailedStep(model):
                 newState.failedStep = model
             }
         default:
