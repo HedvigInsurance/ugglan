@@ -32,7 +32,7 @@ public struct SetTerminationDate: View {
                     HStack {
                         hText(L10n.terminationDateText, style: .body)
                         Spacer()
-                        hText(terminationDate.localDateString, style: .body)
+                        hText(terminationDate.localDateString ?? "", style: .body)
                             .foregroundColor(hLabelColor.link)
                     }
                 }
