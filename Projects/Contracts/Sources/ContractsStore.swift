@@ -69,7 +69,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in
-                        log.error("Error: \(error)")
+                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
                     }
                 return disposeBag
             }
@@ -100,7 +100,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in
-                        log.error("Error: \(error)")
+                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
                     }
                 return disposeBag
             }
@@ -128,7 +128,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in
-                        log.error("Error: \(error)")
+                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
                     }
                 return disposeBag
             }
