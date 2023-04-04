@@ -41,7 +41,7 @@ public indirect enum ClaimsAction: ActionProtocol {
     case startClaim(from: String)
     case setNewClaimId(with: String)
     case claimNextPhoneNumber(phoneNumber: String)
-    case claimNextDateOfOccurrence(dateOfOccurrence: Date)
+    case claimNextDateOfOccurrence(dateOfOccurrence: Date?)
     case claimNextDateOfOccurrenceAndLocation
     case claimNextLocation(location: String?)
     case claimNextSingleItem(purchasePrice: Double)
@@ -53,7 +53,7 @@ public indirect enum ClaimsAction: ActionProtocol {
     case setPurchasePrice(priceOfPurchase: Double)
     case setSingleItemModel(modelName: ClaimFlowItemModelOptionModel)
     case setSingleItemDamage(damages: [String])
-    case setSingleItemPurchaseDate(purchaseDate: Date)
+    case setSingleItemPurchaseDate(purchaseDate: Date?)
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
     case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
     case setNewClaimContext(context: String)
@@ -65,12 +65,12 @@ public indirect enum ClaimsAction: ActionProtocol {
 
 public enum ClaimsNavigationAction: ActionProtocol {
     case openPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel)
-    case openDateOfOccurrenceScreen
+    case openDateOfOccurrencePlusLocationScreen
     case openAudioRecordingScreen
     case openLocationPicker(type: LocationPickerType)
-    case openDatePicker
+    case openDatePicker(type: DatePickerType)
     case openSuccessScreen
-    case openSingleItemScreen(maxDate: Date)
+    case openSingleItemScreen
     case openSummaryScreen
     case openSummaryEditScreen
     case openDamagePickerScreen
@@ -85,6 +85,12 @@ public enum ClaimsNavigationAction: ActionProtocol {
     public enum LocationPickerType: ActionProtocol {
         case setLocation
         case submitLocation
+    }
+
+    public enum DatePickerType: ActionProtocol {
+        case setDateOfOccurrence
+        case submitDateOfOccurence
+        case setDateOfPurchase
     }
 }
 

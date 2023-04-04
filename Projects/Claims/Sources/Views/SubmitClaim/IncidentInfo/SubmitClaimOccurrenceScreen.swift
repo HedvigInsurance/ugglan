@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct SubmitClaimOccurrenceScreen: View {
+public struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: ClaimsStore
 
     public var body: some View {
@@ -16,7 +16,7 @@ public struct SubmitClaimOccurrenceScreen: View {
                     }
                 ) { dateOfOccurenceStep in
                     hButton.SmallButtonText {
-                        store.send(.navigationAction(action: .openDatePicker))
+                        store.send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
                     } content: {
 
                         HStack(spacing: 0) {
@@ -103,8 +103,8 @@ public struct SubmitClaimOccurrenceScreen: View {
     }
 }
 
-struct SubmitClaimOccurranceScreen_Previews: PreviewProvider {
+struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimOccurrenceScreen()
+        SubmitClaimOccurrencePlusLocationScreen()
     }
 }

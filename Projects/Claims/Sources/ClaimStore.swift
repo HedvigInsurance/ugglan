@@ -112,7 +112,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return disposeBag
             }
         case let .claimNextDateOfOccurrence(dateOfOccurrence):
-            let dateString = dateOfOccurrence.localDateString
+            send(.setLoadingState(action: action, state: .loading))
+            let dateString = dateOfOccurrence?.localDateString
             let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
             let mutation = OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation(
                 input: dateOfOccurrenceInput,
@@ -126,12 +127,17 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     .onValue { data in
                         var actions = [ClaimsAction]()
                         actions.append(.setNewClaimContext(context: data.flowClaimDateOfOccurrenceNext.context))
-                        actions.append(.setNewDate(dateOfOccurrence: dateString))
+                        data.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.executeNextStepActions(
+                            for: action,
+                            callback: callback
+                        )
                         actions.append(.setLoadingState(action: action, state: nil))
                         actions.forEach({ callback(.value($0)) })
                     }
                     .onError { error in
-                        print(error)
+                        callback(
+                            .value(.setLoadingState(action: action, state: .error(error: error.localizedDescription)))
+                        )
                     }
                 return NilDisposer()
             }
@@ -402,7 +408,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .setPurchasePrice(priceOfPurchase):
             newState.singleItemStep?.purchasePrice = priceOfPurchase
         case let .setSingleItemPurchaseDate(purchaseDate):
-            newState.singleItemStep?.purchaseDate = purchaseDate.localDateStringWithToday
+            newState.singleItemStep?.purchaseDate = purchaseDate?.localDateString
         case let .setItemBrand(brand):
             newState.singleItemStep?.selectedItemModel = nil
             newState.singleItemStep?.selectedItemBrand = brand.itemBrandId
@@ -461,7 +467,7 @@ extension OctopusGraphQL.FlowClaimFragment {
             actions.append(.navigationAction(action: .openAudioRecordingScreen))
         } else if let step = currentStep.fragments.flowClaimSingleItemStepFragment {
             actions.append(.stepModelAction(action: .setSingleItem(model: FlowClamSingleItemStepModel(with: step))))
-            actions.append(.navigationAction(action: .openSingleItemScreen(maxDate: Date())))
+            actions.append(.navigationAction(action: .openSingleItemScreen))
         } else if let step = currentStep.fragments.flowClaimSingleItemCheckoutStepFragment {
             actions.append(.stepModelAction(action: .setSingleItemCheckoutStep(model: .init(with: step))))
             actions.append(.navigationAction(action: .openCheckoutNoRepairScreen))
@@ -470,7 +476,7 @@ extension OctopusGraphQL.FlowClaimFragment {
             actions.append(.navigationAction(action: .openLocationPicker(type: .submitLocation)))
         } else if let step = currentStep.fragments.flowClaimDateOfOccurrenceStepFragment {
             actions.append(.stepModelAction(action: .setDateOfOccurence(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openDateOfOccurrenceScreen))
+            actions.append(.navigationAction(action: .openDatePicker(type: .submitDateOfOccurence)))
         } else if let step = currentStep.fragments.flowClaimSummaryStepFragment {
             actions.append(.stepModelAction(action: .setSummaryStep(model: .init(with: step))))
             actions.append(.navigationAction(action: .openSummaryScreen))
@@ -485,7 +491,7 @@ extension OctopusGraphQL.FlowClaimFragment {
             actions.append(.stepModelAction(action: .setDateOfOccurrencePlusLocation(model: model)))
             actions.append(.stepModelAction(action: .setDateOfOccurence(model: dateOfOccurence)))
             actions.append(.stepModelAction(action: .setLocation(model: locationModel)))
-            actions.append(.navigationAction(action: .openDateOfOccurrenceScreen))
+            actions.append(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
         } else if let step = currentStep.fragments.flowClaimFailedStepFragment {
             actions.append(.stepModelAction(action: .setFailedStep(model: .init(with: step))))
             actions.append(.navigationAction(action: .openFailureSceen))
