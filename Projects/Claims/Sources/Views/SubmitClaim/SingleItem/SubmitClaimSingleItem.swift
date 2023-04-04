@@ -93,7 +93,7 @@ public struct SubmitClaimSingleItem: View {
             }
         }
         .onTap {
-            store.send(.navigationAction(action: .openDatePicker))
+            store.send(.navigationAction(action: .openDatePicker(type: .setDateOfPurchase)))
         }
         .frame(height: 64)
         .background(hBackgroundColor.tertiary)
