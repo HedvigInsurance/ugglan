@@ -62,14 +62,12 @@ public struct TerminationDeleteScreen: View {
             VStack {
                 hButton.LargeButtonOutlined {
                     store.send(.dismissTerminationFlow)
-                    //                    onSelected()
                 } content: {
                     hText(L10n.generalCloseButton, style: .body)
                         .foregroundColor(hLabelColor.primary)
                 }
                 .padding(.bottom, 4)
                 hButton.LargeButtonFilled {
-                    //                    store.send(.)
                     onSelected()
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)

@@ -32,7 +32,7 @@ public struct SetTerminationDate: View {
                     HStack {
                         hText(L10n.terminationDateText, style: .body)
                         Spacer()
-                        hText(formatAndPrintDate(), style: .body)
+                        hText(terminationDate.localDateString, style: .body)
                             .foregroundColor(hLabelColor.link)
                     }
                 }
@@ -77,19 +77,7 @@ public struct SetTerminationDate: View {
         }
     }
 
-    func formatAndPrintDate() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd-MM-yyyy"
-        return dateFormatter.string(from: terminationDate)
-    }
-
     func convertDateFormat(inputDate: String) -> Date {
-        let dateFormatter = DateFormatter()
-
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        guard let dateString = dateFormatter.date(from: inputDate) else {
-            return Date()
-        }
-        return dateString
+        return inputDate.localDateToDate ?? Date()
     }
 }
