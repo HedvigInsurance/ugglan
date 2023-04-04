@@ -83,7 +83,6 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
@@ -103,7 +102,6 @@ public class ClaimJourneys {
                 getScreen(for: action)
             }
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func openLocationScreen() -> some JourneyPresentation {
@@ -118,7 +116,6 @@ public class ClaimJourneys {
                 PopJourney()
             }
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func openBrandPickerScreen() -> some JourneyPresentation {
@@ -159,7 +156,6 @@ public class ClaimJourneys {
                 }
             }
         )
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func openModelPickerScreen() -> some JourneyPresentation {
@@ -191,7 +187,6 @@ public class ClaimJourneys {
                 }
             }
         )
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func openDamagePickerScreen() -> some JourneyPresentation {
@@ -208,7 +203,6 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
 
     static func openAudioRecordingSceen() -> some JourneyPresentation {
@@ -237,7 +231,6 @@ public class ClaimJourneys {
             }
         }
         .hidesBackButton
-        .setScrollEdgeNavigationBarAppearanceToStandard
     }
     private static func openSingleItemScreen() -> some JourneyPresentation {
         HostingJourney(
