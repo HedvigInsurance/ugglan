@@ -49,17 +49,13 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             .emitEachThenEnd
 
         case .startTermination(let contractId):
-
             self.send(.setLoadingState(action: action, state: .loading))
             let mutation = OctopusGraphQL.FlowTerminationStartMutation(
                 input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId)
             )
-
             return FiniteSignal { callback in
-
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client.perform(mutation: mutation)
-
                     .onValue { data in
                         callback(
                             .value(.setTerminationContext(context: data.flowTerminationStart.context))
@@ -70,7 +66,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                             for: action,
                             callback: callback
                         )
-
                         callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in
@@ -80,9 +75,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             }
 
         case let .sendTerminationDate(terminationDate):
-
             self.send(.setLoadingState(action: action, state: .loading))
-
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
             let inputDateToString = dateFormatter.string(from: terminationDate)
@@ -94,24 +87,19 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 context: terminationContext
             )
             return FiniteSignal { callback in
-
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client.perform(mutation: mutation)
-
                     .onValue { data in
-
                         callback(
                             .value(
                                 .setTerminationContext(context: data.flowTerminationDateNext.context)
                             )
                         )
-
                         data.flowTerminationDateNext.fragments.flowTerminationFragment.executeNextStepActions(
                             for: action,
                             callback: callback
                         )
                         callback(.value(.setLoadingState(action: action, state: nil)))
-
                     }
                     .onError { error in
                         log.error("Error: \(error)")
@@ -120,24 +108,21 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             }
 
         case .deleteTermination:
-
+            self.send(.setLoadingState(action: action, state: .loading))
             let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
-                context: terminationContext
+                context: terminationContext,
+                input: state.terminationDeleteStep?.returnDeltionInput()
             )
 
             return FiniteSignal { callback in
-
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client.perform(mutation: mutation)
-
                     .onValue { data in
-
                         callback(
                             .value(
                                 .setTerminationContext(context: data.flowTerminationDeletionNext.context)
                             )
                         )
-
                         data.flowTerminationDeletionNext.fragments.flowTerminationFragment.executeNextStepActions(
                             for: action,
                             callback: callback

@@ -10,4 +10,8 @@ public struct TerminationFlowDeletionNextModel: FlowClaimStepModel {
         self.id = data.id
         self.disclaimer = data.disclaimer
     }
+
+    public func returnDeltionInput() -> OctopusGraphQL.FlowTerminationDeletionInput {
+        return OctopusGraphQL.FlowTerminationDeletionInput(confirmed: true)
+    }
 }
