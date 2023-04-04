@@ -41,7 +41,7 @@ public struct TerminationDeleteScreen: View {
                     } _: { value in
 
                         hText(
-                            L10n.terminationContractDeletionAlertDescription("\"" + (value?.displayName ?? "") + "\""),
+                            L10n.terminationContractDeletionAlertDescription(value?.displayName ?? ""),
                             style: .title2
                         )
                         .frame(maxWidth: .infinity, alignment: .leading)
