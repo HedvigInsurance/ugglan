@@ -93,10 +93,6 @@ public enum ContractsResult {
     case openFreeTextChat
     case openCrossSellingDetail(crossSell: CrossSell)
     case openCrossSellingEmbark(name: String)
-    case terminationFlow(contextInput: String)
-    case openTerminationSuccess(terminationDateInput: Date, surveyURL: String)
-    case openTerminationFailScreen
-    case openTerminationUpdateAppScreen
     case openCrossSellingWebUrl(url: URL)
 }
 
@@ -133,10 +129,18 @@ extension Contracts {
                 resultJourney(.openFreeTextChat)
             } else if case .goToMovingFlow = action {
                 resultJourney(.movingFlow)
-            } else if case let .goToTerminationFlow(_, context) = action {
-                resultJourney(.terminationFlow(contextInput: context))
-            } else if case .openTerminationUpdateAppScreen = action {
-                resultJourney(.openTerminationUpdateAppScreen)
+            } else if case let .terminationInitialNavigation(navigationAction) = action {
+                if case .openTerminationSuccessScreen = navigationAction {
+                    TerminationFlowJourney.openTerminationSuccessScreen()
+                } else if case .openTerminationSetDateScreen = navigationAction {
+                    TerminationFlowJourney.openSetTerminationDateScreen()
+                } else if case .openTerminationFailScreen = navigationAction {
+                    TerminationFlowJourney.openTerminationFailScreen()
+                } else if case .openTerminationUpdateAppScreen = navigationAction {
+                    TerminationFlowJourney.openUpdateAppTerminationScreen()
+                } else if case .openTerminationDeletionScreen = navigationAction {
+                    TerminationFlowJourney.openTerminationDeletionScreen()
+                }
             }
         }
         .onPresent({
