@@ -89,11 +89,11 @@ extension AppDelegate {
         )
 
         let odysseyNetworkClient = OdysseyNetworkClient()
-        Dependencies.shared.add(
-            module: Module { () -> GetEntryPointsClaimsClient in
-                odysseyNetworkClient
-            }
-        )
+        //        Dependencies.shared.add(
+        //            module: Module { () -> GetEntryPointsClaimsClient in
+        //                odysseyNetworkClient
+        //            }
+        //        )
 
         Dependencies.shared.add(
             module: Module { () -> FileUploaderClient in
