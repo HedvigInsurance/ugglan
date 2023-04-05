@@ -38,20 +38,9 @@ extension AppJourney {
 
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        //        if hAnalyticsExperiment.claimsFlow {
-        if true {
+        if hAnalyticsExperiment.claimsFlow {
             ClaimJourneys.showCommonClaimIfNeeded(origin: origin) { newOrigin in
                 honestyPledge(from: newOrigin)
-                //                {
-                //                    AppJourney.notificationJourney {
-                //                        AppJourney.getScreenForAction(for: .openPhoneNumberScreen(phoneNumber: ""))
-                ////                        ContinueJourney().onPresent {
-                ////                            let store: ClaimsStore = globalPresentableStoreContainer.get()
-                ////                            store.send(.startClaim(from: newOrigin.id))
-                ////                        }.onAction(ClaimsStore.self) { action in
-                ////                            getScreenForAction(for: action)
-                ////                        }
-                //                    }
             }
         } else if hAnalyticsExperiment.odysseyClaims {
             ClaimJourneys.showCommonClaimIfNeeded(origin: origin) { newOrigin in
