@@ -89,3 +89,9 @@ public enum TerminationNavigationAction: ActionProtocol {
     case openTerminationFailScreen
     case openTerminationDeletionScreen
 }
+
+extension ContractAction: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine("\(try! JSONEncoder().encode(self))")
+    }
+}
