@@ -86,7 +86,7 @@ struct ContractInformationView: View {
                             }
                             .sectionContainerStyle(.transparent)
                         }
-                        
+
                         if contract.canChangeCoInsured {
                             ChangePeopleView()
                         }
