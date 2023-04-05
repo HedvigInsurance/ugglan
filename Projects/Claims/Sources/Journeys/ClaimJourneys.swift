@@ -41,8 +41,8 @@ public class ClaimJourneys {
                     showClaimFailureScreen().addDismissWithConfirmation()
                 } else if case .openSummaryEditScreen = navigationAction {
                     openSummaryEditScreen().addDismissWithConfirmation()
-                } else if case .openLocationPicker = navigationAction {
-                    openLocationScreen().addDismissWithConfirmation()
+                } else if case let .openLocationPicker(type) = navigationAction {
+                    openLocationScreen(type: type).addDismissWithConfirmation()
                 } else if case .openUpdateAppScreen = navigationAction {
                     openUpdateAppTerminationScreen().addDismissWithConfirmation()
                 } else if case .openCheckoutTransferringDoneScreen = navigationAction {
@@ -77,8 +77,8 @@ public class ClaimJourneys {
             action in
             if case let .navigationAction(.openDatePicker(pickerType)) = action {
                 openDatePickerScreen(type: pickerType)
-            } else if case .navigationAction(.openLocationPicker) = action {
-                openLocationScreen()
+            } else if case let .navigationAction(.openLocationPicker(type)) = action {
+                openLocationScreen(type: type)
             } else {
                 getScreenForAction(for: action)
             }
@@ -104,16 +104,18 @@ public class ClaimJourneys {
         }
     }
 
-    static func openLocationScreen() -> some JourneyPresentation {
+    static func openLocationScreen(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
 
         HostingJourney(
             ClaimsStore.self,
-            rootView: LocationPickerScreen(),
+            rootView: LocationPickerScreen(type: type),
             style: .default
         ) {
             action in
             if case .setNewLocation = action {
                 PopJourney()
+            } else {
+                getScreen(for: action)
             }
         }
     }
