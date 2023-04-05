@@ -79,7 +79,11 @@ public struct Contract: Codable, Hashable, Equatable {
     public let typeOfContract: TypeOfContract
     public let upcomingAgreementsTable: DetailAgreementsTable
     public let currentAgreementsTable: DetailAgreementsTable?
-    public var gradientOption: GradientOption {
+    public var gradientOption: GradientOption? {
+        if self.currentAgreement?.status == .terminated {
+            return nil
+        }
+        
         switch self.typeOfContract {
         case .seHouse:
             return .house

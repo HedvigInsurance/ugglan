@@ -190,9 +190,9 @@ extension GiraffeGraphQL.ChoosePlanQuery.Data.EmbarkStory {
             metadata.compactMap { $0.asEmbarkStoryMetadataEntryBackground?.background }.first
 
         switch background {
-        case .gradientOne: return .insuranceOne
-        case .gradientTwo: return .insuranceTwo
-        case .gradientThree: return .insuranceThree
+        case .gradientOne: return .home
+        case .gradientTwo: return .accident
+        case .gradientThree: return .pet
         case .__unknown, .none: return nil
         }
     }

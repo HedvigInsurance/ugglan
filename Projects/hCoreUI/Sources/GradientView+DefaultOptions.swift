@@ -130,7 +130,7 @@ extension GradientView {
 }
 
 extension Contract.GradientOption {
-    var preset: GradientView.Preset {
+    public var preset: GradientView.Preset {
         switch self {
         case .home:
             return .home

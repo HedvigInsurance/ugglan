@@ -36,39 +36,11 @@ extension Header: Presentable {
 
         bag += store.stateSignal.compactMap { $0.currentVariant?.bundle.appConfiguration.gradientOption }
             .onValue { gradientOption in
-                switch gradientOption {
-                case .one:
-                    gradientView.gradientOption = .init(
-                        preset: .insuranceOne,
-                        shouldShimmer: false,
-                        shouldAnimate: false
-                    )
-                case .two:
-                    gradientView.gradientOption =
-                        .init(
-                            preset: .insuranceTwo,
-                            shouldShimmer: false,
-                            shouldAnimate: false
-                        )
-                case .three:
-                    gradientView.gradientOption = .init(
-                        preset: .insuranceThree,
-                        shouldShimmer: false,
-                        shouldAnimate: false
-                    )
-                case .four:
-                    gradientView.gradientOption = .init(
-                        preset: .insuranceFour,
-                        shouldShimmer: false,
-                        shouldAnimate: false
-                    )
-                case .five:
-                    gradientView.gradientOption = .init(
-                        preset: .insuranceFive,
-                        shouldShimmer: false,
-                        shouldAnimate: false
-                    )
-                }
+                gradientView.gradientOption = .init(
+                    preset: gradientOption.preset,
+                    shouldShimmer: false,
+                    shouldAnimate: false
+                )
             }
 
         bag += view.add(
