@@ -9,7 +9,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
 
     public var body: some View {
         hForm {
-
             PresentableStoreLens(
                 ClaimsStore.self,
                 getter: { state in
@@ -64,7 +63,8 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
         }
     }
 
-    @ViewBuilder func displayPriceFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
+    @ViewBuilder
+    func displayPriceFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
         displayField(withTitle: L10n.Claims.Payout.Purchase.price, andFor: checkoutStep?.price)
         Divider()
         displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation)

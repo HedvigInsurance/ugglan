@@ -60,11 +60,7 @@ public class ClaimJourneys {
             rootView: SubmitClaimContactScreen(model: model),
             style: .detented(.large, modally: false)
         ) { action in
-            if case .dissmissNewClaimFlow = action {
-                PopJourney()
-            } else {
-                getScreenForAction(for: action)
-            }
+            getScreenForAction(for: action)
         }
     }
 
@@ -93,8 +89,6 @@ public class ClaimJourneys {
         ) {
             action in
             if case .setNewDate = action {
-                PopJourney()
-            } else if case .dissmissNewClaimFlow = action {
                 PopJourney()
             } else if case .setSingleItemPurchaseDate = action {
                 PopJourney()
@@ -153,8 +147,6 @@ public class ClaimJourneys {
             { action, pre in
                 if case .setSingleItemModel(_) = action {
                     pre.bag.dispose()
-                } else if case .dissmissNewClaimFlow = action {
-                    pre.bag.dispose()
                 }
             }
         )
@@ -183,8 +175,6 @@ public class ClaimJourneys {
             ClaimsStore.self,
             { action, pre in
                 if case .setSingleItemModel = action {
-                    pre.bag.dispose()
-                } else if case .dissmissNewClaimFlow = action {
                     pre.bag.dispose()
                 }
             }
@@ -221,17 +211,9 @@ public class ClaimJourneys {
 
     private static func openSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
-            ClaimsStore.self,
             rootView: SubmitClaimSuccessScreen(),
             style: .detented(.large, modally: false)
-        ) {
-            action in
-            if case .dissmissNewClaimFlow = action {
-                DismissJourney()
-            } else {
-                getScreenForAction(for: action)
-            }
-        }
+        )
         .hidesBackButton
     }
     private static func openSingleItemScreen() -> some JourneyPresentation {
@@ -268,11 +250,7 @@ public class ClaimJourneys {
             style: .detented(.large, modally: false)
         ) {
             action in
-            if case .dissmissNewClaimFlow = action {
-                PopJourney()
-            } else {
-                getScreenForAction(for: action)
-            }
+            getScreenForAction(for: action)
         }
     }
 
@@ -316,17 +294,9 @@ public class ClaimJourneys {
     private static func openCheckoutTransferringDoneScreen() -> some JourneyPresentation {
 
         HostingJourney(
-            ClaimsStore.self,
             rootView: SubmitClaimCheckoutTransferringDoneScreen(),
             style: .modally(presentationStyle: .fullScreen)
-        ) {
-            action in
-            if case .dissmissNewClaimFlow = action {
-                DismissJourney()
-            } else {
-                getScreenForAction(for: action)
-            }
-        }
+        )
     }
 
     private static func openSummaryEditScreen() -> some JourneyPresentation {
@@ -376,15 +346,8 @@ public class ClaimJourneys {
     }
 
     private static func showClaimFailureScreen() -> some JourneyPresentation {
-        HostingJourney(
-            ClaimsStore.self,
-            rootView: ClaimFailureScreen()
-        ) { action in
-            if case .dissmissNewClaimFlow = action {
-                DismissJourney()
-            }
-        }
-        .hidesBackButton
+        HostingJourney(rootView: ClaimFailureScreen())
+            .hidesBackButton
     }
 
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
