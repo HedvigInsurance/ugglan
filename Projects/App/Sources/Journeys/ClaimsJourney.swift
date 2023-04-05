@@ -42,16 +42,6 @@ extension AppJourney {
         if true {
             ClaimJourneys.showCommonClaimIfNeeded(origin: origin) { newOrigin in
                 honestyPledge(from: newOrigin)
-                //                {
-                //                    AppJourney.notificationJourney {
-                //                        AppJourney.getScreenForAction(for: .openPhoneNumberScreen(phoneNumber: ""))
-                ////                        ContinueJourney().onPresent {
-                ////                            let store: ClaimsStore = globalPresentableStoreContainer.get()
-                ////                            store.send(.startClaim(from: newOrigin.id))
-                ////                        }.onAction(ClaimsStore.self) { action in
-                ////                            getScreenForAction(for: action)
-                ////                        }
-                //                    }
             }
         } else if hAnalyticsExperiment.odysseyClaims {
             ClaimJourneys.showCommonClaimIfNeeded(origin: origin) { newOrigin in
@@ -86,7 +76,7 @@ extension AppJourney {
             style: .detented(.scrollViewContentSize, modally: false)
         ) { action in
             if case .didAcceptHonestyPledge = action {
-                let status = UNUserNotificationCenter.current().status()
+                let status = UNUserNotificationCenter.current().startClaimIfStatusDeterminated(forOriginId: origin.id)
                 if case .notDetermined = status {
                     Journey(
                         ClaimsAskForPushnotifications(),
@@ -98,12 +88,6 @@ extension AppJourney {
                                 store.send(.startClaim(from: origin.id))
                             }
                     }
-                } else {
-                    ContinueJourney()
-                        .onPresent {
-                            let store: ClaimsStore = globalPresentableStoreContainer.get()
-                            store.send(.startClaim(from: origin.id))
-                        }
                 }
             } else {
                 ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)

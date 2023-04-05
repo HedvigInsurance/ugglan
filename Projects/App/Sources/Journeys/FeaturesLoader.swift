@@ -1,3 +1,4 @@
+import Claims
 import Flow
 import Form
 import Foundation
@@ -84,11 +85,18 @@ struct NotificationLoader: Presentable {
 }
 
 extension UNUserNotificationCenter {
-    func status() -> UNAuthorizationStatus {
+    func startClaimIfStatusDeterminated(forOriginId originId: String) -> UNAuthorizationStatus {
         var status: UNAuthorizationStatus!
         let semaphore = DispatchSemaphore(value: 0)
         self.getNotificationSettings { settings in
             status = settings.authorizationStatus
+            switch status {
+            case .notDetermined:
+                break
+            default:
+                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                store.send(.startClaim(from: originId))
+            }
             semaphore.signal()
         }
         semaphore.wait()
