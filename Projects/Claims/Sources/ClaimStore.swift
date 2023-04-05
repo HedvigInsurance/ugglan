@@ -366,12 +366,17 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             }
         case .fetchCommonClaimsForSelection:
             self.send(.setLoadingState(action: action, state: .loading))
-            let getEntryPointsClaimsClient: GetEntryPointsClaimsClient = Dependencies.shared.resolve()
+            let entryPointInput = OctopusGraphQL.EntrypointSearchInput(type: OctopusGraphQL.EntrypointType.claim)
+            let query = OctopusGraphQL.EntrypointSearchQuery(input: entryPointInput)
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 disposeBag +=
-                    getEntryPointsClaimsClient.execute()
-                    .onValue { model in
+                    self.octopus.client.fetch(query: query)
+                    .onValue { data in
+                        let model = data.entrypointSearch.map {
+                            ClaimEntryPointResponseModel(id: $0.id, displayName: $0.displayName)
+                        }
+
                         callback(.value(.setCommonClaimsForSelection(model)))
                         callback(.value(.setLoadingState(action: action, state: nil)))
                     }
