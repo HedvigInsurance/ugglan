@@ -176,7 +176,7 @@ public struct QuoteBundle: Codable, Equatable {
             approveButtonTerminology = .init(rawValue: config.approveButtonTerminology.rawValue) ?? .unknown
             startDateTerminology = .init(rawValue: config.startDateTerminology.rawValue) ?? .unknown
             title = (.init(rawValue: config.title.rawValue) ?? .unknown)
-            gradientOption = .init(rawValue: config.gradientOption.rawValue) ?? .one
+            gradientOption = .house
         }
 
         public enum ApproveButtonTerminology: String, Codable {
