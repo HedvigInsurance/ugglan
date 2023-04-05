@@ -93,12 +93,6 @@ extension AppJourney {
                 ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
             }
         }
-        .onAction(ClaimsStore.self) { action, nav in
-            if case .startClaim = action {
-                nav.viewController.navigationController?.popToViewController(nav.viewController, animated: true)
-
-            }
-        }
     }
 
     private static func odysseyClaims(from origin: ClaimsOrigin) -> some JourneyPresentation {
