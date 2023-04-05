@@ -312,7 +312,6 @@ extension Contract {
 
 
 public struct TerminationStartFlow: Codable, Hashable, Equatable {
-
     public init(
         id: String,
         minDate: String,
@@ -326,7 +325,6 @@ public struct TerminationStartFlow: Codable, Hashable, Equatable {
     public let id: String
     public let minDate: String
     public let maxDate: String?
-
 }
 
 public struct UpcomingRenewal: Codable, Hashable {
