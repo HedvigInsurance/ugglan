@@ -86,13 +86,33 @@ extension AppJourney {
             style: .detented(.scrollViewContentSize, modally: false)
         ) { action in
             if case .didAcceptHonestyPledge = action {
-                ContinueJourney()
-                    .onPresent {
-                        @PresentableStore var store: ClaimsStore
-                        store.send(.startClaim(from: origin.id))
+                let status = UNUserNotificationCenter.current().status()
+                if case .notDetermined = status {
+                    Journey(
+                        ClaimsAskForPushnotifications(),
+                        style: .detented(.large, modally: false)
+                    ) { _ in
+                        PopJourney()
+                            .onPresent {
+                                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                                store.send(.startClaim(from: origin.id))
+                            }
                     }
+                } else {
+                    ContinueJourney()
+                        .onPresent {
+                            let store: ClaimsStore = globalPresentableStoreContainer.get()
+                            store.send(.startClaim(from: origin.id))
+                        }
+                }
             } else {
                 ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+            }
+        }
+        .onAction(ClaimsStore.self) { action, nav in
+            if case .startClaim = action {
+                nav.viewController.navigationController?.popToViewController(nav.viewController, animated: true)
+
             }
         }
     }

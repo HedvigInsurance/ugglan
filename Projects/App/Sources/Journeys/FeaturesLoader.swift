@@ -58,7 +58,7 @@ struct NotificationLoader: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
-        viewController.view.backgroundColor = .white
+        viewController.view.backgroundColor = .brand(.primaryBackground())
 
         let activityIndicatorView = UIActivityIndicatorView(style: .large)
         viewController.view.addSubview(activityIndicatorView)
@@ -73,7 +73,6 @@ struct NotificationLoader: Presentable {
             viewController,
             FiniteSignal { callback in
                 let current = UNUserNotificationCenter.current()
-
                 current.getNotificationSettings(completionHandler: { settings in
                     callback(.value(settings.authorizationStatus))
                 })
@@ -81,5 +80,18 @@ struct NotificationLoader: Presentable {
                 return bag
             }
         )
+    }
+}
+
+extension UNUserNotificationCenter {
+    func status() -> UNAuthorizationStatus {
+        var status: UNAuthorizationStatus!
+        let semaphore = DispatchSemaphore(value: 0)
+        self.getNotificationSettings { settings in
+            status = settings.authorizationStatus
+            semaphore.signal()
+        }
+        semaphore.wait()
+        return status
     }
 }

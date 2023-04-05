@@ -143,9 +143,6 @@ struct SlideToConfirm: View {
                     hasDraggedOnce = true
                 })
         )
-        .onAppear {
-            self.draggedTillTheEnd = false
-        }
     }
 }
 
