@@ -83,7 +83,7 @@ public struct Contract: Codable, Hashable, Equatable {
         if self.currentAgreement?.status == .terminated {
             return nil
         }
-        
+
         switch self.typeOfContract {
         case .seHouse:
             return .house
