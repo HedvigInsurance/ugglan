@@ -8,29 +8,29 @@ import hGraphQL
 public struct ClaimDetailView: View {
     @State var claim: Claim
     @PresentableStore var store: ClaimsStore
-    
+
     public init(
         claim: Claim
     ) {
         self.claim = claim
     }
-    
+
     private var statusParagraph: String {
         claim.claimDetailData.statusParagraph
     }
-    
+
     /// Displays payout only if claim status is closed and outcome is paid. Nil otherwise and it won't be displayed
     private var payoutDisplayAmount: MonetaryAmount? {
         if case .closed = claim.claimDetailData.status,
-           case .paid = claim.claimDetailData.outcome,
-           !claim.claimDetailData.payout.amount.isEmpty
+            case .paid = claim.claimDetailData.outcome,
+            !claim.claimDetailData.payout.amount.isEmpty
         {
             return claim.claimDetailData.payout
         }
-        
+
         return nil
     }
-    
+
     public var body: some View {
         hForm {
             // Header for Claim status details
@@ -42,7 +42,7 @@ public struct ClaimDetailView: View {
                 payout: payoutDisplayAmount
             )
             .padding(.vertical, 24)
-            
+
             // Card showing the status of claim
             RaisedCard(alignment: .leading) {
                 HStack(spacing: 6) {
@@ -52,15 +52,15 @@ public struct ClaimDetailView: View {
                 }
                 .padding([.horizontal, .top], 16)
                 .padding(.bottom, 24)
-                
+
                 hText(statusParagraph)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 20)
-                
+
                 Divider()
-                
+
                 ContactChatView(
                     store: self.store,
                     id: self.claim.id,
@@ -68,10 +68,10 @@ public struct ClaimDetailView: View {
                 )
             }
             .padding(.horizontal, 16)
-            
+
             Spacer()
                 .frame(height: 52)
-            
+
             // Section to show attachments for the claim
             if let url = URL(string: claim.claimDetailData.signedAudioURL) {
                 let audioPlayer = AudioPlayer(url: url)
@@ -90,12 +90,12 @@ public struct ClaimDetailView: View {
                 )
                 .padding(.horizontal, 16)
             }
-            
+
             Spacer()
         }
         .trackOnAppear(
             hAnalyticsEvent.screenView(screen: .claimsStatusDetail)
         )
-        
+
     }
 }

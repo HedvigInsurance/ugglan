@@ -15,7 +15,9 @@ extension OdysseyNetworkClient: FileUploaderClient {
                             with: request,
                             completionHandler: { (data, response, error) in
                                 do {
-                                    if let data: UploadFileResponseModel = try self?.handleResponse(data: data, response: response, error: error) {
+                                    if let data: UploadFileResponseModel = try self?
+                                        .handleResponse(data: data, response: response, error: error)
+                                    {
                                         completion(.success(data))
                                     }
                                 } catch let error {
