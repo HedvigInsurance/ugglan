@@ -180,7 +180,7 @@ public struct Contract: Codable, Hashable, Equatable {
         case four = "GRADIENT_FOUR"
         case five = "GRADIENT_FIVE"
     }
-    
+
     public enum TypeOfContract: String, Codable {
         case seHouse = "SE_HOUSE"
         case seApartmentBrf = "SE_APARTMENT_BRF"
@@ -309,7 +309,6 @@ extension Contract {
         }
     }
 }
-
 
 public struct TerminationStartFlow: Codable, Hashable, Equatable {
     public init(
