@@ -16,7 +16,6 @@ public enum ExternalDependencies: CaseIterable {
     case runtime
     case hero
     case snapshottesting
-    case shake
     case reveal
     case datadog
     case hAnalytics
@@ -89,7 +88,6 @@ public enum ExternalDependencies: CaseIterable {
                     .upToNextMajor(from: "1.9.0")
                 )
             ]
-        case .shake: return [.package(url: "https://github.com/shakebugs/shake-ios", .branch("master"))]
         case .reveal: return []
         case .datadog:
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("1.10.0"))]
@@ -134,7 +132,6 @@ public enum ExternalDependencies: CaseIterable {
         case .runtime: return [.package(product: "Runtime")]
         case .hero: return [.package(product: "Hero")]
         case .snapshottesting: return [.package(product: "SnapshotTesting")]
-        case .shake: return [.package(product: "Shake")]
         case .reveal:
             let path = Path(
                 "\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Application Support/Reveal/RevealServer/RevealServer.xcframework"
