@@ -1,0 +1,7 @@
+mutation FlowTerminationDeletionNext($context: FlowContext!, $input: FlowTerminationDeletionInput) {
+  flowTerminationDeletionNext(context: $context, input: $input) {
+    id
+    ...FlowTerminationFragment
+    context
+  }
+}
