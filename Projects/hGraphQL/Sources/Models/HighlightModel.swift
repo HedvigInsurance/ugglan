@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Highlight: Codable, Equatable {
+public struct Highlight: Codable, Equatable, Hashable {
     public var title: String
     public var description: String
 

@@ -5,34 +5,34 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public enum TerminationStepModelAction: ActionProtocol {
+public enum TerminationStepModelAction: ActionProtocol, Hashable {
     case setTerminationDateStep(model: TerminationFlowDateNextStepModel)
     case setTerminationDeletion(model: TerminationFlowDeletionNextModel)
     case setSuccessStep(model: TerminationFlowSuccessNextModel)
     case setFailedStep(model: TerminationFlowFailedNextModel)
 }
 
-public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol {
+public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol, Hashable {
     case detail
     case peril(peril: Perils)
     case insurableLimit(insurableLimit: InsurableLimits)
     case insuranceTerm(insuranceTerm: InsuranceTerm)
 }
 
-public enum ContractDetailNavigationAction: ActionProtocol {
+public enum ContractDetailNavigationAction: ActionProtocol, Hashable {
     case peril(peril: Perils)
     case insurableLimit(insurableLimit: InsurableLimits)
     case document(url: URL, title: String)
     case upcomingAgreement(details: DetailAgreementsTable)
 }
 
-public enum CrossSellingFAQListNavigationAction: ActionProtocol {
+public enum CrossSellingFAQListNavigationAction: ActionProtocol, Hashable {
     case list
     case detail(faq: FAQ)
     case chat
 }
 
-public indirect enum ContractAction: ActionProtocol {
+public indirect enum ContractAction: ActionProtocol, Hashable {
 
     // fetch everything
     case fetch
@@ -79,19 +79,12 @@ public indirect enum ContractAction: ActionProtocol {
     case stepModelAction(action: TerminationStepModelAction)
     case navigationAction(action: TerminationNavigationAction)
     case terminationInitialNavigation(action: TerminationNavigationAction)
-
 }
 
-public enum TerminationNavigationAction: ActionProtocol {
+public enum TerminationNavigationAction: ActionProtocol, Hashable {
     case openTerminationSuccessScreen
     case openTerminationSetDateScreen
     case openTerminationUpdateAppScreen
     case openTerminationFailScreen
     case openTerminationDeletionScreen
-}
-
-extension ContractAction: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine("\(try! JSONEncoder().encode(self))")
-    }
 }
