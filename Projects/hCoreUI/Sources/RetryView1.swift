@@ -1,7 +1,7 @@
 import SwiftUI
 import hCore
 
-public struct RetryView1: View {
+public struct RetryView: View {
     var title: String
     var retryTitle: String
     var action: (() -> Void)
