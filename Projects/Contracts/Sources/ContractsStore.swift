@@ -5,109 +5,6 @@ import Presentation
 import hCore
 import hGraphQL
 
-public struct ContractState: StateProtocol {
-
-    public init() {}
-
-    public var hasLoadedContractBundlesOnce = false
-    public var contractBundles: [ActiveContractBundle] = []
-    public var contracts: [Contract] = []
-    public var focusedCrossSell: CrossSell?
-    public var signedCrossSells: [CrossSell] = []
-    public var terminations: TerminationStartFlow? = nil
-
-    func contractForId(_ id: String) -> Contract? {
-        if let inBundleContract = contractBundles.flatMap({ $0.contracts })
-            .first(where: { contract in
-                contract.id == id
-            })
-        {
-            return inBundleContract
-        }
-
-        return contracts.first { contract in
-            contract.id == id
-        }
-    }
-}
-
-extension ContractState {
-    public var hasUnseenCrossSell: Bool {
-        contractBundles.contains(where: { bundle in bundle.crossSells.contains(where: { !$0.hasBeenSeen }) })
-    }
-
-    public var hasActiveContracts: Bool {
-        !contractBundles.flatMap { $0.contracts }.isEmpty
-    }
-}
-
-public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol {
-    case detail
-    case peril(peril: Perils)
-    case insurableLimit(insurableLimit: InsurableLimits)
-    case insuranceTerm(insuranceTerm: InsuranceTerm)
-}
-
-public enum ContractDetailNavigationAction: ActionProtocol {
-    case peril(peril: Perils)
-    case insurableLimit(insurableLimit: InsurableLimits)
-    case document(url: URL, title: String)
-    case upcomingAgreement(details: DetailAgreementsTable)
-}
-
-public enum CrossSellingFAQListNavigationAction: ActionProtocol {
-    case list
-    case detail(faq: FAQ)
-    case chat
-}
-
-public enum ContractAction: ActionProtocol {
-
-    // fetch everything
-    case fetch
-
-    // Fetch contracts for terminated
-    case fetchContractBundles
-    case fetchContracts
-
-    case setContractBundles(activeContractBundles: [ActiveContractBundle])
-    case setContracts(contracts: [Contract])
-    case goToMovingFlow
-    case goToFreeTextChat
-    case setFocusedCrossSell(focusedCrossSell: CrossSell?)
-    case openCrossSellingEmbark(name: String)
-    case openCrossSellingWebUrl(url: URL)
-    case openCrossSellingChat
-
-    case crossSellingDetailEmbark(name: String)
-    case crossSellWebAction(url: URL)
-    case crossSellingCoverageDetailNavigation(action: CrossSellingCoverageDetailNavigationAction)
-    case crossSellingFAQListNavigation(action: CrossSellingFAQListNavigationAction)
-    case openCrossSellingDetail(crossSell: CrossSell)
-    case hasSeenCrossSells(value: Bool)
-    case closeCrossSellingSigned
-    case openDetail(contractId: String)
-    case openTerminatedContracts
-    case didSignFocusedCrossSell
-    case resetSignedCrossSells
-
-    case contractDetailNavigationAction(action: ContractDetailNavigationAction)
-
-    case goToTerminationFlow(contractId: String, contextInput: String)
-    case sendTermination(terminationDate: Date, contextInput: String, surveyUrl: String)
-    case dismissTerminationFlow
-
-    case startTermination(contractId: String)
-    case sendTerminationDate(terminationDateInput: Date, contextInput: String)
-    case setTerminationDetails(details: TerminationStartFlow)
-
-    case openTerminationSuccess(terminationDateInput: Date, surveyURL: String)
-    case openTerminationSetDateScreen(context: String)
-    case openTerminationUpdateAppScreen
-    case openTerminationFailScreen
-    case submitTerminationDate(terminationDate: Date)
-}
-
 public final class ContractStore: StateStore<ContractState, ContractAction> {
     @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
@@ -116,6 +13,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         _ getState: @escaping () -> ContractState,
         _ action: ContractAction
     ) -> FiniteSignal<ContractAction>? {
+        let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case .fetchContractBundles:
             return giraffe.client
@@ -151,94 +49,88 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             .emitEachThenEnd
 
         case .startTermination(let contractId):
-
+            self.send(.setLoadingState(action: action, state: .loading))
+            let mutation = OctopusGraphQL.FlowTerminationStartMutation(
+                input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId)
+            )
             return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.FlowTerminationStartMutation(
-                            input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId)
-                        )
-                    )
+                let disposeBag = DisposeBag()
+                disposeBag += self.octopus.client.perform(mutation: mutation)
                     .onValue { data in
-                        let step = data.flowTerminationStart.currentStep
-                        let context = data.flowTerminationStart.context
-                        var actions = [ContractAction]()
+                        callback(
+                            .value(.setTerminationContext(context: data.flowTerminationStart.context))
+                        )
+                        callback(.value(.setTerminationContractId(id: contractId)))
 
-                        if let nextStep = step.asFlowTerminationDateStep {
-                            actions.append(.goToTerminationFlow(contractId: contractId, contextInput: context))
-                            actions.append(
-                                .setTerminationDetails(
-                                    details:
-                                        TerminationStartFlow(
-                                            id: nextStep.id,
-                                            minDate: nextStep.minDate,
-                                            maxDate: nextStep.maxDate
-                                        )
-                                )
-                            )
-                        } else if let nextStep = step.asFlowTerminationFailedStep {
-                            actions.append(.openTerminationFailScreen)
-                        } else if let nextStep = step.asFlowTerminationSuccessStep {
-                            let terminationDate = nextStep.terminationDate
-                            let surveyURL = nextStep.surveyUrl
-
-                            let dateFormatter = DateFormatter()
-                            dateFormatter.dateFormat = "yyyy-MM-dd"
-                            if let date = dateFormatter.date(from: terminationDate ?? "") {
-                                actions.append(
-                                    .openTerminationSuccess(terminationDateInput: date, surveyURL: surveyURL)
-                                )
-                            } else {
-                                actions.append(.openTerminationFailScreen)
-                            }
-                        } else {
-                            actions.append(.openTerminationUpdateAppScreen)
-                        }
-                        actions.forEach({ callback(.value($0)) })
+                        data.flowTerminationStart.fragments.flowTerminationFragment.executeNextStepActions(
+                            for: action,
+                            callback: callback
+                        )
+                        callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in
-                        log.error("Error: \(error)")
+                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
                     }
-                return NilDisposer()
+                return disposeBag
             }
 
-        case .sendTerminationDate(let terminationDate, let contextInput):
+        case let .sendTerminationDate(terminationDate):
+            self.send(.setLoadingState(action: action, state: .loading))
 
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let inputDateToString = dateFormatter.string(from: terminationDate)
+            let inputDateToString = terminationDate.localDateString ?? ""
             let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
 
+            let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
+                input: terminationDateInput,
+                context: terminationContext
+            )
             return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: OctopusGraphQL.FlowTerminationDateNextMutation(
-                            context: contextInput,
-                            input: terminationDateInput
-                        )
-                    )
+                let disposeBag = DisposeBag()
+                disposeBag += self.octopus.client.perform(mutation: mutation)
                     .onValue { data in
-                        let context = data.flowTerminationDateNext.context
-                        var actions = [ContractAction]()
-                        let step = data.flowTerminationDateNext.currentStep
-                        if let nextStep = step.asFlowTerminationSuccessStep {
-                            let surveyURL = nextStep.surveyUrl
-                            actions.append(
-                                .openTerminationSuccess(terminationDateInput: terminationDate, surveyURL: surveyURL)
+                        callback(
+                            .value(
+                                .setTerminationContext(context: data.flowTerminationDateNext.context)
                             )
-                        } else if let nextStep = step.asFlowTerminationFailedStep {
-                            actions.append(.openTerminationFailScreen)
-                        } else if let nextStep = step.asFlowTerminationDateStep {
-                            actions.append(.openTerminationSetDateScreen(context: context))
-                        } else {
-                            actions.append(.openTerminationUpdateAppScreen)
-                        }
-                        actions.forEach({ callback(.value($0)) })
+                        )
+                        data.flowTerminationDateNext.fragments.flowTerminationFragment.executeNextStepActions(
+                            for: action,
+                            callback: callback
+                        )
+                        callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in
-                        log.error("Error: \(error)")
+                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
                     }
-                return NilDisposer()
+                return disposeBag
+            }
+
+        case .deleteTermination:
+            self.send(.setLoadingState(action: action, state: .loading))
+            let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
+                context: terminationContext,
+                input: state.terminationDeleteStep?.returnDeltionInput()
+            )
+
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.octopus.client.perform(mutation: mutation)
+                    .onValue { data in
+                        callback(
+                            .value(
+                                .setTerminationContext(context: data.flowTerminationDeletionNext.context)
+                            )
+                        )
+                        data.flowTerminationDeletionNext.fragments.flowTerminationFragment.executeNextStepActions(
+                            for: action,
+                            callback: callback
+                        )
+                        callback(.value(.setLoadingState(action: action, state: nil)))
+                    }
+                    .onError { error in
+                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                    }
+                return disposeBag
             }
 
         default:
@@ -279,13 +171,64 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         case .resetSignedCrossSells:
             newState.signedCrossSells = []
 
-        case .setTerminationDetails(let terminationDetails):
-            newState.terminations = terminationDetails
+        case let .setTerminationContext(context):
+            newState.currentTerminationContext = context
 
+        case let .setTerminationContractId(id):
+            newState.terminationContractId = id
+
+        case let .stepModelAction(step):
+            switch step {
+            case let .setTerminationDateStep(model):
+                newState.terminationDateStep = model
+            case let .setTerminationDeletion(model):
+                newState.terminationDeleteStep = model
+            case let .setSuccessStep(model):
+                newState.successStep = model
+            case let .setFailedStep(model):
+                newState.failedStep = model
+            }
         default:
             break
         }
 
         return newState
+    }
+}
+
+extension OctopusGraphQL.FlowTerminationFragment {
+    func executeNextStepActions(for action: ContractAction, callback: (Event<ContractAction>) -> Void) {
+        let currentStep = self.currentStep
+        var actions = [ContractAction]()
+        var navigationAction: TerminationNavigationAction?
+        if let step = currentStep.fragments.flowTerminationDateStepFragment {
+            let model = TerminationFlowDateNextStepModel(with: step)
+            actions.append(.stepModelAction(action: .setTerminationDateStep(model: model)))
+            navigationAction = .openTerminationSetDateScreen
+        } else if let step = currentStep.fragments.flowTerminationDeletionFragment {
+            let model = TerminationFlowDeletionNextModel(with: step)
+            actions.append(.stepModelAction(action: .setTerminationDeletion(model: model)))
+            navigationAction = .openTerminationDeletionScreen
+        } else if let step = currentStep.fragments.flowTerminationFailedFragment {
+            let model = TerminationFlowFailedNextModel(with: step)
+            actions.append(.stepModelAction(action: .setFailedStep(model: model)))
+            navigationAction = .openTerminationFailScreen
+
+        } else if let step = currentStep.fragments.flowTerminationSuccessFragment {
+            let model = TerminationFlowSuccessNextModel(with: step)
+            actions.append(.stepModelAction(action: .setSuccessStep(model: model)))
+            navigationAction = .openTerminationSuccessScreen
+        } else {
+            navigationAction = .openTerminationUpdateAppScreen
+        }
+        if let navigationAction {
+            actions.append(.navigationAction(action: navigationAction))
+            if case .startTermination = action {
+                actions.append(.terminationInitialNavigation(action: navigationAction))
+            }
+        }
+        actions.forEach { action in
+            callback(.value(action))
+        }
     }
 }
