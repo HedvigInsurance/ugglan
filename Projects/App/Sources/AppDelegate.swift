@@ -2,6 +2,7 @@ import Adyen
 import AdyenActions
 import Apollo
 import Authentication
+import Claims
 import CoreDependencies
 import Datadog
 import DatadogCrashReporting
@@ -24,7 +25,6 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import Claims
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
