@@ -447,6 +447,18 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             case let .setAudioStep(model):
                 newState.audioRecordingStep = model
             }
+        case .startClaim:
+            newState.summaryStep = nil
+            newState.dateOfOccurenceStep = nil
+            newState.locationStep = nil
+            newState.singleItemStep = nil
+            newState.phoneNumberStep = nil
+            newState.dateOfOccurrencePlusLocationStep = nil
+            newState.singleItemCheckoutStep = nil
+            newState.successStep = nil
+            newState.failedStep = nil
+            newState.audioRecordingStep = nil
+            newState.currentClaimContext = nil
         default:
             break
         }

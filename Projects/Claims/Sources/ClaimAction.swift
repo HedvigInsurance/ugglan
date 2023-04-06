@@ -35,7 +35,6 @@ public indirect enum ClaimsAction: ActionProtocol {
     case dissmissNewClaimFlow
 
     case submitAudioRecording(audioURL: URL)
-    case submitSingleItem(purchasePrice: Double)
     case submitDamage(damage: [String])
 
     case startClaim(from: String)

@@ -220,8 +220,7 @@ public class ClaimJourneys {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimSingleItem(),
-            style: .detented(.large, modally: false),
-            options: .allowSwipeDismissAlways
+            style: .detented(.large, modally: false)
         ) {
             action in
             if case .navigationAction(.openDatePicker) = action {
@@ -232,15 +231,6 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
-        .onAction(
-            ClaimsStore.self,
-            { action, _ in
-                if case let .submitSingleItem(purchasePrice) = action {
-                    @PresentableStore var store: ClaimsStore
-                    store.send(.claimNextSingleItem(purchasePrice: purchasePrice))
-                }
-            }
-        )
     }
 
     private static func openSummaryScreen() -> some JourneyPresentation {
