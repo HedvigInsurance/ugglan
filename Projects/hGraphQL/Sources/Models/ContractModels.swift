@@ -84,86 +84,7 @@ public struct Contract: Codable, Hashable, Equatable {
             return nil
         }
 
-        switch self.typeOfContract {
-        case .seHouse:
-            return .house
-        case .seApartmentBrf:
-            return .home
-        case .seApartmentRent:
-            return .home
-        case .seApartmentStudentBrf:
-            return .home
-        case .seApartmentStudentRent:
-            return .home
-        case .seAccident:
-            return .accident
-        case .seAccidentStudent:
-            return .accident
-        case .seCarTraffic:
-            return .car
-        case .seCarHalf:
-            return .car
-        case .seCarFull:
-            return .car
-        case .seGroupApartmentRent:
-            return .home
-        case .seQasaShortTermRental:
-            return .home
-        case .seQasaLongTermRental:
-            return .home
-        case .seDogBasic:
-            return .pet
-        case .seDogStandard:
-            return .pet
-        case .seDogPremium:
-            return .pet
-        case .seCatBasic:
-            return .pet
-        case .seCatStandard:
-            return .pet
-        case .seCatPremium:
-            return .pet
-        case .noHouse:
-            return .house
-        case .noHomeContentOwn:
-            return .home
-        case .noHomeContentRent:
-            return .home
-        case .noHomeContentYouthOwn:
-            return .home
-        case .noHomeContentYouthRent:
-            return .home
-        case .noHomeContentStudentOwn:
-            return .home
-        case .noHomeContentStudentRent:
-            return .home
-        case .noTravel:
-            return .travel
-        case .noTravelYouth:
-            return .travel
-        case .noTravelStudent:
-            return .travel
-        case .noAccident:
-            return .accident
-        case .dkHomeContentOwn:
-            return .home
-        case .dkHomeContentRent:
-            return .home
-        case .dkHomeContentStudentOwn:
-            return .home
-        case .dkHomeContentStudentRent:
-            return .home
-        case .dkHouse:
-            return .house
-        case .dkAccident:
-            return .accident
-        case .dkAccidentStudent:
-            return .accident
-        case .dkTravel:
-            return .travel
-        case .dkTravelStudent:
-            return .travel
-        }
+        return self.typeOfContract.gradientOption
     }
 
     public let logo: IconEnvelope?
@@ -295,6 +216,91 @@ public struct Contract: Codable, Hashable, Equatable {
         case dkAccidentStudent = "DK_ACCIDENT_STUDENT"
         case dkTravel = "DK_TRAVEL"
         case dkTravelStudent = "DK_TRAVEL_STUDENT"
+    }
+}
+
+extension Contract.TypeOfContract {
+    var gradientOption: Contract.GradientOption {
+        switch self {
+        case .seHouse:
+            return .house
+        case .seApartmentBrf:
+            return .home
+        case .seApartmentRent:
+            return .home
+        case .seApartmentStudentBrf:
+            return .home
+        case .seApartmentStudentRent:
+            return .home
+        case .seAccident:
+            return .accident
+        case .seAccidentStudent:
+            return .accident
+        case .seCarTraffic:
+            return .car
+        case .seCarHalf:
+            return .car
+        case .seCarFull:
+            return .car
+        case .seGroupApartmentRent:
+            return .home
+        case .seQasaShortTermRental:
+            return .home
+        case .seQasaLongTermRental:
+            return .home
+        case .seDogBasic:
+            return .pet
+        case .seDogStandard:
+            return .pet
+        case .seDogPremium:
+            return .pet
+        case .seCatBasic:
+            return .pet
+        case .seCatStandard:
+            return .pet
+        case .seCatPremium:
+            return .pet
+        case .noHouse:
+            return .house
+        case .noHomeContentOwn:
+            return .home
+        case .noHomeContentRent:
+            return .home
+        case .noHomeContentYouthOwn:
+            return .home
+        case .noHomeContentYouthRent:
+            return .home
+        case .noHomeContentStudentOwn:
+            return .home
+        case .noHomeContentStudentRent:
+            return .home
+        case .noTravel:
+            return .travel
+        case .noTravelYouth:
+            return .travel
+        case .noTravelStudent:
+            return .travel
+        case .noAccident:
+            return .accident
+        case .dkHomeContentOwn:
+            return .home
+        case .dkHomeContentRent:
+            return .home
+        case .dkHomeContentStudentOwn:
+            return .home
+        case .dkHomeContentStudentRent:
+            return .home
+        case .dkHouse:
+            return .house
+        case .dkAccident:
+            return .accident
+        case .dkAccidentStudent:
+            return .accident
+        case .dkTravel:
+            return .travel
+        case .dkTravelStudent:
+            return .travel
+        }
     }
 }
 

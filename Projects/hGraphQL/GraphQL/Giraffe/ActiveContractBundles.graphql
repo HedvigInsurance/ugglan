@@ -7,7 +7,6 @@ query ActiveContractBundles($locale: Locale!) {
       statusPills(locale: $locale)
       detailPills(locale: $locale)
       displayName
-      gradientOption
       switchedFromInsuranceProvider
       logo(locale: $locale) {
         ...IconFragment

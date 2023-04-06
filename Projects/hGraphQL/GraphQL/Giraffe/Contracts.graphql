@@ -4,7 +4,6 @@ query Contracts($locale: Locale!) {
     displayName
     typeOfContract
     switchedFromInsuranceProvider
-    gradientOption
     logo(locale: $locale) {
       ...IconFragment
     }
