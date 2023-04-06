@@ -98,7 +98,7 @@ public struct Contract: Codable, Hashable, Equatable {
         contract: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract
     ) {
         id = contract.id
-        typeOfContract = TypeOfContract(rawValue: contract.typeOfContract.rawValue)!
+        typeOfContract = TypeOfContract.resolve(for: contract.typeOfContract)
         upcomingAgreementsTable = .init(
             fragment: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment
         )
@@ -139,7 +139,7 @@ public struct Contract: Codable, Hashable, Equatable {
         contract: GiraffeGraphQL.ContractsQuery.Data.Contract
     ) {
         id = contract.id
-        typeOfContract = TypeOfContract(rawValue: contract.typeOfContract.rawValue)!
+        typeOfContract = TypeOfContract.resolve(for: contract.typeOfContract)
         upcomingAgreementsTable = .init(
             fragment: contract.upcomingAgreementDetailsTable.fragments.detailsTableFragment
         )
@@ -221,6 +221,21 @@ public struct Contract: Codable, Hashable, Equatable {
         case dkAccidentStudent = "DK_ACCIDENT_STUDENT"
         case dkTravel = "DK_TRAVEL"
         case dkTravelStudent = "DK_TRAVEL_STUDENT"
+        case unknown = "UNKNOWN"
+        
+        static func resolve(for typeOfContract: GiraffeGraphQL.TypeOfContract) -> Self {
+            if let concreteTypeOfContract = Self(rawValue: typeOfContract.rawValue) {
+                return concreteTypeOfContract
+            }
+            
+            log.warn(
+                "Got an unknown type of contract \(typeOfContract.rawValue) that couldn't be resolved.",
+                error: nil,
+                attributes: nil
+            )
+            
+            return .unknown
+        }
     }
 }
 
@@ -306,6 +321,8 @@ extension Contract {
             return true
         case .dkTravelStudent:
             return true
+        case .unknown:
+            return false
         }
     }
 }
