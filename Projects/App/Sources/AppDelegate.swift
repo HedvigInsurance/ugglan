@@ -2,6 +2,7 @@ import Adyen
 import AdyenActions
 import Apollo
 import Authentication
+import Claims
 import CoreDependencies
 import Datadog
 import DatadogCrashReporting
@@ -24,7 +25,6 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import Claims
 
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
@@ -108,6 +108,8 @@ import Claims
         Future { completion in
             UNUserNotificationCenter.current()
                 .getNotificationSettings { settings in
+                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                    store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                     guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                         return
                     }
@@ -121,6 +123,12 @@ import Claims
                 .requestAuthorization(
                     options: authOptions,
                     completionHandler: { _, _ in
+
+                        UNUserNotificationCenter.current()
+                            .getNotificationSettings { settings in
+                                let store: UgglanStore = globalPresentableStoreContainer.get()
+                                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                            }
                         completion(.success)
 
                         self.trackNotificationPermission()

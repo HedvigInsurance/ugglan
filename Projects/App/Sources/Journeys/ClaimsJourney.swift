@@ -38,8 +38,7 @@ extension AppJourney {
 
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        //        if hAnalyticsExperiment.claimsFlow {
-        if true {
+        if hAnalyticsExperiment.claimsFlow {
             ClaimJourneys.showCommonClaimIfNeeded(origin: origin) { newOrigin in
                 honestyPledge(from: newOrigin)
             }
@@ -76,21 +75,34 @@ extension AppJourney {
             style: .detented(.scrollViewContentSize, modally: false)
         ) { action in
             if case .didAcceptHonestyPledge = action {
-                let status = UNUserNotificationCenter.current().startClaimIfStatusDeterminated(forOriginId: origin.id)
-                if case .notDetermined = status {
-                    Journey(
-                        ClaimsAskForPushnotifications(),
-                        style: .detented(.large, modally: false)
-                    ) { _ in
-                        PopJourney()
-                            .onPresent {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                if store.state.askForPushNotificationPermission() {
+                    HostingJourney(
+                        ClaimsStore.self,
+                        rootView: LoadingViewWithContent(.startClaim(from: origin.id)) {
+                            ClaimFlowAskForPushnotifications(onActionExecuted: {
                                 let store: ClaimsStore = globalPresentableStoreContainer.get()
                                 store.send(.startClaim(from: origin.id))
-                            }
+                            })
+                        },
+                        style: .detented(.large, modally: false)
+                    ) { action in
+                        ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
                     }
+                    .hidesBackButton
                 }
             } else {
                 ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+            }
+        }
+        .onAction(ClaimsStore.self) {
+            action,
+            _
+            in
+            let store: UgglanStore = globalPresentableStoreContainer.get()
+            if case .didAcceptHonestyPledge = action, !store.state.askForPushNotificationPermission() {
+                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                store.send(.startClaim(from: origin.id))
             }
         }
     }
