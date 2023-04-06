@@ -160,7 +160,8 @@ public struct QuoteBundle: Codable, Equatable {
     public var gradientOption: Contract.GradientOption? {
         Contract.TypeOfContract(
             rawValue: self.quotes.first?.typeOfContract ?? ""
-        )?.gradientOption
+        )?
+        .gradientOption
     }
 
     public struct AppConfiguration: Codable, Equatable {
