@@ -1,6 +1,6 @@
 import Foundation
 
-public struct FAQ: Codable, Equatable {
+public struct FAQ: Codable, Equatable, Hashable {
     public var title: String
     public var description: String
 
