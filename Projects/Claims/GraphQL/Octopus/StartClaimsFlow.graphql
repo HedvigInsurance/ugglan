@@ -79,7 +79,7 @@ fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutS
         ...MoneyFragment
     }
     availableCheckoutMethods {
-        id
+        ...FlowClaimAutomaticAutogiroPayoutFragment
     }
 }
 
@@ -146,4 +146,13 @@ fragment FlowTerminationSuccessStepFragment on FlowTerminationSuccessStep {
 fragment MoneyFragment on Money {
     amount
     currencyCode
+}
+
+
+fragment FlowClaimAutomaticAutogiroPayoutFragment on FlowClaimAutomaticAutogiroPayout {
+    id
+    amount{
+        ...MoneyFragment
+    }
+    displayName
 }
