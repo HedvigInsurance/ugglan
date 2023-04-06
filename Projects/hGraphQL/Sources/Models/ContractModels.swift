@@ -222,18 +222,18 @@ public struct Contract: Codable, Hashable, Equatable {
         case dkTravel = "DK_TRAVEL"
         case dkTravelStudent = "DK_TRAVEL_STUDENT"
         case unknown = "UNKNOWN"
-        
+
         static func resolve(for typeOfContract: GiraffeGraphQL.TypeOfContract) -> Self {
             if let concreteTypeOfContract = Self(rawValue: typeOfContract.rawValue) {
                 return concreteTypeOfContract
             }
-            
+
             log.warn(
                 "Got an unknown type of contract \(typeOfContract.rawValue) that couldn't be resolved.",
                 error: nil,
                 attributes: nil
             )
-            
+
             return .unknown
         }
     }
