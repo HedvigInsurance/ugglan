@@ -70,7 +70,7 @@ public struct TerminationDeleteScreen: View {
                     hButton.LargeButtonFilled {
                         onSelected()
                     } content: {
-                        hText(L10n.generalContinueButton, style: .body)
+                        hText(L10n.terminationContractDeletionConfirmButton, style: .body)
                             .foregroundColor(hLabelColor.primary.inverted)
                     }
                     .padding(.bottom, 2)
