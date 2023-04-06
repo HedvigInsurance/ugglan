@@ -174,6 +174,7 @@ public struct Contract: Codable, Hashable, Equatable {
         case travel
         case car
         case pet
+        case unknown
     }
 
     public enum TypeOfContract: String, Codable {
@@ -315,6 +316,8 @@ extension Contract.TypeOfContract {
             return .travel
         case .dkTravelStudent:
             return .travel
+        case .unknown:
+            return .unknown
         }
     }
 }

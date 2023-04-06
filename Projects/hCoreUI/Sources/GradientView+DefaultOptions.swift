@@ -122,6 +122,7 @@ extension GradientView {
         case travel
         case car
         case pet
+        case unknown
 
         public static var random: Self {
             Self.allCases.shuffled().randomElement()!
@@ -144,6 +145,8 @@ extension Contract.GradientOption {
             return .car
         case .pet:
             return .pet
+        case .unknown:
+            return .unknown
         }
     }
 }
