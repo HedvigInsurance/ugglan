@@ -1,6 +1,6 @@
 import Foundation
 
-public struct CrossSellInfo: Codable, Equatable {
+public struct CrossSellInfo: Codable, Equatable, Hashable {
     public var headerImageURL: URL
     public var title: String
     public var about: String
@@ -27,7 +27,7 @@ public struct CrossSellInfo: Codable, Equatable {
     }
 }
 
-public struct CrossSell: Codable, Equatable {
+public struct CrossSell: Codable, Equatable, Hashable {
     public var typeOfContract: String
     public var title: String
     public var description: String

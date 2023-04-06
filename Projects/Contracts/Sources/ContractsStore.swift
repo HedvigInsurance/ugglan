@@ -188,6 +188,12 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             case let .setFailedStep(model):
                 newState.failedStep = model
             }
+        case let .setLoadingState(action, state):
+            if let state {
+                newState.loadingStates[action] = state
+            } else {
+                newState.loadingStates.removeValue(forKey: action)
+            }
         default:
             break
         }
