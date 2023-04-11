@@ -14,7 +14,7 @@ extension AppDelegate {
         hAnalyticsNetworking.endpointURL = {
             switch Environment.current {
             case .production:
-                return "https://hanalytics.prod.hedvigit.com/"
+                return "https://hanalytics.prod.hedvigit.com"
             case .custom, .staging:
                 return "https://hanalytics.dev.hedvigit.com"
             }

@@ -1,6 +1,6 @@
 import Foundation
 
-public struct InsuranceTerm: Codable, Equatable {
+public struct InsuranceTerm: Codable, Equatable, Hashable {
     public var displayName: String
     public var url: URL
 

@@ -1,6 +1,6 @@
 import Foundation
 
-public struct ActiveContractBundle: Codable, Equatable {
+public struct ActiveContractBundle: Codable, Equatable, Hashable {
     public var contracts: [Contract]
     public var id: String
     public var movingFlowEmbarkId: String?

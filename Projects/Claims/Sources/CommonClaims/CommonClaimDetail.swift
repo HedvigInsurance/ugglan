@@ -69,7 +69,7 @@ extension CommonClaimDetail: Presentable {
             bag += claimButton.onTapSignal.onValue {
                 hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
 
-                if claim.id == "25" {
+                if claim.id == "30" || claim.id == "31" {
                     if let url = URL(
                         string: "https://apps.apple.com/se/app/firstvet-veterin%C3%A4r-i-mobilen/id1155459157"
                     ) {
