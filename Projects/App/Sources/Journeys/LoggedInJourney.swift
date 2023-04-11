@@ -45,6 +45,12 @@ extension AppJourney {
             }
         }
         .configureClaimsNavigation
+        .onPresent {
+            ApplicationContext.shared.$isLoggedIn.value = true
+        }
+        .onDismiss {
+            ApplicationContext.shared.$isLoggedIn.value = false
+        }
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {

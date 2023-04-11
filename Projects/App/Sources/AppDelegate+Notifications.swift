@@ -16,13 +16,15 @@ extension AppDelegate {
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-        bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter(predicate: { $0 })
+        bag += ApplicationContext.shared.$isLoggedIn.atOnce().filter(predicate: { $0 })
             .onValue { _ in
-                let client: ApolloClient = Dependencies.shared.resolve()
+                let giraffe: hGiraffe = Dependencies.shared.resolve()
 
                 let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
 
-                client.perform(mutation: GraphQL.NotificationRegisterDeviceMutation(token: deviceTokenString))
+                giraffe.client.perform(
+                    mutation: GiraffeGraphQL.NotificationRegisterDeviceMutation(token: deviceTokenString)
+                )
                     .onValue { data in
                         if data.notificationRegisterDevice == true {
                             log.info("Did register CustomerIO push token for user")
