@@ -1,3 +1,4 @@
+import Claims
 import Flow
 import Form
 import Foundation
@@ -58,7 +59,7 @@ struct NotificationLoader: Presentable {
         let viewController = UIViewController()
         let bag = DisposeBag()
 
-        viewController.view.backgroundColor = .white
+        viewController.view.backgroundColor = .brand(.primaryBackground())
 
         let activityIndicatorView = UIActivityIndicatorView(style: .large)
         viewController.view.addSubview(activityIndicatorView)
@@ -73,7 +74,6 @@ struct NotificationLoader: Presentable {
             viewController,
             FiniteSignal { callback in
                 let current = UNUserNotificationCenter.current()
-
                 current.getNotificationSettings(completionHandler: { settings in
                     callback(.value(settings.authorizationStatus))
                 })

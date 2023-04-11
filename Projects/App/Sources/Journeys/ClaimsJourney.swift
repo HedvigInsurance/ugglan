@@ -75,13 +75,34 @@ extension AppJourney {
             style: .detented(.scrollViewContentSize, modally: false)
         ) { action in
             if case .didAcceptHonestyPledge = action {
-                ContinueJourney()
-                    .onPresent {
-                        @PresentableStore var store: ClaimsStore
-                        store.send(.startClaim(from: origin.id))
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                if store.state.askForPushNotificationPermission() {
+                    HostingJourney(
+                        ClaimsStore.self,
+                        rootView: LoadingViewWithContent(.startClaim(from: origin.id)) {
+                            ClaimFlowAskForPushnotifications(onActionExecuted: {
+                                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                                store.send(.startClaim(from: origin.id))
+                            })
+                        },
+                        style: .detented(.large, modally: false)
+                    ) { action in
+                        ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
                     }
+                    .hidesBackButton
+                }
             } else {
                 ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+            }
+        }
+        .onAction(ClaimsStore.self) {
+            action,
+            _
+            in
+            let store: UgglanStore = globalPresentableStoreContainer.get()
+            if case .didAcceptHonestyPledge = action, !store.state.askForPushNotificationPermission() {
+                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                store.send(.startClaim(from: origin.id))
             }
         }
     }
