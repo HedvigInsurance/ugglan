@@ -35,7 +35,6 @@ public indirect enum ClaimsAction: ActionProtocol {
     case dissmissNewClaimFlow
 
     case submitAudioRecording(audioURL: URL)
-    case submitSingleItem(purchasePrice: Double)
     case submitDamage(damage: [String])
 
     case startClaim(from: String)
@@ -78,7 +77,6 @@ public enum ClaimsNavigationAction: ActionProtocol {
     case openBrandPicker
     case openCheckoutNoRepairScreen
     case openCheckoutTransferringScreen
-    case openCheckoutTransferringDoneScreen
     case openFailureSceen
     case openUpdateAppScreen
 

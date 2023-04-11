@@ -159,14 +159,16 @@ extension JourneyPresentation {
             } else if case let .submitNewClaim(origin) = action {
                 AppJourney.startClaimsJourney(from: origin)
                     .onAction(ClaimsStore.self) { action in
-                        if case .openFreeTextChat = action {
-                            AppJourney.freeTextChat()
+                        if case .dissmissNewClaimFlow = action {
+                            DismissJourney()
                         }
                     }
             } else if case .openHowClaimsWork = action {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
+            } else if case .openFreeTextChat = action {
+                AppJourney.freeTextChat()
             }
         }
     }

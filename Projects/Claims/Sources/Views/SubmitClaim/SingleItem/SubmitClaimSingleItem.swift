@@ -27,7 +27,7 @@ public struct SubmitClaimSingleItem: View {
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
-                    store.send(.submitSingleItem(purchasePrice: Double(purchasePrice) ?? 0))
+                    store.send(.claimNextSingleItem(purchasePrice: Double(purchasePrice) ?? 0))
                 } content: {
                     hText(L10n.generalContinueButton)
                 }

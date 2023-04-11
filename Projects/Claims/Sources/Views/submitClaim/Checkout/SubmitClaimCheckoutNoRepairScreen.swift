@@ -9,7 +9,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
 
     public var body: some View {
         hForm {
-
             PresentableStoreLens(
                 ClaimsStore.self,
                 getter: { state in
@@ -53,6 +52,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
         }
         .hFormAttachToBottom {
             hButton.LargeButtonFilled {
+                store.send(.claimNextSingleItemCheckout)
                 store.send(.navigationAction(action: .openCheckoutTransferringScreen))
             } content: {
                 hText(L10n.Claims.Payout.Payout.label, style: .body)
@@ -64,19 +64,20 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
         }
     }
 
-    @ViewBuilder func displayPriceFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
+    @ViewBuilder
+    func displayPriceFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
         displayField(withTitle: L10n.Claims.Payout.Purchase.price, andFor: checkoutStep?.price)
         Divider()
-        displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation)
+        displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation, prefix: "- ")
         Divider()
-        displayField(withTitle: L10n.Claims.Payout.Age.deductable, andFor: checkoutStep?.deductible)
+        displayField(withTitle: L10n.Claims.Payout.Age.deductable, andFor: checkoutStep?.deductible, prefix: "- ")
         Divider()
         displayField(withTitle: L10n.Claims.Payout.total, andFor: checkoutStep?.payoutAmount)
             .foregroundColor(hLabelColor.primary)
     }
 
     @ViewBuilder
-    func displayField(withTitle title: String, andFor model: ClaimFlowMoneyModel?) -> some View {
+    func displayField(withTitle title: String, andFor model: ClaimFlowMoneyModel?, prefix: String = "") -> some View {
         hRow {
             HStack {
                 hText(title)
@@ -86,13 +87,13 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 if checkIfNotDecimal(value: model?.amount ?? 0) {
 
                     hText(
-                        formatDoubleWithoutDecimal(value: model?.amount ?? 0) + " "
+                        prefix + formatDoubleWithoutDecimal(value: model?.amount ?? 0) + " "
                             + String(model?.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
                 } else {
                     hText(
-                        formatDoubleWithDecimal(value: model?.amount ?? 0) + " "
+                        prefix + formatDoubleWithDecimal(value: model?.amount ?? 0) + " "
                             + String(model?.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
