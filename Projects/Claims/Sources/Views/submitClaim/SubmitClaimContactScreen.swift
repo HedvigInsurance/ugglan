@@ -55,9 +55,9 @@ public struct SubmitClaimContactScreen: View {
                     .background(hBackgroundColor.tertiary)
                     .cornerRadius(12)
                     .padding([.leading, .trailing], 16)
-
                     hButton.LargeButtonFilled {
                         store.send(.claimNextPhoneNumber(phoneNumber: phoneNumber))
+                        UIApplication.dismissKeyboard()
                     } content: {
                         hText(L10n.generalContinueButton, style: .body)
                             .foregroundColor(hLabelColor.primary.inverted)

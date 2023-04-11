@@ -21,26 +21,23 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
         self.onError = onError
     }
     public var body: some View {
-        ZStack {
-            PresentableStoreLens(
-                ClaimsStore.self,
-                getter: { state in
-                    state.loadingStates
-                }
-            ) { loadingStates in
-                if let state = loadingStates[action] {
-                    switch state {
-                    case .loading:
-                        onLoading()
-                    case let .error(error):
-                        onError(error)
-                    }
-                } else {
-                    content()
-                }
+        PresentableStoreLens(
+            ClaimsStore.self,
+            getter: { state in
+                state.loadingStates
             }
-            .presentableStoreLensAnimation(.easeInOut)
+        ) { loadingStates in
+            if let state = loadingStates[action] {
+                switch state {
+                case .loading:
+                    onLoading()
+                case let .error(error):
+                    onError(error)
+                }
+            } else {
+                content()
+            }
         }
-
+        .presentableStoreLensAnimation(.easeInOut)
     }
 }
