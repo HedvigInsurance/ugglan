@@ -79,6 +79,7 @@ public enum ClaimsNavigationAction: ActionProtocol {
     case openCheckoutTransferringScreen
     case openFailureSceen
     case openUpdateAppScreen
+    case openNotificationsPermissionScreen
 
     public enum LocationPickerType: ActionProtocol {
         case setLocation

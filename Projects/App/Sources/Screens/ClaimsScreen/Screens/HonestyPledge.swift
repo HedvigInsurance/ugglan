@@ -79,7 +79,7 @@ struct SlideDragger: View {
 struct DidAcceptPledgeNotifier: View {
     var canNotify: Bool
     var dragOffsetX: CGFloat
-
+    let onConfirmAction: (() -> Void)?
     @Binding var hasNotifiedStore: Bool
     @PresentableStore var store: ClaimsStore
     var body: some View {
@@ -89,6 +89,7 @@ struct DidAcceptPledgeNotifier: View {
             ) { value in
                 if value && !hasNotifiedStore {
                     hasNotifiedStore = true
+                    onConfirmAction?()
                     store.send(.didAcceptHonestyPledge)
                 }
             }
@@ -100,6 +101,7 @@ struct SlideToConfirm: View {
     @State var hasDraggedOnce = false
     @GestureState var dragOffsetX: CGFloat = 0
     @State var draggedTillTheEnd = false
+    let onConfirmAction: (() -> Void)?
     var labelOpacity: Double {
         1 - (Double(max(dragOffsetX, 0)) / 100)
     }
@@ -121,6 +123,7 @@ struct SlideToConfirm: View {
             DidAcceptPledgeNotifier(
                 canNotify: hasDraggedOnce,
                 dragOffsetX: dragOffsetX,
+                onConfirmAction: onConfirmAction,
                 hasNotifiedStore: $draggedTillTheEnd
             )
         )
@@ -148,6 +151,14 @@ struct SlideToConfirm: View {
 
 struct HonestyPledge: View {
     @PresentableStore var store: UgglanStore
+    let onConfirmAction: (() -> Void)?
+
+    init(
+        onConfirmAction: (() -> Void)?
+    ) {
+        self.onConfirmAction = onConfirmAction
+    }
+
     var body: some View {
         hForm {
             VStack {
@@ -156,7 +167,7 @@ struct HonestyPledge: View {
                         .foregroundColor(hLabelColor.secondary)
                 }
                 .padding(.bottom, 20)
-                SlideToConfirm()
+                SlideToConfirm(onConfirmAction: onConfirmAction)
                     .frame(maxHeight: 50)
             }
             .padding(.bottom, 20)
@@ -174,7 +185,7 @@ extension HonestyPledge {
     ) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
-            rootView: HonestyPledge(),
+            rootView: HonestyPledge(onConfirmAction: nil),
             style: style,
             options: [
                 .defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),

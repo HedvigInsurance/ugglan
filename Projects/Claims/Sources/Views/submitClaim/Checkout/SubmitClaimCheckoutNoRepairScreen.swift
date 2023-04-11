@@ -8,14 +8,13 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
     public init() {}
 
     public var body: some View {
-        hForm {
-            PresentableStoreLens(
-                ClaimsStore.self,
-                getter: { state in
-                    state.singleItemCheckoutStep
-                }
-            ) { singleItemCheckoutStep in
-
+        PresentableStoreLens(
+            ClaimsStore.self,
+            getter: { state in
+                state.singleItemCheckoutStep
+            }
+        ) { singleItemCheckoutStep in
+            hForm {
                 hSection {
                     displayPriceFields(checkoutStep: singleItemCheckoutStep)
                 }
@@ -49,18 +48,23 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     .padding(.bottom, 10)
                 }
             }
-        }
-        .hFormAttachToBottom {
-            hButton.LargeButtonFilled {
-                store.send(.claimNextSingleItemCheckout)
-                store.send(.navigationAction(action: .openCheckoutTransferringScreen))
-            } content: {
-                hText(L10n.Claims.Payout.Payout.label, style: .body)
+            .hFormAttachToBottom {
+                hButton.LargeButtonFilled {
+                    store.send(.claimNextSingleItemCheckout)
+                    store.send(.navigationAction(action: .openCheckoutTransferringScreen))
+                } content: {
+                    hText(
+                        L10n.Claims.Payout.Button.label(
+                            singleItemCheckoutStep?.payoutAmount.getAmountWithCurrency() ?? ""
+                        ),
+                        style: .body
+                    )
                     .foregroundColor(hLabelColor.primary.inverted)
-            }
-            .frame(maxWidth: .infinity, alignment: .bottom)
-            .padding([.leading, .trailing], 16)
+                }
+                .frame(maxWidth: .infinity, alignment: .bottom)
+                .padding([.leading, .trailing], 16)
 
+            }
         }
     }
 

@@ -18,7 +18,7 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    static func getScreen(for action: ClaimsAction) -> some JourneyPresentation {
+    private static func getScreen(for action: ClaimsAction) -> some JourneyPresentation {
         GroupJourney {
             if case let .navigationAction(navigationAction) = action {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
