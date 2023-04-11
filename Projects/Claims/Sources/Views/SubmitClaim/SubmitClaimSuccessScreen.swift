@@ -44,7 +44,7 @@ public struct SubmitClaimSuccessScreen: View {
                     store.send(.openFreeTextChat)
                 } label: {
                     HStack {
-                        hText(L10n.Message.Claims.Start.Select.From.user, style: .body)
+                        hText(L10n.openChat, style: .body)
                             .foregroundColor(hLabelColor.primary)
                     }
                     .padding([.top, .bottom], 10)
