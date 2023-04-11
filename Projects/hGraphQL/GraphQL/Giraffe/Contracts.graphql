@@ -2,6 +2,7 @@ query Contracts($locale: Locale!) {
   contracts {
     id
     displayName
+    typeOfContract
     switchedFromInsuranceProvider
     gradientOption
     logo(locale: $locale) {

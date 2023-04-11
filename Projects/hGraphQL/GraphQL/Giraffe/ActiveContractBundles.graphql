@@ -3,6 +3,7 @@ query ActiveContractBundles($locale: Locale!) {
     id
     contracts {
       id
+      typeOfContract
       statusPills(locale: $locale)
       detailPills(locale: $locale)
       displayName
