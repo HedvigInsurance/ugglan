@@ -68,9 +68,9 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
     func displayPriceFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
         displayField(withTitle: L10n.Claims.Payout.Purchase.price, andFor: checkoutStep?.price)
         Divider()
-        displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation, prefix: "-")
+        displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation, prefix: "- ")
         Divider()
-        displayField(withTitle: L10n.Claims.Payout.Age.deductable, andFor: checkoutStep?.deductible, prefix: "-")
+        displayField(withTitle: L10n.Claims.Payout.Age.deductable, andFor: checkoutStep?.deductible, prefix: "- ")
         Divider()
         displayField(withTitle: L10n.Claims.Payout.total, andFor: checkoutStep?.payoutAmount)
             .foregroundColor(hLabelColor.primary)
