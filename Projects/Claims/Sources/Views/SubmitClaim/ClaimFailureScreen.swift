@@ -37,6 +37,7 @@ public struct ClaimFailureScreen: View {
                 }
                 .padding(.bottom, 4)
                 hButton.LargeButtonFilled {
+                    store.send(.dissmissNewClaimFlow)
                     store.send(.openFreeTextChat)
                 } content: {
                     hText(L10n.MovingUwFailure.buttonText, style: .body)

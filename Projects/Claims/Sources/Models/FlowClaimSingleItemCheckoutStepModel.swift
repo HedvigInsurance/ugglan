@@ -56,6 +56,17 @@ struct ClaimFlowMoneyModel: Codable, Equatable {
         self.amount = data.amount
         self.currencyCode = data.currencyCode.rawValue
     }
+
+    func getAmountWithCurrency() -> String {
+        let formatter = NumberFormatter()
+        formatter.groupingSeparator = ""
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        formatter.currencyCode = self.currencyCode
+        formatter.currencySymbol = self.currencyCode
+        return formatter.string(for: amount) ?? ""
+    }
 }
 
 struct AvailableCheckoutMethods: Codable, Equatable {

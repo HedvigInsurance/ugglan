@@ -40,6 +40,7 @@ public struct SubmitClaimSuccessScreen: View {
                 }
 
                 Button {
+                    store.send(.dissmissNewClaimFlow)
                     store.send(.openFreeTextChat)
                 } label: {
                     HStack {

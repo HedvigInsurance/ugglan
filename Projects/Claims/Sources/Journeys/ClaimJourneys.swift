@@ -18,7 +18,7 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    static func getScreen(for action: ClaimsAction) -> some JourneyPresentation {
+    private static func getScreen(for action: ClaimsAction) -> some JourneyPresentation {
         GroupJourney {
             if case let .navigationAction(navigationAction) = action {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
@@ -45,8 +45,6 @@ public class ClaimJourneys {
                     openLocationScreen(type: type).addDismissWithConfirmation()
                 } else if case .openUpdateAppScreen = navigationAction {
                     openUpdateAppTerminationScreen().addDismissWithConfirmation()
-                } else if case .openCheckoutTransferringDoneScreen = navigationAction {
-                    openCheckoutTransferringDoneScreen()
                 } else if case let .openDatePicker(type) = navigationAction {
                     openDatePickerScreen(type: type)
                 }
@@ -60,11 +58,7 @@ public class ClaimJourneys {
             rootView: SubmitClaimContactScreen(model: model),
             style: .detented(.large, modally: false)
         ) { action in
-            if case .dissmissNewClaimFlow = action {
-                PopJourney()
-            } else {
-                getScreenForAction(for: action)
-            }
+            getScreenForAction(for: action)
         }
     }
 
@@ -93,8 +87,6 @@ public class ClaimJourneys {
         ) {
             action in
             if case .setNewDate = action {
-                PopJourney()
-            } else if case .dissmissNewClaimFlow = action {
                 PopJourney()
             } else if case .setSingleItemPurchaseDate = action {
                 PopJourney()
@@ -153,8 +145,6 @@ public class ClaimJourneys {
             { action, pre in
                 if case .setSingleItemModel(_) = action {
                     pre.bag.dispose()
-                } else if case .dissmissNewClaimFlow = action {
-                    pre.bag.dispose()
                 }
             }
         )
@@ -183,8 +173,6 @@ public class ClaimJourneys {
             ClaimsStore.self,
             { action, pre in
                 if case .setSingleItemModel = action {
-                    pre.bag.dispose()
-                } else if case .dissmissNewClaimFlow = action {
                     pre.bag.dispose()
                 }
             }
@@ -221,25 +209,16 @@ public class ClaimJourneys {
 
     private static func openSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
-            ClaimsStore.self,
             rootView: SubmitClaimSuccessScreen(),
             style: .detented(.large, modally: false)
-        ) {
-            action in
-            if case .dissmissNewClaimFlow = action {
-                DismissJourney()
-            } else {
-                getScreenForAction(for: action)
-            }
-        }
+        )
         .hidesBackButton
     }
     private static func openSingleItemScreen() -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
             rootView: SubmitClaimSingleItem(),
-            style: .detented(.large, modally: false),
-            options: .allowSwipeDismissAlways
+            style: .detented(.large, modally: false)
         ) {
             action in
             if case .navigationAction(.openDatePicker) = action {
@@ -250,15 +229,6 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
-        .onAction(
-            ClaimsStore.self,
-            { action, _ in
-                if case let .submitSingleItem(purchasePrice) = action {
-                    @PresentableStore var store: ClaimsStore
-                    store.send(.claimNextSingleItem(purchasePrice: purchasePrice))
-                }
-            }
-        )
     }
 
     private static func openSummaryScreen() -> some JourneyPresentation {
@@ -268,11 +238,7 @@ public class ClaimJourneys {
             style: .detented(.large, modally: false)
         ) {
             action in
-            if case .dissmissNewClaimFlow = action {
-                PopJourney()
-            } else {
-                getScreenForAction(for: action)
-            }
+            getScreenForAction(for: action)
         }
     }
 
@@ -297,36 +263,9 @@ public class ClaimJourneys {
     static func openCheckoutTransferringScreen() -> some JourneyPresentation {
 
         HostingJourney(
-            ClaimsStore.self,
             rootView: SubmitClaimCheckoutTransferringScreen(),
-            style: .modally(presentationStyle: .fullScreen)
-        ) {
-            action in
-            getScreenForAction(for: action)
-        }
-        .onPresent {
-            Task {
-                await delay(4)
-                let store: ClaimsStore = globalPresentableStoreContainer.get()
-                store.send(.claimNextSingleItemCheckout)
-            }
-        }
-    }
-
-    private static func openCheckoutTransferringDoneScreen() -> some JourneyPresentation {
-
-        HostingJourney(
-            ClaimsStore.self,
-            rootView: SubmitClaimCheckoutTransferringDoneScreen(),
-            style: .modally(presentationStyle: .fullScreen)
-        ) {
-            action in
-            if case .dissmissNewClaimFlow = action {
-                DismissJourney()
-            } else {
-                getScreenForAction(for: action)
-            }
-        }
+            style: .modally(presentationStyle: .fullScreen, transitionStyle: .crossDissolve)
+        )
     }
 
     private static func openSummaryEditScreen() -> some JourneyPresentation {
@@ -376,15 +315,8 @@ public class ClaimJourneys {
     }
 
     private static func showClaimFailureScreen() -> some JourneyPresentation {
-        HostingJourney(
-            ClaimsStore.self,
-            rootView: ClaimFailureScreen()
-        ) { action in
-            if case .dissmissNewClaimFlow = action {
-                DismissJourney()
-            }
-        }
-        .hidesBackButton
+        HostingJourney(rootView: ClaimFailureScreen())
+            .hidesBackButton
     }
 
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {

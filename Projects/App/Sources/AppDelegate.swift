@@ -108,6 +108,8 @@ import hGraphQL
         Future { completion in
             UNUserNotificationCenter.current()
                 .getNotificationSettings { settings in
+                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                    store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                     guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                         return
                     }
@@ -121,6 +123,12 @@ import hGraphQL
                 .requestAuthorization(
                     options: authOptions,
                     completionHandler: { _, _ in
+
+                        UNUserNotificationCenter.current()
+                            .getNotificationSettings { settings in
+                                let store: UgglanStore = globalPresentableStoreContainer.get()
+                                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                            }
                         completion(.success)
 
                         self.trackNotificationPermission()

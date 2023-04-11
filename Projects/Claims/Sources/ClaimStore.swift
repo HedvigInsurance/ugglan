@@ -452,6 +452,18 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             case let .setAudioStep(model):
                 newState.audioRecordingStep = model
             }
+        case .startClaim:
+            newState.summaryStep = nil
+            newState.dateOfOccurenceStep = nil
+            newState.locationStep = nil
+            newState.singleItemStep = nil
+            newState.phoneNumberStep = nil
+            newState.dateOfOccurrencePlusLocationStep = nil
+            newState.singleItemCheckoutStep = nil
+            newState.successStep = nil
+            newState.failedStep = nil
+            newState.audioRecordingStep = nil
+            newState.currentClaimContext = nil
         default:
             break
         }
@@ -503,7 +515,6 @@ extension OctopusGraphQL.FlowClaimFragment {
         } else if let step = currentStep.fragments.flowClaimSuccessStepFragment {
             actions.append(.stepModelAction(action: .setSuccessStep(model: .init(with: step))))
             if case .claimNextSingleItemCheckout = action {
-                actions.append(.navigationAction(action: .openCheckoutTransferringDoneScreen))
             } else {
                 actions.append(.navigationAction(action: .openSuccessScreen))
             }

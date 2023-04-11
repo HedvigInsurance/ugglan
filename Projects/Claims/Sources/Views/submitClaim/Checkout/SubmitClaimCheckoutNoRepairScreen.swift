@@ -8,15 +8,13 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
     public init() {}
 
     public var body: some View {
-        hForm {
-
-            PresentableStoreLens(
-                ClaimsStore.self,
-                getter: { state in
-                    state.singleItemCheckoutStep
-                }
-            ) { singleItemCheckoutStep in
-
+        PresentableStoreLens(
+            ClaimsStore.self,
+            getter: { state in
+                state.singleItemCheckoutStep
+            }
+        ) { singleItemCheckoutStep in
+            hForm {
                 hSection {
                     displayPriceFields(checkoutStep: singleItemCheckoutStep)
                 }
@@ -38,33 +36,40 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     .padding(.bottom, 10)
                 }
             }
-        }
-        .hFormAttachToBottom {
-            hButton.LargeButtonFilled {
-                store.send(.navigationAction(action: .openCheckoutTransferringScreen))
-            } content: {
-                hText(L10n.Claims.Payout.Payout.label, style: .body)
+            .hFormAttachToBottom {
+                hButton.LargeButtonFilled {
+                    store.send(.claimNextSingleItemCheckout)
+                    store.send(.navigationAction(action: .openCheckoutTransferringScreen))
+                } content: {
+                    hText(
+                        L10n.Claims.Payout.Button.label(
+                            singleItemCheckoutStep?.payoutAmount.getAmountWithCurrency() ?? ""
+                        ),
+                        style: .body
+                    )
                     .foregroundColor(hLabelColor.primary.inverted)
-            }
-            .frame(maxWidth: .infinity, alignment: .bottom)
-            .padding([.leading, .trailing], 16)
+                }
+                .frame(maxWidth: .infinity, alignment: .bottom)
+                .padding([.leading, .trailing], 16)
 
+            }
         }
     }
 
-    @ViewBuilder func displayPriceFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
+    @ViewBuilder
+    func displayPriceFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
         displayField(withTitle: L10n.Claims.Payout.Purchase.price, andFor: checkoutStep?.price)
         Divider()
-        displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation)
+        displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation, prefix: "- ")
         Divider()
-        displayField(withTitle: L10n.Claims.Payout.Age.deductable, andFor: checkoutStep?.deductible)
+        displayField(withTitle: L10n.Claims.Payout.Age.deductable, andFor: checkoutStep?.deductible, prefix: "- ")
         Divider()
         displayField(withTitle: L10n.Claims.Payout.total, andFor: checkoutStep?.payoutAmount)
             .foregroundColor(hLabelColor.primary)
     }
 
     @ViewBuilder
-    func displayField(withTitle title: String, andFor model: ClaimFlowMoneyModel?) -> some View {
+    func displayField(withTitle title: String, andFor model: ClaimFlowMoneyModel?, prefix: String = "") -> some View {
         hRow {
             HStack {
                 hText(title)
@@ -74,13 +79,13 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 if checkIfNotDecimal(value: model?.amount ?? 0) {
 
                     hText(
-                        formatDoubleWithoutDecimal(value: model?.amount ?? 0) + " "
+                        prefix + formatDoubleWithoutDecimal(value: model?.amount ?? 0) + " "
                             + String(model?.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
                 } else {
                     hText(
-                        formatDoubleWithDecimal(value: model?.amount ?? 0) + " "
+                        prefix + formatDoubleWithDecimal(value: model?.amount ?? 0) + " "
                             + String(model?.currencyCode ?? "")
                     )
                     .foregroundColor(hLabelColor.secondary)
