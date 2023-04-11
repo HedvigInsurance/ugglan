@@ -61,7 +61,6 @@ public struct Contract: Codable, Hashable, Equatable {
         self.typeOfContract = typeOfContract
         self.upcomingAgreementsTable = upcomingAgreementsTable
         self.currentAgreementsTable = currentAgreementsTable
-        self.gradientOption = gradientOption
         self.logo = logo
         self.displayName = displayName
         self.switchedFromInsuranceProvider = switchedFromInsuranceProvider
@@ -80,7 +79,14 @@ public struct Contract: Codable, Hashable, Equatable {
     public let typeOfContract: TypeOfContract
     public let upcomingAgreementsTable: DetailAgreementsTable
     public let currentAgreementsTable: DetailAgreementsTable?
-    public let gradientOption: GradientOption?
+    public var gradientOption: GradientOption? {
+        if self.currentAgreement?.status == .terminated {
+            return nil
+        }
+
+        return self.typeOfContract.gradientOption
+    }
+
     public let logo: IconEnvelope?
     public let displayName: String
     public let switchedFromInsuranceProvider: String?
@@ -124,12 +130,6 @@ public struct Contract: Codable, Hashable, Equatable {
             self.logo = nil
         }
 
-        if let contractGradientOption = contract.gradientOption {
-            gradientOption = .init(rawValue: contractGradientOption.rawValue)
-        } else {
-            gradientOption = nil
-        }
-
         showsMovingFlowButton = contract.supportsAddressChange
         upcomingAgreementDate =
             contract.status.asActiveStatus?.upcomingAgreementChange?.newAgreement.activeFrom?.localDateToDate
@@ -163,22 +163,18 @@ public struct Contract: Codable, Hashable, Equatable {
             self.logo = nil
         }
 
-        if let contractGradientOption = contract.gradientOption {
-            gradientOption = .init(rawValue: contractGradientOption.rawValue)
-        } else {
-            gradientOption = nil
-        }
-
         showsMovingFlowButton = false
         upcomingAgreementDate = nil
     }
 
-    public enum GradientOption: String, Codable {
-        case one = "GRADIENT_ONE"
-        case two = "GRADIENT_TWO"
-        case three = "GRADIENT_THREE"
-        case four = "GRADIENT_FOUR"
-        case five = "GRADIENT_FIVE"
+    public enum GradientOption: Codable {
+        case home
+        case accident
+        case house
+        case travel
+        case car
+        case pet
+        case unknown
     }
 
     public enum TypeOfContract: String, Codable {
@@ -233,7 +229,93 @@ public struct Contract: Codable, Hashable, Equatable {
                 error: nil,
                 attributes: nil
             )
+            return .unknown
+        }
+    }
+}
 
+extension Contract.TypeOfContract {
+    var gradientOption: Contract.GradientOption {
+        switch self {
+        case .seHouse:
+            return .house
+        case .seApartmentBrf:
+            return .home
+        case .seApartmentRent:
+            return .home
+        case .seApartmentStudentBrf:
+            return .home
+        case .seApartmentStudentRent:
+            return .home
+        case .seAccident:
+            return .accident
+        case .seAccidentStudent:
+            return .accident
+        case .seCarTraffic:
+            return .car
+        case .seCarHalf:
+            return .car
+        case .seCarFull:
+            return .car
+        case .seGroupApartmentRent:
+            return .home
+        case .seQasaShortTermRental:
+            return .home
+        case .seQasaLongTermRental:
+            return .home
+        case .seDogBasic:
+            return .pet
+        case .seDogStandard:
+            return .pet
+        case .seDogPremium:
+            return .pet
+        case .seCatBasic:
+            return .pet
+        case .seCatStandard:
+            return .pet
+        case .seCatPremium:
+            return .pet
+        case .noHouse:
+            return .house
+        case .noHomeContentOwn:
+            return .home
+        case .noHomeContentRent:
+            return .home
+        case .noHomeContentYouthOwn:
+            return .home
+        case .noHomeContentYouthRent:
+            return .home
+        case .noHomeContentStudentOwn:
+            return .home
+        case .noHomeContentStudentRent:
+            return .home
+        case .noTravel:
+            return .travel
+        case .noTravelYouth:
+            return .travel
+        case .noTravelStudent:
+            return .travel
+        case .noAccident:
+            return .accident
+        case .dkHomeContentOwn:
+            return .home
+        case .dkHomeContentRent:
+            return .home
+        case .dkHomeContentStudentOwn:
+            return .home
+        case .dkHomeContentStudentRent:
+            return .home
+        case .dkHouse:
+            return .house
+        case .dkAccident:
+            return .accident
+        case .dkAccidentStudent:
+            return .accident
+        case .dkTravel:
+            return .travel
+        case .dkTravelStudent:
+            return .travel
+        case .unknown:
             return .unknown
         }
     }
