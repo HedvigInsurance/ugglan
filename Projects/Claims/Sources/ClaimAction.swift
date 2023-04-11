@@ -77,7 +77,6 @@ public enum ClaimsNavigationAction: ActionProtocol {
     case openBrandPicker
     case openCheckoutNoRepairScreen
     case openCheckoutTransferringScreen
-    case openCheckoutTransferringDoneScreen
     case openFailureSceen
     case openUpdateAppScreen
 

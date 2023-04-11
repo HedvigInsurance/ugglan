@@ -510,7 +510,6 @@ extension OctopusGraphQL.FlowClaimFragment {
         } else if let step = currentStep.fragments.flowClaimSuccessStepFragment {
             actions.append(.stepModelAction(action: .setSuccessStep(model: .init(with: step))))
             if case .claimNextSingleItemCheckout = action {
-                actions.append(.navigationAction(action: .openCheckoutTransferringDoneScreen))
             } else {
                 actions.append(.navigationAction(action: .openSuccessScreen))
             }

@@ -45,8 +45,6 @@ public class ClaimJourneys {
                     openLocationScreen(type: type).addDismissWithConfirmation()
                 } else if case .openUpdateAppScreen = navigationAction {
                     openUpdateAppTerminationScreen().addDismissWithConfirmation()
-                } else if case .openCheckoutTransferringDoneScreen = navigationAction {
-                    openCheckoutTransferringDoneScreen()
                 } else if case let .openDatePicker(type) = navigationAction {
                     openDatePickerScreen(type: type)
                 }
@@ -265,27 +263,8 @@ public class ClaimJourneys {
     static func openCheckoutTransferringScreen() -> some JourneyPresentation {
 
         HostingJourney(
-            ClaimsStore.self,
             rootView: SubmitClaimCheckoutTransferringScreen(),
-            style: .modally(presentationStyle: .fullScreen)
-        ) {
-            action in
-            getScreenForAction(for: action)
-        }
-        .onPresent {
-            Task {
-                await delay(4)
-                let store: ClaimsStore = globalPresentableStoreContainer.get()
-                store.send(.claimNextSingleItemCheckout)
-            }
-        }
-    }
-
-    private static func openCheckoutTransferringDoneScreen() -> some JourneyPresentation {
-
-        HostingJourney(
-            rootView: SubmitClaimCheckoutTransferringDoneScreen(),
-            style: .modally(presentationStyle: .fullScreen)
+            style: .modally(presentationStyle: .fullScreen, transitionStyle: .crossDissolve)
         )
     }
 
