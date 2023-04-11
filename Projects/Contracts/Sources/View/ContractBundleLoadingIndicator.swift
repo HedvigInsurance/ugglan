@@ -12,7 +12,10 @@ struct ContractBundleLoadingIndicator: View {
             }
         ) { hasLoadedContractBundlesOnce in
             if !hasLoadedContractBundlesOnce {
-                ActivityIndicator(style: .large).padding(.top, 15)
+                ActivityIndicator(
+                    style: .large,
+                    color: hLabelColor.primary
+                ).padding(.top, 15)
             }
         }
         .sectionContainerStyle(.transparent)

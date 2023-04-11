@@ -15,7 +15,7 @@ struct ExperimentsLoader: Presentable {
         return (
             viewController,
             Signal { callback in
-                hAnalyticsExperiment.load { _ in
+                hAnalyticsExperiment.retryingLoad { _ in
                     callback(())
                 }
 
