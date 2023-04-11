@@ -99,9 +99,9 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
 
     func displayPaymentMethodField(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
         hRow {
-            if let method = checkoutStep?.payoutMethod {
-                ForEach(method, id: \.method?.id) { element in
-                    hText(element.method?.displayName ?? "", style: .headline)
+            if let payoutMethods = checkoutStep?.payoutMethod {
+                ForEach(payoutMethods, id: \.id) { element in
+                    hText(element.getDisplayName(), style: .headline)
                         .foregroundColor(hLabelColor.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom, 4)

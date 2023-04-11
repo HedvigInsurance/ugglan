@@ -7,8 +7,8 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     let depreciation: ClaimFlowMoneyModel
     let payoutAmount: ClaimFlowMoneyModel
     let price: ClaimFlowMoneyModel
-    var payoutMethod: [AvailableCheckoutMethods] = []
-
+    let payoutMethod: [AvailableCheckoutMethods]
+    var selectedPayoutMethod: AvailableCheckoutMethods?
     init(
         with data: OctopusGraphQL.FlowClaimSingleItemCheckoutStepFragment
     ) {
@@ -18,31 +18,20 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
         self.payoutAmount = .init(with: data.payoutAmount.fragments.moneyFragment)
         self.price = .init(with: data.price.fragments.moneyFragment)
 
-        for element in data.availableCheckoutMethods {
-            let amount = OctopusGraphQL.FlowClaimAutomaticAutogiroPayoutFragment.Amount(
-                amount: element.amount.fragments.moneyFragment.amount,
-                currencyCode: element.amount.fragments.moneyFragment.currencyCode
-            )
-            let fragment = OctopusGraphQL.FlowClaimAutomaticAutogiroPayoutFragment(
-                id: element.id,
-                amount: amount,
-                displayName: element.displayName
-            )
-            self.payoutMethod.append(
-                AvailableCheckoutMethods(method: ClaimAutomaticAutogiroPayoutModel(with: fragment))
-            )
-        }
+        self.payoutMethod = data.availableCheckoutMethods.compactMap({
+            let id = $0.id
+            if $0.__typename == "FlowClaimAutomaticAutogiroPayout" {
+                let fragment = $0.fragments.flowClaimAutomaticAutogiroPayoutFragment
+                return AvailableCheckoutMethods(id: id, autogiro: ClaimAutomaticAutogiroPayoutModel(with: fragment))
+            }
+            return nil
+        })
+        self.selectedPayoutMethod = payoutMethod.first
     }
 
-    public func returnSingleItemCheckoutInfo() -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput {
+    public func returnSingleItemCheckoutInfo() -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput? {
+        return selectedPayoutMethod?.getCheckoutInput(forAmount: payoutAmount.amount)
 
-        let automaticAutogiroInput = OctopusGraphQL.FlowClaimAutomaticAutogiroPayoutInput(
-            amount: payoutAmount.amount
-        )
-
-        return OctopusGraphQL.FlowClaimSingleItemCheckoutInput(
-            automaticAutogiro: automaticAutogiroInput
-        )
     }
 }
 
@@ -70,7 +59,29 @@ struct ClaimFlowMoneyModel: Codable, Equatable {
 }
 
 struct AvailableCheckoutMethods: Codable, Equatable {
-    var method: ClaimAutomaticAutogiroPayoutModel?
+    var id: String
+    var autogiro: ClaimAutomaticAutogiroPayoutModel?
+
+    func getDisplayName() -> String {
+        if let autogiro {
+            return autogiro.displayName
+        }
+        return "--"
+    }
+
+    func getCheckoutInput(forAmount amount: Double) -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput? {
+        if autogiro != nil {
+            let automaticAutogiroInput = OctopusGraphQL.FlowClaimAutomaticAutogiroPayoutInput(
+                amount: amount
+            )
+
+            return OctopusGraphQL.FlowClaimSingleItemCheckoutInput(
+                automaticAutogiro: automaticAutogiroInput
+            )
+        }
+        return nil
+    }
+
 }
 
 struct ClaimAutomaticAutogiroPayoutModel: Codable, Equatable {

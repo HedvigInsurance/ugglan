@@ -336,32 +336,37 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             }
         case .claimNextSingleItemCheckout:
             send(.setLoadingState(action: action, state: .loading))
-            let claimSingleItemCheckoutInput = state.singleItemCheckoutStep!.returnSingleItemCheckoutInfo()
-            let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
-                input: claimSingleItemCheckoutInput,
-                context: newClaimContext
-            )
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .onValue { data in
-                        callback(.value(.setNewClaimContext(context: data.flowClaimSingleItemCheckoutNext.context)))
-                        data.flowClaimSingleItemCheckoutNext.fragments.flowClaimFragment.executeNextStepActions(
-                            for: action,
-                            callback: callback
-                        )
-                        callback(.value(.setLoadingState(action: action, state: nil)))
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(
-                                    action: action,
-                                    state: .error(error: L10n.General.errorBody)
+                if let claimSingleItemCheckoutInput = self.state.singleItemCheckoutStep!.returnSingleItemCheckoutInfo()
+                {
+                    let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
+                        input: claimSingleItemCheckoutInput,
+                        context: newClaimContext
+                    )
+
+                    disposeBag += self.octopus.client.perform(mutation: mutation)
+                        .onValue { data in
+                            callback(.value(.setNewClaimContext(context: data.flowClaimSingleItemCheckoutNext.context)))
+                            data.flowClaimSingleItemCheckoutNext.fragments.flowClaimFragment.executeNextStepActions(
+                                for: action,
+                                callback: callback
+                            )
+                            callback(.value(.setLoadingState(action: action, state: nil)))
+                        }
+                        .onError { error in
+                            callback(
+                                .value(
+                                    .setLoadingState(
+                                        action: action,
+                                        state: .error(error: L10n.General.errorBody)
+                                    )
                                 )
                             )
-                        )
-                    }
+                        }
+                } else {
+                    callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                }
                 return disposeBag
             }
         case .fetchCommonClaimsForSelection:
