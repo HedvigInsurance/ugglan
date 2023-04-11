@@ -43,7 +43,7 @@ struct ClaimFlowMoneyModel: Codable, Equatable {
     func getAmountWithCurrency() -> String {
         let formatter = NumberFormatter()
         formatter.groupingSeparator = ""
-        formatter.numberStyle = .decimal
+        formatter.numberStyle = .currency
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 2
         formatter.currencyCode = self.currencyCode
