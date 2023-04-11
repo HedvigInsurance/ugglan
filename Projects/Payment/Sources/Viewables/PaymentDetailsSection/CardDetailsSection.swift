@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct CardDetailsSection {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let urlScheme: String
 }
 
@@ -19,8 +19,8 @@ extension CardDetailsSection: Viewable {
 
         let section = SectionView(header: L10n.myPaymentCardRowLabel, footer: nil)
 
-        let dataSignal = client.watch(
-            query: GraphQL.ActivePaymentMethodsQuery(),
+        let dataSignal = giraffe.client.watch(
+            query: GiraffeGraphQL.ActivePaymentMethodsQuery(),
             cachePolicy: .returnCacheDataAndFetch
         )
 

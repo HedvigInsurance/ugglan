@@ -17,11 +17,11 @@ public enum ExternalRedirect {
 public class EmbarkState {
     var store = EmbarkStore()
     var edgePanGestureRecognizer: UIScreenEdgePanGestureRecognizer?
-    let storySignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
+    let storySignal = ReadWriteSignal<GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory?>(nil)
     let startPassageIDSignal = ReadWriteSignal<String?>(nil)
-    let passagesSignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
-    let currentPassageSignal = ReadWriteSignal<GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
-    let passageHistorySignal = ReadWriteSignal<[GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
+    let passagesSignal = ReadWriteSignal<[GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
+    let currentPassageSignal = ReadWriteSignal<GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage?>(nil)
+    let passageHistorySignal = ReadWriteSignal<[GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage]>([])
     let externalRedirectSignal = ReadWriteSignal<ExternalRedirect?>(nil)
     let bag = DisposeBag()
     var quoteCartId: String = ""
@@ -79,7 +79,7 @@ public class EmbarkState {
 
     func startAPIPassageHandling() {
         bag += currentPassageSignal.compactMap { $0 }
-            .mapLatestToFuture { passage -> Future<GraphQL.EmbarkLinkFragment?> in
+            .mapLatestToFuture { passage -> Future<GiraffeGraphQL.EmbarkLinkFragment?> in
                 guard let apiFragment = passage.api?.fragments.apiFragment else {
                     return Future(error: ApiError.noApi)
                 }
@@ -176,8 +176,8 @@ public class EmbarkState {
     }
 
     private func handleRedirects(
-        passage: GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
-    ) -> GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage? {
+        passage: GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage
+    ) -> GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage? {
         guard
             let passingRedirect = passage.redirects.first(where: { redirect in
                 store.shouldRedirectTo(redirect: redirect) != nil

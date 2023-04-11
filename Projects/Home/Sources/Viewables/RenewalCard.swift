@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct RenewalCard { @Inject var client: ApolloClient }
+struct RenewalCard { @Inject var giraffe: hGiraffe }
 
 extension RenewalCard: Viewable {
     func materialize(events _: ViewableEvents) -> (UIStackView, Disposable) {
@@ -24,7 +24,7 @@ extension RenewalCard: Viewable {
             }
         }
 
-        func openDocument(_ contract: GraphQL.HomeQuery.Data.Contract, viewController: UIViewController) {
+        func openDocument(_ contract: GiraffeGraphQL.HomeQuery.Data.Contract, viewController: UIViewController) {
             if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
                 let url = URL(string: draftCertificateUrl)
             {
@@ -35,7 +35,7 @@ extension RenewalCard: Viewable {
             }
         }
 
-        bag += client.watch(query: GraphQL.HomeQuery())
+        bag += giraffe.client.watch(query: GiraffeGraphQL.HomeQuery())
             .map { $0.contracts.filter { contract in contract.upcomingRenewal != nil } }
             .filter { !$0.isEmpty }
             .onValueDisposePrevious { contracts -> Disposable? in let bag = DisposeBag()

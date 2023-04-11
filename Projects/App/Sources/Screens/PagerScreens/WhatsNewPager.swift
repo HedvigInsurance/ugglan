@@ -7,29 +7,30 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct WhatsNewPager { @Inject var client: ApolloClient }
+struct WhatsNewPager { @Inject var giraffe: hGiraffe }
 
 extension WhatsNewPager: FutureConditional {
     var lastNewsSeen: String { ApplicationState.getLastNewsSeen() }
 
     func getPages() -> Future<[PagerItem]> {
-        client.fetch(
-            query: GraphQL.WhatsNewQuery(
-                locale: Localization.Locale.currentLocale.asGraphQLLocale(),
-                sinceVersion: lastNewsSeen
-            )
-        )
-        .compactMap { $0.news }
-        .map { news in
-            news.map {
-                ContentIconPagerItem(
-                    title: $0.title,
-                    paragraph: $0.paragraph,
-                    icon: $0.illustration.fragments.iconFragment
+        giraffe.client
+            .fetch(
+                query: GiraffeGraphQL.WhatsNewQuery(
+                    locale: Localization.Locale.currentLocale.asGraphQLLocale(),
+                    sinceVersion: lastNewsSeen
                 )
-                .pagerItem
+            )
+            .compactMap { $0.news }
+            .map { news in
+                news.map {
+                    ContentIconPagerItem(
+                        title: $0.title,
+                        paragraph: $0.paragraph,
+                        icon: $0.illustration.fragments.iconFragment
+                    )
+                    .pagerItem
+                }
             }
-        }
     }
 
     func condition() -> Future<Bool> {

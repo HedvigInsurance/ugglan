@@ -6,10 +6,10 @@ extension JourneyPresentation {
     /// removes back button and disables interactive poping
     public var hidesBackButton: Self {
         addConfiguration { presenter in
-            presenter.viewController.navigationItem.hidesBackButton = true
 
-            presenter.bag += presenter.viewController.view.didMoveToWindowSignal.onValue({ _ in
+            presenter.bag += presenter.viewController.view.didLayoutSignal.onValue({ _ in
                 presenter.viewController.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+                presenter.viewController.navigationItem.hidesBackButton = true
             })
         }
     }

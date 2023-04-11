@@ -24,8 +24,7 @@ public enum HomeAction: ActionProtocol {
 }
 
 public final class HomeStore: StateStore<HomeState, HomeAction> {
-    @Inject var client: ApolloClient
-    @Inject var store: ApolloStore
+    @Inject var giraffe: hGiraffe
 
     public override func effects(
         _ getState: @escaping () -> HomeState,
@@ -35,9 +34,8 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
         case .openFreeTextChat:
             return nil
         case .fetchMemberState:
-            return
-                client
-                .fetch(query: GraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
+            return giraffe.client
+                .fetch(query: GiraffeGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheData)
                 .map { data in
                     .setMemberContractState(state: .init(state: data.homeState, name: data.member.firstName))
                 }
@@ -74,7 +72,7 @@ public enum MemberContractState: String, Codable, Equatable {
     case loading
 }
 
-extension GraphQL.HomeQuery.Data {
+extension GiraffeGraphQL.HomeQuery.Data {
     fileprivate var homeState: MemberContractState {
         if isFuture {
             return .future

@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct PastPaymentsSection {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let presentingViewController: UIViewController
 }
 
@@ -19,8 +19,8 @@ extension PastPaymentsSection: Viewable {
 
         let section = SectionView(header: L10n.paymentsSubtitlePaymentHistory, footer: nil)
 
-        let dataSignal = client.watch(
-            query: GraphQL.MyPaymentQuery(
+        let dataSignal = giraffe.client.watch(
+            query: GiraffeGraphQL.MyPaymentQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             )
         )

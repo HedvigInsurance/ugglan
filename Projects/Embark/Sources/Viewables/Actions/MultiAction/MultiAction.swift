@@ -14,7 +14,7 @@ struct MultiAction {
 }
 
 extension MultiAction: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GiraffeGraphQL.EmbarkLinkFragment>) {
         let bag = DisposeBag()
 
         let layout = UICollectionViewFlowLayout()
@@ -167,7 +167,7 @@ extension MultiAction: Viewable {
     }
 }
 
-typealias MultiActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
+typealias MultiActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action.AsEmbarkMultiAction
     .MultiActionDatum
 
 typealias MultiActionRow = Either<MultiActionValueRow, MultiActionAddObjectRow>

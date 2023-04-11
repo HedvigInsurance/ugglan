@@ -1,11 +1,11 @@
 import Foundation
 
-public struct Highlight: Codable, Equatable {
+public struct Highlight: Codable, Equatable, Hashable {
     public var title: String
     public var description: String
 
     init(
-        _ data: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info.Highlight
+        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info.Highlight
     ) {
         self.title = data.title
         self.description = data.description

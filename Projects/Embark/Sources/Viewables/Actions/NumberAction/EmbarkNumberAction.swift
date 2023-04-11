@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-internal typealias EmbarkNumberActionData = GraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
+internal typealias EmbarkNumberActionData = GiraffeGraphQL.EmbarkStoryQuery.Data.EmbarkStory.Passage.Action
     .AsEmbarkNumberAction.NumberActionDatum
 
 struct EmbarkNumberAction {
@@ -43,7 +43,7 @@ struct EmbarkNumberAction {
 }
 
 extension EmbarkNumberAction: Viewable {
-    func materialize(events: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+    func materialize(events: ViewableEvents) -> (UIView, Signal<GiraffeGraphQL.EmbarkLinkFragment>) {
         let bag = DisposeBag()
 
         let view = UIStackView()

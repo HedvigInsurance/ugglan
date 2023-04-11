@@ -1,11 +1,12 @@
 import Foundation
 
-public struct InsuranceTerm: Codable, Equatable {
+public struct InsuranceTerm: Codable, Equatable, Hashable {
     public var displayName: String
     public var url: URL
 
     init?(
-        _ data: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info.InsuranceTerm
+        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info
+            .InsuranceTerm
     ) {
         guard let url = URL(string: data.url) else {
 

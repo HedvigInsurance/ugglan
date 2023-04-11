@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct BankDetailsSection {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     let urlScheme: String
 }
 
@@ -23,8 +23,8 @@ extension BankDetailsSection: Viewable {
 
         bag += section.append(row)
 
-        let dataSignal = client.watch(
-            query: GraphQL.MyPaymentQuery(
+        let dataSignal = giraffe.client.watch(
+            query: GiraffeGraphQL.MyPaymentQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             )
         )
@@ -36,14 +36,14 @@ extension BankDetailsSection: Viewable {
 
         bag += dataSignal.compactMap { $0.bankAccount?.descriptor }.bindTo(row.valueSignal)
 
-        let myPaymentQuerySignal = client.watch(
-            query: GraphQL.MyPaymentQuery(
+        let myPaymentQuerySignal = giraffe.client.watch(
+            query: GiraffeGraphQL.MyPaymentQuery(
                 locale: Localization.Locale.currentLocale.asGraphQLLocale()
             ),
             cachePolicy: .returnCacheDataAndFetch
         )
 
-        func addConnectPayment(_ data: GraphQL.MyPaymentQuery.Data) -> Disposable {
+        func addConnectPayment(_ data: GiraffeGraphQL.MyPaymentQuery.Data) -> Disposable {
             let bag = DisposeBag()
             let hasAlreadyConnected = data.payinMethodStatus != .needsSetup
             let buttonText =

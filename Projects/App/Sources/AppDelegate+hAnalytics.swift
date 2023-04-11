@@ -14,9 +14,9 @@ extension AppDelegate {
         hAnalyticsNetworking.endpointURL = {
             switch Environment.current {
             case .production:
-                return "https://hanalytics-production.herokuapp.com"
+                return "https://hanalytics.prod.hedvigit.com"
             case .custom, .staging:
-                return "https://hanalytics-staging.herokuapp.com"
+                return "https://hanalytics.dev.hedvigit.com"
             }
         }
         hAnalyticsNetworking.trackingId = { ApolloClient.getDeviceIdentifier() }

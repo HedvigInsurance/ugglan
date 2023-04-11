@@ -240,7 +240,7 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
     }
 
     init(
-        from message: GraphQL.MessageData,
+        from message: GiraffeGraphQL.MessageData,
         listSignal: ReadSignal<[ChatListContent]>?
     ) {
         globalId = message.globalId

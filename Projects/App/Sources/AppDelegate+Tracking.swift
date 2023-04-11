@@ -1,6 +1,5 @@
 import Datadog
 import DatadogCrashReporting
-import Shake
 import hCore
 import hGraphQL
 
@@ -24,8 +23,8 @@ extension AppDelegate {
                 .trackUIKitRUMActions(using: RUMUserActionsPredicate())
                 .trackUIKitRUMViews(using: RUMViewsPredicate())
                 .trackURLSession(firstPartyHosts: [
-                    Environment.production.endpointURL.host ?? "",
-                    Environment.staging.endpointURL.host ?? "",
+                    Environment.production.giraffeEndpointURL.host ?? "",
+                    Environment.staging.giraffeEndpointURL.host ?? "",
                 ])
                 .build()
         )
@@ -41,7 +40,6 @@ extension AppDelegate {
         )
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
-            Shake.setup()
             Datadog.verbosityLevel = .debug
         }
 

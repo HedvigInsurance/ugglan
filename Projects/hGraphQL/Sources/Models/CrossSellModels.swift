@@ -1,6 +1,6 @@
 import Foundation
 
-public struct CrossSellInfo: Codable, Equatable {
+public struct CrossSellInfo: Codable, Equatable, Hashable {
     public var headerImageURL: URL
     public var title: String
     public var about: String
@@ -12,7 +12,7 @@ public struct CrossSellInfo: Codable, Equatable {
 
     init(
         headerImageURL: URL,
-        _ data: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info
+        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info
     ) {
         self.title = data.displayName
         self.about = data.aboutSection
@@ -27,7 +27,7 @@ public struct CrossSellInfo: Codable, Equatable {
     }
 }
 
-public struct CrossSell: Codable, Equatable {
+public struct CrossSell: Codable, Equatable, Hashable {
     public var typeOfContract: String
     public var title: String
     public var description: String
@@ -79,7 +79,7 @@ public struct CrossSell: Codable, Equatable {
     }
 
     init?(
-        _ data: GraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell
+        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell
     ) {
         title = data.title
         description = data.description

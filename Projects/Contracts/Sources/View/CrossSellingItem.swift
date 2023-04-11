@@ -9,7 +9,7 @@ struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
     let crossSell: hGraphQL.CrossSell
 
-    func openEmbark() {
+    func openExternal() {
         if let embarkStoryName = crossSell.embarkStoryName {
             store.send(.openCrossSellingEmbark(name: embarkStoryName))
             store.send(.setFocusedCrossSell(focusedCrossSell: crossSell))
@@ -18,6 +18,10 @@ struct CrossSellingItem: View {
                 storyName: embarkStoryName
             )
             .send()
+        } else if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
+            store.send(.openCrossSellingWebUrl(url: url))
+        } else {
+            store.send(.openCrossSellingChat)
         }
     }
 
@@ -30,11 +34,11 @@ struct CrossSellingItem: View {
                 .send()
                 store.send(.openCrossSellingDetail(crossSell: crossSell))
             } else {
-                openEmbark()
+                openExternal()
             }
         } label: {
             CrossSellingCardLabel(crossSell: crossSell) {
-                openEmbark()
+                openExternal()
             }
         }
         .buttonStyle(CrossSellingCardButtonStyle(crossSell: crossSell))

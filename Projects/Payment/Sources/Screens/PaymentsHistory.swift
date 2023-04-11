@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct PaymentsHistory { @Inject var client: ApolloClient }
+struct PaymentsHistory { @Inject var giraffe: hGiraffe }
 
 extension PaymentsHistory: Presentable {
     func materialize() -> (UIViewController, Disposable) {
@@ -22,8 +22,9 @@ extension PaymentsHistory: Presentable {
         let section = form.appendSection(header: nil, footer: nil)
 
         bag +=
-            client.watch(
-                query: GraphQL.MyPaymentQuery(
+            giraffe.client
+            .watch(
+                query: GiraffeGraphQL.MyPaymentQuery(
                     locale: Localization.Locale.currentLocale.asGraphQLLocale()
                 )
             )

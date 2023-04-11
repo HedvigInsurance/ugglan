@@ -126,7 +126,7 @@ extension CoreSignal where Kind == Plain {
 }
 
 public final class AuthenticationStore: StateStore<AuthenticationState, AuthenticationAction> {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
 
     lazy var networkAuthRepository: NetworkAuthRepository = {
         NetworkAuthRepository(

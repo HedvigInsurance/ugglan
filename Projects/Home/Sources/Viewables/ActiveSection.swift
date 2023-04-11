@@ -11,7 +11,7 @@ import hCoreUI
 import hGraphQL
 
 struct ActiveSection<ClaimsContent: View, CommonClaims: View> {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     var claimsContent: ClaimsContent
     var commonClaims: CommonClaims
 }

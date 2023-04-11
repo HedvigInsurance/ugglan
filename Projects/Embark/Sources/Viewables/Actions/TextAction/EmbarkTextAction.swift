@@ -30,7 +30,7 @@ struct EmbarkTextAction {
 }
 
 extension EmbarkTextAction: Viewable {
-    func materialize(events _: ViewableEvents) -> (UIView, Signal<GraphQL.EmbarkLinkFragment>) {
+    func materialize(events _: ViewableEvents) -> (UIView, Signal<GiraffeGraphQL.EmbarkLinkFragment>) {
         let view = UIStackView()
         view.axis = .vertical
         view.spacing = 10

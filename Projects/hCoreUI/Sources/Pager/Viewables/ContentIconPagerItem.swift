@@ -9,14 +9,14 @@ import hGraphQL
 public struct ContentIconPagerItem {
     let title: String?
     let paragraph: String
-    let icon: GraphQL.IconFragment
+    let icon: GiraffeGraphQL.IconFragment
 
     public var pagerItem: PagerItem { PagerItem(id: .init(), content: AnyPresentable(self)) }
 
     public init(
         title: String?,
         paragraph: String,
-        icon: GraphQL.IconFragment
+        icon: GiraffeGraphQL.IconFragment
     ) {
         self.title = title
         self.paragraph = paragraph

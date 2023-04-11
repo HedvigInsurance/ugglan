@@ -12,7 +12,7 @@ public struct MemberDetails: Codable, Equatable, Identifiable {
     }
 
     public init?(
-        memberData: GraphQL.MemberDetailsQuery.Data.Member
+        memberData: GiraffeGraphQL.MemberDetailsQuery.Data.Member
     ) {
         guard let id = memberData.id else { return nil }
         self.id = id.description

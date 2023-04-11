@@ -31,12 +31,6 @@ extension PerilDetail: Presentable {
 
         form.append(stackView)
 
-        bag += stackView.addArranged(RemoteVectorIcon(peril.icon)) { iconView in
-            iconView.snp.makeConstraints { make in make.height.width.equalTo(80) }
-        }
-
-        bag += stackView.addArranged(Spacing(height: 20))
-
         bag += stackView.addArranged(
             MultilineLabel(value: peril.title, style: .brand(.title1(color: .primary)).centerAligned)
         )

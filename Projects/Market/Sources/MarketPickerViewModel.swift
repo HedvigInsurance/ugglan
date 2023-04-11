@@ -7,7 +7,7 @@ import hCore
 import hGraphQL
 
 public class MarketPickerViewModel: ObservableObject {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false
@@ -15,9 +15,9 @@ public class MarketPickerViewModel: ObservableObject {
     let bag = DisposeBag()
 
     func fetchMarketingImage() {
-        bag +=
-            client.fetch(
-                query: GraphQL.MarketingImagesQuery()
+        bag += giraffe.client
+            .fetch(
+                query: GiraffeGraphQL.MarketingImagesQuery()
             )
             .compactMap {
                 $0.appMarketingImages
@@ -39,7 +39,11 @@ public class MarketPickerViewModel: ObservableObject {
         let store: MarketStore = globalPresentableStoreContainer.get()
         let innerBag = bag.innerBag()
 
-        bag += client.fetch(query: GraphQL.GeoQuery(), queue: .global(qos: .background))
+        bag += giraffe.client
+            .fetch(
+                query: GiraffeGraphQL.GeoQuery(),
+                queue: .global(qos: .background)
+            )
             .valueSignal
             .map { $0.geo.countryIsoCode.lowercased() }
             .map { code -> Market in

@@ -197,12 +197,13 @@ import hGraphQL
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
-        setupSession()
 
         hGraphQL.log = Logger.builder
             .sendNetworkInfo(true)
             .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
             .build()
+
+        setupSession()
 
         log.info("Starting app")
 
@@ -304,10 +305,10 @@ import hGraphQL
 
 extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
-        Self.initClient()
-            .onValue { store, client in
-                Dependencies.shared.add(module: Module { store })
-                Dependencies.shared.add(module: Module { client })
+        Self.initClients()
+            .onValue { hApollo in
+                Dependencies.shared.add(module: Module { hApollo.giraffe })
+                Dependencies.shared.add(module: Module { hApollo.octopus })
             }
             .toVoid()
     }

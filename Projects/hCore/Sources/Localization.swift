@@ -46,7 +46,7 @@ public enum Localization {
                 }
             }
 
-            public var graphQL: GraphQL.Market {
+            public var graphQL: GiraffeGraphQL.Market {
                 switch self {
                 case .dk:
                     return .denmark
@@ -141,7 +141,7 @@ public enum Localization {
 }
 
 extension Localization.Locale {
-    public func asGraphQLLocale() -> hGraphQL.GraphQL.Locale {
+    public func asGraphQLLocale() -> hGraphQL.GiraffeGraphQL.Locale {
         switch self {
         case .sv_SE: return .svSe
         case .en_SE: return .enSe

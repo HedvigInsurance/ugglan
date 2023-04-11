@@ -57,7 +57,7 @@ public enum ClaimsOrigin: Codable, Equatable {
 }
 
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
-    @Inject var client: ApolloClient
+    @Inject var giraffe: hGiraffe
     @Inject var store: ApolloStore
 
     public override func effects(
@@ -68,10 +68,12 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case .openFreeTextChat:
             return nil
         case .fetchClaims:
-            return
-                client
+            return giraffe
+                .client
                 .fetch(
-                    query: GraphQL.ClaimStatusCardsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale()),
+                    query: GiraffeGraphQL.ClaimStatusCardsQuery(
+                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                    ),
                     cachePolicy: .fetchIgnoringCacheData
                 )
                 .compactMap {
@@ -83,8 +85,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 .valueThenEndSignal
         case .fetchCommonClaims:
             return
-                client.fetch(
-                    query: GraphQL.CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                giraffe.client
+                .fetch(
+                    query: GiraffeGraphQL.CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                 )
                 .map { data in
                     let commonClaims = data.commonClaims.map {
