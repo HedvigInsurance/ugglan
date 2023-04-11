@@ -7,7 +7,7 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     let depreciation: ClaimFlowMoneyModel
     let payoutAmount: ClaimFlowMoneyModel
     let price: ClaimFlowMoneyModel
-    var payoutMethod: [ClaimAutomaticAutogiroPayoutModel] = []
+    var payoutMethod: [AvailableCheckoutMethods] = []
 
     init(
         with data: OctopusGraphQL.FlowClaimSingleItemCheckoutStepFragment
@@ -28,7 +28,9 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
                 amount: amount,
                 displayName: element.displayName
             )
-            self.payoutMethod.append(ClaimAutomaticAutogiroPayoutModel(with: fragment))
+            self.payoutMethod.append(
+                AvailableCheckoutMethods(method: ClaimAutomaticAutogiroPayoutModel(with: fragment))
+            )
         }
     }
 
@@ -54,6 +56,10 @@ struct ClaimFlowMoneyModel: Codable, Equatable {
         self.amount = data.amount
         self.currencyCode = data.currencyCode.rawValue
     }
+}
+
+struct AvailableCheckoutMethods: Codable, Equatable {
+    var method: ClaimAutomaticAutogiroPayoutModel?
 }
 
 struct ClaimAutomaticAutogiroPayoutModel: Codable, Equatable {
