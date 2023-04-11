@@ -53,7 +53,7 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                 ) { singleItemCheckoutStep in
                     if checkIfNotDecimal(value: singleItemCheckoutStep?.price.amount ?? 0) {
                         hText(
-                            formatDoubleWithoutDecimal(value: singleItemCheckoutStep?.price.amount ?? 0.0) + " "
+                            formatDoubleWithoutDecimal(value: singleItemCheckoutStep?.payoutAmount.amount ?? 0.0) + " "
                                 + (singleItemCheckoutStep?.price.currencyCode ?? ""),
                             style: .title1
                         )
