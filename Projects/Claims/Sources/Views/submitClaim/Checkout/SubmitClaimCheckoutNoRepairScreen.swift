@@ -27,21 +27,9 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 .sectionContainerStyle(.transparent)
 
                 hSection {
-                    hRow {
-                        hText(L10n.Claims.Payout.Method.autogiro, style: .headline)
-                            .foregroundColor(hLabelColor.primary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.bottom, 4)
-
-                    }
-                    .frame(height: 64)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(hBackgroundColor.tertiary)
-                    .cornerRadius(.defaultCornerRadius)
-
+                    displayPaymentMethodField(checkoutStep: singleItemCheckoutStep)
                 }
                 .withHeader {
-
                     HStack(spacing: 0) {
                         hText(L10n.Claims.Payout.Summary.method, style: .title3)
                             .foregroundColor(hLabelColor.primary)
@@ -100,6 +88,25 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
         }
         .padding([.leading, .trailing], -20)
+    }
+
+    @ViewBuilder
+
+    func displayPaymentMethodField(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
+        hRow {
+            if let method = checkoutStep?.payoutMethod {
+                ForEach(method, id: \.id) { element in
+                    hText(element.displayName, style: .headline)
+                        .foregroundColor(hLabelColor.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.bottom, 4)
+                }
+            }
+        }
+        .frame(height: 64)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(hBackgroundColor.tertiary)
+        .cornerRadius(.defaultCornerRadius)
     }
 
     func checkIfNotDecimal(value: Double) -> Bool {

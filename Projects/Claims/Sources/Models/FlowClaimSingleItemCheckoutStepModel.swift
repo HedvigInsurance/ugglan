@@ -7,6 +7,8 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     let depreciation: ClaimFlowMoneyModel
     let payoutAmount: ClaimFlowMoneyModel
     let price: ClaimFlowMoneyModel
+    var payoutMethod: [ClaimAutomaticAutogiroPayoutModel] = []
+
     init(
         with data: OctopusGraphQL.FlowClaimSingleItemCheckoutStepFragment
     ) {
@@ -15,6 +17,19 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
         self.depreciation = .init(with: data.depreciation.fragments.moneyFragment)
         self.payoutAmount = .init(with: data.payoutAmount.fragments.moneyFragment)
         self.price = .init(with: data.price.fragments.moneyFragment)
+
+        for element in data.availableCheckoutMethods {
+            let amount = OctopusGraphQL.FlowClaimAutomaticAutogiroPayoutFragment.Amount(
+                amount: element.amount.fragments.moneyFragment.amount,
+                currencyCode: element.amount.fragments.moneyFragment.currencyCode
+            )
+            let fragment = OctopusGraphQL.FlowClaimAutomaticAutogiroPayoutFragment(
+                id: element.id,
+                amount: amount,
+                displayName: element.displayName
+            )
+            self.payoutMethod.append(ClaimAutomaticAutogiroPayoutModel(with: fragment))
+        }
     }
 
     public func returnSingleItemCheckoutInfo() -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput {
@@ -38,5 +53,19 @@ struct ClaimFlowMoneyModel: Codable, Equatable {
     ) {
         self.amount = data.amount
         self.currencyCode = data.currencyCode.rawValue
+    }
+}
+
+struct ClaimAutomaticAutogiroPayoutModel: Codable, Equatable {
+    let id: String
+    let amount: ClaimFlowMoneyModel
+    let displayName: String
+
+    init(
+        with data: OctopusGraphQL.FlowClaimAutomaticAutogiroPayoutFragment
+    ) {
+        self.id = data.id
+        self.displayName = data.displayName
+        self.amount = .init(with: data.amount.fragments.moneyFragment)
     }
 }
