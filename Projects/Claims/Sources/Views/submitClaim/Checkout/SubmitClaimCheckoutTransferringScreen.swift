@@ -151,7 +151,7 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 40, height: 40)
-                hText(L10n.somethingWentWrong, style: .title1)
+                hText(L10n.HomeTab.errorTitle, style: .title1)
                     .foregroundColor(hLabelColor.primary)
                 hText(error, style: .footnote)
                     .multilineTextAlignment(.center)

@@ -15,12 +15,12 @@ public struct ClaimFailureScreen: View {
                 .padding(.leading, 16)
                 .padding([.bottom, .top], 4)
 
-            hText(L10n.terminationNotSuccessfulTitle, style: .title2)
+            hText(L10n.HomeTab.errorTitle, style: .title2)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 16)
                 .padding(.bottom, 4)
 
-            hText(L10n.somethingWentWrong, style: .body)
+            hText(L10n.HomeTab.errorBody, style: .body)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 16)
         }
@@ -40,7 +40,7 @@ public struct ClaimFailureScreen: View {
                     store.send(.dissmissNewClaimFlow)
                     store.send(.openFreeTextChat)
                 } content: {
-                    hText(L10n.MovingUwFailure.buttonText, style: .body)
+                    hText(L10n.openChat, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
                 }
             }
