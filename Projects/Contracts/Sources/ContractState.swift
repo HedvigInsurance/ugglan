@@ -22,6 +22,7 @@ public struct ContractState: StateProtocol {
     var terminationDeleteStep: TerminationFlowDeletionNextModel?
     var successStep: TerminationFlowSuccessNextModel?
     var failedStep: TerminationFlowFailedNextModel?
+    var loadingStates: [ContractAction: LoadingState<String>] = [:]
 
     func contractForId(_ id: String) -> Contract? {
         if let inBundleContract = contractBundles.flatMap({ $0.contracts })
@@ -48,7 +49,7 @@ extension ContractState {
     }
 }
 
-public enum LoadingState<T>: Codable & Equatable where T: Codable & Equatable {
+public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & Equatable & Hashable {
     case loading
     case error(error: T)
 }
