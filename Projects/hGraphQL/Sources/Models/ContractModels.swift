@@ -229,7 +229,6 @@ public struct Contract: Codable, Hashable, Equatable {
                 error: nil,
                 attributes: nil
             )
-
             return .unknown
         }
     }
