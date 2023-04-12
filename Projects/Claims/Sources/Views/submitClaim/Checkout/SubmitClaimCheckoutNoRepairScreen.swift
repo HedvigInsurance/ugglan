@@ -4,6 +4,7 @@ import hCoreUI
 
 public struct SubmitClaimCheckoutNoRepairScreen: View {
     @PresentableStore var store: ClaimsStore
+    @State var selectedMethods: [String] = []
 
     public init() {}
 
@@ -98,20 +99,53 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
     @ViewBuilder
 
     func displayPaymentMethodField(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
-        hRow {
-            if let payoutMethods = checkoutStep?.payoutMethod {
+
+        if let payoutMethods = checkoutStep?.payoutMethod {
+
+            if payoutMethods.count == 1 {
                 ForEach(payoutMethods, id: \.id) { element in
-                    hText(element.getDisplayName(), style: .headline)
-                        .foregroundColor(hLabelColor.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, 4)
+                    hRow {
+                        hText(element.getDisplayName(), style: .headline)
+                            .foregroundColor(hLabelColor.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.bottom, 4)
+                    }
+                    .frame(height: 64)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(hBackgroundColor.tertiary)
+                    .cornerRadius(.defaultCornerRadius)
+                }
+            } else if payoutMethods.count > 1 {
+                ForEach(payoutMethods, id: \.id) { element in
+                    hRow {
+                        hText(element.getDisplayName(), style: .headline)
+                            .foregroundColor(hLabelColor.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.bottom, 4)
+                    }
+
+                    .withSelectedAccessory(selectedMethods.contains(element.id))
+
+                    .onTapGesture {
+                        let methodId = element.id
+                        withAnimation {
+                            if !selectedMethods.contains(methodId) {
+                                selectedMethods = []
+                                selectedMethods.append(methodId)
+                            } else {
+                                if let index = selectedMethods.firstIndex(of: methodId) {
+                                    selectedMethods.remove(at: index)
+                                }
+                            }
+                        }
+                    }
+                    .background(hBackgroundColor.tertiary)
+                    .cornerRadius(.defaultCornerRadius)
+                    .border(.blue)
+                    .padding(.bottom, 8)
                 }
             }
         }
-        .frame(height: 64)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(hBackgroundColor.tertiary)
-        .cornerRadius(.defaultCornerRadius)
     }
 
     func checkIfNotDecimal(value: Double) -> Bool {

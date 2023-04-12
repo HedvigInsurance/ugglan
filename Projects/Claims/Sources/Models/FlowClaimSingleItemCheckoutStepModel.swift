@@ -81,7 +81,6 @@ struct AvailableCheckoutMethods: Codable, Equatable {
         }
         return nil
     }
-
 }
 
 struct ClaimAutomaticAutogiroPayoutModel: Codable, Equatable {
