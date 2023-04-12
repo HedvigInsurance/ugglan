@@ -160,19 +160,48 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
             } content: {
                 hText(L10n.openChat)
             }
+            .padding([.leading, .trailing], 16)
+            .cornerRadius(.defaultCornerRadius)
             HStack {
-                hButton.LargeButtonText {
+
+                Button {
                     store.send(.dissmissNewClaimFlow)
-                } content: {
-                    hText(L10n.generalCloseButton)
+                } label: {
+                    HStack {
+                        hText(L10n.generalCloseButton)
+                            .foregroundColor(hLabelColor.primary)
+                            .padding(16)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .cornerRadius(.defaultCornerRadius)
+                    .overlay(
+                        RoundedRectangle(
+                            cornerRadius: .defaultCornerRadius
+                        )
+                        .stroke(hLabelColor.primary, lineWidth: 1)
+                    )
                 }
 
-                hButton.LargeButtonText {
+                Button {
                     store.send(.claimNextSingleItemCheckout)
-                } content: {
-                    hText(L10n.generalRetry)
+                } label: {
+                    HStack {
+                        hText(L10n.generalRetry)
+                            .foregroundColor(hLabelColor.primary)
+                            .padding(16)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .cornerRadius(.defaultCornerRadius)
+                    .overlay(
+                        RoundedRectangle(
+                            cornerRadius: .defaultCornerRadius
+                        )
+                        .stroke(hLabelColor.primary, lineWidth: 1)
+                    )
                 }
             }
+            .padding([.leading, .trailing], 16)
+
         }
         .opacity(errorAnimation ? 1 : 0)
         .disabled(!errorAnimation)
