@@ -36,8 +36,9 @@ extension ProfileSection: Viewable {
             let myPaymentRow = MyPaymentRow(presentingViewController: presentingViewController)
             bag += section.append(myPaymentRow)
 
-            bag += dataSignal.atOnce().map { $0?.insuranceCost?.fragments.costFragment.monthlyNet.amount }
-                .toInt().bindTo(myPaymentRow.monthlyCostSignal)
+            bag += dataSignal.atOnce().map {
+                $0?.chargeEstimation.subscription.fragments.monetaryAmountFragment.monetaryAmount.formattedAmountWithoutSymbol
+            }.bindTo(myPaymentRow.monthlyCostSignal)
         }
 
         return (section, bag)
