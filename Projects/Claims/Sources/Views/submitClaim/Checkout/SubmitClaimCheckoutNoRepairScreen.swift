@@ -63,7 +63,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding([.leading, .trailing], 16)
-
             }
         }
     }
@@ -88,49 +87,14 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
 
-                if checkIfNotDecimal(value: model?.amount ?? 0) {
-
-                    hText(
-                        prefix + formatDoubleWithoutDecimal(value: model?.amount ?? 0) + " "
-                            + String(model?.currencyCode ?? "")
-                    )
-                    .foregroundColor(hLabelColor.secondary)
-                } else {
-                    hText(
-                        prefix + formatDoubleWithDecimal(value: model?.amount ?? 0) + " "
-                            + String(model?.currencyCode ?? "")
-                    )
-                    .foregroundColor(hLabelColor.secondary)
-                }
+                hText(
+                    prefix + (model?.formatAndPrintDouble(value: model?.amount ?? 0) ?? "") + " "
+                        + String(model?.currencyCode ?? "")
+                )
+                .foregroundColor(hLabelColor.secondary)
             }
         }
         .padding([.leading, .trailing], -20)
-    }
-
-    func checkIfNotDecimal(value: Double) -> Bool {
-        if value.truncatingRemainder(dividingBy: 1) == 0 {
-            return true
-        }
-        return false
-    }
-
-    func formatDoubleWithoutDecimal(value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.groupingSeparator = " "
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 0
-        return formatter.string(for: value) ?? ""
-    }
-
-    func formatDoubleWithDecimal(value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.groupingSeparator = " "
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 1
-        formatter.maximumFractionDigits = 2
-        formatter.decimalSeparator = "."
-        return formatter.string(for: value) ?? ""
     }
 }
 
