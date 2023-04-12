@@ -469,6 +469,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.failedStep = nil
             newState.audioRecordingStep = nil
             newState.currentClaimContext = nil
+        case let .setPayoutMethod(method):
+            newState.singleItemCheckoutStep?.selectedPayoutMethod = method
         default:
             break
         }

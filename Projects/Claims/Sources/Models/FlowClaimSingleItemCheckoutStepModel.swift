@@ -7,8 +7,9 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     let depreciation: ClaimFlowMoneyModel
     let payoutAmount: ClaimFlowMoneyModel
     let price: ClaimFlowMoneyModel
-    let payoutMethod: [AvailableCheckoutMethods]
-    var selectedPayoutMethod: AvailableCheckoutMethods?
+    let payoutMethods: [AvailableCheckoutMethod]
+    var selectedPayoutMethod: AvailableCheckoutMethod?
+
     init(
         with data: OctopusGraphQL.FlowClaimSingleItemCheckoutStepFragment
     ) {
@@ -18,15 +19,15 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
         self.payoutAmount = .init(with: data.payoutAmount.fragments.moneyFragment)
         self.price = .init(with: data.price.fragments.moneyFragment)
 
-        self.payoutMethod = data.availableCheckoutMethods.compactMap({
+        self.payoutMethods = data.availableCheckoutMethods.compactMap({
             let id = $0.id
             if $0.__typename == "FlowClaimAutomaticAutogiroPayout" {
                 let fragment = $0.fragments.flowClaimAutomaticAutogiroPayoutFragment
-                return AvailableCheckoutMethods(id: id, autogiro: ClaimAutomaticAutogiroPayoutModel(with: fragment))
+                return AvailableCheckoutMethod(id: id, autogiro: ClaimAutomaticAutogiroPayoutModel(with: fragment))
             }
             return nil
         })
-        self.selectedPayoutMethod = payoutMethod.first
+        self.selectedPayoutMethod = payoutMethods.first
     }
 
     public func returnSingleItemCheckoutInfo() -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput? {
@@ -58,9 +59,17 @@ struct ClaimFlowMoneyModel: Codable, Equatable {
     }
 }
 
-struct AvailableCheckoutMethods: Codable, Equatable {
+public struct AvailableCheckoutMethod: Codable, Equatable {
     var id: String
     var autogiro: ClaimAutomaticAutogiroPayoutModel?
+
+    init(
+        id: String,
+        autogiro: ClaimAutomaticAutogiroPayoutModel? = nil
+    ) {
+        self.id = id
+        self.autogiro = autogiro
+    }
 
     func getDisplayName() -> String {
         if let autogiro {

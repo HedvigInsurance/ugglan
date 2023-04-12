@@ -4,7 +4,6 @@ import hCoreUI
 
 public struct SubmitClaimCheckoutNoRepairScreen: View {
     @PresentableStore var store: ClaimsStore
-    @State var selectedMethods: [String] = []
 
     public init() {}
 
@@ -36,6 +35,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     .padding(.top, 50)
                     .padding(.bottom, 10)
                 }
+                .sectionContainerStyle(.transparent)
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
@@ -55,6 +55,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
 
             }
         }
+        .presentableStoreLensAnimation(.spring())
     }
 
     @ViewBuilder
@@ -100,50 +101,25 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
 
     func displayPaymentMethodField(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
 
-        if let payoutMethods = checkoutStep?.payoutMethod {
-
-            if payoutMethods.count == 1 {
-                ForEach(payoutMethods, id: \.id) { element in
-                    hRow {
-                        hText(element.getDisplayName(), style: .headline)
-                            .foregroundColor(hLabelColor.primary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.bottom, 4)
-                    }
-                    .frame(height: 64)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(hBackgroundColor.tertiary)
-                    .cornerRadius(.defaultCornerRadius)
+        if let checkoutStep = checkoutStep {
+            let payoutMethods = checkoutStep.payoutMethods
+            let shouldShowCheckmark = payoutMethods.count > 1
+            ForEach(payoutMethods, id: \.id) { element in
+                hRow {
+                    hText(element.getDisplayName(), style: .headline)
+                        .foregroundColor(hLabelColor.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.bottom, 4)
                 }
-            } else if payoutMethods.count > 1 {
-                ForEach(payoutMethods, id: \.id) { element in
-                    hRow {
-                        hText(element.getDisplayName(), style: .headline)
-                            .foregroundColor(hLabelColor.primary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.bottom, 4)
+                .withSelectedAccessory(checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark)
+                .onTapGesture {
+                    withAnimation {
+                        store.send(.setPayoutMethod(method: element))
                     }
-
-                    .withSelectedAccessory(selectedMethods.contains(element.id))
-
-                    .onTapGesture {
-                        let methodId = element.id
-                        withAnimation {
-                            if !selectedMethods.contains(methodId) {
-                                selectedMethods = []
-                                selectedMethods.append(methodId)
-                            } else {
-                                if let index = selectedMethods.firstIndex(of: methodId) {
-                                    selectedMethods.remove(at: index)
-                                }
-                            }
-                        }
-                    }
-                    .background(hBackgroundColor.tertiary)
-                    .cornerRadius(.defaultCornerRadius)
-                    .border(.blue)
-                    .padding(.bottom, 8)
                 }
+                .background(hBackgroundColor.tertiary)
+                .cornerRadius(.defaultCornerRadius)
+                .padding(.bottom, 8)
             }
         }
     }
