@@ -25,21 +25,9 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 .sectionContainerStyle(.transparent)
 
                 hSection {
-                    hRow {
-                        hText(L10n.Claims.Payout.Method.autogiro, style: .headline)
-                            .foregroundColor(hLabelColor.primary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.bottom, 4)
-
-                    }
-                    .frame(height: 64)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(hBackgroundColor.tertiary)
-                    .cornerRadius(.defaultCornerRadius)
-
+                    displayPaymentMethodField(checkoutStep: singleItemCheckoutStep)
                 }
                 .withHeader {
-
                     HStack(spacing: 0) {
                         hText(L10n.Claims.Payout.Summary.method, style: .title3)
                             .foregroundColor(hLabelColor.primary)
@@ -47,6 +35,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     .padding(.top, 50)
                     .padding(.bottom, 10)
                 }
+                .sectionContainerStyle(.transparent)
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
@@ -66,6 +55,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
 
             }
         }
+        .presentableStoreLensAnimation(.spring())
     }
 
     @ViewBuilder
@@ -105,6 +95,33 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
         }
         .padding([.leading, .trailing], -20)
+    }
+
+    @ViewBuilder
+
+    func displayPaymentMethodField(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
+
+        if let checkoutStep = checkoutStep {
+            let payoutMethods = checkoutStep.payoutMethods
+            let shouldShowCheckmark = payoutMethods.count > 1
+            ForEach(payoutMethods, id: \.id) { element in
+                hRow {
+                    hText(element.getDisplayName(), style: .headline)
+                        .foregroundColor(hLabelColor.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.bottom, 4)
+                }
+                .withSelectedAccessory(checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark)
+                .onTapGesture {
+                    withAnimation {
+                        store.send(.setPayoutMethod(method: element))
+                    }
+                }
+                .background(hBackgroundColor.tertiary)
+                .cornerRadius(.defaultCornerRadius)
+                .padding(.bottom, 8)
+            }
+        }
     }
 
     func checkIfNotDecimal(value: Double) -> Bool {

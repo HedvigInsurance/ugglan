@@ -79,6 +79,7 @@ fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutS
         ...MoneyFragment
     }
     availableCheckoutMethods {
+        id
         ...FlowClaimAutomaticAutogiroPayoutFragment
     }
 }

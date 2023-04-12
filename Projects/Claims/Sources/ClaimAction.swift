@@ -56,6 +56,7 @@ public indirect enum ClaimsAction: ActionProtocol {
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
     case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
     case setNewClaimContext(context: String)
+    case setPayoutMethod(method: AvailableCheckoutMethod)
     case didAcceptHonestyPledge
 
     case navigationAction(action: ClaimsNavigationAction)
