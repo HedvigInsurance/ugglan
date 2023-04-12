@@ -1,6 +1,7 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct SubmitClaimCheckoutNoRepairScreen: View {
     @PresentableStore var store: ClaimsStore
@@ -44,7 +45,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 } content: {
                     hText(
                         L10n.Claims.Payout.Button.label(
-                            singleItemCheckoutStep?.payoutAmount.getAmountWithCurrency() ?? ""
+                            singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""
                         ),
                         style: .body
                     )
@@ -52,7 +53,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding([.leading, .trailing], 16)
-
             }
         }
         .presentableStoreLensAnimation(.spring())
@@ -62,36 +62,26 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
     func displayPriceFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
         displayField(withTitle: L10n.Claims.Payout.Purchase.price, andFor: checkoutStep?.price)
         Divider()
-        displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation, prefix: "- ")
+        displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation.negative)
         Divider()
-        displayField(withTitle: L10n.Claims.Payout.Age.deductable, andFor: checkoutStep?.deductible, prefix: "- ")
+        displayField(withTitle: L10n.Claims.Payout.Age.deductable, andFor: checkoutStep?.deductible.negative)
         Divider()
         displayField(withTitle: L10n.Claims.Payout.total, andFor: checkoutStep?.payoutAmount)
             .foregroundColor(hLabelColor.primary)
     }
 
     @ViewBuilder
-    func displayField(withTitle title: String, andFor model: ClaimFlowMoneyModel?, prefix: String = "") -> some View {
+    func displayField(withTitle title: String, andFor model: MonetaryAmount?) -> some View {
         hRow {
             HStack {
                 hText(title)
                     .foregroundColor(hLabelColor.primary)
                 Spacer()
 
-                if checkIfNotDecimal(value: model?.amount ?? 0) {
-
-                    hText(
-                        prefix + formatDoubleWithoutDecimal(value: model?.amount ?? 0) + " "
-                            + String(model?.currencyCode ?? "")
-                    )
-                    .foregroundColor(hLabelColor.secondary)
-                } else {
-                    hText(
-                        prefix + formatDoubleWithDecimal(value: model?.amount ?? 0) + " "
-                            + String(model?.currencyCode ?? "")
-                    )
-                    .foregroundColor(hLabelColor.secondary)
-                }
+                hText(
+                    model?.formattedAmount ?? ""
+                )
+                .foregroundColor(hLabelColor.secondary)
             }
         }
         .padding([.leading, .trailing], -20)

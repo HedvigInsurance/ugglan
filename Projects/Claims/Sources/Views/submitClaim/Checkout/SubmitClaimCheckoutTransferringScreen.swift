@@ -51,28 +51,16 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                         state.singleItemCheckoutStep
                     }
                 ) { singleItemCheckoutStep in
-                    if checkIfNotDecimal(value: singleItemCheckoutStep?.price.amount ?? 0) {
-                        hText(
-                            formatDoubleWithoutDecimal(value: singleItemCheckoutStep?.payoutAmount.amount ?? 0.0) + " "
-                                + (singleItemCheckoutStep?.price.currencyCode ?? ""),
-                            style: .title1
-                        )
-                        .foregroundColor(hLabelColor.primary)
 
-                    } else {
-                        hText(
-                            formatDoubleWithDecimal(value: singleItemCheckoutStep?.payoutAmount.amount ?? 0)
-                                + " "
-                                + (singleItemCheckoutStep?.payoutAmount.currencyCode ?? ""),
-                            style: .title1
-                        )
-                        .foregroundColor(hLabelColor.primary)
-                    }
+                    hText(
+                        (singleItemCheckoutStep?.price.formattedAmount ?? ""),
+                        style: .title1
+                    )
+                    .foregroundColor(hLabelColor.primary)
                 }
                 hText(L10n.Claims.Payout.Success.message, style: .footnote)
                     .foregroundColor(hLabelColor.primary)
                     .matchedGeometryEffect(id: "titleLabel", in: animation)
-
             }
             .scaleEffect(
                 x: successAnimation ? 1 : 0.3,
@@ -203,33 +191,6 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                 }
             }
         }
-
-    }
-
-    func checkIfNotDecimal(value: Double) -> Bool {
-        if value.truncatingRemainder(dividingBy: 1) == 0 {
-            return true
-        }
-        return false
-    }
-
-    func formatDoubleWithoutDecimal(value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.groupingSeparator = " "
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 0
-        return formatter.string(for: value) ?? ""
-    }
-
-    func formatDoubleWithDecimal(value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.groupingSeparator = " "
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 1
-        formatter.maximumFractionDigits = 2
-        formatter.decimalSeparator = "."
-        return formatter.string(for: value) ?? ""
     }
 }
 

@@ -1,12 +1,13 @@
 import Foundation
+import hCore
 import hGraphQL
 
 public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     let id: String
-    let deductible: ClaimFlowMoneyModel
-    let depreciation: ClaimFlowMoneyModel
-    let payoutAmount: ClaimFlowMoneyModel
-    let price: ClaimFlowMoneyModel
+    let deductible: MonetaryAmount
+    let depreciation: MonetaryAmount
+    let payoutAmount: MonetaryAmount
+    let price: MonetaryAmount
     let payoutMethods: [AvailableCheckoutMethod]
     var selectedPayoutMethod: AvailableCheckoutMethod?
 
@@ -14,10 +15,10 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
         with data: OctopusGraphQL.FlowClaimSingleItemCheckoutStepFragment
     ) {
         self.id = data.id
-        self.deductible = .init(with: data.deductible.fragments.moneyFragment)
-        self.depreciation = .init(with: data.depreciation.fragments.moneyFragment)
-        self.payoutAmount = .init(with: data.payoutAmount.fragments.moneyFragment)
-        self.price = .init(with: data.price.fragments.moneyFragment)
+        self.deductible = .init(fragment: data.deductible.fragments.moneyFragment)
+        self.depreciation = .init(fragment: data.depreciation.fragments.moneyFragment)
+        self.payoutAmount = .init(fragment: data.payoutAmount.fragments.moneyFragment)
+        self.price = .init(fragment: data.price.fragments.moneyFragment)
 
         self.payoutMethods = data.availableCheckoutMethods.compactMap({
             let id = $0.id
@@ -31,31 +32,7 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     }
 
     public func returnSingleItemCheckoutInfo() -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput? {
-        return selectedPayoutMethod?.getCheckoutInput(forAmount: payoutAmount.amount)
-
-    }
-}
-
-struct ClaimFlowMoneyModel: Codable, Equatable {
-    let amount: Double
-    let currencyCode: String
-
-    init(
-        with data: OctopusGraphQL.MoneyFragment
-    ) {
-        self.amount = data.amount
-        self.currencyCode = data.currencyCode.rawValue
-    }
-
-    func getAmountWithCurrency() -> String {
-        let formatter = NumberFormatter()
-        formatter.groupingSeparator = ""
-        formatter.numberStyle = .currency
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 2
-        formatter.currencyCode = self.currencyCode
-        formatter.currencySymbol = self.currencyCode
-        return formatter.string(for: amount) ?? ""
+        return selectedPayoutMethod?.getCheckoutInput(forAmount: Double(payoutAmount.floatAmount))
     }
 }
 
@@ -94,7 +71,7 @@ public struct AvailableCheckoutMethod: Codable, Equatable {
 
 struct ClaimAutomaticAutogiroPayoutModel: Codable, Equatable {
     let id: String
-    let amount: ClaimFlowMoneyModel
+    let amount: MonetaryAmount
     let displayName: String
 
     init(
@@ -102,6 +79,6 @@ struct ClaimAutomaticAutogiroPayoutModel: Codable, Equatable {
     ) {
         self.id = data.id
         self.displayName = data.displayName
-        self.amount = .init(with: data.amount.fragments.moneyFragment)
+        self.amount = .init(fragment: data.amount.fragments.moneyFragment)
     }
 }
