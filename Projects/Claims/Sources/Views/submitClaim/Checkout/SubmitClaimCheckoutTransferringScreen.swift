@@ -191,8 +191,7 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
     @ViewBuilder
     func displayFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
         hText(
-            (checkoutStep?.price.formatAndPrintDouble(value: checkoutStep?.payoutAmount.amount ?? 0.0) ?? "") + " "
-                + (checkoutStep?.payoutAmount.currencyCode ?? ""),
+            (checkoutStep?.price.getAmountWithCurrency() ?? ""),
             style: .title1
         )
         .foregroundColor(hLabelColor.primary)

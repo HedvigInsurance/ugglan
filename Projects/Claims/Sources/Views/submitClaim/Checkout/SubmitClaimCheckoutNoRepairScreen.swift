@@ -88,8 +88,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 Spacer()
 
                 hText(
-                    prefix + (model?.formatAndPrintDouble(value: model?.amount ?? 0) ?? "") + " "
-                        + String(model?.currencyCode ?? "")
+                    prefix + (model?.getAmountWithCurrency() ?? "")
                 )
                 .foregroundColor(hLabelColor.secondary)
             }

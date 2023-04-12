@@ -42,28 +42,11 @@ struct ClaimFlowMoneyModel: Codable, Equatable {
 
     func getAmountWithCurrency() -> String {
         let formatter = NumberFormatter()
-        formatter.groupingSeparator = ""
         formatter.numberStyle = .currency
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 2
         formatter.currencyCode = self.currencyCode
         formatter.currencySymbol = self.currencyCode
         return formatter.string(for: amount) ?? ""
-    }
-
-    func formatAndPrintDouble(value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.groupingSeparator = " "
-        formatter.numberStyle = .decimal
-
-        if value.truncatingRemainder(dividingBy: 1) == 0 {
-            formatter.minimumFractionDigits = 0
-            formatter.maximumFractionDigits = 0
-        } else {
-            formatter.minimumFractionDigits = 1
-            formatter.maximumFractionDigits = 2
-            formatter.decimalSeparator = "."
-        }
-        return formatter.string(for: value) ?? ""
     }
 }
