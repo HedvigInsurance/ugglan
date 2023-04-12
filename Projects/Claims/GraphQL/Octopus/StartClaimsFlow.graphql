@@ -144,12 +144,6 @@ fragment FlowTerminationSuccessStepFragment on FlowTerminationSuccessStep {
     surveyUrl
 }
 
-fragment MoneyFragment on Money {
-    amount
-    currencyCode
-}
-
-
 fragment FlowClaimAutomaticAutogiroPayoutFragment on FlowClaimAutomaticAutogiroPayout {
     id
     amount{

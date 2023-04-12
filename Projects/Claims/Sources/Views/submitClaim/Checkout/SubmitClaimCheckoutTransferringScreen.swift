@@ -51,7 +51,12 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                         state.singleItemCheckoutStep
                     }
                 ) { singleItemCheckoutStep in
-                    displayFields(checkoutStep: singleItemCheckoutStep)
+
+                    hText(
+                        (singleItemCheckoutStep?.price.formattedAmount ?? ""),
+                        style: .title1
+                    )
+                    .foregroundColor(hLabelColor.primary)
                 }
                 hText(L10n.Claims.Payout.Success.message, style: .footnote)
                     .foregroundColor(hLabelColor.primary)
@@ -186,15 +191,6 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                 }
             }
         }
-    }
-
-    @ViewBuilder
-    func displayFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
-        hText(
-            (checkoutStep?.price.getAmountWithCurrency() ?? ""),
-            style: .title1
-        )
-        .foregroundColor(hLabelColor.primary)
     }
 }
 

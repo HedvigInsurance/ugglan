@@ -1,6 +1,7 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct SubmitClaimCheckoutNoRepairScreen: View {
     @PresentableStore var store: ClaimsStore
@@ -44,7 +45,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 } content: {
                     hText(
                         L10n.Claims.Payout.Button.label(
-                            singleItemCheckoutStep?.payoutAmount.getAmountWithCurrency() ?? ""
+                            singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""
                         ),
                         style: .body
                     )
@@ -61,16 +62,16 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
     func displayPriceFields(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
         displayField(withTitle: L10n.Claims.Payout.Purchase.price, andFor: checkoutStep?.price)
         Divider()
-        displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation, prefix: "- ")
+        displayField(withTitle: L10n.Claims.Payout.Age.deduction, andFor: checkoutStep?.depreciation.negative)
         Divider()
-        displayField(withTitle: L10n.Claims.Payout.Age.deductable, andFor: checkoutStep?.deductible, prefix: "- ")
+        displayField(withTitle: L10n.Claims.Payout.Age.deductable, andFor: checkoutStep?.deductible.negative)
         Divider()
         displayField(withTitle: L10n.Claims.Payout.total, andFor: checkoutStep?.payoutAmount)
             .foregroundColor(hLabelColor.primary)
     }
 
     @ViewBuilder
-    func displayField(withTitle title: String, andFor model: ClaimFlowMoneyModel?, prefix: String = "") -> some View {
+    func displayField(withTitle title: String, andFor model: MonetaryAmount?) -> some View {
         hRow {
             HStack {
                 hText(title)
@@ -78,7 +79,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                 Spacer()
 
                 hText(
-                    prefix + (model?.getAmountWithCurrency() ?? "")
+                    model?.formattedAmount ?? ""
                 )
                 .foregroundColor(hLabelColor.secondary)
             }

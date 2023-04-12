@@ -391,6 +391,13 @@ public struct MonetaryAmount: Equatable, Hashable, Codable {
         currency = fragment.currency
     }
 
+    public init(
+        fragment: OctopusGraphQL.MoneyFragment
+    ) {
+        amount = String(fragment.amount)
+        currency = fragment.currencyCode.rawValue
+    }
+
     public var amount: String
     public var currency: String
 }
