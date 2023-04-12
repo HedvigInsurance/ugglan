@@ -6,18 +6,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-extension ClaimsAction: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        switch self {
-        case .submitAudioRecording:
-            hasher.combine("submitAudioRecording")
-        default:
-            hasher.combine("\(try! JSONEncoder().encode(self))")
-        }
-    }
-}
-
-public indirect enum ClaimsAction: ActionProtocol {
+public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case openFreeTextChat
     case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
@@ -63,7 +52,7 @@ public indirect enum ClaimsAction: ActionProtocol {
     case stepModelAction(action: ClaimsStepModelAction)
 }
 
-public enum ClaimsNavigationAction: ActionProtocol {
+public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel)
     case openDateOfOccurrencePlusLocationScreen
     case openAudioRecordingScreen
@@ -94,7 +83,7 @@ public enum ClaimsNavigationAction: ActionProtocol {
     }
 }
 
-public enum ClaimsStepModelAction: ActionProtocol {
+public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setPhoneNumber(model: FlowClaimPhoneNumberStepModel)
     case setDateOfOccurrencePlusLocation(model: FlowClaimDateOfOccurrencePlusLocationStepModel)
     case setDateOfOccurence(model: FlowClaimDateOfOccurenceStepModel)

@@ -19,7 +19,7 @@ public struct FlowClaimLocationStepModel: FlowClaimStepModel {
     }
 }
 
-public struct ClaimFlowLocationOptionModel: Codable, Equatable {
+public struct ClaimFlowLocationOptionModel: Codable, Equatable, Hashable {
     let displayName: String
     let value: String
 

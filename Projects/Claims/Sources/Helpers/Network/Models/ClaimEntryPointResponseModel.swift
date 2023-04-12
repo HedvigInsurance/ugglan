@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-public struct ClaimEntryPointResponseModel: Codable, Equatable {
+public struct ClaimEntryPointResponseModel: Codable, Equatable, Hashable {
     let id: String
     let displayName: String
 

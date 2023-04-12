@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-public protocol FlowClaimStepModel: Codable, Equatable {}
+public protocol FlowClaimStepModel: Codable, Equatable, Hashable {}
 
 public struct FlowClaimSummaryStepModel: FlowClaimStepModel {
     let id: String

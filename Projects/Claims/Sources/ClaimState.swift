@@ -43,12 +43,12 @@ public struct ClaimsState: StateProtocol {
     }
 }
 
-public enum LoadingState<T>: Codable & Equatable where T: Codable & Equatable {
+public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & Equatable & Hashable {
     case loading
     case error(error: T)
 }
 
-public enum ClaimsOrigin: Codable, Equatable {
+public enum ClaimsOrigin: Codable, Equatable, Hashable {
     case generic
     case commonClaims(id: String)
 

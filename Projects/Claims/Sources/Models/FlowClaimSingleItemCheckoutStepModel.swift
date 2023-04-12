@@ -36,7 +36,7 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     }
 }
 
-public struct AvailableCheckoutMethod: Codable, Equatable {
+public struct AvailableCheckoutMethod: Codable, Equatable, Hashable {
     var id: String
     var autogiro: ClaimAutomaticAutogiroPayoutModel?
 
@@ -69,7 +69,7 @@ public struct AvailableCheckoutMethod: Codable, Equatable {
     }
 }
 
-struct ClaimAutomaticAutogiroPayoutModel: Codable, Equatable {
+struct ClaimAutomaticAutogiroPayoutModel: Codable, Equatable, Hashable {
     let id: String
     let amount: MonetaryAmount
     let displayName: String

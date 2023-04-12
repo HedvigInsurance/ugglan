@@ -2,7 +2,7 @@ import Foundation
 
 typealias ClaimStatusCard = GiraffeGraphQL.ClaimStatusCardsQuery.Data.ClaimsStatusCard
 
-public struct Claim: Codable, Equatable, Identifiable {
+public struct Claim: Codable, Equatable, Identifiable, Hashable {
     public init(
         id: String,
         pills: [Claim.ClaimPill],
@@ -42,7 +42,7 @@ public struct Claim: Codable, Equatable, Identifiable {
     public let subtitle: String
     public let claimDetailData: ClaimDetailData
 
-    public struct ClaimDetailData: Codable, Equatable {
+    public struct ClaimDetailData: Codable, Equatable, Hashable {
         internal init(
             id: String,
             status: Claim.ClaimDetailData.ClaimStatus,
@@ -135,7 +135,7 @@ public struct Claim: Codable, Equatable, Identifiable {
 
     }
 
-    public struct ClaimPill: Codable, Equatable {
+    public struct ClaimPill: Codable, Equatable, Hashable {
         public init(
             text: String,
             type: Claim.ClaimPill.ClaimPillType
@@ -156,7 +156,7 @@ public struct Claim: Codable, Equatable, Identifiable {
         }
     }
 
-    public struct ClaimStatusProgressSegment: Codable, Equatable {
+    public struct ClaimStatusProgressSegment: Codable, Equatable, Hashable {
         public init(
             text: String,
             type: Claim.ClaimStatusProgressSegment.ClaimStatusProgressType

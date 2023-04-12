@@ -117,7 +117,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
     }
 }
 
-public struct ClaimFlowItemBrandOptionModel: Codable, Equatable {
+public struct ClaimFlowItemBrandOptionModel: Codable, Equatable, Hashable {
     let displayName: String
     let itemBrandId: String
     let itemTypeId: String
@@ -131,7 +131,7 @@ public struct ClaimFlowItemBrandOptionModel: Codable, Equatable {
     }
 }
 
-public struct ClaimFlowItemModelOptionModel: Codable, Equatable {
+public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     let displayName: String
     let itemBrandId: String
     let itemTypeId: String
@@ -147,7 +147,7 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable {
     }
 }
 
-struct ClaimFlowItemProblemOptionModel: Codable, Equatable {
+struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
     let displayName: String
     let itemProblemId: String
 
