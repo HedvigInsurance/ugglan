@@ -106,35 +106,36 @@ public struct SubmitClaimSingleItem: View {
     }
 
     @ViewBuilder func displayDamageField(claim: FlowClamSingleItemStepModel?) -> some View {
+        if !(claim?.availableItemProblems.isEmpty ?? true) {
+            if (claim?.selectedItemProblems) != nil {
+                hRow {
+                    HStack {
 
-        if (claim?.selectedItemProblems) != nil {
-            hRow {
-                HStack {
+                        hText(L10n.Claims.Item.Screen.Damage.button)
+                            .foregroundColor(hLabelColor.secondary)
 
-                    hText(L10n.Claims.Item.Screen.Damage.button)
-                        .foregroundColor(hLabelColor.secondary)
+                        Spacer()
 
-                    Spacer()
-
+                    }
                 }
-            }
-            .withCustomAccessory {
-                if let chosenDamages = claim?.getChoosenDamagesAsText() {
-                    hText(chosenDamages).foregroundColor(hLabelColor.primary)
-                } else {
-                    hText(L10n.Claim.Location.choose).foregroundColor(hLabelColor.placeholder)
+                .withCustomAccessory {
+                    if let chosenDamages = claim?.getChoosenDamagesAsText() {
+                        hText(chosenDamages).foregroundColor(hLabelColor.primary)
+                    } else {
+                        hText(L10n.Claim.Location.choose).foregroundColor(hLabelColor.placeholder)
+                    }
                 }
+                .onTap {
+                    store.send(.navigationAction(action: .openDamagePickerScreen))
+                }
+                .frame(height: 64)
+                .background(hBackgroundColor.tertiary)
+                .cornerRadius(.defaultCornerRadius)
+                .padding(.leading, 16)
+                .padding(.trailing, 16)
+                .padding(.top, 20)
+                .hShadow()
             }
-            .onTap {
-                store.send(.navigationAction(action: .openDamagePickerScreen))
-            }
-            .frame(height: 64)
-            .background(hBackgroundColor.tertiary)
-            .cornerRadius(.defaultCornerRadius)
-            .padding(.leading, 16)
-            .padding(.trailing, 16)
-            .padding(.top, 20)
-            .hShadow()
         }
     }
 
