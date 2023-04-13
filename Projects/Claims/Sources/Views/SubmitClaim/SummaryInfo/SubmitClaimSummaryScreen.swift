@@ -108,7 +108,6 @@ public struct SubmitClaimSummaryScreen: View {
         ) { singleItemStep in
 
             HStack {
-
                 if let purchaseDate = singleItemStep?.purchaseDate {
                     hText(L10n.summaryPurchaseDateDescription(purchaseDate))
                         .foregroundColor(hLabelColor.primary)
