@@ -83,7 +83,12 @@ extension AppJourney {
                     }
                 }
             },
-            style: .detented(.scrollViewContentSize, modally: false)
+            style: .detented(
+                .hostingControllerContentSize(
+                    LoadingViewWithContent<HonestyPledge>.self
+                ),
+                modally: false
+            )
         ) { action in
             if case let .navigationAction(navigationAction) = action {
                 if case .openNotificationsPermissionScreen = navigationAction {
