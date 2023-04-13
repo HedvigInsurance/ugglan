@@ -502,6 +502,21 @@ extension OctopusGraphQL.FlowClaimFragment {
             actions.append(.stepModelAction(action: .setDateOfOccurence(model: .init(with: step))))
             actions.append(.navigationAction(action: .openDatePicker(type: .submitDateOfOccurence)))
         } else if let step = currentStep.fragments.flowClaimSummaryStepFragment {
+            if let singleItemStep = step.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
+                actions.append(.stepModelAction(action: .setSingleItem(model: .init(with: singleItemStep))))
+            }
+            actions.append(
+                .stepModelAction(
+                    action: .setLocation(model: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment))
+                )
+            )
+            actions.append(
+                .stepModelAction(
+                    action: .setDateOfOccurence(
+                        model: .init(with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment)
+                    )
+                )
+            )
             actions.append(.stepModelAction(action: .setSummaryStep(model: .init(with: step))))
             actions.append(.navigationAction(action: .openSummaryScreen))
         } else if let step = currentStep.fragments.flowClaimDateOfOccurrencePlusLocationStepFragment {
