@@ -53,7 +53,7 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                 ) { singleItemCheckoutStep in
 
                     hText(
-                        (singleItemCheckoutStep?.price.formattedAmount ?? ""),
+                        (singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""),
                         style: .title1
                     )
                     .foregroundColor(hLabelColor.primary)
