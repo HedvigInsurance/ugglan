@@ -1,6 +1,8 @@
+import Flow
 import Presentation
 import SwiftUI
 import hCore
+import hCoreUI
 
 public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: View>: View {
     var content: () -> Content
@@ -8,9 +10,9 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
     var onError: (_ error: String) -> ErrorView
 
     @PresentableStore var store: ClaimsStore
-    private let action: ClaimsAction
+    private let action: ClaimsLoadingType
     public init(
-        _ action: ClaimsAction,
+        _ action: ClaimsLoadingType,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder onLoading: @escaping () -> LoadingView,
         @ViewBuilder onError: @escaping (_ error: String) -> ErrorView
@@ -39,5 +41,83 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
             }
         }
         .presentableStoreLensAnimation(.easeInOut)
+    }
+}
+
+public struct LoadingViewWithContent<Content: View>: View {
+    var content: () -> Content
+    @PresentableStore var store: ClaimsStore
+    private let action: ClaimsLoadingType
+
+    @State var presentError = false
+    @State var error = ""
+    @State var isLoading = false
+    var disposeBag = DisposeBag()
+
+    public init(
+        _ action: ClaimsLoadingType,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.action = action
+        self.content = content
+    }
+    public var body: some View {
+        PresentableStoreLens(
+            ClaimsStore.self,
+            getter: { state in
+                state.loadingStates
+            }
+        ) { loadingStates in
+            ZStack {
+                content()
+                    .alert(isPresented: $presentError) {
+                        Alert(
+                            title: Text(L10n.somethingWentWrong),
+                            message: Text(error),
+                            dismissButton: .default(Text(L10n.alertOk))
+                        )
+                    }
+                if isLoading {
+                    HStack {
+                        WordmarkActivityIndicator(.standard)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(hBackgroundColor.primary.opacity(0.7))
+                    .cornerRadius(.defaultCornerRadius)
+                    .edgesIgnoringSafeArea(.top)
+                }
+            }
+        }
+        .presentableStoreLensAnimation(.easeInOut)
+        .onAppear {
+            func handle(state: ClaimsState) {
+                if let actionState = state.loadingStates[action] {
+                    switch actionState {
+                    case .loading:
+                        withAnimation {
+                            self.isLoading = true
+                            self.presentError = false
+                        }
+                    case let .error(error):
+                        withAnimation {
+                            self.isLoading = false
+                            self.error = error
+                            self.presentError = true
+                        }
+                    }
+                } else {
+                    withAnimation {
+                        self.isLoading = false
+                        self.presentError = false
+                    }
+                }
+            }
+            let store: ClaimsStore = globalPresentableStoreContainer.get()
+            disposeBag += store.stateSignal.onValue { state in
+                handle(state: state)
+            }
+            handle(state: store.state)
+
+        }
     }
 }

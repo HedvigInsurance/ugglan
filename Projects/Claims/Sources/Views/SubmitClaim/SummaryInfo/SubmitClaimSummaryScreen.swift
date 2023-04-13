@@ -8,7 +8,7 @@ public struct SubmitClaimSummaryScreen: View {
     public init() {}
 
     public var body: some View {
-        LoadingViewWithContent(.claimNextSummary) {
+        LoadingViewWithContent(.postSummary) {
             hForm {
                 VStack(alignment: .center) {
 

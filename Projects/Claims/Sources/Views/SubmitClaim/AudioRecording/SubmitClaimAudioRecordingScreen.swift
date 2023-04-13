@@ -26,7 +26,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(.submitAudioRecording(audioURL: self.audioPlayer.url)) {
+        LoadingViewWithContent(.postAudioRecording) {
             hForm {
                 PresentableStoreLens(
                     ClaimsStore.self,

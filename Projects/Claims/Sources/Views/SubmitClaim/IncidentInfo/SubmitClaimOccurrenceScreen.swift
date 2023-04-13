@@ -6,9 +6,8 @@ public struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: ClaimsStore
 
     public var body: some View {
-        LoadingViewWithContent(.claimNextDateOfOccurrenceAndLocation) {
+        LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
             hForm {
-
                 PresentableStoreLens(
                     ClaimsStore.self,
                     getter: { state in

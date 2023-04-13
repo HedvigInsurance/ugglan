@@ -5,9 +5,11 @@ import hCoreUI
 
 public struct SelectCommonClaim: View {
     @PresentableStore var store: ClaimsStore
-    public init() {}
+    public init() {
+        store.send(.fetchCommonClaimsForSelection)
+    }
     public var body: some View {
-        LoadingViewWithContent(.fetchCommonClaimsForSelection) {
+        LoadingViewWithContent(.fetchCommonClaims) {
             PresentableStoreLens(
                 ClaimsStore.self,
                 getter: { state in
