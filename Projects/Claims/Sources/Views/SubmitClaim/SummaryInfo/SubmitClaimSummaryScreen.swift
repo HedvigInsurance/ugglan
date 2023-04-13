@@ -17,13 +17,6 @@ public struct SubmitClaimSummaryScreen: View {
                     displayModelField()
                     displayDateOfPurchase()
                     displayDamageField()
-
-                    //                    hButton.SmallButtonOutlined {
-                    //                        store.send(.openSummaryEditScreen(context: ""))
-                    //                    } content: {
-                    //                        hText(L10n.Claims.Edit.button)
-                    //                    }
-                    //                    .padding(.top, 25)
                 }
             }
             .hFormAttachToBottom {
@@ -63,7 +56,7 @@ public struct SubmitClaimSummaryScreen: View {
                     .resizable()
                     .frame(width: 12.0, height: 12.0)
                     .foregroundColor(.secondary)
-                hText(dateOfOccurenceStep?.dateOfOccurence ?? "")
+                hText(dateOfOccurenceStep?.dateOfOccurence ?? L10n.Claims.Summary.Screen.Not.selected)
                     .padding(.top, 1)
                     .foregroundColor(.secondary)
             }
@@ -77,7 +70,7 @@ public struct SubmitClaimSummaryScreen: View {
             HStack {
                 Image(uiImage: hCoreUIAssets.location.image)
                     .foregroundColor(hLabelColor.secondary)
-                hText(locationStep?.getSelectedOption()?.displayName ?? "")
+                hText(locationStep?.getSelectedOption()?.displayName ?? L10n.Claims.Summary.Screen.Not.selected)
                     .padding(.top, 1)
                     .foregroundColor(.secondary)
             }
@@ -109,7 +102,8 @@ public struct SubmitClaimSummaryScreen: View {
 
             let stringToDisplay = singleItemStep?.returnDisplayStringForSummary
 
-            hText(stringToDisplay ?? "")
+            hText(stringToDisplay ?? L10n.Claims.Summary.Screen.Not.selected)
+                .padding(.top, 1)
                 .foregroundColor(hLabelColor.primary)
         }
     }
