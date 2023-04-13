@@ -32,13 +32,13 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case claimNextDateOfOccurrence(dateOfOccurrence: Date?)
     case claimNextDateOfOccurrenceAndLocation
     case claimNextLocation(location: String?)
-    case claimNextSingleItem(purchasePrice: Double)
+    case claimNextSingleItem(purchasePrice: Double?)
     case claimNextSummary
     case claimNextSingleItemCheckout
 
     case setNewLocation(location: String?)
     case setNewDate(dateOfOccurrence: String?)
-    case setPurchasePrice(priceOfPurchase: Double)
+    case setPurchasePrice(priceOfPurchase: Double?)
     case setSingleItemModel(modelName: ClaimFlowItemModelOptionModel)
     case setSingleItemDamage(damages: [String])
     case setSingleItemPurchaseDate(purchaseDate: Date?)
