@@ -118,23 +118,19 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
     }
 
     var returnDisplayStringForSummary: String {
-        var stringToReturn = ""
-
-        if let purchaseDate = purchaseDate {
-            stringToReturn = L10n.summaryPurchaseDateDescription(purchaseDate)
+        var textParts: [String] = []
+        if let purchaseDate {
+            let purchaseDateText = L10n.summaryPurchaseDateDescription(purchaseDate)
+            textParts.append(purchaseDateText)
         }
 
-        if let purchasePrice = purchasePrice {
-            if purchaseDate != nil {
-                stringToReturn = stringToReturn + " · "
-            }
-
-            stringToReturn +=
-                L10n.summaryPurchasePriceDescription(Int(purchasePrice))
-                + " " + (currencyCode ?? "")
+        if let purchasePrice {
+            let purchasePriceText =
+                L10n.summaryPurchasePriceDescription(Int(purchasePrice)) + " " + (currencyCode ?? "")
+            textParts.append(purchasePriceText)
         }
 
-        return stringToReturn
+        return textParts.joined(separator: " · ")
     }
 }
 
