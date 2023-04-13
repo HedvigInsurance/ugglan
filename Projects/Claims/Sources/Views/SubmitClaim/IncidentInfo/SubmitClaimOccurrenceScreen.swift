@@ -9,79 +9,57 @@ public struct SubmitClaimOccurrencePlusLocationScreen: View {
         LoadingViewWithContent(.claimNextDateOfOccurrenceAndLocation) {
             hForm {
 
-                PresentableStoreLens(
-                    ClaimsStore.self,
-                    getter: { state in
-                        state.dateOfOccurenceStep
-                    }
-                ) { dateOfOccurenceStep in
-                    hButton.SmallButtonText {
-                        store.send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
-                    } content: {
-
-                        HStack(spacing: 0) {
+                hSection {
+                    PresentableStoreLens(
+                        ClaimsStore.self,
+                        getter: { state in
+                            state.dateOfOccurenceStep
+                        }
+                    ) { dateOfOccurenceStep in
+                        hRow {
                             hText(L10n.Claims.Incident.Screen.Date.Of.incident)
-                                .foregroundColor(hLabelColor.primary)
-                                .padding([.top, .bottom], 16)
+                        }.withCustomAccessory {
                             Spacer()
-                            if let dateOfOccurrence = dateOfOccurenceStep?.dateOfOccurence {
-                                hText(dateOfOccurrence)
-                                    .foregroundColor(hLabelColor.primary)
-                            } else {
-                                Image(uiImage: hCoreUIAssets.calendar.image)
-                                    .foregroundColor(hLabelColor.primary)
-                            }
+                            
+                            Group {
+                                if let dateOfOccurrence = dateOfOccurenceStep?.dateOfOccurence {
+                                    hText(dateOfOccurrence)
+                                } else {
+                                    Image(uiImage: hCoreUIAssets.calendar.image)
+                                        .renderingMode(.template)
+                                }
+                            }.foregroundColor(hLabelColor.secondary)
+                        }.onTap {
+                            store.send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
                         }
                     }
                 }
-
-                .frame(height: 64)
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(12)
-                .padding(.leading, 16)
-                .padding(.trailing, 16)
-                .padding(.top, 20)
-                .hShadow()
-
-                PresentableStoreLens(
-                    ClaimsStore.self,
-                    getter: { state in
-                        state.locationStep
-                    }
-                ) { locationStep in
-                    hButton.SmallButtonText {
-                        store.send(.navigationAction(action: .openLocationPicker(type: .setLocation)))
-                    } content: {
-
-                        HStack(spacing: 0) {
+                
+                hSection {
+                    PresentableStoreLens(
+                        ClaimsStore.self,
+                        getter: { state in
+                            state.locationStep
+                        }
+                    ) { locationStep in
+                        hRow {
                             hText(L10n.Claims.Incident.Screen.location)
-                                .foregroundColor(hLabelColor.primary)
-                                .padding([.top, .bottom], 16)
-
+                        }.withCustomAccessory {
                             Spacer()
-                            if let location = locationStep?.getSelectedOption()?.displayName {
-                                hText(location.displayValue)
-                                    .foregroundColor(hLabelColor.primary)
-                            } else {
-                                hText(L10n.Claim.Location.choose)
-                                    .foregroundColor(hLabelColor.primary)
-                            }
-
+                            Group {
+                                if let location = locationStep?.getSelectedOption()?.displayName {
+                                    hText(location.displayValue)
+                                } else {
+                                    hText(L10n.Claim.Location.choose)
+                                }
+                            }.foregroundColor(hLabelColor.secondary)
+                        }.onTap {
+                            store.send(.navigationAction(action: .openLocationPicker(type: .setLocation)))
                         }
                     }
-                    .frame(height: 64)
-                    .background(hBackgroundColor.tertiary)
-                    .cornerRadius(12)
-                    .padding(.leading, 16)
-                    .padding(.trailing, 16)
-                    .padding(.top, 20)
-                    .hShadow()
-
                 }
             }
-
             .hFormAttachToBottom {
-
                 hButton.LargeButtonFilled {
                     store.send(.claimNextDateOfOccurrenceAndLocation)
                 } content: {
