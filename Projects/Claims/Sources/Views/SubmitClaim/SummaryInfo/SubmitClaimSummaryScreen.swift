@@ -107,10 +107,9 @@ public struct SubmitClaimSummaryScreen: View {
             }
         ) { singleItemStep in
             hText(
-                L10n.summaryPurchaseDescription(
-                    singleItemStep?.purchaseDate ?? "",
-                    Int(singleItemStep?.purchasePrice ?? 0)
-                ) + " " + (singleItemStep?.currencyCode ?? "")
+                L10n.summaryPurchaseDateDescription(singleItemStep?.purchaseDate ?? "")
+                    + L10n.summaryPurchasePriceDescription(Int(singleItemStep?.purchasePrice ?? 0))
+                    + " " + (singleItemStep?.currencyCode ?? "")
             )
             .foregroundColor(hLabelColor.primary)
             .padding(.top, 1)
