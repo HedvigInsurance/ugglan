@@ -42,6 +42,7 @@ public struct DatePickerScreen: View {
             }
         }()
         self.executedAction = .navigationAction(action: .openDatePicker(type: type))
+        self.dateOfOccurrence = min(maxDate, Date())
     }
 
     public var body: some View {
@@ -58,6 +59,7 @@ public struct DatePickerScreen: View {
                     .datePickerStyle(.graphical)
                     .padding([.leading, .trailing], 16)
                     .padding([.top], 5)
+                    .expandAppearAnimation()
                 }
                 .withHeader {
                     hText(title, style: .title1)

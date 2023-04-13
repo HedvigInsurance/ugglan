@@ -46,7 +46,7 @@ public class ClaimJourneys {
                 } else if case .openUpdateAppScreen = navigationAction {
                     openUpdateAppTerminationScreen().addDismissWithConfirmation()
                 } else if case let .openDatePicker(type) = navigationAction {
-                    openDatePickerScreen(type: type)
+                    openDatePickerScreen(type: type).addDismissWithConfirmation()
                 }
             }
         }
@@ -69,13 +69,7 @@ public class ClaimJourneys {
             style: .detented(.large, modally: false)
         ) {
             action in
-            if case let .navigationAction(.openDatePicker(pickerType)) = action {
-                openDatePickerScreen(type: pickerType)
-            } else if case let .navigationAction(.openLocationPicker(type)) = action {
-                openLocationScreen(type: type)
-            } else {
-                getScreenForAction(for: action)
-            }
+            getScreenForAction(for: action)
         }
     }
 
