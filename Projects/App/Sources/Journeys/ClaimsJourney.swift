@@ -83,7 +83,12 @@ extension AppJourney {
                     }
                 }
             },
-            style: .detented(.scrollViewContentSize, modally: false)
+            style: .detented(
+                .hostingControllerContentSize(
+                    LoadingViewWithContent<HonestyPledge>.self
+                ),
+                modally: false
+            )
         ) { action in
             if case let .navigationAction(navigationAction) = action {
                 if case .openNotificationsPermissionScreen = navigationAction {
@@ -164,7 +169,7 @@ extension AppJourney {
     private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
         @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney
     ) -> some JourneyPresentation {
-        HonestyPledge.journey(style: .detented(.scrollViewContentSize)) {
+        HonestyPledge.journey(style: .detented(.hostingControllerContentSize(HonestyPledge.self))) {
             AppJourney.notificationJourney {
                 let embark = Embark(name: "claims")
                 AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
