@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 import hGraphQL
 
 public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
@@ -37,7 +38,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         self.defaultItemProblems = data.selectedItemProblems
     }
 
-    public func returnSingleItemInfo(purchasePrice: Double) -> OctopusGraphQL.FlowClaimSingleItemInput {
+    public func returnSingleItemInfo(purchasePrice: Double?) -> OctopusGraphQL.FlowClaimSingleItemInput {
         let itemBrandInput: OctopusGraphQL.FlowClaimItemBrandInput? = {
             if selectedItemModel != nil {
                 return nil
@@ -114,6 +115,22 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
 
     func shouldShowListOfModels(for brand: ClaimFlowItemBrandOptionModel) -> Bool {
         return !(self.getListOfModels(for: brand.itemBrandId)?.isEmpty ?? true)
+    }
+
+    var returnDisplayStringForSummary: String {
+        var textParts: [String] = []
+        if let purchaseDate {
+            let purchaseDateText = L10n.summaryPurchaseDateDescription(purchaseDate)
+            textParts.append(purchaseDateText)
+        }
+
+        if let purchasePrice {
+            let purchasePriceText =
+                L10n.summaryPurchasePriceDescription(Int(purchasePrice)) + " " + (currencyCode ?? "")
+            textParts.append(purchasePriceText)
+        }
+
+        return textParts.joined(separator: " · ")
     }
 }
 
