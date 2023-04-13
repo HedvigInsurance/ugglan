@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 import hGraphQL
 
 public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
@@ -114,6 +115,26 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
 
     func shouldShowListOfModels(for brand: ClaimFlowItemBrandOptionModel) -> Bool {
         return !(self.getListOfModels(for: brand.itemBrandId)?.isEmpty ?? true)
+    }
+
+    var returnDisplayStringForSummary: String {
+        var stringToReturn = ""
+
+        if let purchaseDate = purchaseDate {
+            stringToReturn = L10n.summaryPurchaseDateDescription(purchaseDate)
+        }
+
+        if let purchasePrice = purchasePrice {
+            if purchaseDate != nil {
+                stringToReturn = stringToReturn + " · "
+            }
+
+            stringToReturn +=
+                L10n.summaryPurchasePriceDescription(Int(purchasePrice))
+                + " " + (currencyCode ?? "")
+        }
+
+        return stringToReturn
     }
 }
 

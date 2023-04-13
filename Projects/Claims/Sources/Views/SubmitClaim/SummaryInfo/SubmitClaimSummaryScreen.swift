@@ -107,25 +107,10 @@ public struct SubmitClaimSummaryScreen: View {
             }
         ) { singleItemStep in
 
-            HStack {
-                if let purchaseDate = singleItemStep?.purchaseDate {
-                    hText(L10n.summaryPurchaseDateDescription(purchaseDate))
-                        .foregroundColor(hLabelColor.primary)
-                }
+            let stringToDisplay = singleItemStep?.returnDisplayStringForSummary
 
-                if let purchasePrice = singleItemStep?.purchasePrice {
-                    if singleItemStep?.purchaseDate != nil {
-                        hText("·")
-                            .foregroundColor(hLabelColor.primary)
-                    }
-                    hText(
-                        L10n.summaryPurchasePriceDescription(Int(purchasePrice))
-                            + " " + (singleItemStep?.currencyCode ?? "")
-                    )
-                    .foregroundColor(hLabelColor.primary)
-                }
-            }
-            .padding(.top, 2)
+            hText(stringToDisplay ?? "")
+                .foregroundColor(hLabelColor.primary)
         }
     }
 
