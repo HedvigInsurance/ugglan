@@ -64,6 +64,7 @@ public struct SubmitClaimContactScreen: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .bottom)
                     .padding([.leading, .trailing], 16)
+                    .padding(.bottom, 6)
                 }
             }
         }
