@@ -529,10 +529,12 @@ extension PresentationStyle {
                     .wait(
                         until: navigationController
                             .interactivePopGestureRecognizer?
-                            .map { $0 == .possible || $0 == .ended }
+                            .map {
+                                $0 == .possible || $0 == .ended || $0 == .failed
+                            }
                             ?? ReadSignal(true)
                     )
-                    .debug().filter(predicate: { $0 == viewController })
+                    .filter(predicate: { $0 == viewController })
                     .onValue { _ in
                         guard
                             let previousViewController =
