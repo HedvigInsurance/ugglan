@@ -2,6 +2,7 @@ import Combine
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct SubmitClaimSingleItem: View {
     @PresentableStore var store: ClaimsStore
@@ -12,7 +13,6 @@ public struct SubmitClaimSingleItem: View {
     public var body: some View {
         LoadingViewWithContent(.claimNextSingleItem(purchasePrice: Double(purchasePrice) ?? 0)) {
             hForm {
-
                 PresentableStoreLens(
                     ClaimsStore.self,
                     getter: { state in
@@ -43,131 +43,103 @@ public struct SubmitClaimSingleItem: View {
             || (singleItemStep?.availableItemBrandOptions.count) ?? 0 > 0
         {
 
-            hRow {
-                HStack {
-                    hText(L10n.singleItemInfoBrand)
-                        .foregroundColor(hLabelColor.secondary)
+            hSection {
+                hRow {
+                    HStack {
+                        hText(L10n.singleItemInfoBrand)
+                            .foregroundColor(hLabelColor.primary)
 
-                    Spacer()
+                        Spacer()
+                    }
+                }
+                .withCustomAccessory {
+                    if let brandName = singleItemStep?.getBrandOrModelName() {
+                        hText(brandName)
+                            .foregroundColor(hLabelColor.secondary)
+                    } else {
+                        hText(L10n.Claim.Location.choose)
+                            .foregroundColor(hLabelColor.placeholder)
+                    }
+                }
+                .onTap {
+                    store.send(.navigationAction(action: .openBrandPicker))
                 }
             }
-            .withCustomAccessory {
-                if let brandName = singleItemStep?.getBrandOrModelName() {
-                    hText(brandName)
-                        .foregroundColor(hLabelColor.primary)
-                } else {
-                    hText(L10n.Claim.Location.choose)
-                        .foregroundColor(hLabelColor.placeholder)
-                }
-            }
-            .onTap {
-                store.send(.navigationAction(action: .openBrandPicker))
-            }
-            .frame(height: 64)
-            .background(hBackgroundColor.tertiary)
-            .cornerRadius(12)
-            .padding(.leading, 16)
-            .padding(.trailing, 16)
-            .padding(.top, 20)
-            .hShadow()
+            
         }
     }
 
     @ViewBuilder func displayDateField(claim: FlowClamSingleItemStepModel?) -> some View {
-
-        hRow {
-            HStack {
+        hSection {
+            hRow {
                 hText(L10n.Claims.Item.Screen.Date.Of.Purchase.button)
-                    .foregroundColor(hLabelColor.secondary)
-                    .padding([.top, .bottom], 16)
-
-                Spacer()
-            }
-        }
-        .withCustomAccessory {
-            if let purchaseDate = claim?.purchaseDate {
-
-                hText(purchaseDate)
                     .foregroundColor(hLabelColor.primary)
-            } else {
-                Image(uiImage: hCoreUIAssets.calendar.image)
+            }
+            .withCustomAccessory {
+                Spacer()
+
+                Group {
+                    if let purchaseDate = claim?.purchaseDate {
+                        hText(purchaseDate)
+                    } else {
+                        Image(uiImage: hCoreUIAssets.calendar.image)
+                            .renderingMode(.template)
+                    }
+                }.foregroundColor(hLabelColor.secondary)
+            }
+            .onTap {
+                store.send(.navigationAction(action: .openDatePicker(type: .setDateOfPurchase)))
             }
         }
-        .onTap {
-            store.send(.navigationAction(action: .openDatePicker(type: .setDateOfPurchase)))
-        }
-        .frame(height: 64)
-        .background(hBackgroundColor.tertiary)
-        .cornerRadius(.defaultCornerRadius)
-        .padding(.leading, 16)
-        .padding(.trailing, 16)
-        .padding(.top, 20)
-        .hShadow()
     }
 
     @ViewBuilder func displayDamageField(claim: FlowClamSingleItemStepModel?) -> some View {
         if !(claim?.availableItemProblems.isEmpty ?? true) {
             if (claim?.selectedItemProblems) != nil {
-                hRow {
-                    HStack {
-
+                hSection {
+                    hRow {
                         hText(L10n.Claims.Item.Screen.Damage.button)
-                            .foregroundColor(hLabelColor.secondary)
-
+                            .foregroundColor(hLabelColor.primary)
+                    }
+                    .withCustomAccessory {
                         Spacer()
 
+                        if let chosenDamages = claim?.getChoosenDamagesAsText() {
+                            hText(chosenDamages).foregroundColor(hLabelColor.secondary)
+                        } else {
+                            hText(L10n.Claim.Location.choose).foregroundColor(hLabelColor.placeholder)
+                        }
+                    }
+                    .onTap {
+                        store.send(.navigationAction(action: .openDamagePickerScreen))
                     }
                 }
-                .withCustomAccessory {
-                    if let chosenDamages = claim?.getChoosenDamagesAsText() {
-                        hText(chosenDamages).foregroundColor(hLabelColor.primary)
-                    } else {
-                        hText(L10n.Claim.Location.choose).foregroundColor(hLabelColor.placeholder)
-                    }
-                }
-                .onTap {
-                    store.send(.navigationAction(action: .openDamagePickerScreen))
-                }
-                .frame(height: 64)
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(.defaultCornerRadius)
-                .padding(.leading, 16)
-                .padding(.trailing, 16)
-                .padding(.top, 20)
-                .hShadow()
             }
         }
     }
 
     @ViewBuilder func displayPurchasePriceField(claim: FlowClamSingleItemStepModel?) -> some View {
-        hRow {
-            ZStack {
-                HStack {
-                    hText(L10n.Claims.Item.Screen.Purchase.Price.button)
-                        .foregroundColor(hLabelColor.secondary)
-                    Spacer()
-                    hText(claim?.prefferedCurrency ?? "")
-                }
-
-                TextField("", text: $purchasePrice)
+        hSection {
+            hRow {
+                hText(L10n.Claims.Item.Screen.Purchase.Price.button)
+                    .foregroundColor(hLabelColor.primary)
+            }.withCustomAccessory {
+                Group {
+                    hTextField(
+                        masking: Masking(type: .digits),
+                        value: $purchasePrice
+                    )
                     .multilineTextAlignment(.trailing)
-                    .padding(.trailing, 40)
-                    .keyboardType(.numberPad)
-                    .onReceive(Just(purchasePrice)) { newValue in
-                        let filteredNumbers = newValue.filter { "0123456789".contains($0) }
-                        if filteredNumbers != newValue {
-                            self.purchasePrice = filteredNumbers
-                        }
+                    .hTextFieldOptions([])
+                    Spacer()
+                    
+                    if let preferredCurrency = claim?.prefferedCurrency {
+                        let amount = MonetaryAmount(amount: 0.0, currency: preferredCurrency)
+                        hText(amount.currencySymbol)
                     }
+                }.foregroundColor(hLabelColor.secondary)
             }
         }
-        .frame(height: 64)
-        .background(hBackgroundColor.tertiary)
-        .cornerRadius(.defaultCornerRadius)
-        .padding(.leading, 16)
-        .padding(.trailing, 16)
-        .padding(.top, 20)
-        .hShadow()
     }
 
     func convertDateToString(date: Date) -> String {
