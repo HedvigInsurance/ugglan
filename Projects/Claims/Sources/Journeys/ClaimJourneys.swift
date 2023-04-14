@@ -77,7 +77,7 @@ public class ClaimJourneys {
 
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
         let screen = DatePickerScreen(type: type)
-        
+
         return HostingJourney(
             ClaimsStore.self,
             rootView: screen,
@@ -85,7 +85,7 @@ public class ClaimJourneys {
             options: [
                 .defaults,
                 .largeTitleDisplayMode(.always),
-                .prefersLargeTitles(true)
+                .prefersLargeTitles(true),
             ]
         ) {
             action in

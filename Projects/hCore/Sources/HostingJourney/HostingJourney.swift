@@ -14,18 +14,17 @@ public struct PresentableStore<S: Store> {
 
 public class HostingJourneyController<RootView: View>: UIHostingController<RootView> {
 
-    
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
     }
-    
+
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         /// Force set frame to make SwiftUI resize itself accordingly
-        if
-            let navigationController = self.navigationController,
-            let presentedFrame = navigationController.presentationController?.presentedView?.frame {
+        if let navigationController = self.navigationController,
+            let presentedFrame = navigationController.presentationController?.presentedView?.frame
+        {
             self.view.frame.size = presentedFrame.size
             self.view.setNeedsUpdateConstraints()
         }

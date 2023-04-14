@@ -1,10 +1,10 @@
 import Flow
-import hCore
 import Form
 import Foundation
 import Presentation
-import UIKit
 import SwiftUI
+import UIKit
+import hCore
 
 func setGrabber(on presentationController: UIPresentationController, to value: Bool) {
     let grabberKey = ["_", "setWants", "Grabber:"]
@@ -76,12 +76,15 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                 guard let navigationController = self.viewController.navigationController else {
                     return
                 }
-                
-                guard ![
-                    .changed,
-                    .began,
-                    .cancelled
-                ].contains(navigationController.interactivePopGestureRecognizer?.state) else {
+
+                guard
+                    ![
+                        .changed,
+                        .began,
+                        .cancelled,
+                    ]
+                    .contains(navigationController.interactivePopGestureRecognizer?.state)
+                else {
                     return
                 }
 
@@ -350,13 +353,15 @@ extension PresentationStyle {
         public static var scrollViewContentSize: Detent {
             .custom("scrollViewContentSize") { viewController, containerView in
                 let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
-                
-                guard let scrollView = allScrollViewDescendants.first(where: { _ in
-                    true
-                }) else {
+
+                guard
+                    let scrollView = allScrollViewDescendants.first(where: { _ in
+                        true
+                    })
+                else {
                     return 0
                 }
-                
+
                 let transitioningDelegate =
                     viewController.navigationController?.transitioningDelegate
                     as? DetentedTransitioningDelegate
@@ -527,12 +532,13 @@ extension PresentationStyle {
                 let presentationController = navigationController.presentationController
             {
                 from.lastDetentIndex = getDetentIndex(on: presentationController)
-                
+
                 bag += navigationController
                     .willShowViewControllerSignal
                     .filter {
                         $0.viewController == viewController
-                    }.onFirstValue { _ in
+                    }
+                    .onFirstValue { _ in
                         DispatchQueue.main.async {
                             Self.Detent.set(
                                 detents,
@@ -589,7 +595,7 @@ extension PresentationStyle {
                         }
                     }
             }
-            
+
             let defaultPresentation = PresentationStyle.default.present(
                 viewController,
                 from: from,
