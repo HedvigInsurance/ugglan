@@ -22,6 +22,7 @@ public class ClaimJourneys {
         GroupJourney {
             if case let .navigationAction(navigationAction) = action {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
+                    <<<<<<<HEAD
                     submitClaimPhoneNumberScreen(model: model).addDismissWithConfirmation()
                         .configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
@@ -36,20 +37,20 @@ public class ClaimJourneys {
                 } else if case .openSummaryScreen = navigationAction {
                     openSummaryScreen().addDismissWithConfirmation().configureTitle((L10n.Claims.Summary.Screen.title))
                 } else if case .openDamagePickerScreen = navigationAction {
-                    openDamagePickerScreen().addDismissWithConfirmation()
+                    openDamagePickerScreen().addDismissClaimsFlow()
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
                     openCheckoutNoRepairScreen().addDismissWithConfirmation()
                         .configureTitle((L10n.Claims.Payout.Summary.title))
                 } else if case .openFailureSceen = navigationAction {
-                    showClaimFailureScreen().addDismissWithConfirmation()
+                    showClaimFailureScreen().addDismissClaimsFlow()
                 } else if case .openSummaryEditScreen = navigationAction {
                     openSummaryEditScreen().addDismissWithConfirmation().configureTitle((L10n.Claims.Edit.Screen.title))
                 } else if case let .openLocationPicker(type) = navigationAction {
-                    openLocationScreen(type: type).addDismissWithConfirmation()
+                    openLocationScreen(type: type).addDismissClaimsFlow()
                 } else if case .openUpdateAppScreen = navigationAction {
-                    openUpdateAppTerminationScreen().addDismissWithConfirmation()
+                    openUpdateAppTerminationScreen().addDismissClaimsFlow()
                 } else if case let .openDatePicker(type) = navigationAction {
-                    openDatePickerScreen(type: type).addDismissWithConfirmation()
+                    openDatePickerScreen(type: type).addDismissClaimsFlow()
                 }
             }
         }
@@ -302,10 +303,6 @@ public class ClaimJourneys {
                     }
                 }
             }
-            .onPresent({
-                let store: ClaimsStore = globalPresentableStoreContainer.get()
-                store.send(.fetchCommonClaimsForSelection)
-            })
         case .commonClaims:
             redirectJourney(origin)
         }
@@ -335,7 +332,7 @@ public class ClaimJourneys {
 }
 
 extension JourneyPresentation {
-    func addDismissWithConfirmation() -> some JourneyPresentation {
+    func addDismissClaimsFlow() -> some JourneyPresentation {
         self.withJourneyDismissButtonWithConfirmation(
             withTitle: L10n.General.areYouSure,
             andBody: L10n.Claims.Alert.body,

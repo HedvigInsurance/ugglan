@@ -5,7 +5,6 @@ import hCoreUI
 public struct LocationPickerScreen: View {
     @PresentableStore var store: ClaimsStore
     @State var type: ClaimsNavigationAction.LocationPickerType
-    @State var executedAction: ClaimsAction = .navigationAction(action: .openLocationPicker(type: .submitLocation))
     public init(
         type: ClaimsNavigationAction.LocationPickerType
     ) {
@@ -14,7 +13,7 @@ public struct LocationPickerScreen: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(executedAction) {
+        LoadingViewWithContent(.postLocation) {
             hForm {
                 hSection {
                     PresentableStoreLens(
@@ -39,7 +38,6 @@ public struct LocationPickerScreen: View {
                                             return .claimNextLocation(location: element.value)
                                         }
                                     }()
-                                    self.executedAction = executedAction
                                     store.send(executedAction)
                                 }
                             }

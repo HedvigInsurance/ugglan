@@ -11,7 +11,7 @@ public struct ClaimsState: StateProtocol {
     var commonClaims: [CommonClaim]? = nil
     var currentClaimId: String = ""
     var currentClaimContext: String?
-    var loadingStates: [ClaimsAction: LoadingState<String>] = [:]
+    var loadingStates: [ClaimsLoadingType: LoadingState<String>] = [:]
     var entryPointCommonClaims: [ClaimEntryPointResponseModel] = []
 
     var summaryStep: FlowClaimSummaryStepModel?

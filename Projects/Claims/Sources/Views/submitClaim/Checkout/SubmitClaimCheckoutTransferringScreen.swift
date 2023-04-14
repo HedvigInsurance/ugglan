@@ -25,7 +25,7 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                 }
                 .opacity(loadingAnimation ? 0 : 1)
                 .animation(.spring(), value: loadingAnimation)
-                LoadingViewWithState(.claimNextSingleItemCheckout) {
+                LoadingViewWithState(.postSingleItemCheckout) {
                     successView()
                 } onLoading: {
                     loadingView()

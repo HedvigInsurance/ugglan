@@ -6,7 +6,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public indirect enum ClaimsAction: ActionProtocol, Hashable {
+public enum ClaimsAction: ActionProtocol, Hashable {
     case openFreeTextChat
     case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
@@ -43,7 +43,7 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case setSingleItemDamage(damages: [String])
     case setSingleItemPurchaseDate(purchaseDate: Date?)
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
-    case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
+    case setLoadingState(action: ClaimsLoadingType, state: LoadingState<String>?)
     case setNewClaimContext(context: String)
     case setPayoutMethod(method: AvailableCheckoutMethod)
     case didAcceptHonestyPledge
@@ -95,4 +95,17 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setFailedStep(model: FlowClaimFailedStepModel)
     case setAudioStep(model: FlowClaimAudioRecordingStepModel)
 
+}
+
+public enum ClaimsLoadingType: Codable & Equatable & Hashable {
+    case startClaim
+    case fetchCommonClaims
+    case postPhoneNumber
+    case postDateOfOccurrence
+    case postDateOfOccurrenceAndLocation
+    case postLocation
+    case postSingleItem
+    case postSummary
+    case postSingleItemCheckout
+    case postAudioRecording
 }
