@@ -1,4 +1,6 @@
 import Foundation
+import UIKit
+import hCore
 
 public final class OdysseyNetworkClient {
     let sessionClient: URLSession
@@ -8,8 +10,8 @@ public final class OdysseyNetworkClient {
     }
 
     func handleResponse<T>(data: Data?, response: URLResponse?, error: Error?) throws -> T? where T: Decodable {
-        if let error = error {
-            throw OdysseyNetworkError.networkError(message: error.localizedDescription)
+        if error != nil {
+            throw OdysseyNetworkError.networkError(message: L10n.General.errorBody)
         }
 
         guard let httpResponse = response as? HTTPURLResponse,

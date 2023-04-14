@@ -1,0 +1,7 @@
+mutation FlowClaimSingleItemCheckoutNext($input: FlowClaimSingleItemCheckoutInput!, $context: FlowContext!) {
+  flowClaimSingleItemCheckoutNext(input: $input, context: $context) {
+    id
+    ...FlowClaimFragment
+    context
+  }
+}

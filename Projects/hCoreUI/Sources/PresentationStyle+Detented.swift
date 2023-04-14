@@ -3,6 +3,7 @@ import Form
 import Foundation
 import Presentation
 import UIKit
+import SwiftUI
 
 func setGrabber(on presentationController: UIPresentationController, to value: Bool) {
     let grabberKey = ["_", "setWants", "Grabber:"]
@@ -339,11 +340,12 @@ extension PresentationStyle {
 
         public static var scrollViewContentSize: Detent {
             .custom("scrollViewContentSize") { viewController, containerView in
-                let allScrollViewDescendants = containerView.allDescendants(ofType: UIScrollView.self)
+                let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
+                
                 guard let scrollView = allScrollViewDescendants.first(where: { _ in true }) else {
                     return 0
                 }
-
+                
                 let transitioningDelegate =
                     viewController.navigationController?.transitioningDelegate
                     as? DetentedTransitioningDelegate
@@ -368,6 +370,33 @@ extension PresentationStyle {
                     + 10
 
                 return totalHeight
+            }
+        }
+        
+        public static func hostingControllerContentSize<Content: View>(
+            _ type: Content.Type
+        ) -> Detent {
+            .custom("hostingControllerContentSize") { viewController, containerView in
+                let hostingController = viewController as? UIHostingController<Content>
+                
+                let hostingControllerSafeArea = hostingController?.view.safeAreaInsets ?? .zero
+                let containerViewSafeArea = containerView.safeAreaInsets
+                
+                let safeAreaDiff = UIEdgeInsets(
+                    top: containerViewSafeArea.top - hostingControllerSafeArea.top,
+                    left: containerViewSafeArea.left - hostingControllerSafeArea.left,
+                    bottom: containerViewSafeArea.bottom - hostingControllerSafeArea.bottom,
+                    right: containerViewSafeArea.right - hostingControllerSafeArea.right
+                )
+
+                let contentHeight = hostingController?.sizeThatFits(
+                    in: CGSize(
+                        width: containerView.frame.width,
+                        height: .zero
+                    )
+                ).height ?? .zero
+                
+                return contentHeight + safeAreaDiff.top + safeAreaDiff.bottom
             }
         }
 
@@ -529,10 +558,12 @@ extension PresentationStyle {
                     .wait(
                         until: navigationController
                             .interactivePopGestureRecognizer?
-                            .map { $0 == .possible || $0 == .ended }
+                            .map {
+                                $0 == .possible || $0 == .ended || $0 == .failed
+                            }
                             ?? ReadSignal(true)
                     )
-                    .debug().filter(predicate: { $0 == viewController })
+                    .filter(predicate: { $0 == viewController })
                     .onValue { _ in
                         guard
                             let previousViewController =

@@ -150,18 +150,25 @@ extension AppJourney {
 }
 
 extension JourneyPresentation {
+
     public var configureClaimsNavigation: some JourneyPresentation {
+
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {
                 AppJourney.claimDetailJourney(claim: claim)
             } else if case let .submitNewClaim(origin) = action {
-                AppJourney.claimJourney(from: origin)
-            } else if case .openFreeTextChat = action {
-                AppJourney.freeTextChat()
+                AppJourney.startClaimsJourney(from: origin)
+                    .onAction(ClaimsStore.self) { action in
+                        if case .dissmissNewClaimFlow = action {
+                            DismissJourney()
+                        }
+                    }
             } else if case .openHowClaimsWork = action {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
+            } else if case .openFreeTextChat = action {
+                AppJourney.freeTextChat()
             }
         }
     }

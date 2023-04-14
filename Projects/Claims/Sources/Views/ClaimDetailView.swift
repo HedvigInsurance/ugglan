@@ -96,5 +96,6 @@ public struct ClaimDetailView: View {
         .trackOnAppear(
             hAnalyticsEvent.screenView(screen: .claimsStatusDetail)
         )
+
     }
 }

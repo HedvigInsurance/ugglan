@@ -1,0 +1,7 @@
+mutation FlowClaimPhoneNumberNext($input: FlowClaimPhoneNumberInput!, $context: FlowContext!) {
+  flowClaimPhoneNumberNext(input: $input, context: $context) {
+    id
+    ...FlowClaimFragment
+    context
+  }
+}
