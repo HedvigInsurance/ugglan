@@ -495,6 +495,7 @@ extension PresentationStyle {
             bag.hold(delegate)
             vc.transitioningDelegate = delegate
             vc.modalPresentationStyle = .custom
+            vc.view.backgroundColor = .brand(.primaryBackground())
 
             return from.modallyPresentQueued(vc, options: options) {
                 return Future { completion in
@@ -556,9 +557,6 @@ extension PresentationStyle {
                         else { return }
 
                         func handleDismiss() {
-                            navigationController.view.backgroundColor =
-                                previousViewController.view
-                                .backgroundColor
                             Self.Detent.set(
                                 previousViewController.appliedDetents,
                                 on: presentationController,
