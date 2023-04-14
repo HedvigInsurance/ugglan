@@ -6,7 +6,9 @@ query AdyenAvailableMethods {
         paymentMethodsResponse
     }
     adyenPublicKey
-    insuranceCost {
-        ...CostFragment
+    chargeEstimation {
+        subscription {
+            ...MonetaryAmountFragment
+        }
     }
 }

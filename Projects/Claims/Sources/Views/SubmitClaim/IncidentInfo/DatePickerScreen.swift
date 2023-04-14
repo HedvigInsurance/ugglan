@@ -10,7 +10,6 @@ public struct DatePickerScreen: View {
     public let title: String
     private let buttonTitle: String
     private let maxDate: Date
-    @State var executedAction: ClaimsAction = .navigationAction(action: .openDatePicker(type: .submitDateOfOccurence))
     public init(
         type: ClaimsNavigationAction.DatePickerType
     ) {
@@ -41,12 +40,11 @@ public struct DatePickerScreen: View {
                 return L10n.generalContinueButton
             }
         }()
-        self.executedAction = .navigationAction(action: .openDatePicker(type: type))
         self.dateOfOccurrence = min(maxDate, Date())
     }
 
     public var body: some View {
-        LoadingViewWithContent(executedAction) {
+        LoadingViewWithContent(.postDateOfOccurrence) {
             hForm {
                 hSection {
                     DatePicker(
@@ -74,7 +72,6 @@ public struct DatePickerScreen: View {
                                 return .setSingleItemPurchaseDate(purchaseDate: dateOfOccurrence)
                             }
                         }()
-                        executedAction = action
                         store.send(action)
                     } content: {
                         hText(buttonTitle, style: .body)
@@ -93,7 +90,6 @@ public struct DatePickerScreen: View {
                                 return .setSingleItemPurchaseDate(purchaseDate: nil)
                             }
                         }()
-                        executedAction = action
                         store.send(action)
                     } content: {
                         hText(L10n.generalNotSure, style: .body)

@@ -43,9 +43,7 @@ extension AppJourney {
                 honestyPledge(from: newOrigin)
             }
         } else if hAnalyticsExperiment.odysseyClaims {
-            ClaimJourneys.showCommonClaimIfNeeded(origin: origin) { newOrigin in
-                odysseyClaims(from: newOrigin)
-            }
+            odysseyClaims(from: origin)
         } else {
             claimsJourneyPledgeAndNotificationWrapper { redirect in
                 switch redirect {
@@ -71,7 +69,7 @@ extension AppJourney {
     private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
         HostingJourney(
             ClaimsStore.self,
-            rootView: LoadingViewWithContent(.startClaim(from: origin.id)) {
+            rootView: LoadingViewWithContent(.startClaim) {
                 HonestyPledge {
                     let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                     if ugglanStore.state.askForPushNotificationPermission() {
@@ -92,7 +90,7 @@ extension AppJourney {
                 if case .openNotificationsPermissionScreen = navigationAction {
                     HostingJourney(
                         ClaimsStore.self,
-                        rootView: LoadingViewWithContent(.startClaim(from: origin.id)) {
+                        rootView: LoadingViewWithContent(.startClaim) {
                             ClaimFlowAskForPushnotifications(onActionExecuted: {
                                 let store: ClaimsStore = globalPresentableStoreContainer.get()
                                 store.send(.startClaim(from: origin.id))

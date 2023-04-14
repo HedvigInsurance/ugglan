@@ -6,7 +6,7 @@ public struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: ClaimsStore
 
     public var body: some View {
-        LoadingViewWithContent(.claimNextDateOfOccurrenceAndLocation) {
+        LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
             hForm {
 
                 hSection {
@@ -18,9 +18,10 @@ public struct SubmitClaimOccurrencePlusLocationScreen: View {
                     ) { dateOfOccurenceStep in
                         hRow {
                             hText(L10n.Claims.Incident.Screen.Date.Of.incident)
-                        }.withCustomAccessory {
+                        }
+                        .withCustomAccessory {
                             Spacer()
-                            
+
                             Group {
                                 if let dateOfOccurrence = dateOfOccurenceStep?.dateOfOccurence {
                                     hText(dateOfOccurrence)
@@ -28,13 +29,15 @@ public struct SubmitClaimOccurrencePlusLocationScreen: View {
                                     Image(uiImage: hCoreUIAssets.calendar.image)
                                         .renderingMode(.template)
                                 }
-                            }.foregroundColor(hLabelColor.secondary)
-                        }.onTap {
+                            }
+                            .foregroundColor(hLabelColor.secondary)
+                        }
+                        .onTap {
                             store.send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
                         }
                     }
                 }
-                
+
                 hSection {
                     PresentableStoreLens(
                         ClaimsStore.self,
@@ -44,7 +47,8 @@ public struct SubmitClaimOccurrencePlusLocationScreen: View {
                     ) { locationStep in
                         hRow {
                             hText(L10n.Claims.Incident.Screen.location)
-                        }.withCustomAccessory {
+                        }
+                        .withCustomAccessory {
                             Spacer()
                             Group {
                                 if let location = locationStep?.getSelectedOption()?.displayName {
@@ -52,8 +56,10 @@ public struct SubmitClaimOccurrencePlusLocationScreen: View {
                                 } else {
                                     hText(L10n.Claim.Location.choose)
                                 }
-                            }.foregroundColor(hLabelColor.secondary)
-                        }.onTap {
+                            }
+                            .foregroundColor(hLabelColor.secondary)
+                        }
+                        .onTap {
                             store.send(.navigationAction(action: .openLocationPicker(type: .setLocation)))
                         }
                     }

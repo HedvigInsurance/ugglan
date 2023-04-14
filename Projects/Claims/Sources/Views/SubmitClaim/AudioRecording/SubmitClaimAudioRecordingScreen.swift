@@ -26,7 +26,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(.submitAudioRecording(audioURL: self.audioPlayer.url)) {
+        LoadingViewWithContent(.postAudioRecording) {
             hForm {
                 PresentableStoreLens(
                     ClaimsStore.self,
@@ -68,7 +68,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                     hText(L10n.embarkRecordAgain)
                                 }
                             }
-                            .transition(.move(edge: .bottom))
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
                             .onAppear {
                                 self.audioPlayer.url = recording.url
                             }

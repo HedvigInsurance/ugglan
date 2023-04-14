@@ -51,7 +51,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 }
                 .valueThenEndSignal
         case let .startClaim(id):
-            self.send(.setLoadingState(action: action, state: .loading))
+            self.send(.setLoadingState(action: .startClaim, state: .loading))
             let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: id)
             let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput)
             return FiniteSignal { callback in
@@ -70,13 +70,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             for: action,
                             callback: callback
                         )
-                        callback(.value(.setLoadingState(action: action, state: nil)))
+                        callback(.value(.setLoadingState(action: .startClaim, state: nil)))
                     }
                     .onError { error in
                         callback(
                             .value(
                                 .setLoadingState(
-                                    action: action,
+                                    action: .startClaim,
                                     state: .error(error: L10n.General.errorBody)
                                 )
                             )
@@ -85,7 +85,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return disposeBag
             }
         case let .claimNextPhoneNumber(phoneNumberInput):
-            self.send(.setLoadingState(action: action, state: .loading))
+            self.send(.setLoadingState(action: .postPhoneNumber, state: .loading))
             let phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
             let mutation = OctopusGraphQL.FlowClaimPhoneNumberNextMutation(input: phoneNumber, context: newClaimContext)
             return FiniteSignal { callback in
@@ -97,13 +97,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             for: action,
                             callback: callback
                         )
-                        callback(.value(.setLoadingState(action: action, state: nil)))
+                        callback(.value(.setLoadingState(action: .postPhoneNumber, state: nil)))
                     }
                     .onError { error in
                         callback(
                             .value(
                                 .setLoadingState(
-                                    action: action,
+                                    action: .postPhoneNumber,
                                     state: .error(error: L10n.General.errorBody)
                                 )
                             )
@@ -112,7 +112,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return disposeBag
             }
         case let .claimNextDateOfOccurrence(dateOfOccurrence):
-            send(.setLoadingState(action: action, state: .loading))
+            send(.setLoadingState(action: .postDateOfOccurrence, state: .loading))
             let dateString = dateOfOccurrence?.localDateString
             let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
             let mutation = OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation(
@@ -131,18 +131,23 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             for: action,
                             callback: callback
                         )
-                        actions.append(.setLoadingState(action: action, state: nil))
+                        actions.append(.setLoadingState(action: .postDateOfOccurrence, state: nil))
                         actions.forEach({ callback(.value($0)) })
                     }
                     .onError { error in
                         callback(
-                            .value(.setLoadingState(action: action, state: .error(error: error.localizedDescription)))
+                            .value(
+                                .setLoadingState(
+                                    action: .postDateOfOccurrence,
+                                    state: .error(error: L10n.General.errorBody)
+                                )
+                            )
                         )
                     }
                 return NilDisposer()
             }
         case let .claimNextLocation(location):
-            self.send(.setLoadingState(action: action, state: .loading))
+            self.send(.setLoadingState(action: .postLocation, state: .loading))
             let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: location)
             let mutation = OctopusGraphQL.FlowClaimLocationNextMutation(input: locationInput, context: newClaimContext)
             return FiniteSignal { callback in
@@ -154,13 +159,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             for: action,
                             callback: callback
                         )
-                        callback(.value(.setLoadingState(action: action, state: nil)))
+                        callback(.value(.setLoadingState(action: .postLocation, state: nil)))
                     }
                     .onError { error in
                         callback(
                             .value(
                                 .setLoadingState(
-                                    action: action,
+                                    action: .postLocation,
                                     state: .error(error: L10n.General.errorBody)
                                 )
                             )
@@ -169,7 +174,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return disposeBag
             }
         case .claimNextDateOfOccurrenceAndLocation:
-            self.send(.setLoadingState(action: action, state: .loading))
+            self.send(.setLoadingState(action: .postDateOfOccurrenceAndLocation, state: .loading))
             let location = state.locationStep?.getSelectedOption()?.value
             let date = state.dateOfOccurenceStep?.dateOfOccurence
 
@@ -190,13 +195,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         )
                         data.flowClaimDateOfOccurrencePlusLocationNext.fragments.flowClaimFragment
                             .executeNextStepActions(for: action, callback: callback)
-                        callback(.value(.setLoadingState(action: action, state: nil)))
+                        callback(.value(.setLoadingState(action: .postDateOfOccurrenceAndLocation, state: nil)))
                     }
                     .onError { error in
                         callback(
                             .value(
                                 .setLoadingState(
-                                    action: action,
+                                    action: .postDateOfOccurrenceAndLocation,
                                     state: .error(error: L10n.General.errorBody)
                                 )
                             )
@@ -205,7 +210,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return disposeBag
             }
         case let .submitAudioRecording(audioURL):
-            self.send(.setLoadingState(action: action, state: .loading))
+            self.send(.setLoadingState(action: .postAudioRecording, state: .loading))
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 do {
@@ -232,13 +237,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                         for: action,
                                         callback: callback
                                     )
-                                    callback(.value(.setLoadingState(action: action, state: nil)))
+                                    callback(.value(.setLoadingState(action: .postAudioRecording, state: nil)))
                                 }
                                 .onError { error in
                                     callback(
                                         .value(
                                             .setLoadingState(
-                                                action: action,
+                                                action: .postAudioRecording,
                                                 state: .error(error: L10n.General.errorBody)
                                             )
                                         )
@@ -250,8 +255,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             callback(
                                 .value(
                                     .setLoadingState(
-                                        action: action,
-                                        state: .error(error: error.localizedDescription)
+                                        action: .postAudioRecording,
+                                        state: .error(error: L10n.General.errorBody)
                                     )
                                 )
                             )
@@ -259,7 +264,12 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         .disposable
                 } catch let error {
                     callback(
-                        .value(.setLoadingState(action: action, state: .error(error: error.localizedDescription)))
+                        .value(
+                            .setLoadingState(
+                                action: .postAudioRecording,
+                                state: .error(error: L10n.General.errorBody)
+                            )
+                        )
                     )
                 }
 
@@ -272,7 +282,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             }
 
         case let .claimNextSingleItem(purchasePrice):
-            self.send(.setLoadingState(action: action, state: .loading))
+            self.send(.setLoadingState(action: .postSingleItem, state: .loading))
             let singleItemInput = state.singleItemStep!.returnSingleItemInfo(purchasePrice: purchasePrice)
             let mutation = OctopusGraphQL.FlowClaimSingleItemNextMutation(
                 input: singleItemInput,
@@ -293,19 +303,21 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             for: action,
                             callback: callback
                         )
-                        actions.append(.setLoadingState(action: action, state: nil))
+                        actions.append(.setLoadingState(action: .postSingleItem, state: nil))
                         actions.forEach({ callback(.value($0)) })
                     }
                     .onError { error in
                         callback(
-                            .value(.setLoadingState(action: action, state: .error(error: error.localizedDescription)))
+                            .value(
+                                .setLoadingState(action: .postSingleItem, state: .error(error: L10n.General.errorBody))
+                            )
                         )
                     }
                 return NilDisposer()
             }
 
         case .claimNextSummary:
-            send(.setLoadingState(action: action, state: .loading))
+            send(.setLoadingState(action: .postSummary, state: .loading))
             let summaryInput = OctopusGraphQL.FlowClaimSummaryInput()
             let mutation = OctopusGraphQL.FlowClaimSummaryNextMutation(
                 input: summaryInput,
@@ -320,13 +332,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             for: action,
                             callback: callback
                         )
-                        callback(.value(.setLoadingState(action: action, state: nil)))
+                        callback(.value(.setLoadingState(action: .postSummary, state: nil)))
                     }
                     .onError { error in
                         callback(
                             .value(
                                 .setLoadingState(
-                                    action: action,
+                                    action: .postSummary,
                                     state: .error(error: L10n.General.errorBody)
                                 )
                             )
@@ -335,7 +347,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return disposeBag
             }
         case .claimNextSingleItemCheckout:
-            send(.setLoadingState(action: action, state: .loading))
+            send(.setLoadingState(action: .postSingleItemCheckout, state: .loading))
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 if let claimSingleItemCheckoutInput = self.state.singleItemCheckoutStep!.returnSingleItemCheckoutInfo()
@@ -352,25 +364,32 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                 for: action,
                                 callback: callback
                             )
-                            callback(.value(.setLoadingState(action: action, state: nil)))
+                            callback(.value(.setLoadingState(action: .postSingleItemCheckout, state: nil)))
                         }
                         .onError { error in
                             callback(
                                 .value(
                                     .setLoadingState(
-                                        action: action,
+                                        action: .postSingleItemCheckout,
                                         state: .error(error: L10n.General.errorBody)
                                     )
                                 )
                             )
                         }
                 } else {
-                    callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                    callback(
+                        .value(
+                            .setLoadingState(
+                                action: .postSingleItemCheckout,
+                                state: .error(error: L10n.General.errorBody)
+                            )
+                        )
+                    )
                 }
                 return disposeBag
             }
         case .fetchCommonClaimsForSelection:
-            self.send(.setLoadingState(action: action, state: .loading))
+            self.send(.setLoadingState(action: .fetchCommonClaims, state: .loading))
             let entryPointInput = OctopusGraphQL.EntrypointSearchInput(type: OctopusGraphQL.EntrypointType.claim)
             let query = OctopusGraphQL.EntrypointSearchQuery(input: entryPointInput)
             return FiniteSignal { callback in
@@ -383,11 +402,16 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         }
 
                         callback(.value(.setCommonClaimsForSelection(model)))
-                        callback(.value(.setLoadingState(action: action, state: nil)))
+                        callback(.value(.setLoadingState(action: .fetchCommonClaims, state: nil)))
                     }
                     .onError { error in
                         callback(
-                            .value(.setLoadingState(action: action, state: .error(error: error.localizedDescription)))
+                            .value(
+                                .setLoadingState(
+                                    action: .fetchCommonClaims,
+                                    state: .error(error: L10n.General.errorBody)
+                                )
+                            )
                         )
                     }
                     .disposable

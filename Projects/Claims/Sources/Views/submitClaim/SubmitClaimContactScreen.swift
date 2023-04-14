@@ -15,11 +15,12 @@ public struct SubmitClaimContactScreen: View {
     }
     public var body: some View {
 
-        LoadingViewWithContent(.claimNextPhoneNumber(phoneNumber: phoneNumber)) {
+        LoadingViewWithContent(.postPhoneNumber) {
             hForm {
                 HStack(spacing: 0) {
                     hText(L10n.Message.Claims.Ask.phone, style: .body)
                         .foregroundColor(hLabelColor.primary)
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding([.trailing, .leading], 12)
                         .padding([.top, .bottom], 16)
                 }
@@ -64,52 +65,9 @@ public struct SubmitClaimContactScreen: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .bottom)
                     .padding([.leading, .trailing], 16)
+                    .padding(.bottom, 6)
                 }
             }
         }
-    }
-}
-
-public struct LoadingViewWithContent<Content: View>: View {
-    var content: () -> Content
-    @PresentableStore var store: ClaimsStore
-    private let action: ClaimsAction
-    public init(
-        _ action: ClaimsAction,
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.action = action
-        self.content = content
-    }
-    public var body: some View {
-        ZStack {
-            content()
-            PresentableStoreLens(
-                ClaimsStore.self,
-                getter: { state in
-                    state.loadingStates
-                }
-            ) { loadingStates in
-                if let state = loadingStates[action] {
-                    switch state {
-                    case .loading:
-                        HStack {
-                            WordmarkActivityIndicator(.standard)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(hBackgroundColor.primary.opacity(0.7))
-                        .cornerRadius(.defaultCornerRadius)
-                        .edgesIgnoringSafeArea(.top)
-                    case let .error(error):
-                        RetryView(title: error, retryTitle: L10n.alertOk) {
-                            store.send(.setLoadingState(action: action, state: nil))
-                        }
-                    }
-
-                }
-            }
-            .presentableStoreLensAnimation(.easeInOut)
-        }
-
     }
 }

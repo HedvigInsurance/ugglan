@@ -66,7 +66,7 @@ public struct SetTerminationDate: View {
                     hButton.LargeButtonFilled {
                         onSelected(terminationDate)
                     } content: {
-                        hText(L10n.generalContinueButton, style: .body)
+                        hText(L10n.terminationConfirmButton, style: .body)
                             .foregroundColor(hLabelColor.primary.inverted)
                             .frame(minHeight: 52)
                             .frame(minWidth: 200)
