@@ -47,7 +47,10 @@ public struct ZignsecLoginSession: View {
                             HStack {
                                 hText(L10n.zignsecOpeningBrowser)
 
-                                ActivityIndicator(style: .large)
+                                ActivityIndicator(
+                                    style: .large,
+                                    color: hLabelColor.primary
+                                )
                             }
                         } else {
                             VectorPreservedImage(
@@ -60,7 +63,10 @@ public struct ZignsecLoginSession: View {
                             HStack {
                                 hText(L10n.zignsecWaitingForResponse)
 
-                                ActivityIndicator(style: .large)
+                                ActivityIndicator(
+                                    style: .large,
+                                    color: hLabelColor.primary
+                                )
                             }
                         }
                     }

@@ -1,6 +1,8 @@
 query MyPayment($locale: Locale!) {
-    insuranceCost {
-        ...CostFragment
+    chargeEstimation {
+        subscription {
+            ...MonetaryAmountFragment
+        }
     }
     bankAccount {
         bankName

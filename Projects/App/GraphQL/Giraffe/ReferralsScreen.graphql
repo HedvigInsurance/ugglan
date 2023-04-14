@@ -1,6 +1,8 @@
 query ReferralsScreen {
-    insuranceCost {
-        ...CostFragment
+    chargeEstimation {
+        subscription {
+            ...MonetaryAmountFragment
+        }
     }
     referralInformation {
         campaign {

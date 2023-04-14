@@ -34,11 +34,9 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
                     )
                 )
                 .compactMap { data in
-                    if let fragment = data.insuranceCost?.monthlyNet.fragments.monetaryAmountFragment {
-                        return .setMonthlyNetCost(cost: MonetaryAmount(fragment: fragment))
-                    }
+                    let amount = data.chargeEstimation.charge.fragments.monetaryAmountFragment.monetaryAmount
 
-                    return nil
+                    return .setMonthlyNetCost(cost: amount)
                 }
                 .valueThenEndSignal
         default:
