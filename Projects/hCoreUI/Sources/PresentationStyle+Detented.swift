@@ -519,20 +519,24 @@ extension PresentationStyle {
             {
                 from.lastDetentIndex = getDetentIndex(on: presentationController)
                 
-                bag += navigationController.willShowViewControllerSignal.filter(predicate: {
-                    $0.viewController == viewController
-                }).delay(by: 0.05).onFirstValue { _ in
-                    Self.Detent.set(
-                        detents,
-                        on: presentationController,
-                        viewController: viewController,
-                        unanimated: options.contains(.unanimated)
-                    )
-                    setGrabber(
-                        on: presentationController,
-                        to: options.contains(.wantsGrabber)
-                    )
-                }
+                bag += navigationController
+                    .willShowViewControllerSignal
+                    .filter {
+                        $0.viewController == viewController
+                    }.onFirstValue { _ in
+                        DispatchQueue.main.async {
+                            Self.Detent.set(
+                                detents,
+                                on: presentationController,
+                                viewController: viewController,
+                                unanimated: options.contains(.unanimated)
+                            )
+                            setGrabber(
+                                on: presentationController,
+                                to: options.contains(.wantsGrabber)
+                            )
+                        }
+                    }
 
                 bag += navigationController.willPopViewControllerSignal
                     .wait(
@@ -579,7 +583,7 @@ extension PresentationStyle {
                         }
                     }
             }
-
+            
             let defaultPresentation = PresentationStyle.default.present(
                 viewController,
                 from: from,

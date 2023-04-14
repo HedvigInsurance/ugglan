@@ -59,7 +59,6 @@ public struct DatePickerScreen: View {
                     .datePickerStyle(.graphical)
                     .padding([.leading, .trailing], 16)
                     .padding([.top], 5)
-                    .expandAppearAnimation()
                 }
             }
             .hFormAttachToBottom {

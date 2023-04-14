@@ -79,7 +79,7 @@ public class ClaimJourneys {
         return HostingJourney(
             ClaimsStore.self,
             rootView: screen,
-            style: .detented(.preferredContentSize),
+            style: .detented(.scrollViewContentSize),
             options: [
                 .defaults,
                 .largeTitleDisplayMode(.always),
