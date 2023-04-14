@@ -28,7 +28,7 @@ public struct ClaimFlowAskForPushnotifications: View {
 
         }
         .hFormAttachToBottom {
-            VStack {
+            VStack(spacing: 12) {
                 hButton.LargeButtonFilled {
                     let current = UNUserNotificationCenter.current()
                     current.getNotificationSettings(completionHandler: { settings in
