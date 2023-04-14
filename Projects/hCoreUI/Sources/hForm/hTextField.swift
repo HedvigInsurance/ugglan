@@ -16,9 +16,10 @@ extension Set where Element == hTextFieldOptions {
             } else {
                 return nil
             }
-        }.first ?? 0.0
+        }
+        .first ?? 0.0
     }
-    
+
     var showDivider: Bool {
         self.contains(.showDivider)
     }

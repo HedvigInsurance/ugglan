@@ -11,7 +11,7 @@ public struct SubmitClaimSingleItem: View {
     public init() {}
 
     public var body: some View {
-        LoadingViewWithContent(.claimNextSingleItem(purchasePrice: Double(purchasePrice) ?? 0)) {
+        LoadingViewWithContent(.postSingleItem) {
             hForm {
                 PresentableStoreLens(
                     ClaimsStore.self,
