@@ -33,6 +33,7 @@ public struct SubmitClaimSingleItem: View {
                     hText(L10n.generalContinueButton)
                 }
                 .padding([.leading, .trailing], 16)
+                .padding(.bottom, 6)
             }
         }
     }
@@ -65,7 +66,7 @@ public struct SubmitClaimSingleItem: View {
                     store.send(.navigationAction(action: .openBrandPicker))
                 }
             }
-            
+
         }
     }
 
@@ -85,7 +86,8 @@ public struct SubmitClaimSingleItem: View {
                         Image(uiImage: hCoreUIAssets.calendar.image)
                             .renderingMode(.template)
                     }
-                }.foregroundColor(hLabelColor.secondary)
+                }
+                .foregroundColor(hLabelColor.secondary)
             }
             .onTap {
                 store.send(.navigationAction(action: .openDatePicker(type: .setDateOfPurchase)))
@@ -123,7 +125,8 @@ public struct SubmitClaimSingleItem: View {
             hRow {
                 hText(L10n.Claims.Item.Screen.Purchase.Price.button)
                     .foregroundColor(hLabelColor.primary)
-            }.withCustomAccessory {
+            }
+            .withCustomAccessory {
                 Group {
                     hTextField(
                         masking: Masking(type: .digits),
@@ -132,12 +135,13 @@ public struct SubmitClaimSingleItem: View {
                     .multilineTextAlignment(.trailing)
                     .hTextFieldOptions([])
                     Spacer()
-                    
+
                     if let preferredCurrency = claim?.prefferedCurrency {
                         let amount = MonetaryAmount(amount: 0.0, currency: preferredCurrency)
                         hText(amount.currencySymbol)
                     }
-                }.foregroundColor(hLabelColor.secondary)
+                }
+                .foregroundColor(hLabelColor.secondary)
             }
         }
     }
