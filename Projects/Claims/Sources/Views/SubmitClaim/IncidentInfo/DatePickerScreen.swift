@@ -7,7 +7,7 @@ public struct DatePickerScreen: View {
     @State private var dateOfOccurrence = Date()
     @PresentableStore var store: ClaimsStore
     private let type: ClaimsNavigationAction.DatePickerType
-    private let title: String
+    public let title: String
     private let buttonTitle: String
     private let maxDate: Date
     @State var executedAction: ClaimsAction = .navigationAction(action: .openDatePicker(type: .submitDateOfOccurence))
@@ -61,15 +61,9 @@ public struct DatePickerScreen: View {
                     .padding([.top], 5)
                     .expandAppearAnimation()
                 }
-                .withHeader {
-                    hText(title, style: .title1)
-                        .foregroundColor(hLabelColor.primary)
-                }
             }
             .hFormAttachToBottom {
-
                 VStack {
-
                     hButton.LargeButtonFilled {
                         let action: ClaimsAction = {
                             switch type {

@@ -1,4 +1,5 @@
 import Flow
+import hCore
 import Form
 import Foundation
 import Presentation
@@ -342,7 +343,9 @@ extension PresentationStyle {
             .custom("scrollViewContentSize") { viewController, containerView in
                 let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
                 
-                guard let scrollView = allScrollViewDescendants.first(where: { _ in true }) else {
+                guard let scrollView = allScrollViewDescendants.first(where: { _ in
+                    true
+                }) else {
                     return 0
                 }
                 
@@ -370,33 +373,6 @@ extension PresentationStyle {
                     + 10
 
                 return totalHeight
-            }
-        }
-        
-        public static func hostingControllerContentSize<Content: View>(
-            _ type: Content.Type
-        ) -> Detent {
-            .custom("hostingControllerContentSize") { viewController, containerView in
-                let hostingController = viewController as? UIHostingController<Content>
-                
-                let hostingControllerSafeArea = hostingController?.view.safeAreaInsets ?? .zero
-                let containerViewSafeArea = containerView.safeAreaInsets
-                
-                let safeAreaDiff = UIEdgeInsets(
-                    top: containerViewSafeArea.top - hostingControllerSafeArea.top,
-                    left: containerViewSafeArea.left - hostingControllerSafeArea.left,
-                    bottom: containerViewSafeArea.bottom - hostingControllerSafeArea.bottom,
-                    right: containerViewSafeArea.right - hostingControllerSafeArea.right
-                )
-
-                let contentHeight = hostingController?.sizeThatFits(
-                    in: CGSize(
-                        width: containerView.frame.width,
-                        height: .zero
-                    )
-                ).height ?? .zero
-                
-                return contentHeight + safeAreaDiff.top + safeAreaDiff.bottom
             }
         }
 
@@ -542,17 +518,21 @@ extension PresentationStyle {
                 let presentationController = navigationController.presentationController
             {
                 from.lastDetentIndex = getDetentIndex(on: presentationController)
-
-                Self.Detent.set(
-                    detents,
-                    on: presentationController,
-                    viewController: viewController,
-                    unanimated: options.contains(.unanimated)
-                )
-                setGrabber(
-                    on: presentationController,
-                    to: options.contains(.wantsGrabber)
-                )
+                
+                bag += navigationController.willShowViewControllerSignal.filter(predicate: {
+                    $0.viewController == viewController
+                }).delay(by: 0.05).onFirstValue { _ in
+                    Self.Detent.set(
+                        detents,
+                        on: presentationController,
+                        viewController: viewController,
+                        unanimated: options.contains(.unanimated)
+                    )
+                    setGrabber(
+                        on: presentationController,
+                        to: options.contains(.wantsGrabber)
+                    )
+                }
 
                 bag += navigationController.willPopViewControllerSignal
                     .wait(
