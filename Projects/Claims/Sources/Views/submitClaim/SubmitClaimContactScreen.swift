@@ -20,6 +20,7 @@ public struct SubmitClaimContactScreen: View {
                 HStack(spacing: 0) {
                     hText(L10n.Message.Claims.Ask.phone, style: .body)
                         .foregroundColor(hLabelColor.primary)
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding([.trailing, .leading], 12)
                         .padding([.top, .bottom], 16)
                 }
