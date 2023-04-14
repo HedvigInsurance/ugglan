@@ -62,33 +62,25 @@ public struct LoadingViewWithContent<Content: View>: View {
         self.content = content
     }
     public var body: some View {
-        PresentableStoreLens(
-            ClaimsStore.self,
-            getter: { state in
-                state.loadingStates
-            }
-        ) { loadingStates in
-            ZStack {
-                content()
-                    .alert(isPresented: $presentError) {
-                        Alert(
-                            title: Text(L10n.somethingWentWrong),
-                            message: Text(error),
-                            dismissButton: .default(Text(L10n.alertOk))
-                        )
-                    }
-                if isLoading {
-                    HStack {
-                        WordmarkActivityIndicator(.standard)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(hBackgroundColor.primary.opacity(0.7))
-                    .cornerRadius(.defaultCornerRadius)
-                    .edgesIgnoringSafeArea(.top)
+        ZStack {
+            content()
+                .alert(isPresented: $presentError) {
+                    Alert(
+                        title: Text(L10n.somethingWentWrong),
+                        message: Text(error),
+                        dismissButton: .default(Text(L10n.alertOk))
+                    )
                 }
+            if isLoading {
+                HStack {
+                    WordmarkActivityIndicator(.standard)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(hBackgroundColor.primary.opacity(0.7))
+                .cornerRadius(.defaultCornerRadius)
+                .edgesIgnoringSafeArea(.top)
             }
         }
-        .presentableStoreLensAnimation(.easeInOut)
         .onAppear {
             func handle(state: ClaimsState) {
                 if let actionState = state.loadingStates[action] {
