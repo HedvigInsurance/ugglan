@@ -76,6 +76,14 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                 guard let navigationController = self.viewController.navigationController else {
                     return
                 }
+                
+                guard ![
+                    .changed,
+                    .began,
+                    .cancelled
+                ].contains(navigationController.interactivePopGestureRecognizer?.state) else {
+                    return
+                }
 
                 if var topController = navigationController.view.window?.rootViewController {
                     while let presentedViewController = topController.presentedViewController {
