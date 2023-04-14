@@ -23,24 +23,27 @@ public class ClaimJourneys {
             if case let .navigationAction(navigationAction) = action {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
                     submitClaimPhoneNumberScreen(model: model).addDismissWithConfirmation()
+                        .configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
                     submitClaimOccurrancePlusLocationScreen().addDismissWithConfirmation()
+                        .configureTitle(L10n.Claims.Incident.Screen.header)
                 } else if case .openAudioRecordingScreen = navigationAction {
-                    openAudioRecordingSceen().addDismissWithConfirmation()
+                    openAudioRecordingSceen().addDismissWithConfirmation().configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSuccessScreen = navigationAction {
-                    openSuccessScreen().addDismissWithConfirmation()
+                    openSuccessScreen().addDismissWithConfirmation().configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSingleItemScreen = navigationAction {
-                    openSingleItemScreen().addDismissWithConfirmation()
+                    openSingleItemScreen().addDismissWithConfirmation().configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSummaryScreen = navigationAction {
-                    openSummaryScreen().addDismissWithConfirmation()
+                    openSummaryScreen().addDismissWithConfirmation().configureTitle((L10n.Claims.Summary.Screen.title))
                 } else if case .openDamagePickerScreen = navigationAction {
                     openDamagePickerScreen().addDismissWithConfirmation()
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
                     openCheckoutNoRepairScreen().addDismissWithConfirmation()
+                        .configureTitle((L10n.Claims.Payout.Summary.title))
                 } else if case .openFailureSceen = navigationAction {
                     showClaimFailureScreen().addDismissWithConfirmation()
                 } else if case .openSummaryEditScreen = navigationAction {
-                    openSummaryEditScreen().addDismissWithConfirmation()
+                    openSummaryEditScreen().addDismissWithConfirmation().configureTitle((L10n.Claims.Edit.Screen.title))
                 } else if case let .openLocationPicker(type) = navigationAction {
                     openLocationScreen(type: type).addDismissWithConfirmation()
                 } else if case .openUpdateAppScreen = navigationAction {
