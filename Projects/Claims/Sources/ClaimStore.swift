@@ -256,7 +256,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                 .value(
                                     .setLoadingState(
                                         action: .postAudioRecording,
-                                        state: .error(error: error.localizedDescription)
+                                        state: .error(error: L10n.General.errorBody)
                                     )
                                 )
                             )
@@ -267,7 +267,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         .value(
                             .setLoadingState(
                                 action: .postAudioRecording,
-                                state: .error(error: error.localizedDescription)
+                                state: .error(error: L10n.General.errorBody)
                             )
                         )
                     )
