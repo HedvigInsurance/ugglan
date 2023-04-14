@@ -22,7 +22,6 @@ public class ClaimJourneys {
         GroupJourney {
             if case let .navigationAction(navigationAction) = action {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
-                    <<<<<<<HEAD
                     submitClaimPhoneNumberScreen(model: model).addDismissWithConfirmation()
                         .configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
