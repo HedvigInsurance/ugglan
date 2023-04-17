@@ -42,21 +42,13 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
 //            actions.append(.stepModelAction(action: .setDateOfOccurence(model: .init(with: dateOfOccurrenceStep))))
 //            actions.append(.stepModelAction(action: .setSummaryStep(model: .init(with: step))))
 //            actions.append(.navigationAction(action: .openSummaryScreen))
-//        } else if let step = self.fragments.flowClaimDateOfOccurrencePlusLocationStepFragment {
-//            let model = FlowClaimDateOfOccurrencePlusLocationStepModel(with: step)
-//            let dateOfOccurence = FlowClaimDateOfOccurenceStepModel(
-//                with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
-//            )
-//            let locationModel = FlowClaimLocationStepModel(
-//                with: step.locationStep.fragments.flowClaimLocationStepFragment
-//            )
-//            actions.append(.stepModelAction(action: .setDateOfOccurrencePlusLocation(model: model)))
-//            actions.append(.stepModelAction(action: .setDateOfOccurence(model: dateOfOccurence)))
-//            actions.append(.stepModelAction(action: .setLocation(model: locationModel)))
-//            actions.append(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
-//        } else if let step = self.fragments.flowClaimFailedStepFragment {
-//            actions.append(.stepModelAction(action: .setFailedStep(model: .init(with: step))))
-//            actions.append(.navigationAction(action: .openFailureSceen))
+        } else if let step = self.fragments.flowClaimDateOfOccurrencePlusLocationStepFragment {
+            return .stepModelAction(action: .setDateOfOccurrencePlusLocation(model: .init(dateOfOccurencePlusLocationModel: .init(with: step),
+                                                                                          dateOfOccurenceModel: .init(with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment),
+                                                                                          locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment))))
+            //        } else if let step = self.fragments.flowClaimFailedStepFragment {
+            //            actions.append(.stepModelAction(action: .setFailedStep(model: .init(with: step))))
+            //            actions.append(.navigationAction(action: .openFailureSceen))
 //        } else if let step = self.fragments.flowClaimSuccessStepFragment {
 //            actions.append(.stepModelAction(action: .setSuccessStep(model: .init(with: step))))
             //            if case .claimNextSingleItemCheckout = action {
@@ -103,11 +95,17 @@ protocol ClaimStepContext {
 
 extension OctopusGraphQL.FlowClaimStartMutation.Data: ClaimStepContext, ClaimStepId {
     func getContext() -> String {
-        return self.flowClaimStart.id
+        return self.flowClaimStart.context
     }
     
     func getStepId() -> String {
-        return self.flowClaimStart.context
+        return self.flowClaimStart.id
+    }
+}
+
+extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data: ClaimStepContext {
+    func getContext() -> String {
+        return self.flowClaimDateOfOccurrencePlusLocationNext.context
     }
 }
 

@@ -258,6 +258,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 newState.dateOfOccurrencePlusLocationStep = model.dateOfOccurencePlusLocationModel
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
+                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
             case let .setDateOfOccurence(model):
                 newState.dateOfOccurenceStep = model
             case let .setLocation(model):
