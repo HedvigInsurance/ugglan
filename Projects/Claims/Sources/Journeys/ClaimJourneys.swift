@@ -287,29 +287,24 @@ public class ClaimJourneys {
         origin: ClaimsOrigin,
         @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
     ) -> some JourneyPresentation {
-        switch origin {
-        case .generic:
-            HostingJourney(
-                ClaimsStore.self,
-                rootView: SelectCommonClaim(),
-                style: .detented(.large),
-                options: [
-                    .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
-                ]
-            ) { action in
-                if case let .commonClaimOriginSelected(origin) = action {
-                    GroupJourney { context in
-                        switch origin {
-                        case .generic:
-                            ContinueJourney()
-                        case let .commonClaims(id):
-                            redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                        }
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: SelectCommonClaim(),
+            style: .detented(.large),
+            options: [
+                .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
+            ]
+        ) { action in
+            if case let .commonClaimOriginSelected(origin) = action {
+                GroupJourney { context in
+                    switch origin {
+                    case .generic:
+                        ContinueJourney()
+                    case let .commonClaims(id):
+                        redirectJourney(ClaimsOrigin.commonClaims(id: id))
                     }
                 }
             }
-        case .commonClaims:
-            redirectJourney(origin)
         }
     }
 
