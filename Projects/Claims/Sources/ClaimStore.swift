@@ -50,67 +50,16 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     return .setCommonClaims(commonClaims: commonClaims)
                 }
                 .valueThenEndSignal
-        case let .startClaim(id):
+        case let .startClaimRequest(id):
             self.send(.setLoadingState(action: .startClaim, state: .loading))
             let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: id)
             let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput)
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .onValue { data in
-                        callback(.value(.setNewClaimContext(context: data.flowClaimStart.context)))
-                        callback(
-                            .value(
-                                .setNewClaimId(
-                                    with: data.flowClaimStart.id
-                                )
-                            )
-                        )
-                        data.flowClaimStart.fragments.flowClaimFragment.executeNextStepActions(
-                            for: action,
-                            callback: callback
-                        )
-                        callback(.value(.setLoadingState(action: .startClaim, state: nil)))
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(
-                                    action: .startClaim,
-                                    state: .error(error: L10n.General.errorBody)
-                                )
-                            )
-                        )
-                    }
-                return disposeBag
-            }
+            return mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
         case let .claimNextPhoneNumber(phoneNumberInput):
             self.send(.setLoadingState(action: .postPhoneNumber, state: .loading))
             let phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
             let mutation = OctopusGraphQL.FlowClaimPhoneNumberNextMutation(input: phoneNumber, context: newClaimContext)
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .onValue { data in
-                        callback(.value(.setNewClaimContext(context: data.flowClaimPhoneNumberNext.context)))
-                        data.flowClaimPhoneNumberNext.fragments.flowClaimFragment.executeNextStepActions(
-                            for: action,
-                            callback: callback
-                        )
-                        callback(.value(.setLoadingState(action: .postPhoneNumber, state: nil)))
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(
-                                    action: .postPhoneNumber,
-                                    state: .error(error: L10n.General.errorBody)
-                                )
-                            )
-                        )
-                    }
-                return disposeBag
-            }
+            return mutation.execute(\.flowClaimPhoneNumberNext.fragments.flowClaimFragment.currentStep)
         case let .claimNextDateOfOccurrence(dateOfOccurrence):
             send(.setLoadingState(action: .postDateOfOccurrence, state: .loading))
             let dateString = dateOfOccurrence?.localDateString
@@ -119,60 +68,12 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 input: dateOfOccurrenceInput,
                 context: newClaimContext
             )
-            return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: mutation
-                    )
-                    .onValue { data in
-                        var actions = [ClaimsAction]()
-                        actions.append(.setNewClaimContext(context: data.flowClaimDateOfOccurrenceNext.context))
-                        data.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.executeNextStepActions(
-                            for: action,
-                            callback: callback
-                        )
-                        actions.append(.setLoadingState(action: .postDateOfOccurrence, state: nil))
-                        actions.forEach({ callback(.value($0)) })
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(
-                                    action: .postDateOfOccurrence,
-                                    state: .error(error: L10n.General.errorBody)
-                                )
-                            )
-                        )
-                    }
-                return NilDisposer()
-            }
+            return mutation.execute(\.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.currentStep)
         case let .claimNextLocation(location):
             self.send(.setLoadingState(action: .postLocation, state: .loading))
             let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: location)
             let mutation = OctopusGraphQL.FlowClaimLocationNextMutation(input: locationInput, context: newClaimContext)
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .onValue { data in
-                        callback(.value(.setNewClaimContext(context: data.flowClaimLocationNext.context)))
-                        data.flowClaimLocationNext.fragments.flowClaimFragment.executeNextStepActions(
-                            for: action,
-                            callback: callback
-                        )
-                        callback(.value(.setLoadingState(action: .postLocation, state: nil)))
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(
-                                    action: .postLocation,
-                                    state: .error(error: L10n.General.errorBody)
-                                )
-                            )
-                        )
-                    }
-                return disposeBag
-            }
+            return mutation.execute(\.flowClaimLocationNext.fragments.flowClaimFragment.currentStep)
         case .claimNextDateOfOccurrenceAndLocation:
             self.send(.setLoadingState(action: .postDateOfOccurrenceAndLocation, state: .loading))
             let location = state.locationStep?.getSelectedOption()?.value
@@ -186,34 +87,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 input: dateAndLocationInput,
                 context: newClaimContext
             )
-            
-            return mutation.execute(
-                \.flowClaimDateOfOccurrencePlusLocationNext.fragments.flowClaimFragment.currentStep
-            )
-            
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .onValue { data in
-                        callback(
-                            .value(.setNewClaimContext(context: data.flowClaimDateOfOccurrencePlusLocationNext.context))
-                        )
-                        data.flowClaimDateOfOccurrencePlusLocationNext.fragments.flowClaimFragment
-                            .executeNextStepActions(for: action, callback: callback)
-                        callback(.value(.setLoadingState(action: .postDateOfOccurrenceAndLocation, state: nil)))
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(
-                                    action: .postDateOfOccurrenceAndLocation,
-                                    state: .error(error: L10n.General.errorBody)
-                                )
-                            )
-                        )
-                    }
-                return disposeBag
-            }
+            return mutation.execute(\.flowClaimDateOfOccurrencePlusLocationNext.fragments.flowClaimFragment.currentStep)
         case let .submitAudioRecording(audioURL):
             self.send(.setLoadingState(action: .postAudioRecording, state: .loading))
             return FiniteSignal { callback in
@@ -233,28 +107,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                 input: audioInput,
                                 context: newClaimContext
                             )
-                            disposeBag += self.octopus.client.perform(mutation: mutation)
-                                .onValue { data in
-                                    callback(
-                                        .value(.setNewClaimContext(context: data.flowClaimAudioRecordingNext.context))
-                                    )
-                                    data.flowClaimAudioRecordingNext.fragments.flowClaimFragment.executeNextStepActions(
-                                        for: action,
-                                        callback: callback
-                                    )
-                                    callback(.value(.setLoadingState(action: .postAudioRecording, state: nil)))
-                                }
-                                .onError { error in
-                                    callback(
-                                        .value(
-                                            .setLoadingState(
-                                                action: .postAudioRecording,
-                                                state: .error(error: L10n.General.errorBody)
-                                            )
-                                        )
-                                    )
-                                }
-
+                            disposeBag += mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep).onValue({ action in
+                                callback(.value(action))
+                            })
                         })
                         .onError({ error in
                             callback(
@@ -267,7 +122,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             )
                         })
                         .disposable
-                } catch let error {
+                } catch _ {
                     callback(
                         .value(
                             .setLoadingState(
@@ -293,34 +148,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 input: singleItemInput,
                 context: newClaimContext
             )
-            return FiniteSignal { callback in
-                self.octopus.client
-                    .perform(
-                        mutation: mutation
-                    )
-                    .onValue { data in
-                        var actions = [ClaimsAction]()
-                        actions.append(.setNewClaimContext(context: data.flowClaimSingleItemNext.context))
-                        actions.append(
-                            .setPurchasePrice(priceOfPurchase: purchasePrice)
-                        )
-                        data.flowClaimSingleItemNext.fragments.flowClaimFragment.executeNextStepActions(
-                            for: action,
-                            callback: callback
-                        )
-                        actions.append(.setLoadingState(action: .postSingleItem, state: nil))
-                        actions.forEach({ callback(.value($0)) })
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(action: .postSingleItem, state: .error(error: L10n.General.errorBody))
-                            )
-                        )
-                    }
-                return NilDisposer()
-            }
-
+            return mutation.execute(\.flowClaimSingleItemNext.fragments.flowClaimFragment.currentStep)
         case .claimNextSummary:
             send(.setLoadingState(action: .postSummary, state: .loading))
             let summaryInput = OctopusGraphQL.FlowClaimSummaryInput()
@@ -328,60 +156,18 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 input: summaryInput,
                 context: newClaimContext
             )
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client.perform(mutation: mutation)
-                    .onValue { data in
-                        callback(.value(.setNewClaimContext(context: data.flowClaimSummaryNext.context)))
-                        data.flowClaimSummaryNext.fragments.flowClaimFragment.executeNextStepActions(
-                            for: action,
-                            callback: callback
-                        )
-                        callback(.value(.setLoadingState(action: .postSummary, state: nil)))
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(
-                                    action: .postSummary,
-                                    state: .error(error: L10n.General.errorBody)
-                                )
-                            )
-                        )
-                    }
-                return disposeBag
-            }
+            return mutation.execute(\.flowClaimSummaryNext.fragments.flowClaimFragment.currentStep)
         case .claimNextSingleItemCheckout:
             send(.setLoadingState(action: .postSingleItemCheckout, state: .loading))
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                if let claimSingleItemCheckoutInput = self.state.singleItemCheckoutStep!.returnSingleItemCheckoutInfo()
-                {
-                    let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
-                        input: claimSingleItemCheckoutInput,
-                        context: newClaimContext
-                    )
-
-                    disposeBag += self.octopus.client.perform(mutation: mutation)
-                        .onValue { data in
-                            callback(.value(.setNewClaimContext(context: data.flowClaimSingleItemCheckoutNext.context)))
-                            data.flowClaimSingleItemCheckoutNext.fragments.flowClaimFragment.executeNextStepActions(
-                                for: action,
-                                callback: callback
-                            )
-                            callback(.value(.setLoadingState(action: .postSingleItemCheckout, state: nil)))
-                        }
-                        .onError { error in
-                            callback(
-                                .value(
-                                    .setLoadingState(
-                                        action: .postSingleItemCheckout,
-                                        state: .error(error: L10n.General.errorBody)
-                                    )
-                                )
-                            )
-                        }
-                } else {
+            if let claimSingleItemCheckoutInput = self.state.singleItemCheckoutStep!.returnSingleItemCheckoutInfo() {
+                let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
+                    input: claimSingleItemCheckoutInput,
+                    context: newClaimContext
+                )
+                return mutation.execute(\.flowClaimSingleItemCheckoutNext.fragments.flowClaimFragment.currentStep)
+            } else {
+                return FiniteSignal { callback in
+                    let disposeBag = DisposeBag()
                     callback(
                         .value(
                             .setLoadingState(
@@ -390,8 +176,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             )
                         )
                     )
+                    return disposeBag
                 }
-                return disposeBag
             }
         case .fetchCommonClaimsForSelection:
             self.send(.setLoadingState(action: .fetchCommonClaims, state: .loading))
@@ -467,8 +253,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             switch action {
             case let .setPhoneNumber(model):
                 newState.phoneNumberStep = model
+                send(.navigationAction(action: .openPhoneNumberScreen(model: model)))
             case let .setDateOfOccurrencePlusLocation(model):
-                newState.dateOfOccurrencePlusLocationStep = model
+                newState.dateOfOccurrencePlusLocationStep = model.dateOfOccurencePlusLocationModel
+                newState.locationStep = model.locationModel
+                newState.dateOfOccurenceStep = model.dateOfOccurenceModel
             case let .setDateOfOccurence(model):
                 newState.dateOfOccurenceStep = model
             case let .setLocation(model):
@@ -486,7 +275,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             case let .setAudioStep(model):
                 newState.audioRecordingStep = model
             }
-        case .startClaim:
+        case .startClaimRequest:
             newState.summaryStep = nil
             newState.dateOfOccurenceStep = nil
             newState.locationStep = nil
@@ -504,149 +293,5 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             break
         }
         return newState
-    }
-}
-
-protocol Into {
-    associatedtype To
-    func into() -> To
-}
-
-extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
-    func into() -> ClaimsAction {
-        if let step = self.fragments.flowClaimPhoneNumberStepFragment {
-            let model = FlowClaimPhoneNumberStepModel(with: step)
-            return .stepModelAction(action: .setPhoneNumber(model: model))
-            //actions.append(.navigationAction(action: .openPhoneNumberScreen(model: model)))
-        } else if let step = self.fragments.flowClaimAudioRecordingStepFragment {
-            actions.append(.stepModelAction(action: .setAudioStep(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openAudioRecordingScreen))
-        } else if let step = self.fragments.flowClaimSingleItemStepFragment {
-            actions.append(.stepModelAction(action: .setSingleItem(model: FlowClamSingleItemStepModel(with: step))))
-            actions.append(.navigationAction(action: .openSingleItemScreen))
-        } else if let step = self.fragments.flowClaimSingleItemCheckoutStepFragment {
-            actions.append(.stepModelAction(action: .setSingleItemCheckoutStep(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openCheckoutNoRepairScreen))
-        } else if let step = self.fragments.flowClaimLocationStepFragment {
-            actions.append(.stepModelAction(action: .setLocation(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openLocationPicker(type: .submitLocation)))
-        } else if let step = self.fragments.flowClaimDateOfOccurrenceStepFragment {
-            actions.append(.stepModelAction(action: .setDateOfOccurence(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openDatePicker(type: .submitDateOfOccurence)))
-        } else if let step = self.fragments.flowClaimSummaryStepFragment {
-            if let singleItemStep = step.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
-                actions.append(.stepModelAction(action: .setSingleItem(model: .init(with: singleItemStep))))
-            }
-            let locationStep = step.locationStep.fragments.flowClaimLocationStepFragment
-            actions.append(.stepModelAction(action: .setLocation(model: .init(with: locationStep))))
-
-            let dateOfOccurrenceStep = step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
-            actions.append(.stepModelAction(action: .setDateOfOccurence(model: .init(with: dateOfOccurrenceStep))))
-            actions.append(.stepModelAction(action: .setSummaryStep(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openSummaryScreen))
-        } else if let step = self.fragments.flowClaimDateOfOccurrencePlusLocationStepFragment {
-            let model = FlowClaimDateOfOccurrencePlusLocationStepModel(with: step)
-            let dateOfOccurence = FlowClaimDateOfOccurenceStepModel(
-                with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
-            )
-            let locationModel = FlowClaimLocationStepModel(
-                with: step.locationStep.fragments.flowClaimLocationStepFragment
-            )
-            actions.append(.stepModelAction(action: .setDateOfOccurrencePlusLocation(model: model)))
-            actions.append(.stepModelAction(action: .setDateOfOccurence(model: dateOfOccurence)))
-            actions.append(.stepModelAction(action: .setLocation(model: locationModel)))
-            actions.append(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
-        } else if let step = self.fragments.flowClaimFailedStepFragment {
-            actions.append(.stepModelAction(action: .setFailedStep(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openFailureSceen))
-        } else if let step = self.fragments.flowClaimSuccessStepFragment {
-            actions.append(.stepModelAction(action: .setSuccessStep(model: .init(with: step))))
-            if case .claimNextSingleItemCheckout = action {
-            } else {
-                actions.append(.navigationAction(action: .openSuccessScreen))
-            }
-        } else {
-            actions.append(.navigationAction(action: .openUpdateAppScreen))
-        }
-    }
-}
-
-
-
-extension GraphQLMutation {
-    func execute<ClaimStep: Into>(_ keyPath: KeyPath<Self.Data, ClaimStep>) -> FiniteSignal<ClaimsAction>
-        where ClaimStep.To == ClaimsAction {
-        let octopus: hOctopus = Dependencies.shared.resolve()
-        
-        return octopus.client.perform(mutation: self).map { data in
-            data[keyPath: keyPath].into()
-        }.mapError { error in
-            .setLoadingState(action: .fetchCommonClaims, state: .error(error: error.localizedDescription))
-        }.valueThenEndSignal
-    }
-}
-
-extension OctopusGraphQL.FlowClaimFragment {
-    func executeNextStepActions(for action: ClaimsAction, callback: (Event<ClaimsAction>) -> Void) {
-        let currentStep = self.currentStep
-        var actions = [ClaimsAction]()
-    
-        if let step = currentStep.fragments.flowClaimPhoneNumberStepFragment {
-            let model = FlowClaimPhoneNumberStepModel(with: step)
-            actions.append(.stepModelAction(action: .setPhoneNumber(model: model)))
-            actions.append(.navigationAction(action: .openPhoneNumberScreen(model: model)))
-        } else if let step = currentStep.fragments.flowClaimAudioRecordingStepFragment {
-            actions.append(.stepModelAction(action: .setAudioStep(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openAudioRecordingScreen))
-        } else if let step = currentStep.fragments.flowClaimSingleItemStepFragment {
-            actions.append(.stepModelAction(action: .setSingleItem(model: FlowClamSingleItemStepModel(with: step))))
-            actions.append(.navigationAction(action: .openSingleItemScreen))
-        } else if let step = currentStep.fragments.flowClaimSingleItemCheckoutStepFragment {
-            actions.append(.stepModelAction(action: .setSingleItemCheckoutStep(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openCheckoutNoRepairScreen))
-        } else if let step = currentStep.fragments.flowClaimLocationStepFragment {
-            actions.append(.stepModelAction(action: .setLocation(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openLocationPicker(type: .submitLocation)))
-        } else if let step = currentStep.fragments.flowClaimDateOfOccurrenceStepFragment {
-            actions.append(.stepModelAction(action: .setDateOfOccurence(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openDatePicker(type: .submitDateOfOccurence)))
-        } else if let step = currentStep.fragments.flowClaimSummaryStepFragment {
-            if let singleItemStep = step.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
-                actions.append(.stepModelAction(action: .setSingleItem(model: .init(with: singleItemStep))))
-            }
-            let locationStep = step.locationStep.fragments.flowClaimLocationStepFragment
-            actions.append(.stepModelAction(action: .setLocation(model: .init(with: locationStep))))
-
-            let dateOfOccurrenceStep = step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
-            actions.append(.stepModelAction(action: .setDateOfOccurence(model: .init(with: dateOfOccurrenceStep))))
-            actions.append(.stepModelAction(action: .setSummaryStep(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openSummaryScreen))
-        } else if let step = currentStep.fragments.flowClaimDateOfOccurrencePlusLocationStepFragment {
-            let model = FlowClaimDateOfOccurrencePlusLocationStepModel(with: step)
-            let dateOfOccurence = FlowClaimDateOfOccurenceStepModel(
-                with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
-            )
-            let locationModel = FlowClaimLocationStepModel(
-                with: step.locationStep.fragments.flowClaimLocationStepFragment
-            )
-            actions.append(.stepModelAction(action: .setDateOfOccurrencePlusLocation(model: model)))
-            actions.append(.stepModelAction(action: .setDateOfOccurence(model: dateOfOccurence)))
-            actions.append(.stepModelAction(action: .setLocation(model: locationModel)))
-            actions.append(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
-        } else if let step = currentStep.fragments.flowClaimFailedStepFragment {
-            actions.append(.stepModelAction(action: .setFailedStep(model: .init(with: step))))
-            actions.append(.navigationAction(action: .openFailureSceen))
-        } else if let step = currentStep.fragments.flowClaimSuccessStepFragment {
-            actions.append(.stepModelAction(action: .setSuccessStep(model: .init(with: step))))
-            if case .claimNextSingleItemCheckout = action {
-            } else {
-                actions.append(.navigationAction(action: .openSuccessScreen))
-            }
-        } else {
-            actions.append(.navigationAction(action: .openUpdateAppScreen))
-        }
-        actions.forEach { action in
-            callback(.value(action))
-        }
     }
 }

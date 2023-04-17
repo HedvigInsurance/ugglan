@@ -77,7 +77,7 @@ extension AppJourney {
                         store.send(.navigationAction(action: .openNotificationsPermissionScreen))
                     } else {
                         let store: ClaimsStore = globalPresentableStoreContainer.get()
-                        store.send(.startClaim(from: origin.id))
+                        store.send(.startClaimRequest(with: origin.id))
                     }
                 }
             },
@@ -95,7 +95,7 @@ extension AppJourney {
                         rootView: LoadingViewWithContent(.startClaim) {
                             ClaimFlowAskForPushnotifications(onActionExecuted: {
                                 let store: ClaimsStore = globalPresentableStoreContainer.get()
-                                store.send(.startClaim(from: origin.id))
+                                store.send(.startClaimRequest(with: origin.id))
                             })
                         },
                         style: .detented(.large, modally: false)

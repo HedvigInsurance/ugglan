@@ -7,6 +7,7 @@ import hCore
 import hGraphQL
 
 public enum ClaimsAction: ActionProtocol, Hashable {
+    case didAcceptHonestyPledge
     case openFreeTextChat
     case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
@@ -26,8 +27,10 @@ public enum ClaimsAction: ActionProtocol, Hashable {
     case submitAudioRecording(audioURL: URL)
     case submitDamage(damage: [String])
 
-    case startClaim(from: String)
     case setNewClaimId(with: String)
+    case setNewClaimContext(context: String)
+    
+    case startClaimRequest(with: String)
     case claimNextPhoneNumber(phoneNumber: String)
     case claimNextDateOfOccurrence(dateOfOccurrence: Date?)
     case claimNextDateOfOccurrenceAndLocation
@@ -44,9 +47,7 @@ public enum ClaimsAction: ActionProtocol, Hashable {
     case setSingleItemPurchaseDate(purchaseDate: Date?)
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
     case setLoadingState(action: ClaimsLoadingType, state: LoadingState<String>?)
-    case setNewClaimContext(context: String)
     case setPayoutMethod(method: AvailableCheckoutMethod)
-    case didAcceptHonestyPledge
 
     case navigationAction(action: ClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
@@ -84,8 +85,15 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
 }
 
 public enum ClaimsStepModelAction: ActionProtocol, Hashable {
+    
+   public  struct DateOfOccurrencePlusLocationStepModels: ActionProtocol, Hashable {
+        let dateOfOccurencePlusLocationModel: FlowClaimDateOfOccurrencePlusLocationStepModel
+        let dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel
+        let locationModel: FlowClaimLocationStepModel
+    }
+    
     case setPhoneNumber(model: FlowClaimPhoneNumberStepModel)
-    case setDateOfOccurrencePlusLocation(model: FlowClaimDateOfOccurrencePlusLocationStepModel)
+    case setDateOfOccurrencePlusLocation(model: DateOfOccurrencePlusLocationStepModels)
     case setDateOfOccurence(model: FlowClaimDateOfOccurenceStepModel)
     case setLocation(model: FlowClaimLocationStepModel)
     case setSingleItem(model: FlowClamSingleItemStepModel)
@@ -94,7 +102,6 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setSuccessStep(model: FlowClaimSuccessStepModel)
     case setFailedStep(model: FlowClaimFailedStepModel)
     case setAudioStep(model: FlowClaimAudioRecordingStepModel)
-
 }
 
 public enum ClaimsLoadingType: Codable & Equatable & Hashable {
