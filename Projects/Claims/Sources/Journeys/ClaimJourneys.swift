@@ -48,7 +48,7 @@ public class ClaimJourneys {
                 } else if case .openUpdateAppScreen = navigationAction {
                     openUpdateAppTerminationScreen().addDismissClaimsFlow()
                 } else if case let .openDatePicker(type) = navigationAction {
-                    openDatePickerScreen(type: type).addDismissClaimsFlow()
+                    openDatePickerScreen(type: type)
                 }
             }
         }
@@ -76,20 +76,27 @@ public class ClaimJourneys {
     }
 
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
+        let screen = DatePickerScreen(type: type)
+
         return HostingJourney(
             ClaimsStore.self,
-            rootView: DatePickerScreen(type: type),
-            style: .default
+            rootView: screen,
+            style: .detented(.scrollViewContentSize),
+            options: [
+                .defaults,
+                .largeTitleDisplayMode(.always),
+                .prefersLargeTitles(true),
+            ]
         ) {
             action in
             if case .setNewDate = action {
                 PopJourney()
             } else if case .setSingleItemPurchaseDate = action {
                 PopJourney()
-            } else {
-                getScreen(for: action)
             }
         }
+        .configureTitle(screen.title)
+        .withDismissButton
     }
 
     static func openLocationScreen(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {

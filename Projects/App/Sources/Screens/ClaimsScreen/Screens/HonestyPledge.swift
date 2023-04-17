@@ -160,19 +160,21 @@ struct HonestyPledge: View {
     }
 
     var body: some View {
-        VStack {
-            HStack {
-                L10n.honestyPledgeDescription.hText(.body)
-                    .foregroundColor(hLabelColor.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+        hForm {
+            VStack {
+                HStack {
+                    L10n.honestyPledgeDescription.hText(.body)
+                        .foregroundColor(hLabelColor.secondary)
+                }
+                .padding(.bottom, 20)
+                SlideToConfirm(onConfirmAction: onConfirmAction)
+                    .frame(maxHeight: 50)
             }
             .padding(.bottom, 20)
-            SlideToConfirm(onConfirmAction: onConfirmAction)
-                .frame(maxHeight: 50)
+            .padding(.leading, 15)
+            .padding(.trailing, 15)
+            .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.bottom, 20)
-        .padding(.leading, 15)
-        .padding(.trailing, 15)
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
     }
 }
