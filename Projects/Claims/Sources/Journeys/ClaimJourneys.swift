@@ -193,10 +193,10 @@ public class ClaimJourneys {
 
     static func openAudioRecordingSceen() -> some JourneyPresentation {
         let store: ClaimsStore = globalPresentableStoreContainer.get()
-        let url = store.state.audioRecordingStep!.url
+        let url = store.state.audioRecordingStep?.url
         return HostingJourney(
             ClaimsStore.self,
-            rootView: SubmitClaimAudioRecordingScreen(url: url),
+            rootView: SubmitClaimAudioRecordingScreen(url: url ?? URL(string: "www.google.com")!),
             style: .detented(.large, modally: false)
         ) { action in
             getScreenForAction(for: action)

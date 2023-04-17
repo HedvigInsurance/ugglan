@@ -86,8 +86,15 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
 
 public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     
-   public  struct DateOfOccurrencePlusLocationStepModels: ActionProtocol, Hashable {
+    public struct DateOfOccurrencePlusLocationStepModels: ActionProtocol, Hashable {
         let dateOfOccurencePlusLocationModel: FlowClaimDateOfOccurrencePlusLocationStepModel
+        let dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel
+        let locationModel: FlowClaimLocationStepModel
+    }
+    
+    public struct SummaryStepModels: ActionProtocol, Hashable {
+        let summaryStep: FlowClaimSummaryStepModel?
+        let singleItemStepModel: FlowClamSingleItemStepModel?
         let dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel
         let locationModel: FlowClaimLocationStepModel
     }
@@ -97,7 +104,7 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setDateOfOccurence(model: FlowClaimDateOfOccurenceStepModel)
     case setLocation(model: FlowClaimLocationStepModel)
     case setSingleItem(model: FlowClamSingleItemStepModel)
-    case setSummaryStep(model: FlowClaimSummaryStepModel)
+    case setSummaryStep(model: SummaryStepModels)
     case setSingleItemCheckoutStep(model: FlowClaimSingleItemCheckoutStepModel)
     case setSuccessStep(model: FlowClaimSuccessStepModel)
     case setFailedStep(model: FlowClaimFailedStepModel)

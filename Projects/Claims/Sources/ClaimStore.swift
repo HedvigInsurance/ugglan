@@ -261,20 +261,31 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
             case let .setDateOfOccurence(model):
                 newState.dateOfOccurenceStep = model
+                send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
             case let .setLocation(model):
                 newState.locationStep = model
+                send(.navigationAction(action: .openLocationPicker(type: .submitLocation)))
             case let .setSingleItem(model):
                 newState.singleItemStep = model
+                send(.navigationAction(action: .openSingleItemScreen))
             case let .setSummaryStep(model):
-                newState.summaryStep = model
+                newState.summaryStep = model.summaryStep
+                newState.locationStep = model.locationModel
+                newState.dateOfOccurenceStep = model.dateOfOccurenceModel
+                newState.singleItemStep = model.singleItemStepModel
+                send(.navigationAction(action: .openSummaryScreen))
             case let .setSingleItemCheckoutStep(model):
                 newState.singleItemCheckoutStep = model
+                send(.navigationAction(action: .openCheckoutNoRepairScreen))
             case let .setFailedStep(model):
                 newState.failedStep = model
+                send(.navigationAction(action: .openFailureSceen))
             case let .setSuccessStep(model):
                 newState.successStep = model
+                send(.navigationAction(action: .openSuccessScreen))
             case let .setAudioStep(model):
                 newState.audioRecordingStep = model
+                send(.navigationAction(action: .openAudioRecordingScreen))
             }
         case .startClaimRequest:
             newState.summaryStep = nil

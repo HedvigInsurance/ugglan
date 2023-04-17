@@ -13,43 +13,37 @@ protocol Into {
 extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
     func into() -> ClaimsAction {
         if let step = self.fragments.flowClaimPhoneNumberStepFragment {
-            let model = FlowClaimPhoneNumberStepModel(with: step)
-            return .stepModelAction(action: .setPhoneNumber(model: model))
-//        }
-//        else if let step = self.fragments.flowClaimAudioRecordingStepFragment {
-//            actions.append(.stepModelAction(action: .setAudioStep(model: .init(with: step))))
-//            actions.append(.navigationAction(action: .openAudioRecordingScreen))
-//        } else if let step = self.fragments.flowClaimSingleItemStepFragment {
-//            actions.append(.stepModelAction(action: .setSingleItem(model: FlowClamSingleItemStepModel(with: step))))
-//            actions.append(.navigationAction(action: .openSingleItemScreen))
-//        } else if let step = self.fragments.flowClaimSingleItemCheckoutStepFragment {
-//            actions.append(.stepModelAction(action: .setSingleItemCheckoutStep(model: .init(with: step))))
-//            actions.append(.navigationAction(action: .openCheckoutNoRepairScreen))
-//        } else if let step = self.fragments.flowClaimLocationStepFragment {
-//            actions.append(.stepModelAction(action: .setLocation(model: .init(with: step))))
-//            actions.append(.navigationAction(action: .openLocationPicker(type: .submitLocation)))
-//        } else if let step = self.fragments.flowClaimDateOfOccurrenceStepFragment {
-//            actions.append(.stepModelAction(action: .setDateOfOccurence(model: .init(with: step))))
-//            actions.append(.navigationAction(action: .openDatePicker(type: .submitDateOfOccurence)))
-//        } else if let step = self.fragments.flowClaimSummaryStepFragment {
-//            if let singleItemStep = step.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
-//                actions.append(.stepModelAction(action: .setSingleItem(model: .init(with: singleItemStep))))
-//            }
-//            let locationStep = step.locationStep.fragments.flowClaimLocationStepFragment
-//            actions.append(.stepModelAction(action: .setLocation(model: .init(with: locationStep))))
-//
-//            let dateOfOccurrenceStep = step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
-//            actions.append(.stepModelAction(action: .setDateOfOccurence(model: .init(with: dateOfOccurrenceStep))))
-//            actions.append(.stepModelAction(action: .setSummaryStep(model: .init(with: step))))
-//            actions.append(.navigationAction(action: .openSummaryScreen))
+            return .stepModelAction(action: .setPhoneNumber(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimAudioRecordingStepFragment {
+            return .stepModelAction(action: .setAudioStep(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimSingleItemStepFragment {
+            return .stepModelAction(action: .setSingleItem(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimSingleItemCheckoutStepFragment {
+            return .stepModelAction(action: .setSingleItemCheckoutStep(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimLocationStepFragment {
+            return .stepModelAction(action: .setLocation(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimDateOfOccurrenceStepFragment {
+            return .stepModelAction(action: .setDateOfOccurence(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimSummaryStepFragment {
+            let summaryStep = FlowClaimSummaryStepModel(with: step)
+            let singleItemStepModel: FlowClamSingleItemStepModel? = {
+                if let singleItemStep = step.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
+                    return .init(with: singleItemStep)
+                }
+                return nil
+            }()
+            return .stepModelAction(action: .setSummaryStep(model: .init(summaryStep: summaryStep,
+                                                                         singleItemStepModel: singleItemStepModel,
+                                                                         dateOfOccurenceModel: .init(with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment),
+                                                                         locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment))))
         } else if let step = self.fragments.flowClaimDateOfOccurrencePlusLocationStepFragment {
             return .stepModelAction(action: .setDateOfOccurrencePlusLocation(model: .init(dateOfOccurencePlusLocationModel: .init(with: step),
                                                                                           dateOfOccurenceModel: .init(with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment),
                                                                                           locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment))))
-            //        } else if let step = self.fragments.flowClaimFailedStepFragment {
-            //            actions.append(.stepModelAction(action: .setFailedStep(model: .init(with: step))))
-            //            actions.append(.navigationAction(action: .openFailureSceen))
-//        } else if let step = self.fragments.flowClaimSuccessStepFragment {
+        } else if let step = self.fragments.flowClaimFailedStepFragment {
+            return .stepModelAction(action: .setFailedStep(model: .init(with: step)))
+        } else if let step = self.fragments.flowClaimSuccessStepFragment {
+            return .stepModelAction(action: .setSuccessStep(model: .init(with: step)))
 //            actions.append(.stepModelAction(action: .setSuccessStep(model: .init(with: step))))
             //            if case .claimNextSingleItemCheckout = action {
             //            } else {
@@ -63,7 +57,7 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
 
 extension GraphQLMutation {
     func execute<ClaimStep: Into>(_ keyPath: KeyPath<Self.Data, ClaimStep>) -> FiniteSignal<ClaimsAction>
-    where ClaimStep.To == ClaimsAction, Self: ClaimStepLoadingType {
+    where ClaimStep.To == ClaimsAction, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext {
         let octopus: hOctopus = Dependencies.shared.resolve()
         return FiniteSignal { callback in
             let disposeBag = DisposeBag()
@@ -72,9 +66,7 @@ extension GraphQLMutation {
                 if let data = data as? ClaimStepId  {
                     callback(.value(.setNewClaimId(with: data.getStepId())))
                 }
-                if let data = data as? ClaimStepContext  {
-                    callback(.value(.setNewClaimContext(context: data.getContext())))
-                }
+                callback(.value(.setNewClaimContext(context: data.getContext())))
                 callback(.value(data[keyPath: keyPath].into()))
                 callback(.value(.setLoadingState(action: self.getLoadingType(), state: nil)))
             }.onError({ error in
@@ -115,8 +107,43 @@ extension OctopusGraphQL.FlowClaimAudioRecordingNextMutation.Data: ClaimStepCont
     }
 }
 
+extension OctopusGraphQL.FlowClaimPhoneNumberNextMutation.Data: ClaimStepContext {
+    func getContext() -> String {
+        return self.flowClaimPhoneNumberNext.context
+    }
+}
 
+extension OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation.Data: ClaimStepContext {
+    func getContext() -> String {
+        return self.flowClaimDateOfOccurrenceNext.context
+    }
+}
 
+extension OctopusGraphQL.FlowClaimLocationNextMutation.Data: ClaimStepContext {
+    func getContext() -> String {
+        return self.flowClaimLocationNext.context
+    }
+}
+
+extension OctopusGraphQL.FlowClaimSingleItemNextMutation.Data: ClaimStepContext {
+    func getContext() -> String {
+        return self.flowClaimSingleItemNext.context
+    }
+}
+
+extension OctopusGraphQL.FlowClaimSummaryNextMutation.Data: ClaimStepContext {
+    func getContext() -> String {
+        return self.flowClaimSummaryNext.context
+    }
+}
+
+extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation.Data: ClaimStepContext {
+    func getContext() -> String {
+        return self.flowClaimSingleItemCheckoutNext.context
+    }
+}
+
+//MARK: loading type
 protocol ClaimStepLoadingType {
     func getLoadingType() -> ClaimsLoadingType
 }
