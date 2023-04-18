@@ -137,17 +137,6 @@ extension AppJourney {
             .sendActionImmediately(ProfileStore.self, .fetchProfileState)
             .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
-            .onAction(
-                UgglanStore.self,
-                { action, _ in
-                    if action == .openChat {
-                        AppJourney.freeTextChat().withDismissButton
-                    }
-                    //                    else if action == .openClaims {
-                    //                        AppJourney.claimJourney(from: .generic)
-                    //                    }
-                }
-            )
         }
         .onPresent {
             ApplicationState.preserveState(.loggedIn)
@@ -161,7 +150,6 @@ extension AppJourney {
 }
 
 extension JourneyPresentation {
-    //<<<<<<< HEAD
     @discardableResult
     func sendActionImmediately<S: Store>(
         _ storeType: S.Type,
@@ -174,47 +162,6 @@ extension JourneyPresentation {
     }
 }
 
-//extension JourneyPresentation {
-//    public var claimStoreRedirectFromHome: some JourneyPresentation {
-//        onAction(HomeStore.self) { action in
-//            if case .openClaim = action {
-//                AppJourney.claimJourney(from: .generic)
-//            }
-//        }
-//    }
-////=======
-////>>>>>>> main
-//
-//    public var configureClaimsNavigation: some JourneyPresentation {
-//
-//        onAction(ClaimsStore.self) { action in
-//            if case let .openClaimDetails(claim) = action {
-//                AppJourney.claimDetailJourney(claim: claim)
-////<<<<<<< HEAD
-////            } else if case .submitNewClaim = action {
-////                AppJourney.claimJourney(from: .generic)
-////            } else if case .openFreeTextChat = action {
-////                AppJourney.freeTextChat()
-////=======
-//            } else if case let .submitNewClaim(origin) = action {
-//                AppJourney.startClaimsJourney(from: origin)
-//                    .onAction(ClaimsStore.self) { action in
-//                        if case .dissmissNewClaimFlow = action {
-//                            DismissJourney()
-//                        }
-//                    }
-////>>>>>>> main
-//            } else if case .openHowClaimsWork = action {
-//                AppJourney.claimsInfoJourney()
-//            } else if case let .openCommonClaimDetail(commonClaim) = action {
-//                AppJourney.commonClaimDetailJourney(claim: commonClaim)
-//            } else if case .openFreeTextChat = action {
-//                AppJourney.freeTextChat()
-//            }
-//        }
-//    }
-//}
-
 extension JourneyPresentation {
     public var configurePaymentNavigation: some JourneyPresentation {
         onAction(PaymentStore.self) { action in
@@ -226,7 +173,7 @@ extension JourneyPresentation {
 }
 
 extension JourneyPresentation {
-    public var claimStoreRedirectFromHome: some JourneyPresentation {
+    public var claimStoreRedirectFromHome: some JourneyPresentation {  // not sure if needed?
         onAction(HomeStore.self) { action in
             if case .openClaim = action {
                 //                    AppJourney.claimJourney(from: .generic)
