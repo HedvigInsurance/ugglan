@@ -155,10 +155,6 @@ extension Contracts {
                 navigationController.isHeroEnabled = true
                 navigationController.hero.navigationAnimationType = .fade
             }
-
-            if filter.displaysActiveContracts {
-                presenter.matter.installChatButton()
-            }
         })
         .configureTitle(filter.displaysActiveContracts ? L10n.InsurancesTab.title : "")
         .configureContractsTabBarItem
