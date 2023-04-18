@@ -17,4 +17,5 @@ extension Date {
     public var localDateStringWithToday: String? {
         if Calendar.current.isDateInToday(self) { return L10n.startDateToday } else { return localDateString }
     }
+
 }

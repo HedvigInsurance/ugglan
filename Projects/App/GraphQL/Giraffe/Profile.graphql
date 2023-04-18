@@ -3,8 +3,10 @@ query Profile {
         firstName
         lastName
     }
-    insuranceCost {
-         ...CostFragment
+    chargeEstimation {
+        subscription {
+            ...MonetaryAmountFragment
+        }
     }
     cashback {
         name

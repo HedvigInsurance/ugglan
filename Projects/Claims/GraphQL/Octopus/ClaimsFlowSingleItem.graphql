@@ -1,0 +1,7 @@
+mutation FlowClaimSingleItemNext($input: FlowClaimSingleItemInput!, $context: FlowContext!) {
+  flowClaimSingleItemNext(input: $input, context: $context) {
+    id
+    ...FlowClaimFragment
+    context
+  }
+}

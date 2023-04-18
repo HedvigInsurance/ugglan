@@ -12,8 +12,27 @@ public struct PresentableStore<S: Store> {
     public init() {}
 }
 
+public class HostingJourneyController<RootView: View>: UIHostingController<RootView> {
+
+    public override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+    }
+
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        /// Force set frame to make SwiftUI resize itself accordingly
+        if let navigationController = self.navigationController,
+            let presentedFrame = navigationController.presentationController?.presentedView?.frame
+        {
+            self.view.frame.size = presentedFrame.size
+            self.view.setNeedsUpdateConstraints()
+        }
+    }
+}
+
 public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
-    public typealias P = AnyPresentable<UIHostingController<RootView>, Result>
+    public typealias P = AnyPresentable<HostingJourneyController<RootView>, Result>
 
     public var onDismiss: (Error?) -> Void
 
@@ -92,7 +111,7 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
         }
 
         self.presentable = AnyPresentable(materialize: {
-            let controller = UIHostingController(rootView: rootView)
+            let controller = HostingJourneyController(rootView: rootView)
             controller.debugPresentationTitle = "\(RootView.self)"
             return (
                 controller,
@@ -127,7 +146,7 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
             presenter.viewController.debugPresentationTitle = "\(type(of: rootView))"
         }
         self.presentable = AnyPresentable(materialize: {
-            let controller = UIHostingController(rootView: rootView)
+            let controller = HostingJourneyController(rootView: rootView)
             controller.debugPresentationTitle = "\(RootView.self)"
             return (
                 controller,

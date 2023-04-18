@@ -1,0 +1,7 @@
+mutation FlowClaimDateOfOccurrencePlusLocationNext($input: FlowClaimDateOfOccurrencePlusLocationInput!, $context: FlowContext!) {
+  flowClaimDateOfOccurrencePlusLocationNext(input: $input, context: $context) {
+    id
+    ...FlowClaimFragment
+    context
+  }
+}

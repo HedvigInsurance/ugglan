@@ -1,0 +1,7 @@
+mutation FlowClaimLocationNext($input: FlowClaimLocationInput!, $context: FlowContext!) {
+  flowClaimLocationNext(input: $input, context: $context) {
+    id
+    ...FlowClaimFragment
+    context
+  }
+}

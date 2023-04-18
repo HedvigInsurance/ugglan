@@ -1,0 +1,7 @@
+mutation FlowClaimAudioRecordingNext($input: FlowClaimAudioRecordingInput!, $context: FlowContext!) {
+  flowClaimAudioRecordingNext(input: $input, context: $context) {
+    id
+    ...FlowClaimFragment
+    context
+  }
+}

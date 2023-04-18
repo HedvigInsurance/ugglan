@@ -1,17 +1,19 @@
 import Apollo
+import Claims
+import Datadog
 import Foundation
+import Odyssey
 import OdysseyKit
 import hCore
 import hGraphQL
-import Odyssey
-import Datadog
 
 extension TokenRefresher: OdysseyKit.AccessTokenProvider {
     public func provide() async -> String? {
         await withCheckedContinuation { continuation in
-            refreshIfNeeded().onValue { _ in
-                continuation.resume(returning: ApolloClient.retreiveToken()?.accessToken)
-            }
+            refreshIfNeeded()
+                .onValue { _ in
+                    continuation.resume(returning: ApolloClient.retreiveToken()?.accessToken)
+                }
         }
     }
 }
@@ -33,7 +35,6 @@ class OdysseyDatadogLogger: DatadogLogger {
         log.warn("\(tag) : \(message)")
     }
 }
-
 
 class OdysseyDatadogProvider: DatadogProvider {
     let serialQueue = DispatchQueue(label: "datadog.span.serial.queue")
@@ -77,7 +78,6 @@ class OdysseyDatadogProvider: DatadogProvider {
     var logger: DatadogLogger = OdysseyDatadogLogger()
 }
 
-
 extension AppDelegate {
     func initOdyssey() {
         OdysseyKit.initialize(
@@ -86,6 +86,13 @@ extension AppDelegate {
             datadogProvider: OdysseyDatadogProvider(),
             locale: Localization.Locale.currentLocale.acceptLanguageHeader,
             enableNetworkLogs: false
+        )
+
+        let odysseyNetworkClient = OdysseyNetworkClient()
+        Dependencies.shared.add(
+            module: Module { () -> FileUploaderClient in
+                odysseyNetworkClient
+            }
         )
     }
 }
