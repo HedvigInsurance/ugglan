@@ -8,6 +8,7 @@ public struct MarketPickerView: View {
 
     @ObservedObject var viewModel = MarketPickerViewModel()
     @PresentableStore var store: MarketStore
+    @State var submitButtonLoading: Bool = false
 
     @State var title: String = L10n.MarketLanguageScreen.title
     @State var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
@@ -41,24 +42,31 @@ public struct MarketPickerView: View {
         LanguageRow()
 
         Spacer().frame(height: 36)
-
-        Button {
+        
+        hButton.LargeButtonFilled {
             hAnalyticsEvent.marketSelected(
                 locale: Localization.Locale.currentLocale.lprojCode
             )
             .send()
-            hAnalyticsExperiment.load { _ in }
-
-            withAnimation(.easeInOut) {
-                viewState = .onboardAndLogin
+            
+            withAnimation(.default) {
+                submitButtonLoading = true
             }
-        } label: {
+            
+            hAnalyticsExperiment.retryingLoad { _ in
+                withAnimation(.default.delay(0.5)) {
+                    submitButtonLoading = false
+                }
+                
+                withAnimation(.easeInOut.delay(0.25)) {
+                    viewState = .onboardAndLogin
+                }
+            }
+        } content: {
             hText(buttonText, style: .body)
-                .foregroundColor(hLabelColor.primary.inverted)
-                .frame(minWidth: 200, maxWidth: .infinity, minHeight: 52)
         }
-        .background(Color.white)
-        .cornerRadius(.defaultCornerRadius)
+        .hButtonIsLoading(submitButtonLoading)
+        .hButtonFilledStyle(.overImage)
     }
 
     @ViewBuilder

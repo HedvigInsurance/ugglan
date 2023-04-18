@@ -4,64 +4,219 @@ import hCoreUI
 
 public struct SubmitClaimCheckoutTransferringScreen: View {
     @PresentableStore var store: ClaimsStore
-    @State var hasActionCompleted: Bool = false
+    @State var loadingAnimation: Bool = false
+    @State var successAnimation: Bool = false
+    @State var errorAnimation: Bool = false
 
+    @Namespace private var animation
     public init() {}
 
     public var body: some View {
-
         BlurredProgressOverlay {
             ZStack(alignment: .center) {
                 VStack {
                     Spacer()
                         .scaleEffect(
-                            x: hasActionCompleted ? 2 : 1,
-                            y: hasActionCompleted ? 2 : 1,
+                            x: loadingAnimation ? 2 : 1,
+                            y: loadingAnimation ? 2 : 1,
                             anchor: .center
                         )
                     Spacer()
                 }
-                .opacity(hasActionCompleted ? 0 : 1)
-                .animation(.spring(), value: hasActionCompleted)
-
-                VStack {
-                    Spacer()
-
-                    VStack(spacing: 16) {
-
-                        hText(L10n.Claims.Payout.Progress.title, style: .title2)
-
-                    }
-                    .frame(maxHeight: .infinity, alignment: .top)
-                    .scaleEffect(
-                        x: hasActionCompleted ? 1 : 0.3,
-                        y: hasActionCompleted ? 1 : 0.3,
-                        anchor: .top
-                    )
-
-                    Spacer()
+                .opacity(loadingAnimation ? 0 : 1)
+                .animation(.spring(), value: loadingAnimation)
+                LoadingViewWithState(.postSingleItemCheckout) {
+                    successView()
+                } onLoading: {
+                    loadingView()
+                } onError: { error in
+                    errorView(withError: error)
                 }
-                .opacity(hasActionCompleted ? 1 : 0)
-                .disabled(!hasActionCompleted)
-                .animation(
-                    .interpolatingSpring(
-                        stiffness: 170,
-                        damping: 15
-                    )
-                    .delay(0.25),
-                    value: hasActionCompleted
-                )
             }
         }
-        .onAppear {
-            if !hasActionCompleted {
-                Task {
-                    await delay(2)
-                    withAnimation {
-                        hasActionCompleted = true
+    }
+
+    @ViewBuilder
+    private func successView() -> some View {
+        VStack {
+            Spacer()
+            VStack(spacing: 16) {
+                Image(uiImage: hCoreUIAssets.circularCheckmark.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                PresentableStoreLens(
+                    ClaimsStore.self,
+                    getter: { state in
+                        state.singleItemCheckoutStep
                     }
-                    await delay(5)
-                    store.send(.openCheckoutTransferringDoneScreen)
+                ) { singleItemCheckoutStep in
+
+                    hText(
+                        (singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""),
+                        style: .title1
+                    )
+                    .foregroundColor(hLabelColor.primary)
+                }
+                hText(L10n.Claims.Payout.Success.message, style: .footnote)
+                    .foregroundColor(hLabelColor.primary)
+                    .matchedGeometryEffect(id: "titleLabel", in: animation)
+            }
+            .scaleEffect(
+                x: successAnimation ? 1 : 0.3,
+                y: successAnimation ? 1 : 0.3,
+                anchor: .center
+            )
+            Spacer()
+            hButton.LargeButtonFilled {
+                store.send(.dissmissNewClaimFlow)
+            } content: {
+                hText(L10n.generalContinueButton)
+            }
+        }
+        .opacity(successAnimation ? 1 : 0)
+        .disabled(!successAnimation)
+        .animation(
+            .interpolatingSpring(
+                stiffness: 170,
+                damping: 15
+            )
+            .delay(0.25),
+            value: successAnimation
+        )
+        .onAppear {
+            if !successAnimation {
+                withAnimation {
+                    successAnimation = true
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func loadingView() -> some View {
+        VStack {
+            Spacer()
+
+            VStack(spacing: 16) {
+                hText(L10n.Claims.Payout.Progress.title, style: .title2)
+                    .matchedGeometryEffect(id: "titleLabel", in: animation)
+            }
+            .frame(maxHeight: .infinity, alignment: .top)
+            .scaleEffect(
+                x: loadingAnimation ? 1 : 0.3,
+                y: loadingAnimation ? 1 : 0.3,
+                anchor: .top
+            )
+
+            Spacer()
+        }
+        .opacity(loadingAnimation ? 1 : 0)
+        .disabled(!loadingAnimation)
+        .animation(
+            .interpolatingSpring(
+                stiffness: 170,
+                damping: 15
+            )
+            .delay(0.25),
+            value: loadingAnimation
+        )
+        .onAppear {
+            if !loadingAnimation {
+                withAnimation {
+                    loadingAnimation = true
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func errorView(withError error: String) -> some View {
+        VStack {
+            Spacer()
+            VStack(spacing: 16) {
+                Image(uiImage: hCoreUIAssets.warningTriangle.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                hText(L10n.HomeTab.errorTitle, style: .title1)
+                    .foregroundColor(hLabelColor.primary)
+                hText(error, style: .footnote)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(hLabelColor.primary)
+                    .matchedGeometryEffect(id: "titleLabel", in: animation)
+            }
+            .scaleEffect(
+                x: errorAnimation ? 1 : 0.3,
+                y: errorAnimation ? 1 : 0.3,
+                anchor: .center
+            )
+
+            Spacer()
+
+            hButton.LargeButtonFilled {
+                store.send(.dissmissNewClaimFlow)
+                store.send(.openFreeTextChat)
+            } content: {
+                hText(L10n.openChat)
+            }
+            .padding([.leading, .trailing], 16)
+            .cornerRadius(.defaultCornerRadius)
+            HStack {
+
+                Button {
+                    store.send(.dissmissNewClaimFlow)
+                } label: {
+                    HStack {
+                        hText(L10n.generalCloseButton)
+                            .foregroundColor(hLabelColor.primary)
+                            .padding(16)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .cornerRadius(.defaultCornerRadius)
+                    .overlay(
+                        RoundedRectangle(
+                            cornerRadius: .defaultCornerRadius
+                        )
+                        .stroke(hLabelColor.primary, lineWidth: 1)
+                    )
+                }
+
+                Button {
+                    store.send(.claimNextSingleItemCheckout)
+                } label: {
+                    HStack {
+                        hText(L10n.generalRetry)
+                            .foregroundColor(hLabelColor.primary)
+                            .padding(16)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .cornerRadius(.defaultCornerRadius)
+                    .overlay(
+                        RoundedRectangle(
+                            cornerRadius: .defaultCornerRadius
+                        )
+                        .stroke(hLabelColor.primary, lineWidth: 1)
+                    )
+                }
+            }
+            .padding([.leading, .trailing], 16)
+
+        }
+        .opacity(errorAnimation ? 1 : 0)
+        .disabled(!errorAnimation)
+        .animation(
+            .interpolatingSpring(
+                stiffness: 170,
+                damping: 15
+            )
+            .delay(0.25),
+            value: errorAnimation
+        )
+        .onAppear {
+            if !errorAnimation {
+                withAnimation {
+                    errorAnimation = true
                 }
             }
         }
@@ -71,103 +226,5 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
 struct SubmitClaimCheckoutTransferringScreen_Previews: PreviewProvider {
     static var previews: some View {
         SubmitClaimCheckoutTransferringScreen()
-    }
-}
-
-struct BlurredProgressOverlay<Content: View>: View {
-    @Environment(\.colorScheme) var colorScheme
-    @State private var isAnimating = false
-    var content: () -> Content
-
-    private var largeCircleDiameter: CGFloat = 354
-    private var smallCircleDiameter: CGFloat = 284
-
-    init(
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.content = content
-    }
-
-    @hColorBuilder
-    var largeCircleColor: some hColor {
-        if colorScheme == .dark {
-            hTintColor.yellowOne.opacity(0.25)
-        } else {
-            hTintColor.yellowTwo
-        }
-    }
-
-    var largeCircle: some View {
-        Circle()
-            .foregroundColor(largeCircleColor)
-            .frame(width: largeCircleDiameter, height: largeCircleDiameter)
-    }
-
-    @hColorBuilder
-    var smallCircleColor: some hColor {
-        if colorScheme == .dark {
-            hTintColor.lavenderOne.opacity(0.25)
-        } else {
-            hTintColor.lavenderTwo
-        }
-    }
-
-    var smallCircle: some View {
-        Circle()
-            .foregroundColor(smallCircleColor)
-            .frame(width: smallCircleDiameter, height: smallCircleDiameter)
-    }
-
-    var body: some View {
-        ZStack(alignment: .center) {
-            ZStack {
-                GeometryReader { geo in
-                    smallCircle
-                        .offset(x: geo.size.width - 150, y: isAnimating ? geo.size.height - smallCircleDiameter : 0)
-                        .rotationEffect(Angle(degrees: isAnimating ? 25 : -25), anchor: .top)
-                        .blur(radius: 50)
-
-                    largeCircle
-                        .offset(x: -109, y: isAnimating ? 0 : geo.size.height - largeCircleDiameter)
-                        .rotationEffect(Angle(degrees: isAnimating ? -25 : 25), anchor: .top)
-                        .blur(radius: 100)
-                }
-                .animation(isAnimating ? .easeInOut(duration: 6).repeatForever(autoreverses: true) : .none)
-                .id(colorScheme)
-            }
-            .ignoresSafeArea()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            ZStack(alignment: .center) {
-                content()
-                    .padding(.horizontal, 24)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear {
-                withAnimation {
-                    isAnimating = true
-                }
-            }
-            .onChange(of: colorScheme) { newValue in
-                withAnimation {
-                    isAnimating = false
-                }
-
-                Task {
-                    await delay(0.25)
-                    withAnimation {
-                        isAnimating = true
-                    }
-                }
-            }
-        }
-    }
-
-}
-
-struct BlurredProgressOverlayPreviews: PreviewProvider {
-    static var previews: some View {
-        BlurredProgressOverlay {
-            Text("hello world")
-        }
     }
 }

@@ -1,6 +1,5 @@
 import Datadog
 import DatadogCrashReporting
-import Shake
 import hCore
 import hGraphQL
 
@@ -41,7 +40,6 @@ extension AppDelegate {
         )
 
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
-            Shake.setup()
             Datadog.verbosityLevel = .debug
         }
 

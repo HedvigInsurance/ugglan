@@ -1,3 +1,4 @@
+import Claims
 import Combine
 import Flow
 import Foundation
@@ -7,7 +8,6 @@ import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
-import Claims
 
 struct SlideTrack: View {
     var shouldAnimate: Bool
@@ -62,8 +62,6 @@ struct SlideDragger: View {
                     .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
                     .background(hTintColor.lavenderOne)
                     .clipShape(Circle())
-                    .scaleEffect(didFinished ? 1.2 : 1)
-                    .animation(didFinished ? Animation.spring().repeatForever(autoreverses: true) : nil)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .modifier(
@@ -81,10 +79,9 @@ struct SlideDragger: View {
 struct DidAcceptPledgeNotifier: View {
     var canNotify: Bool
     var dragOffsetX: CGFloat
-    
+    let onConfirmAction: (() -> Void)?
     @Binding var hasNotifiedStore: Bool
-    @PresentableStore var store: UgglanStore
-
+    @PresentableStore var store: ClaimsStore
     var body: some View {
         GeometryReader { geo in
             Color.clear.onReceive(
@@ -92,6 +89,7 @@ struct DidAcceptPledgeNotifier: View {
             ) { value in
                 if value && !hasNotifiedStore {
                     hasNotifiedStore = true
+                    onConfirmAction?()
                     store.send(.didAcceptHonestyPledge)
                 }
             }
@@ -103,6 +101,7 @@ struct SlideToConfirm: View {
     @State var hasDraggedOnce = false
     @GestureState var dragOffsetX: CGFloat = 0
     @State var draggedTillTheEnd = false
+    let onConfirmAction: (() -> Void)?
     var labelOpacity: Double {
         1 - (Double(max(dragOffsetX, 0)) / 100)
     }
@@ -124,6 +123,7 @@ struct SlideToConfirm: View {
             DidAcceptPledgeNotifier(
                 canNotify: hasDraggedOnce,
                 dragOffsetX: dragOffsetX,
+                onConfirmAction: onConfirmAction,
                 hasNotifiedStore: $draggedTillTheEnd
             )
         )
@@ -151,6 +151,13 @@ struct SlideToConfirm: View {
 
 struct HonestyPledge: View {
     @PresentableStore var store: UgglanStore
+    let onConfirmAction: (() -> Void)?
+
+    init(
+        onConfirmAction: (() -> Void)?
+    ) {
+        self.onConfirmAction = onConfirmAction
+    }
 
     var body: some View {
         hForm {
@@ -160,12 +167,13 @@ struct HonestyPledge: View {
                         .foregroundColor(hLabelColor.secondary)
                 }
                 .padding(.bottom, 20)
-                SlideToConfirm()
+                SlideToConfirm(onConfirmAction: onConfirmAction)
                     .frame(maxHeight: 50)
             }
             .padding(.bottom, 20)
             .padding(.leading, 15)
             .padding(.trailing, 15)
+            .fixedSize(horizontal: false, vertical: true)
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
     }
@@ -177,12 +185,11 @@ extension HonestyPledge {
         @JourneyBuilder _ next: @escaping () -> Next
     ) -> some JourneyPresentation {
         HostingJourney(
-            UgglanStore.self,
-            rootView: HonestyPledge(),
+            ClaimsStore.self,
+            rootView: HonestyPledge(onConfirmAction: nil),
             style: style,
             options: [
                 .defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always),
-                .allowSwipeDismissAlways,
             ]
         ) { action in
             if case .didAcceptHonestyPledge = action {

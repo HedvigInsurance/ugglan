@@ -2,93 +2,72 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct SubmitClaimOccurrenceScreen: View {
+public struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: ClaimsStore
 
-    public init() {}
-
     public var body: some View {
-        LoadingViewWithContent(.claimNextDateOfOccurrenceAndLocation) {
+        LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
             hForm {
-                hButton.SmallButtonText {
-                    store.send(.openDatePicker)
-                } content: {
 
-                    HStack(spacing: 0) {
-                        hText(L10n.Claims.Incident.Screen.Date.Of.incident)
-                            .foregroundColor(hLabelColor.primary)
-                            .padding([.top, .bottom], 16)
+                hSection {
+                    PresentableStoreLens(
+                        ClaimsStore.self,
+                        getter: { state in
+                            state.dateOfOccurenceStep
+                        }
+                    ) { dateOfOccurenceStep in
+                        hRow {
+                            hText(L10n.Claims.Incident.Screen.Date.Of.incident)
+                        }
+                        .withCustomAccessory {
+                            Spacer()
 
-                        Spacer()
-
-                        PresentableStoreLens(
-                            ClaimsStore.self,
-                            getter: { state in
-                                state.newClaim
+                            Group {
+                                if let dateOfOccurrence = dateOfOccurenceStep?.dateOfOccurence {
+                                    hText(dateOfOccurrence)
+                                } else {
+                                    Image(uiImage: hCoreUIAssets.calendar.image)
+                                        .renderingMode(.template)
+                                }
                             }
-                        ) { claim in
-
-                            if let dateOfOccurrence = claim.dateOfOccurrence {
-                                hText(claim.dateOfOccurrence ?? "")
-                                    .foregroundColor(hLabelColor.primary)
-                            } else {
-                                Image(uiImage: hCoreUIAssets.calendar.image)
-                                    .foregroundColor(hLabelColor.primary)
-                            }
+                            .foregroundColor(hLabelColor.secondary)
+                        }
+                        .onTap {
+                            store.send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
                         }
                     }
                 }
-                .frame(height: 64)
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(12)
-                .padding(.leading, 16)
-                .padding(.trailing, 16)
-                .padding(.top, 20)
-                .hShadow()
 
-                hButton.SmallButtonText {
-                    store.send(.openLocationPicker)
-                } content: {
-
-                    HStack(spacing: 0) {
-                        hText(L10n.Claims.Incident.Screen.location)
-                            .foregroundColor(hLabelColor.primary)
-                            .padding([.top, .bottom], 16)
-
-                        Spacer()
-
-                        PresentableStoreLens(
-                            ClaimsStore.self,
-                            getter: { state in
-                                state.newClaim
+                hSection {
+                    PresentableStoreLens(
+                        ClaimsStore.self,
+                        getter: { state in
+                            state.locationStep
+                        }
+                    ) { locationStep in
+                        hRow {
+                            hText(L10n.Claims.Incident.Screen.location)
+                        }
+                        .withCustomAccessory {
+                            Spacer()
+                            Group {
+                                if let location = locationStep?.getSelectedOption()?.displayName {
+                                    hText(location.displayValue)
+                                } else {
+                                    hText(L10n.Claim.Location.choose)
+                                }
                             }
-                        ) { claim in
-
-                            if claim.location != nil {
-                                hText(claim.location?.displayValue ?? "")
-                                    .foregroundColor(hLabelColor.primary)
-                            } else {
-                                hText(L10n.Claim.Location.choose)
-                                    .foregroundColor(hLabelColor.primary)
-                            }
+                            .foregroundColor(hLabelColor.secondary)
+                        }
+                        .onTap {
+                            store.send(.navigationAction(action: .openLocationPicker(type: .setLocation)))
                         }
                     }
                 }
-                .frame(height: 64)
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(12)
-                .padding(.leading, 16)
-                .padding(.trailing, 16)
-                .padding(.top, 20)
-                .hShadow()
-
             }
-
             .hFormAttachToBottom {
-
                 hButton.LargeButtonFilled {
-                    store.send(.submitOccuranceAndLocation)
-                    store.send(.dissmissNewClaimFlow)
+                    store.send(.claimNextDateOfOccurrenceAndLocation)
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
@@ -107,8 +86,8 @@ public struct SubmitClaimOccurrenceScreen: View {
     }
 }
 
-struct SubmitClaimOccurranceScreen_Previews: PreviewProvider {
+struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimOccurrenceScreen()
+        SubmitClaimOccurrencePlusLocationScreen()
     }
 }

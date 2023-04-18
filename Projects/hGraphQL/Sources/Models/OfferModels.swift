@@ -157,6 +157,12 @@ public struct QuoteBundle: Codable, Equatable {
     public let quotes: [Quote]
     public var inception: Inception
     public var displayName: String
+    public var gradientOption: Contract.GradientOption? {
+        Contract.TypeOfContract(
+            rawValue: self.quotes.first?.typeOfContract ?? ""
+        )?
+        .gradientOption
+    }
 
     public struct AppConfiguration: Codable, Equatable {
         public let showCampaignManagement: Bool
@@ -164,7 +170,6 @@ public struct QuoteBundle: Codable, Equatable {
         public let ignoreCampaigns: Bool
         public let approveButtonTerminology: ApproveButtonTerminology
         public let startDateTerminology: StartDateTerminology
-        public let gradientOption: Contract.GradientOption
         public let title: AppConfigTitle
 
         public init(
@@ -176,7 +181,6 @@ public struct QuoteBundle: Codable, Equatable {
             approveButtonTerminology = .init(rawValue: config.approveButtonTerminology.rawValue) ?? .unknown
             startDateTerminology = .init(rawValue: config.startDateTerminology.rawValue) ?? .unknown
             title = (.init(rawValue: config.title.rawValue) ?? .unknown)
-            gradientOption = .init(rawValue: config.gradientOption.rawValue) ?? .one
         }
 
         public enum ApproveButtonTerminology: String, Codable {

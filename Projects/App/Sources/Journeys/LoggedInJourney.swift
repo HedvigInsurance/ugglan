@@ -58,10 +58,6 @@ extension AppJourney {
                 AppJourney.crossSellingJourney(crossSell: crossSell)
             case let .openCrossSellingEmbark(name):
                 AppJourney.crossSellingEmbarkJourney(name: name, style: .detented(.large))
-            case let .terminationFlow(contractId, contextInput):
-                AppJourney.terminationFlow(contractId: contractId, context: contextInput)
-            case let .terminationSuccessFlow(terminationDate, surveyURL):
-                AppJourney.sendTermination(terminationDate: terminationDate, surveyURL: surveyURL)
             case let .openCrossSellingWebUrl(url):
                 AppJourney.webRedirect(url: url)
             }
@@ -162,12 +158,17 @@ extension JourneyPresentation {
                 AppJourney.claimDetailJourney(claim: claim)
             } else if case let .submitNewClaim(origin) = action {
                 AppJourney.startClaimsJourney(from: origin)
-            } else if case .openFreeTextChat = action {
-                AppJourney.freeTextChat()
+                    .onAction(ClaimsStore.self) { action in
+                        if case .dissmissNewClaimFlow = action {
+                            DismissJourney()
+                        }
+                    }
             } else if case .openHowClaimsWork = action {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
+            } else if case .openFreeTextChat = action {
+                AppJourney.freeTextChat()
             }
         }
     }

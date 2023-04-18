@@ -8,123 +8,117 @@ public struct SubmitClaimSummaryScreen: View {
     public init() {}
 
     public var body: some View {
-
-        PresentableStoreLens(
-            ClaimsStore.self,
-            getter: { state in
-                state.newClaim
-            }
-        ) { claim in
-
+        LoadingViewWithContent(.postSummary) {
             hForm {
                 VStack(alignment: .center) {
 
-                    displayTitleField(claim: claim)
-                    displayDateAndLocationOfOccurrenceField(claim: claim)
-                    displayModelField(claim: claim)
-                    displayDateOfPurchase(claim: claim)
-                    displayDamageField(claim: claim)
-
-                    //                    hButton.SmallButtonOutlined {
-                    //                        store.send(.openSummaryEditScreen(context: ""))
-                    //                    } content: {
-                    //                        hText(L10n.Claims.Edit.button)
-                    //                    }
-                    //                    .padding(.top, 25)
+                    displayTitleField()
+                    displayDateAndLocationOfOccurrenceField()
+                    displayModelField()
+                    displayDateOfPurchase()
+                    displayDamageField()
                 }
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
-                    store.send(.submitSummary)
+                    store.send(.claimNextSummary)
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
                 .padding([.leading, .trailing], 16)
             }
+
         }
     }
 
-    @ViewBuilder func displayModelField(claim: NewClaim) -> some View {
-
-        if claim.chosenModel != nil {
-            hText(claim.chosenModel?.displayName ?? "")
-                .padding(.top, 40)
-        } else if claim.chosenBrand != nil {
-            hText(claim.chosenBrand?.displayName ?? "")
-                .padding(.top, 40)
-        }
-    }
-
-    @ViewBuilder func displayDateOfPurchase(claim: NewClaim) -> some View {
-
-        hText(
-            L10n.summaryPurchaseDescription(
-                claim.dateOfPurchase?.localDateString ?? "",
-                Int(claim.priceOfPurchase?.amount ?? 0)
-            ) + " " + (claim.payoutAmount?.currencyCode ?? "")
-        )
-        .padding(.top, 2)
-    }
-
-    @ViewBuilder func displayDateAndLocationOfOccurrenceField(claim: NewClaim) -> some View {
-        HStack {
-            Image(uiImage: hCoreUIAssets.calendar.image)
-                .resizable()
-                .frame(width: 12.0, height: 12.0)
-                .foregroundColor(.secondary)
-            hText(claim.dateOfOccurrence ?? "")
-                .padding(.top, 2)
-                .foregroundColor(.secondary)
-        }
-
-        HStack {
-            Image(uiImage: hCoreUIAssets.location.image)
+    @ViewBuilder func displayTitleField() -> some View {
+        PresentableStoreLens(
+            ClaimsStore.self,
+            getter: { state in
+                state.summaryStep
+            }
+        ) { summaryStep in
+            hText(summaryStep?.title ?? "", style: .title3)
+                .padding(.top, UIScreen.main.bounds.size.height / 5)
                 .foregroundColor(hLabelColor.secondary)
-            hText(claim.location?.displayValue ?? "")
-                .padding(.top, 2)
-                .foregroundColor(.secondary)
         }
     }
 
-    @ViewBuilder func displayTitleField(claim: NewClaim) -> some View {
-
-        if claim.chosenModel != nil {
-            hText(claim.chosenModel?.itemTypeID ?? "", style: .title3) /* TODO: CHANGE? */
-                .padding(.top, UIScreen.main.bounds.size.height / 5)
-        } else if claim.chosenBrand != nil {
-            hText(claim.chosenBrand?.itemTypeId ?? "", style: .title3) /* TODO: CHANGE? */
-                .padding(.top, UIScreen.main.bounds.size.height / 5)
+    @ViewBuilder func displayDateAndLocationOfOccurrenceField() -> some View {
+        PresentableStoreLens(
+            ClaimsStore.self,
+            getter: { state in
+                state.dateOfOccurenceStep
+            }
+        ) { dateOfOccurenceStep in
+            HStack {
+                Image(uiImage: hCoreUIAssets.calendar.image)
+                    .resizable()
+                    .frame(width: 12.0, height: 12.0)
+                    .foregroundColor(.secondary)
+                hText(dateOfOccurenceStep?.dateOfOccurence ?? L10n.Claims.Summary.Screen.Not.selected)
+                    .padding(.top, 1)
+                    .foregroundColor(.secondary)
+            }
+        }
+        PresentableStoreLens(
+            ClaimsStore.self,
+            getter: { state in
+                state.locationStep
+            }
+        ) { locationStep in
+            HStack {
+                Image(uiImage: hCoreUIAssets.location.image)
+                    .foregroundColor(hLabelColor.secondary)
+                hText(locationStep?.getSelectedOption()?.displayName ?? L10n.Claims.Summary.Screen.Not.selected)
+                    .padding(.top, 1)
+                    .foregroundColor(.secondary)
+            }
         }
     }
 
-    @ViewBuilder func displayDamageField(claim: NewClaim) -> some View {
-
-        /* TODO: FIX */
-
-        if claim.chosenDamages != nil {
-            if claim.chosenDamages!.count <= 2 {
-                ForEach(claim.chosenDamages ?? [], id: \.self) { damage in
-                    hText(L10n.summarySelectedProblemDescription(damage.displayName))
-                        .foregroundColor(hLabelColor.primary)
-                        .padding(.top, 2)
-                }
-            } else {
-
-                var counter = 0
-
-                ForEach(claim.chosenDamages ?? [], id: \.self) { damage in
-                    if counter < 2 {
-                        hText(damage.displayName)
-                            .foregroundColor(hLabelColor.primary)
-                    }
-                    let _ = counter += 1
-                }
-                hText("...")
+    @ViewBuilder func displayModelField() -> some View {
+        PresentableStoreLens(
+            ClaimsStore.self,
+            getter: { state in
+                state.singleItemStep
+            }
+        ) { singleItemStep in
+            if let modelName = singleItemStep?.getBrandOrModelName() {
+                hText(modelName)
+                    .padding(.top, 40)
                     .foregroundColor(hLabelColor.primary)
             }
-        } else {
-            hText(L10n.Claim.Location.choose)
+        }
+    }
+
+    @ViewBuilder func displayDateOfPurchase() -> some View {
+        PresentableStoreLens(
+            ClaimsStore.self,
+            getter: { state in
+                state.singleItemStep
+            }
+        ) { singleItemStep in
+
+            let stringToDisplay = singleItemStep?.returnDisplayStringForSummary
+
+            hText(stringToDisplay ?? L10n.Claims.Summary.Screen.Not.selected)
+                .padding(.top, 1)
                 .foregroundColor(hLabelColor.primary)
+        }
+    }
+
+    @ViewBuilder func displayDamageField() -> some View {
+        PresentableStoreLens(
+            ClaimsStore.self,
+            getter: { state in
+                state.singleItemStep
+            }
+        ) { singleItemStep in
+            if let chosenDamages = singleItemStep?.getChoosenDamagesAsText() {
+                hText(L10n.summarySelectedProblemDescription(chosenDamages)).foregroundColor(hLabelColor.primary)
+                    .padding(.top, 1)
+            }
         }
     }
 }

@@ -5,47 +5,39 @@ import hCoreUI
 
 public struct SelectCommonClaim: View {
     @PresentableStore var store: ClaimsStore
-    public init() {}
+    public init() {
+        store.send(.fetchCommonClaimsForSelection)
+    }
     public var body: some View {
-        PresentableStoreLens(
-            ClaimsStore.self,
-            getter: { state in
-                state.entryPointCommonClaims
-            }
-        ) { entryPointCommonClaims in
-            switch entryPointCommonClaims {
-            case .loading:
-                ActivityIndicator(style: .large)
-            case let .error(message):
-                RetryView(title: message, retryTitle: L10n.generalRetry) {
-                    store.send(.fetchCommonClaimsForSelection)
+        LoadingViewWithContent(.fetchCommonClaims) {
+            PresentableStoreLens(
+                ClaimsStore.self,
+                getter: { state in
+                    state.entryPointCommonClaims
                 }
-                .padding(16)
-            case let .success(entryPointCommonClaims):
+            ) { entryPointCommonClaims in
                 hForm {
-                    hSection {
-                        ForEach(entryPointCommonClaims, id: \.id) { claimType in
-                            hRow {
-                                hText(claimType.displayName)
-                            }
-                            .onTap {
-                                store.send(
-                                    .commonClaimOriginSelected(commonClaim: ClaimsOrigin.commonClaims(id: claimType.id))
-                                )
-                            }
+                    hSection(entryPointCommonClaims, id: \.id) { claimType in
+                        hRow {
+                            hText(claimType.displayName, style: .body)
+                                .foregroundColor(hLabelColor.primary)
+                        }
+                        .onTap {
+                            store.send(
+                                .commonClaimOriginSelected(commonClaim: ClaimsOrigin.commonClaims(id: claimType.id))
+                            )
                         }
                     }
                     .withHeader {
                         hText(L10n.claimTriagingTitle, style: .prominentTitle)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.bottom, 30)
                     }
                 }
+
             }
+            .presentableStoreLensAnimation(.easeInOut)
         }
-        .onAppear {
-            store.send(.fetchCommonClaimsForSelection)
-        }
-        .presentableStoreLensAnimation(.easeInOut)
     }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 
 public struct RetryView: View {
     var title: String
@@ -16,15 +17,18 @@ public struct RetryView: View {
     }
 
     public var body: some View {
-        VStack {
-            Spacer()
-            hText(title, style: .body).multilineTextAlignment(.center)
-            Spacer(minLength: 40)
-            hButton.LargeButtonFilled {
-                action()
-            } content: {
-                hText(retryTitle)
+        hSection {
+            Group {
+                hText(L10n.somethingWentWrong)
+                hText(title, style: .body).multilineTextAlignment(.center)
+                hButton.SmallButtonFilled {
+                    action()
+                } content: {
+                    hText(retryTitle)
+                }
             }
+            .padding(20)
         }
+        .hShadow()
     }
 }

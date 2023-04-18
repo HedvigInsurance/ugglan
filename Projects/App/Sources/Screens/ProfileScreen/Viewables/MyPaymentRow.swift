@@ -7,7 +7,7 @@ import UIKit
 import hCore
 
 struct MyPaymentRow {
-    let monthlyCostSignal = ReadWriteSignal<Int?>(nil)
+    let monthlyCostSignal = ReadWriteSignal<String?>(nil)
     let presentingViewController: UIViewController
 }
 
