@@ -196,7 +196,7 @@ public class ClaimJourneys {
         let url = store.state.audioRecordingStep?.url
         return HostingJourney(
             ClaimsStore.self,
-            rootView: SubmitClaimAudioRecordingScreen(url: url ?? URL(string: "www.google.com")!),
+            rootView: SubmitClaimAudioRecordingScreen(url: url),
             style: .detented(.large, modally: false)
         ) { action in
             getScreenForAction(for: action)

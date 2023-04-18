@@ -8,7 +8,6 @@ import hGraphQL
 
 public enum ClaimsAction: ActionProtocol, Hashable {
     case didAcceptHonestyPledge
-    case openFreeTextChat
     case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
     case setClaims(claims: [Claim])
@@ -17,6 +16,8 @@ public enum ClaimsAction: ActionProtocol, Hashable {
     case fetchCommonClaimsForSelection
     case setCommonClaimsForSelection([ClaimEntryPointResponseModel])
     case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
+    
+    case openFreeTextChat
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)

@@ -15,7 +15,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
     let onSubmit: (_ url: URL) -> Void
 
     public init(
-        url: URL
+        url: URL?
     ) {
         audioPlayer = AudioPlayer(url: url)
 

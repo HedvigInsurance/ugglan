@@ -51,7 +51,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 }
                 .valueThenEndSignal
         case let .startClaimRequest(id):
-            self.send(.setLoadingState(action: .startClaim, state: .loading))
             let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: id)
             let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput)
             return mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
@@ -288,6 +287,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 send(.navigationAction(action: .openAudioRecordingScreen))
             }
         case .startClaimRequest:
+            newState.loadingStates[.startClaim] = .loading
             newState.summaryStep = nil
             newState.dateOfOccurenceStep = nil
             newState.locationStep = nil
