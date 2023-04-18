@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct DatePickerScreen: View {
     @State private var dateOfOccurrence = Date()
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     private let type: ClaimsNavigationAction.DatePickerType
     private let title: String
     private let buttonTitle: String
@@ -14,7 +14,7 @@ public struct DatePickerScreen: View {
         type: ClaimsNavigationAction.DatePickerType
     ) {
         self.type = type
-        let store: ClaimsStore = globalPresentableStoreContainer.get()
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         self.maxDate = {
             switch type {
             case .setDateOfOccurrence, .submitDateOfOccurence:
@@ -69,7 +69,7 @@ public struct DatePickerScreen: View {
                 VStack {
 
                     hButton.LargeButtonFilled {
-                        let action: ClaimsAction = {
+                        let action: SubmitClaimsAction = {
                             switch type {
                             case .setDateOfOccurrence:
                                 return .setNewDate(dateOfOccurrence: dateOfOccurrence.localDateString)
@@ -87,7 +87,7 @@ public struct DatePickerScreen: View {
                     .padding([.leading, .trailing], 16)
 
                     hButton.LargeButtonText {
-                        let action: ClaimsAction = {
+                        let action: SubmitClaimsAction = {
                             switch type {
                             case .setDateOfOccurrence:
                                 return .setNewDate(dateOfOccurrence: nil)

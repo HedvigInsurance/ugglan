@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct SubmitClaimContactScreen: View {
 
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     @State var phoneNumber: String
 
     public init(

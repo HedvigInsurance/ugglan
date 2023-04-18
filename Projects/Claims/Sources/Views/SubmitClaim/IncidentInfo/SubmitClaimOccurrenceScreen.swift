@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimOccurrencePlusLocationScreen: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
 
     public var body: some View {
         LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
@@ -11,7 +11,7 @@ public struct SubmitClaimOccurrencePlusLocationScreen: View {
 
                 hSection {
                     PresentableStoreLens(
-                        ClaimsStore.self,
+                        SubmitClaimStore.self,
                         getter: { state in
                             state.dateOfOccurenceStep
                         }
@@ -40,7 +40,7 @@ public struct SubmitClaimOccurrencePlusLocationScreen: View {
 
                 hSection {
                     PresentableStoreLens(
-                        ClaimsStore.self,
+                        SubmitClaimStore.self,
                         getter: { state in
                             state.locationStep
                         }

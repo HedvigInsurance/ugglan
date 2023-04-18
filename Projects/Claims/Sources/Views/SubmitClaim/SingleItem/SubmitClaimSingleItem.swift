@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimSingleItem: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     @State var purchasePrice: String = ""
 
     public init() {}
@@ -14,7 +14,7 @@ public struct SubmitClaimSingleItem: View {
         LoadingViewWithContent(.postSingleItem) {
             hForm {
                 PresentableStoreLens(
-                    ClaimsStore.self,
+                    SubmitClaimStore.self,
                     getter: { state in
                         state.singleItemStep
                     }

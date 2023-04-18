@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimSummaryScreen: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
 
     public init() {}
 
@@ -33,7 +33,7 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder func displayTitleField() -> some View {
         PresentableStoreLens(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             getter: { state in
                 state.summaryStep
             }
@@ -46,7 +46,7 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder func displayDateAndLocationOfOccurrenceField() -> some View {
         PresentableStoreLens(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             getter: { state in
                 state.dateOfOccurenceStep
             }
@@ -62,7 +62,7 @@ public struct SubmitClaimSummaryScreen: View {
             }
         }
         PresentableStoreLens(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             getter: { state in
                 state.locationStep
             }
@@ -79,7 +79,7 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder func displayModelField() -> some View {
         PresentableStoreLens(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             getter: { state in
                 state.singleItemStep
             }
@@ -94,7 +94,7 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder func displayDateOfPurchase() -> some View {
         PresentableStoreLens(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             getter: { state in
                 state.singleItemStep
             }
@@ -110,7 +110,7 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder func displayDamageField() -> some View {
         PresentableStoreLens(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             getter: { state in
                 state.singleItemStep
             }

@@ -7,7 +7,7 @@ public class ClaimJourneys {
 
     @JourneyBuilder
     public static func getScreenForAction(
-        for action: ClaimsAction,
+        for action: SubmitClaimsAction,
         withHidesBack: Bool = false
     ) -> some JourneyPresentation {
         if withHidesBack {
@@ -18,7 +18,7 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    private static func getScreen(for action: ClaimsAction) -> some JourneyPresentation {
+    private static func getScreen(for action: SubmitClaimsAction) -> some JourneyPresentation {
         GroupJourney {
             if case let .navigationAction(navigationAction) = action {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
@@ -56,7 +56,7 @@ public class ClaimJourneys {
 
     private static func submitClaimPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel) -> some JourneyPresentation {
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: SubmitClaimContactScreen(model: model),
             style: .detented(.large, modally: false)
         ) { action in
@@ -66,7 +66,7 @@ public class ClaimJourneys {
 
     static func submitClaimOccurrancePlusLocationScreen() -> some JourneyPresentation {
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: SubmitClaimOccurrencePlusLocationScreen(),
             style: .detented(.large, modally: false)
         ) {
@@ -77,7 +77,7 @@ public class ClaimJourneys {
 
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
         return HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: DatePickerScreen(type: type),
             style: .default
         ) {
@@ -95,7 +95,7 @@ public class ClaimJourneys {
     static func openLocationScreen(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
 
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: LocationPickerScreen(type: type),
             style: .default
         ) {
@@ -110,15 +110,15 @@ public class ClaimJourneys {
 
     static func openBrandPickerScreen() -> some JourneyPresentation {
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: ItemPickerScreen<ClaimFlowItemBrandOptionModel>(
                 items: {
-                    let store: ClaimsStore = globalPresentableStoreContainer.get()
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     return store.state.singleItemStep?.availableItemBrandOptions
                         .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
                 }(),
                 onSelected: { item in
-                    let store: ClaimsStore = globalPresentableStoreContainer.get()
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setItemBrand(brand: item))
                 }
             ),
@@ -126,7 +126,7 @@ public class ClaimJourneys {
         ) {
             action in
             if case let .setItemBrand(brand) = action {
-                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 if store.state.singleItemStep?.shouldShowListOfModels(for: brand) ?? false {
                     openModelPickerScreen()
                 } else {
@@ -137,7 +137,7 @@ public class ClaimJourneys {
             }
         }
         .onAction(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             { action, pre in
                 if case .setSingleItemModel(_) = action {
                     pre.bag.dispose()
@@ -149,15 +149,15 @@ public class ClaimJourneys {
     static func openModelPickerScreen() -> some JourneyPresentation {
 
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: ItemPickerScreen<ClaimFlowItemModelOptionModel>(
                 items: {
-                    let store: ClaimsStore = globalPresentableStoreContainer.get()
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     return store.state.singleItemStep?.getListOfModels()?.compactMap({ ($0, $0.displayName) }) ?? []
 
                 }(),
                 onSelected: { item in
-                    let store: ClaimsStore = globalPresentableStoreContainer.get()
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setSingleItemModel(modelName: item))
                 }
             )
@@ -166,7 +166,7 @@ public class ClaimJourneys {
             ContinueJourney()
         }
         .onAction(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             { action, pre in
                 if case .setSingleItemModel = action {
                     pre.bag.dispose()
@@ -178,7 +178,7 @@ public class ClaimJourneys {
     static func openDamagePickerScreen() -> some JourneyPresentation {
 
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: DamamagePickerScreen(),
             style: .default
         ) {
@@ -192,10 +192,10 @@ public class ClaimJourneys {
     }
 
     static func openAudioRecordingSceen() -> some JourneyPresentation {
-        let store: ClaimsStore = globalPresentableStoreContainer.get()
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let url = store.state.audioRecordingStep?.url
         return HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: SubmitClaimAudioRecordingScreen(url: url),
             style: .detented(.large, modally: false)
         ) { action in
@@ -212,7 +212,7 @@ public class ClaimJourneys {
     }
     private static func openSingleItemScreen() -> some JourneyPresentation {
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: SubmitClaimSingleItem(),
             style: .detented(.large, modally: false)
         ) {
@@ -229,7 +229,7 @@ public class ClaimJourneys {
 
     private static func openSummaryScreen() -> some JourneyPresentation {
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: SubmitClaimSummaryScreen(),
             style: .detented(.large, modally: false)
         ) {
@@ -241,7 +241,7 @@ public class ClaimJourneys {
     private static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
 
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: SubmitClaimCheckoutNoRepairScreen(),
             style: .detented(.large, modally: false)
         ) {
@@ -267,7 +267,7 @@ public class ClaimJourneys {
     private static func openSummaryEditScreen() -> some JourneyPresentation {
 
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: SubmitClaimEditSummaryScreen()
         ) {
             action in
@@ -283,7 +283,7 @@ public class ClaimJourneys {
         switch origin {
         case .generic:
             HostingJourney(
-                ClaimsStore.self,
+                SubmitClaimStore.self,
                 rootView: SelectCommonClaim(),
                 style: .detented(.large),
                 options: [
@@ -313,10 +313,10 @@ public class ClaimJourneys {
 
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: UpdateAppScreen(
                 onSelected: {
-                    let store: ClaimsStore = globalPresentableStoreContainer.get()
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.dissmissNewClaimFlow)
                 }
             ),

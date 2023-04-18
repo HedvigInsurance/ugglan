@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 public struct DamamagePickerScreen: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     @State var selectedDamages: [String] = []
 
     public init() {}
@@ -12,7 +12,7 @@ public struct DamamagePickerScreen: View {
             hSection {
 
                 PresentableStoreLens(
-                    ClaimsStore.self,
+                    SubmitClaimStore.self,
                     getter: { state in
                         state.singleItemStep
                     }

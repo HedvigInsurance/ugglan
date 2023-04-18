@@ -1,9 +1,9 @@
-import Foundation
-import hCore
-import hGraphQL
 import Apollo
 import Flow
+import Foundation
 import Presentation
+import hCore
+import hGraphQL
 
 protocol Into {
     associatedtype To
@@ -11,7 +11,7 @@ protocol Into {
 }
 
 extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
-    func into() -> ClaimsAction {
+    func into() -> SubmitClaimsAction {
         if let step = self.fragments.flowClaimPhoneNumberStepFragment {
             return .stepModelAction(action: .setPhoneNumber(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimAudioRecordingStepFragment {
@@ -32,19 +32,35 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
                 }
                 return nil
             }()
-            return .stepModelAction(action: .setSummaryStep(model: .init(summaryStep: summaryStep,
-                                                                         singleItemStepModel: singleItemStepModel,
-                                                                         dateOfOccurenceModel: .init(with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment),
-                                                                         locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment))))
+            return .stepModelAction(
+                action: .setSummaryStep(
+                    model: .init(
+                        summaryStep: summaryStep,
+                        singleItemStepModel: singleItemStepModel,
+                        dateOfOccurenceModel: .init(
+                            with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
+                        ),
+                        locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment)
+                    )
+                )
+            )
         } else if let step = self.fragments.flowClaimDateOfOccurrencePlusLocationStepFragment {
-            return .stepModelAction(action: .setDateOfOccurrencePlusLocation(model: .init(dateOfOccurencePlusLocationModel: .init(with: step),
-                                                                                          dateOfOccurenceModel: .init(with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment),
-                                                                                          locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment))))
+            return .stepModelAction(
+                action: .setDateOfOccurrencePlusLocation(
+                    model: .init(
+                        dateOfOccurencePlusLocationModel: .init(with: step),
+                        dateOfOccurenceModel: .init(
+                            with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
+                        ),
+                        locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment)
+                    )
+                )
+            )
         } else if let step = self.fragments.flowClaimFailedStepFragment {
             return .stepModelAction(action: .setFailedStep(model: .init(with: step)))
         } else if let step = self.fragments.flowClaimSuccessStepFragment {
             return .stepModelAction(action: .setSuccessStep(model: .init(with: step)))
-//            actions.append(.stepModelAction(action: .setSuccessStep(model: .init(with: step))))
+            //            actions.append(.stepModelAction(action: .setSuccessStep(model: .init(with: step))))
             //            if case .claimNextSingleItemCheckout = action {
             //            } else {
             //                actions.append(.navigationAction(action: .openSuccessScreen))
@@ -56,22 +72,31 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
 }
 
 extension GraphQLMutation {
-    func execute<ClaimStep: Into>(_ keyPath: KeyPath<Self.Data, ClaimStep>) -> FiniteSignal<ClaimsAction>
-    where ClaimStep.To == ClaimsAction, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext {
+    func execute<ClaimStep: Into>(_ keyPath: KeyPath<Self.Data, ClaimStep>) -> FiniteSignal<SubmitClaimsAction>
+    where ClaimStep.To == SubmitClaimsAction, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext {
         let octopus: hOctopus = Dependencies.shared.resolve()
         return FiniteSignal { callback in
             let disposeBag = DisposeBag()
             callback(.value(.setLoadingState(action: self.getLoadingType(), state: .loading)))
-            disposeBag += octopus.client.perform(mutation: self).map { data in
-                if let data = data as? ClaimStepId  {
-                    callback(.value(.setNewClaimId(with: data.getStepId())))
+            disposeBag += octopus.client.perform(mutation: self)
+                .map { data in
+                    if let data = data as? ClaimStepId {
+                        callback(.value(.setNewClaimId(with: data.getStepId())))
+                    }
+                    callback(.value(.setNewClaimContext(context: data.getContext())))
+                    callback(.value(data[keyPath: keyPath].into()))
+                    callback(.value(.setLoadingState(action: self.getLoadingType(), state: nil)))
                 }
-                callback(.value(.setNewClaimContext(context: data.getContext())))
-                callback(.value(data[keyPath: keyPath].into()))
-                callback(.value(.setLoadingState(action: self.getLoadingType(), state: nil)))
-            }.onError({ error in
-                callback(.value(.setLoadingState(action: self.getLoadingType() , state: .error(error: L10n.General.errorBody))))
-            })
+                .onError({ error in
+                    callback(
+                        .value(
+                            .setLoadingState(
+                                action: self.getLoadingType(),
+                                state: .error(error: L10n.General.errorBody)
+                            )
+                        )
+                    )
+                })
             return disposeBag
         }
     }
@@ -89,7 +114,7 @@ extension OctopusGraphQL.FlowClaimStartMutation.Data: ClaimStepContext, ClaimSte
     func getContext() -> String {
         return self.flowClaimStart.context
     }
-    
+
     func getStepId() -> String {
         return self.flowClaimStart.id
     }

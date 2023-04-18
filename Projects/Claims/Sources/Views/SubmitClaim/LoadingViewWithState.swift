@@ -9,7 +9,7 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
     var onLoading: () -> LoadingView
     var onError: (_ error: String) -> ErrorView
 
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     private let action: ClaimsLoadingType
     public init(
         _ action: ClaimsLoadingType,
@@ -24,7 +24,7 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
     }
     public var body: some View {
         PresentableStoreLens(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             getter: { state in
                 state.loadingStates
             }
@@ -46,7 +46,7 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
 
 public struct LoadingViewWithContent<Content: View>: View {
     var content: () -> Content
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     private let action: ClaimsLoadingType
 
     @State var presentError = false
@@ -82,7 +82,7 @@ public struct LoadingViewWithContent<Content: View>: View {
             }
         }
         .onAppear {
-            func handle(state: ClaimsState) {
+            func handle(state: SubmitClaimsState) {
                 if let actionState = state.loadingStates[action] {
                     switch actionState {
                     case .loading:
@@ -104,7 +104,7 @@ public struct LoadingViewWithContent<Content: View>: View {
                     }
                 }
             }
-            let store: ClaimsStore = globalPresentableStoreContainer.get()
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             disposeBag += store.stateSignal.onValue { state in
                 handle(state: state)
             }
