@@ -55,12 +55,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput)
             return mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
         case let .claimNextPhoneNumber(phoneNumberInput):
-            self.send(.setLoadingState(action: .postPhoneNumber, state: .loading))
             let phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
             let mutation = OctopusGraphQL.FlowClaimPhoneNumberNextMutation(input: phoneNumber, context: newClaimContext)
             return mutation.execute(\.flowClaimPhoneNumberNext.fragments.flowClaimFragment.currentStep)
         case let .claimNextDateOfOccurrence(dateOfOccurrence):
-            send(.setLoadingState(action: .postDateOfOccurrence, state: .loading))
             let dateString = dateOfOccurrence?.localDateString
             let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
             let mutation = OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation(
@@ -69,12 +67,10 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             )
             return mutation.execute(\.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.currentStep)
         case let .claimNextLocation(location):
-            self.send(.setLoadingState(action: .postLocation, state: .loading))
             let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: location)
             let mutation = OctopusGraphQL.FlowClaimLocationNextMutation(input: locationInput, context: newClaimContext)
             return mutation.execute(\.flowClaimLocationNext.fragments.flowClaimFragment.currentStep)
         case .claimNextDateOfOccurrenceAndLocation:
-            self.send(.setLoadingState(action: .postDateOfOccurrenceAndLocation, state: .loading))
             let location = state.locationStep?.getSelectedOption()?.value
             let date = state.dateOfOccurenceStep?.dateOfOccurence
 
@@ -88,7 +84,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             )
             return mutation.execute(\.flowClaimDateOfOccurrencePlusLocationNext.fragments.flowClaimFragment.currentStep)
         case let .submitAudioRecording(audioURL):
-            self.send(.setLoadingState(action: .postAudioRecording, state: .loading))
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 do {
@@ -98,7 +93,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     disposeBag += try self.fileUploaderClient
                         .upload(flowId: self.state.currentClaimId, file: uploadFile)
                         .onValue({ responseModel in
-                            //todo
                             let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
                                 audioUrl: responseModel.audioUrl
                             )
@@ -106,9 +100,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                                 input: audioInput,
                                 context: newClaimContext
                             )
-                            disposeBag += mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep).onValue({ action in
-                                callback(.value(action))
-                            })
+                            disposeBag +=
+                                mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
+                                .onValue({ action in
+                                    callback(.value(action))
+                                })
                         })
                         .onError({ error in
                             callback(
@@ -141,7 +137,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             }
 
         case let .claimNextSingleItem(purchasePrice):
-            self.send(.setLoadingState(action: .postSingleItem, state: .loading))
             let singleItemInput = state.singleItemStep!.returnSingleItemInfo(purchasePrice: purchasePrice)
             let mutation = OctopusGraphQL.FlowClaimSingleItemNextMutation(
                 input: singleItemInput,
@@ -149,7 +144,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             )
             return mutation.execute(\.flowClaimSingleItemNext.fragments.flowClaimFragment.currentStep)
         case .claimNextSummary:
-            send(.setLoadingState(action: .postSummary, state: .loading))
             let summaryInput = OctopusGraphQL.FlowClaimSummaryInput()
             let mutation = OctopusGraphQL.FlowClaimSummaryNextMutation(
                 input: summaryInput,
@@ -157,7 +151,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             )
             return mutation.execute(\.flowClaimSummaryNext.fragments.flowClaimFragment.currentStep)
         case .claimNextSingleItemCheckout:
-            send(.setLoadingState(action: .postSingleItemCheckout, state: .loading))
             if let claimSingleItemCheckoutInput = self.state.singleItemCheckoutStep!.returnSingleItemCheckoutInfo() {
                 let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
                     input: claimSingleItemCheckoutInput,
@@ -179,7 +172,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 }
             }
         case .fetchCommonClaimsForSelection:
-            self.send(.setLoadingState(action: .fetchCommonClaims, state: .loading))
             let entryPointInput = OctopusGraphQL.EntrypointSearchInput(type: OctopusGraphQL.EntrypointType.claim)
             let query = OctopusGraphQL.EntrypointSearchQuery(input: entryPointInput)
             return FiniteSignal { callback in
@@ -248,6 +240,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.entryPointCommonClaims = commonClaims
         case let .submitAudioRecording(url):
             newState.audioRecordingStep?.url = url
+            newState.loadingStates[.postAudioRecording] = .loading
         case let .stepModelAction(action):
             switch action {
             case let .setPhoneNumber(model):
@@ -301,6 +294,22 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.currentClaimContext = nil
         case let .setPayoutMethod(method):
             newState.singleItemCheckoutStep?.selectedPayoutMethod = method
+        case .claimNextPhoneNumber:
+            newState.loadingStates[.postPhoneNumber] = .loading
+        case .claimNextDateOfOccurrence:
+            newState.loadingStates[.postDateOfOccurrence] = .loading
+        case .claimNextLocation:
+            newState.loadingStates[.postLocation] = .loading
+        case .claimNextDateOfOccurrenceAndLocation:
+            newState.loadingStates[.postDateOfOccurrenceAndLocation] = .loading
+        case .claimNextSingleItem:
+            newState.loadingStates[.postSingleItem] = .loading
+        case .claimNextSummary:
+            newState.loadingStates[.postSummary] = .loading
+        case .claimNextSingleItemCheckout:
+            newState.loadingStates[.postSingleItemCheckout] = .loading
+        case .fetchCommonClaimsForSelection:
+            newState.loadingStates[.fetchCommonClaims] = .loading
         default:
             break
         }
