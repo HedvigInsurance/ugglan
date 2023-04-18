@@ -22,9 +22,10 @@ extension AppDelegate {
 
                 let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
 
-                giraffe.client.perform(
-                    mutation: GiraffeGraphQL.NotificationRegisterDeviceMutation(token: deviceTokenString)
-                )
+                giraffe.client
+                    .perform(
+                        mutation: GiraffeGraphQL.NotificationRegisterDeviceMutation(token: deviceTokenString)
+                    )
                     .onValue { data in
                         if data.notificationRegisterDevice == true {
                             log.info("Did register CustomerIO push token for user")
