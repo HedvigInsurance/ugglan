@@ -45,6 +45,7 @@ struct ChatButtonView: View {
                     .clipShape(Circle())
                     .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 1)
             }
+            .animation(nil)
         }
         .background(tooltipView)
     }

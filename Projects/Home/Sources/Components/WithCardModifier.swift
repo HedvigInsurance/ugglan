@@ -3,13 +3,10 @@ import SwiftUI
 
 struct WithCard<Card: View>: ViewModifier {
     var card: () -> Card
-    @State private var rect1: CGRect = CGRect()
 
     func body(content: Content) -> some View {
         VStack {
             content
-            card()
-                .padding(.top, 32)
         }
     }
 }

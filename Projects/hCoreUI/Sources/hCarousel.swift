@@ -65,6 +65,7 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
                     )
                 }
             }
+            .frame(width: cardWidth)
             .offset(x: calcOffset, y: 0)
             .animation(
                 .easeInOut(duration: 0.15)
@@ -109,9 +110,7 @@ struct hCarouselCard<Content: View, hCarouselItem: Identifiable>: View {
     }
 
     var body: some View {
-        VStack {
-            self.content
-        }
-        .frame(width: width)
+        self.content
+            .frame(width: width)
     }
 }

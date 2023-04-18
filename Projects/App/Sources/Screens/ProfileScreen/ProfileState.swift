@@ -38,8 +38,6 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                 .map { data in
                     let name = (data.member.firstName ?? "") + " " + (data.member.lastName ?? "")
                     let charity = data.cashback?.name ?? ""
-                    //                    let monthlyNet = Int(Float(data.insuranceCost?.fragments.costFragment.monthlyNet.amount ?? "") ?? 0)
-                    /* TODO: FIX */
                     let monthlyNet = Int(data.chargeEstimation.subscription.fragments.monetaryAmountFragment.amount)
                     return .setProfileState(name: name, charity: charity, monthlyNet: monthlyNet ?? 0)
                 }
