@@ -27,7 +27,7 @@ public struct SubmitClaimSingleItem: View {
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
-                    store.send(.claimNextSingleItem(purchasePrice: Double(purchasePrice)))
+                    store.send(.singleItemRequest(purchasePrice: Double(purchasePrice)))
                     UIApplication.dismissKeyboard()
                 } content: {
                     hText(L10n.generalContinueButton)

@@ -248,7 +248,7 @@ public class ClaimJourneys {
             action in
             if case .navigationAction(.openCheckoutTransferringScreen) = action {
                 openCheckoutTransferringScreen()
-            } else if case .claimNextSummary = action {
+            } else if case .summaryRequest = action {
                 openCheckoutTransferringScreen()
             } else {
                 getScreenForAction(for: action)

@@ -74,7 +74,7 @@ public struct DatePickerScreen: View {
                             case .setDateOfOccurrence:
                                 return .setNewDate(dateOfOccurrence: dateOfOccurrence.localDateString)
                             case .submitDateOfOccurence:
-                                return .claimNextDateOfOccurrence(dateOfOccurrence: dateOfOccurrence)
+                                return .dateOfOccurrenceRequest(dateOfOccurrence: dateOfOccurrence)
                             case .setDateOfPurchase:
                                 return .setSingleItemPurchaseDate(purchaseDate: dateOfOccurrence)
                             }
@@ -92,7 +92,7 @@ public struct DatePickerScreen: View {
                             case .setDateOfOccurrence:
                                 return .setNewDate(dateOfOccurrence: nil)
                             case .submitDateOfOccurence:
-                                return .claimNextDateOfOccurrence(dateOfOccurrence: nil)
+                                return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
                             case .setDateOfPurchase:
                                 return .setSingleItemPurchaseDate(purchaseDate: nil)
                             }

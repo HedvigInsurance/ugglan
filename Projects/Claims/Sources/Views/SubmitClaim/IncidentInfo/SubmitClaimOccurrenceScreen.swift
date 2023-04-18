@@ -67,7 +67,7 @@ public struct SubmitClaimOccurrencePlusLocationScreen: View {
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
-                    store.send(.claimNextDateOfOccurrenceAndLocation)
+                    store.send(.dateOfOccurrenceAndLocationRequest)
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)

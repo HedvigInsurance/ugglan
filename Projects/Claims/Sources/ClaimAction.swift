@@ -16,7 +16,7 @@ public enum ClaimsAction: ActionProtocol, Hashable {
     case fetchCommonClaimsForSelection
     case setCommonClaimsForSelection([ClaimEntryPointResponseModel])
     case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
-    
+
     case openFreeTextChat
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
@@ -30,15 +30,15 @@ public enum ClaimsAction: ActionProtocol, Hashable {
 
     case setNewClaimId(with: String)
     case setNewClaimContext(context: String)
-    
+
     case startClaimRequest(with: String)
-    case claimNextPhoneNumber(phoneNumber: String)
-    case claimNextDateOfOccurrence(dateOfOccurrence: Date?)
-    case claimNextDateOfOccurrenceAndLocation
-    case claimNextLocation(location: String?)
-    case claimNextSingleItem(purchasePrice: Double?)
-    case claimNextSummary
-    case claimNextSingleItemCheckout
+    case phoneNumberRequest(phoneNumber: String)
+    case dateOfOccurrenceRequest(dateOfOccurrence: Date?)
+    case dateOfOccurrenceAndLocationRequest
+    case locationRequest(location: String?)
+    case singleItemRequest(purchasePrice: Double?)
+    case summaryRequest
+    case singleItemCheckoutRequest
 
     case setNewLocation(location: String?)
     case setNewDate(dateOfOccurrence: String?)
@@ -86,20 +86,20 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
 }
 
 public enum ClaimsStepModelAction: ActionProtocol, Hashable {
-    
+
     public struct DateOfOccurrencePlusLocationStepModels: ActionProtocol, Hashable {
         let dateOfOccurencePlusLocationModel: FlowClaimDateOfOccurrencePlusLocationStepModel
         let dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel
         let locationModel: FlowClaimLocationStepModel
     }
-    
+
     public struct SummaryStepModels: ActionProtocol, Hashable {
         let summaryStep: FlowClaimSummaryStepModel?
         let singleItemStepModel: FlowClamSingleItemStepModel?
         let dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel
         let locationModel: FlowClaimLocationStepModel
     }
-    
+
     case setPhoneNumber(model: FlowClaimPhoneNumberStepModel)
     case setDateOfOccurrencePlusLocation(model: DateOfOccurrencePlusLocationStepModels)
     case setDateOfOccurence(model: FlowClaimDateOfOccurenceStepModel)

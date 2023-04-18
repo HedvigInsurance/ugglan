@@ -40,7 +40,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
-                    store.send(.claimNextSingleItemCheckout)
+                    store.send(.singleItemCheckoutRequest)
                     store.send(.navigationAction(action: .openCheckoutTransferringScreen))
                 } content: {
                     hText(

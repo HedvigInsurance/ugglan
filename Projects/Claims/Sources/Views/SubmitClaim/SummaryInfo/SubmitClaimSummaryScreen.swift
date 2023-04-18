@@ -21,7 +21,7 @@ public struct SubmitClaimSummaryScreen: View {
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
-                    store.send(.claimNextSummary)
+                    store.send(.summaryRequest)
                 } content: {
                     hText(L10n.generalContinueButton)
                 }

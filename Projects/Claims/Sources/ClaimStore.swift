@@ -54,11 +54,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: id)
             let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput)
             return mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
-        case let .claimNextPhoneNumber(phoneNumberInput):
+        case let .phoneNumberRequest(phoneNumberInput):
             let phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
             let mutation = OctopusGraphQL.FlowClaimPhoneNumberNextMutation(input: phoneNumber, context: newClaimContext)
             return mutation.execute(\.flowClaimPhoneNumberNext.fragments.flowClaimFragment.currentStep)
-        case let .claimNextDateOfOccurrence(dateOfOccurrence):
+        case let .dateOfOccurrenceRequest(dateOfOccurrence):
             let dateString = dateOfOccurrence?.localDateString
             let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
             let mutation = OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation(
@@ -66,11 +66,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 context: newClaimContext
             )
             return mutation.execute(\.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.currentStep)
-        case let .claimNextLocation(location):
+        case let .locationRequest(location):
             let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: location)
             let mutation = OctopusGraphQL.FlowClaimLocationNextMutation(input: locationInput, context: newClaimContext)
             return mutation.execute(\.flowClaimLocationNext.fragments.flowClaimFragment.currentStep)
-        case .claimNextDateOfOccurrenceAndLocation:
+        case .dateOfOccurrenceAndLocationRequest:
             let location = state.locationStep?.getSelectedOption()?.value
             let date = state.dateOfOccurenceStep?.dateOfOccurence
 
@@ -136,21 +136,21 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                 return NilDisposer()
             }
 
-        case let .claimNextSingleItem(purchasePrice):
+        case let .singleItemRequest(purchasePrice):
             let singleItemInput = state.singleItemStep!.returnSingleItemInfo(purchasePrice: purchasePrice)
             let mutation = OctopusGraphQL.FlowClaimSingleItemNextMutation(
                 input: singleItemInput,
                 context: newClaimContext
             )
             return mutation.execute(\.flowClaimSingleItemNext.fragments.flowClaimFragment.currentStep)
-        case .claimNextSummary:
+        case .summaryRequest:
             let summaryInput = OctopusGraphQL.FlowClaimSummaryInput()
             let mutation = OctopusGraphQL.FlowClaimSummaryNextMutation(
                 input: summaryInput,
                 context: newClaimContext
             )
             return mutation.execute(\.flowClaimSummaryNext.fragments.flowClaimFragment.currentStep)
-        case .claimNextSingleItemCheckout:
+        case .singleItemCheckoutRequest:
             if let claimSingleItemCheckoutInput = self.state.singleItemCheckoutStep!.returnSingleItemCheckoutInfo() {
                 let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
                     input: claimSingleItemCheckoutInput,
@@ -294,19 +294,19 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.currentClaimContext = nil
         case let .setPayoutMethod(method):
             newState.singleItemCheckoutStep?.selectedPayoutMethod = method
-        case .claimNextPhoneNumber:
+        case .phoneNumberRequest:
             newState.loadingStates[.postPhoneNumber] = .loading
-        case .claimNextDateOfOccurrence:
+        case .dateOfOccurrenceRequest:
             newState.loadingStates[.postDateOfOccurrence] = .loading
-        case .claimNextLocation:
+        case .locationRequest:
             newState.loadingStates[.postLocation] = .loading
-        case .claimNextDateOfOccurrenceAndLocation:
+        case .dateOfOccurrenceAndLocationRequest:
             newState.loadingStates[.postDateOfOccurrenceAndLocation] = .loading
-        case .claimNextSingleItem:
+        case .singleItemRequest:
             newState.loadingStates[.postSingleItem] = .loading
-        case .claimNextSummary:
+        case .summaryRequest:
             newState.loadingStates[.postSummary] = .loading
-        case .claimNextSingleItemCheckout:
+        case .singleItemCheckoutRequest:
             newState.loadingStates[.postSingleItemCheckout] = .loading
         case .fetchCommonClaimsForSelection:
             newState.loadingStates[.fetchCommonClaims] = .loading

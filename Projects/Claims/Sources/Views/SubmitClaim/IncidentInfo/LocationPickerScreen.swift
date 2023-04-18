@@ -35,7 +35,7 @@ public struct LocationPickerScreen: View {
                                         case .setLocation:
                                             return .setNewLocation(location: element.value)
                                         case .submitLocation:
-                                            return .claimNextLocation(location: element.value)
+                                            return .locationRequest(location: element.value)
                                         }
                                     }()
                                     store.send(executedAction)

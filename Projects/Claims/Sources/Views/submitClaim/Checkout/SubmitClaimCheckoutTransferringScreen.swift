@@ -183,7 +183,7 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
                 }
 
                 Button {
-                    store.send(.claimNextSingleItemCheckout)
+                    store.send(.singleItemCheckoutRequest)
                 } label: {
                     HStack {
                         hText(L10n.generalRetry)
