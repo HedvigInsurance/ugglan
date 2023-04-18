@@ -78,16 +78,16 @@ class AudioPlayer: NSObject, ObservableObject {
         if let url {
             let playerItem = AVPlayerItem(url: url)
             audioPlayer = AVPlayer(playerItem: playerItem)
-            
+
             addAudioPlayerNotificationObserver()
-            
+
             audioPlayer?
                 .addPeriodicTimeObserver(
                     forInterval: CMTime(value: 1, timescale: 50),
                     queue: .main,
                     using: { [weak self] time in
                         guard let self = self, let item = self.audioPlayer?.currentItem else { return }
-                        
+
                         switch item.status {
                         case .readyToPlay:
                             let duration = CMTimeGetSeconds(item.duration)
@@ -98,7 +98,7 @@ class AudioPlayer: NSObject, ObservableObject {
                         }
                     }
                 )
-            
+
             audioPlayer?.actionAtItemEnd = .pause
             audioPlayer?.play()
         }
