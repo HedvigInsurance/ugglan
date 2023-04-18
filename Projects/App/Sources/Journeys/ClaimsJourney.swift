@@ -68,16 +68,16 @@ extension AppJourney {
 
     private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
         HostingJourney(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             rootView: LoadingViewWithContent(.startClaim) {
                 HonestyPledge {
                     let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                     if ugglanStore.state.askForPushNotificationPermission() {
-                        let store: ClaimsStore = globalPresentableStoreContainer.get()
+                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                         store.send(.navigationAction(action: .openNotificationsPermissionScreen))
                     } else {
-                        let store: ClaimsStore = globalPresentableStoreContainer.get()
-                        store.send(.startClaim(from: origin.id))
+                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                        store.send(.startClaimRequest(with: origin.id))
                     }
                 }
             },
@@ -89,11 +89,11 @@ extension AppJourney {
             if case let .navigationAction(navigationAction) = action {
                 if case .openNotificationsPermissionScreen = navigationAction {
                     HostingJourney(
-                        ClaimsStore.self,
+                        SubmitClaimStore.self,
                         rootView: LoadingViewWithContent(.startClaim) {
                             ClaimFlowAskForPushnotifications(onActionExecuted: {
-                                let store: ClaimsStore = globalPresentableStoreContainer.get()
-                                store.send(.startClaim(from: origin.id))
+                                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                                store.send(.startClaimRequest(with: origin.id))
                             })
                         },
                         style: .detented(.large, modally: false)

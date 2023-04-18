@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct SubmitClaimContactScreen: View {
 
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     @State var phoneNumber: String
 
     public init(
@@ -57,7 +57,7 @@ public struct SubmitClaimContactScreen: View {
                     .cornerRadius(12)
                     .padding([.leading, .trailing], 16)
                     hButton.LargeButtonFilled {
-                        store.send(.claimNextPhoneNumber(phoneNumber: phoneNumber))
+                        store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
                         UIApplication.dismissKeyboard()
                     } content: {
                         hText(L10n.generalContinueButton, style: .body)

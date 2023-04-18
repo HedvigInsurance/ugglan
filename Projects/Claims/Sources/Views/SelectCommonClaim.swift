@@ -4,14 +4,14 @@ import hCore
 import hCoreUI
 
 public struct SelectCommonClaim: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     public init() {
         store.send(.fetchCommonClaimsForSelection)
     }
     public var body: some View {
         LoadingViewWithContent(.fetchCommonClaims) {
             PresentableStoreLens(
-                ClaimsStore.self,
+                SubmitClaimStore.self,
                 getter: { state in
                     state.entryPointCommonClaims
                 }

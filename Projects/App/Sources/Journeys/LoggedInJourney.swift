@@ -150,6 +150,7 @@ extension AppJourney {
 }
 
 extension JourneyPresentation {
+    //<<<<<<< HEAD
     @discardableResult
     func sendActionImmediately<S: Store>(
         _ storeType: S.Type,
@@ -161,7 +162,7 @@ extension JourneyPresentation {
         }
     }
 }
-
+//
 extension JourneyPresentation {
     public var configurePaymentNavigation: some JourneyPresentation {
         onAction(PaymentStore.self) { action in
@@ -171,7 +172,7 @@ extension JourneyPresentation {
         }
     }
 }
-
+//
 extension JourneyPresentation {
     public var claimStoreRedirectFromHome: some JourneyPresentation {  // not sure if needed?
         onAction(HomeStore.self) { action in
@@ -181,14 +182,17 @@ extension JourneyPresentation {
             }
         }
     }
+    //=======
+    //>>>>>>> bazooka-claims-store
 
     public var configureClaimsNavigation: some JourneyPresentation {
+
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {
                 AppJourney.claimDetailJourney(claim: claim)
             } else if case let .submitNewClaim(origin) = action {
                 AppJourney.startClaimsJourney(from: origin)
-                    .onAction(ClaimsStore.self) { action in
+                    .onAction(SubmitClaimStore.self) { action in
                         if case .dissmissNewClaimFlow = action {
                             DismissJourney()
                         }

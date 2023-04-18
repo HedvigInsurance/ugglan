@@ -22,7 +22,6 @@ extension NSFileCoordinator {
                 } else {
                     completion(.failure(CoordinatorError.failureConvertingToData))
                 }
-
                 url.stopAccessingSecurityScopedResource()
             }
 
