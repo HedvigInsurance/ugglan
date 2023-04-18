@@ -25,7 +25,7 @@ struct ClaimSectionLoading: View {
             }
 
             startClaimsButton(claims)
-                .padding(.bottom, 16)
+                .padding([.bottom], 6)
 
             HowClaimsWorkButton()
         }
@@ -51,7 +51,6 @@ struct ClaimSectionLoading: View {
     }
 
     var body: some View {
-
         PresentableStoreLens(
             ClaimsStore.self,
             getter: { state in

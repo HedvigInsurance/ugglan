@@ -45,6 +45,21 @@ public struct RowViewBuilder {
             )
         )
     }
+    public static func buildBlock<A: View, B: View, C: View, D: View, E: View>(
+        _ viewA: A,
+        _ viewB: B,
+        _ viewC: C,
+        _ viewD: D,
+        _ viewE: E
+    ) -> some View {
+        return TupleView(
+            (
+                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
+                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
+                viewE.environment(\.hRowPosition, .middle)
+            )
+        )
+    }
 }
 
 struct hShadowModifier: ViewModifier {

@@ -111,17 +111,21 @@ struct LoaderOrContent<Content: View>: View {
     @Environment(\.hButtonIsLoading) var isLoading
 
     var content: () -> Content
+    var color: any hColor
 
     init(
+        color: any hColor,
         @ViewBuilder _ content: @escaping () -> Content
     ) {
+        self.color = color
         self.content = content
     }
 
     var body: some View {
         if isLoading {
             ActivityIndicator(
-                style: .medium
+                style: .medium,
+                color: color
             )
         } else {
             content()
@@ -154,35 +158,33 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
         var configuration: Configuration
 
+        @hColorBuilder var foregroundColor: some hColor {
+            if !isEnabled {
+                switch hButtonFilledStyle {
+                case .standard:
+                    hColorScheme(
+                        light: hLabelColor.primary.inverted,
+                        dark: hLabelColor.quarternary
+                    )
+                case .overImage:
+                    hLabelColor.primary.colorFor(.light, .base)
+                }
+            } else {
+                switch hButtonFilledStyle {
+                case .standard:
+                    hLabelColor.primary.inverted
+                case .overImage:
+                    hLabelColor.primary.colorFor(.light, .base)
+                }
+            }
+        }
+
         var body: some View {
-            switch hButtonFilledStyle {
-            case .standard:
-                LoaderOrContent {
-                    if !isEnabled {
-                        configuration.label
-                            .foregroundColor(
-                                hColorScheme(
-                                    light: hLabelColor.primary.inverted,
-                                    dark: hLabelColor.quarternary
-                                )
-                            )
-                    } else {
-                        configuration.label
-                            .foregroundColor(hLabelColor.primary.inverted)
-                    }
-                }
-            case .overImage:
-                LoaderOrContent {
-                    if !isEnabled {
-                        configuration.label
-                            .foregroundColor(
-                                hLabelColor.primary.colorFor(.light, .base)
-                            )
-                    } else {
-                        configuration.label
-                            .foregroundColor(hLabelColor.primary.colorFor(.light, .base))
-                    }
-                }
+            LoaderOrContent(color: foregroundColor) {
+                configuration.label
+                    .foregroundColor(
+                        foregroundColor
+                    )
             }
         }
     }
@@ -214,7 +216,7 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            LoaderOrContent {
+            LoaderOrContent(color: hLabelColor.primary) {
                 configuration.label
                     .foregroundColor(hLabelColor.primary)
                     .environment(\.defaultHTextStyle, .body)
@@ -268,7 +270,7 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            LoaderOrContent {
+            LoaderOrContent(color: hLabelColor.primary) {
                 configuration.label
                     .foregroundColor(hLabelColor.primary)
                     .environment(\.defaultHTextStyle, .body)
@@ -301,7 +303,7 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            LoaderOrContent {
+            LoaderOrContent(color: hLabelColor.primary) {
                 configuration.label
                     .foregroundColor(hLabelColor.primary)
                     .environment(\.defaultHTextStyle, .body)

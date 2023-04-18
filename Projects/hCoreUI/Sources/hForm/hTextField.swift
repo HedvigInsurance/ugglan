@@ -3,6 +3,45 @@ import Foundation
 import SwiftUI
 import hCore
 
+public enum hTextFieldOptions: Hashable {
+    case showDivider
+    case minimumHeight(height: CGFloat)
+}
+
+extension Set where Element == hTextFieldOptions {
+    var minimumHeight: CGFloat {
+        self.compactMap { option in
+            if case .minimumHeight(let height) = option {
+                return height
+            } else {
+                return nil
+            }
+        }
+        .first ?? 0.0
+    }
+
+    var showDivider: Bool {
+        self.contains(.showDivider)
+    }
+}
+
+private struct EnvironmentHTextFieldOptions: EnvironmentKey {
+    static let defaultValue: Set<hTextFieldOptions> = [.showDivider, .minimumHeight(height: 40.0)]
+}
+
+extension EnvironmentValues {
+    public var hTextFieldOptions: Set<hTextFieldOptions> {
+        get { self[EnvironmentHTextFieldOptions.self] }
+        set { self[EnvironmentHTextFieldOptions.self] = newValue }
+    }
+}
+
+extension View {
+    public func hTextFieldOptions(_ options: Set<hTextFieldOptions>) -> some View {
+        self.environment(\.hTextFieldOptions, options)
+    }
+}
+
 private struct EnvironmentHTextFieldError: EnvironmentKey {
     static let defaultValue: String? = nil
 }
@@ -21,6 +60,7 @@ extension View {
 }
 
 public struct hTextField: View {
+    @Environment(\.hTextFieldOptions) var options
     @Environment(\.hTextFieldError) var errorMessage
     var masking: Masking
     var placeholder: String
@@ -53,7 +93,7 @@ public struct hTextField: View {
                             previousInnerValue = value
                         }
                     }
-                    .frame(minHeight: 40)
+                    .frame(minHeight: options.minimumHeight)
                 if errorMessage != nil {
                     Image(uiImage: hCoreUIAssets.circularExclamationPoint.image)
                         .resizable()
@@ -62,7 +102,9 @@ public struct hTextField: View {
                         .foregroundColor(hTintColor.red)
                 }
             }
-            SwiftUI.Divider()
+            if options.showDivider {
+                SwiftUI.Divider()
+            }
             if let errorMessage = errorMessage {
                 hText(errorMessage, style: .footnote)
                     .padding(.top, 7)

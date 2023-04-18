@@ -16,7 +16,6 @@ fragment QuoteBundleFragment on QuoteBundle {
         approveButtonTerminology
         startDateTerminology
         title
-        gradientOption
         postSignStep
       }
       bundleCost {

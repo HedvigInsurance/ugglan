@@ -1,0 +1,38 @@
+mutation FlowTerminationStart($input: FlowTerminationStartInput!, $context: FlowContext) {
+  flowTerminationStart(input: $input, context: $context) {
+    id
+    ...FlowTerminationFragment
+    context
+  }
+}
+
+fragment FlowTerminationFragment on Flow {
+  currentStep {
+    id
+	...FlowTerminationDateStepFragment
+	...FlowTerminationDeletionFragment
+	...FlowTerminationFailedFragment
+	...FlowTerminationSuccessFragment
+  }
+}
+
+fragment FlowTerminationDateStepFragment on FlowTerminationDateStep{
+     id
+     minDate
+     maxDate
+}
+
+fragment FlowTerminationDeletionFragment on FlowTerminationDeletionStep{
+	id
+	disclaimer
+}
+
+fragment FlowTerminationFailedFragment on FlowTerminationFailedStep{
+     id
+}
+
+fragment FlowTerminationSuccessFragment on FlowTerminationSuccessStep{
+     id
+     terminationDate
+     surveyUrl
+}

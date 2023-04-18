@@ -2,14 +2,33 @@ import Apollo
 import Flow
 import Odyssey
 import Presentation
+import SwiftUI
 import hCore
 import hGraphQL
 
 public struct ClaimsState: StateProtocol {
     var claims: [Claim]? = nil
     var commonClaims: [CommonClaim]? = nil
+    var currentClaimId: String = ""
+    var currentClaimContext: String?
+    var loadingStates: [ClaimsLoadingType: LoadingState<String>] = [:]
+    var entryPointCommonClaims: [ClaimEntryPointResponseModel] = []
 
+    var summaryStep: FlowClaimSummaryStepModel?
+    var dateOfOccurenceStep: FlowClaimDateOfOccurenceStepModel?
+    var locationStep: FlowClaimLocationStepModel?
+    var singleItemStep: FlowClamSingleItemStepModel?
+    var phoneNumberStep: FlowClaimPhoneNumberStepModel?
+    var dateOfOccurrencePlusLocationStep: FlowClaimDateOfOccurrencePlusLocationStepModel?
+    var singleItemCheckoutStep: FlowClaimSingleItemCheckoutStepModel?
+    var successStep: FlowClaimSuccessStepModel?
+    var failedStep: FlowClaimFailedStepModel?
+    var audioRecordingStep: FlowClaimAudioRecordingStepModel?
     public init() {}
+
+    private enum CodingKeys: String, CodingKey {
+        case claims, commonClaims
+    }
 
     public var hasActiveClaims: Bool {
         if let claims = claims {
@@ -24,20 +43,12 @@ public struct ClaimsState: StateProtocol {
     }
 }
 
-public enum ClaimsAction: ActionProtocol {
-    case openFreeTextChat
-    case submitNewClaim(from: ClaimsOrigin)
-    case fetchClaims
-    case setClaims(claims: [Claim])
-    case fetchCommonClaims
-    case setCommonClaims(commonClaims: [CommonClaim])
-    case openCommonClaimDetail(commonClaim: CommonClaim)
-    case openHowClaimsWork
-    case openClaimDetails(claim: Claim)
-    case odysseyRedirect(url: String)
+public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & Equatable & Hashable {
+    case loading
+    case error(error: T)
 }
 
-public enum ClaimsOrigin: Codable, Equatable {
+public enum ClaimsOrigin: Codable, Equatable, Hashable {
     case generic
     case commonClaims(id: String)
 
@@ -54,65 +65,14 @@ public enum ClaimsOrigin: Codable, Equatable {
         }
         return scopeValues
     }
-}
 
-public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
-    @Inject var giraffe: hGiraffe
-    @Inject var store: ApolloStore
-
-    public override func effects(
-        _ getState: @escaping () -> ClaimsState,
-        _ action: ClaimsAction
-    ) -> FiniteSignal<ClaimsAction>? {
-        switch action {
-        case .openFreeTextChat:
-            return nil
-        case .fetchClaims:
-            return giraffe
-                .client
-                .fetch(
-                    query: GiraffeGraphQL.ClaimStatusCardsQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    ),
-                    cachePolicy: .fetchIgnoringCacheData
-                )
-                .compactMap {
-                    ClaimData(cardData: $0)
-                }
-                .map { claimData in
-                    return .setClaims(claims: claimData.claims)
-                }
-                .valueThenEndSignal
-        case .fetchCommonClaims:
-            return
-                giraffe.client
-                .fetch(
-                    query: GiraffeGraphQL.CommonClaimsQuery(locale: Localization.Locale.currentLocale.asGraphQLLocale())
-                )
-                .map { data in
-                    let commonClaims = data.commonClaims.map {
-                        CommonClaim(claim: $0)
-                    }
-                    return .setCommonClaims(commonClaims: commonClaims)
-                }
-                .valueThenEndSignal
-        default:
-            return nil
+    public var id: String {
+        switch self {
+        case .generic:
+            return ""
+        case .commonClaims(let id):
+            return id
         }
     }
 
-    public override func reduce(_ state: ClaimsState, _ action: ClaimsAction) -> ClaimsState {
-        var newState = state
-
-        switch action {
-        case let .setClaims(claims):
-            newState.claims = claims
-        case let .setCommonClaims(commonClaims):
-            newState.commonClaims = commonClaims
-        default:
-            break
-        }
-
-        return newState
-    }
 }

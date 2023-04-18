@@ -1,6 +1,6 @@
 import Foundation
 
-public struct CommonClaim: Codable, Equatable {
+public struct CommonClaim: Codable, Equatable, Hashable {
     public let id: String
     public let icon: IconEnvelope?
     public let displayTitle: String
@@ -19,7 +19,7 @@ public struct CommonClaim: Codable, Equatable {
         self.layout = Layout(layout: claim.layout)
     }
 
-    public struct Layout: Codable, Equatable {
+    public struct Layout: Codable, Equatable, Hashable {
         public var titleAndBulletPoint: TitleAndBulletPoints?
         public var emergency: Emergency?
 
@@ -46,7 +46,7 @@ public struct CommonClaim: Codable, Equatable {
             }
         }
 
-        public struct TitleAndBulletPoints: Codable, Equatable {
+        public struct TitleAndBulletPoints: Codable, Equatable, Hashable {
             public let color: String
             public var buttonTitle: String?
             public var title: String?

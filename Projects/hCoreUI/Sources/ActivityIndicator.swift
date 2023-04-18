@@ -2,12 +2,17 @@ import Foundation
 import SwiftUI
 
 public struct ActivityIndicator: UIViewRepresentable {
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.userInterfaceLevel) var userInterfaceLevel
     var style: UIActivityIndicatorView.Style
+    var color: any hColor
 
     public init(
-        style: UIActivityIndicatorView.Style
+        style: UIActivityIndicatorView.Style,
+        color: any hColor
     ) {
         self.style = style
+        self.color = color
     }
 
     public func makeUIView(context: Context) -> UIActivityIndicatorView {
@@ -16,6 +21,7 @@ public struct ActivityIndicator: UIViewRepresentable {
 
     public func updateUIView(_ uiView: UIActivityIndicatorView, context: Context) {
         uiView.startAnimating()
+        uiView.color = UIColor(self.color.colorFor(colorScheme, userInterfaceLevel).color)
     }
 }
 

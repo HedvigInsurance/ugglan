@@ -1,0 +1,7 @@
+mutation FlowClaimDateOfOccurrenceNext($input: FlowClaimDateOfOccurrenceInput!, $context: FlowContext!) {
+  flowClaimDateOfOccurrenceNext(input: $input, context: $context) {
+    id
+    ...FlowClaimFragment
+    context
+  }
+}

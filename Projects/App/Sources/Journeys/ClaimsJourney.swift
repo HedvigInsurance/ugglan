@@ -1,4 +1,5 @@
 import Claims
+import Contacts
 import Embark
 import Flow
 import Foundation
@@ -13,6 +14,7 @@ import hCoreUI
 import hGraphQL
 
 extension AppJourney {
+
     static func claimDetailJourney(claim: Claim) -> some JourneyPresentation {
         HostingJourney(
             UgglanStore.self,
@@ -34,50 +36,81 @@ extension AppJourney {
             }
     }
 
-    static func claimJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        hAnalyticsEvent.claimFlowType(
-            claimType: hAnalyticsExperiment.odysseyClaims ? .automation : .manual
-        )
-        .send()
-        return AppJourney.claimsJourneyPledgeAndNotificationWrapper(from: origin) { redirect in
-            switch redirect {
-            case .chat:
-                AppJourney.claimsChat()
-                    .hidesBackButton
-                    .withJourneyDismissButton
-            case .close:
-                DismissJourney()
-            case .menu:
-                ContinueJourney()
-            case .mailingList:
-                DismissJourney()
-            case .offer:
-                DismissJourney()
-            case .quoteCartOffer:
-                DismissJourney()
-            }
-        }
-    }
-
     @JourneyBuilder
-    private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
-        from origin: ClaimsOrigin,
-        @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney
-    ) -> some JourneyPresentation {
-        if hAnalyticsExperiment.odysseyClaims {
-            odysseyClaims(from: origin).withJourneyDismissButton
+    static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
+        if hAnalyticsExperiment.claimsFlow {
+            ClaimJourneys.showCommonClaimIfNeeded(origin: origin) { newOrigin in
+                honestyPledge(from: newOrigin)
+            }
+        } else if hAnalyticsExperiment.odysseyClaims {
+            odysseyClaims(from: origin)
         } else {
-            HonestyPledge.journey {
-                AppJourney.notificationJourney {
-                    let embark = Embark(name: "claims")
-                    AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
+            claimsJourneyPledgeAndNotificationWrapper { redirect in
+                switch redirect {
+                case .chat:
+                    AppJourney.claimsChat()
+                        .hidesBackButton
+                        .withJourneyDismissButton
+                case .close:
+                    DismissJourney()
+                case .menu:
+                    ContinueJourney()
+                case .mailingList:
+                    DismissJourney()
+                case .offer:
+                    DismissJourney()
+                case .quoteCartOffer:
+                    DismissJourney()
                 }
-                .withJourneyDismissButton
             }
         }
     }
 
-    static func odysseyClaims(from origin: ClaimsOrigin) -> some JourneyPresentation {
+    private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
+        HostingJourney(
+            ClaimsStore.self,
+            rootView: LoadingViewWithContent(.startClaim) {
+                HonestyPledge {
+                    let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                    if ugglanStore.state.askForPushNotificationPermission() {
+                        let store: ClaimsStore = globalPresentableStoreContainer.get()
+                        store.send(.navigationAction(action: .openNotificationsPermissionScreen))
+                    } else {
+                        let store: ClaimsStore = globalPresentableStoreContainer.get()
+                        store.send(.startClaim(from: origin.id))
+                    }
+                }
+            },
+            style: .detented(
+                .scrollViewContentSize,
+                modally: false
+            )
+        ) { action in
+            if case let .navigationAction(navigationAction) = action {
+                if case .openNotificationsPermissionScreen = navigationAction {
+                    HostingJourney(
+                        ClaimsStore.self,
+                        rootView: LoadingViewWithContent(.startClaim) {
+                            ClaimFlowAskForPushnotifications(onActionExecuted: {
+                                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                                store.send(.startClaim(from: origin.id))
+                            })
+                        },
+                        style: .detented(.large, modally: false)
+                    ) { action in
+                        ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+                    }
+                    .hidesBackButton
+                } else {
+                    ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+                }
+            } else {
+                ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+            }
+        }
+    }
+
+    private static func odysseyClaims(from origin: ClaimsOrigin) -> some JourneyPresentation {
         return OdysseyRoot(
             name: "mainRouter",
             initialURL: "/automation-claim",
@@ -126,6 +159,18 @@ extension AppJourney {
             }
         }
         .withJourneyDismissButton
+    }
+
+    @JourneyBuilder
+    private static func claimsJourneyPledgeAndNotificationWrapper<RedirectJourney: JourneyPresentation>(
+        @JourneyBuilder redirectJourney: @escaping (_ redirect: ExternalRedirect) -> RedirectJourney
+    ) -> some JourneyPresentation {
+        HonestyPledge.journey(style: .detented(.scrollViewContentSize)) {
+            AppJourney.notificationJourney {
+                let embark = Embark(name: "claims")
+                AppJourney.embark(embark, redirectJourney: redirectJourney).hidesBackButton
+            }
+        }
     }
 }
 

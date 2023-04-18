@@ -2,6 +2,7 @@ import Adyen
 import AdyenActions
 import Apollo
 import Authentication
+import Claims
 import CoreDependencies
 import Datadog
 import DatadogCrashReporting
@@ -107,6 +108,8 @@ import hGraphQL
         Future { completion in
             UNUserNotificationCenter.current()
                 .getNotificationSettings { settings in
+                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                    store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                     guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                         return
                     }
@@ -120,6 +123,12 @@ import hGraphQL
                 .requestAuthorization(
                     options: authOptions,
                     completionHandler: { _, _ in
+
+                        UNUserNotificationCenter.current()
+                            .getNotificationSettings { settings in
+                                let store: UgglanStore = globalPresentableStoreContainer.get()
+                                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                            }
                         completion(.success)
 
                         self.trackNotificationPermission()
@@ -326,8 +335,10 @@ extension ApolloClient {
     public static func initAndRegisterClient() -> Future<Void> {
         Self.initClients()
             .onValue { hApollo in
+                let odysseyNetworkClient = OdysseyNetworkClient()
                 Dependencies.shared.add(module: Module { hApollo.giraffe })
                 Dependencies.shared.add(module: Module { hApollo.octopus })
+                Dependencies.shared.add(module: Module { () -> FileUploaderClient in odysseyNetworkClient })
             }
             .toVoid()
     }

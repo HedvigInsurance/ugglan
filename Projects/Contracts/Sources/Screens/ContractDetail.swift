@@ -112,45 +112,54 @@ struct ContractDetail: View {
     }
 
     var body: some View {
-        hForm {
-            hSection {
-                ContractRow(
-                    id: id,
-                    allowDetailNavigation: false
-                )
-                .padding(.bottom, 20)
-                Picker("View", selection: $context.selected) {
-                    ForEach(ContractDetailsViews.allCases) { view in
-                        hText(view.title).tag(view)
+
+        LoadingViewWithContent(.startTermination(contractId: id)) {
+            hForm {
+                hSection {
+                    ContractRow(
+                        id: id,
+                        allowDetailNavigation: false
+                    )
+                    .padding(.bottom, 20)
+                    Picker("View", selection: $context.selected) {
+                        ForEach(ContractDetailsViews.allCases) { view in
+                            hText(view.title).tag(view)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+                .withoutBottomPadding
+                .sectionContainerStyle(.transparent)
+
+                ForEach(ContractDetailsViews.allCases) { panel in
+                    if context.trigger == panel {
+                        viewFor(view: panel)
+                            .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                            .animation(.interpolatingSpring(stiffness: 300, damping: 70))
                     }
                 }
-                .pickerStyle(.segmented)
-            }
-            .withoutBottomPadding
-            .sectionContainerStyle(.transparent)
 
-            ForEach(ContractDetailsViews.allCases) { panel in
-                if context.trigger == panel {
-                    viewFor(view: panel)
-                        .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                        .animation(.interpolatingSpring(stiffness: 300, damping: 70))
+                if hAnalyticsExperiment.terminationFlow {
+                    PresentableStoreLens(
+                        ContractStore.self,
+                        getter: { state in
+                            state.contractForId(id)
+                        }
+                    ) { contract in
+                        if (contract?.currentAgreement?.activeTo) == nil {
+                            hButton.SmallButtonText {
+                                store.send(.startTermination(contractId: id))
+                            } content: {
+                                hText(L10n.terminationButton, style: .body)
+                                    .foregroundColor(hTintColor.red)
+                            }
+                            .padding(.bottom, 39)
+                        }
+                    }
                 }
-            }
-
-            if hAnalyticsExperiment.terminationFlow {
-                hButton.SmallButtonText {
-                    store.send(.goToTerminationFlow)
-                } content: {
-                    hText(L10n.cancelSubscriptionButton, style: .body)
-                        .foregroundColor(hTintColor.red)
-
-                }
-                .padding(.top, 0)
-                .padding(.bottom, 39)
             }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insuranceDetail))
-
     }
 }
 

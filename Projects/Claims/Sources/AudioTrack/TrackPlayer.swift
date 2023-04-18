@@ -30,8 +30,11 @@ struct TrackPlayer: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 16) {
                 if audioPlayer.playbackState == .loading {
-                    ActivityIndicator(style: .large)
-                        .foregroundColor(loadingColor)
+                    ActivityIndicator(
+                        style: .large,
+                        color: hLabelColor.primary
+                    )
+                    .foregroundColor(loadingColor)
                 } else {
                     image
 

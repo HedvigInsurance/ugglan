@@ -3,10 +3,10 @@ query ActiveContractBundles($locale: Locale!) {
     id
     contracts {
       id
+      typeOfContract
       statusPills(locale: $locale)
       detailPills(locale: $locale)
       displayName
-      gradientOption
       switchedFromInsuranceProvider
       logo(locale: $locale) {
         ...IconFragment

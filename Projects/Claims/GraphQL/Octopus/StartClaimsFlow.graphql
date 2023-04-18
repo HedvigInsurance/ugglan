@@ -1,0 +1,153 @@
+mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
+  flowClaimStart(input: $input, context: $context) {
+    id
+    ...FlowClaimFragment
+    context
+  }
+}
+
+fragment FlowClaimFragment on Flow {
+  currentStep {
+    id
+    ...FlowClaimAudioRecordingStepFragment
+    ...FlowClaimDateOfOccurrencePlusLocationStepFragment
+    ...FlowClaimDateOfOccurrenceStepFragment
+    ...FlowClaimFailedStepFragment
+    ...FlowClaimLocationStepFragment
+    ...FlowClaimPhoneNumberStepFragment
+    ...FlowClaimSingleItemCheckoutStepFragment
+    ...FlowClaimSingleItemStepFragment
+    ...FlowClaimSuccessStepFragment
+    ...FlowClaimSummaryStepFragment
+    ...FlowTerminationDateStepFragment
+    ...FlowTerminationFailedStepFragment
+    ...FlowTerminationSuccessStepFragment
+  }
+}
+
+fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep{
+    id
+    questions
+    signedUrl
+}
+
+fragment FlowClaimDateOfOccurrencePlusLocationStepFragment on FlowClaimDateOfOccurrencePlusLocationStep {
+    dateOfOccurrenceStep {
+        ...FlowClaimDateOfOccurrenceStepFragment
+    }
+    id
+    locationStep {
+        ...FlowClaimLocationStepFragment
+    }
+}
+
+fragment FlowClaimDateOfOccurrenceStepFragment on FlowClaimDateOfOccurrenceStep {
+    dateOfOccurrence
+    id
+    maxDate
+}
+
+fragment FlowClaimFailedStepFragment on FlowClaimFailedStep {
+    id
+}
+
+fragment FlowClaimLocationStepFragment on FlowClaimLocationStep {
+    id
+    location
+    options {
+        displayName
+        value
+    }
+}
+
+fragment FlowClaimPhoneNumberStepFragment on FlowClaimPhoneNumberStep {
+    id
+    phoneNumber
+}
+fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutStep {
+    id
+    price {
+        ...MoneyFragment
+    }
+    depreciation {
+        ...MoneyFragment
+    }
+    deductible {
+        ...MoneyFragment
+    }
+    payoutAmount {
+        ...MoneyFragment
+    }
+    availableCheckoutMethods {
+        id
+        ...FlowClaimAutomaticAutogiroPayoutFragment
+    }
+}
+
+fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
+    id
+    preferredCurrency
+    purchasePrice {
+        ...MoneyFragment
+    }
+    purchaseDate
+    selectedItemProblems
+    availableItemProblems {
+        displayName
+        itemProblemId
+    }
+    selectedItemBrand
+    availableItemBrands {
+        displayName
+        itemTypeId
+        itemBrandId
+    }
+    selectedItemModel
+    availableItemModels {
+        displayName
+        imageUrl
+        itemTypeId
+        itemBrandId
+        itemModelId
+    }
+    customName
+}
+
+
+fragment FlowClaimSuccessStepFragment on FlowClaimSuccessStep {
+    id
+}
+fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
+    id
+    title
+    dateOfOccurrenceStep {
+        ...FlowClaimDateOfOccurrenceStepFragment
+    }
+    locationStep {
+        ...FlowClaimLocationStepFragment
+    }
+    singleItemStep {
+        ...FlowClaimSingleItemStepFragment
+    }
+}
+fragment FlowTerminationDateStepFragment on FlowTerminationDateStep {
+    id
+    minDate
+    maxDate
+}
+fragment FlowTerminationFailedStepFragment on FlowTerminationFailedStep {
+    id
+}
+fragment FlowTerminationSuccessStepFragment on FlowTerminationSuccessStep {
+    id
+    terminationDate
+    surveyUrl
+}
+
+fragment FlowClaimAutomaticAutogiroPayoutFragment on FlowClaimAutomaticAutogiroPayout {
+    id
+    amount{
+        ...MoneyFragment
+    }
+    displayName
+}

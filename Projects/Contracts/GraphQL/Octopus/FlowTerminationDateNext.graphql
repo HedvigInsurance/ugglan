@@ -1,0 +1,7 @@
+mutation FlowTerminationDateNext($input: FlowTerminationDateInput!, $context: FlowContext!) {
+  flowTerminationDateNext(input: $input, context: $context) {
+    id
+    ...FlowTerminationFragment
+    context
+  }
+}
