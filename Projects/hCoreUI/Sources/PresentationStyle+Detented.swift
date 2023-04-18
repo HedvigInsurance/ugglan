@@ -2,8 +2,9 @@ import Flow
 import Form
 import Foundation
 import Presentation
-import UIKit
 import SwiftUI
+import UIKit
+import hCore
 
 func setGrabber(on presentationController: UIPresentationController, to value: Bool) {
     let grabberKey = ["_", "setWants", "Grabber:"]
@@ -73,6 +74,17 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                 }
 
                 guard let navigationController = self.viewController.navigationController else {
+                    return
+                }
+
+                guard
+                    ![
+                        .changed,
+                        .began,
+                        .cancelled,
+                    ]
+                    .contains(navigationController.interactivePopGestureRecognizer?.state)
+                else {
                     return
                 }
 
@@ -341,11 +353,15 @@ extension PresentationStyle {
         public static var scrollViewContentSize: Detent {
             .custom("scrollViewContentSize") { viewController, containerView in
                 let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
-                
-                guard let scrollView = allScrollViewDescendants.first(where: { _ in true }) else {
+
+                guard
+                    let scrollView = allScrollViewDescendants.first(where: { _ in
+                        true
+                    })
+                else {
                     return 0
                 }
-                
+
                 let transitioningDelegate =
                     viewController.navigationController?.transitioningDelegate
                     as? DetentedTransitioningDelegate
@@ -370,33 +386,6 @@ extension PresentationStyle {
                     + 10
 
                 return totalHeight
-            }
-        }
-        
-        public static func hostingControllerContentSize<Content: View>(
-            _ type: Content.Type
-        ) -> Detent {
-            .custom("hostingControllerContentSize") { viewController, containerView in
-                let hostingController = viewController as? UIHostingController<Content>
-                
-                let hostingControllerSafeArea = hostingController?.view.safeAreaInsets ?? .zero
-                let containerViewSafeArea = containerView.safeAreaInsets
-                
-                let safeAreaDiff = UIEdgeInsets(
-                    top: containerViewSafeArea.top - hostingControllerSafeArea.top,
-                    left: containerViewSafeArea.left - hostingControllerSafeArea.left,
-                    bottom: containerViewSafeArea.bottom - hostingControllerSafeArea.bottom,
-                    right: containerViewSafeArea.right - hostingControllerSafeArea.right
-                )
-
-                let contentHeight = hostingController?.sizeThatFits(
-                    in: CGSize(
-                        width: containerView.frame.width,
-                        height: .zero
-                    )
-                ).height ?? .zero
-                
-                return contentHeight + safeAreaDiff.top + safeAreaDiff.bottom
             }
         }
 
@@ -519,6 +508,7 @@ extension PresentationStyle {
             bag.hold(delegate)
             vc.transitioningDelegate = delegate
             vc.modalPresentationStyle = .custom
+            vc.view.backgroundColor = .brand(.primaryBackground())
 
             return from.modallyPresentQueued(vc, options: options) {
                 return Future { completion in
@@ -543,16 +533,25 @@ extension PresentationStyle {
             {
                 from.lastDetentIndex = getDetentIndex(on: presentationController)
 
-                Self.Detent.set(
-                    detents,
-                    on: presentationController,
-                    viewController: viewController,
-                    unanimated: options.contains(.unanimated)
-                )
-                setGrabber(
-                    on: presentationController,
-                    to: options.contains(.wantsGrabber)
-                )
+                bag += navigationController
+                    .willShowViewControllerSignal
+                    .filter {
+                        $0.viewController == viewController
+                    }
+                    .onFirstValue { _ in
+                        DispatchQueue.main.async {
+                            Self.Detent.set(
+                                detents,
+                                on: presentationController,
+                                viewController: viewController,
+                                unanimated: options.contains(.unanimated)
+                            )
+                            setGrabber(
+                                on: presentationController,
+                                to: options.contains(.wantsGrabber)
+                            )
+                        }
+                    }
 
                 bag += navigationController.willPopViewControllerSignal
                     .wait(
@@ -572,9 +571,6 @@ extension PresentationStyle {
                         else { return }
 
                         func handleDismiss() {
-                            navigationController.view.backgroundColor =
-                                previousViewController.view
-                                .backgroundColor
                             Self.Detent.set(
                                 previousViewController.appliedDetents,
                                 on: presentationController,
