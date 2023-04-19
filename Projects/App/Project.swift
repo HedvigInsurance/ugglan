@@ -108,7 +108,7 @@ let project = Project(
             bundleId: "com.hedvig.AppTests",
             deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
             infoPlist: .default,
-            sources: ["Tests/**"],
+            sources: [""],
             resources: [],
             scripts: targetScripts,
             dependencies: [
