@@ -38,8 +38,10 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                 .map { data in
                     let name = (data.member.firstName ?? "") + " " + (data.member.lastName ?? "")
                     let charity = data.cashback?.name ?? ""
-                    let monthlyNet = Int(data.chargeEstimation.subscription.fragments.monetaryAmountFragment.amount)
-                    return .setProfileState(name: name, charity: charity, monthlyNet: monthlyNet ?? 0)
+                    let monthlyNet = Int(
+                        data.chargeEstimation.subscription.fragments.monetaryAmountFragment.monetaryAmount.floatAmount
+                    )
+                    return .setProfileState(name: name, charity: charity, monthlyNet: monthlyNet)
                 }
                 .valueThenEndSignal
         default:
