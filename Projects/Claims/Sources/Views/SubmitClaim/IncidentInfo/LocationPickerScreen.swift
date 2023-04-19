@@ -2,17 +2,17 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct LocationPickerScreen: View {
+struct LocationPickerScreen: View {
     @PresentableStore var store: ClaimsStore
     @State var type: ClaimsNavigationAction.LocationPickerType
-    public init(
+    init(
         type: ClaimsNavigationAction.LocationPickerType
     ) {
         self.type = type
 
     }
 
-    public var body: some View {
+    var body: some View {
         LoadingViewWithContent(.postLocation) {
             hForm {
                 hSection {

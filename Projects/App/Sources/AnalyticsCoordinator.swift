@@ -5,10 +5,10 @@ import Foundation
 import hCore
 import hGraphQL
 
-public struct AnalyticsCoordinator {
+struct AnalyticsCoordinator {
     @Inject private var giraffe: hGiraffe
 
-    public init() {}
+    init() {}
 
     func setUserId() {
         giraffe.client.fetch(query: GiraffeGraphQL.MemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)

@@ -145,13 +145,6 @@ public struct SubmitClaimSingleItem: View {
             }
         }
     }
-
-    func convertDateToString(date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let dateString = dateFormatter.string(from: date)
-        return dateString
-    }
 }
 
 struct SubmitClaimObjectInformation_Previews: PreviewProvider {

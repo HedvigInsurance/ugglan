@@ -36,9 +36,3 @@ extension MyInfoRow: Viewable {
         return (row, bag)
     }
 }
-
-extension MyInfoRow: Previewable {
-    func preview() -> (MyInfo, PresentationOptions) {
-        return (MyInfo(), [.autoPop, .largeTitleDisplayMode(.never)])
-    }
-}

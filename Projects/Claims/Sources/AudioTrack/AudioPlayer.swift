@@ -103,7 +103,7 @@ class AudioPlayer: NSObject, ObservableObject {
         audioPlayer?.play()
     }
 
-    override public func observeValue(
+    override func observeValue(
         forKeyPath keyPath: String?,
         of object: Any?,
         change: [NSKeyValueChangeKey: Any]?,

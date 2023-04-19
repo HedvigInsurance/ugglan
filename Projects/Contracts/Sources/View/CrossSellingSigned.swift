@@ -15,10 +15,7 @@ public struct CrossSellingSigned: View {
     }
 
     var displayDate: String {
-        guard let localDateString = startDate.localDateString else {
-            return ""
-        }
-
+       let localDateString = startDate.localDateString
         let crossSellTitle = store.state.focusedCrossSell?.title.lowercased() ?? ""
 
         if Calendar.current.isDateInToday(startDate) {

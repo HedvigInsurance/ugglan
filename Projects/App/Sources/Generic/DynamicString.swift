@@ -9,8 +9,6 @@ struct DynamicString: SignalProvider {
         get { providedSignal.value }
         set(newValue) { providedSignal.value = newValue }
     }
-
-    init(_ value: String = "") { self.value = value }
 }
 
 extension UILabel {

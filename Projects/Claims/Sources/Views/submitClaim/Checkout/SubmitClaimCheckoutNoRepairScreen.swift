@@ -113,32 +113,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
         }
     }
-
-    func checkIfNotDecimal(value: Double) -> Bool {
-        if value.truncatingRemainder(dividingBy: 1) == 0 {
-            return true
-        }
-        return false
-    }
-
-    func formatDoubleWithoutDecimal(value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.groupingSeparator = " "
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 0
-        return formatter.string(for: value) ?? ""
-    }
-
-    func formatDoubleWithDecimal(value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.groupingSeparator = " "
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 1
-        formatter.maximumFractionDigits = 2
-        formatter.decimalSeparator = "."
-        return formatter.string(for: value) ?? ""
-    }
 }
 
 struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {

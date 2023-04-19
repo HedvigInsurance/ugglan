@@ -35,10 +35,7 @@ extension PaymentHeaderNextCharge: Viewable {
             .map { $0.nextChargeDate }
             .onValue { nextChargeDate in
                 if let nextChargeDate = nextChargeDate {
-                    let dateParsingFormatter = DateFormatter()
-                    dateParsingFormatter.dateFormat = "yyyy-MM-dd"
-
-                    if let date = dateParsingFormatter.date(from: nextChargeDate) {
+                    if let date = nextChargeDate.localDateToDate {
                         let dateDisplayFormatter = DateFormatter()
                         dateDisplayFormatter.dateFormat = "dd MMMM"
                         label.value = dateDisplayFormatter.string(from: date)

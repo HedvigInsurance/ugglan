@@ -12,7 +12,7 @@ struct ClaimSectionLoading: View {
     @PresentableStore var store: ClaimsStore
 
     @ViewBuilder
-    public func claimsSection(_ claims: [Claim]) -> some View {
+    func claimsSection(_ claims: [Claim]) -> some View {
         VStack {
             if claims.isEmpty {
                 Spacer().frame(height: 40)
@@ -32,7 +32,7 @@ struct ClaimSectionLoading: View {
     }
 
     @ViewBuilder
-    public func startClaimsButton(_ claims: [Claim]) -> some View {
+    func startClaimsButton(_ claims: [Claim]) -> some View {
         if claims.count > 0 {
             hButton.LargeButtonOutlined {
                 hAnalyticsEvent.beginClaim(screen: .home).send()

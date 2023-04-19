@@ -7,7 +7,6 @@ import hCoreUI
 import hGraphQL
 
 struct ChatTextView {
-    @Inject var giraffe: hGiraffe
     let chatState: ChatState
     let isHiddenSignal = ReadWriteSignal<Bool>(false)
 

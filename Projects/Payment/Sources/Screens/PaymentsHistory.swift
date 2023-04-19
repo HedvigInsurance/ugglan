@@ -33,14 +33,9 @@ extension PaymentsHistory: Presentable {
                 innerBag += data.chargeHistory.map { chargeHistory -> Disposable in
                     let row = KeyValueRow()
                     row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
-
-                    let dateParsingFormatter = DateFormatter()
-                    dateParsingFormatter.dateFormat = "yyyy-MM-dd"
-
-                    if let date = dateParsingFormatter.date(from: chargeHistory.date) {
+                    if let date = chargeHistory.date.localDateToDate {
                         let dateDisplayFormatter = DateFormatter()
                         dateDisplayFormatter.dateFormat = "dd MMMM, yyyy"
-
                         row.keySignal.value = dateDisplayFormatter.string(from: date)
                     }
 

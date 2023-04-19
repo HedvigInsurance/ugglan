@@ -2,16 +2,16 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct SubmitClaimCheckoutTransferringScreen: View {
+struct SubmitClaimCheckoutTransferringScreen: View {
     @PresentableStore var store: ClaimsStore
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
     @State var errorAnimation: Bool = false
 
     @Namespace private var animation
-    public init() {}
+    init() {}
 
-    public var body: some View {
+    var body: some View {
         BlurredProgressOverlay {
             ZStack(alignment: .center) {
                 VStack {

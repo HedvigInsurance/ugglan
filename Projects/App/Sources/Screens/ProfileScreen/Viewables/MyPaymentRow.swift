@@ -40,9 +40,3 @@ extension MyPaymentRow: Viewable {
         return (row, bag)
     }
 }
-
-extension MyPaymentRow: Previewable {
-    func preview() -> (MyPayment, PresentationOptions) {
-        return (MyPayment(urlScheme: Bundle.main.urlScheme ?? ""), [.largeTitleDisplayMode(.never)])
-    }
-}
