@@ -68,7 +68,6 @@ public enum HomeAction: ActionProtocol {
     case fetchImportantMessages
     case setImportantMessage(message: ImportantMessage)
     case openMovingFlow
-    case openClaim
     case connectPayments
     case setMemberContractState(state: MemberStateData, contracts: [Contract])
     case fetchFutureStatus

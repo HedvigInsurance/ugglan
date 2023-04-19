@@ -44,7 +44,6 @@ extension AppJourney {
                     return false
                 }
             }
-            .claimStoreRedirectFromHome
             .configureClaimsNavigation
             .configurePaymentNavigation
     }
@@ -162,7 +161,7 @@ extension JourneyPresentation {
         }
     }
 }
-//
+
 extension JourneyPresentation {
     public var configurePaymentNavigation: some JourneyPresentation {
         onAction(PaymentStore.self) { action in
@@ -172,19 +171,8 @@ extension JourneyPresentation {
         }
     }
 }
-//
-extension JourneyPresentation {
-    public var claimStoreRedirectFromHome: some JourneyPresentation {  // not sure if needed?
-        onAction(HomeStore.self) { action in
-            if case .openClaim = action {
-                //                    AppJourney.claimJourney(from: .generic)
-                AppJourney.startClaimsJourney(from: .generic)///?
-            }
-        }
-    }
-    //=======
-    //>>>>>>> bazooka-claims-store
 
+extension JourneyPresentation {
     public var configureClaimsNavigation: some JourneyPresentation {
 
         onAction(ClaimsStore.self) { action in
