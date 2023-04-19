@@ -149,7 +149,6 @@ extension AppJourney {
 }
 
 extension JourneyPresentation {
-    //<<<<<<< HEAD
     @discardableResult
     func sendActionImmediately<S: Store>(
         _ storeType: S.Type,
