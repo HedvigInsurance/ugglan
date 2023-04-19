@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 public struct LocationPickerScreen: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     @State var type: ClaimsNavigationAction.LocationPickerType
     public init(
         type: ClaimsNavigationAction.LocationPickerType
@@ -17,7 +17,7 @@ public struct LocationPickerScreen: View {
             hForm {
                 hSection {
                     PresentableStoreLens(
-                        ClaimsStore.self,
+                        SubmitClaimStore.self,
                         getter: { state in
                             state.locationStep
                         }
@@ -30,12 +30,12 @@ public struct LocationPickerScreen: View {
                                 }
                                 .withSelectedAccessory(locationStep?.location == element.value)
                                 .onTap {
-                                    let executedAction: ClaimsAction = {
+                                    let executedAction: SubmitClaimsAction = {
                                         switch type {
                                         case .setLocation:
                                             return .setNewLocation(location: element.value)
                                         case .submitLocation:
-                                            return .claimNextLocation(location: element.value)
+                                            return .locationRequest(location: element.value)
                                         }
                                     }()
                                     store.send(executedAction)
