@@ -40,9 +40,9 @@ struct HeaderView: View {
                                 )
                         }
                     ) { data in
-                        if let grossAmount = data.grossAmount,
-                            let netAmount = data.netAmount,
-                            let potentialDiscountAmount = data.potentialDiscountAmount
+                        if let grossAmount = data?.grossAmount,
+                            let netAmount = data?.netAmount,
+                            let potentialDiscountAmount = data?.potentialDiscountAmount
                         {
                             PieChartView(
                                 state: .init(
