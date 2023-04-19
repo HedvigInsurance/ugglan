@@ -194,12 +194,4 @@ extension JourneyPresentation {
             }
         }
     }
-
-    public var businessModelNavigation: some JourneyPresentation {
-        onAction(UgglanStore.self) { action in
-            if case .businessModelDetail = action {
-                AppJourney.businessModelDetailJourney
-            }
-        }
-    }
 }
