@@ -3,31 +3,30 @@ import hCore
 import hCoreUI
 
 struct ClaimFailureScreen: View {
-    @PresentableStore var store: ClaimsStore
-
+    @PresentableStore var store: SubmitClaimStore
     init() {}
-
+    
     var body: some View {
-
+        
         hForm {
             Image(uiImage: hCoreUIAssets.warningTriangle.image)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 16)
                 .padding([.bottom, .top], 4)
-
+            
             hText(L10n.HomeTab.errorTitle, style: .title2)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 16)
                 .padding(.bottom, 4)
-
+            
             hText(L10n.HomeTab.errorBody, style: .body)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 16)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-
+        
         .hFormAttachToBottom {
-
+            
             VStack {
                 hButton.LargeButtonOutlined {
                     store.send(.dissmissNewClaimFlow)

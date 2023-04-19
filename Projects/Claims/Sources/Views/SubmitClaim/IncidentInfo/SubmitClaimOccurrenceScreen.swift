@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
 
     var body: some View {
         LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
@@ -11,7 +11,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
                 hSection {
                     PresentableStoreLens(
-                        ClaimsStore.self,
+                        SubmitClaimStore.self,
                         getter: { state in
                             state.dateOfOccurenceStep
                         }
@@ -40,7 +40,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
                 hSection {
                     PresentableStoreLens(
-                        ClaimsStore.self,
+                        SubmitClaimStore.self,
                         getter: { state in
                             state.locationStep
                         }
@@ -67,7 +67,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
-                    store.send(.claimNextDateOfOccurrenceAndLocation)
+                    store.send(.dateOfOccurrenceAndLocationRequest)
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)

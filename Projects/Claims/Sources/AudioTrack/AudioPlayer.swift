@@ -6,7 +6,7 @@ import hCore
 
 class AudioPlayer: NSObject, ObservableObject {
     internal init(
-        url: URL
+        url: URL?
     ) {
         self.url = url
         self.sampleHeights = generateGaussianHeights()
@@ -36,7 +36,7 @@ class AudioPlayer: NSObject, ObservableObject {
         }
     }
 
-    var url: URL {
+    var url: URL? {
         didSet {
             objectWillChange.send(self)
         }
@@ -75,32 +75,33 @@ class AudioPlayer: NSObject, ObservableObject {
         } catch {
             self.playbackState = .error(message: "Playing over the device's speakers failed")
         }
+        if let url {
+            let playerItem = AVPlayerItem(url: url)
+            audioPlayer = AVPlayer(playerItem: playerItem)
 
-        let playerItem = AVPlayerItem(url: url)
-        audioPlayer = AVPlayer(playerItem: playerItem)
+            addAudioPlayerNotificationObserver()
 
-        addAudioPlayerNotificationObserver()
+            audioPlayer?
+                .addPeriodicTimeObserver(
+                    forInterval: CMTime(value: 1, timescale: 50),
+                    queue: .main,
+                    using: { [weak self] time in
+                        guard let self = self, let item = self.audioPlayer?.currentItem else { return }
 
-        audioPlayer?
-            .addPeriodicTimeObserver(
-                forInterval: CMTime(value: 1, timescale: 50),
-                queue: .main,
-                using: { [weak self] time in
-                    guard let self = self, let item = self.audioPlayer?.currentItem else { return }
-
-                    switch item.status {
-                    case .readyToPlay:
-                        let duration = CMTimeGetSeconds(item.duration)
-                        let timeInFloat = CMTimeGetSeconds(time)
-                        self.progress = timeInFloat / duration
-                    default:
-                        self.playbackState = .error(message: "Unknown playback error")
+                        switch item.status {
+                        case .readyToPlay:
+                            let duration = CMTimeGetSeconds(item.duration)
+                            let timeInFloat = CMTimeGetSeconds(time)
+                            self.progress = timeInFloat / duration
+                        default:
+                            self.playbackState = .error(message: "Unknown playback error")
+                        }
                     }
-                }
-            )
+                )
 
-        audioPlayer?.actionAtItemEnd = .pause
-        audioPlayer?.play()
+            audioPlayer?.actionAtItemEnd = .pause
+            audioPlayer?.play()
+        }
     }
 
     override func observeValue(

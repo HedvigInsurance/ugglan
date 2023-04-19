@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimCheckoutTransferringScreen: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
     @State var errorAnimation: Bool = false
@@ -46,7 +46,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 40, height: 40)
                 PresentableStoreLens(
-                    ClaimsStore.self,
+                    SubmitClaimStore.self,
                     getter: { state in
                         state.singleItemCheckoutStep
                     }
@@ -183,7 +183,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 }
 
                 Button {
-                    store.send(.claimNextSingleItemCheckout)
+                    store.send(.singleItemCheckoutRequest)
                 } label: {
                     HStack {
                         hText(L10n.generalRetry)

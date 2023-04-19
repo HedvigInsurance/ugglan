@@ -4,13 +4,13 @@ import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimCheckoutNoRepairScreen: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
 
     public init() {}
 
     public var body: some View {
         PresentableStoreLens(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             getter: { state in
                 state.singleItemCheckoutStep
             }
@@ -40,7 +40,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
-                    store.send(.claimNextSingleItemCheckout)
+                    store.send(.singleItemCheckoutRequest)
                     store.send(.navigationAction(action: .openCheckoutTransferringScreen))
                 } content: {
                     hText(

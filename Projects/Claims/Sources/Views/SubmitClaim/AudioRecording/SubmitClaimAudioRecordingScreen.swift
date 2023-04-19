@@ -8,14 +8,14 @@ import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimAudioRecordingScreen: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     @ObservedObject var audioPlayer: AudioPlayer
     @ObservedObject var audioRecorder: AudioRecorder
 
     let onSubmit: (_ url: URL) -> Void
 
     public init(
-        url: URL
+        url: URL?
     ) {
         audioPlayer = AudioPlayer(url: url)
 
@@ -29,7 +29,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
         LoadingViewWithContent(.postAudioRecording) {
             hForm {
                 PresentableStoreLens(
-                    ClaimsStore.self,
+                    SubmitClaimStore.self,
                     getter: { state in
                         state.audioRecordingStep
                     }
