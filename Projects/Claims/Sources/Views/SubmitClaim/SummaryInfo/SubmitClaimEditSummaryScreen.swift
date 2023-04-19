@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimEditSummaryScreen: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     @State var purchasePrice: String = ""
 
     public init() {}
@@ -45,7 +45,7 @@ public struct SubmitClaimEditSummaryScreen: View {
     @ViewBuilder func displayDateOfIncidentField() -> some View {
 
         PresentableStoreLens(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             getter: { state in
                 state.dateOfOccurenceStep
             }
@@ -76,7 +76,7 @@ public struct SubmitClaimEditSummaryScreen: View {
 
     @ViewBuilder func displayPlaceOfIncidentField() -> some View {
         PresentableStoreLens(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             getter: { state in
                 state.locationStep
             }
@@ -99,7 +99,7 @@ public struct SubmitClaimEditSummaryScreen: View {
 
     @ViewBuilder func displayModelInfoField() -> some View {
         PresentableStoreLens(
-            ClaimsStore.self,
+            SubmitClaimStore.self,
             getter: { state in
                 state.singleItemStep
             }
@@ -131,7 +131,7 @@ public struct SubmitClaimEditSummaryScreen: View {
         }
         .withCustomAccessory {
             PresentableStoreLens(
-                ClaimsStore.self,
+                SubmitClaimStore.self,
                 getter: { state in
                     state.singleItemStep
                 }
@@ -168,7 +168,7 @@ public struct SubmitClaimEditSummaryScreen: View {
         }
         .withCustomAccessory {
             PresentableStoreLens(
-                ClaimsStore.self,
+                SubmitClaimStore.self,
                 getter: { state in
                     state.singleItemStep
                 }

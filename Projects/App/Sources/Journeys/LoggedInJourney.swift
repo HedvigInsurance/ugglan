@@ -158,7 +158,7 @@ extension JourneyPresentation {
                 AppJourney.claimDetailJourney(claim: claim)
             } else if case let .submitNewClaim(origin) = action {
                 AppJourney.startClaimsJourney(from: origin)
-                    .onAction(ClaimsStore.self) { action in
+                    .onAction(SubmitClaimStore.self) { action in
                         if case .dissmissNewClaimFlow = action {
                             DismissJourney()
                         }

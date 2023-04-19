@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 public struct ClaimFailureScreen: View {
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
 
     public init() {}
 

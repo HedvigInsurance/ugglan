@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct DatePickerScreen: View {
     @State private var dateOfOccurrence = Date()
-    @PresentableStore var store: ClaimsStore
+    @PresentableStore var store: SubmitClaimStore
     private let type: ClaimsNavigationAction.DatePickerType
     public let title: String
     private let buttonTitle: String
@@ -14,7 +14,7 @@ public struct DatePickerScreen: View {
         type: ClaimsNavigationAction.DatePickerType
     ) {
         self.type = type
-        let store: ClaimsStore = globalPresentableStoreContainer.get()
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         self.maxDate = {
             switch type {
             case .setDateOfOccurrence, .submitDateOfOccurence:
@@ -62,12 +62,12 @@ public struct DatePickerScreen: View {
             .hFormAttachToBottom {
                 VStack {
                     hButton.LargeButtonFilled {
-                        let action: ClaimsAction = {
+                        let action: SubmitClaimsAction = {
                             switch type {
                             case .setDateOfOccurrence:
                                 return .setNewDate(dateOfOccurrence: dateOfOccurrence.localDateString)
                             case .submitDateOfOccurence:
-                                return .claimNextDateOfOccurrence(dateOfOccurrence: dateOfOccurrence)
+                                return .dateOfOccurrenceRequest(dateOfOccurrence: dateOfOccurrence)
                             case .setDateOfPurchase:
                                 return .setSingleItemPurchaseDate(purchaseDate: dateOfOccurrence)
                             }
@@ -80,12 +80,12 @@ public struct DatePickerScreen: View {
                     .padding([.leading, .trailing], 16)
 
                     hButton.LargeButtonText {
-                        let action: ClaimsAction = {
+                        let action: SubmitClaimsAction = {
                             switch type {
                             case .setDateOfOccurrence:
                                 return .setNewDate(dateOfOccurrence: nil)
                             case .submitDateOfOccurence:
-                                return .claimNextDateOfOccurrence(dateOfOccurrence: nil)
+                                return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
                             case .setDateOfPurchase:
                                 return .setSingleItemPurchaseDate(purchaseDate: nil)
                             }
