@@ -21,7 +21,7 @@ let ugglanConfigurations: [Configuration] = [
         name: "Release",
         settings: [
             "CODE_SIGN_STYLE": "automatic",
-            "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER"
+            "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
     ),
@@ -108,7 +108,7 @@ let project = Project(
             bundleId: "com.hedvig.AppTests",
             deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
             infoPlist: .default,
-            sources: [""],
+            sources: ["Sources/**"],
             resources: [],
             scripts: targetScripts,
             dependencies: [
