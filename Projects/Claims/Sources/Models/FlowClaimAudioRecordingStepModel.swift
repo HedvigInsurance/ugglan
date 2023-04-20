@@ -4,14 +4,19 @@ import hGraphQL
 public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
     let id: String
     let questions: [String]
-    let audioContent: AudioContentModel?
-    var url: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    var audioContent: AudioContentModel?
+    
     init(
         with data: OctopusGraphQL.FlowClaimAudioRecordingStepFragment
     ) {
         self.id = data.id
         self.questions = data.questions
         self.audioContent = .init(with: (data.audioContent?.fragments.flowClaimAudioContentFragment))
+    }
+    
+    func getUrl() -> URL? {
+        guard let url = audioContent?.signedUrl else { return nil}
+        return URL(string: url)
     }
 }
 

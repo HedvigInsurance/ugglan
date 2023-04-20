@@ -10,6 +10,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
 
     case submitAudioRecording(audioURL: URL)
+    case resetAudioRecording
     case submitDamage(damage: [String])
 
     case setNewClaimId(with: String)
