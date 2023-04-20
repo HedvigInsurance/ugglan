@@ -32,15 +32,15 @@ public enum GradientType {
             switch scheme {
             case .dark:
                 return [
-                    Color(red: 0.00, green: 0.00, blue: 0.00, opacity: 1.00),
-                    Color(red: 0.04, green: 0.09, blue: 0.10, opacity: 1.00),
-                    Color(red: 0.10, green: 0.18, blue: 0.20, opacity: 1.00),
+                    Color(.brand(.primaryBackground(scheme == .dark))),
+                    Color(.brand(.primaryBackground(scheme == .dark))),
+                    Color(.brand(.primaryBackground(scheme == .dark))),
                 ]
             default:
                 return [
-                    Color(red: 0.95, green: 0.85, blue: 0.75, opacity: 1.00),
-                    Color(red: 0.96, green: 0.91, blue: 0.86, opacity: 1.00),
-                    Color(red: 0.96, green: 0.96, blue: 0.96, opacity: 1.00),
+                    Color(.brand(.primaryBackground(scheme == .dark))),
+                    Color(.brand(.primaryBackground(scheme == .dark))),
+                    Color(.brand(.primaryBackground(scheme == .dark))),
                 ]
             }
         case .forever:
