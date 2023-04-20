@@ -63,10 +63,12 @@ struct Loader: Presentable {
         let form = FormView()
         bag += viewController.install(form, scrollView: scrollView)
 
-        let activityIndicatorView = HostingView(rootView: ActivityIndicator(
-            style: .large,
-            color: hLabelColor.primary
-        ))
+        let activityIndicatorView = HostingView(
+            rootView: ActivityIndicator(
+                style: .large,
+                color: hLabelColor.primary
+            )
+        )
         scrollView.addSubview(activityIndicatorView)
 
         return (

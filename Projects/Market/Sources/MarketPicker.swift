@@ -42,22 +42,22 @@ public struct MarketPickerView: View {
         LanguageRow()
 
         Spacer().frame(height: 36)
-        
+
         hButton.LargeButtonFilled {
             hAnalyticsEvent.marketSelected(
                 locale: Localization.Locale.currentLocale.lprojCode
             )
             .send()
-            
+
             withAnimation(.default) {
                 submitButtonLoading = true
             }
-            
+
             hAnalyticsExperiment.retryingLoad { _ in
                 withAnimation(.default.delay(0.5)) {
                     submitButtonLoading = false
                 }
-                
+
                 withAnimation(.easeInOut.delay(0.25)) {
                     viewState = .onboardAndLogin
                 }

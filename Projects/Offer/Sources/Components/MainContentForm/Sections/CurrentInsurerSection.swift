@@ -21,7 +21,8 @@ struct InceptionRow: View {
         hCard(
             titleIcon: hCoreUIAssets.restart.image,
             title: L10n.switcherAutoCardTitle,
-            bodyText: L10n.switcherAutoCardDescription
+            bodyText: L10n.switcherAutoCardDescription,
+            backgroundColor: hTintColor.lavenderTwo
         ) { EmptyView() }
     }
 
@@ -29,7 +30,8 @@ struct InceptionRow: View {
         hCard(
             titleIcon: hCoreUIAssets.warningTriangle.image,
             title: L10n.switcherManualCardTitle,
-            bodyText: L10n.switcherManualCardDescription
+            bodyText: L10n.switcherManualCardDescription,
+            backgroundColor: hTintColor.lavenderTwo
         ) { EmptyView() }
     }
 

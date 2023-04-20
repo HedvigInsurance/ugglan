@@ -33,19 +33,43 @@ struct BackgroundView: UIViewRepresentable {
 }
 
 public struct hForm<Content: View>: View {
+    @ObservedObject var gradientState = GradientState.shared
+    let gradientType: GradientType
+
+    @State var shouldAnimateGradient = true
+
     @State var bottomAttachedViewHeight: CGFloat = 0
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     var content: Content
 
     public init(
+        gradientType: GradientType = .none,
         @ViewBuilder _ builder: () -> Content
     ) {
         self.content = builder()
+        self.gradientType = gradientType
+        gradientState.gradientType = gradientType
     }
 
     public var body: some View {
         ZStack {
-            BackgroundView().edgesIgnoringSafeArea(.all)
+            if gradientType != .none {
+                hGradient(
+                    oldGradientType: $gradientState.oldGradientType,
+                    newGradientType: $gradientState.gradientType,
+                    animate: $shouldAnimateGradient
+                )
+                .onDisappear {
+                    shouldAnimateGradient = gradientState.gradientTypeBeforeNone != gradientType
+                }
+                .onAppear {
+                    if gradientState.gradientTypeBeforeNone == gradientType {
+                        gradientState.gradientTypeBeforeNone = nil
+                    }
+                }
+            } else {
+                BackgroundView().edgesIgnoringSafeArea(.all)
+            }
             ScrollView {
                 VStack {
                     content

@@ -32,8 +32,10 @@ extension PaymentDetailsSection: Viewable {
         grossPriceRow.keySignal.value = L10n.profilePaymentPriceLabel
         grossPriceRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
-        bag += dataSignal.map { $0.chargeEstimation.subscription.fragments.monetaryAmountFragment.monetaryAmount
-        }
+        bag +=
+            dataSignal.map {
+                $0.chargeEstimation.subscription.fragments.monetaryAmountFragment.monetaryAmount
+            }
             .map { amount in
                 L10n.profilePaymentPrice(amount.formattedAmountWithoutSymbol)
             }
@@ -45,9 +47,10 @@ extension PaymentDetailsSection: Viewable {
         discountRow.keySignal.value = L10n.profilePaymentDiscountLabel
         discountRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
-        bag += dataSignal.map {
-            $0.chargeEstimation.discount.fragments.monetaryAmountFragment.monetaryAmount
-        }
+        bag +=
+            dataSignal.map {
+                $0.chargeEstimation.discount.fragments.monetaryAmountFragment.monetaryAmount
+            }
             .map { amount in
                 L10n.profilePaymentDiscount(amount.formattedAmountWithoutSymbol)
             }
@@ -59,9 +62,10 @@ extension PaymentDetailsSection: Viewable {
         netPriceRow.keySignal.value = L10n.profilePaymentFinalCostLabel
         netPriceRow.valueStyleSignal.value = .brand(.headline(color: .quartenary))
 
-        bag += dataSignal.map {
-            $0.chargeEstimation.charge.fragments.monetaryAmountFragment.monetaryAmount
-        }
+        bag +=
+            dataSignal.map {
+                $0.chargeEstimation.charge.fragments.monetaryAmountFragment.monetaryAmount
+            }
             .map { amount in
                 L10n.profilePaymentFinalCost(amount.formattedAmountWithoutSymbol)
             }
@@ -77,14 +81,16 @@ extension PaymentDetailsSection: Viewable {
         bag += applyDiscountButtonRow.onSelect.onValue { _ in let applyDiscount = ApplyDiscount()
 
             bag += applyDiscount.didRedeemValidCodeSignal.onValue { result in
-                self.giraffe.client.fetch(
-                    query: GiraffeGraphQL.MyPaymentQuery(
-                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                    ),
-                    cachePolicy: .fetchIgnoringCacheData
-                ).onValue { _ in
-                    // only refetching to update cache
-                }
+                self.giraffe.client
+                    .fetch(
+                        query: GiraffeGraphQL.MyPaymentQuery(
+                            locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                        ),
+                        cachePolicy: .fetchIgnoringCacheData
+                    )
+                    .onValue { _ in
+                        // only refetching to update cache
+                    }
 
                 if let costFragment = result.cost?.fragments.costFragment {
                     NotificationCenter.default.post(name: .costDidUpdate, object: costFragment)
@@ -100,14 +106,15 @@ extension PaymentDetailsSection: Viewable {
 
             self.presentingViewController.present(
                 applyDiscount.wrappedInCloseButton(),
-                style: .detented(.scrollViewContentSize, .large),
+                style: .detented(.medium, .large),
                 options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
             )
         }
 
         bag += section.append(applyDiscountButtonRow)
 
-        let hasAppliedDiscount = dataSignal.map { !$0.chargeEstimation.discount.fragments.monetaryAmountFragment.monetaryAmount.floatAmount.isZero
+        let hasAppliedDiscount = dataSignal.map {
+            !$0.chargeEstimation.discount.fragments.monetaryAmountFragment.monetaryAmount.floatAmount.isZero
         }
         bag += hasAppliedDiscount.bindTo(applyDiscountButtonRow.isHiddenSignal)
 

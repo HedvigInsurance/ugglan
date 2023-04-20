@@ -134,7 +134,8 @@ struct RenewalInformationCard: View {
                 title: L10n.InsuranceDetails.updateDetailsSheetTitle,
                 bodyText: L10n.InsuranceDetails.AdressUpdateBody.No.address(
                     contract.upcomingAgreementDate?.localDateString ?? ""
-                )
+                ),
+                backgroundColor: hTintColor.lavenderTwo
             ) {
                 hButton.SmallButtonOutlined {
                     store.send(

@@ -28,7 +28,6 @@ fragment FlowClaimFragment on Flow {
 fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep{
     id
     questions
-    signedUrl
 }
 
 fragment FlowClaimDateOfOccurrencePlusLocationStepFragment on FlowClaimDateOfOccurrencePlusLocationStep {

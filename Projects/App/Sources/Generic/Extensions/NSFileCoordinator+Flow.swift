@@ -16,13 +16,12 @@ extension NSFileCoordinator {
                     completion(.failure(CoordinatorError.accessingSecurityScopedResource))
                     return
                 }
-                
+
                 if let data = try? Data(contentsOf: url) {
                     completion(.success(data))
                 } else {
                     completion(.failure(CoordinatorError.failureConvertingToData))
                 }
-                
                 url.stopAccessingSecurityScopedResource()
             }
 

@@ -21,7 +21,7 @@ let ugglanConfigurations: [Configuration] = [
         name: "Release",
         settings: [
             "CODE_SIGN_STYLE": "automatic",
-            "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER"
+            "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
     ),
