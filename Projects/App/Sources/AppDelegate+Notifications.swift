@@ -1,7 +1,6 @@
 import Apollo
 import Contracts
 import CoreDependencies
-import FirebaseMessaging
 import Flow
 import Foundation
 import Payment
@@ -12,26 +11,33 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-extension AppDelegate: MessagingDelegate {
-    func registerFCMToken(_ token: String) {
-        bag += ApplicationContext.shared.$hasFinishedBootstrapping.filter(predicate: { $0 })
-            .onValue { _ in let giraffe: hGiraffe = Dependencies.shared.resolve()
-                giraffe.client.perform(mutation: GiraffeGraphQL.RegisterPushTokenMutation(pushToken: token))
+extension AppDelegate {
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
+        bag += ApplicationContext.shared.$isLoggedIn.atOnce().filter(predicate: { $0 })
+            .onValue { _ in
+                let giraffe: hGiraffe = Dependencies.shared.resolve()
+
+                let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
+
+                giraffe.client
+                    .perform(
+                        mutation: GiraffeGraphQL.NotificationRegisterDeviceMutation(token: deviceTokenString)
+                    )
                     .onValue { data in
-                        if data.registerPushToken != nil {
-                            log.info("Did register push token for user")
+                        if data.notificationRegisterDevice == true {
+                            log.info("Did register CustomerIO push token for user")
                         } else {
-                            log.info("Failed to register push token for user")
+                            log.info("Failed to register CustomerIO push token for user")
                         }
                     }
             }
     }
 
-    func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        if let fcmToken = fcmToken {
-            ApplicationState.setFirebaseMessagingToken(fcmToken)
-            registerFCMToken(fcmToken)
-        }
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        log.info("Failed to register for remote notifications with error: \(error))")
     }
 }
 
