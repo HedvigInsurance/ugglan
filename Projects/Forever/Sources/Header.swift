@@ -52,7 +52,7 @@ struct HeaderView: View {
                                 ),
                                 newPrice: netAmount.formattedAmount
                             )
-                            .frame(width: 250, height: 250, alignment: .center)
+                            .frame(width: 200, height: 175, alignment: .center)
 
                             if grossAmount.amount != netAmount.amount {
                                 // Discount present
