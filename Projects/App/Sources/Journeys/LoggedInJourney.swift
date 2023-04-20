@@ -159,21 +159,8 @@ extension JourneyPresentation {
             store.send(action)
         }
     }
-}
 
-extension JourneyPresentation {
-    public var configurePaymentNavigation: some JourneyPresentation {
-        onAction(PaymentStore.self) { action in
-            if case .connectPayments = action {
-                PaymentSetup(setupType: .initial).journeyThenDismiss
-            }
-        }
-    }
-}
-
-extension JourneyPresentation {
     public var configureClaimsNavigation: some JourneyPresentation {
-
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {
                 AppJourney.claimDetailJourney(claim: claim)
@@ -190,6 +177,14 @@ extension JourneyPresentation {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
             } else if case .openFreeTextChat = action {
                 AppJourney.freeTextChat()
+            }
+        }
+    }
+
+    public var configurePaymentNavigation: some JourneyPresentation {
+        onAction(PaymentStore.self) { action in
+            if case .connectPayments = action {
+                PaymentSetup(setupType: .initial).journeyThenDismiss
             }
         }
     }

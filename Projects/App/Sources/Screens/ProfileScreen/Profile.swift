@@ -131,6 +131,8 @@ extension ProfileView {
                     AppInfo(type: .appInformation),
                     options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
                 )
+            } else if case .openCharity = action {
+                AppJourney.businessModelDetailJourney
             } else if case .openAppSettings = action {
                 Journey(
                     AppInfo(type: .appSettings),

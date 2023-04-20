@@ -10,7 +10,7 @@ enum ProfileRowType {
         case .myInfo:
             return L10n.profileMyInfoRowTitle
         case .myCharity:
-            return L10n.profileMyCharityRowTitle
+            return L10n.businessModelProfileRow
         case .payment:
             return L10n.profilePaymentRowHeader
         case .appInfo:
