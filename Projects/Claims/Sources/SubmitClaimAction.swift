@@ -3,7 +3,6 @@ import SwiftUI
 
 public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dissmissNewClaimFlow
-    case openFreeTextChat
 
     case fetchCommonClaimsForSelection
     case setCommonClaimsForSelection([ClaimEntryPointResponseModel])
