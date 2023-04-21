@@ -8,7 +8,7 @@ import Foundation
 import Home
 import Payment
 import Presentation
-import UIKit
+import SwiftUI
 import hAnalytics
 import hCore
 import hCoreUI
@@ -17,34 +17,41 @@ extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
         let commonClaims = CommonClaimsView()
-        return Journey(
-            Home(
-                claimsContent: claims,
-                commonClaims: commonClaims
-            ),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        ) { result in
-            switch result {
-            case .startMovingFlow:
-                AppJourney.movingFlow
-            case .openFreeTextChat:
-                AppJourney.freeTextChat()
-            case .openConnectPayments:
-                PaymentSetup(setupType: .initial).journeyThenDismiss
+
+        return
+            HomeView.journey(claimsContent: claims, commonClaimsContent: commonClaims) { result in
+                switch result {
+                case .startMovingFlow:
+                    AppJourney.movingFlow
+                case .openFreeTextChat:
+                    AppJourney.freeTextChat().withDismissButton
+                case .openConnectPayments:
+                    PaymentSetup(setupType: .initial).journeyThenDismiss
+                }
+            } statusCard: {
+                VStack(spacing: 16) {
+                    ConnectPaymentCardView()
+                    RenewalCardView()
+                }
             }
-        }
-        .configureTabBarItem
-        .onTabSelected {
-            ContextGradient.currentOption = .home
-        }
-        .makeTabSelected(UgglanStore.self) { action in
-            if case .makeTabActive(let deepLink) = action {
-                return deepLink == .home
-            } else {
-                return false
+            .onTabSelected {
+                GradientState.shared.gradientType = .home
             }
-        }
-        .configureClaimsNavigation
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .home
+                } else {
+                    return false
+                }
+            }
+            .configureClaimsNavigation
+            .configurePaymentNavigation
+            .onPresent {
+                ApplicationContext.shared.$isLoggedIn.value = true
+            }
+            .onDismiss {
+                ApplicationContext.shared.$isLoggedIn.value = false
+            }
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -63,7 +70,7 @@ extension AppJourney {
             }
         }
         .onTabSelected {
-            ContextGradient.currentOption = .none
+            GradientState.shared.gradientType = .insurance
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
@@ -75,31 +82,33 @@ extension AppJourney {
     }
 
     fileprivate static var foreverTab: some JourneyPresentation {
-        Journey(
-            Forever(service: ForeverServiceGraphQL()),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        )
-        .onTabSelected {
-            ContextGradient.currentOption = .forever
-        }
-        .makeTabSelected(UgglanStore.self) { action in
-            if case .makeTabActive(let deepLink) = action {
-                return deepLink == .forever
-            } else {
-                return false
+        ForeverView.journey()
+            .onTabSelected {
+                GradientState.shared.gradientType = .forever
             }
-        }
-        .configureForeverTabBarItem
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .forever
+                } else {
+                    return false
+                }
+            }
     }
 
     fileprivate static var profileTab: some JourneyPresentation {
-        Journey(
-            Profile(),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
-        )
-        .configureTabBarItem
+        ProfileView.journey { result in
+            switch result {
+            case .openPayment:
+                Journey(
+                    MyPayment(urlScheme: Bundle.main.urlScheme ?? ""),
+                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
+                )
+            case .openFreeTextChat:
+                AppJourney.freeTextChat().withDismissButton
+            }
+        }
         .onTabSelected {
-            ContextGradient.currentOption = .profile
+            GradientState.shared.gradientType = .profile
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
@@ -108,7 +117,6 @@ extension AppJourney {
                 return false
             }
         }
-        .businessModelNavigation
     }
 
     static var loggedIn: some JourneyPresentation {
@@ -130,29 +138,31 @@ extension AppJourney {
                 }
             )
             .sendActionImmediately(ContractStore.self, .fetch)
+            .sendActionImmediately(ForeverStore.self, .fetch)
+            .sendActionImmediately(ProfileStore.self, .fetchProfileState)
             .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
-            .onAction(UgglanStore.self) { action in
-                if action == .openChat {
-                    AppJourney.freeTextChat().withDismissButton
-                }
-            }
         }
         .onPresent {
             ApplicationState.preserveState(.loggedIn)
             AnalyticsCoordinator().setUserId()
-
-            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-                UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
-            }
         }
     }
 }
 
 extension JourneyPresentation {
+    @discardableResult
+    func sendActionImmediately<S: Store>(
+        _ storeType: S.Type,
+        _ action: S.Action
+    ) -> Self {
+        return self.onPresent {
+            let store: S = self.presentable.get()
+            store.send(action)
+        }
+    }
 
     public var configureClaimsNavigation: some JourneyPresentation {
-
         onAction(ClaimsStore.self) { action in
             if case let .openClaimDetails(claim) = action {
                 AppJourney.claimDetailJourney(claim: claim)
@@ -173,10 +183,10 @@ extension JourneyPresentation {
         }
     }
 
-    public var businessModelNavigation: some JourneyPresentation {
-        onAction(UgglanStore.self) { action in
-            if case .businessModelDetail = action {
-                AppJourney.businessModelDetailJourney
+    public var configurePaymentNavigation: some JourneyPresentation {
+        onAction(PaymentStore.self) { action in
+            if case .connectPayments = action {
+                PaymentSetup(setupType: .initial).journeyThenDismiss
             }
         }
     }

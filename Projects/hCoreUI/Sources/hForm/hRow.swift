@@ -39,7 +39,8 @@ public struct hRow<Content: View, Accessory: View>: View {
 
     var content: Content
     var accessory: Accessory
-    var padding: CGFloat = 21
+    var horizontalPadding: CGFloat = 21
+    var verticalPadding: CGFloat = 21
 
     public init(
         _ accessory: Accessory,
@@ -52,7 +53,14 @@ public struct hRow<Content: View, Accessory: View>: View {
     /// Removes spacing from hRow
     public func noSpacing() -> Self {
         var new = self
-        new.padding = 0
+        new.verticalPadding = 0
+        new.horizontalPadding = 0
+        return new
+    }
+
+    public func verticalPadding(_ newPadding: CGFloat) -> Self {
+        var new = self
+        new.verticalPadding = newPadding
         return new
     }
 
@@ -65,8 +73,8 @@ public struct hRow<Content: View, Accessory: View>: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding([.horizontal], padding)
-            .padding([.vertical], padding)
+            .padding([.horizontal], horizontalPadding)
+            .padding([.vertical], verticalPadding)
             if position == .middle || position == .top {
                 hRowDivider()
             }

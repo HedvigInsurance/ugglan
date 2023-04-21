@@ -31,8 +31,9 @@ extension AdyenMethodsList {
 }
 
 public struct AdyenPayIn: Presentable {
-    @Inject var giraffe: hGiraffe
     @PresentableStore var paymentStore: PaymentStore
+
+    @Inject var giraffe: hGiraffe
     let adyenOptions: AdyenOptions
     let urlScheme: String
 
@@ -64,7 +65,7 @@ public struct AdyenPayIn: Presentable {
                 .onValue { data in
                     if let data = data.paymentConnectionConnectPayment.asConnectPaymentFinished {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            giraffe.client
+                            self.giraffe.client
                                 .fetch(
                                     query: GiraffeGraphQL.ActivePaymentMethodsQuery(),
                                     cachePolicy: .fetchIgnoringCacheData
@@ -94,9 +95,11 @@ public struct AdyenPayIn: Presentable {
                 }
             }
 
+            paymentStore.send(.fetchPayInMethodStatus)
+
             // refetch to refresh UI
             Future().delay(by: 0.5)
-                .flatMapResult { _ in giraffe.client.fetch(query: GiraffeGraphQL.ActivePaymentMethodsQuery()) }
+                .flatMapResult { _ in self.giraffe.client.fetch(query: GiraffeGraphQL.ActivePaymentMethodsQuery()) }
                 .sink()
         }
         .materialize()

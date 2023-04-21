@@ -8,6 +8,7 @@ import hGraphQL
 
 public struct PaymentState: StateProtocol {
     var monthlyNetCost: MonetaryAmount? = nil
+    public var paymentStatus: PayinMethodStatus = .active
     var paymentConnectionID: String? = nil
     public init() {}
 }
@@ -15,8 +16,14 @@ public struct PaymentState: StateProtocol {
 public enum PaymentAction: ActionProtocol {
     case load
     case setMonthlyNetCost(cost: MonetaryAmount)
+    case setPayInMethodStatus(status: PayinMethodStatus)
+    case connectPayments
+    case fetchPayInMethodStatus
     case setConnectionID(id: String)
 }
+
+public typealias PayinMethodStatus = GiraffeGraphQL.PayinMethodStatus
+extension PayinMethodStatus: Codable {}
 
 public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
     @Inject var giraffe: hGiraffe
@@ -39,6 +46,14 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
                     return .setMonthlyNetCost(cost: amount)
                 }
                 .valueThenEndSignal
+        case .fetchPayInMethodStatus:
+            return giraffe
+                .client
+                .fetch(query: GiraffeGraphQL.PayInMethodStatusQuery(), cachePolicy: .fetchIgnoringCacheData)
+                .map { data in
+                    .setPayInMethodStatus(status: data.payinMethodStatus)
+                }
+                .valueThenEndSignal
         default:
             return nil
         }
@@ -50,6 +65,8 @@ public final class PaymentStore: StateStore<PaymentState, PaymentAction> {
         switch action {
         case let .setMonthlyNetCost(cost):
             newState.monthlyNetCost = cost
+        case .setPayInMethodStatus(let paymentStatus):
+            newState.paymentStatus = paymentStatus
         case let .setConnectionID(id):
             newState.paymentConnectionID = id
         default:

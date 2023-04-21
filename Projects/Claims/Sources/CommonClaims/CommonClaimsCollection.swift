@@ -15,19 +15,21 @@ struct CommonClaimsCollection: View {
     }
 
     var body: some View {
-        ForEach(commonClaims.chunked(into: 2), id: \.id) { claimsRow in
-            HStack(spacing: 8) {
-                ForEach(claimsRow, id: \.id) { claim in
-                    Button {
-                        store.send(.openCommonClaimDetail(commonClaim: claim))
-                    } label: {
+        VStack {
+            ForEach(commonClaims.chunked(into: 2), id: \.id) { claimsRow in
+                HStack(spacing: 8) {
+                    ForEach(claimsRow, id: \.id) { claim in
+                        Button {
+                            store.send(.openCommonClaimDetail(commonClaim: claim))
+                        } label: {
 
+                        }
+                        .buttonStyle(CommonClaimButtonStyle(claim: claim))
                     }
-                    .buttonStyle(CommonClaimButtonStyle(claim: claim))
-                }
 
-                if claimsRow.count == 1 {
-                    Spacer().frame(maxWidth: .infinity)
+                    if claimsRow.count == 1 {
+                        Spacer().frame(maxWidth: .infinity)
+                    }
                 }
             }
         }
@@ -79,24 +81,29 @@ public struct CommonClaimsView: View {
 
     public init() {}
     public var body: some View {
-        VStack {
-            hText(L10n.claimsQuickChoiceHeader, style: .title2)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 52)
-                .padding(.bottom, 16)
-
-            PresentableStoreLens(
-                ClaimsStore.self,
-                getter: { state in
-                    return state.commonClaims ?? []
-                },
-                setter: { _ in
-                    .fetchCommonClaims
+        hSection {
+            hRow {
+                PresentableStoreLens(
+                    ClaimsStore.self,
+                    getter: { state in
+                        return state.commonClaims ?? []
+                    },
+                    setter: { _ in
+                        .fetchCommonClaims
+                    }
+                ) { commonClaims, _ in
+                    CommonClaimsCollection(commonClaims: commonClaims)
                 }
-            ) { commonClaims, _ in
-                CommonClaimsCollection(commonClaims: commonClaims)
             }
+            .noSpacing()
         }
+        .withHeader {
+            hText(
+                L10n.claimsQuickChoiceHeader,
+                style: .title2
+            )
+        }
+        .sectionContainerStyle(.transparent)
         .onAppear {
             store.send(.fetchCommonClaims)
         }

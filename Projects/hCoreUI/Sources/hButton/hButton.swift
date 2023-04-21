@@ -157,7 +157,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         @Environment(\.isEnabled) var isEnabled
         @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
         var configuration: Configuration
-        
+
         @hColorBuilder var foregroundColor: some hColor {
             if !isEnabled {
                 switch hButtonFilledStyle {
@@ -178,7 +178,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                 }
             }
         }
-        
+
         var body: some View {
             LoaderOrContent(color: foregroundColor) {
                 configuration.label
