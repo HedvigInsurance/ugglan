@@ -47,14 +47,10 @@ public struct SubmitClaimAudioRecordingScreen: View {
             .hFormAttachToBottom {
                 ZStack(alignment: .bottom) {
                     Group {
-                        if let recording = audioRecorder.recording {
+                        if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
                             VStack(spacing: 12) {
                                 TrackPlayer(audioPlayer: audioPlayer)
-
                                 hButton.LargeButtonFilled {
-                                    guard let url = audioRecorder.recording?.url else {
-                                        return
-                                    }
                                     onSubmit(url)
                                     store.send(.submitAudioRecording(audioURL: url))
                                 } content: {
@@ -62,6 +58,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 }
                                 hButton.LargeButtonText {
                                     withAnimation(.spring()) {
+                                        store.send(.resetAudioRecording)
                                         audioRecorder.restart()
                                     }
                                 } content: {
@@ -70,16 +67,14 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             }
                             .transition(.move(edge: .bottom).combined(with: .opacity))
                             .onAppear {
-                                self.audioPlayer.url = recording.url
+                                self.audioPlayer.url = url
                             }
-
                         } else {
 
                             RecordButton(isRecording: audioRecorder.isRecording) {
                                 if audioRecorder.isRecording {
                                 } else {
                                 }
-
                                 withAnimation(.spring()) {
                                     audioRecorder.toggleRecording()
                                 }

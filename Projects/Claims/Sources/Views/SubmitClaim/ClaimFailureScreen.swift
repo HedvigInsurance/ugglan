@@ -4,7 +4,7 @@ import hCoreUI
 
 struct ClaimFailureScreen: View {
     @PresentableStore var store: SubmitClaimStore
-    init() {}
+    @PresentableStore var claimStore: ClaimsStore
 
     var body: some View {
 
@@ -37,7 +37,7 @@ struct ClaimFailureScreen: View {
                 .padding(.bottom, 4)
                 hButton.LargeButtonFilled {
                     store.send(.dissmissNewClaimFlow)
-                    store.send(.openFreeTextChat)
+                    claimStore.send(.openFreeTextChat)
                 } content: {
                     hText(L10n.openChat, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
