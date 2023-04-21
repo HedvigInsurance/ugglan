@@ -1,10 +1,11 @@
 import Odyssey
 import Presentation
 import hCore
+
 public struct SubmitClaimsState: StateProtocol {
-    @Transient(defaultValue: "") var currentClaimId:String
+    @Transient(defaultValue: "") var currentClaimId: String
     @OptionalTransient var currentClaimContext: String?
-    @Transient(defaultValue: [:]) var loadingStates:[ClaimsLoadingType: LoadingState<String>]
+    @Transient(defaultValue: [:]) var loadingStates: [ClaimsLoadingType: LoadingState<String>]
     @Transient(defaultValue: []) var entryPointCommonClaims: [ClaimEntryPointResponseModel]
     @OptionalTransient var summaryStep: FlowClaimSummaryStepModel?
     @OptionalTransient var dateOfOccurenceStep: FlowClaimDateOfOccurenceStepModel?
