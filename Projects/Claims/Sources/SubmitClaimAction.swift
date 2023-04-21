@@ -3,13 +3,13 @@ import SwiftUI
 
 public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dissmissNewClaimFlow
-    case openFreeTextChat
 
     case fetchCommonClaimsForSelection
     case setCommonClaimsForSelection([ClaimEntryPointResponseModel])
     case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
 
     case submitAudioRecording(audioURL: URL)
+    case resetAudioRecording
     case submitDamage(damage: [String])
 
     case setNewClaimId(with: String)

@@ -28,6 +28,9 @@ fragment FlowClaimFragment on Flow {
 fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep{
     id
     questions
+    audioContent {
+        ...FlowClaimAudioContentFragment
+    }
 }
 
 fragment FlowClaimDateOfOccurrencePlusLocationStepFragment on FlowClaimDateOfOccurrencePlusLocationStep {
@@ -149,4 +152,9 @@ fragment FlowClaimAutomaticAutogiroPayoutFragment on FlowClaimAutomaticAutogiroP
         ...MoneyFragment
     }
     displayName
+}
+
+fragment FlowClaimAudioContentFragment on FlowClaimAudioContent {
+    audioUrl
+    signedUrl
 }
