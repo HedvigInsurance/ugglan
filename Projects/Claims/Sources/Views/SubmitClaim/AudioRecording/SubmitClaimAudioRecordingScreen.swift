@@ -47,7 +47,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             .hFormAttachToBottom {
                 ZStack(alignment: .bottom) {
                     Group {
-                        if let url = audioRecorder.recording?.url ??  store.state.audioRecordingStep?.getUrl() {
+                        if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
                             VStack(spacing: 12) {
                                 TrackPlayer(audioPlayer: audioPlayer)
                                 hButton.LargeButtonFilled {

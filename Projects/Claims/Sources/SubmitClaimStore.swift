@@ -62,7 +62,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                             context: newClaimContext
                         )
                         disposeBag +=
-                        mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
+                            mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
                             .onValue({ action in
                                 callback(.value(action))
                             })
@@ -81,7 +81,9 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                                     context: newClaimContext
                                 )
                                 disposeBag +=
-                                mutation.execute(\.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep)
+                                    mutation.execute(
+                                        \.flowClaimAudioRecordingNext.fragments.flowClaimFragment.currentStep
+                                    )
                                     .onValue({ action in
                                         callback(.value(action))
                                     })

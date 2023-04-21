@@ -19,7 +19,7 @@ public struct SubmitClaimsState: StateProtocol {
     var audioRecordingStep: FlowClaimAudioRecordingStepModel?
 
     enum CodingKeys: CodingKey {}
-    
+
     public init() {}
 }
 
