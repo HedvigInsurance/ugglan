@@ -150,7 +150,7 @@ extension Masking {
         case .personalNumber, .postalCode, .birthDate, .norwegianPostalCode, .email, .digits,
             .norwegianPersonalNumber, .danishPersonalNumber, .none:
             return maskValue(text: text, previousText: "")
-        case .birthDateReverse:            
+        case .birthDateReverse:
             guard let date = text.localDateToDate else { return text }
 
             let birthDateFormatter = DateFormatter()
