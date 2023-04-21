@@ -1,24 +1,21 @@
 import Odyssey
 import Presentation
-
+import hCore
 public struct SubmitClaimsState: StateProtocol {
-    var currentClaimId: String = ""
-    var currentClaimContext: String?
-    var loadingStates: [ClaimsLoadingType: LoadingState<String>] = [:]
-    var entryPointCommonClaims: [ClaimEntryPointResponseModel] = []
-
-    var summaryStep: FlowClaimSummaryStepModel?
-    var dateOfOccurenceStep: FlowClaimDateOfOccurenceStepModel?
-    var locationStep: FlowClaimLocationStepModel?
-    var singleItemStep: FlowClamSingleItemStepModel?
-    var phoneNumberStep: FlowClaimPhoneNumberStepModel?
-    var dateOfOccurrencePlusLocationStep: FlowClaimDateOfOccurrencePlusLocationStepModel?
-    var singleItemCheckoutStep: FlowClaimSingleItemCheckoutStepModel?
-    var successStep: FlowClaimSuccessStepModel?
-    var failedStep: FlowClaimFailedStepModel?
-    var audioRecordingStep: FlowClaimAudioRecordingStepModel?
-
-    enum CodingKeys: CodingKey {}
+    @Transient(defaultValue: "") var currentClaimId:String
+    @OptionalTransient var currentClaimContext: String?
+    @Transient(defaultValue: [:]) var loadingStates:[ClaimsLoadingType: LoadingState<String>]
+    @Transient(defaultValue: []) var entryPointCommonClaims: [ClaimEntryPointResponseModel]
+    @OptionalTransient var summaryStep: FlowClaimSummaryStepModel?
+    @OptionalTransient var dateOfOccurenceStep: FlowClaimDateOfOccurenceStepModel?
+    @OptionalTransient var locationStep: FlowClaimLocationStepModel?
+    @OptionalTransient var singleItemStep: FlowClamSingleItemStepModel?
+    @OptionalTransient var phoneNumberStep: FlowClaimPhoneNumberStepModel?
+    @OptionalTransient var dateOfOccurrencePlusLocationStep: FlowClaimDateOfOccurrencePlusLocationStepModel?
+    @OptionalTransient var singleItemCheckoutStep: FlowClaimSingleItemCheckoutStepModel?
+    @OptionalTransient var successStep: FlowClaimSuccessStepModel?
+    @OptionalTransient var failedStep: FlowClaimFailedStepModel?
+    @OptionalTransient var audioRecordingStep: FlowClaimAudioRecordingStepModel?
 
     public init() {}
 }
