@@ -5,6 +5,7 @@ import Form
 import Foundation
 import Home
 import HomeTesting
+import Payment
 import Presentation
 import SwiftUI
 import TestingUtil
@@ -13,101 +14,289 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct Debug {}
+struct DebugView: View {
+    @PresentableStore var store: DebugStore
 
-extension Debug: Presentable {
-    func materialize() -> (UIViewController, Disposable) {
-        let bag = DisposeBag()
-        let viewController = UIViewController()
-        viewController.title = "HomeExample"
-
-        let form = FormView()
-
-        ContextGradient.currentOption = .home
-
-        let section = form.appendSection(
-            headerView: UILabel(value: "Screens", style: .default),
-            footerView: nil
-        )
-
-        func presentHome(_ body: JSONObject) {
+    var body: some View {
+        hForm {
+            hSection {
+                hRow {
+                    hText("Home — Active")
+                }
+                .onTap {
+                    store.send(.openHomeActive)
+                }
+                hRow {
+                    hText("Home — Active in future")
+                }
+                .onTap {
+                    store.send(.openHomeActiveInFuture)
+                }
+                hRow {
+                    hText("Home — Pending switchable")
+                }
+                .onTap {
+                    store.send(.openHomePending)
+                }
+                hRow {
+                    hText("Home — Pending nonswitchable")
+                }
+                .onTap {
+                    store.send(.openHomePendingNonswitchable)
+                }
+            }
+            hSection {
+                hRow {
+                    hText("Home — With payment card")
+                }
+                .onTap {
+                    store.send(.openHomePaymentCard)
+                }
+            }
+            hSection {
+                hRow {
+                    hText("Home — With one renewal")
+                }
+                .onTap {
+                    store.send(.openHomeOneRenewal)
+                }
+                hRow {
+                    hText("Home — With multiple renewals, same date")
+                }
+                .onTap {
+                    store.send(.openHomeMultipleRenewals)
+                }
+                hRow {
+                    hText("Home — With multiple renewals, separate dates")
+                }
+                .onTap {
+                    store.send(.openHomeMultipleRenewalsSeparateDates)
+                }
+            }
+            hSection {
+                hRow {
+                    hText("Home — Terminated")
+                }
+                .onTap {
+                    store.send(.openHomeTerminated)
+                }
+            }
+        }
+        .onAppear {
             let apolloClient = ApolloClient(
-                networkTransport: MockNetworkTransport(body: body),
+                networkTransport: MockNetworkTransport(body: JSONObject()),
                 store: ApolloStore()
             )
 
             Dependencies.shared.add(module: Module { () -> ApolloClient in apolloClient })
+        }
+    }
+}
 
-            bag += viewController.view.window?
-                .present(
-                    Journey(
-                        Home(
-                            claimsContent: ClaimSectionDebug(),
-                            commonClaims: CommonClaimsDebug()
-                        ),
-                        options: [
-                            .defaults, .prefersLargeTitles(true),
-                            .largeTitleDisplayMode(.always),
-                        ]
-                    ) { result in
-                        return DismissJourney()
+func addDaysToDate(_ days: Int = 30) -> Date {
+    let today = Date()
+
+    var dateComponent = DateComponents()
+    dateComponent.day = days
+    dateComponent.hour = 0
+
+    let futureDate = Calendar.current.date(byAdding: dateComponent, to: today)
+
+    return futureDate ?? Date()
+}
+
+extension DebugView {
+    static var journey: some JourneyPresentation {
+        HostingJourney(
+            rootView: DebugView()
+        )
+        .configureTitle("Home debug")
+        .onAction(DebugStore.self) { action in
+            switch action {
+            case .openHomeActive:
+                HostingJourney(
+                    rootView: HomeView(statusCard: {
+                        EmptyView()
+                    })
+                    .mockState(HomeStore.self) { state in
+                        var newState = state
+
+                        newState.memberStateData = .init(state: .active, name: "Mock")
+
+                        return newState
                     }
                 )
-        }
+            case .openHomeActiveInFuture:
+                HostingJourney(
+                    rootView: HomeView(statusCard: {
+                        EmptyView()
+                    })
+                    .mockState(HomeStore.self) { state in
+                        var newState = state
 
-        bag += section.appendRow(title: "Home - Active").append(hCoreUIAssets.chevronRight.image)
-            .onValue { presentHome(.makeActive()) }
+                        newState.memberStateData = .init(state: .future, name: "Mock")
+                        newState.futureStatus = .activeInFuture(inceptionDate: Date().localDateString ?? "")
+                        return newState
+                    }
+                )
+            case .openHomePending:
+                HostingJourney(
+                    rootView: HomeView(statusCard: {
+                        EmptyView()
+                    })
+                    .mockState(HomeStore.self) { state in
+                        var newState = state
 
-        bag += section.appendRow(title: "Home - Active in future").append(hCoreUIAssets.chevronRight.image)
-            .onValue { presentHome(.makeActiveInFuture(switchable: true)) }
+                        newState.memberStateData = .init(state: .future, name: "Mock")
+                        newState.futureStatus = .pendingSwitchable
+                        return newState
+                    }
+                )
+            case .openHomePendingNonswitchable:
+                HostingJourney(
+                    rootView: HomeView(statusCard: {
+                        EmptyView()
+                    })
+                    .mockState(HomeStore.self) { state in
+                        var newState = state
 
-        bag += section.appendRow(title: "Home - Pending").append(hCoreUIAssets.chevronRight.image)
-            .onValue { presentHome(.makePending(switchable: true)) }
+                        newState.memberStateData = .init(state: .future, name: "Mock")
+                        newState.futureStatus = .pendingNonswitchable
+                        return newState
+                    }
+                )
+            case .openHomePaymentCard:
+                HostingJourney(
+                    rootView: HomeView(statusCard: {
+                        ConnectPaymentCardView()
+                            .mockState(PaymentStore.self) { state in
+                                var newState = state
+                                newState.paymentStatus = .needsSetup
 
-        bag += section.appendRow(title: "Home - Pending non switchable")
-            .append(hCoreUIAssets.chevronRight.image)
-            .onValue { presentHome(.makePending(switchable: false)) }
+                                return newState
+                            }
+                    })
+                    .mockState(HomeStore.self) { state in
+                        var newState = state
 
-        bag += section.appendRow(title: "Home - With payment card").append(hCoreUIAssets.chevronRight.image)
-            .onValue { presentHome(combineMultiple([.makeActive(), .makePayInMethodStatus(.needsSetup)])) }
+                        newState.memberStateData = .init(state: .active, name: "Mock")
+                        return newState
+                    }
+                )
+            case .openHomeOneRenewal:
+                HostingJourney(
+                    rootView: HomeView(statusCard: {
+                        RenewalCardView()
+                    })
+                    .mockState(HomeStore.self) { state in
+                        var newState = state
 
-        bag += section.appendRow(title: "Renewals - One renewal").append(hCoreUIAssets.chevronRight.image)
-            .onValue { presentHome(combineMultiple([.makeActiveWithRenewal()])) }
+                        newState.memberStateData = .init(state: .active, name: "Mock")
+                        newState.contracts = [
+                            .init(
+                                contract: .init(
+                                    displayName: "Home insurance",
+                                    status: .makeActiveStatus(),
+                                    upcomingRenewal: .init(
+                                        renewalDate: addDaysToDate().localDateString ?? "",
+                                        draftCertificateUrl:
+                                            "https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
+                                    )
+                                )
+                            )
+                        ]
 
-        bag += section.appendRow(title: "Renewals - Multiple same date")
-            .append(hCoreUIAssets.chevronRight.image)
-            .onValue { presentHome(.makeActiveWithMultipleRenewals()) }
+                        return newState
+                    }
+                )
+            case .openHomeMultipleRenewals:
+                HostingJourney(
+                    rootView: HomeView(statusCard: {
+                        RenewalCardView()
+                    })
+                    .mockState(HomeStore.self) { state in
+                        var newState = state
 
-        bag += section.appendRow(title: "Renewals - Multiple separate dates")
-            .append(hCoreUIAssets.chevronRight.image)
-            .onValue { presentHome(.makeActiveWithMultipleRenewalsOnSeparateDates()) }
+                        newState.memberStateData = .init(state: .active, name: "Mock")
+                        newState.contracts = [
+                            .init(
+                                contract: .init(
+                                    displayName: "Home insurance",
+                                    status: .makeActiveStatus(),
+                                    upcomingRenewal: .init(
+                                        renewalDate: addDaysToDate().localDateString ?? "",
+                                        draftCertificateUrl:
+                                            "https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
+                                    )
+                                )
+                            ),
+                            .init(
+                                contract: .init(
+                                    displayName: "Travel insurance",
+                                    status: .makeActiveStatus(),
+                                    upcomingRenewal: .init(
+                                        renewalDate: addDaysToDate().localDateString ?? "",
+                                        draftCertificateUrl:
+                                            "https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
+                                    )
+                                )
+                            ),
+                        ]
 
-        bag += section.appendRow(title: "Home - Terminated")
-            .append(hCoreUIAssets.chevronRight.image)
-            .onValue { presentHome(.makeTerminatedInTheFuture()) }
+                        return newState
+                    }
+                )
+            case .openHomeMultipleRenewalsSeparateDates:
+                HostingJourney(
+                    rootView: HomeView(statusCard: {
+                        RenewalCardView()
+                    })
+                    .mockState(HomeStore.self) { state in
+                        var newState = state
 
-        bag += viewController.install(form)
+                        newState.memberStateData = .init(state: .active, name: "Mock")
+                        newState.contracts = [
+                            .init(
+                                contract: .init(
+                                    displayName: "Home insurance",
+                                    status: .makeActiveStatus(),
+                                    upcomingRenewal: .init(
+                                        renewalDate: addDaysToDate().localDateString ?? "",
+                                        draftCertificateUrl:
+                                            "https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
+                                    )
+                                )
+                            ),
+                            .init(
+                                contract: .init(
+                                    displayName: "Travel insurance",
+                                    status: .makeActiveStatus(),
+                                    upcomingRenewal: .init(
+                                        renewalDate: addDaysToDate(20).localDateString ?? "",
+                                        draftCertificateUrl:
+                                            "https://cdn.hedvig.com/info/se/sv/forsakringsvillkor-hyresratt-2020-08-v2.pdf"
+                                    )
+                                )
+                            ),
+                        ]
 
-        return (viewController, bag)
-    }
-}
+                        return newState
+                    }
+                )
+            case .openHomeTerminated:
+                HostingJourney(
+                    rootView: HomeView(statusCard: {
+                        EmptyView()
+                    })
+                    .mockState(HomeStore.self) { state in
+                        var newState = state
 
-public struct ClaimSectionDebug: View {
-    public init() {}
+                        newState.memberStateData = .init(state: .terminated, name: "Mock")
 
-    public var body: some View {
-        VStack {
-            Text("Claims card")
-        }
-    }
-}
-
-public struct CommonClaimsDebug: View {
-    public init() {}
-
-    public var body: some View {
-        VStack {
-            Text("Common Claims")
+                        return newState
+                    }
+                )
+            }
         }
     }
 }

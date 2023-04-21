@@ -25,9 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.makeKeyAndVisible()
 
             bag += navigationController.present(
-                Debug(),
-                style: .default,
-                options: [.largeTitleDisplayMode(.always)]
+                Debug.journey
             )
         }
     }

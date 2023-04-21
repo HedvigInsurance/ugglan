@@ -29,8 +29,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         bag += { self.window?.removeGestureRecognizer(tapGestureRecognizer) }
 
-        navigationController.present(Debug(), options: [.defaults, .largeTitleDisplayMode(.always)])
-
+        bag += navigationController.present(DebugView.journey)
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
 

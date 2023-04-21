@@ -4,7 +4,9 @@ import Presentation
 import UIKit
 import hCore
 
-extension TimeInterval { static func days(numberOfDays: Int) -> TimeInterval { Double(numberOfDays) * 24 * 60 * 60 } }
+extension TimeInterval {
+    public static func days(numberOfDays: Int) -> TimeInterval { Double(numberOfDays) * 24 * 60 * 60 }
+}
 
 protocol DateProvider { var date: Date { get } }
 

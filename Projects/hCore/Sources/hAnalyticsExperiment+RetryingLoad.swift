@@ -20,7 +20,7 @@ extension hAnalyticsExperiment {
             }
         }
     }
-    
+
     public static func retryingLoad(onComplete: @escaping (_ success: Bool) -> Void) {
         log.info("Started loading hAnlyticsExperiments")
         self.retryingLoad(numberOfTries: 0, onComplete: onComplete)

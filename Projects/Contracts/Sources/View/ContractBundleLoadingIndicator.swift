@@ -15,7 +15,8 @@ struct ContractBundleLoadingIndicator: View {
                 ActivityIndicator(
                     style: .large,
                     color: hLabelColor.primary
-                ).padding(.top, 15)
+                )
+                .padding(.top, 15)
             }
         }
         .sectionContainerStyle(.transparent)

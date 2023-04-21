@@ -14,9 +14,21 @@ public struct ForeverInvitation: Hashable, Codable {
         case pending
         case active
     }
+
+    public init(
+        name: String,
+        state: State,
+        discount: MonetaryAmount? = nil,
+        invitedByOther: Bool
+    ) {
+        self.name = name
+        self.state = state
+        self.discount = discount
+        self.invitedByOther = invitedByOther
+    }
 }
 
-public struct ForeverData: Codable {
+public struct ForeverData: Codable, Equatable {
     public init(
         grossAmount: MonetaryAmount,
         netAmount: MonetaryAmount,

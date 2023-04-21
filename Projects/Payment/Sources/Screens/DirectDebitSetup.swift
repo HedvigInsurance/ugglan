@@ -10,6 +10,7 @@ import hCore
 import hGraphQL
 
 struct DirectDebitSetup {
+    @PresentableStore var paymentStore: PaymentStore
     @Inject var giraffe: hGiraffe
     let setupType: PaymentSetup.SetupType
 
@@ -188,7 +189,7 @@ extension DirectDebitSetup: Presentable {
                     case .success:
                         giraffe.client.fetch(query: GiraffeGraphQL.PayInMethodStatusQuery())
                             .onValue { _ in
-                                giraffe.store.update(
+                                giraffe.client.store.update(
                                     query: GiraffeGraphQL.PayInMethodStatusQuery()
                                 ) { (data: inout GiraffeGraphQL.PayInMethodStatusQuery.Data) in
                                     data.payinMethodStatus = .pending
@@ -204,7 +205,10 @@ extension DirectDebitSetup: Presentable {
                                 make.edges.equalToSuperview()
                             }
                         }
-                        .onValue { success in callback(.value(success)) }
+                        .onValue { success in
+                            paymentStore.send(.fetchPayInMethodStatus)
+                            callback(.value(success))
+                        }
                         .onError { _ in
                             bag += Signal(after: 0.5).onValue { _ in startRegistration() }
                         }

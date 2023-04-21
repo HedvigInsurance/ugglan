@@ -75,8 +75,11 @@ extension Contracts: View {
     }
 
     public var body: some View {
-        hForm {
+        hForm(gradientType: .insurance) {
             ContractTable(filter: filter)
+        }
+        .withChatButton {
+            store.send(.goToFreeTextChat)
         }
         .onReceive(pollTimer) { _ in
             fetch()
@@ -151,10 +154,6 @@ extension Contracts {
             if let navigationController = presenter.viewController as? UINavigationController {
                 navigationController.isHeroEnabled = true
                 navigationController.hero.navigationAnimationType = .fade
-            }
-
-            if filter.displaysActiveContracts {
-                presenter.matter.installChatButton()
             }
         })
         .configureTitle(filter.displaysActiveContracts ? L10n.InsurancesTab.title : "")

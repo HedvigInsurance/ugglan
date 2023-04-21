@@ -5,21 +5,29 @@ import SwiftUI
 import UIKit
 import hCore
 
-public struct hCard<Content: View>: View {
+public struct hCard<Content: View, BgColor: hColor>: View {
     private var titleIcon: UIImage
     private var title: String
     private var bodyText: String
     private let content: Content
+    private let backgroundColor: BgColor
+    private let lightTextAppearance: Bool
+
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
 
     public init(
         titleIcon: UIImage,
         title: String,
         bodyText: String,
+        backgroundColor: BgColor,
+        lightTextAppearance: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.titleIcon = titleIcon
         self.title = title
         self.bodyText = bodyText
+        self.lightTextAppearance = lightTextAppearance
+        self.backgroundColor = backgroundColor
         self.content = content()
     }
 
@@ -41,11 +49,15 @@ public struct hCard<Content: View>: View {
 
             content
         }
+        .colorScheme(lightTextAppearance ? .light : colorScheme)
         .frame(maxWidth: .infinity)
         .padding()
-        .background(hTintColor.lavenderTwo)
-        .border(hSeparatorColor.separator, width: .hairlineWidth)
+        .background(backgroundColor)
         .cornerRadius(.defaultCornerRadius)
+        .overlay(
+            RoundedRectangle(cornerRadius: .defaultCornerRadius).stroke(lineWidth: .hairlineWidth)
+                .foregroundColor(hSeparatorColor.separator)
+        )
     }
 }
 
@@ -53,53 +65,16 @@ extension hCard where Content == EmptyView {
     init(
         titleIcon: UIImage,
         title: String,
-        bodyText: String
+        bodyText: String,
+        backgroundColor: BgColor
     ) {
         self.init(
             titleIcon: titleIcon,
             title: title,
             bodyText: bodyText,
+            backgroundColor: backgroundColor,
             content: { EmptyView() }
         )
-    }
-}
-
-struct CardPreview: PreviewProvider {
-    static var previews: some View {
-        Group {
-            hCard(
-                titleIcon: hCoreUIAssets.refresh.image,
-                title: "Title",
-                bodyText: "Subtitle"
-            )
-            hCard(
-                titleIcon: hCoreUIAssets.refresh.image,
-                title: "Title",
-                bodyText: "Subtitle"
-            ) {
-                hButton.SmallButtonOutlined {
-                    print("Hello")
-                } content: {
-                    "Button".hText()
-                }
-            }
-            .preferredColorScheme(.light)
-            hCard(
-                titleIcon: hCoreUIAssets.refresh.image,
-                title: "Title",
-                bodyText: "Subtitle"
-            ) {
-                hButton.SmallButtonOutlined {
-                    print("Hello")
-                } content: {
-                    "Button".hText()
-                }
-            }
-            .preferredColorScheme(.dark)
-        }
-        .previewLayout(PreviewLayout.sizeThatFits)
-        .padding()
-        .previewDisplayName("Default preview")
     }
 }
 

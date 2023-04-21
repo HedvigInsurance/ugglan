@@ -33,7 +33,8 @@ struct TrackPlayer: View {
                     ActivityIndicator(
                         style: .large,
                         color: hLabelColor.primary
-                    ).foregroundColor(loadingColor)
+                    )
+                    .foregroundColor(loadingColor)
                 } else {
                     image
 

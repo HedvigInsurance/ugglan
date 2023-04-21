@@ -9,7 +9,7 @@ import hCoreUI
 struct MyInfo {}
 
 extension MyInfo: Presentable {
-    func materialize() -> (UIViewController, Future<Void>) {
+    func materialize() -> (UIViewController, Signal<Void>) {
         let bag = DisposeBag()
 
         let viewController = UIViewController()
@@ -62,7 +62,7 @@ extension MyInfo: Presentable {
 
         return (
             viewController,
-            Future { completion in
+            Future<Void> { completion in
                 bag += cancelButton.onValue { _ in
                     let alert = Alert<Bool>(
                         title: L10n.myInfoCancelAlertTitle,
@@ -83,6 +83,7 @@ extension MyInfo: Presentable {
 
                 return DelayedDisposer(bag, delay: 2)
             }
+            .resultSignal.toVoid()
         )
     }
 }
