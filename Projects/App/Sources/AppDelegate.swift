@@ -22,6 +22,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+
 #if PRESENTATION_DEBUGGER
     #if compiler(>=5.5)
         import PresentationDebugSupport
@@ -294,13 +295,13 @@ import hGraphQL
                             self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
                                 .atValue { _ in
                                     self.initOdyssey()
-                                    
+
                                     Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
-                                    
+
                                     AnalyticsCoordinator().setUserId()
                                     self.bag += self.window.present(AppJourney.main)
                                 }
-                        }else {
+                        } else {
                             let alert = Alert(
                                 title: L10n.somethingWentWrong,
                                 message: L10n.General.errorBody,
@@ -314,12 +315,16 @@ import hGraphQL
                                 ]
                             )
 
-                            self.bag += self.window.present(ActivityIndicator(style: .large, color: hLabelColor.primary).disposableHostingJourney.onPresent({
-                                Journey(alert).onPresent {
-                                    Launch.shared.completeAnimationCallbacker.callAll()
-                                }
-                            }))
-                            
+                            self.bag += self.window.present(
+                                ActivityIndicator(style: .large, color: hLabelColor.primary).disposableHostingJourney
+                                    .onPresent({
+                                        Journey(alert)
+                                            .onPresent {
+                                                Launch.shared.completeAnimationCallbacker.callAll()
+                                            }
+                                    })
+                            )
+
                         }
                     }
             }
