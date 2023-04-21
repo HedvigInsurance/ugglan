@@ -46,6 +46,12 @@ extension AppJourney {
             }
             .configureClaimsNavigation
             .configurePaymentNavigation
+            .onPresent {
+                ApplicationContext.shared.$isLoggedIn.value = true
+            }
+            .onDismiss {
+                ApplicationContext.shared.$isLoggedIn.value = false
+            }
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -140,10 +146,6 @@ extension AppJourney {
         .onPresent {
             ApplicationState.preserveState(.loggedIn)
             AnalyticsCoordinator().setUserId()
-
-            if let fcmToken = ApplicationState.getFirebaseMessagingToken() {
-                UIApplication.shared.appDelegate.registerFCMToken(fcmToken)
-            }
         }
     }
 }

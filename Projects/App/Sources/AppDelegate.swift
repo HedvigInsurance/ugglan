@@ -7,9 +7,6 @@ import CoreDependencies
 import Datadog
 import DatadogCrashReporting
 import Disk
-import Firebase
-import FirebaseDynamicLinks
-import FirebaseMessaging
 import Flow
 import Form
 import Foundation
@@ -88,19 +85,8 @@ import hGraphQL
         restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-
-        return DynamicLinks.dynamicLinks()
-            .handleUniversalLink(url) { dynamicLink, error in
-                if let error = error {
-                    log.error("Dynamic Link Error", error: error, attributes: [:])
-                }
-
-                guard let dynamicLinkURL = dynamicLink?.url else {
-                    return
-                }
-
-                self.handleDeepLink(dynamicLinkURL)
-            }
+        self.handleDeepLink(url)
+        return true
     }
 
     func registerForPushNotifications() -> Future<Void> {
@@ -131,10 +117,6 @@ import hGraphQL
                         completion(.success)
 
                         self.trackNotificationPermission()
-
-                        DispatchQueue.main.async {
-                            UIApplication.shared.registerForRemoteNotifications()
-                        }
                     }
                 )
 
@@ -233,10 +215,10 @@ import hGraphQL
 
         log.info("Starting app")
 
+        UIApplication.shared.registerForRemoteNotifications()
+
         hAnalyticsEvent.identify()
         hAnalyticsEvent.appStarted().send()
-
-        FirebaseApp.configure()
 
         let (launchView, launchFuture) = Launch.shared.materialize()
         window.rootView.addSubview(launchView)
@@ -272,7 +254,6 @@ import hGraphQL
 
         DefaultStyling.installCustom()
 
-        Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
 
         bag += launchFuture.valueSignal.onValue { _ in
