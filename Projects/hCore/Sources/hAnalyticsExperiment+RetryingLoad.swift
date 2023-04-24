@@ -9,8 +9,8 @@ extension hAnalyticsExperiment {
             if success {
                 log.info("Successfully loaded hAnlyticsExperiments")
                 onComplete(true)
-            } else if numberOfTries > 20 {
-                log.info("Failed to load hAnlyticsExperiments after 20 tries")
+            } else if numberOfTries > 5 {
+                log.info("Failed to load hAnlyticsExperiments after 5 tries")
                 onComplete(false)
             } else {
                 log.info("Failed loading hAnlyticsExperiments, retries in \(numberOfTries * 100) ms")
