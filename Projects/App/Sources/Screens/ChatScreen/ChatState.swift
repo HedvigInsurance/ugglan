@@ -20,6 +20,7 @@ class ChatState {
 
     let isEditingSignal = ReadWriteSignal<Bool>(false)
     let currentMessageSignal: ReadSignal<Message?>
+    let errorSignal = ReadWriteSignal< (Error?, retry:(() -> ())?)>((nil, retry: nil))
     let listSignal = ReadWriteSignal<[ChatListContent]>([])
     let tableSignal: ReadSignal<Table<EmptySection, ChatListContent>>
     let filteredListSignal: ReadSignal<[ChatListContent]>
@@ -37,7 +38,6 @@ class ChatState {
         } else {
             result.append(.make(newMessage))
         }
-
         return result
     }
 
@@ -81,6 +81,12 @@ class ChatState {
                 cachePolicy: cachePolicy,
                 queue: DispatchQueue.global(qos: .background)
             )
+            .onError({ error in
+                log.error("Chat Error: ChatMessagesQuery", error: error, attributes: nil)
+                self.errorSignal.value = (ChatError.fetchFailed, retry: {
+                    self.fetch(cachePolicy: cachePolicy, hasFetched: hasFetched)
+                })
+            })
             .valueSignal
             .compactMap(on: .concurrentBackground) { data -> [GiraffeGraphQL.MessageData]? in
                 data.messages.compactMap { message in message?.fragments.messageData }
@@ -140,6 +146,12 @@ class ChatState {
         listSignal.value = []
         bag += giraffe.client.perform(mutation: GiraffeGraphQL.TriggerResetChatMutation())
             .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
+            .onError({ error in
+                log.error("Chat Error: TriggerResetChatMutation", error: error, attributes: nil)
+                self.errorSignal.value = (ChatError.fetchFailed, retry: {
+                    self.reset()
+                })
+            })
     }
 
     func sendSingleSelectResponse(selectedValue: GraphQLID) {
@@ -153,6 +165,12 @@ class ChatState {
                         )
                     )
                     .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
+                    .onError({ error in
+                        log.error("Chat Error: SendChatSingleSelectResponseMutation", error: error, attributes: nil)
+                        self.errorSignal.value = (ChatError.mutationFailed, retry: {
+                            self.sendSingleSelectResponse(selectedValue: selectedValue)
+                        })
+                    })
             }
     }
 
@@ -174,7 +192,12 @@ class ChatState {
                         )
                         .onValue { _ in callback(())
                             self.fetch(cachePolicy: .fetchIgnoringCacheData)
-                        }
+                        }.onError({ error in
+                            log.error("Chat Error: SendChatTextResponseMutation", error: error, attributes: nil)
+                            self.errorSignal.value = (ChatError.mutationFailed, retry: {
+                               innerBag += self.sendChatFreeTextResponse(text: text)
+                            })
+                        })
                 }
 
             return innerBag
@@ -195,6 +218,12 @@ class ChatState {
                         )
                     )
                     .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
+                    .onError({ error in
+                        log.error("Chat Error: SendChatFileResponseMutation", error: error, attributes: nil)
+                        self.errorSignal.value = (ChatError.mutationFailed, retry: {
+                            self.sendChatFileResponseMutation(key: key, mimeType: mimeType)
+                        })
+                    })
             }
     }
 
@@ -213,6 +242,12 @@ class ChatState {
                         files: [file]
                     )
                     .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
+                    .onError({ error in
+                        log.error("Chat Error: SendChatAudioResponseMutation", error: error, attributes: nil)
+                        self.errorSignal.value = (ChatError.mutationFailed, retry: {
+                            self.sendChatAudioResponse(fileUrl: fileUrl)
+                        })
+                    })
             }
     }
 
@@ -276,6 +311,21 @@ class ChatState {
         editBag += isEditingSignal.onValue { isEditing in
             self.listSignal.value.compactMap { $0.left }
                 .forEach { message in message.editingDisabledSignal.value = isEditing }
+        }
+    }
+}
+
+
+enum ChatError: Error {
+    case fetchFailed
+    case mutationFailed
+}
+
+extension ChatError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .fetchFailed: return L10n.General.errorBody
+        case .mutationFailed: return L10n.General.errorBody
         }
     }
 }
