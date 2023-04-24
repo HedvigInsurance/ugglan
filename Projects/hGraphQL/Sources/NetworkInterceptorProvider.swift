@@ -6,7 +6,7 @@ public var urlSessionClientProvider: () -> URLSessionClient = {
     URLSessionClient()
 }
 
-public class NetworkInterceptorProvider: DefaultInterceptorProvider {
+class NetworkInterceptorProvider: DefaultInterceptorProvider {
     let acceptLanguageHeader: String
     let userAgent: String
     let deviceIdentifier: String
@@ -23,7 +23,7 @@ public class NetworkInterceptorProvider: DefaultInterceptorProvider {
         super.init(client: urlSessionClientProvider(), store: store)
     }
 
-    override public func interceptors<Operation: GraphQLOperation>(for operation: Operation) -> [ApolloInterceptor] {
+    override func interceptors<Operation: GraphQLOperation>(for operation: Operation) -> [ApolloInterceptor] {
         var interceptors = super.interceptors(for: operation)
         interceptors.insert(
             HeadersInterceptor(

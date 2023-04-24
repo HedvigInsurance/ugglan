@@ -2,10 +2,10 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct SubmitClaimOccurrencePlusLocationScreen: View {
+struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
 
-    public var body: some View {
+    var body: some View {
         LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
             hForm {
 
@@ -76,13 +76,6 @@ public struct SubmitClaimOccurrencePlusLocationScreen: View {
                 .padding([.leading, .trailing], 16)
             }
         }
-    }
-
-    func dateToString(date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let dateString = dateFormatter.string(from: date)
-        return dateString
     }
 }
 

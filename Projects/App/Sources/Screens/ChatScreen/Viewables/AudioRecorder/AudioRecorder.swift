@@ -9,7 +9,6 @@ import hCoreUI
 import hGraphQL
 
 struct AudioRecorder {
-    @Inject var giraffe: hGiraffe
     let chatState: ChatState
 
     init(chatState: ChatState) { self.chatState = chatState }

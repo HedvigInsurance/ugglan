@@ -8,7 +8,6 @@ class SlackBot {
     @Inject var giraffe: hGiraffe
 
     enum SlackError: Error {
-        case invalidRequestBody(description: String)
         case requestError(description: String)
         case invalidStatusCode
         case emptyDataReceived

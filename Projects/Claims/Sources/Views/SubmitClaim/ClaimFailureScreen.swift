@@ -2,13 +2,11 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ClaimFailureScreen: View {
+struct ClaimFailureScreen: View {
     @PresentableStore var store: SubmitClaimStore
     @PresentableStore var claimStore: ClaimsStore
 
-    public init() {}
-
-    public var body: some View {
+    var body: some View {
 
         hForm {
             Image(uiImage: hCoreUIAssets.warningTriangle.image)

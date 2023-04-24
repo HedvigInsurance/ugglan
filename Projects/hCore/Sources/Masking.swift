@@ -78,11 +78,7 @@ public struct Masking {
             reverseDateFormatter.dateFormat = "dd-MM-yyyy"
 
             guard let date = reverseDateFormatter.date(from: text) else { return text }
-
-            let birthDateFormatter = DateFormatter()
-            birthDateFormatter.dateFormat = "yyyy-MM-dd"
-
-            return birthDateFormatter.string(from: date)
+            return date.localDateString
         case .email, .norwegianPostalCode, .digits, .norwegianPersonalNumber: return text
         case .danishPersonalNumber: return text.replacingOccurrences(of: "-", with: "")
         case .none: return text

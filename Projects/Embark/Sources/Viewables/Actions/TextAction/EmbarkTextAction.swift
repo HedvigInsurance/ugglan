@@ -151,10 +151,7 @@ extension Masking {
             .norwegianPersonalNumber, .danishPersonalNumber, .none:
             return maskValue(text: text, previousText: "")
         case .birthDateReverse:
-            let reverseDateFormatter = DateFormatter()
-            reverseDateFormatter.dateFormat = "yyyy-MM-dd"
-
-            guard let date = reverseDateFormatter.date(from: text) else { return text }
+            guard let date = text.localDateToDate else { return text }
 
             let birthDateFormatter = DateFormatter()
             birthDateFormatter.dateFormat = "dd-MM-yyyy"

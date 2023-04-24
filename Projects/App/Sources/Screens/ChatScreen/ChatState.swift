@@ -9,7 +9,7 @@ import hCoreUI
 import hGraphQL
 
 class ChatState {
-    public static var shared = ChatState()
+    static var shared = ChatState()
     private let bag = DisposeBag()
     private let subscriptionBag = DisposeBag()
     private let editBag = DisposeBag()

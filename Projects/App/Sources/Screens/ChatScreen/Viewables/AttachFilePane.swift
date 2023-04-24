@@ -10,7 +10,6 @@ import hGraphQL
 struct AttachFilePane {
     let isOpenSignal: ReadWriteSignal<Bool>
     let chatState: ChatState
-    @Inject var giraffe: hGiraffe
 
     init(
         isOpenSignal: ReadWriteSignal<Bool>,
@@ -135,13 +134,13 @@ extension AttachFilePane: Viewable {
                     let imageAssets = PHAsset.fetchAssets(with: .image, options: fetchOptions)
 
                     imageAssets.enumerateObjects { asset, _, _ in
-                        list.append(AttachFileAsset(asset: asset, type: .image))
+                        list.append(AttachFileAsset(asset: asset))
                     }
 
                     let videoAssets = PHAsset.fetchAssets(with: .video, options: fetchOptions)
 
                     videoAssets.enumerateObjects { asset, _, _ in
-                        list.append(AttachFileAsset(asset: asset, type: .video))
+                        list.append(AttachFileAsset(asset: asset))
                     }
 
                     DispatchQueue.main.async { collectionKit.table = Table(rows: list) }

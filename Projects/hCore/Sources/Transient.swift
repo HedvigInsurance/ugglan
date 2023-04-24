@@ -13,12 +13,17 @@ public struct Transient<Value>: Codable & Equatable where Value: Codable & Equat
     public var innerValue: Value?
     public var defaultValue: Value
 
-    public init(wrappedValue: Value?, defaultValue: Value) {
+    public init(
+        wrappedValue: Value?,
+        defaultValue: Value
+    ) {
         self.defaultValue = defaultValue
         self.innerValue = wrappedValue
     }
 
-    public init(defaultValue: Value) {
+    public init(
+        defaultValue: Value
+    ) {
         self.defaultValue = defaultValue
         self.innerValue = nil
     }
@@ -40,7 +45,9 @@ public struct OptionalTransient<Value>: Codable & Equatable where Value: Codable
     }
     public var innerValue: Value?
 
-    public init(wrappedValue: Value?) {
+    public init(
+        wrappedValue: Value?
+    ) {
         self.innerValue = wrappedValue
     }
 

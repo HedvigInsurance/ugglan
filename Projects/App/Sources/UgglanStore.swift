@@ -1,18 +1,23 @@
 import Apollo
 import Flow
 import Foundation
-import Offer
 import Presentation
 import UIKit
 import hCore
 import hCoreUI
 import hGraphQL
 
-public struct UgglanState: StateProtocol {
+struct UgglanState: StateProtocol {
     var selectedTabIndex: Int = 0
     var pushNotificationStatus: Int?
 
-    public init() {}
+    init() {
+        UNUserNotificationCenter.current()
+            .getNotificationSettings { settings in
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+            }
+    }
 
     func askForPushNotificationPermission() -> Bool {
         if let status = pushNotificationStatus, let status = UNAuthorizationStatus(rawValue: status),
@@ -24,7 +29,7 @@ public struct UgglanState: StateProtocol {
     }
 }
 
-public enum UgglanAction: ActionProtocol {
+enum UgglanAction: ActionProtocol {
     case setSelectedTabIndex(index: Int)
     case makeTabActive(deeplink: DeepLink)
     case showLoggedIn
@@ -35,10 +40,8 @@ public enum UgglanAction: ActionProtocol {
     case setPushNotificationStatus(status: Int?)
 }
 
-public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
-    @Inject var giraffe: hGiraffe
-
-    public override func effects(
+final class UgglanStore: StateStore<UgglanState, UgglanAction> {
+    override func effects(
         _ getState: @escaping () -> UgglanState,
         _ action: UgglanAction
     ) -> FiniteSignal<UgglanAction>? {
@@ -50,7 +53,7 @@ public final class UgglanStore: StateStore<UgglanState, UgglanAction> {
         return nil
     }
 
-    public override func reduce(_ state: UgglanState, _ action: UgglanAction) -> UgglanState {
+    override func reduce(_ state: UgglanState, _ action: UgglanAction) -> UgglanState {
         var newState = state
 
         switch action {

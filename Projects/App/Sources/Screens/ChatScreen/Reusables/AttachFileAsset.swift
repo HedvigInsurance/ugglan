@@ -9,17 +9,14 @@ import hCoreUI
 
 struct AttachFileAsset: Reusable {
     let asset: PHAsset
-    let type: AssetType
     var uploadFileDelegate = Flow.Delegate<FileUpload, Future<(key: String, bucket: String)>>()
 
     enum AssetType { case image, video }
 
     init(
-        asset: PHAsset,
-        type: AssetType
+        asset: PHAsset
     ) {
         self.asset = asset
-        self.type = type
     }
 
     static func makeAndConfigure() -> (make: UIView, configure: (AttachFileAsset) -> Disposable) {
