@@ -4,7 +4,6 @@ import hCoreUI
 
 public struct SubmitClaimSuccessScreen: View {
     @PresentableStore var store: SubmitClaimStore
-    @PresentableStore var claimStore: ClaimsStore
 
     public init() {}
 
@@ -42,7 +41,7 @@ public struct SubmitClaimSuccessScreen: View {
 
                 Button {
                     store.send(.dissmissNewClaimFlow)
-                    claimStore.send(.openFreeTextChat)
+                    store.send(.submitClaimopenFreeTextChat)
                 } label: {
                     HStack {
                         hText(L10n.openChat, style: .body)
