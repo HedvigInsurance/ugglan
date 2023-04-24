@@ -9,7 +9,6 @@ struct CrossSellingStack: View {
             ContractStore.self,
             getter: { state in
                 state.crossSells
-                state.contractBundles.flatMap { $0.crossSells }
                     .filter { crossSell in
                         !state.signedCrossSells.contains(crossSell)
                     }
