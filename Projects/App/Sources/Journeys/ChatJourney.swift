@@ -19,7 +19,8 @@ extension AppJourney {
                     chat.chatState.fetch(cachePolicy: .fetchIgnoringCacheData) {
                         chat.chatState.subscribe()
                     }
-                }.onError { error in
+                }
+                .onError { error in
                     log.error("Chat Error: TriggerFreeTextChatMutation", error: error, attributes: nil)
                     chat.chatState.errorSignal.value = (ChatError.mutationFailed, nil)
                 }

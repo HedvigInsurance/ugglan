@@ -240,20 +240,20 @@ extension Chat: Presentable {
                     }
                     actions.append(retryAction)
                 }
-                
-                    let cancelAction = Alert.Action(
-                        title: L10n.alertCancel,
-                        style: UIAlertAction.Style.cancel
-                    ) { }
-                    let contactUsAction = Alert.Action(title: L10n.General.emailUs) {
-                        if let url = URL(string: "mailto:\(L10n.General.email)") {
-                            UIApplication.shared.open(url)
-                        }
+
+                let cancelAction = Alert.Action(
+                    title: L10n.alertCancel,
+                    style: UIAlertAction.Style.cancel
+                ) {}
+                let contactUsAction = Alert.Action(title: L10n.General.emailUs) {
+                    if let url = URL(string: "mailto:\(L10n.General.email)") {
+                        UIApplication.shared.open(url)
                     }
-                
+                }
+
                 actions.append(cancelAction)
                 actions.append(contactUsAction)
-                
+
                 let alert = Alert(
                     title: L10n.somethingWentWrong,
                     message: error.localizedDescription,
@@ -263,7 +263,7 @@ extension Chat: Presentable {
                 viewController.present(alert)
             }
         })
-        
+
         viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .chat))
         return (
             viewController,

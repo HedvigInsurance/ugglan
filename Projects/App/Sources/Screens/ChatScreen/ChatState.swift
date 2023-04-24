@@ -20,7 +20,7 @@ class ChatState {
 
     let isEditingSignal = ReadWriteSignal<Bool>(false)
     let currentMessageSignal: ReadSignal<Message?>
-    let errorSignal = ReadWriteSignal< (Error?, retry:(() -> ())?)>((nil, retry: nil))
+    let errorSignal = ReadWriteSignal<(Error?, retry: (() -> Void)?)>((nil, retry: nil))
     let listSignal = ReadWriteSignal<[ChatListContent]>([])
     let tableSignal: ReadSignal<Table<EmptySection, ChatListContent>>
     let filteredListSignal: ReadSignal<[ChatListContent]>
@@ -83,9 +83,12 @@ class ChatState {
             )
             .onError({ error in
                 log.error("Chat Error: ChatMessagesQuery", error: error, attributes: nil)
-                self.errorSignal.value = (ChatError.fetchFailed, retry: {
-                    self.fetch(cachePolicy: cachePolicy, hasFetched: hasFetched)
-                })
+                self.errorSignal.value = (
+                    ChatError.fetchFailed,
+                    retry: {
+                        self.fetch(cachePolicy: cachePolicy, hasFetched: hasFetched)
+                    }
+                )
             })
             .valueSignal
             .compactMap(on: .concurrentBackground) { data -> [GiraffeGraphQL.MessageData]? in
@@ -148,9 +151,12 @@ class ChatState {
             .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
             .onError({ error in
                 log.error("Chat Error: TriggerResetChatMutation", error: error, attributes: nil)
-                self.errorSignal.value = (ChatError.fetchFailed, retry: {
-                    self.reset()
-                })
+                self.errorSignal.value = (
+                    ChatError.fetchFailed,
+                    retry: {
+                        self.reset()
+                    }
+                )
             })
     }
 
@@ -167,9 +173,12 @@ class ChatState {
                     .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
                     .onError({ error in
                         log.error("Chat Error: SendChatSingleSelectResponseMutation", error: error, attributes: nil)
-                        self.errorSignal.value = (ChatError.mutationFailed, retry: {
-                            self.sendSingleSelectResponse(selectedValue: selectedValue)
-                        })
+                        self.errorSignal.value = (
+                            ChatError.mutationFailed,
+                            retry: {
+                                self.sendSingleSelectResponse(selectedValue: selectedValue)
+                            }
+                        )
                     })
             }
     }
@@ -192,11 +201,15 @@ class ChatState {
                         )
                         .onValue { _ in callback(())
                             self.fetch(cachePolicy: .fetchIgnoringCacheData)
-                        }.onError({ error in
+                        }
+                        .onError({ error in
                             log.error("Chat Error: SendChatTextResponseMutation", error: error, attributes: nil)
-                            self.errorSignal.value = (ChatError.mutationFailed, retry: {
-                               innerBag += self.sendChatFreeTextResponse(text: text)
-                            })
+                            self.errorSignal.value = (
+                                ChatError.mutationFailed,
+                                retry: {
+                                    innerBag += self.sendChatFreeTextResponse(text: text)
+                                }
+                            )
                         })
                 }
 
@@ -220,9 +233,12 @@ class ChatState {
                     .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
                     .onError({ error in
                         log.error("Chat Error: SendChatFileResponseMutation", error: error, attributes: nil)
-                        self.errorSignal.value = (ChatError.mutationFailed, retry: {
-                            self.sendChatFileResponseMutation(key: key, mimeType: mimeType)
-                        })
+                        self.errorSignal.value = (
+                            ChatError.mutationFailed,
+                            retry: {
+                                self.sendChatFileResponseMutation(key: key, mimeType: mimeType)
+                            }
+                        )
                     })
             }
     }
@@ -244,9 +260,12 @@ class ChatState {
                     .onValue { _ in self.fetch(cachePolicy: .fetchIgnoringCacheData) }
                     .onError({ error in
                         log.error("Chat Error: SendChatAudioResponseMutation", error: error, attributes: nil)
-                        self.errorSignal.value = (ChatError.mutationFailed, retry: {
-                            self.sendChatAudioResponse(fileUrl: fileUrl)
-                        })
+                        self.errorSignal.value = (
+                            ChatError.mutationFailed,
+                            retry: {
+                                self.sendChatAudioResponse(fileUrl: fileUrl)
+                            }
+                        )
                     })
             }
     }
@@ -314,7 +333,6 @@ class ChatState {
         }
     }
 }
-
 
 enum ChatError: Error {
     case fetchFailed
