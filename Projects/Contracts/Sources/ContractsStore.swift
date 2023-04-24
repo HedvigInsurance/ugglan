@@ -20,7 +20,9 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client.fetch(query: OctopusGraphQL.CrossSellsQuery())
                     .onValue({ data in
-                        let crossSells = data.currentMember.fragments.crossSellFragment.crossSells.compactMap({CrossSell($0)})
+                        let crossSells = data.currentMember.fragments.crossSellFragment.crossSells.compactMap({
+                            CrossSell($0)
+                        })
                         callback(.value(.setCrossSells(crossSells: crossSells)))
                     })
                     .onError({ error in

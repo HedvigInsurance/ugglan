@@ -534,7 +534,7 @@ public struct Perils: Codable, Equatable, Hashable {
         exceptions = fragment.exceptions
         color = nil
     }
-    
+
     public init(
         fragment: OctopusGraphQL.ProductVariantFragment.Peril
     ) {
@@ -559,7 +559,7 @@ public struct InsurableLimits: Codable, Hashable {
         limit = fragment.limit
         description = fragment.description
     }
-    
+
     init(
         _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
     ) {

@@ -34,26 +34,28 @@ class HeadersInterceptor: ApolloInterceptor {
             "User-Agent": userAgent,
             "hedvig-device-id": deviceIdentifier,
         ]
-        
-        TokenRefresher.shared.refreshIfNeeded().onValue {
-            if let token = ApolloClient.retreiveToken() {
-                httpAdditionalHeaders["Authorization"] = "Bearer " + token.accessToken
+
+        TokenRefresher.shared.refreshIfNeeded()
+            .onValue {
+                if let token = ApolloClient.retreiveToken() {
+                    httpAdditionalHeaders["Authorization"] = "Bearer " + token.accessToken
+                }
+
+                httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
+
+                chain.proceedAsync(
+                    request: request,
+                    response: response,
+                    completion: completion
+                )
             }
-            
-            httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
-            
-            chain.proceedAsync(
-                request: request,
-                response: response,
-                completion: completion
-            )
-        }.onError { error in
-            chain.handleErrorAsync(
-                error,
-                request: request,
-                response: response,
-                completion: completion
-            )
-        }
+            .onError { error in
+                chain.handleErrorAsync(
+                    error,
+                    request: request,
+                    response: response,
+                    completion: completion
+                )
+            }
     }
 }

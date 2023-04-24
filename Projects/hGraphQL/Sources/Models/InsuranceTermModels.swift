@@ -16,7 +16,7 @@ public struct InsuranceTerm: Codable, Equatable, Hashable {
         self.displayName = data.displayName
         self.url = url
     }
-    
+
     init?(
         _ data: OctopusGraphQL.ProductVariantFragment.Document
     ) {
