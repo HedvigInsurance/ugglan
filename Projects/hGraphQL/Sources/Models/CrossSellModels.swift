@@ -9,21 +9,21 @@ public struct CrossSellInfo: Codable, Equatable, Hashable {
     public var insurableLimits: [InsurableLimits]
     public var insuranceTerms: [InsuranceTerm]
     public var perils: [Perils]
-
-    init(
+    
+    init?(
         headerImageURL: URL,
-        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info
+        about: String,
+        _ data: OctopusGraphQL.CrossSellFragment.CrossSell.ProductVariant
     ) {
+        
         self.title = data.displayName
-        self.about = data.aboutSection
+        self.about = about
         self.headerImageURL = headerImageURL
-        self.highlights = data.highlights.map { highlight in Highlight(highlight) }
-        self.faqs = data.faq.map { faq in FAQ(faq) }
-        self.insurableLimits = data.insurableLimits.map { insurableLimit in
-            InsurableLimits(fragment: insurableLimit.fragments.insurableLimitFragment)
-        }
-        self.insuranceTerms = data.insuranceTerms.compactMap { insuranceTerm in InsuranceTerm(insuranceTerm) }
-        self.perils = data.contractPerils.map { peril in Perils(fragment: peril.fragments.perilFragment) }
+        self.highlights = data.fragments.productVariantFragment.highlights.map({Highlight($0)})
+        self.faqs = []
+        self.insurableLimits = data.fragments.productVariantFragment.insurableLimits.map({InsurableLimits($0)})
+        self.insuranceTerms = data.fragments.productVariantFragment.documents.compactMap({InsuranceTerm($0)})
+        self.perils = data.fragments.productVariantFragment.perils.compactMap({Perils(fragment: $0)})
     }
 }
 
@@ -37,7 +37,7 @@ public struct CrossSell: Codable, Equatable, Hashable {
     public var embarkStoryName: String?
     public var notificationType: String
     public var webActionURL: String?
-    public var info: CrossSellInfo?
+    public var infos: [CrossSellInfo]
     public var hasBeenSeen: Bool {
         didSet {
             UserDefaults.standard.set(hasBeenSeen, forKey: Self.hasBeenSeenKey(typeOfContract: typeOfContract))
@@ -52,6 +52,8 @@ public struct CrossSell: Codable, Equatable, Hashable {
     public static func == (lhs: CrossSell, rhs: CrossSell) -> Bool {
         return lhs.typeOfContract == rhs.typeOfContract
     }
+    
+
 
     public init(
         title: String,
@@ -63,7 +65,7 @@ public struct CrossSell: Codable, Equatable, Hashable {
         webActionURL: String? = nil,
         hasBeenSeen: Bool = false,
         typeOfContract: String,
-        info: CrossSellInfo?
+        infos: [CrossSellInfo]
     ) {
         self.notificationType = ""
         self.title = title
@@ -75,29 +77,27 @@ public struct CrossSell: Codable, Equatable, Hashable {
         self.webActionURL = webActionURL
         self.hasBeenSeen = hasBeenSeen
         self.typeOfContract = typeOfContract
-        self.info = info
+        self.infos = infos
     }
-
-    init?(
-        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell
-    ) {
+    
+    public init?(_ data: OctopusGraphQL.CrossSellFragment.CrossSell) {
         title = data.title
         description = data.description
-
+        
         guard let parsedImageURL = URL(string: data.imageUrl) else {
             return nil
         }
-
-        notificationType = data.type.rawValue
+        notificationType = data.id
         imageURL = parsedImageURL
-        buttonText = data.callToAction
-        embarkStoryName = data.action.asCrossSellEmbark?.embarkStoryV2.name
+        buttonText = data.title
+        embarkStoryName = nil
         blurHash = data.blurHash
         hasBeenSeen = UserDefaults.standard.bool(
-            forKey: Self.hasBeenSeenKey(typeOfContract: data.contractType.rawValue)
+            forKey: Self.hasBeenSeenKey(typeOfContract: data.id)
         )
-        webActionURL = data.action.asCrossSellWeb?.url
-        typeOfContract = data.contractType.rawValue
-        info = CrossSellInfo(headerImageURL: parsedImageURL, data.info)
+        webActionURL = data.storeUrl
+        typeOfContract = data.id
+        
+        infos = data.productVariants.compactMap({CrossSellInfo(headerImageURL: parsedImageURL,about: data.about, $0)})
     }
 }

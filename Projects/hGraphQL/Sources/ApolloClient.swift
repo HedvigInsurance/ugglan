@@ -128,6 +128,7 @@ extension ApolloClient {
 
         requestChainTransport.clientName = clientName
         requestChainTransport.clientVersion = appVersion
+        
 
         let client = ApolloClient(networkTransport: requestChainTransport, store: store)
 

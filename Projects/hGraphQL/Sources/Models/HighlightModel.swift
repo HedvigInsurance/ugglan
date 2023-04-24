@@ -10,4 +10,9 @@ public struct Highlight: Codable, Equatable, Hashable {
         self.title = data.title
         self.description = data.description
     }
+    
+    init( _ data: OctopusGraphQL.ProductVariantFragment.Highlight) {
+        self.title = data.title
+        self.description = data.description
+    }
 }

@@ -1,0 +1,50 @@
+query CrossSells {
+  currentMember {
+    ...CrossSellFragment
+  }
+}
+
+
+fragment ProductVariantFragment on ProductVariant {
+    perils {
+        colorCode
+        covered
+        description
+        exceptions
+        id
+        info
+        title
+    }
+    typeOfContract
+    documents {
+        displayName
+        type
+        url
+    }
+    displayName
+    insurableLimits {
+        label
+        limit
+        description
+        type
+    }
+    highlights {
+        title
+        description
+    }
+}
+
+fragment CrossSellFragment on Member {
+    crossSells {
+      id
+      title
+      description
+      about
+      imageUrl
+      blurHash
+      storeUrl
+      productVariants {
+        ...ProductVariantFragment
+      }
+    }
+}

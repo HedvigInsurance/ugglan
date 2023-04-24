@@ -10,16 +10,19 @@ import hGraphQL
 public struct CrossSellingCoverageDetail: View {
     @PresentableStore var store: ContractStore
     var crossSell: CrossSell
+    var crossSellInfo: CrossSellInfo
 
     public init(
-        crossSell: CrossSell
+        crossSell: CrossSell,
+        crossSellInfo: CrossSellInfo
     ) {
         self.crossSell = crossSell
+        self.crossSellInfo = crossSellInfo
     }
 
     public var body: some View {
         hForm {
-            if let perils = crossSell.info?.perils {
+            if let perils = crossSellInfo.perils {
                 hSection(header: hText(L10n.CrossSell.Info.coverageTitle)) {
                     PerilCollection(perils: perils) { peril in
                         store.send(.crossSellingCoverageDetailNavigation(action: .peril(peril: peril)))
@@ -28,7 +31,7 @@ public struct CrossSellingCoverageDetail: View {
                 .sectionContainerStyle(.transparent)
             }
 
-            if let insurableLimits = crossSell.info?.insurableLimits {
+            if let insurableLimits = crossSellInfo.insurableLimits {
                 InsurableLimitsSectionView(
                     header: hText(
                         L10n.contractCoverageMoreInfo
@@ -39,7 +42,7 @@ public struct CrossSellingCoverageDetail: View {
                 }
             }
 
-            if let insuranceTerms = crossSell.info?.insuranceTerms {
+            if let insuranceTerms = crossSellInfo.insuranceTerms {
                 InsuranceTermsSection(terms: insuranceTerms) { insuranceTerm in
                     store.send(
                         .crossSellingCoverageDetailNavigation(action: .insuranceTerm(insuranceTerm: insuranceTerm))

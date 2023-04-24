@@ -15,6 +15,19 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
     ) -> FiniteSignal<ContractAction>? {
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
+        case .fetchCrossSale:
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.octopus.client.fetch(query: OctopusGraphQL.CrossSellsQuery())
+                    .onValue({ data in
+                        let crossSells = data.currentMember.fragments.crossSellFragment.crossSells.compactMap({CrossSell($0)})
+                        callback(.value(.setCrossSells(crossSells: crossSells)))
+                    })
+                    .onError({ error in
+                        let ss = ""
+                    })
+                return disposeBag
+            }
         case .fetchContractBundles:
             return giraffe.client
                 .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
@@ -33,6 +46,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 }
         case .fetch:
             return [
+                .fetchCrossSale,
                 .fetchContracts,
                 .fetchContractBundles,
             ]
@@ -150,17 +164,13 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             newState.contractBundles = activeContractBundles
         case .setContracts(let contracts):
             newState.contracts = contracts
+        case .setCrossSells(let crossSells):
+            newState.crossSells = crossSells
         case let .hasSeenCrossSells(value):
-            newState.contractBundles = newState.contractBundles.map { bundle in
-                var newBundle = bundle
-
-                newBundle.crossSells = newBundle.crossSells.map { crossSell in
-                    var newCrossSell = crossSell
-                    newCrossSell.hasBeenSeen = value
-                    return newCrossSell
-                }
-
-                return newBundle
+            newState.crossSells = newState.crossSells.map { crossSell in
+                var newCrossSell = crossSell
+                newCrossSell.hasBeenSeen = value
+                return newCrossSell
             }
         case let .setFocusedCrossSell(focusedCrossSell):
             newState.focusedCrossSell = focusedCrossSell

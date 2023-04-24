@@ -30,13 +30,14 @@ class HeadersInterceptor: ApolloInterceptor {
     ) {
         var httpAdditionalHeaders = [
             "Accept-Language": acceptLanguageHeader,
+            "hedvig-language": acceptLanguageHeader,
             "User-Agent": userAgent,
             "hedvig-device-id": deviceIdentifier,
         ]
         
         TokenRefresher.shared.refreshIfNeeded().onValue {
             if let token = ApolloClient.retreiveToken() {
-                httpAdditionalHeaders["Authorization"] = token.accessToken
+                httpAdditionalHeaders["Authorization"] = "Bearer " + token.accessToken
             }
             
             httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }

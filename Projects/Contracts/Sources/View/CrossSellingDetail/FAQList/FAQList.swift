@@ -19,7 +19,7 @@ public struct CrossSellingFAQList: View {
 
     public var body: some View {
         hForm {
-            if let faqs = crossSell.info?.faqs {
+            if let faqs = crossSell.infos.first?.faqs {
                 hSection(faqs, id: \.title) { faq in
                     hRow {
                         hText(faq.title)

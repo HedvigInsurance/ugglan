@@ -4,7 +4,6 @@ public struct ActiveContractBundle: Codable, Equatable, Hashable {
     public var contracts: [Contract]
     public var id: String
     public var movingFlowEmbarkId: String?
-    public var crossSells: [CrossSell]
 
     public init(
         bundle: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle
@@ -12,7 +11,6 @@ public struct ActiveContractBundle: Codable, Equatable, Hashable {
         contracts = bundle.contracts.map { .init(contract: $0) }
         movingFlowEmbarkId = bundle.angelStories.addressChangeV2
         id = bundle.id
-        crossSells = bundle.potentialCrossSells.compactMap { CrossSell($0) }
     }
 }
 
@@ -522,6 +520,7 @@ public struct Perils: Codable, Equatable, Hashable {
     public let title: String
     public let description: String
     public let icon: IconEnvelope?
+    public let color: String?
     public let covered: [String]
     public let exceptions: [String]
 
@@ -533,6 +532,18 @@ public struct Perils: Codable, Equatable, Hashable {
         icon = .init(fragment: fragment.icon.fragments.iconFragment)
         covered = fragment.covered
         exceptions = fragment.exceptions
+        color = nil
+    }
+    
+    public init(
+        fragment: OctopusGraphQL.ProductVariantFragment.Peril
+    ) {
+        title = fragment.title
+        description = fragment.description
+        icon = nil
+        covered = fragment.covered
+        exceptions = fragment.exceptions
+        color = fragment.colorCode
     }
 }
 
@@ -547,6 +558,14 @@ public struct InsurableLimits: Codable, Hashable {
         label = fragment.label
         limit = fragment.limit
         description = fragment.description
+    }
+    
+    init(
+        _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
+    ) {
+        label = data.label
+        limit = data.limit
+        description = data.description
     }
 }
 
