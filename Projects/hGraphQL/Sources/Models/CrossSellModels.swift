@@ -9,21 +9,21 @@ public struct CrossSellInfo: Codable, Equatable, Hashable {
     public var insurableLimits: [InsurableLimits]
     public var insuranceTerms: [InsuranceTerm]
     public var perils: [Perils]
-    
+
     init?(
         headerImageURL: URL,
         about: String,
         _ data: OctopusGraphQL.CrossSellFragment.CrossSell.ProductVariant
     ) {
-        
+
         self.title = data.displayName
         self.about = about
         self.headerImageURL = headerImageURL
-        self.highlights = data.fragments.productVariantFragment.highlights.map({Highlight($0)})
+        self.highlights = data.fragments.productVariantFragment.highlights.map({ Highlight($0) })
         self.faqs = []
-        self.insurableLimits = data.fragments.productVariantFragment.insurableLimits.map({InsurableLimits($0)})
-        self.insuranceTerms = data.fragments.productVariantFragment.documents.compactMap({InsuranceTerm($0)})
-        self.perils = data.fragments.productVariantFragment.perils.compactMap({Perils(fragment: $0)})
+        self.insurableLimits = data.fragments.productVariantFragment.insurableLimits.map({ InsurableLimits($0) })
+        self.insuranceTerms = data.fragments.productVariantFragment.documents.compactMap({ InsuranceTerm($0) })
+        self.perils = data.fragments.productVariantFragment.perils.compactMap({ Perils(fragment: $0) })
     }
 }
 
@@ -52,8 +52,6 @@ public struct CrossSell: Codable, Equatable, Hashable {
     public static func == (lhs: CrossSell, rhs: CrossSell) -> Bool {
         return lhs.typeOfContract == rhs.typeOfContract
     }
-    
-
 
     public init(
         title: String,
@@ -79,11 +77,11 @@ public struct CrossSell: Codable, Equatable, Hashable {
         self.typeOfContract = typeOfContract
         self.infos = infos
     }
-    
+
     public init?(_ data: OctopusGraphQL.CrossSellFragment.CrossSell) {
         title = data.title
         description = data.description
-        
+
         guard let parsedImageURL = URL(string: data.imageUrl) else {
             return nil
         }
@@ -97,7 +95,8 @@ public struct CrossSell: Codable, Equatable, Hashable {
         )
         webActionURL = data.storeUrl
         typeOfContract = data.id
-        
-        infos = data.productVariants.compactMap({CrossSellInfo(headerImageURL: parsedImageURL,about: data.about, $0)})
+
+        infos = data.productVariants.compactMap({ CrossSellInfo(headerImageURL: parsedImageURL, about: data.about, $0) }
+        )
     }
 }
