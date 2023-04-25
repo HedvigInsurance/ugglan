@@ -183,6 +183,7 @@ extension Toast: Viewable {
         chevronImageView.tintColor = textColor
         chevronImageView.contentMode = .scaleAspectFit
         chevronImageView.isHidden = true
+        chevronImageView.isUserInteractionEnabled = false
         chevronImageView.snp.makeConstraints { make in
             make.width.equalTo(20)
         }
