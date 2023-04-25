@@ -166,7 +166,7 @@ extension Toast: Viewable {
         )
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.numberOfLines = 0
-        
+
         textContainer.addArrangedSubview(bodyLabel)
 
         if let subtitle = subtitle {

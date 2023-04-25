@@ -48,10 +48,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 work()
             }
     }
-    
+
     fileprivate func performPushAction(notificationType: String, userInfo: [AnyHashable: Any]) {
         hAnalyticsEvent.notificationOpened(type: notificationType).send()
-        
+
         if notificationType == "NEW_MESSAGE" {
             performPostLoggedIn {
                 let store: UgglanStore = globalPresentableStoreContainer.get()
@@ -118,7 +118,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             }
         }
     }
-    
+
     func userNotificationCenter(
         _: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
@@ -144,11 +144,11 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             body: notification.request.content.title,
             subtitle: notification.request.content.body
         )
-                
+
         self.bag += toast.onTap.onValue {
             let userInfo = notification.request.content.userInfo
             guard let notificationType = userInfo["TYPE"] as? String else { return }
-            
+
             self.performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
 
