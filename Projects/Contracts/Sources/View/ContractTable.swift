@@ -16,13 +16,13 @@ struct ContractTable {
         switch filter {
         case .active:
             return state
-                .contractBundles.getData()?
-                .flatMap { $0.contracts } ?? []
+                .contractBundles
+                .flatMap { $0.contracts }
         case .terminated:
-            return state.contracts.getData()?
+            return state.contracts
                 .filter { contract in
                     contract.currentAgreement?.status == .terminated
-                } ?? []
+                }
         case .none: return []
         }
     }

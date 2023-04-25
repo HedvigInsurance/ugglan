@@ -117,8 +117,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
                         self.bag += contractsStore.stateSignal
                             .map {
-                                $0.contractBundles.getData()?.flatMap { contractBundle in contractBundle.crossSells }
-                                    ?? []
+                                $0.contractBundles.flatMap { contractBundle in contractBundle.crossSells }
                             }
                             .compactMap {
                                 $0.first(where: { crossSell in crossSell.notificationType == crossSellType })

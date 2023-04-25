@@ -41,8 +41,8 @@ public indirect enum ContractAction: ActionProtocol, Hashable {
     case fetchContractBundles
     case fetchContracts
 
-    case setContractBundles(activeContractBundles: LoadingWrapper<[ActiveContractBundle], String>)
-    case setContracts(contracts: LoadingWrapper<[Contract], String>)
+    case setContractBundles(activeContractBundles: [ActiveContractBundle])
+    case setContracts(contracts: [Contract])
     case goToMovingFlow
     case goToFreeTextChat
     case setFocusedCrossSell(focusedCrossSell: CrossSell?)

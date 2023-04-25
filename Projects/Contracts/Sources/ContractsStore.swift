@@ -16,33 +16,69 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
         case .fetchContractBundles:
-            return giraffe.client
-                .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
-                .valueThenEndSignal
-                .map { activeContractBundles in
-                    ContractAction.setContractBundles(activeContractBundles: .success(activeContractBundles))
-                }
-
-        case .fetchContracts:
-            return giraffe.client.fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
-                .valueThenEndSignal
-                .filter { contracts in
-                    contracts != getState().contracts.getData()
-                }
-                .map {
-                    .setContracts(contracts: .success($0))
-                }
-        case .fetch:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                callback(.value(.setContracts(contracts: .loading)))
+                disposeBag += self.giraffe.client
+                    .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                    .onValue { activeContractBundles in
+                        callback(
+                            .value(ContractAction.setContractBundles(activeContractBundles: activeContractBundles))
+                        )
+                        callback(.value(.setLoadingState(action: action, state: nil)))
+                    }
+                    .onError { error in
+                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                    }
                 return disposeBag
             }
-        //            return [
-        //                .fetchContracts,
-        //                .fetchContractBundles,
-        //            ]
-        //            .emitEachThenEnd
+
+        //            return giraffe.client
+        //                            .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+        //                            .valueThenEndSignal
+        //                            .map { activeContractBundles in
+        //                                ContractAction.setContractBundles(activeContractBundles: .success(activeContractBundles))
+        //                            }
+
+        case .fetchContracts:
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.giraffe.client
+                    .fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                    .onValue { contracts in
+
+                        var filtered = [Contract]()
+
+                        for data in contracts {
+                            for contract in getState().contracts {
+                                if data != contract {
+                                    filtered.append(data)
+                                }
+                            }
+                        }
+
+                        callback(.value(ContractAction.setContracts(contracts: filtered)))
+
+                        callback(.value(.setLoadingState(action: action, state: nil)))
+                    }
+                    .onError { error in
+                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                    }
+                return disposeBag
+            }
+        //            return giraffe.client.fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+        //                .valueThenEndSignal
+        //                .filter { contracts in
+        //                    contracts != getState().contracts
+        //                }
+        //                .map {
+        //                    .setContracts(contracts: $0)
+        //                }
+        case .fetch:
+            return [
+                .fetchContracts,
+                .fetchContractBundles,
+            ]
+            .emitEachThenEnd
         case .didSignFocusedCrossSell:
             return [
                 .fetch
@@ -157,7 +193,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         case let .setContracts(contracts):
             newState.contracts = contracts
         case let .hasSeenCrossSells(value):
-            let contractBundles = newState.contractBundles.getData()?
+            newState.contractBundles
                 .map { bundle in
                     var newBundle = bundle
 
@@ -169,10 +205,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
 
                     return newBundle
                 }
-
-            if let contractBundles {
-                newState.contractBundles = .success(contractBundles)
-            }
 
         case let .setFocusedCrossSell(focusedCrossSell):
             newState.focusedCrossSell = focusedCrossSell
