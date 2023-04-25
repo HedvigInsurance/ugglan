@@ -191,7 +191,7 @@ extension ContractDetail {
             } else if case let .contractDetailNavigationAction(action: .upcomingAgreement(details)) = action {
                 Journey(
                     UpcomingAddressChangeDetails(details: details),
-                    style: .detented(.medium, .large)
+                    style: .detented(.scrollViewContentSize, .large)
                 )
                 .withDismissButton
             }
