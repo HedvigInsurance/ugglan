@@ -34,7 +34,7 @@ extension PayoutDetailsSection: Viewable {
                         .journey({ _ in
                             DismissJourney()
                         })
-                        .setStyle(.detented(.scrollViewContentSize))
+                        .setStyle(.detented(.medium, .large))
                         .setOptions([.defaults, .allowSwipeDismissAlways])
                         .withJourneyDismissButton
                 )
