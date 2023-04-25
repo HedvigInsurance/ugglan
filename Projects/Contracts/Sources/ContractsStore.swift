@@ -20,23 +20,29 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                 .valueThenEndSignal
                 .map { activeContractBundles in
-                    ContractAction.setContractBundles(activeContractBundles: activeContractBundles)
+                    ContractAction.setContractBundles(activeContractBundles: .success(activeContractBundles))
                 }
+
         case .fetchContracts:
             return giraffe.client.fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                 .valueThenEndSignal
                 .filter { contracts in
-                    contracts != getState().contracts
+                    contracts != getState().contracts.getData()
                 }
                 .map {
-                    .setContracts(contracts: $0)
+                    .setContracts(contracts: .success($0))
                 }
         case .fetch:
-            return [
-                .fetchContracts,
-                .fetchContractBundles,
-            ]
-            .emitEachThenEnd
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                callback(.value(.setContracts(contracts: .error("rror"))))
+                return disposeBag
+            }
+        //            return [
+        //                .fetchContracts,
+        //                .fetchContractBundles,
+        //            ]
+        //            .emitEachThenEnd
         case .didSignFocusedCrossSell:
             return [
                 .fetch
@@ -77,7 +83,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         case let .sendTerminationDate(terminationDate):
             self.send(.setLoadingState(action: action, state: .loading))
 
-            let inputDateToString = terminationDate.localDateString ?? ""
+            let inputDateToString = terminationDate.localDateString
             let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
 
             let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
@@ -148,20 +154,26 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             guard activeContractBundles != state.contractBundles else { return newState }
 
             newState.contractBundles = activeContractBundles
-        case .setContracts(let contracts):
+        case let .setContracts(contracts):
             newState.contracts = contracts
         case let .hasSeenCrossSells(value):
-            newState.contractBundles = newState.contractBundles.map { bundle in
-                var newBundle = bundle
+            let contractBundles = newState.contractBundles.getData()?
+                .map { bundle in
+                    var newBundle = bundle
 
-                newBundle.crossSells = newBundle.crossSells.map { crossSell in
-                    var newCrossSell = crossSell
-                    newCrossSell.hasBeenSeen = value
-                    return newCrossSell
+                    newBundle.crossSells = newBundle.crossSells.map { crossSell in
+                        var newCrossSell = crossSell
+                        newCrossSell.hasBeenSeen = value
+                        return newCrossSell
+                    }
+
+                    return newBundle
                 }
 
-                return newBundle
+            if let contractBundles {
+                newState.contractBundles = .success(contractBundles)
             }
+
         case let .setFocusedCrossSell(focusedCrossSell):
             newState.focusedCrossSell = focusedCrossSell
         case .didSignFocusedCrossSell:

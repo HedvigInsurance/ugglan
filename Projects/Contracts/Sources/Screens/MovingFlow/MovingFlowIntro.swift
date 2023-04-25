@@ -146,7 +146,7 @@ extension MovingFlowIntro: Presentable {
 
         bag += store.stateSignal.atOnce()
             .onValue { state in
-                if let upcomingAgreementTable = state.contractBundles.flatMap({ $0.contracts })
+                if let upcomingAgreementTable = state.contractBundles.getData()?.flatMap({ $0.contracts })
                     .first(where: {
                         !$0.upcomingAgreementsTable.sections.isEmpty
                     })?
@@ -154,9 +154,11 @@ extension MovingFlowIntro: Presentable {
                 {
                     $section.value = .existing(upcomingAgreementTable)
                 } else {
-                    if let bundle = state.contractBundles.first(where: { bundle in
-                        bundle.movingFlowEmbarkId != nil
-                    }) {
+                    if let bundle = state.contractBundles.getData()?
+                        .first(where: { bundle in
+                            bundle.movingFlowEmbarkId != nil
+                        })
+                    {
                         $section.value = .normal(
                             bundle.movingFlowEmbarkId ?? ""
                         )

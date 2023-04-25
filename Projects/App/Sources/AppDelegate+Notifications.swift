@@ -116,7 +116,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                         guard let crossSellType = userInfo["CROSS_SELL_TYPE"] as? String else { return }
 
                         self.bag += contractsStore.stateSignal
-                            .map { $0.contractBundles.flatMap { contractBundle in contractBundle.crossSells } }
+                            .map {
+                                $0.contractBundles.getData()?.flatMap { contractBundle in contractBundle.crossSells }
+                                    ?? []
+                            }
                             .compactMap {
                                 $0.first(where: { crossSell in crossSell.notificationType == crossSellType })
                             }

@@ -11,8 +11,8 @@ public struct ContractState: StateProtocol {
     public init() {}
 
     public var hasLoadedContractBundlesOnce = false
-    public var contractBundles: [ActiveContractBundle] = []
-    public var contracts: [Contract] = []
+    public var contractBundles: LoadingWrapper<[ActiveContractBundle], String> = .loading
+    public var contracts: LoadingWrapper<[Contract], String> = .loading
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
 
@@ -25,7 +25,7 @@ public struct ContractState: StateProtocol {
     var loadingStates: [ContractAction: LoadingState<String>] = [:]
 
     func contractForId(_ id: String) -> Contract? {
-        if let inBundleContract = contractBundles.flatMap({ $0.contracts })
+        if let inBundleContract = contractBundles.getData()?.flatMap({ $0.contracts })
             .first(where: { contract in
                 contract.id == id
             })
@@ -33,19 +33,21 @@ public struct ContractState: StateProtocol {
             return inBundleContract
         }
 
-        return contracts.first { contract in
-            contract.id == id
-        }
+        return contracts.getData()?
+            .first { contract in
+                contract.id == id
+            }
     }
 }
 
 extension ContractState {
     public var hasUnseenCrossSell: Bool {
-        contractBundles.contains(where: { bundle in bundle.crossSells.contains(where: { !$0.hasBeenSeen }) })
+        contractBundles.getData()?.contains(where: { bundle in bundle.crossSells.contains(where: { !$0.hasBeenSeen }) })
+            ?? false
     }
 
     public var hasActiveContracts: Bool {
-        !contractBundles.flatMap { $0.contracts }.isEmpty
+        !(contractBundles.getData()?.flatMap { $0.contracts }.isEmpty ?? false)
     }
 }
 

@@ -9,6 +9,7 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimSectionLoading: View {
+    @State var showAlert: Bool = false
     @PresentableStore var store: ClaimsStore
 
     @ViewBuilder
@@ -37,7 +38,6 @@ struct ClaimSectionLoading: View {
             hButton.LargeButtonOutlined {
                 hAnalyticsEvent.beginClaim(screen: .home).send()
                 store.send(.submitNewClaim(from: .generic))
-                //                store.send(.startClaim(from: .generic))
             } content: {
                 L10n.Home.OpenClaim.startNewClaimButton.hText()
             }
@@ -52,16 +52,34 @@ struct ClaimSectionLoading: View {
     }
 
     var body: some View {
+
         PresentableStoreLens(
             ClaimsStore.self,
             getter: { state in
-                state.claims ?? []
+                state.claims
             },
             setter: { _ in
                 .fetchClaims
             }
         ) { claims, _ in
-            claimsSection(claims)
+            switch claims {
+            case let .success(claims):
+                claimsSection(claims)
+            case let .error(error):
+                hText("")
+                    .alert(isPresented: $showAlert) {
+                        Alert(
+                            title: Text(L10n.somethingWentWrong),
+                            message: Text(error),
+                            dismissButton: .default(Text(L10n.alertOk))
+                        )
+                    }
+                    .onAppear {
+                        showAlert = true
+                    }
+            case .loading:
+                hText("")
+            }
         }
     }
 }
