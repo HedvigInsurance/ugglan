@@ -32,6 +32,10 @@ fragment ProductVariantFragment on ProductVariant {
         title
         description
     }
+    faq {
+        headline
+        body
+    }
 }
 
 fragment CrossSellFragment on Member {

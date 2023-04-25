@@ -22,28 +22,28 @@ public struct CrossSellingCoverageDetail: View {
 
     public var body: some View {
         hForm {
-            if let perils = crossSellInfo.perils {
+            if !crossSellInfo.perils.isEmpty {
                 hSection(header: hText(L10n.CrossSell.Info.coverageTitle)) {
-                    PerilCollection(perils: perils) { peril in
+                    PerilCollection(perils: crossSellInfo.perils) { peril in
                         store.send(.crossSellingCoverageDetailNavigation(action: .peril(peril: peril)))
                     }
                 }
                 .sectionContainerStyle(.transparent)
             }
 
-            if let insurableLimits = crossSellInfo.insurableLimits {
+            if !crossSellInfo.insurableLimits.isEmpty {
                 InsurableLimitsSectionView(
                     header: hText(
                         L10n.contractCoverageMoreInfo
                     ),
-                    limits: insurableLimits
+                    limits: crossSellInfo.insurableLimits
                 ) { limit in
                     store.send(.crossSellingCoverageDetailNavigation(action: .insurableLimit(insurableLimit: limit)))
                 }
             }
 
-            if let insuranceTerms = crossSellInfo.insuranceTerms {
-                InsuranceTermsSection(terms: insuranceTerms) { insuranceTerm in
+            if !crossSellInfo.insuranceTerms.isEmpty {
+                InsuranceTermsSection(terms: crossSellInfo.insuranceTerms) { insuranceTerm in
                     store.send(
                         .crossSellingCoverageDetailNavigation(action: .insuranceTerm(insuranceTerm: insuranceTerm))
                     )

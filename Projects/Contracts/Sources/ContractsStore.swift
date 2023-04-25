@@ -25,9 +25,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         })
                         callback(.value(.setCrossSells(crossSells: crossSells)))
                     })
-                    .onError({ error in
-                        let ss = ""
-                    })
                 return disposeBag
             }
         case .fetchContractBundles:
