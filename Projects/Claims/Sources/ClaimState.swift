@@ -7,7 +7,8 @@ import hCore
 import hGraphQL
 
 public struct ClaimsState: StateProtocol {
-    var claims: [Claim]? = nil
+    var claims: LoadingWrapper<[Claim], String> = .loading
+    //    var claims: [Claim]? = nil
     var commonClaims: [CommonClaim]? = nil
     public init() {}
 
@@ -16,14 +17,16 @@ public struct ClaimsState: StateProtocol {
     }
 
     public var hasActiveClaims: Bool {
-        if let claims = claims {
+        switch claims {
+        case let .success(claims):
             return
                 !claims.filter {
                     $0.claimDetailData.status == .beingHandled || $0.claimDetailData.status == .reopened
                         || $0.claimDetailData.status == .submitted
                 }
                 .isEmpty
+        default:
+            return false
         }
-        return false
     }
 }

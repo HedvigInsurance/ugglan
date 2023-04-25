@@ -17,6 +17,11 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case .openFreeTextChat:
             return nil
         case .fetchClaims:
+            //            return FiniteSignal{callback in
+            //                let disposeBag = DisposeBag()
+            //                callback(.value(.setClaims(claims: .loading)))
+            //                return disposeBag
+            //            }
             return giraffe
                 .client
                 .fetch(
@@ -29,7 +34,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     ClaimData(cardData: $0)
                 }
                 .map { claimData in
-                    return .setClaims(claims: claimData.claims)
+                    return .setClaims(claims: .success(claimData))
+                    //                    return .setClaims(claims: claimData.claims)
                 }
                 .valueThenEndSignal
         case .fetchCommonClaims:
