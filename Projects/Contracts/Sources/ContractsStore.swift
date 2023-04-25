@@ -35,7 +35,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         case .fetch:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                callback(.value(.setContracts(contracts: .error("rror"))))
+                callback(.value(.setContracts(contracts: .loading)))
                 return disposeBag
             }
         //            return [
