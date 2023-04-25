@@ -20,14 +20,14 @@ public struct DetailAgreementsTableView: View {
                     hText(table.title, style: .title3)
                         .padding(.leading, 15)
                 }
-                
+
                 ForEach(table.sections, id: \.hashValue) { section in
                     hSection(section.rows, id: \.title) { row in
                         hRow {
                             VStack(alignment: .leading) {
                                 hText(row.title, style: .body)
                                     .foregroundColor(hLabelColor.primary)
-                                
+
                                 if let subtitle = row.subtitle {
                                     hText(subtitle, style: .subheadline)
                                         .foregroundColor(hLabelColor.secondary)
@@ -52,7 +52,7 @@ public struct DetailAgreementsTableView: View {
                         } else {
                             hText(section.title)
                         }
-                        
+
                     }
                 }
             }
