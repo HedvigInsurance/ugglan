@@ -20,7 +20,7 @@ public struct CrossSellInfo: Codable, Equatable, Hashable {
         self.about = about
         self.headerImageURL = headerImageURL
         self.highlights = data.fragments.productVariantFragment.highlights.map({ Highlight($0) })
-        self.faqs = data.fragments.productVariantFragment.faq.compactMap({FAQ($0)})
+        self.faqs = data.fragments.productVariantFragment.faq.compactMap({ FAQ($0) })
         self.insurableLimits = data.fragments.productVariantFragment.insurableLimits.map({ InsurableLimits($0) })
         self.insuranceTerms = data.fragments.productVariantFragment.documents.compactMap({ InsuranceTerm($0) })
         self.perils = data.fragments.productVariantFragment.perils.compactMap({ Perils(fragment: $0) })
