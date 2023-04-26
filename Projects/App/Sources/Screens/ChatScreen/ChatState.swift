@@ -20,7 +20,7 @@ class ChatState {
 
     let isEditingSignal = ReadWriteSignal<Bool>(false)
     let currentMessageSignal: ReadSignal<Message?>
-    let errorSignal = ReadWriteSignal<(Error?, retry: (() -> Void)?)>((nil, retry: nil))
+    let errorSignal = ReadWriteSignal<(ChatError?, retry: (() -> Void)?)>((nil, retry: nil))
     let listSignal = ReadWriteSignal<[ChatListContent]>([])
     let tableSignal: ReadSignal<Table<EmptySection, ChatListContent>>
     let filteredListSignal: ReadSignal<[ChatListContent]>
@@ -125,7 +125,10 @@ class ChatState {
             giraffe.client
             .subscribe(
                 subscription: GiraffeGraphQL.ChatMessagesSubscriptionSubscription(),
-                queue: DispatchQueue.global(qos: .background)
+                queue: DispatchQueue.global(qos: .background),
+                onError: { error in
+                    log.error("Chat Error: ChatMessagesSubscriptionSubscription", error: error, attributes: nil)
+                }
             )
             .compactMap(on: .concurrentBackground) { $0.message.fragments.messageData }
             .filter(predicate: { message -> Bool in
@@ -298,7 +301,6 @@ class ChatState {
                     .map { message -> Disposable in
                         message.left?.onEditCallbacker
                             .addCallback { _ in self.bag.dispose()
-
                                 guard
                                     let firstIndex = self.listSignal.value
                                         .firstIndex(where: { message -> Bool in
