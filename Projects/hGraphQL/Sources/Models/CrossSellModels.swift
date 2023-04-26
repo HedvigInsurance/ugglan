@@ -9,8 +9,7 @@ public struct CrossSellInfo: Codable, Equatable, Hashable {
     public var insurableLimits: [InsurableLimits]
     public var insuranceTerms: [InsuranceTerm]
     public var perils: [Perils]
-    
-    
+
     public init(
         headerImageURL: URL,
         title: String,
@@ -19,17 +18,18 @@ public struct CrossSellInfo: Codable, Equatable, Hashable {
         faqs: [FAQ],
         insurableLimits: [InsurableLimits],
         insuranceTerms: [InsuranceTerm],
-        perils: [Perils]){
-            self.headerImageURL = headerImageURL
-            self.title = title
-            self.about = about
-            self.highlights = highlights
-            self.faqs = faqs
-            self.insurableLimits = insurableLimits
-            self.insuranceTerms = insuranceTerms
-            self.perils = perils
-        }
-    
+        perils: [Perils]
+    ) {
+        self.headerImageURL = headerImageURL
+        self.title = title
+        self.about = about
+        self.highlights = highlights
+        self.faqs = faqs
+        self.insurableLimits = insurableLimits
+        self.insuranceTerms = insuranceTerms
+        self.perils = perils
+    }
+
     init?(
         headerImageURL: URL,
         about: String,

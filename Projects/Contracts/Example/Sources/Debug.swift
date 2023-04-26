@@ -93,13 +93,15 @@ extension CrossSell {
 
 extension CrossSellInfo {
     public static func mock() -> CrossSellInfo {
-        .init(headerImageURL: URL(string: "")!,
-              title: "Title",
-              about: "About",
-              highlights: [],
-              faqs: [],
-              insurableLimits: [],
-              insuranceTerms: [],
-              perils: [])
+        .init(
+            headerImageURL: URL(string: "")!,
+            title: "Title",
+            about: "About",
+            highlights: [],
+            faqs: [],
+            insurableLimits: [],
+            insuranceTerms: [],
+            perils: []
+        )
     }
 }
