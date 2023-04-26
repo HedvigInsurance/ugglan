@@ -1,4 +1,3 @@
-import Odyssey
 import Presentation
 import hCore
 
@@ -29,20 +28,6 @@ public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & E
 public enum ClaimsOrigin: Codable, Equatable, Hashable {
     case generic
     case commonClaims(id: String)
-
-    public var initialScopeValues: ScopeValues {
-        let scopeValues = ScopeValues()
-        switch self {
-        case let .commonClaims(id):
-            scopeValues.setValue(
-                key: CommonClaimIdScopeValueKey.shared,
-                value: id
-            )
-        default:
-            break
-        }
-        return scopeValues
-    }
 
     public var id: String {
         switch self {
