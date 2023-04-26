@@ -41,6 +41,9 @@ struct FileUpload {
                     let bucket = data.uploadFile.bucket
                     completion(.success((key, bucket)))
                 }
+                .onError({ error in
+                    completion(.failure(error))
+                })
                 .disposable
         }
     }
@@ -84,6 +87,9 @@ extension AttachFilePane: Viewable {
             future.onValue { key, _ in
                 self.chatState.sendChatFileResponseMutation(key: key, mimeType: fileUpload.mimeType)
                 self.isOpenSignal.value = false
+            }
+            .onError { error in
+                self.chatState.errorSignal.value = (ChatError.mutationFailed, nil)
             }
 
             return future

@@ -45,6 +45,7 @@ extension AppJourney {
                 }
             }
             .configureClaimsNavigation
+            .configureSubmitClaimsNavigation
             .configurePaymentNavigation
             .onPresent {
                 ApplicationContext.shared.$isLoggedIn.value = true
@@ -142,6 +143,12 @@ extension AppJourney {
             .sendActionImmediately(ProfileStore.self, .fetchProfileState)
             .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
+            .onAction(UgglanStore.self) { action in
+                if action == .openChat {
+                    freeTextChat(style: .unlessAlreadyPresented(style: .detented(.large)))
+                        .withDismissButton
+                }
+            }
         }
         .onPresent {
             ApplicationState.preserveState(.loggedIn)
@@ -178,6 +185,14 @@ extension JourneyPresentation {
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
             } else if case .openFreeTextChat = action {
+                AppJourney.freeTextChat()
+            }
+        }
+    }
+
+    public var configureSubmitClaimsNavigation: some JourneyPresentation {
+        onAction(SubmitClaimStore.self) { action in
+            if case .submitClaimOpenFreeTextChat = action {
                 AppJourney.freeTextChat()
             }
         }

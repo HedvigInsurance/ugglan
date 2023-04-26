@@ -42,6 +42,83 @@ extension AppDelegate {
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
+    fileprivate func performPostLoggedIn(work: @escaping () -> Void) {
+        bag += ApplicationContext.shared.$isLoggedIn.atOnce().filter { $0 }
+            .onFirstValue { _ in
+                work()
+            }
+    }
+
+    fileprivate func performPushAction(notificationType: String, userInfo: [AnyHashable: Any]) {
+        hAnalyticsEvent.notificationOpened(type: notificationType).send()
+
+        if notificationType == "NEW_MESSAGE" {
+            performPostLoggedIn {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                store.send(.openChat)
+            }
+        } else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
+            performPostLoggedIn {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                store.send(.makeTabActive(deeplink: .forever))
+            }
+        } else if notificationType == "CONNECT_DIRECT_DEBIT" {
+            performPostLoggedIn {
+                self.window.rootViewController?
+                    .present(
+                        PaymentSetup(
+                            setupType: .initial
+                        )
+                        .journeyThenDismiss
+                    )
+                    .onValue({ _ in
+
+                    })
+            }
+        } else if notificationType == "PAYMENT_FAILED" {
+            performPostLoggedIn {
+                self.window.rootViewController?
+                    .present(
+                        PaymentSetup(
+                            setupType: .replacement
+                        )
+                        .journeyThenDismiss
+                    )
+                    .onValue({ _ in
+
+                    })
+            }
+        } else if notificationType == "OPEN_FOREVER_TAB" {
+            performPostLoggedIn {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                store.send(.makeTabActive(deeplink: .forever))
+            }
+        } else if notificationType == "OPEN_INSURANCE_TAB" {
+            performPostLoggedIn {
+                let store: UgglanStore = globalPresentableStoreContainer.get()
+                store.send(.makeTabActive(deeplink: .insurances))
+            }
+        } else if notificationType == "CROSS_SELL" {
+            performPostLoggedIn {
+                let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                ugglanStore.send(.makeTabActive(deeplink: .insurances))
+
+                let contractsStore: ContractStore = globalPresentableStoreContainer.get()
+
+                guard let crossSellType = userInfo["CROSS_SELL_TYPE"] as? String else { return }
+
+                self.bag += contractsStore.stateSignal
+                    .map { $0.contractBundles.flatMap { contractBundle in contractBundle.crossSells } }
+                    .compactMap {
+                        $0.first(where: { crossSell in crossSell.notificationType == crossSellType })
+                    }
+                    .onFirstValue { crossSell in
+                        contractsStore.send(.openCrossSellingDetail(crossSell: crossSell))
+                    }
+            }
+        }
+    }
+
     func userNotificationCenter(
         _: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
@@ -50,83 +127,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = response.notification.request.content.userInfo
         guard let notificationType = userInfo["TYPE"] as? String else { return }
 
-        hAnalyticsEvent.notificationOpened(type: notificationType).send()
-
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-            if notificationType == "NEW_MESSAGE" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                        store.send(.openChat)
-                    }
-            } else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                        store.send(.makeTabActive(deeplink: .forever))
-                    }
-            } else if notificationType == "CONNECT_DIRECT_DEBIT" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        self.window.rootViewController?
-                            .present(
-                                PaymentSetup(
-                                    setupType: .initial
-                                )
-                                .journeyThenDismiss
-                            )
-                            .onValue({ _ in
-
-                            })
-                    }
-            } else if notificationType == "PAYMENT_FAILED" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        self.window.rootViewController?
-                            .present(
-                                PaymentSetup(
-                                    setupType: .replacement
-                                )
-                                .journeyThenDismiss
-                            )
-                            .onValue({ _ in
-
-                            })
-                    }
-            } else if notificationType == "OPEN_FOREVER_TAB" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                        store.send(.makeTabActive(deeplink: .forever))
-                    }
-            } else if notificationType == "OPEN_INSURANCE_TAB" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                        store.send(.makeTabActive(deeplink: .insurances))
-                    }
-            } else if notificationType == "CROSS_SELL" {
-                bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
-                    .onValue { _ in
-                        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-                        ugglanStore.send(.makeTabActive(deeplink: .insurances))
-
-                        let contractsStore: ContractStore = globalPresentableStoreContainer.get()
-
-                        guard let crossSellType = userInfo["CROSS_SELL_TYPE"] as? String else { return }
-
-                        self.bag += contractsStore.stateSignal
-                            .map {
-                                $0.contractBundles.flatMap { contractBundle in contractBundle.crossSells }
-                            }
-                            .compactMap {
-                                $0.first(where: { crossSell in crossSell.notificationType == crossSellType })
-                            }
-                            .onFirstValue { crossSell in
-                                contractsStore.send(.openCrossSellingDetail(crossSell: crossSell))
-                            }
-                    }
-            }
+            performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
 
         completionHandler()
@@ -142,6 +144,13 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             body: notification.request.content.title,
             subtitle: notification.request.content.body
         )
+
+        self.bag += toast.onTap.onValue {
+            let userInfo = notification.request.content.userInfo
+            guard let notificationType = userInfo["TYPE"] as? String else { return }
+
+            self.performPushAction(notificationType: notificationType, userInfo: userInfo)
+        }
 
         if ChatState.shared.allowNewMessageToast { Toasts.shared.displayToast(toast: toast) }
     }
