@@ -156,7 +156,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 
             hButton.LargeButtonFilled {
                 store.send(.dissmissNewClaimFlow)
-                store.send(.submitClaimopenFreeTextChat)
+                store.send(.submitClaimOpenFreeTextChat)
             } content: {
                 hText(L10n.openChat)
             }

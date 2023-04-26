@@ -16,7 +16,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
     ) -> FiniteSignal<SubmitClaimsAction>? {
         let newClaimContext = state.currentClaimContext ?? ""
         switch action {
-        case .submitClaimopenFreeTextChat:
+        case .submitClaimOpenFreeTextChat:
             return nil
         case let .startClaimRequest(id):
             let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: id)

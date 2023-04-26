@@ -186,7 +186,7 @@ extension JourneyPresentation {
 
     public var configureSubmitClaimsNavigation: some JourneyPresentation {
         onAction(SubmitClaimStore.self) { action in
-            if case .submitClaimopenFreeTextChat = action {
+            if case .submitClaimOpenFreeTextChat = action {
                 AppJourney.freeTextChat()
             }
         }

@@ -36,7 +36,7 @@ struct ClaimFailureScreen: View {
                 .padding(.bottom, 4)
                 hButton.LargeButtonFilled {
                     store.send(.dissmissNewClaimFlow)
-                    store.send(.submitClaimopenFreeTextChat)
+                    store.send(.submitClaimOpenFreeTextChat)
                 } content: {
                     hText(L10n.openChat, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
