@@ -34,7 +34,7 @@ extension CardDetailsSection: Viewable {
                             DismissJourney()
                         })
                         .withJourneyDismissButton
-                        .setStyle(.detented(.scrollViewContentSize))
+                        .setStyle(.detented(.medium, .large))
                         .setOptions([.defaults, .allowSwipeDismissAlways])
                 )
                 .onValue { _ in

@@ -4,7 +4,6 @@ import hCoreUI
 
 struct SubmitClaimCheckoutTransferringScreen: View {
     @PresentableStore var store: SubmitClaimStore
-    @PresentableStore var claimStore: ClaimsStore
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
     @State var errorAnimation: Bool = false
@@ -157,7 +156,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 
             hButton.LargeButtonFilled {
                 store.send(.dissmissNewClaimFlow)
-                claimStore.send(.openFreeTextChat)
+                store.send(.submitClaimOpenFreeTextChat)
             } content: {
                 hText(L10n.openChat)
             }
