@@ -53,7 +53,7 @@ extension Debug {
                             blurHash: "",
                             buttonText: "",
                             typeOfContract: "SE_ACCIDENT",
-                            info: nil
+                            infos: []
                         )
 
                         return newState
@@ -62,7 +62,7 @@ extension Debug {
                 )
 
             case .openCrossSellingDetail:
-                CrossSellingCoverageDetail(crossSell: .mock())
+                CrossSellingCoverageDetail(crossSell: .mock(), crossSellInfo: .mock())
                     .journey(
                         { _ in
                             ContinueJourney()
@@ -86,7 +86,20 @@ extension CrossSell {
             blurHash: "blurHash",
             buttonText: "Button text",
             typeOfContract: "Type of contract",
-            info: nil
+            infos: []
         )
+    }
+}
+
+extension CrossSellInfo {
+    public static func mock() -> CrossSellInfo {
+        .init(headerImageURL: URL(string: "")!,
+              title: "Title",
+              about: "About",
+              highlights: [],
+              faqs: [],
+              insurableLimits: [],
+              insuranceTerms: [],
+              perils: [])
     }
 }
