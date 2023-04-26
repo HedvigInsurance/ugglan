@@ -18,5 +18,4 @@ public enum ClaimsAction: ActionProtocol, Hashable {
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
-    case odysseyRedirect(url: String)
 }

@@ -108,43 +108,6 @@ extension AppJourney {
         }
     }
 
-    private static func odysseyClaims(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        return OdysseyRoot(
-            name: "mainRouter",
-            initialURL: "/automation-claim",
-            scopeValues: origin.initialScopeValues
-        ) { destinationURL in
-            let store: ClaimsStore = globalPresentableStoreContainer.get()
-            store.send(.odysseyRedirect(url: destinationURL))
-        }
-        .disposableHostingJourney
-        .setStyle(.detented(.large))
-        .setOptions([])
-        .onAction(ClaimsStore.self) { action in
-            if case let .odysseyRedirect(urlString) = action {
-                switch urlString {
-                case "hedvig://chat":
-                    AppJourney.claimsChat()
-                        .hidesBackButton
-                        .withJourneyDismissButton
-                case "hedvig://close":
-                    DismissJourney()
-                default:
-                    ContinueJourney()
-                        .onPresent {
-                            guard let url = URL(string: urlString), url.isHTTP else {
-                                return
-                            }
-
-                            if UIApplication.shared.canOpenURL(url) {
-                                UIApplication.shared.open(url)
-                            }
-                        }
-                }
-            }
-        }
-    }
-
     static func commonClaimDetailJourney(claim: CommonClaim) -> some JourneyPresentation {
         Journey(
             CommonClaimDetail(claim: claim),
