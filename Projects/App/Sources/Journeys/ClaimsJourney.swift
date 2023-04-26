@@ -42,8 +42,6 @@ extension AppJourney {
             ClaimJourneys.showCommonClaimIfNeeded(origin: origin) { newOrigin in
                 honestyPledge(from: newOrigin)
             }
-        } else if hAnalyticsExperiment.odysseyClaims {
-            odysseyClaims(from: origin)
         } else {
             claimsJourneyPledgeAndNotificationWrapper { redirect in
                 switch redirect {
