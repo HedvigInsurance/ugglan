@@ -144,7 +144,7 @@ extension AppJourney {
             .syncTabIndex()
             .onAction(UgglanStore.self) { action in
                 if action == .openChat {
-                    freeTextChat()
+                    freeTextChat(style: .unlessAlreadyPresented(style: .detented(.large)))
                         .withDismissButton
                 }
             }
