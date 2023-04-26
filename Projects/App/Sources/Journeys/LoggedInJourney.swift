@@ -143,6 +143,12 @@ extension AppJourney {
             .sendActionImmediately(ProfileStore.self, .fetchProfileState)
             .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
+            .onAction(UgglanStore.self) { action in
+                if action == .openChat {
+                    freeTextChat(style: .unlessAlreadyPresented(style: .detented(.large)))
+                        .withDismissButton
+                }
+            }
         }
         .onPresent {
             ApplicationState.preserveState(.loggedIn)
