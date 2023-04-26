@@ -41,7 +41,7 @@ public struct SubmitClaimSuccessScreen: View {
 
                 Button {
                     store.send(.dissmissNewClaimFlow)
-                    store.send(.openFreeTextChat)
+                    store.send(.submitClaimOpenFreeTextChat)
                 } label: {
                     HStack {
                         hText(L10n.openChat, style: .body)

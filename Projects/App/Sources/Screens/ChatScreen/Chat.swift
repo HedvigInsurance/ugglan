@@ -11,7 +11,6 @@ import hCoreUI
 import hGraphQL
 
 struct Chat {
-    @Inject var giraffe: hGiraffe
     let reloadChatCallbacker = Callbacker<Void>()
     let chatState = ChatState.shared
 
@@ -232,9 +231,40 @@ extension Chat: Presentable {
             },
             delay: 2
         )
+        bag += chatState.errorSignal.onValue({ (error, retry) in
+            if let error {
+                var actions: [Alert<()>.Action] = [Alert<()>.Action]()
+                if let retry {
+                    let retryAction = Alert.Action(title: L10n.generalRetry, style: UIAlertAction.Style.default) {
+                        retry()
+                    }
+                    actions.append(retryAction)
+                }
+
+                let cancelAction = Alert.Action(
+                    title: L10n.alertCancel,
+                    style: UIAlertAction.Style.cancel
+                ) {}
+                let contactUsAction = Alert.Action(title: L10n.General.emailUs) {
+                    if let url = URL(string: "mailto:\(L10n.General.email)") {
+                        UIApplication.shared.open(url)
+                    }
+                }
+
+                actions.append(cancelAction)
+                actions.append(contactUsAction)
+
+                let alert = Alert(
+                    title: L10n.somethingWentWrong,
+                    message: error.localizedDescription,
+                    tintColor: nil,
+                    actions: actions
+                )
+                viewController.present(alert)
+            }
+        })
 
         viewController.trackOnAppear(hAnalyticsEvent.screenView(screen: .chat))
-
         return (
             viewController,
             Signal { callback in

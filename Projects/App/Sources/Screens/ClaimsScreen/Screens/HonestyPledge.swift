@@ -150,7 +150,6 @@ struct SlideToConfirm: View {
 }
 
 struct HonestyPledge: View {
-    @PresentableStore var store: UgglanStore
     let onConfirmAction: (() -> Void)?
 
     init(

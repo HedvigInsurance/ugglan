@@ -12,7 +12,6 @@ import Form
 import Foundation
 import Hero
 import OdysseyKit
-import Offer
 import Payment
 import Presentation
 import SwiftUI
@@ -290,24 +289,44 @@ import hGraphQL
                 self.bag += ApplicationContext.shared.$hasLoadedExperiments
                     .atOnce()
                     .onValue { isLoaded in
-                        guard isLoaded else { return }
-                        self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
-                            .atValue { _ in
-                                self.initOdyssey()
+                        guard let isLoaded else { return }
+                        if isLoaded {
+                            self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
+                                .atValue { _ in
+                                    self.initOdyssey()
 
-                                Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
+                                    Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
-                                AnalyticsCoordinator().setUserId()
+                                    AnalyticsCoordinator().setUserId()
+                                    self.bag += self.window.present(AppJourney.main)
+                                }
+                        } else {
+                            let alert = Alert(
+                                title: L10n.somethingWentWrong,
+                                message: L10n.General.errorBody,
+                                actions: [
+                                    Alert.Action(
+                                        title: L10n.generalRetry,
+                                        action: {
+                                            self.setupHAnalyticsExperiments()
+                                        }
+                                    )
+                                ]
+                            )
 
-                                self.bag += ApplicationContext.shared.$hasLoadedExperiments.atOnce()
-                                    .filter(predicate: { hasLoaded in hasLoaded })
-                                    .onValue { _ in
-                                        self.bag += self.window.present(AppJourney.main)
-                                    }
-                            }
+                            self.bag += self.window.present(
+                                ActivityIndicator(style: .large, color: hLabelColor.primary).disposableHostingJourney
+                                    .onPresent({
+                                        Journey(alert)
+                                            .onPresent {
+                                                Launch.shared.completeAnimationCallbacker.callAll()
+                                            }
+                                    })
+                            )
+
+                        }
                     }
             }
-
         return true
     }
 }

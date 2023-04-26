@@ -9,14 +9,11 @@ final class MaskingTests: XCTestCase {
     override func tearDown() { super.tearDown() }
 
     func testDerivedValues() throws {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-
         let dateMinusOneDay = try XCTUnwrap(Calendar.current.date(byAdding: .day, value: -1, to: Date()))
         let date = try XCTUnwrap(Calendar.current.date(byAdding: .year, value: -7, to: dateMinusOneDay))
 
         let birthDateMasking = Masking(type: .birthDate)
-        let birthDateDerivedValues = birthDateMasking.derivedValues(text: dateFormatter.string(from: date))
+        let birthDateDerivedValues = birthDateMasking.derivedValues(text: date.localDateString)
         XCTAssertEqual(birthDateDerivedValues, [".Age": "7"])
 
         let nonValidBirthDateDerivedValues = birthDateMasking.derivedValues(text: "")

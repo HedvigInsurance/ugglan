@@ -4,7 +4,6 @@ import Embark
 import Flow
 import Foundation
 import Home
-import Offer
 import Presentation
 import UIKit
 import hCore

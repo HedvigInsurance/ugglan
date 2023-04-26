@@ -11,34 +11,6 @@ extension PHAsset {
             failedToConvertHEIC
     }
 
-    enum ProcessImageError: Error { case noData, failedToConvert, notAnImage }
-
-    /// returns a UIImage when PHAsset has mediaType == .image
-    var image: Future<UIImage?> {
-        Future { completion in
-            if self.mediaType != .image {
-                completion(.failure(ProcessImageError.notAnImage))
-                return NilDisposer()
-            }
-
-            PHImageManager.default()
-                .requestImageDataAndOrientation(for: self, options: nil) { data, _, _, _ in
-                    guard let data = data else {
-                        completion(.failure(ProcessImageError.noData))
-                        return
-                    }
-                    guard let image = UIImage(data: data) else {
-                        completion(.failure(ProcessImageError.failedToConvert))
-                        return
-                    }
-
-                    completion(.success(image))
-                }
-
-            return NilDisposer()
-        }
-    }
-
     /// generates a fileUpload for current PHAsset
     var fileUpload: Future<FileUpload> {
         Future { completion in let options = PHContentEditingInputRequestOptions()

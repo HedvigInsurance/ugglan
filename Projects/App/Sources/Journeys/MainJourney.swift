@@ -2,7 +2,6 @@ import Authentication
 import Flow
 import Foundation
 import Market
-import Offer
 import Presentation
 import UIKit
 import hAnalytics

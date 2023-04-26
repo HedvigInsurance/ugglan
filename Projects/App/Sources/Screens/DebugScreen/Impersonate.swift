@@ -7,8 +7,6 @@ import hCore
 import hGraphQL
 
 struct Impersonate {
-    @Inject var giraffe: hGiraffe
-    @PresentableStore var store: UgglanStore
     @PresentableStore var authenticationStore: AuthenticationStore
 
     private func getAuthorizationCode(from url: URL) -> String? {

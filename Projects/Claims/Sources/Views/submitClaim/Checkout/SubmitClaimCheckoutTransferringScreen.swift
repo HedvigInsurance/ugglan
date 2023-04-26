@@ -2,16 +2,16 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct SubmitClaimCheckoutTransferringScreen: View {
+struct SubmitClaimCheckoutTransferringScreen: View {
     @PresentableStore var store: SubmitClaimStore
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
     @State var errorAnimation: Bool = false
 
     @Namespace private var animation
-    public init() {}
+    init() {}
 
-    public var body: some View {
+    var body: some View {
         BlurredProgressOverlay {
             ZStack(alignment: .center) {
                 VStack {
@@ -156,7 +156,7 @@ public struct SubmitClaimCheckoutTransferringScreen: View {
 
             hButton.LargeButtonFilled {
                 store.send(.dissmissNewClaimFlow)
-                store.send(.openFreeTextChat)
+                store.send(.submitClaimOpenFreeTextChat)
             } content: {
                 hText(L10n.openChat)
             }

@@ -260,7 +260,7 @@ public final class OfferStore: StateStore<OfferState, OfferAction> {
             let state = getState()
             if let quoteCartId = state.quoteCartId, let quoteId = state.currentVariant?.id {
                 let ids = state.currentVariant?.bundle.quotes.compactMap { $0.id } ?? [quoteId]
-                return requestQuoteCartSign(quoteCartId: quoteCartId, ids: ids)
+                return requestQuoteCartSign(quoteCartId: quoteCartId, ids: ids.unique())
             }
         case .fetchAccessToken:
             if let quoteCartId = getState().quoteCartId {

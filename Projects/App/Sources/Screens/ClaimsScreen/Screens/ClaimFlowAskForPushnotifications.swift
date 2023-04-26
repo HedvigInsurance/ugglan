@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ClaimFlowAskForPushnotifications: View {
+struct ClaimFlowAskForPushnotifications: View {
     let onActionExecuted: () -> Void
 
     init(
@@ -12,7 +12,7 @@ public struct ClaimFlowAskForPushnotifications: View {
         self.onActionExecuted = onActionExecuted
     }
 
-    public var body: some View {
+    var body: some View {
         hForm {
             VStack {
                 Spacer(minLength: 24)

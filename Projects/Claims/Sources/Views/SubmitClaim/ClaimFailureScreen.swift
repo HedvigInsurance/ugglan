@@ -2,12 +2,10 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ClaimFailureScreen: View {
+struct ClaimFailureScreen: View {
     @PresentableStore var store: SubmitClaimStore
 
-    public init() {}
-
-    public var body: some View {
+    var body: some View {
 
         hForm {
             Image(uiImage: hCoreUIAssets.warningTriangle.image)
@@ -38,7 +36,7 @@ public struct ClaimFailureScreen: View {
                 .padding(.bottom, 4)
                 hButton.LargeButtonFilled {
                     store.send(.dissmissNewClaimFlow)
-                    store.send(.openFreeTextChat)
+                    store.send(.submitClaimOpenFreeTextChat)
                 } content: {
                     hText(L10n.openChat, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
