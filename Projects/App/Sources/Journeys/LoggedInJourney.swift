@@ -45,6 +45,7 @@ extension AppJourney {
                 }
             }
             .configureClaimsNavigation
+            .configureSubmitClaimsNavigation
             .configurePaymentNavigation
             .onPresent {
                 ApplicationContext.shared.$isLoggedIn.value = true
@@ -178,6 +179,14 @@ extension JourneyPresentation {
             } else if case let .openCommonClaimDetail(commonClaim) = action {
                 AppJourney.commonClaimDetailJourney(claim: commonClaim)
             } else if case .openFreeTextChat = action {
+                AppJourney.freeTextChat()
+            }
+        }
+    }
+
+    public var configureSubmitClaimsNavigation: some JourneyPresentation {
+        onAction(SubmitClaimStore.self) { action in
+            if case .submitClaimOpenFreeTextChat = action {
                 AppJourney.freeTextChat()
             }
         }
