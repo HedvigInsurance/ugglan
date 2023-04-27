@@ -10,7 +10,7 @@ public struct ContractState: StateProtocol {
 
     public init() {}
 
-    public var hasLoadedContractBundlesOnce = false
+    @Transient(defaultValue: false) public var hasLoadedContractBundlesOnce: Bool
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?

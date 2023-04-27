@@ -11,7 +11,7 @@ import hGraphQL
 struct ContractTable {
     let filter: ContractFilter
     @PresentableStore var store: ContractStore
-
+    
     func getContractsToShow(for state: ContractState, filter: ContractFilter) -> [Contract] {
         switch filter {
         case .active:
@@ -30,26 +30,26 @@ struct ContractTable {
 
 extension ContractTable: View {
     var body: some View {
-        ContractBundleLoadingIndicator()
-
-        hSection {
-            PresentableStoreLens(
-                ContractStore.self,
-                getter: { state in
-                    getContractsToShow(for: state, filter: filter.nonemptyFilter(state: state))
-                }
-            ) { contracts in
-                ForEach(contracts, id: \.id) { contract in
-                    ContractRow(id: contract.id)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, 15)
-                        .transition(.slide)
+        LoadingViewWithContent(.fetchContractBundles, withRetry: true) {
+            hSection {
+                PresentableStoreLens(
+                    ContractStore.self,
+                    getter: { state in
+                        getContractsToShow(for: state, filter: filter.nonemptyFilter(state: state))
+                    }
+                ) { contracts in
+                    ForEach(contracts, id: \.id) { contract in
+                        ContractRow(id: contract.id)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.top, 15)
+                            .transition(.slide)
+                    }
                 }
             }
+            .presentableStoreLensAnimation(.spring())
+            .sectionContainerStyle(.transparent)
+            
         }
-        .presentableStoreLensAnimation(.spring())
-        .sectionContainerStyle(.transparent)
-
         PresentableStoreLens(
             ContractStore.self,
             getter: { state in
@@ -58,7 +58,7 @@ extension ContractTable: View {
         ) { displaysActiveContracts in
             if displaysActiveContracts {
                 CrossSellingStack()
-
+                
                 PresentableStoreLens(
                     ContractStore.self,
                     getter: { state in

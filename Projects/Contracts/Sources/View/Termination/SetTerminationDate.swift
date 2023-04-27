@@ -2,6 +2,8 @@ import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
+import Form
+import Flow
 
 public struct SetTerminationDate: View {
     @State private var terminationDate = Date()
@@ -85,44 +87,84 @@ public struct SetTerminationDate: View {
 }
 
 public struct LoadingViewWithContent<Content: View>: View {
+    
     var content: () -> Content
     @PresentableStore var store: ContractStore
     private let action: ContractAction
+
+    @State var presentError = false
+    @State var error = ""
+    @State var isLoading = false
+    private let withRetry: Bool
+    var disposeBag = DisposeBag()
+
     public init(
         _ action: ContractAction,
+        withRetry: Bool = false,
         @ViewBuilder content: @escaping () -> Content
     ) {
+        self.withRetry = withRetry
         self.action = action
         self.content = content
     }
     public var body: some View {
         ZStack {
             content()
-            PresentableStoreLens(
-                ContractStore.self,
-                getter: { state in
-                    state.loadingStates
+                .alert(isPresented: $presentError) {
+//                    Alert.Button.
+                    if withRetry {
+                        return Alert(title: Text(L10n.somethingWentWrong),
+                              message: Text(error),
+                              primaryButton: .default(Text(L10n.alertOk)),
+                              secondaryButton: .default(Text(L10n.generalRetry),
+                                                        action: { self.store.send(action)}
+                                                       ))
+                    } else {
+                        return Alert(
+                            title: Text(L10n.somethingWentWrong),
+                            message: Text(error),
+                            dismissButton: .default(Text(L10n.alertOk))
+                        )
+                    }
                 }
-            ) { loadingStates in
-                if let state = loadingStates[action] {
-                    switch state {
+            if isLoading {
+                HStack {
+                    WordmarkActivityIndicator(.standard)
+                }
+                .frame(maxWidth: .infinity, minHeight: 50, maxHeight: .infinity)
+//                .background(hBackgroundColor.primary.opacity(0.7))
+                .cornerRadius(.defaultCornerRadius)
+                .edgesIgnoringSafeArea(.top)
+            }
+        }
+        .onAppear {
+            func handle(state: ContractState) {
+                if let actionState = state.loadingStates[action] {
+                    switch actionState {
                     case .loading:
-                        HStack {
-                            WordmarkActivityIndicator(.standard)
+                        withAnimation {
+                            self.isLoading = true
+                            self.presentError = false
                         }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(hBackgroundColor.primary.opacity(0.7))
-                        .cornerRadius(.defaultCornerRadius)
-                        .edgesIgnoringSafeArea(.top)
                     case let .error(error):
-                        RetryView(title: error, retryTitle: L10n.alertOk) {
-                            store.send(.setLoadingState(action: action, state: nil))
+                        withAnimation {
+                            self.isLoading = false
+                            self.error = error
+                            self.presentError = true
                         }
                     }
-
+                } else {
+                    withAnimation {
+                        self.isLoading = false
+                        self.presentError = false
+                    }
                 }
             }
-            .presentableStoreLensAnimation(.easeInOut)
+            disposeBag += store.stateSignal.onValue { state in
+                handle(state: state)
+            }
+            handle(state: store.state)
+
         }
     }
 }

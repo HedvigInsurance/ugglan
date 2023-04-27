@@ -45,14 +45,14 @@ extension ContractFilter {
             let activeContracts =
                 state
                 .contractBundles
-                .flatMap { $0.contracts } ?? []
+                .flatMap { $0.contracts }
             return activeContracts.isEmpty ? self.emptyFilter : self
         case .terminated:
             let terminatedContracts =
                 state.contracts
                 .filter { contract in
                     contract.currentAgreement?.status == .terminated
-                } ?? []
+                }
             return terminatedContracts.isEmpty ? self.emptyFilter : self
         case .none: return self
         }

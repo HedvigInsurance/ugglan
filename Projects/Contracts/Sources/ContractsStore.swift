@@ -24,20 +24,14 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         callback(
                             .value(ContractAction.setContractBundles(activeContractBundles: activeContractBundles))
                         )
-                        callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in
-                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                        if !self.state.hasLoadedContractBundlesOnce {
+                            callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                        }
                     }
                 return disposeBag
             }
-
-        //            return giraffe.client
-        //                            .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
-        //                            .valueThenEndSignal
-        //                            .map { activeContractBundles in
-        //                                ContractAction.setContractBundles(activeContractBundles: .success(activeContractBundles))
-        //                            }
 
         case .fetchContracts:
             return FiniteSignal { callback in
@@ -45,33 +39,17 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                 disposeBag += self.giraffe.client
                     .fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
                     .onValue { contracts in
-
-                        var filtered = [Contract]()
-
-                        for data in contracts {
-                            for contract in getState().contracts {
-                                if data != contract {
-                                    filtered.append(data)
-                                }
-                            }
+                        if getState().contracts != contracts {
+                            callback(.value(.setContracts(contracts: contracts)))
+                        }else {
+                            callback(.value(.setLoadingState(action: action, state: nil)))
                         }
-
-                        callback(.value(ContractAction.setContracts(contracts: filtered)))
-                        callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in
                         callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
                     }
                 return disposeBag
             }
-        //            return giraffe.client.fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
-        //                .valueThenEndSignal
-        //                .filter { contracts in
-        //                    contracts != getState().contracts
-        //                }
-        //                .map {
-        //                    .setContracts(contracts: $0)
-        //                }
         case .fetch:
             return [
                 .fetchContracts,
@@ -183,16 +161,22 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
     public override func reduce(_ state: ContractState, _ action: ContractAction) -> ContractState {
         var newState = state
         switch action {
+        case .fetchContractBundles:
+            if !newState.hasLoadedContractBundlesOnce {
+                newState.loadingStates[.fetchContractBundles] = .loading
+            }
+        case .fetchContracts:
+            newState.loadingStates[action] = .loading
         case .setContractBundles(let activeContractBundles):
             newState.hasLoadedContractBundlesOnce = true
-            // Prevent infinite spinner if there are no active contracts
+            newState.loadingStates.removeValue(forKey: .fetchContractBundles)
             guard activeContractBundles != state.contractBundles else { return newState }
-
             newState.contractBundles = activeContractBundles
         case let .setContracts(contracts):
+            newState.loadingStates.removeValue(forKey: .fetchContracts)
             newState.contracts = contracts
         case let .hasSeenCrossSells(value):
-            newState.contractBundles
+            newState.contractBundles = newState.contractBundles
                 .map { bundle in
                     var newBundle = bundle
 
@@ -204,7 +188,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
 
                     return newBundle
                 }
-
         case let .setFocusedCrossSell(focusedCrossSell):
             newState.focusedCrossSell = focusedCrossSell
         case .didSignFocusedCrossSell:
