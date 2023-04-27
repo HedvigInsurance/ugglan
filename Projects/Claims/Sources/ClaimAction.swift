@@ -6,11 +6,11 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public enum ClaimsAction: ActionProtocol, Hashable {
+public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case didAcceptHonestyPledge
     case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
-    case setClaims(claims: LoadingWrapper<[Claim], String>)
+    case setClaims(claims: [Claim])
     case fetchCommonClaims
     case setCommonClaims(commonClaims: [CommonClaim])
 
@@ -19,4 +19,5 @@ public enum ClaimsAction: ActionProtocol, Hashable {
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
     case odysseyRedirect(url: String)
+    case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
 }

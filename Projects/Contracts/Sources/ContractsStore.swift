@@ -57,7 +57,6 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         }
 
                         callback(.value(ContractAction.setContracts(contracts: filtered)))
-
                         callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in

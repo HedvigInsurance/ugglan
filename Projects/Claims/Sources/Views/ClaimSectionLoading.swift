@@ -9,7 +9,6 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimSectionLoading: View {
-    @State var showAlert: Bool = false
     @PresentableStore var store: ClaimsStore
 
     @ViewBuilder
@@ -56,30 +55,13 @@ struct ClaimSectionLoading: View {
         PresentableStoreLens(
             ClaimsStore.self,
             getter: { state in
-                state.claims
+                state.claims ?? []
             },
             setter: { _ in
                 .fetchClaims
             }
         ) { claims, _ in
-            switch claims {
-            case let .success(claims):
-                claimsSection(claims)
-            case let .error(error):
-                hText("")
-                    .alert(isPresented: $showAlert) {
-                        Alert(
-                            title: Text(L10n.somethingWentWrong),
-                            message: Text(error),
-                            dismissButton: .default(Text(L10n.alertOk))
-                        )
-                    }
-                    .onAppear {
-                        showAlert = true
-                    }
-            case .loading:
-                hText("")
-            }
+            claimsSection(claims)
         }
     }
 }
