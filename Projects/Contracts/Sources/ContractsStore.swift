@@ -27,7 +27,9 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                     }
                     .onError { error in
                         if !self.state.hasLoadedContractBundlesOnce {
-                            callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                            callback(
+                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
+                            )
                         }
                     }
                 return disposeBag
@@ -41,7 +43,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                     .onValue { contracts in
                         if getState().contracts != contracts {
                             callback(.value(.setContracts(contracts: contracts)))
-                        }else {
+                        } else {
                             callback(.value(.setLoadingState(action: action, state: nil)))
                         }
                     }
