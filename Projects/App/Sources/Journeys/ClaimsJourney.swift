@@ -4,8 +4,6 @@ import Embark
 import Flow
 import Foundation
 import Home
-import Odyssey
-import OdysseyKit
 import Presentation
 import UIKit
 import hAnalytics
@@ -42,8 +40,6 @@ extension AppJourney {
             ClaimJourneys.showCommonClaimIfNeeded(origin: origin) { newOrigin in
                 honestyPledge(from: newOrigin)
             }
-        } else if hAnalyticsExperiment.odysseyClaims {
-            odysseyClaims(from: origin)
         } else {
             claimsJourneyPledgeAndNotificationWrapper { redirect in
                 switch redirect {
@@ -106,43 +102,6 @@ extension AppJourney {
                 }
             } else {
                 ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
-            }
-        }
-    }
-
-    private static func odysseyClaims(from origin: ClaimsOrigin) -> some JourneyPresentation {
-        return OdysseyRoot(
-            name: "mainRouter",
-            initialURL: "/automation-claim",
-            scopeValues: origin.initialScopeValues
-        ) { destinationURL in
-            let store: ClaimsStore = globalPresentableStoreContainer.get()
-            store.send(.odysseyRedirect(url: destinationURL))
-        }
-        .disposableHostingJourney
-        .setStyle(.detented(.large))
-        .setOptions([])
-        .onAction(ClaimsStore.self) { action in
-            if case let .odysseyRedirect(urlString) = action {
-                switch urlString {
-                case "hedvig://chat":
-                    AppJourney.claimsChat()
-                        .hidesBackButton
-                        .withJourneyDismissButton
-                case "hedvig://close":
-                    DismissJourney()
-                default:
-                    ContinueJourney()
-                        .onPresent {
-                            guard let url = URL(string: urlString), url.isHTTP else {
-                                return
-                            }
-
-                            if UIApplication.shared.canOpenURL(url) {
-                                UIApplication.shared.open(url)
-                            }
-                        }
-                }
             }
         }
     }
