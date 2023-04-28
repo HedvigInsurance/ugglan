@@ -29,7 +29,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     .onValue { claimData in
                         let claimData = ClaimData(cardData: claimData)
                         callback(.value(ClaimsAction.setClaims(claims: claimData.claims)))
-                        callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in
                         callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
@@ -50,7 +49,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                             CommonClaim(claim: $0)
                         }
                         callback(.value(ClaimsAction.setCommonClaims(commonClaims: commonClaims)))
-                        callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in
                         callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
@@ -65,9 +63,15 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     public override func reduce(_ state: ClaimsState, _ action: ClaimsAction) -> ClaimsState {
         var newState = state
         switch action {
+        case .fetchClaims:
+            newState.loadingStates[action] = .loading
         case let .setClaims(claims):
+            newState.loadingStates.removeValue(forKey: .fetchClaims)
             newState.claims = claims
+        case .fetchCommonClaims:
+            newState.loadingStates[action] = .loading
         case let .setCommonClaims(commonClaims):
+            newState.loadingStates.removeValue(forKey: .fetchCommonClaims)
             newState.commonClaims = commonClaims
         case let .setLoadingState(action, state):
             if let state {
