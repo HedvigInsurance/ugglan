@@ -38,11 +38,11 @@ public struct CrossSellingDetail: View {
             }
             .sectionContainerStyle(.transparent)
 
-            if let info = crossSell.info {
+            if let info = crossSell.infos.first {
                 CrossSellHightlights(info: info)
                 CrossSellAbout(info: info)
-                CrossSellMoreInfoSection(info: info)
             }
+            CrossSellMoreInfoSection(crossSell: crossSell)
         }
         .hFormAttachToBottom {
             ContinueButton(crossSell: crossSell)
@@ -73,8 +73,8 @@ extension CrossSellingDetail {
                 next(.embark(name: name))
             } else if case .openCrossSellingChat = action {
                 next(.chat)
-            } else if case .crossSellingCoverageDetailNavigation(action: .detail) = action {
-                CrossSellingCoverageDetail(crossSell: self.crossSell).journey(next)
+            } else if case let .crossSellingCoverageDetailNavigation(action: .detail(info)) = action {
+                CrossSellingCoverageDetail(crossSell: self.crossSell, crossSellInfo: info).journey(next)
             } else if case .crossSellingFAQListNavigation(action: .list) = action {
                 CrossSellingFAQList(crossSell: self.crossSell).journey(next)
             } else if case let .crossSellWebAction(url) = action {

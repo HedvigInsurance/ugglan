@@ -14,6 +14,7 @@ public struct ContractState: StateProtocol {
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
+    public var crossSells: [CrossSell] = []
 
     var currentTerminationContext: String?
     var terminationContractId: String? = ""
@@ -42,8 +43,7 @@ public struct ContractState: StateProtocol {
 
 extension ContractState {
     public var hasUnseenCrossSell: Bool {
-        contractBundles.contains(where: { bundle in bundle.crossSells.contains(where: { !$0.hasBeenSeen }) })
-
+        crossSells.contains(where: { crossSell in !crossSell.hasBeenSeen })
     }
 
     public var hasActiveContracts: Bool {

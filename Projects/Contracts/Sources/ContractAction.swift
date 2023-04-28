@@ -13,7 +13,7 @@ public enum TerminationStepModelAction: ActionProtocol, Hashable {
 }
 
 public enum CrossSellingCoverageDetailNavigationAction: ActionProtocol, Hashable {
-    case detail
+    case detail(info: CrossSellInfo)
     case peril(peril: Perils)
     case insurableLimit(insurableLimit: InsurableLimits)
     case insuranceTerm(insuranceTerm: InsuranceTerm)
@@ -39,9 +39,11 @@ public indirect enum ContractAction: ActionProtocol, Hashable {
 
     // Fetch contracts for terminated
     case fetchContractBundles
+    case fetchCrossSale
     case fetchContracts
 
     case setContractBundles(activeContractBundles: [ActiveContractBundle])
+    case setCrossSells(crossSells: [CrossSell])
     case setContracts(contracts: [Contract])
     case goToMovingFlow
     case goToFreeTextChat

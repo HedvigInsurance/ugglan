@@ -2,12 +2,13 @@ import Foundation
 
 public struct FAQ: Codable, Equatable, Hashable {
     public var title: String
-    public var description: String
+    public var description: String?
 
-    init(
-        _ data: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.PotentialCrossSell.Info.Faq
+    init?(
+        _ data: OctopusGraphQL.ProductVariantFragment.Faq
     ) {
+        guard let description = data.body else { return nil }
         self.title = data.headline
-        self.description = data.body
+        self.description = description
     }
 }
