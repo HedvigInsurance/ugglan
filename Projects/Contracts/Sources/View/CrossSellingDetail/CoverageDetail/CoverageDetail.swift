@@ -10,37 +10,40 @@ import hGraphQL
 public struct CrossSellingCoverageDetail: View {
     @PresentableStore var store: ContractStore
     var crossSell: CrossSell
+    var crossSellInfo: CrossSellInfo
 
     public init(
-        crossSell: CrossSell
+        crossSell: CrossSell,
+        crossSellInfo: CrossSellInfo
     ) {
         self.crossSell = crossSell
+        self.crossSellInfo = crossSellInfo
     }
 
     public var body: some View {
         hForm {
-            if let perils = crossSell.info?.perils {
+            if !crossSellInfo.perils.isEmpty {
                 hSection(header: hText(L10n.CrossSell.Info.coverageTitle)) {
-                    PerilCollection(perils: perils) { peril in
+                    PerilCollection(perils: crossSellInfo.perils) { peril in
                         store.send(.crossSellingCoverageDetailNavigation(action: .peril(peril: peril)))
                     }
                 }
                 .sectionContainerStyle(.transparent)
             }
 
-            if let insurableLimits = crossSell.info?.insurableLimits {
+            if !crossSellInfo.insurableLimits.isEmpty {
                 InsurableLimitsSectionView(
                     header: hText(
                         L10n.contractCoverageMoreInfo
                     ),
-                    limits: insurableLimits
+                    limits: crossSellInfo.insurableLimits
                 ) { limit in
                     store.send(.crossSellingCoverageDetailNavigation(action: .insurableLimit(insurableLimit: limit)))
                 }
             }
 
-            if let insuranceTerms = crossSell.info?.insuranceTerms {
-                InsuranceTermsSection(terms: insuranceTerms) { insuranceTerm in
+            if !crossSellInfo.insuranceTerms.isEmpty {
+                InsuranceTermsSection(terms: crossSellInfo.insuranceTerms) { insuranceTerm in
                     store.send(
                         .crossSellingCoverageDetailNavigation(action: .insuranceTerm(insuranceTerm: insuranceTerm))
                     )

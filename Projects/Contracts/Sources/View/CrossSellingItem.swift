@@ -27,7 +27,7 @@ struct CrossSellingItem: View {
 
     var body: some View {
         SwiftUI.Button {
-            if crossSell.info != nil {
+            if !crossSell.infos.isEmpty {
                 hAnalyticsEvent.cardClickCrossSellDetail(
                     id: crossSell.typeOfContract
                 )
@@ -59,7 +59,7 @@ struct CrossSellingItemPreviews: PreviewProvider {
             buttonText: "Calculate price",
             embarkStoryName: nil,
             typeOfContract: "SE_ACCIDENT",
-            info: nil
+            infos: []
         )
     )
 
@@ -72,7 +72,7 @@ struct CrossSellingItemPreviews: PreviewProvider {
             buttonText: "Calculate price",
             embarkStoryName: nil,
             typeOfContract: "SE_ACCIDENT",
-            info: nil
+            infos: []
         )
     )
 
