@@ -28,7 +28,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         cachePolicy: .fetchIgnoringCacheData
                     )
                     .onValue { claimData in
-                        let claimData = ClaimData(cardData: claimData)  // TODO: need to sort out empty values
+                        let claimData = ClaimData(cardData: claimData)
                         callback(.value(ClaimsAction.setClaims(claims: claimData.claims)))
                         callback(.value(.setLoadingState(action: action, state: nil)))
                     }
@@ -37,21 +37,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                     }
                 return disposeBag
             }
-        //            return giraffe
-        //                .client
-        //                .fetch(
-        //                    query: GiraffeGraphQL.ClaimStatusCardsQuery(
-        //                        locale: Localization.Locale.currentLocale.asGraphQLLocale()
-        //                    ),
-        //                    cachePolicy: .fetchIgnoringCacheData
-        //                )
-        //                .compactMap {
-        //                    ClaimData(cardData: $0)
-        //                }
-        //                .map { claimData in
-        //                    return .setClaims(claims: claimData.claims)
-        //                }
-        //                .valueThenEndSignal
         case .fetchCommonClaims:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
