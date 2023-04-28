@@ -5,7 +5,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public enum ClaimsAction: ActionProtocol, Hashable {
+public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case didAcceptHonestyPledge
     case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
@@ -17,4 +17,5 @@ public enum ClaimsAction: ActionProtocol, Hashable {
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
+    case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
 }

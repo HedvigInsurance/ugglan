@@ -37,7 +37,6 @@ struct ClaimSectionLoading: View {
             hButton.LargeButtonOutlined {
                 hAnalyticsEvent.beginClaim(screen: .home).send()
                 store.send(.submitNewClaim(from: .generic))
-                //                store.send(.startClaim(from: .generic))
             } content: {
                 L10n.Home.OpenClaim.startNewClaimButton.hText()
             }
@@ -52,6 +51,7 @@ struct ClaimSectionLoading: View {
     }
 
     var body: some View {
+
         PresentableStoreLens(
             ClaimsStore.self,
             getter: { state in

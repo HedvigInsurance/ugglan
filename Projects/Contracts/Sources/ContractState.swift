@@ -9,7 +9,7 @@ public struct ContractState: StateProtocol {
 
     public init() {}
 
-    public var hasLoadedContractBundlesOnce = false
+    @Transient(defaultValue: false) public var hasLoadedContractBundlesOnce: Bool
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
@@ -33,9 +33,11 @@ public struct ContractState: StateProtocol {
             return inBundleContract
         }
 
-        return contracts.first { contract in
-            contract.id == id
-        }
+        return
+            contracts
+            .first { contract in
+                contract.id == id
+            }
     }
 }
 
@@ -45,7 +47,7 @@ extension ContractState {
     }
 
     public var hasActiveContracts: Bool {
-        !contractBundles.flatMap { $0.contracts }.isEmpty
+        !(contractBundles.flatMap { $0.contracts }.isEmpty)
     }
 }
 
