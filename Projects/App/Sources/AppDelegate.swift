@@ -11,7 +11,6 @@ import Flow
 import Form
 import Foundation
 import Hero
-import OdysseyKit
 import Payment
 import Presentation
 import SwiftUI
@@ -293,8 +292,6 @@ import hGraphQL
                         if isLoaded {
                             self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
                                 .atValue { _ in
-                                    self.initOdyssey()
-
                                     Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
 
                                     AnalyticsCoordinator().setUserId()

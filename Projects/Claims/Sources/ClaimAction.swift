@@ -1,6 +1,5 @@
 import Apollo
 import Flow
-import Odyssey
 import Presentation
 import SwiftUI
 import hCore
@@ -18,6 +17,5 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork
     case openClaimDetails(claim: Claim)
-    case odysseyRedirect(url: String)
     case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
 }
