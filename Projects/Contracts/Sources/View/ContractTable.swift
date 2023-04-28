@@ -11,7 +11,7 @@ import hGraphQL
 struct ContractTable {
     let filter: ContractFilter
     @PresentableStore var store: ContractStore
-    
+
     func getContractsToShow(for state: ContractState, filter: ContractFilter) -> [Contract] {
         switch filter {
         case .active:
@@ -48,7 +48,7 @@ extension ContractTable: View {
             }
             .presentableStoreLensAnimation(.spring())
             .sectionContainerStyle(.transparent)
-            
+
         }
         PresentableStoreLens(
             ContractStore.self,
@@ -58,7 +58,7 @@ extension ContractTable: View {
         ) { displaysActiveContracts in
             if displaysActiveContracts {
                 CrossSellingStack()
-                
+
                 PresentableStoreLens(
                     ContractStore.self,
                     getter: { state in
