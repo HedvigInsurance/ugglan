@@ -194,7 +194,6 @@ public struct Claim: Codable, Equatable, Identifiable, Hashable {
 
 public struct ClaimData {
     public let claims: [Claim]
-    //    public let claims: LoadingWrapper<[Claim], String>
     public init(
         cardData: GiraffeGraphQL.ClaimStatusCardsQuery.Data
     ) {

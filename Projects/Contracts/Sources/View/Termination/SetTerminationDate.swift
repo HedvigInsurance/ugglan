@@ -111,7 +111,6 @@ public struct LoadingViewWithContent<Content: View>: View {
         ZStack {
             content()
                 .alert(isPresented: $presentError) {
-                    //                    Alert.Button.
                     if withRetry {
                         return Alert(
                             title: Text(L10n.somethingWentWrong),
@@ -135,7 +134,6 @@ public struct LoadingViewWithContent<Content: View>: View {
                     WordmarkActivityIndicator(.standard)
                 }
                 .frame(maxWidth: .infinity, minHeight: 50, maxHeight: .infinity)
-                //                .background(hBackgroundColor.primary.opacity(0.7))
                 .cornerRadius(.defaultCornerRadius)
                 .edgesIgnoringSafeArea(.top)
             }
