@@ -3,21 +3,21 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct SelectCommonClaim: View {
+public struct SelectClaimEntrypoint: View {
     @PresentableStore var store: SubmitClaimStore
     public init() {
-        store.send(.fetchCommonClaimsForSelection)
+        store.send(.fetchClaimEntrypointsForSelection)
     }
     public var body: some View {
-        LoadingViewWithContent(.fetchCommonClaims) {
+        LoadingViewWithContent(.fetchClaimEntrypoints) {
             PresentableStoreLens(
                 SubmitClaimStore.self,
                 getter: { state in
-                    state.entryPointCommonClaims
+                    state.claimEntrypoints
                 }
-            ) { entryPointCommonClaims in
+            ) { claimEntrypoint in
                 hForm {
-                    hSection(entryPointCommonClaims, id: \.id) { claimType in
+                    hSection(claimEntrypoint, id: \.id) { claimType in
                         hRow {
                             hText(claimType.displayName, style: .body)
                                 .foregroundColor(hLabelColor.primary)

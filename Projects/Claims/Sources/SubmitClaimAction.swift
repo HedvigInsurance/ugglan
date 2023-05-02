@@ -5,8 +5,8 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dissmissNewClaimFlow
     case submitClaimOpenFreeTextChat
 
-    case fetchCommonClaimsForSelection
-    case setCommonClaimsForSelection([ClaimEntryPointResponseModel])
+    case fetchClaimEntrypointsForSelection
+    case setClaimEntrypointsForSelection([ClaimEntryPointResponseModel])
     case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
 
     case submitAudioRecording(audioURL: URL)
@@ -99,7 +99,7 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
 
 public enum ClaimsLoadingType: Codable & Equatable & Hashable {
     case startClaim
-    case fetchCommonClaims
+    case fetchClaimEntrypoints
     case postPhoneNumber
     case postDateOfOccurrence
     case postDateOfOccurrenceAndLocation

@@ -289,7 +289,7 @@ public class ClaimJourneys {
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectCommonClaim(),
+            rootView: SelectClaimEntrypoint(),
             style: .detented(.large),
             options: [
                 .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
