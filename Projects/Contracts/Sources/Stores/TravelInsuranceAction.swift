@@ -9,6 +9,8 @@ enum TravelInsuranceAction: ActionProtocol, Hashable {
     case getTravelInsuranceData
     case postTravelInsuranceForm
     case navigation(TravelInsuranceNavigationAction)
+    case setPolicyConInsured(PolicyCoinsuredPersonModel)
+    case dismiss
 }
 
 enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {

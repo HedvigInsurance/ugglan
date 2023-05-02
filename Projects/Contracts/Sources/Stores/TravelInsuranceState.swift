@@ -10,7 +10,6 @@ struct TravelInsuranceState: StateProtocol {
     @OptionalTransient var travelInsuranceModel: TravelInsuranceModel?
 }
 
-
 struct TravelInsuranceModel: Codable, Equatable, Hashable {
     var startDate: String
     var endDate: String?
@@ -18,9 +17,11 @@ struct TravelInsuranceModel: Codable, Equatable, Hashable {
     let maxNumberOfConisuredPersons: Int
     let maxTravelInsuraceDays: Int
     var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
-    init(startDate: String,
-         maxNumberOfConisuredPersons: Int,
-         maxTravelInsuraceDays: Int) {
+    init(
+        startDate: String,
+        maxNumberOfConisuredPersons: Int,
+        maxTravelInsuraceDays: Int
+    ) {
         self.startDate = startDate
         self.maxNumberOfConisuredPersons = maxNumberOfConisuredPersons
         self.maxTravelInsuraceDays = maxTravelInsuraceDays
@@ -28,9 +29,7 @@ struct TravelInsuranceModel: Codable, Equatable, Hashable {
 }
 
 struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
-    let id: String
+    var id = UUID()
     let fullName: String
     let personalNumber: String
 }
-
-

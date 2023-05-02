@@ -1,34 +1,38 @@
 import Foundation
 import Presentation
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 public struct TravelInsuranceFlowJourney {
 
     public static func start() -> some JourneyPresentation {
-        HostingJourney(TravelInsuranceStore.self,
-                       rootView: ProgressView(),
-                       style: .detented(.large)) { action in
+        HostingJourney(
+            TravelInsuranceStore.self,
+            rootView: ProgressView(),
+            style: .detented(.large)
+        ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openTravelInsuranceForm = navigationAction {
                     TravelInsuranceFlowJourney.showForm()
                 }
             }
-        }.onPresent {
+        }
+        .onPresent {
             let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
             store.send(.getTravelInsuranceData)
         }
     }
-    
+
     private static func showForm() -> some JourneyPresentation {
-        HostingJourney(TravelInsuranceStore.self,
-                       rootView: TravelInsuranceFormScreen())
-        { action in
+        HostingJourney(
+            TravelInsuranceStore.self,
+            rootView: TravelInsuranceFormScreen()
+        ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openDatePicker = navigationAction {
                     ContinueJourney()
-                }else if case let .openCoinsured(member) = navigationAction {
+                } else if case let .openCoinsured(member) = navigationAction {
                     openCoinsured(member: member)
                 }
             }
@@ -36,16 +40,19 @@ public struct TravelInsuranceFlowJourney {
         .hidesBackButton
         .addDismissClaimsFlow()
     }
-    
+
     private static func openCoinsured(member: PolicyCoinsuredPersonModel?) -> some JourneyPresentation {
-        HostingJourney(TravelInsuranceStore.self,
-                       rootView: TravelInsuranceAddInsuredMemberScreen(member),
-                       style: .detented(.scrollViewContentSize))
-        { action in
+        HostingJourney(
+            TravelInsuranceStore.self,
+            rootView: TravelInsuranceAddInsuredMemberScreen(member),
+            style: .detented(.scrollViewContentSize)
+        ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openDatePicker = navigationAction {
                     ContinueJourney()
                 }
+            } else if case .dismiss = action {
+                PopJourney()
             }
         }
     }

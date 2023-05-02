@@ -18,12 +18,18 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
         var newState = state
         switch action {
         case .getTravelInsuranceData:
-            newState.travelInsuranceModel = TravelInsuranceModel(startDate: Date().localDateString,
-                                                                 maxNumberOfConisuredPersons: 1,
-                                                                 maxTravelInsuraceDays: 10)
+            newState.travelInsuranceModel = TravelInsuranceModel(
+                startDate: Date().localDateString,
+                maxNumberOfConisuredPersons: 1,
+                maxTravelInsuraceDays: 10
+            )
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.send(.navigation(.openTravelInsuranceForm))
             }
+        case let .setPolicyConInsured(data):
+            var tempData = newState.travelInsuranceModel?.policyCoinsuredPersons
+            tempData?.append(data)
+            newState.travelInsuranceModel?.policyCoinsuredPersons = tempData ?? []
         default:
             break
         }

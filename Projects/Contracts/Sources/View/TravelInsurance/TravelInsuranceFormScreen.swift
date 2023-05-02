@@ -1,7 +1,7 @@
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import Presentation
 
 struct TravelInsuranceFormScreen: View {
     var body: some View {
@@ -17,7 +17,7 @@ struct TravelInsuranceFormScreen: View {
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
-                    
+
                     UIApplication.dismissKeyboard()
                 } content: {
                     hText(L10n.generalContinueButton)
@@ -27,7 +27,7 @@ struct TravelInsuranceFormScreen: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func datesSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
         hSection {
@@ -39,7 +39,7 @@ struct TravelInsuranceFormScreen: View {
                         .foregroundColor(hLabelColor.link)
                 }
             }
-            
+
             hRow {
                 HStack {
                     hText("End date", style: .body)
@@ -48,41 +48,47 @@ struct TravelInsuranceFormScreen: View {
                         .foregroundColor(hLabelColor.link)
                 }
             }
-        }.withHeader {
+        }
+        .withHeader {
             hText(
                 "Traveling dates",
                 style: .title2
             )
-        }.slideUpAppearAnimation()
+        }
+        .slideUpAppearAnimation()
     }
-    
+
     @ViewBuilder
     private func insuredMembers(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
         hSection {
             hRow {
-                hText("Me")
-            }.withSelectedAccessory(travelInsuranceModel.isPolicyHolderIncluded)
+                hText("Me", style: .body)
+            }
+            .withSelectedAccessory(travelInsuranceModel.isPolicyHolderIncluded)
             ForEach(travelInsuranceModel.policyCoinsuredPersons, id: \.id) { member in
-                HStack {
+                hRow {
                     hText(member.fullName, style: .body)
                     Spacer()
                     hText(member.personalNumber, style: .body)
                         .foregroundColor(hLabelColor.link)
                 }
             }
-        }.withHeader {
+        }
+        .withHeader {
             hText(
                 "Insured persons",
                 style: .title2
             )
-        }.slideUpAppearAnimation()
+        }
+        .slideUpAppearAnimation()
         if travelInsuranceModel.policyCoinsuredPersons.count < travelInsuranceModel.maxNumberOfConisuredPersons {
             Button {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
                 store.send(.navigation(.openCoinsured(member: nil)))
             } label: {
                 hText("Add")
-            }.slideUpAppearAnimation()
+            }
+            .slideUpAppearAnimation()
         }
 
     }

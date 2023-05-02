@@ -63,17 +63,18 @@ public struct hTextField: View {
     @Environment(\.hTextFieldOptions) var options
     @Environment(\.hTextFieldError) var errorMessage
     var masking: Masking
-    var placeholder: String
+    var placeholder: String?
     @State var previousInnerValue: String
     @State private var innerValue: String
     @Binding var value: String
 
     public init(
         masking: Masking,
-        value: Binding<String>
+        value: Binding<String>,
+        placeholder: String? = nil
     ) {
         self.masking = masking
-        self.placeholder = masking.placeholderText ?? ""
+        self.placeholder = masking.placeholderText ?? placeholder
         self._value = value
         self.previousInnerValue = value.wrappedValue
         self.innerValue = value.wrappedValue
@@ -82,7 +83,7 @@ public struct hTextField: View {
     public var body: some View {
         VStack {
             HStack {
-                SwiftUI.TextField(placeholder, text: $innerValue)
+                SwiftUI.TextField(placeholder ?? "", text: $innerValue)
                     .modifier(hFontModifier(style: .body))
                     .modifier(masking)
                     .tint(hLabelColor.primary)
@@ -117,7 +118,7 @@ public struct hTextField: View {
 
 struct hTextFieldPreview: PreviewProvider {
     static var previews: some View {
-        hTextField(masking: Masking(type: .personalNumber), value: .constant(""))
+        hTextField(masking: Masking(type: .personalNumber), value: .constant(""), placeholder: "")
             .padding(20)
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Masked with Swedish Personal Number")
