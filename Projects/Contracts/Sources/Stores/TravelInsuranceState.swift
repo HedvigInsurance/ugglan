@@ -8,28 +8,36 @@ import hGraphQL
 struct TravelInsuranceState: StateProtocol {
     init() {}
     @OptionalTransient var travelInsuranceModel: TravelInsuranceModel?
+    @OptionalTransient var travelInsuranceConfig: TravelInsuranceConfig?
+
 }
 
 struct TravelInsuranceModel: Codable, Equatable, Hashable {
-    var startDate: String
-    var endDate: String?
+    var startDate: Date = Date()
+    var endDate: Date?
     var isPolicyHolderIncluded: Bool = true
+    var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
+}
+
+struct TravelInsuranceConfig: Codable, Equatable, Hashable {
+    let minimumDate: Date
+    let maximumDate: Date
     let maxNumberOfConisuredPersons: Int
     let maxTravelInsuraceDays: Int
-    var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
     init(
-        startDate: String,
+        minimumDate: Date,
+        maximumDate: Date,
         maxNumberOfConisuredPersons: Int,
         maxTravelInsuraceDays: Int
     ) {
-        self.startDate = startDate
         self.maxNumberOfConisuredPersons = maxNumberOfConisuredPersons
         self.maxTravelInsuraceDays = maxTravelInsuraceDays
+        self.minimumDate =  minimumDate
+        self.maximumDate =  maximumDate
     }
 }
 
 struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
-    var id = UUID()
     let fullName: String
     let personalNumber: String
 }

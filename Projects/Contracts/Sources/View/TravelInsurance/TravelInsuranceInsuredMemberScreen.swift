@@ -3,16 +3,20 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct TravelInsuranceAddInsuredMemberScreen: View {
+struct TravelInsuranceInsuredMemberScreen: View {
     @State var fullName: String
     @State var personalNumber: String
+    private let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
     private let title: String
+    private let policyCoinsuredPerson: PolicyCoinsuredPersonModel?
     init(
         _ policyCoinsuredPerson: PolicyCoinsuredPersonModel?
     ) {
+        self.title = policyCoinsuredPerson == nil ? "Add" : "Update"
+        
+        self.policyCoinsuredPerson = policyCoinsuredPerson
         self.fullName = policyCoinsuredPerson?.fullName ?? ""
         self.personalNumber = policyCoinsuredPerson?.personalNumber ?? ""
-        self.title = policyCoinsuredPerson == nil ? "Add" : "Update"
     }
 
     var body: some View {
@@ -37,14 +41,10 @@ struct TravelInsuranceAddInsuredMemberScreen: View {
         }
         .hFormAttachToBottom {
             hButton.LargeButtonFilled {
-                //add/update member - should be same action
                 UIApplication.dismissKeyboard()
-
-                let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
                 store.send(
-                    .setPolicyConInsured(PolicyCoinsuredPersonModel(fullName: fullName, personalNumber: personalNumber))
+                    .setPolicyCoInsured(PolicyCoinsuredPersonModel(fullName: fullName, personalNumber: personalNumber))
                 )
-                store.send(.dismiss)
             } content: {
                 hText(title)
             }
@@ -52,11 +52,22 @@ struct TravelInsuranceAddInsuredMemberScreen: View {
             .padding(.bottom, 6)
         }
         .navigationTitle(title)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                if let policyCoinsuredPerson {
+                    Button("Remove") {
+                        store.send(
+                            .removePolicyCoInsured(policyCoinsuredPerson)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
-struct TravelInsuranceAddInsuredMemberScreen_Previews: PreviewProvider {
+struct TravelInsuranceInsuredMemberScreen_Previews: PreviewProvider {
     static var previews: some View {
-        TravelInsuranceAddInsuredMemberScreen(nil)
+        TravelInsuranceInsuredMemberScreen(nil)
     }
 }

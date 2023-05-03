@@ -4,6 +4,7 @@ import hCore
 import hCoreUI
 
 struct TravelInsuranceFormScreen: View {
+    let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
     var body: some View {
         PresentableStoreLens(
             TravelInsuranceStore.self,
@@ -25,7 +26,8 @@ struct TravelInsuranceFormScreen: View {
                 .padding([.leading, .trailing], 16)
                 .padding(.bottom, 6)
             }
-        }
+        }.presentableStoreLensAnimation(.spring())
+            .navigationTitle("Travel certificate")
     }
 
     @ViewBuilder
@@ -33,20 +35,35 @@ struct TravelInsuranceFormScreen: View {
         hSection {
             hRow {
                 HStack {
-                    hText("Start date", style: .body)
-                    Spacer()
-                    hText(travelInsuranceModel.startDate, style: .body)
-                        .foregroundColor(hLabelColor.link)
+                    hText("Start date")
                 }
+            }.withCustomAccessory {
+                Spacer()
+                hText(travelInsuranceModel.startDate.localDateString, style: .body)
+                    .foregroundColor(hLabelColor.secondary)
+            }.onTap {
+                let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+                store.send(.navigation(.openDatePicker(type: .startDate)))
             }
 
             hRow {
                 HStack {
-                    hText("End date", style: .body)
-                    Spacer()
-                    hText(travelInsuranceModel.endDate ?? "", style: .body)
-                        .foregroundColor(hLabelColor.link)
+                    hText("End date")
                 }
+            }.withCustomAccessory {
+                Spacer()
+                Group {
+                    if let endDate = travelInsuranceModel.endDate?.localDateString {
+                        hText(endDate)
+                    } else {
+                        Image(uiImage: hCoreUIAssets.calendar.image)
+                            .renderingMode(.template)
+                    }
+                }
+                .foregroundColor(hLabelColor.secondary)
+            }.onTap {
+                let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+                store.send(.navigation(.openDatePicker(type: .endDate)))
             }
         }
         .withHeader {
@@ -65,12 +82,18 @@ struct TravelInsuranceFormScreen: View {
                 hText("Me", style: .body)
             }
             .withSelectedAccessory(travelInsuranceModel.isPolicyHolderIncluded)
-            ForEach(travelInsuranceModel.policyCoinsuredPersons, id: \.id) { member in
+            .onTap {
+                store.send(.toogleMyselfAsInsured)
+            }
+            ForEach(travelInsuranceModel.policyCoinsuredPersons, id: \.personalNumber) { member in
                 hRow {
                     hText(member.fullName, style: .body)
+                }.withCustomAccessory {
                     Spacer()
                     hText(member.personalNumber, style: .body)
-                        .foregroundColor(hLabelColor.link)
+                        .foregroundColor(hLabelColor.secondary)
+                }.onTap {
+                    store.send(.navigation(.openCoinsured(member: member)))
                 }
             }
         }
@@ -81,7 +104,7 @@ struct TravelInsuranceFormScreen: View {
             )
         }
         .slideUpAppearAnimation()
-        if travelInsuranceModel.policyCoinsuredPersons.count < travelInsuranceModel.maxNumberOfConisuredPersons {
+        if travelInsuranceModel.policyCoinsuredPersons.count < store.state.travelInsuranceConfig?.maxNumberOfConisuredPersons ?? 0 {
             Button {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
                 store.send(.navigation(.openCoinsured(member: nil)))
