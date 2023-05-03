@@ -78,7 +78,7 @@ struct CommonClaimButtonStyle: ButtonStyle {
 
 public struct CommonClaimsView: View {
     @PresentableStore var store: ClaimsStore
-
+    
     public init() {}
     public var body: some View {
         hSection {
@@ -86,7 +86,7 @@ public struct CommonClaimsView: View {
                 PresentableStoreLens(
                     ClaimsStore.self,
                     getter: { state in
-                        return state.commonClaims ?? []
+                        return state.getRecommendedForYou
                     },
                     setter: { _ in
                         .fetchCommonClaims

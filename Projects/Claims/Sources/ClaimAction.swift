@@ -12,7 +12,7 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case setClaims(claims: [Claim])
     case fetchCommonClaims
     case setCommonClaims(commonClaims: [CommonClaim])
-
+    case setShowTravelInsurance(to: Bool)
     case openFreeTextChat
     case openCommonClaimDetail(commonClaim: CommonClaim)
     case openHowClaimsWork

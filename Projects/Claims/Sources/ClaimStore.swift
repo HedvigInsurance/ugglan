@@ -5,10 +5,10 @@ import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
-
+import hAnalytics
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     @Inject var giraffe: hGiraffe
-
+    
     public override func effects(
         _ getState: @escaping () -> ClaimsState,
         _ action: ClaimsAction
@@ -59,7 +59,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             return nil
         }
     }
-
+    
     public override func reduce(_ state: ClaimsState, _ action: ClaimsAction) -> ClaimsState {
         var newState = state
         switch action {
@@ -73,6 +73,9 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .setCommonClaims(commonClaims):
             newState.loadingStates.removeValue(forKey: .fetchCommonClaims)
             newState.commonClaims = commonClaims
+        case let .setShowTravelInsurance(shouldIncludeTravelInsurance):
+//            hAnalyticsExperiment.travelInsurance &&
+            newState.showTravelInsurance = shouldIncludeTravelInsurance
         case let .setLoadingState(action, state):
             if let state {
                 newState.loadingStates[action] = state
