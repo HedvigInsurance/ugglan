@@ -9,6 +9,8 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import Contracts
+import Claims
 
 public struct HomeView<Content: View, Claims: View, CommonClaims: View>: View {
     @PresentableStore var store: HomeStore
@@ -17,7 +19,7 @@ public struct HomeView<Content: View, Claims: View, CommonClaims: View>: View {
 
     var claimsContent: Claims
     var commonClaims: CommonClaims
-
+    let disposeBag: DisposeBag
     public init(
         claimsContent: Claims,
         commonClaimsContent: CommonClaims,
@@ -26,6 +28,14 @@ public struct HomeView<Content: View, Claims: View, CommonClaims: View>: View {
         self.statusCard = statusCard()
         self.claimsContent = claimsContent
         self.commonClaims = commonClaimsContent
+        
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let disposeBag = DisposeBag()
+        disposeBag += contractStore.stateSignal.onValue { state in
+            let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+            claimsStore.send(.setShowTravelInsurance(to: state.isTravelInsuranceIncluded))
+        }
+         self.disposeBag = disposeBag
     }
 }
 

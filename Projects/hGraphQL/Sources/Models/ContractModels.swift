@@ -229,6 +229,15 @@ public struct Contract: Codable, Hashable, Equatable {
             )
             return .unknown
         }
+        
+        public var hasTravelInsurance: Bool {
+            switch self {
+            case .seHouse, .seApartmentBrf, .seApartmentRent, .seApartmentStudentBrf, .seApartmentStudentRent, .seGroupApartmentRent:
+                return true
+            default:
+                return false
+            }
+        }
     }
 }
 

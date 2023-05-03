@@ -48,7 +48,7 @@ extension CommonClaimDetail: Presentable {
 
         topCardContentView.snp.makeConstraints { make in
             make.bottom.trailing.leading.equalToSuperview()
-            make.top.equalTo(40)
+            make.top.equalTo(0)
         }
 
         let layoutTitle = MultilineLabel(value: self.layoutTitle, style: .brand(.title2(color: .primary)))
@@ -75,6 +75,8 @@ extension CommonClaimDetail: Presentable {
                     ) {
                         UIApplication.shared.open(url)
                     }
+                } else if claim.id == "travelInsurance" {
+                    
                 } else {
                     store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
                 }

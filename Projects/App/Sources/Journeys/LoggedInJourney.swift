@@ -17,7 +17,6 @@ extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
         let commonClaims = CommonClaimsView()
-
         return
             HomeView.journey(claimsContent: claims, commonClaimsContent: commonClaims) { result in
                 switch result {

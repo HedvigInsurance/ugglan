@@ -9,7 +9,32 @@ public struct CommonClaim: Codable, Equatable, Hashable {
     public enum CommonClaimItemType: String {
         case phone = "PHONE"
     }
-
+    
+    public init(id: String,
+                icon: IconEnvelope?,
+                displayTitle: String,
+                layout: Layout){
+        self.id = id
+        self.icon = icon
+        self.displayTitle = displayTitle
+        self.layout = layout
+        
+    }
+    
+    public static let travelInsuranceCommonClaim: CommonClaim = {
+        
+        let bulletPoints = CommonClaim.Layout.TitleAndBulletPoints.BulletPoint(title: "TITLE", description: "DESC", icon: nil)
+        let titleAndBulletPoint = CommonClaim.Layout.TitleAndBulletPoints(color: "Red",
+                                                                          buttonTitle: "Get travel certificate",
+                                                                          title: "TITLE 2",
+                                                                          bulletPoints: [])
+        let emergency = CommonClaim.Layout.Emergency(title: "In the event of war or a natural catastrophe during your outbound travel, we will reimburse you for the cost of a flight home and other necessary and reasonable costs.", color: "Red")
+        let layout = CommonClaim.Layout(titleAndBulletPoint: titleAndBulletPoint, emergency: emergency)
+        let commonClaim = CommonClaim(id: "travelInsurance", icon: nil, displayTitle: "Travel Insurance", layout: layout)
+        return commonClaim
+    }()
+    
+    
     public init(
         claim: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim
     ) {
@@ -23,6 +48,13 @@ public struct CommonClaim: Codable, Equatable, Hashable {
         public var titleAndBulletPoint: TitleAndBulletPoints?
         public var emergency: Emergency?
 
+        
+        public init(titleAndBulletPoint: TitleAndBulletPoints?,
+                    emergency: Emergency?){
+            self.titleAndBulletPoint = titleAndBulletPoint
+            self.emergency = emergency
+        }
+        
         public init(
             layout: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim.Layout
         ) {
@@ -52,16 +84,34 @@ public struct CommonClaim: Codable, Equatable, Hashable {
             public var title: String?
             public var bulletPoints: [BulletPoint]
 
+            public init(color: String, buttonTitle: String? = nil, title: String? = nil, bulletPoints: [BulletPoint]) {
+                self.color = color
+                self.buttonTitle = buttonTitle
+                self.title = title
+                self.bulletPoints = bulletPoints
+            }
+            
             public struct BulletPoint: Codable, Hashable, Equatable {
                 public let title: String
                 public let description: String
                 public let icon: IconEnvelope?
+                
+                public init(title: String, description: String, icon: IconEnvelope?) {
+                    self.title = title
+                    self.description = description
+                    self.icon = icon
+                }
             }
         }
 
         public struct Emergency: Codable, Hashable, Equatable {
             public let title: String
             public let color: String
+            
+            public init(title: String, color: String) {
+                self.title = title
+                self.color = color
+            }
         }
     }
 }

@@ -49,6 +49,10 @@ extension ContractState {
     public var hasActiveContracts: Bool {
         !(contractBundles.flatMap { $0.contracts }.isEmpty)
     }
+    
+    public var isTravelInsuranceIncluded: Bool {
+        return contractBundles.flatMap({$0.contracts}).contains(where: {$0.typeOfContract.hasTravelInsurance})
+    }
 }
 
 public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & Equatable & Hashable {
