@@ -6,6 +6,7 @@ public struct SubmitClaimsState: StateProtocol {
     @OptionalTransient var currentClaimContext: String?
     @Transient(defaultValue: [:]) var loadingStates: [ClaimsLoadingType: LoadingState<String>]
     @Transient(defaultValue: []) var claimEntrypoints: [ClaimEntryPointResponseModel]
+    @Transient(defaultValue: []) var claimEntrypointGroups: [ClaimEntryPointGroupResponseModel]
     @OptionalTransient var summaryStep: FlowClaimSummaryStepModel?
     @OptionalTransient var dateOfOccurenceStep: FlowClaimDateOfOccurenceStepModel?
     @OptionalTransient var locationStep: FlowClaimLocationStepModel?

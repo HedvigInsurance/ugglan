@@ -5,8 +5,10 @@ import hCoreUI
 
 public struct SelectClaimEntrypoint: View {
     @PresentableStore var store: SubmitClaimStore
-    public init() {
-        store.send(.fetchClaimEntrypointsForSelection)
+    public init(
+        entrypointGroupId: String
+    ) {
+        store.send(.fetchClaimEntrypointsForSelection(entrypointGroupId: entrypointGroupId))
     }
     public var body: some View {
         LoadingViewWithContent(.fetchClaimEntrypoints) {

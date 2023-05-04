@@ -1,0 +1,6 @@
+query EntrypointGroups($type: EntrypointType!) {
+  entrypointGroups(type: $type) {
+    displayName
+    id
+  }
+}

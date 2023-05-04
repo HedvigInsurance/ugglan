@@ -283,13 +283,40 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    public static func showCommonClaimIfNeeded(
+    public static func showClaimEntrypointGroups(
         origin: ClaimsOrigin,
         @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectClaimEntrypoint(),
+            rootView: SelectEntrypointNavigation(),
+            style: .detented(.large),
+            options: [
+                .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
+            ]
+        ) {
+            action in
+            if case let .entrypointGroupSelected(origin) = action {
+                GroupJourney { context in
+                    switch origin {
+                    case .generic:
+                        ContinueJourney()
+                    case let .commonClaims(id):
+                        redirectJourney(ClaimsOrigin.commonClaims(id: id))
+                    }
+                }
+            }
+        }
+    }
+
+    @JourneyBuilder
+    public static func showClaimEntrypoints(
+        origin: ClaimsOrigin,
+        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
+    ) -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SelectClaimEntrypoint(entrypointGroupId: origin.id),
             style: .detented(.large),
             options: [
                 .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
