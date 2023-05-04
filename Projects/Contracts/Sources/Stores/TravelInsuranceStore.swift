@@ -24,7 +24,7 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                                                                    maxNumberOfConisuredPersons: 2,
                                                                    maxTravelInsuraceDays: 45)
             newState.travelInsuranceModel = TravelInsuranceModel(startDate: Date())
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                 self.send(.navigation(.openTravelInsuranceForm))
             }
         case .toogleMyselfAsInsured:

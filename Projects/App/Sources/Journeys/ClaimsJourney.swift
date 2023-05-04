@@ -115,6 +115,8 @@ extension AppJourney {
         .onAction(ClaimsStore.self) { action in
             if case .submitNewClaim = action {
                 DismissJourney()
+            } else if case .openTravelInsurance = action {
+                DismissJourney()
             }
         }
         .withJourneyDismissButton

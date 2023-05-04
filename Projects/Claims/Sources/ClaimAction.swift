@@ -8,6 +8,7 @@ import hGraphQL
 public indirect enum ClaimsAction: ActionProtocol, Hashable {
     case didAcceptHonestyPledge
     case submitNewClaim(from: ClaimsOrigin)
+    case openTravelInsurance
     case fetchClaims
     case setClaims(claims: [Claim])
     case fetchCommonClaims

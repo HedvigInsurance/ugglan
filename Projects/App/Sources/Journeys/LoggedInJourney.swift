@@ -173,12 +173,13 @@ extension JourneyPresentation {
             if case let .openClaimDetails(claim) = action {
                 AppJourney.claimDetailJourney(claim: claim)
             } else if case let .submitNewClaim(origin) = action {
-//                AppJourney.startClaimsJourney(from: origin)
-//                    .onAction(SubmitClaimStore.self) { action in
-//                        if case .dissmissNewClaimFlow = action {
-//                            DismissJourney()
-//                        }
-//                    }
+                AppJourney.startClaimsJourney(from: origin)
+                    .onAction(SubmitClaimStore.self) { action in
+                        if case .dissmissNewClaimFlow = action {
+                            DismissJourney()
+                        }
+                    }
+            } else if case .openTravelInsurance = action {
                 TravelInsuranceFlowJourney.start()
             } else if case .openHowClaimsWork = action {
                 AppJourney.claimsInfoJourney()

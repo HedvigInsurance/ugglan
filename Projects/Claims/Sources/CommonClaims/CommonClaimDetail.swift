@@ -7,10 +7,9 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-
+import Contracts
 public struct CommonClaimDetail {
     let claim: CommonClaim
-
     public init(
         claim: CommonClaim
     ) {
@@ -65,7 +64,6 @@ extension CommonClaimDetail: Presentable {
             bag += topCardContentView.addArranged(claimButton)
 
             let store: ClaimsStore = self.get()
-
             bag += claimButton.onTapSignal.onValue {
                 hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
 
@@ -75,8 +73,8 @@ extension CommonClaimDetail: Presentable {
                     ) {
                         UIApplication.shared.open(url)
                     }
-                } else if claim.id == "travelInsurance" {
-                    
+                } else if claim.id == CommonClaim.travelInsuranceCommonClaim.id {
+                    store.send(.openTravelInsurance)
                 } else {
                     store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
                 }
@@ -94,4 +92,9 @@ extension CommonClaimDetail: Presentable {
 
         return (viewController, bag)
     }
+}
+
+
+public enum ComonClaimsRedirectionType {
+    case travelInsurace
 }
