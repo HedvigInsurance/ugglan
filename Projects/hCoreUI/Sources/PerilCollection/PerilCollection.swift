@@ -33,6 +33,10 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                 if let icon = peril.icon {
                     RemoteVectorIconView(icon: icon, backgroundFetch: true)
                         .frame(width: 24, height: 24)
+                } else if let color = peril.color {
+                    Circle().fill(Color(hexString: color))
+                        .padding(4)
+                        .frame(width: 24, height: 24)
                 }
                 VStack {
                     hText(peril.title, style: .headline)

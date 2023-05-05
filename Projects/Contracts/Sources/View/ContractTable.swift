@@ -19,9 +19,10 @@ struct ContractTable {
                 .contractBundles
                 .flatMap { $0.contracts }
         case .terminated:
-            return state.contracts.filter { contract in
-                contract.currentAgreement?.status == .terminated
-            }
+            return state.contracts
+                .filter { contract in
+                    contract.currentAgreement?.status == .terminated
+                }
         case .none: return []
         }
     }
@@ -29,26 +30,26 @@ struct ContractTable {
 
 extension ContractTable: View {
     var body: some View {
-        ContractBundleLoadingIndicator()
-
-        hSection {
-            PresentableStoreLens(
-                ContractStore.self,
-                getter: { state in
-                    getContractsToShow(for: state, filter: filter.nonemptyFilter(state: state))
-                }
-            ) { contracts in
-                ForEach(contracts, id: \.id) { contract in
-                    ContractRow(id: contract.id)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, 15)
-                        .transition(.slide)
+        LoadingViewWithContent(.fetchContractBundles, withRetry: true) {
+            hSection {
+                PresentableStoreLens(
+                    ContractStore.self,
+                    getter: { state in
+                        getContractsToShow(for: state, filter: filter.nonemptyFilter(state: state))
+                    }
+                ) { contracts in
+                    ForEach(contracts, id: \.id) { contract in
+                        ContractRow(id: contract.id)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.top, 15)
+                            .transition(.slide)
+                    }
                 }
             }
-        }
-        .presentableStoreLensAnimation(.spring())
-        .sectionContainerStyle(.transparent)
+            .presentableStoreLensAnimation(.spring())
+            .sectionContainerStyle(.transparent)
 
+        }
         PresentableStoreLens(
             ContractStore.self,
             getter: { state in

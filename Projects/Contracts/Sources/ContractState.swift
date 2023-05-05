@@ -1,6 +1,5 @@
 import Apollo
 import Flow
-import Odyssey
 import Presentation
 import SwiftUI
 import hCore
@@ -10,11 +9,12 @@ public struct ContractState: StateProtocol {
 
     public init() {}
 
-    public var hasLoadedContractBundlesOnce = false
+    @Transient(defaultValue: false) public var hasLoadedContractBundlesOnce: Bool
     public var contractBundles: [ActiveContractBundle] = []
     public var contracts: [Contract] = []
     public var focusedCrossSell: CrossSell?
     public var signedCrossSells: [CrossSell] = []
+    public var crossSells: [CrossSell] = []
 
     var currentTerminationContext: String?
     var terminationContractId: String? = ""
@@ -33,19 +33,21 @@ public struct ContractState: StateProtocol {
             return inBundleContract
         }
 
-        return contracts.first { contract in
-            contract.id == id
-        }
+        return
+            contracts
+            .first { contract in
+                contract.id == id
+            }
     }
 }
 
 extension ContractState {
     public var hasUnseenCrossSell: Bool {
-        contractBundles.contains(where: { bundle in bundle.crossSells.contains(where: { !$0.hasBeenSeen }) })
+        crossSells.contains(where: { crossSell in !crossSell.hasBeenSeen })
     }
 
     public var hasActiveContracts: Bool {
-        !contractBundles.flatMap { $0.contracts }.isEmpty
+        !(contractBundles.flatMap { $0.contracts }.isEmpty)
     }
 }
 

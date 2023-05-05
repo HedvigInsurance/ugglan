@@ -80,7 +80,7 @@ struct CrossSellingSignedPreviews: PreviewProvider {
                 blurHash: "",
                 buttonText: "",
                 typeOfContract: "SE_ACCIDENT",
-                info: nil
+                infos: []
             )
 
             return newState

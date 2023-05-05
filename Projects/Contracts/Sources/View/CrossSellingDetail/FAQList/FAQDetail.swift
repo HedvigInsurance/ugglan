@@ -23,7 +23,7 @@ public struct FAQDetail: View {
                         style: .title1
                     )
                     hText(
-                        faq.description,
+                        faq.description ?? "",
                         style: .body
                     )
                     .foregroundColor(hLabelColor.secondary)

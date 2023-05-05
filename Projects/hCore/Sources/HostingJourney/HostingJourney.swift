@@ -13,7 +13,6 @@ public struct PresentableStore<S: Store> {
 }
 
 public class HostingJourneyController<RootView: View>: UIHostingController<RootView> {
-
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
     }

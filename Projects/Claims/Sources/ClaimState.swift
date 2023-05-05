@@ -1,12 +1,12 @@
 import Apollo
 import Flow
-import Odyssey
 import Presentation
 import SwiftUI
 import hCore
 import hGraphQL
 
 public struct ClaimsState: StateProtocol {
+    var loadingStates: [ClaimsAction: LoadingState<String>] = [:]
     var claims: [Claim]? = nil
     var commonClaims: [CommonClaim]? = nil
     public init() {}
@@ -17,12 +17,11 @@ public struct ClaimsState: StateProtocol {
 
     public var hasActiveClaims: Bool {
         if let claims = claims {
-            return
-                !claims.filter {
-                    $0.claimDetailData.status == .beingHandled || $0.claimDetailData.status == .reopened
-                        || $0.claimDetailData.status == .submitted
-                }
-                .isEmpty
+            !claims.filter {
+                $0.claimDetailData.status == .beingHandled || $0.claimDetailData.status == .reopened
+                    || $0.claimDetailData.status == .submitted
+            }
+            .isEmpty
         }
         return false
     }

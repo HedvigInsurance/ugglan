@@ -154,9 +154,11 @@ extension MovingFlowIntro: Presentable {
                 {
                     $section.value = .existing(upcomingAgreementTable)
                 } else {
-                    if let bundle = state.contractBundles.first(where: { bundle in
-                        bundle.movingFlowEmbarkId != nil
-                    }) {
+                    if let bundle = state.contractBundles
+                        .first(where: { bundle in
+                            bundle.movingFlowEmbarkId != nil
+                        })
+                    {
                         $section.value = .normal(
                             bundle.movingFlowEmbarkId ?? ""
                         )

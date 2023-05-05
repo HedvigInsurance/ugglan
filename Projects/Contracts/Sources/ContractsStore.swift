@@ -15,24 +15,58 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
     ) -> FiniteSignal<ContractAction>? {
         let terminationContext = state.currentTerminationContext ?? ""
         switch action {
+        case .fetchCrossSale:
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.octopus.client.fetch(query: OctopusGraphQL.CrossSellsQuery())
+                    .onValue({ data in
+                        let crossSells = data.currentMember.fragments.crossSellFragment.crossSells.compactMap({
+                            CrossSell($0)
+                        })
+                        callback(.value(.setCrossSells(crossSells: crossSells)))
+                    })
+                return disposeBag
+            }
         case .fetchContractBundles:
-            return giraffe.client
-                .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
-                .valueThenEndSignal
-                .map { activeContractBundles in
-                    ContractAction.setContractBundles(activeContractBundles: activeContractBundles)
-                }
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.giraffe.client
+                    .fetchActiveContractBundles(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                    .onValue { activeContractBundles in
+                        callback(
+                            .value(ContractAction.setContractBundles(activeContractBundles: activeContractBundles))
+                        )
+                    }
+                    .onError { error in
+                        if !self.state.hasLoadedContractBundlesOnce {
+                            callback(
+                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
+                            )
+                        }
+                    }
+                return disposeBag
+            }
+
         case .fetchContracts:
-            return giraffe.client.fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
-                .valueThenEndSignal
-                .filter { contracts in
-                    contracts != getState().contracts
-                }
-                .map {
-                    .setContracts(contracts: $0)
-                }
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.giraffe.client
+                    .fetchContracts(locale: Localization.Locale.currentLocale.asGraphQLLocale())
+                    .onValue { contracts in
+                        if getState().contracts != contracts {
+                            callback(.value(.setContracts(contracts: contracts)))
+                        } else {
+                            callback(.value(.setLoadingState(action: action, state: nil)))
+                        }
+                    }
+                    .onError { error in
+                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                    }
+                return disposeBag
+            }
         case .fetch:
             return [
+                .fetchCrossSale,
                 .fetchContracts,
                 .fetchContractBundles,
             ]
@@ -77,7 +111,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
         case let .sendTerminationDate(terminationDate):
             self.send(.setLoadingState(action: action, state: .loading))
 
-            let inputDateToString = terminationDate.localDateString ?? ""
+            let inputDateToString = terminationDate.localDateString
             let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
 
             let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
@@ -142,25 +176,27 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
     public override func reduce(_ state: ContractState, _ action: ContractAction) -> ContractState {
         var newState = state
         switch action {
+        case .fetchContractBundles:
+            if !newState.hasLoadedContractBundlesOnce {
+                newState.loadingStates[.fetchContractBundles] = .loading
+            }
+        case .fetchContracts:
+            newState.loadingStates[action] = .loading
         case .setContractBundles(let activeContractBundles):
             newState.hasLoadedContractBundlesOnce = true
-            // Prevent infinite spinner if there are no active contracts
+            newState.loadingStates.removeValue(forKey: .fetchContractBundles)
             guard activeContractBundles != state.contractBundles else { return newState }
-
             newState.contractBundles = activeContractBundles
-        case .setContracts(let contracts):
+        case let .setContracts(contracts):
+            newState.loadingStates.removeValue(forKey: .fetchContracts)
             newState.contracts = contracts
+        case .setCrossSells(let crossSells):
+            newState.crossSells = crossSells
         case let .hasSeenCrossSells(value):
-            newState.contractBundles = newState.contractBundles.map { bundle in
-                var newBundle = bundle
-
-                newBundle.crossSells = newBundle.crossSells.map { crossSell in
-                    var newCrossSell = crossSell
-                    newCrossSell.hasBeenSeen = value
-                    return newCrossSell
-                }
-
-                return newBundle
+            newState.crossSells = newState.crossSells.map { crossSell in
+                var newCrossSell = crossSell
+                newCrossSell.hasBeenSeen = value
+                return newCrossSell
             }
         case let .setFocusedCrossSell(focusedCrossSell):
             newState.focusedCrossSell = focusedCrossSell
