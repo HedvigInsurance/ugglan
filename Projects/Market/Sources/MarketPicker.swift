@@ -77,7 +77,7 @@ public struct MarketPickerView: View {
             .aspectRatio(contentMode: .fill)
             .frame(width: 150, height: 40)
         Spacer()
-        
+
         hButton.LargeButtonFilled {
             hAnalyticsEvent.buttonClickMarketingOnboard().send()
             store.send(.onboard)
@@ -85,7 +85,7 @@ public struct MarketPickerView: View {
             hText(L10n.marketingGetHedvig, style: .body)
         }
         .hButtonFilledStyle(.overImage)
-        
+
         hButton.LargeButtonOutlined {
             hAnalyticsEvent.buttonClickMarketingLogin().send()
             store.send(.loginButtonTapped)
