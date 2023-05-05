@@ -242,7 +242,7 @@ extension Chat: Presentable {
         bag += reloadChatSignal.onValue { _ in
             self.chatState.reset()
         }
-        
+
         bag += chatState.askForPermissionsSignal.filter(predicate: { $0 })
             .onValue({ _ in
                 viewController.inputAccessoryView?.isUserInteractionEnabled = false
