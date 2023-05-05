@@ -242,17 +242,18 @@ extension Chat: Presentable {
         bag += reloadChatSignal.onValue { _ in
             self.chatState.reset()
         }
-
+        
         bag += chatState.askForPermissionsSignal.filter(predicate: { $0 })
             .onValue({ _ in
-                navigateCallbacker.callAll(
-                    with: .notifications(dismissed: {
-                        viewController.isAccessoryActive = true
-                    })
-                )
-                viewController.isAccessoryActive = false
+                viewController.inputAccessoryView?.isUserInteractionEnabled = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    navigateCallbacker.callAll(
+                        with: .notifications(dismissed: {
+                            viewController.inputAccessoryView?.isUserInteractionEnabled = true
+                        })
+                    )
+                }
             })
-
         bag += viewController.install(tableKit, options: [])
 
         bag += DelayedDisposer(
