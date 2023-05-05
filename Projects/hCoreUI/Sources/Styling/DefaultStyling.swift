@@ -3,8 +3,8 @@ import Form
 import Foundation
 import Presentation
 import StoreKit
-import UIKit
 import SwiftUI
+import UIKit
 
 public class hNavigationController: UINavigationController {
     public init() {
@@ -194,7 +194,7 @@ extension DefaultStyling {
             [NSAttributedString.Key.foregroundColor: UIColor.clear],
             for: .highlighted
         )
-        
+
         UIDatePicker.appearance().tintColor = .brand(.link)
 
         UIImageView.appearance().tintColor = .brand(.primaryTintColor)
