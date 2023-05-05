@@ -3,12 +3,17 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct ClaimFlowAskForPushnotifications: View {
+struct AskForPushnotifications: View {
     let onActionExecuted: () -> Void
-
+    let text: String
+    let pushNotificationStatus: UNAuthorizationStatus
     init(
-        onActionExecuted: @escaping () -> Void
-    ) {
+        text: String,
+        onActionExecuted: @escaping () -> Void)
+    {
+        let store: UgglanStore = globalPresentableStoreContainer.get()
+        self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
+        self.text = text
         self.onActionExecuted = onActionExecuted
     }
 
@@ -48,6 +53,8 @@ struct ClaimFlowAskForPushnotifications: View {
 
                 hButton.SmallButtonText {
                     onActionExecuted()
+                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                    store.send(.setPushNotificationStatus(status: nil))
                 } content: {
                     hText(L10n.claimsActivateNotificationsDismiss, style: .footnote)
                         .foregroundColor(hLabelColor.primary)

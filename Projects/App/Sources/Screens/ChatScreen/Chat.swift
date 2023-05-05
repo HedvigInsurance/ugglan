@@ -22,13 +22,14 @@ struct Chat {
 typealias ChatListContent = Either<Message, TypingIndicator>
 
 enum NavigationEvent {
-    case dashboard, offer, login
+    case dashboard, offer, login, notifications(dismissed: () -> Void)
 }
 
 enum ChatResult {
     case offer(ids: [String])
     case loggedIn
     case login
+    case notifications(dismissed: () -> Void)
 
     var journey: some JourneyPresentation {
         GroupJourney {
@@ -68,6 +69,19 @@ enum ChatResult {
                 AppJourney.loggedIn
             case .login:
                 AppJourney.login
+            case let .notifications(onDismiss):
+                HostingJourney(UgglanStore.self,
+                               rootView: AskForPushnotifications(
+                                text: L10n.chatActivateNotificationsBody
+                                , onActionExecuted: {
+                                    
+                                }), style: .detented(.large)) { action in
+                                    if case .setPushNotificationStatus = action {
+                                        PopJourney()
+                                    }
+                                }.onDismiss {
+                                    onDismiss()
+                                }
             }
         }
     }
@@ -222,6 +236,13 @@ extension Chat: Presentable {
         bag += reloadChatSignal.onValue { _ in
             self.chatState.reset()
         }
+        
+        bag += chatState.askForPermissionsSignal.filter(predicate: {$0}).onValue({ _ in
+            navigateCallbacker.callAll(with: .notifications(dismissed: {
+                viewController.isAccessoryActive = true
+            }))
+            viewController.isAccessoryActive = false
+        })
 
         bag += viewController.install(tableKit, options: [])
 
@@ -231,6 +252,7 @@ extension Chat: Presentable {
             },
             delay: 2
         )
+        
         bag += chatState.errorSignal.onValue({ (error, retry) in
             if let error {
                 var actions: [Alert<()>.Action] = [Alert<()>.Action]()
@@ -277,6 +299,10 @@ extension Chat: Presentable {
                         callback(.loggedIn)
                     case .login:
                         callback(.login)
+                    case let .notifications(onDismiss):
+                        callback(.notifications(dismissed: {
+                            onDismiss()
+                        }))
                     }
                 }
 

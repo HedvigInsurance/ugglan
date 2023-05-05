@@ -7,6 +7,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
+import Presentation
 
 class ChatState {
     static var shared = ChatState()
@@ -17,6 +18,7 @@ class ChatState {
     private var handledGlobalIds: [GraphQLID] = []
     private var hasShownStatusMessage = false
     var allowNewMessageToast = true
+    let askForPermissionsSignal = ReadWriteSignal<Bool>(false)
 
     let isEditingSignal = ReadWriteSignal<Bool>(false)
     let currentMessageSignal: ReadSignal<Message?>
@@ -24,7 +26,7 @@ class ChatState {
     let listSignal = ReadWriteSignal<[ChatListContent]>([])
     let tableSignal: ReadSignal<Table<EmptySection, ChatListContent>>
     let filteredListSignal: ReadSignal<[ChatListContent]>
-
+    private let store: UgglanStore = globalPresentableStoreContainer.get()
     private func parseMessage(message: GiraffeGraphQL.MessageData) -> [ChatListContent] {
         var result: [ChatListContent] = []
         let newMessage = Message(from: message, listSignal: filteredListSignal)
@@ -51,25 +53,29 @@ class ChatState {
             hasShownStatusMessage = true
             let innerBag = bag.innerBag()
 
-            func createToast() -> Toast {
-                if UIApplication.shared.isRegisteredForRemoteNotifications {
-                    return Toast(symbol: .icon(hCoreUIAssets.chat.image), body: statusMessage)
+            let status = self.store.state.pushNotificationCurrentStatus()
+            if status == .notDetermined {
+                self.askForPermissionsSignal.value = true
+            } else {
+                func createToast() -> Toast {
+                    if UIApplication.shared.isRegisteredForRemoteNotifications {
+                        return Toast(symbol: .icon(hCoreUIAssets.chat.image), body: statusMessage)
+                    }
+                    return Toast(
+                        symbol: .icon(hCoreUIAssets.chat.image),
+                        body: statusMessage,
+                        subtitle: L10n.chatToastPushNotificationsSubtitle,
+                        duration: 6
+                    )
                 }
-
-                return Toast(
-                    symbol: .icon(hCoreUIAssets.chat.image),
-                    body: statusMessage,
-                    subtitle: L10n.chatToastPushNotificationsSubtitle
-                )
+                
+                let toast = createToast()
+                
+                innerBag += toast.onTap.onValue { _ in
+                    UIApplication.shared.appDelegate.registerForPushNotifications().sink()
+                }
+                Toasts.shared.displayToast(toast: toast)
             }
-
-            let toast = createToast()
-
-            innerBag += toast.onTap.onValue { _ in
-                UIApplication.shared.appDelegate.registerForPushNotifications().sink()
-            }
-
-            Toasts.shared.displayToast(toast: toast)
         }
     }
 
@@ -328,7 +334,6 @@ class ChatState {
 
                 return innerBag
             }
-
         editBag += isEditingSignal.onValue { isEditing in
             self.listSignal.value.compactMap { $0.left }
                 .forEach { message in message.editingDisabledSignal.value = isEditing }
