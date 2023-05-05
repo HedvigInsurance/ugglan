@@ -90,9 +90,10 @@ extension AppJourney {
                             AskForPushnotifications(
                                 text: L10n.claimsActivateNotificationsBody,
                                 onActionExecuted: {
-                                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                                store.send(.startClaimRequest(with: origin.id))
-                            })
+                                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                                    store.send(.startClaimRequest(with: origin.id))
+                                }
+                            )
                         },
                         style: .detented(.large, modally: false)
                     ) { action in

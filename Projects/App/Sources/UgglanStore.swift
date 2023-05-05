@@ -20,12 +20,12 @@ struct UgglanState: StateProtocol {
     }
 
     func pushNotificationCurrentStatus() -> UNAuthorizationStatus {
-        if let status = pushNotificationStatus, let status = UNAuthorizationStatus(rawValue: status){
+        if let status = pushNotificationStatus, let status = UNAuthorizationStatus(rawValue: status) {
             return status
         }
         return .notDetermined
     }
-    
+
 }
 
 enum UgglanAction: ActionProtocol {
