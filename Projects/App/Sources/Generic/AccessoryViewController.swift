@@ -42,11 +42,7 @@ where Accessory.Events == ViewableEvents, Accessory.Matter: UIView, Accessory.Re
         super.viewDidAppear(animated)
         becomeFirstResponder()
     }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         becomeFirstResponder()
