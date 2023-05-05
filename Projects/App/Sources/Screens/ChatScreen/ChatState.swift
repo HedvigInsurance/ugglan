@@ -2,12 +2,12 @@ import Apollo
 import Flow
 import Form
 import Foundation
+import Presentation
 import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import Presentation
 
 class ChatState {
     static var shared = ChatState()
@@ -68,9 +68,9 @@ class ChatState {
                         duration: 6
                     )
                 }
-                
+
                 let toast = createToast()
-                
+
                 innerBag += toast.onTap.onValue { _ in
                     UIApplication.shared.appDelegate.registerForPushNotifications().sink()
                 }

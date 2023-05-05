@@ -9,8 +9,8 @@ struct AskForPushnotifications: View {
     let pushNotificationStatus: UNAuthorizationStatus
     init(
         text: String,
-        onActionExecuted: @escaping () -> Void)
-    {
+        onActionExecuted: @escaping () -> Void
+    ) {
         let store: UgglanStore = globalPresentableStoreContainer.get()
         self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
         self.text = text
