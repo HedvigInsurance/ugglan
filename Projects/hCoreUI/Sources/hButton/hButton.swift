@@ -205,7 +205,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         .buttonSizeModifier(size)
         .background(ButtonFilledBackground(configuration: configuration))
         .overlay(configuration.isPressed ? pressedColor : nil)
-        .cornerRadius(.defaultCornerRadius)
+        .clipShape(Squircle.default())
     }
 }
 
@@ -239,12 +239,12 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
         func body(content: Content) -> some View {
             if colorScheme == .light {
                 content.overlay(
-                    RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                    Squircle.default(lineWidth: configuration.isPressed ? 0 : 1)
                         .stroke(hLabelColor.primary, lineWidth: configuration.isPressed ? 0 : 1)
                 )
             } else {
                 content.overlay(
-                    RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                    Squircle.default(lineWidth: 1)
                         .stroke(hLabelColor.primary, lineWidth: 1)
                 )
             }
@@ -258,7 +258,7 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
         .buttonSizeModifier(size)
         .background(Color.clear)
         .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
-        .clipShape(RoundedRectangle(cornerRadius: .defaultCornerRadius))
+        .clipShape(Squircle.default())
         .modifier(OverlayModifier(configuration: configuration))
         .modifier(OpacityModifier())
         .contentShape(Rectangle())
@@ -293,7 +293,7 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
         .modifier(LargeButtonModifier())
         .background(Color.clear)
         .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
-        .cornerRadius(.defaultCornerRadius)
+        .clipShape(Squircle.default())
         .modifier(OpacityModifier())
     }
 }
@@ -326,7 +326,7 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
         .modifier(SmallButtonModifier())
         .background(Color.clear)
         .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
-        .cornerRadius(.defaultCornerRadius)
+        .clipShape(Squircle.default())
         .modifier(OpacityModifier())
         .contentShape(Rectangle())
     }

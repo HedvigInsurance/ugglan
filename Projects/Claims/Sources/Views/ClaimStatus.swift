@@ -62,7 +62,7 @@ struct ClaimStatusButtonStyle: ButtonStyle {
         }
         .padding([.top, .bottom], 16)
         .background(
-            RoundedRectangle(cornerRadius: 10)
+            Squircle.default()
                 .fill(hBackgroundColor.tertiary)
                 .hShadow()
         )
