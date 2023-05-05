@@ -132,9 +132,9 @@ struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         .background(
             gradientView
         )
-        .cornerRadius(.defaultCornerRadius)
+        .clipShape(Squircle.default())
         .overlay(
-            RoundedRectangle(cornerRadius: .defaultCornerRadius)
+            Squircle.default(lineWidth: .hairlineWidth)
                 .stroke(hSeparatorColor.separator, lineWidth: .hairlineWidth)
         )
     }
