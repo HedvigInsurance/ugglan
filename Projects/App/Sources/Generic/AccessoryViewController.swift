@@ -6,7 +6,6 @@ import hCore
 class AccessoryViewController<Accessory: Viewable>: UIViewController
 where Accessory.Events == ViewableEvents, Accessory.Matter: UIView, Accessory.Result == Disposable {
     let accessoryView: Accessory.Matter
-
     init(
         accessoryView: Accessory
     ) {
@@ -30,7 +29,7 @@ where Accessory.Events == ViewableEvents, Accessory.Matter: UIView, Accessory.Re
 
     override var canBecomeFirstResponder: Bool { true }
 
-    override var inputAccessoryView: UIView? { accessoryView }
+    override var inputAccessoryView: UIView? { return accessoryView }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)

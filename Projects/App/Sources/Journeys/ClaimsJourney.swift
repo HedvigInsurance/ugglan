@@ -68,7 +68,7 @@ extension AppJourney {
             rootView: LoadingViewWithContent(.startClaim) {
                 HonestyPledge {
                     let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-                    if ugglanStore.state.askForPushNotificationPermission() {
+                    if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
                         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                         store.send(.navigationAction(action: .openNotificationsPermissionScreen))
                     } else {
@@ -87,10 +87,13 @@ extension AppJourney {
                     HostingJourney(
                         SubmitClaimStore.self,
                         rootView: LoadingViewWithContent(.startClaim) {
-                            ClaimFlowAskForPushnotifications(onActionExecuted: {
-                                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                                store.send(.startClaimRequest(with: origin.id))
-                            })
+                            AskForPushnotifications(
+                                text: L10n.claimsActivateNotificationsBody,
+                                onActionExecuted: {
+                                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                                    store.send(.startClaimRequest(with: origin.id))
+                                }
+                            )
                         },
                         style: .detented(.large, modally: false)
                     ) { action in
