@@ -8,8 +8,8 @@ extension AppJourney {
     static func freeTextChat(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
         let chat = Chat()
 
-        return Journey(chat, style: style) { _ in
-            ContinueJourney()
+        return Journey(chat, style: style) { item in
+            item.journey
         }
         .onPresent {
             let giraffe: hGiraffe = Dependencies.shared.resolve()
@@ -34,8 +34,10 @@ extension AppJourney {
     static func claimsChat(style: PresentationStyle = .default) -> some JourneyPresentation {
         let chat = Chat()
 
-        return Journey(chat, style: style) { _ in
-            ContinueJourney()
+        return Journey(chat, style: style) { item in
+            if case .notifications = item {
+                item.journey
+            }
         }
         .onPresent {
             let giraffe: hGiraffe = Dependencies.shared.resolve()

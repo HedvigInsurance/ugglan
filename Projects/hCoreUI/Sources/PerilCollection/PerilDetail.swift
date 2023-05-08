@@ -180,7 +180,6 @@ extension PerilDetail: Presentable {
         swipeHintContainer.addArrangedSubview(swipeHintLabel)
 
         bag += viewController.install(form, scrollView: scrollView)
-
         bag += viewController.currentDetentSignal.animated(style: .lightBounce()) { detent in
             swipeHintBackgroundView.alpha = detent == .large ? 0 : 1
         }

@@ -3,6 +3,7 @@ import Form
 import Foundation
 import Presentation
 import StoreKit
+import SwiftUI
 import UIKit
 
 public class hNavigationController: UINavigationController {
@@ -193,7 +194,7 @@ extension DefaultStyling {
             [NSAttributedString.Key.foregroundColor: UIColor.clear],
             for: .highlighted
         )
-        
+
         UIDatePicker.appearance().tintColor = .brand(.link)
 
         UIImageView.appearance().tintColor = .brand(.primaryTintColor)
@@ -575,7 +576,7 @@ extension DynamicSectionStyle {
 }
 
 extension DynamicFormStyle {
-    static let brandPlain = DynamicFormStyle { trait -> FormStyle in
+    static let brandPlain = DynamicFormStyle { trait in
         if trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular {
             return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
         }
@@ -587,7 +588,7 @@ extension DynamicFormStyle {
         return .init(insets: .zero)
     }
 
-    static let brandGrouped = DynamicFormStyle { trait -> FormStyle in
+    static let brandGrouped = DynamicFormStyle { trait in
         if trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular {
             return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
         }
@@ -599,7 +600,7 @@ extension DynamicFormStyle {
         return .init(insets: .zero)
     }
 
-    public static let brandInset = DynamicFormStyle { trait -> FormStyle in
+    public static let brandInset = DynamicFormStyle { trait in
         if trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular {
             return .init(insets: UIEdgeInsets(top: 0, left: 40, bottom: 0, right: 40))
         }
@@ -622,4 +623,10 @@ extension CGFloat {
     public static var smallCornerRadius: CGFloat = 4
     public static var defaultCornerRadius: CGFloat = 8
     public static var smallIconWidth: CGFloat = 16
+}
+
+extension Squircle {
+    public static func `default`(lineWidth: CGFloat = 0.0) -> Squircle {
+        Squircle(radius: 27.0, smooth: 100.0, lineWidth: lineWidth)
+    }
 }

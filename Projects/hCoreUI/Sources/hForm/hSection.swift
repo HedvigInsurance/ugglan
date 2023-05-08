@@ -101,7 +101,7 @@ extension hSectionContainerStyle: ViewModifier {
             content.background(
                 hBackgroundColor.tertiary
             )
-            .cornerRadius(.defaultCornerRadius)
+            .clipShape(Squircle.default())
             .hShadow()
         case .caution:
             content.background(
