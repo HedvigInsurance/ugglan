@@ -21,31 +21,39 @@ public struct SelectEntrypointNavigation: View {
 
                 hForm {
                     VStack {
-
                         hText(L10n.claimTriagingNavigationTitle, style: .prominentTitle)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding([.trailing, .leading, .bottom], 16)
-
-                        ForEach(claimEntrypoint, id: \.self) { entrypointGroup in
-                            let cardContent = switchContent(entrypointGroup: entrypointGroup)
-                            CardComponent(
-                                onSelected: {
-                                    store.send(
-                                        .entrypointGroupSelected(
-                                            entrypointGroup: ClaimsOrigin.commonClaims(id: entrypointGroup.id)
-                                        )
-                                    )
-                                },
-                                mainContent: cardContent,
-                                title: entrypointGroup.displayName,
-                                text: "För skador som rör din lägenhet, dig själv, dina medförsäkrade och dina saker"
-                            )
+                        VStack {
+                            createCards(claimEntrypoint: claimEntrypoint)
                         }
+                        .padding([.leading, .trailing], 16)
                     }
                 }
             }
             .presentableStoreLensAnimation(.easeInOut)
+        }
+    }
+
+    @ViewBuilder
+    public func createCards(claimEntrypoint: [ClaimEntryPointGroupResponseModel]) -> some View {
+        ForEach(claimEntrypoint, id: \.self) { entrypointGroup in
+            VStack {
+                CardComponent(
+                    onSelected: {
+                        store.send(
+                            .entrypointGroupSelected(
+                                entrypointGroup: ClaimsOrigin.commonClaims(id: entrypointGroup.id)
+                            )
+                        )
+                    },
+                    mainContent: switchContent(entrypointGroup: entrypointGroup),
+                    topTitle: entrypointGroup.displayName,
+                    bottomComponent: returnBottomComponent
+                )
+            }
+            .padding(.bottom, 8)
         }
     }
 
@@ -71,20 +79,11 @@ public struct SelectEntrypointNavigation: View {
                 .frame(width: 48, height: 48)
         }
     }
-}
 
-extension Array {
-
-    func chunked(by distance: Int) -> [[Element]] {
-        precondition(distance > 0, "distance must be greater than 0")  // prevents infinite loop
-
-        if self.count <= distance {
-            return [self]
-        } else {
-            let head = [Array(self[0..<distance])]
-            let tail = Array(self[distance..<self.count])
-            return head + tail.chunked(by: distance)
-        }
+    @ViewBuilder
+    public func returnBottomComponent() -> some View {
+        hText("För skador som rör din lägenhet, dig själv, dina medförsäkrade och dina saker", style: .footnote)
+            .foregroundColor(hLabelColor.secondary)
+            .fixedSize(horizontal: false, vertical: true)
     }
-
 }
