@@ -53,9 +53,10 @@ public struct hCard<Content: View, BgColor: hColor>: View {
         .frame(maxWidth: .infinity)
         .padding()
         .background(backgroundColor)
-        .cornerRadius(.defaultCornerRadius)
+        .clipShape(Squircle.default())
         .overlay(
-            RoundedRectangle(cornerRadius: .defaultCornerRadius).stroke(lineWidth: .hairlineWidth)
+            Squircle.default(lineWidth: .hairlineWidth)
+                .stroke(lineWidth: .hairlineWidth)
                 .foregroundColor(hSeparatorColor.separator)
         )
     }

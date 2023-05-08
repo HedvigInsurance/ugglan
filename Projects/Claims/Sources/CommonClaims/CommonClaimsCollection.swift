@@ -66,7 +66,7 @@ struct CommonClaimButtonStyle: ButtonStyle {
         }
         .frame(maxWidth: .infinity)
         .background(hBackgroundColor.secondary)
-        .cornerRadius(.defaultCornerRadius)
+        .clipShape(Squircle.default())
         .shadow(
             color: .black.opacity(0.1),
             radius: 2,
