@@ -4,10 +4,12 @@ import hCore
 import hCoreUI
 
 public struct SelectEntrypointNavigation: View {
+
     @PresentableStore var store: SubmitClaimStore
     public init() {
         store.send(.fetchEntrypointGroups)
     }
+
     public var body: some View {
         LoadingViewWithContent(.fetchClaimEntrypoints) {
             PresentableStoreLens(
@@ -19,67 +21,54 @@ public struct SelectEntrypointNavigation: View {
 
                 hForm {
                     VStack {
+
                         hText(L10n.claimTriagingNavigationTitle, style: .prominentTitle)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity, alignment: .center)
-                            .padding([.trailing, .leading], 16)
-                            .padding(.bottom, 30)
+                            .padding([.trailing, .leading, .bottom], 16)
+
                         ForEach(claimEntrypoint, id: \.self) { entrypointGroup in
-                            VStack(alignment: .leading, spacing: 0) {
-                                HStack(alignment: .top, spacing: 0) {
-                                    switch entrypointGroup.icon {
-                                    case .home:
-                                        hCoreUIAssets.pillowHome.view
-                                            .resizable()
-                                            .frame(width: 48, height: 48)
-                                    case .accident:
-                                        hCoreUIAssets.pillowAccident.view
-                                            .resizable()
-                                            .frame(width: 48, height: 48)
-                                    case .car:
-                                        hCoreUIAssets.pillowCar.view
-                                            .resizable()
-                                            .frame(width: 48, height: 48)
-                                    case .travel:
-                                        hCoreUIAssets.pillowTravel.view
-                                            .resizable()
-                                            .frame(width: 48, height: 48)
-                                    }
-                                    hText(entrypointGroup.displayName)
-                                        .padding(.leading, 16)
-                                    Spacer()
-                                    hCoreUIAssets.chevronRight.view
-                                }
-                                .padding([.leading, .trailing, .top], 16)
-                                Spacer().frame(height: 20)
-                                SwiftUI.Divider()
-                                    .padding([.leading, .trailing], 16)
-                                hText(
-                                    "För skador som rör din lägenhet, dig själv, dina medförsäkrade och dina saker",
-                                    style: .footnote
-                                )
-                                .foregroundColor(hLabelColor.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .padding(16)
-                            }
-                            .onTapGesture {
-                                store.send(
-                                    //                                    .entrypointGroupSelected(entrypointGroup: ClaimsOrigin.commonClaims(id: claimEntrypoint.id))
-                                    .entrypointGroupSelected(entrypointGroup: ClaimsOrigin.commonClaims(id: "id"))
-                                )
-                            }
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(hBackgroundColor.primary)
-                                    .hShadow()
+                            let cardContent = switchContent(entrypointGroup: entrypointGroup)
+                            CardComponent(
+                                onSelected: {
+                                    store.send(
+                                        .entrypointGroupSelected(
+                                            entrypointGroup: ClaimsOrigin.commonClaims(id: entrypointGroup.id)
+                                        )
+                                    )
+                                },
+                                mainContent: cardContent,
+                                title: entrypointGroup.displayName,
+                                text: "För skador som rör din lägenhet, dig själv, dina medförsäkrade och dina saker"
                             )
-                            .padding([.leading, .trailing], 16)
-                            .padding([.top, .bottom], 8)
                         }
                     }
                 }
             }
             .presentableStoreLensAnimation(.easeInOut)
+        }
+    }
+
+    @ViewBuilder
+    public func switchContent(entrypointGroup: ClaimEntryPointGroupResponseModel) -> some View {
+        switch entrypointGroup.icon {
+        case .home:
+            hCoreUIAssets.pillowHome.view
+                .resizable()
+                .frame(width: 48, height: 48)
+
+        case .accident:
+            hCoreUIAssets.pillowAccident.view
+                .resizable()
+                .frame(width: 48, height: 48)
+        case .car:
+            hCoreUIAssets.pillowCar.view
+                .resizable()
+                .frame(width: 48, height: 48)
+        case .travel:
+            hCoreUIAssets.pillowTravel.view
+                .resizable()
+                .frame(width: 48, height: 48)
         }
     }
 }
