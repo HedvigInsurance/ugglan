@@ -2,21 +2,21 @@ import Foundation
 import SwiftUI
 import hCore
 
-public struct CardComponent<Content, Content2>: View where Content: View, Content2: View {
+public struct CardComponent<MainContent, BottomContent>: View where MainContent: View, BottomContent: View {
     var onSelected: (() -> Void)?
-    let mainContent: Content?
+    let mainContent: MainContent?
     let topTitle: String?
     let title: String?
     let subTitle: String?
-    let bottomComponent: () -> Content2
+    let bottomComponent: () -> BottomContent
 
     public init(
         onSelected: (() -> Void)? = nil,
-        mainContent: Content? = nil,
+        mainContent: MainContent? = nil,
         title: String? = nil,
         subTitle: String? = nil,
         topTitle: String? = nil,
-        bottomComponent: @escaping () -> Content2
+        bottomComponent: @escaping () -> BottomContent
     ) {
         self.onSelected = onSelected
         self.mainContent = mainContent
