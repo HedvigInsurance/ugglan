@@ -121,7 +121,6 @@ public struct Contract: Codable, Hashable, Equatable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
-
         if let logo = contract.logo {
             self.logo = .init(fragment: logo.fragments.iconFragment)
         } else {
@@ -229,16 +228,16 @@ public struct Contract: Codable, Hashable, Equatable {
             )
             return .unknown
         }
-        
-        public var hasTravelInsurance: Bool {
-            switch self {
-            case .seHouse, .seApartmentBrf, .seApartmentRent, .seApartmentStudentBrf, .seApartmentStudentRent, .seGroupApartmentRent:
-                return true
-            default:
-                return false
-            }
-        }
+        fileprivate static let insurancesSuitableForTravelInsurance:[Contract.TypeOfContract] = [.seHouse, .seApartmentBrf, .seApartmentRent, .seApartmentStudentBrf, .seApartmentStudentRent, .seGroupApartmentRent]
     }
+    
+    public var hasTravelInsurance: Bool {
+        let suitableType = Contract.TypeOfContract.insurancesSuitableForTravelInsurance.contains(self.typeOfContract)
+        let suitableStatus = [ContractStatus.active, ContractStatus.activeInFuture].contains(self.currentAgreement?.status ?? .terminated)
+        return suitableType && suitableStatus
+    }
+    
+
 }
 
 extension Contract.TypeOfContract {

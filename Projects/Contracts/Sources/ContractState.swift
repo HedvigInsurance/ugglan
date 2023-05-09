@@ -51,7 +51,7 @@ extension ContractState {
     }
     
     public var isTravelInsuranceIncluded: Bool {
-        return contractBundles.flatMap({$0.contracts}).contains(where: {$0.typeOfContract.hasTravelInsurance}) && hAnalyticsExperiment.travelInsurance
+        return contractBundles.flatMap({$0.contracts}).contains(where: {$0.hasTravelInsurance}) && hAnalyticsExperiment.travelInsurance
     }
 }
 
