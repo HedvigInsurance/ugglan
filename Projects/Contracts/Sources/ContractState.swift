@@ -4,7 +4,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hGraphQL
-
+import hAnalytics
 public struct ContractState: StateProtocol {
 
     public init() {}
@@ -51,7 +51,7 @@ extension ContractState {
     }
     
     public var isTravelInsuranceIncluded: Bool {
-        return contractBundles.flatMap({$0.contracts}).contains(where: {$0.typeOfContract.hasTravelInsurance})
+        return contractBundles.flatMap({$0.contracts}).contains(where: {$0.typeOfContract.hasTravelInsurance}) && hAnalyticsExperiment.travelInsurance
     }
 }
 

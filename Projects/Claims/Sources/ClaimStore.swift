@@ -74,7 +74,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.loadingStates.removeValue(forKey: .fetchCommonClaims)
             newState.commonClaims = commonClaims
         case let .setShowTravelInsurance(shouldIncludeTravelInsurance):
-//            hAnalyticsExperiment.travelInsurance &&
             newState.showTravelInsurance = shouldIncludeTravelInsurance
         case let .setLoadingState(action, state):
             if let state {
