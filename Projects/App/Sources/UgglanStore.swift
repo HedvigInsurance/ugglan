@@ -19,14 +19,13 @@ struct UgglanState: StateProtocol {
             }
     }
 
-    func askForPushNotificationPermission() -> Bool {
-        if let status = pushNotificationStatus, let status = UNAuthorizationStatus(rawValue: status),
-            status != .notDetermined
-        {
-            return false
+    func pushNotificationCurrentStatus() -> UNAuthorizationStatus {
+        if let status = pushNotificationStatus, let status = UNAuthorizationStatus(rawValue: status) {
+            return status
         }
-        return true
+        return .notDetermined
     }
+
 }
 
 enum UgglanAction: ActionProtocol {
