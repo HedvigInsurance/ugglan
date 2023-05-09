@@ -51,6 +51,8 @@ struct CommonClaimButtonStyle: ButtonStyle {
                 if let icon = claim.icon {
                     RemoteVectorIconView(icon: icon, backgroundFetch: true)
                         .frame(width: 24, height: 24)
+                }else if let color = claim.iconColor {
+                    Color(hexString: color).frame(width: 16, height: 16).clipShape(Circle()).padding(4)
                 }
 
                 Spacer()
@@ -66,7 +68,7 @@ struct CommonClaimButtonStyle: ButtonStyle {
         }
         .frame(maxWidth: .infinity)
         .background(hBackgroundColor.secondary)
-        .cornerRadius(.defaultCornerRadius)
+        .clipShape(Squircle.default())
         .shadow(
             color: .black.opacity(0.1),
             radius: 2,
