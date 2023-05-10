@@ -50,7 +50,6 @@ public struct SelectEntrypointNavigation: View {
                         .padding(.leading, 24)
                         .padding(.top, 72)
                 }
-                .background(hBackgroundColor.primary)
             }
             .presentableStoreLensAnimation(.easeInOut)
         }
