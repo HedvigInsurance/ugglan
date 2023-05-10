@@ -96,7 +96,7 @@ public enum Localization {
             case .fr_FR: return "fr-en"
             }
         }
-        
+
         public var priceQoutePath: String {
             switch self {
             case .sv_SE: return "forsakringar"
