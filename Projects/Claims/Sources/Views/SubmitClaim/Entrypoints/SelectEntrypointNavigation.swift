@@ -19,11 +19,20 @@ public struct SelectEntrypointNavigation: View {
                 }
             ) { claimEntrypoint in
 
-                hForm {
-                    hText(L10n.claimTriagingNavigationTitle, style: .prominentTitle)
+                //                PresentableStoreLens(
+                //                    ProfileStore.self,
+                //                    getter: { state in
+                //                        state.memberFullName
+                //                    }
+                //                ) { profile in
+
+                hFormNew {
+                    hText(L10n.claimTriagingAboutTitile("Julia"), style: .prominentTitle)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity, alignment: .center)
-                        .padding([.trailing, .leading, .bottom], 16)
+                        .padding(.bottom, 40)
+                        .padding([.trailing, .leading], 16)
+
                     ForEach(claimEntrypoint, id: \.self) { entrypointGroup in
                         VStack(spacing: 0) {
                             TextBoxComponent(
@@ -52,9 +61,17 @@ public struct SelectEntrypointNavigation: View {
                     //                            createCards(claimEntrypoint: claimEntrypoint)
                     //                        }
                     //                        .padding([.leading, .trailing], 16)
-                    //                    }
+                    //
+
+                    hText(L10n.InsurancesTab.terminatedInsurancesLabel, style: .title2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 24)
+                        .padding(.top, 72)
+                    //                }
                 }
+                .background(hBackgroundColor.primary)
             }
+            //            }
             .presentableStoreLensAnimation(.easeInOut)
         }
     }

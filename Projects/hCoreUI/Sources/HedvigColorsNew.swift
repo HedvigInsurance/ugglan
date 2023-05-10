@@ -3,7 +3,14 @@ import Foundation
 import UIKit
 import hCore
 
-extension UIColor { private enum BrandColorBase {
+extension UIColor { private enum BrandColorBaseNew {
+
+    static let greyScale25 = UIColor(red: 250, green: 250, blue: 250, alpha: 1)  // #FAFAFA Off-White
+    static let greyScale50 = UIColor(red: 245, green: 245, blue: 245, alpha: 0.1)  // #F5F5F5
+    static let greyScale100 = UIColor(red: 240, green: 240, blue: 240, alpha: 1)  // #F0F0F0
+    static let greyScale200 = UIColor(red: 234, green: 234, blue: 234, alpha: 1)  // #EAEAEA
+    static let greyScale300 = UIColor(red: 224, green: 224, blue: 224, alpha: 1)  // #E0E0E0
+    static let greyScale400 = UIColor(red: 207, green: 207, blue: 207, alpha: 1)  // #CFCFCF
     static let almostBlack = UIColor(red: 0.04, green: 0.04, blue: 0.04, alpha: 1.0)
     static let offWhite = UIColor(red: 0.98, green: 0.98, blue: 0.99, alpha: 1.0)
     static let offBlack = UIColor(red: 0.25, green: 0.25, blue: 0.31, alpha: 1.0)
@@ -13,13 +20,13 @@ extension UIColor { private enum BrandColorBase {
     static let darkGray = UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.15)
     static let lightGray = UIColor(red: 0.91, green: 0.93, blue: 0.94, alpha: 1.0)
     static let tertiaryText = UIColor(dynamic: { trait -> UIColor in
-        trait.userInterfaceStyle == .dark ? BrandColorBase.lightGray : BrandColorBase.darkGray
+        trait.userInterfaceStyle == .dark ? BrandColorBaseNew.lightGray : BrandColorBaseNew.darkGray
     })
     static let primaryTextMuted = UIColor(dynamic: { trait -> UIColor in
-        trait.userInterfaceStyle == .dark ? BrandColorBase.lightGray : BrandColorBase.darkGray
+        trait.userInterfaceStyle == .dark ? BrandColorBaseNew.lightGray : BrandColorBaseNew.darkGray
     })
     static let secondaryText = UIColor(dynamic: { trait -> UIColor in
-        trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.offBlack
+        trait.userInterfaceStyle == .dark ? BrandColorBaseNew.white : BrandColorBaseNew.offBlack
     })
     static let lavender = UIColor(dynamic: { trait -> UIColor in
         trait.userInterfaceStyle == .dark
@@ -28,10 +35,10 @@ extension UIColor { private enum BrandColorBase {
     })
     static var primaryBorder = UIColor(dynamic: { trait -> UIColor in
         trait.userInterfaceStyle == .dark
-            ? UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.15) : BrandColorBase.grayBorder
+            ? UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.15) : BrandColorBaseNew.grayBorder
     })
     static let grayBorder = UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.12)
-    static let link = UIColor.tint(.lavenderOne)
+    //    static let link = UIColor.tint(.lavenderOneNew)
     static let caution = UIColor(red: 0.95, green: 0.783, blue: 0.321, alpha: 1)
     static let destructive = UIColor(dynamic: { trait -> UIColor in
         trait.userInterfaceStyle == .dark
@@ -40,12 +47,12 @@ extension UIColor { private enum BrandColorBase {
     })
 }
 
-private enum Grayscale {
+private enum GrayscaleNew {
     static let hGray1 = UIColor(red: 0.918, green: 0.918, blue: 0.918, alpha: 1)
     static let hGray5 = UIColor(red: 0.145, green: 0.145, blue: 0.145, alpha: 1)
 }
 
-public enum BrandColor {
+public enum BrandColorNew {
     case primaryBackground(_ negative: Bool = false)
     case secondaryBackground(_ negative: Bool = false)
     case primaryText(_ negative: Bool = false)
@@ -53,7 +60,7 @@ public enum BrandColor {
     case secondaryText
     case tertiaryText
     case primaryTintColor
-    case link
+    //    case link
     case primaryButtonBackgroundColor
     case secondaryButtonBackgroundColor
     case primaryButtonTextColor
@@ -71,75 +78,75 @@ public enum BrandColor {
             if negative {
                 return UIColor(dynamic: { trait -> UIColor in
                     trait.userInterfaceStyle == .dark
-                        ? BrandColorBase.offWhite : BrandColorBase.almostBlack
+                        ? BrandColorBaseNew.greyScale50 : BrandColorBaseNew.almostBlack
                 })
             }
 
             return UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? BrandColorBase.almostBlack : BrandColorBase.offWhite
+                trait.userInterfaceStyle == .dark ? BrandColorBaseNew.almostBlack : BrandColorBaseNew.greyScale50
             })
         case let .secondaryBackground(negative):
             if negative {
                 return UIColor(dynamic: { trait -> UIColor in
                     trait.userInterfaceStyle == .dark
-                        ? BrandColorBase.white
-                        : BrandColorBase.almostBlack.lighter(amount: 0.10)
+                        ? BrandColorBaseNew.white
+                        : BrandColorBaseNew.almostBlack.lighter(amount: 0.10)
                 })
             }
 
             return UIColor(dynamic: { trait -> UIColor in
                 trait.userInterfaceStyle == .dark
-                    ? BrandColorBase.almostBlack.lighter(amount: 0.10) : BrandColorBase.white
+                    ? BrandColorBaseNew.almostBlack.lighter(amount: 0.10) : BrandColorBaseNew.white
             })
         case let .primaryText(negative):
             if negative {
                 return UIColor(dynamic: { trait -> UIColor in
-                    trait.userInterfaceStyle == .dark ? BrandColorBase.black : BrandColorBase.white
+                    trait.userInterfaceStyle == .dark ? BrandColorBaseNew.black : BrandColorBaseNew.white
                 })
             }
 
             return UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.black
+                trait.userInterfaceStyle == .dark ? BrandColorBaseNew.white : BrandColorBaseNew.black
             })
-        case .secondaryText: return BrandColorBase.secondaryText
+        case .secondaryText: return BrandColorBaseNew.secondaryText
         case .primaryTintColor:
             return UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.black
+                trait.userInterfaceStyle == .dark ? BrandColorBaseNew.white : BrandColorBaseNew.black
             })
-        case .primaryButtonBackgroundColor: return BrandColorBase.lavender
-        case .primaryButtonTextColor: return BrandColorBase.black
+        case .primaryButtonBackgroundColor: return BrandColorBaseNew.lavender
+        case .primaryButtonTextColor: return BrandColorBaseNew.black
         case .secondaryButtonBackgroundColor:
             return UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? BrandColorBase.lavender : BrandColorBase.black
+                trait.userInterfaceStyle == .dark ? BrandColorBaseNew.lavender : BrandColorBaseNew.black
             })
         case .secondaryButtonTextColor:
             return UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? BrandColorBase.black : BrandColorBase.white
+                trait.userInterfaceStyle == .dark ? BrandColorBaseNew.black : BrandColorBaseNew.white
             })
         case .primaryShadowColor:
             return UIColor(dynamic: { trait -> UIColor in
-                trait.userInterfaceStyle == .dark ? BrandColorBase.transparent : BrandColorBase.darkGray
+                trait.userInterfaceStyle == .dark ? BrandColorBaseNew.transparent : BrandColorBaseNew.darkGray
             })
-        case .tertiaryText: return BrandColorBase.tertiaryText
-        case .primaryTextMuted: return BrandColorBase.primaryTextMuted
-        case .regularCaution: return BrandColorBase.caution
-        case .primaryBorderColor: return BrandColorBase.primaryBorder
-        case .link: return BrandColorBase.link
-        case .destructive: return BrandColorBase.destructive
+        case .tertiaryText: return BrandColorBaseNew.tertiaryText
+        case .primaryTextMuted: return BrandColorBaseNew.primaryTextMuted
+        case .regularCaution: return BrandColorBaseNew.caution
+        case .primaryBorderColor: return BrandColorBaseNew.primaryBorder
+        //        case .link: return BrandColorBaseNew.link
+        case .destructive: return BrandColorBaseNew.destructive
         case .secondaryShadowColor: return UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
         case let .embarkMessageBubble(negative):
-            if negative { return BrandColorBase.lavender }
+            if negative { return BrandColorBaseNew.lavender }
 
             return UIColor { (trait) -> UIColor in
-                trait.userInterfaceStyle == .dark ? Grayscale.hGray5 : Grayscale.hGray1
+                trait.userInterfaceStyle == .dark ? GrayscaleNew.hGray5 : GrayscaleNew.hGray1
             }
         }
     }
 }
 
-public static func brand(_ color: BrandColor) -> UIColor { color.color }
+public static func brandNew(_ color: BrandColorNew) -> UIColor { color.color }
 
-    public enum TintColor {
+    public enum TintColorNew {
         case yellowOne
         case yellowTwo
         case lavenderOne
@@ -218,9 +225,9 @@ public static func brand(_ color: BrandColor) -> UIColor { color.color }
         }
     }
 
-    public static func tint(_ tint: TintColor) -> UIColor { tint.color }
+    public static func tintNew(_ tint: TintColor) -> UIColor { tint.color }
 
-    public enum GrayscaleColor {
+    public enum GrayscaleColorNew {
         case grayOne
         case grayFive
 
@@ -239,9 +246,9 @@ public static func brand(_ color: BrandColor) -> UIColor { color.color }
         }
     }
 
-    public static func grayscale(_ grayscale: GrayscaleColor) -> UIColor { grayscale.color }
+    public static func grayscaleNew(_ grayscale: GrayscaleColor) -> UIColor { grayscale.color }
 
-    public enum TypographyColor { case primary(state: State)
+    public enum TypographyColorNew { case primary(state: State)
         case secondary(state: State)
         case tertiary(state: State)
         case quartenary(state: State)
@@ -340,5 +347,5 @@ public static func brand(_ color: BrandColor) -> UIColor { color.color }
         }
     }
 
-    public static func typographyColor(_ typographyColor: TypographyColor) -> UIColor { typographyColor.color }
+    public static func typographyColorNew(_ typographyColor: TypographyColor) -> UIColor { typographyColor.color }
 }

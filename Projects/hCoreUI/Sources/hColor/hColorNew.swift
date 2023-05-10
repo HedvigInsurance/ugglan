@@ -305,6 +305,50 @@ public struct hBackgroundColorNew {
 }
 
 public struct hGrayscaleColorNew {
+
+    public static var greyScale25: some hColor {
+        hColorScheme(
+            Color(hexString: "FAFAFA")
+        )
+    }
+
+    public static var greyScale50: some hColor {
+        hColorScheme(
+            Color(hexString: "F5F5F5")
+        )
+    }
+
+    public static var greyScale100: some hColor {
+        hColorScheme(
+            Color(hexString: "F0F0F0")
+        )
+    }
+
+    public static var greyScale200: some hColor {
+        hColorScheme(
+            Color(hexString: "EAEAEA")
+        )
+    }
+
+    public static var greyScale300: some hColor {
+        hColorScheme(
+            Color(hexString: "E0E0E0")
+        )
+    }
+
+    public static var greyScale400: some hColor {
+        hColorScheme(
+            Color(hexString: "CFCFCF")
+        )
+    }
+
+    //    static let greyScale25 = UIColor(red: 250, green: 250, blue: 250, alpha: 1) // #FAFAFA Off-White
+    //    static let greyScale50 = UIColor(red: 245, green: 245, blue: 245, alpha: 0.1) // #F5F5F5
+    //    static let greyScale100 = UIColor(red: 240, green: 240, blue: 240, alpha: 1) // #F0F0F0
+    //    static let greyScale200 = UIColor(red: 234, green: 234, blue: 234, alpha: 1) // #EAEAEA
+    //    static let greyScale300 = UIColor(red: 224, green: 224, blue: 224, alpha: 1) // #E0E0E0
+    //    static let greyScale400 = UIColor(red: 207, green: 207, blue: 207, alpha: 1) // #CFCFCF
+
     //    public static var one: some hColor {
     //        hColorScheme(
     //            Color(hexString: "EAEAEA")
