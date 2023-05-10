@@ -165,7 +165,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                     self.octopus.client.fetch(query: query)
                     .onValue { data in
                         let model = data.entrypointGroups.map {
-                            ClaimEntryPointGroupResponseModel(id: $0.id, displayName: $0.displayName, icon: .travel)
+                            ClaimEntryPointGroupResponseModel(id: $0.id, displayName: $0.displayName, icon: $0.iconUrl)
                         }
                         callback(.value(.setClaimEntrypointGroupsForSelection(model)))
                         callback(.value(.setLoadingState(action: .fetchClaimEntrypointGroups, state: nil)))

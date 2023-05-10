@@ -19,9 +19,6 @@ fragment FlowClaimFragment on Flow {
     ...FlowClaimSingleItemStepFragment
     ...FlowClaimSuccessStepFragment
     ...FlowClaimSummaryStepFragment
-    ...FlowTerminationDateStepFragment
-    ...FlowTerminationFailedStepFragment
-    ...FlowTerminationSuccessStepFragment
   }
 }
 

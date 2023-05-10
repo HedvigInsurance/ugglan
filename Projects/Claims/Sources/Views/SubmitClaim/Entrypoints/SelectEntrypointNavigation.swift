@@ -1,3 +1,4 @@
+import Contracts
 import Presentation
 import SwiftUI
 import hCore
@@ -49,33 +50,48 @@ public struct SelectEntrypointNavigation: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 24)
                         .padding(.top, 72)
+
+                    PresentableStoreLens(
+                        ContractStore.self,
+                        getter: { state in
+                            state.contracts
+                        }
+                    ) { contracts in
+                        ForEach(contracts, id: \.self) { contract in
+                            if contract.currentAgreement?.status == .terminated {
+                                VStack(spacing: 0) {
+                                    TextBoxComponent(
+                                        onSelected: {
+                                            //                                        store.send(
+                                            //                                            .entrypointGroupSelected(
+                                            //                                                entrypointGroup: ClaimsOrigin.commonClaims(id: entrypointGroup.id)
+                                            //                                            )
+                                            //                                        )
+                                        },
+                                        //                                    mainContent: switchContent(entrypointGroup: entrypointGroup),
+                                        mainContent: hCoreUIAssets.pillowHome.view
+                                            .resizable()
+                                            .frame(width: 48, height: 48),
+                                        subTitle: "subtitle here",
+                                        topTitle: contract.displayName
+                                    )
+                                }
+                                .padding([.trailing, .leading], 16)
+                                .padding(.bottom, 8)
+                            }
+                        }
+                    }
                 }
             }
             .presentableStoreLensAnimation(.easeInOut)
         }
     }
 
-    @ViewBuilder
     public func switchContent(entrypointGroup: ClaimEntryPointGroupResponseModel) -> some View {
-        switch entrypointGroup.icon {
-        case .home:
-            hCoreUIAssets.pillowHome.view
-                .resizable()
-                .frame(width: 48, height: 48)
-
-        case .accident:
-            hCoreUIAssets.pillowAccident.view
-                .resizable()
-                .frame(width: 48, height: 48)
-        case .car:
-            hCoreUIAssets.pillowCar.view
-                .resizable()
-                .frame(width: 48, height: 48)
-        case .travel:
-            hCoreUIAssets.pillowTravel.view
-                .resizable()
-                .frame(width: 48, height: 48)
-        }
+        Image(systemName: "circle.fill")
+            .data(url: (URL(string: entrypointGroup.icon) ?? URL(string: ""))!)
+            .resizable()
+            .frame(width: 48, height: 48)
     }
 
     @ViewBuilder
@@ -83,5 +99,17 @@ public struct SelectEntrypointNavigation: View {
         hText("För skador som rör din lägenhet, dig själv, dina medförsäkrade och dina saker", style: .footnote)
             .foregroundColor(hLabelColor.secondary)
             .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+extension Image {
+    func data(url: URL) -> Self {
+        if let data = try? Data(contentsOf: url) {
+            return Image(uiImage: UIImage(data: data)!)
+                .resizable()
+        }
+        return
+            self
+            .resizable()
     }
 }
