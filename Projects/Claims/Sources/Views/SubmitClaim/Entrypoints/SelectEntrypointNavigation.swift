@@ -19,13 +19,6 @@ public struct SelectEntrypointNavigation: View {
                 }
             ) { claimEntrypoint in
 
-                //                PresentableStoreLens(
-                //                    ProfileStore.self,
-                //                    getter: { state in
-                //                        state.memberFullName
-                //                    }
-                //                ) { profile in
-
                 hFormNew {
                     hText(L10n.claimTriagingAboutTitile("Julia"), style: .prominentTitle)
                         .multilineTextAlignment(.center)
@@ -52,50 +45,16 @@ public struct SelectEntrypointNavigation: View {
                         .padding(.bottom, 8)
                     }
 
-                    //                    VStack {
-                    //                        hText(L10n.claimTriagingNavigationTitle, style: .prominentTitle)
-                    //                            .multilineTextAlignment(.center)
-                    //                            .frame(maxWidth: .infinity, alignment: .center)
-                    //                            .padding([.trailing, .leading, .bottom], 16)
-                    //                        VStack {
-                    //                            createCards(claimEntrypoint: claimEntrypoint)
-                    //                        }
-                    //                        .padding([.leading, .trailing], 16)
-                    //
-
                     hText(L10n.InsurancesTab.terminatedInsurancesLabel, style: .title2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 24)
                         .padding(.top, 72)
-                    //                }
                 }
                 .background(hBackgroundColor.primary)
             }
-            //            }
             .presentableStoreLensAnimation(.easeInOut)
         }
     }
-
-    //    @ViewBuilder
-    //    public func createCards(claimEntrypoint: [ClaimEntryPointGroupResponseModel]) -> some View {
-    //        ForEach(claimEntrypoint, id: \.self) { entrypointGroup in
-    //            VStack {
-    //                CardComponent(
-    //                    onSelected: {
-    //                        store.send(
-    //                            .entrypointGroupSelected(
-    //                                entrypointGroup: ClaimsOrigin.commonClaims(id: entrypointGroup.id)
-    //                            )
-    //                        )
-    //                    },
-    //                    mainContent: switchContent(entrypointGroup: entrypointGroup),
-    //                    topTitle: entrypointGroup.displayName,
-    //                    bottomComponent: returnBottomComponent
-    //                )
-    //            }
-    //            .padding(.bottom, 8)
-    //        }
-    //    }
 
     @ViewBuilder
     public func switchContent(entrypointGroup: ClaimEntryPointGroupResponseModel) -> some View {
