@@ -1,4 +1,5 @@
 import Contracts
+import Home
 import Kingfisher
 import Presentation
 import SwiftUI
@@ -22,12 +23,20 @@ public struct SelectEntrypointNavigation: View {
             ) { claimEntrypoint in
 
                 hFormNew {
-                    hText(L10n.claimTriagingAboutTitile("Julia"), style: .prominentTitle)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.bottom, 40)
-                        .padding([.trailing, .leading], 16)
-
+                    PresentableStoreLens(
+                        HomeStore.self,
+                        getter: { state in
+                            state.memberStateData
+                        }
+                    ) { memberStateData in
+                        if let name = memberStateData.name {
+                            hText(L10n.claimTriagingAboutTitile(name), style: .prominentTitle)
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.bottom, 40)
+                                .padding([.trailing, .leading], 16)
+                        }
+                    }
                     ForEach(claimEntrypoint, id: \.self) { entrypointGroup in
                         VStack(spacing: 0) {
                             TextBoxComponent(
