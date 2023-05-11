@@ -97,6 +97,14 @@ public enum Localization {
             }
         }
 
+        public var priceQoutePath: String {
+            switch self {
+            case .sv_SE: return "forsakringar"
+            case .en_SE: return "insurances"
+            default: return "new-member"
+            }
+        }
+
         public var code: String {
             switch self {
             case .sv_SE: return "sv_SE"
