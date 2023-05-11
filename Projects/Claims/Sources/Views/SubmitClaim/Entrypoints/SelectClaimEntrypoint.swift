@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct SelectClaimEntrypoint: View {
     @PresentableStore var store: SubmitClaimStore
-    @State private var totalHeight = CGFloat.zero
+    @State private var height = CGFloat.zero
     @State var selectedClaimType: String = ""
     var tags: [ClaimEntryPointResponseModel]?
 
@@ -20,39 +20,36 @@ public struct SelectClaimEntrypoint: View {
                 hText(L10n.claimTriagingTitle, style: .prominentTitle)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding([.trailing, .leading, .bottom], 16)
+                    .padding([.trailing, .leading], 16)
+                    .padding([.bottom], 100)
 
                 VStack {
                     GeometryReader { geometry in
                         self.generateContent(in: geometry)
+                            .background(viewHeight(for: $height))
                     }
+                    .frame(height: height)
+                    .padding([.trailing, .leading], 16)
                 }
-                .frame(height: totalHeight)
-                .padding([.leading, .trailing], 16)
-
-                VStack {
-
-                    hButton.LargeButtonFilled {
-                        store.send(
-                            .commonClaimOriginSelected(commonClaim: ClaimsOrigin.commonClaims(id: selectedClaimType))
-                        )
-                    } content: {
-                        hText(L10n.generalContinueButton)
-                            .foregroundColor(hLabelColor.primary).colorInvert()
-                    }
+                .background(hGrayscaleColorNew.greyScale100)
+                hButton.LargeButtonFilled {
+                    store.send(
+                        .commonClaimOriginSelected(commonClaim: ClaimsOrigin.commonClaims(id: selectedClaimType))
+                    )
+                } content: {
+                    hText(L10n.generalContinueButton)
+                        .foregroundColor(hLabelColor.primary).colorInvert()
                 }
                 .padding([.trailing, .leading], 16)
-                .padding(.top, (totalHeight))
             }
         }
-        .navigationTitle("Bellmansgatan 19A")
+        //        .navigationTitle("Bellmansgatan 19A")
     }
 
-    func generateContent(in g: GeometryProxy) -> some View {
-        var width = CGFloat.zero
-        var height = CGFloat.zero
+    func generateContent(in geometry: GeometryProxy) -> some View {
+        var bounds = CGSize.zero
 
-        return ZStack(alignment: .topLeading) {
+        return ZStack {
             PresentableStoreLens(
                 SubmitClaimStore.self,
                 getter: { state in
@@ -83,59 +80,31 @@ public struct SelectClaimEntrypoint: View {
                             .hShadow()
                     )
                     .padding([.trailing, .bottom], 8)
-                    .alignmentGuide(
-                        .leading,
-                        computeValue: { d in
-                            if abs(width - d.width) > g.size.width {
-                                width = 0
-                                height -= d.height
-                            }
-                            let result = width
-                            if claimType == self.tags?.last! {
-                                width = 0
-                            } else {
-                                width -= d.width
-                            }
-                            return result
-                        }
-                    )
-                    .padding(.top, 16)
-                    .alignmentGuide(
-                        .top,
-                        computeValue: { d in
-                            let result = height
-                            if claimType == self.tags?.last! {
-                                height = 0
-                            }
-                            return result  // 0 doesn't start at same place always
-                        }
-                    )
-                }
-                //                hText("Test")
-                //                    .alignmentGuide(
-                //                        .top,
-                //                        computeValue: { d in
-                //                            let result = height
-                ////                            if claimType == self.tags?.last! {
-                ////                                height = 0
-                ////                            }
-                //                            return height // 0 doesn't start at same place always
-                //                        }
-                //                    )
-                ////                .padding([.trailing, .leading, .top], 16)
-                ////                .padding([.top], 16)
-            }
-        }
-        .background(viewHeightReader($totalHeight))
-    }
+                    .alignmentGuide(VerticalAlignment.center) { dimension in
+                        let result = bounds.height
 
-    func viewHeightReader(_ binding: Binding<CGFloat>) -> some View {
-        return GeometryReader { geometry -> Color in
-            let rect = geometry.frame(in: .local)
-            DispatchQueue.main.async {
-                binding.wrappedValue = rect.size.height
+                        if let firstItem = claimEntrypoint.first, claimType == firstItem {
+                            bounds.height = 0
+                        }
+                        return result
+                    }
+                    .alignmentGuide(HorizontalAlignment.center) { dimension in
+                        if abs(bounds.width - dimension.width) > geometry.size.width {
+                            bounds.width = 0
+                            bounds.height -= dimension.height
+                        }
+
+                        let result = bounds.width
+
+                        if let firstItem = claimEntrypoint.first, claimType == firstItem {
+                            bounds.width = 0
+                        } else {
+                            bounds.width -= dimension.width
+                        }
+                        return result
+                    }
+                }
             }
-            return .clear
         }
     }
 
@@ -145,6 +114,17 @@ public struct SelectClaimEntrypoint: View {
             hTintColorNew.green50
         } else {
             hGrayscaleColorNew.greyScale100
+        }
+    }
+
+    private func viewHeight(for binding: Binding<CGFloat>) -> some View {
+        GeometryReader { geometry -> Color in
+            let rect = geometry.frame(in: .local)
+
+            DispatchQueue.main.async {
+                binding.wrappedValue = rect.size.height
+            }
+            return .clear
         }
     }
 }
