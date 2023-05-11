@@ -73,7 +73,6 @@ public struct SelectClaimEntrypoint: View {
                                 .fill(retColor(claimId: tag))
                                 .hShadow()
                         )
-                        .padding([.trailing, .bottom], 8)
 
                     }
                     .padding([.leading, .trailing], 16)
