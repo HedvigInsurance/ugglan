@@ -31,7 +31,6 @@ public struct SelectClaimEntrypoint: View {
                     .frame(height: height)
                     .padding([.trailing, .leading], 16)
                 }
-                .background(hGrayscaleColorNew.greyScale100)
                 hButton.LargeButtonFilled {
                     store.send(
                         .commonClaimOriginSelected(commonClaim: ClaimsOrigin.commonClaims(id: selectedClaimType))
