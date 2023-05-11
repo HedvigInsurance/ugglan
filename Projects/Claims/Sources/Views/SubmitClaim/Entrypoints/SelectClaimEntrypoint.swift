@@ -29,19 +29,23 @@ public struct SelectClaimEntrypoint: View {
                 }
                 .frame(height: totalHeight)
                 .padding([.leading, .trailing], 16)
-            }
-            .hFormAttachToBottom {
-                hButton.LargeButtonFilled {
-                    store.send(
-                        .commonClaimOriginSelected(commonClaim: ClaimsOrigin.commonClaims(id: selectedClaimType))
-                    )
-                } content: {
-                    hText(L10n.generalContinueButton)
-                        .foregroundColor(hLabelColor.primary).colorInvert()
+
+                VStack {
+
+                    hButton.LargeButtonFilled {
+                        store.send(
+                            .commonClaimOriginSelected(commonClaim: ClaimsOrigin.commonClaims(id: selectedClaimType))
+                        )
+                    } content: {
+                        hText(L10n.generalContinueButton)
+                            .foregroundColor(hLabelColor.primary).colorInvert()
+                    }
                 }
                 .padding([.trailing, .leading], 16)
+                .padding(.top, (totalHeight))
             }
         }
+        .navigationTitle("Bellmansgatan 19A")
     }
 
     func generateContent(in g: GeometryProxy) -> some View {
@@ -75,14 +79,8 @@ public struct SelectClaimEntrypoint: View {
                     .padding([.top, .bottom], 8)
                     .background(
                         Squircle.default()
-                            .fill((selectedClaimType == claimType.id) ? .green : .gray)
+                            .fill(retColor(claimId: claimType.id))
                             .hShadow()
-                    )
-                    .overlay(
-                        Squircle.default(lineWidth: .hairlineWidth)
-                            .stroke(lineWidth: .hairlineWidth)
-                            .cornerRadius(.smallCornerRadiusNew)
-                            .foregroundColor(hSeparatorColor.separator)
                     )
                     .padding([.trailing, .bottom], 8)
                     .alignmentGuide(
@@ -101,6 +99,7 @@ public struct SelectClaimEntrypoint: View {
                             return result
                         }
                     )
+                    .padding(.top, 16)
                     .alignmentGuide(
                         .top,
                         computeValue: { d in
@@ -108,11 +107,23 @@ public struct SelectClaimEntrypoint: View {
                             if claimType == self.tags?.last! {
                                 height = 0
                             }
-                            return result
+                            return result  // 0 doesn't start at same place always
                         }
                     )
                 }
-                .padding([.trailing, .leading, .top], 16)
+                //                hText("Test")
+                //                    .alignmentGuide(
+                //                        .top,
+                //                        computeValue: { d in
+                //                            let result = height
+                ////                            if claimType == self.tags?.last! {
+                ////                                height = 0
+                ////                            }
+                //                            return height // 0 doesn't start at same place always
+                //                        }
+                //                    )
+                ////                .padding([.trailing, .leading, .top], 16)
+                ////                .padding([.top], 16)
             }
         }
         .background(viewHeightReader($totalHeight))
@@ -125,6 +136,15 @@ public struct SelectClaimEntrypoint: View {
                 binding.wrappedValue = rect.size.height
             }
             return .clear
+        }
+    }
+
+    @hColorBuilder
+    func retColor(claimId: String) -> some hColor {
+        if selectedClaimType == claimId {
+            hTintColorNew.green50
+        } else {
+            hGrayscaleColorNew.greyScale100
         }
     }
 }

@@ -53,6 +53,12 @@ extension Shape {
         }
     }
 
+    public func fill2<S>(_ content: S, _ content2: S, style: FillStyle = FillStyle()) -> some View where S: hColor {
+        ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
+            self.fill(content.colorFor(colorScheme, userInterfaceLevel).color)
+        }
+    }
+
     public func stroke<S>(_ content: S, lineWidth: CGFloat = 1) -> some View where S: hColor {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
             self.stroke(content.colorFor(colorScheme, userInterfaceLevel).color, lineWidth: lineWidth)
@@ -319,7 +325,9 @@ public struct hGrayscaleColor {
 
     public static var three: some hColor {
         hColorScheme(
-            Color(hexString: "777777")
+            //            Color(hexString: "777777")
+            light: Color(hexString: "121212").opacity(0.25),
+            dark: Color(hexString: "FAFAFA").opacity(0.08)
         )
     }
 
@@ -331,7 +339,9 @@ public struct hGrayscaleColor {
 
     public static var five: some hColor {
         hColorScheme(
-            Color(hexString: "252525")
+            //            Color(hexString: "252525")
+            light: Color(hexString: "121212").opacity(0.25),
+            dark: Color(hexString: "FAFAFA").opacity(0.08)
         )
     }
 }

@@ -1,4 +1,5 @@
 import Contracts
+import Kingfisher
 import Presentation
 import SwiftUI
 import hCore
@@ -88,8 +89,7 @@ public struct SelectEntrypointNavigation: View {
     }
 
     public func switchContent(entrypointGroup: ClaimEntryPointGroupResponseModel) -> some View {
-        Image(systemName: "circle.fill")
-            .data(url: (URL(string: entrypointGroup.icon) ?? URL(string: ""))!)
+        KFImage(URL(string: entrypointGroup.icon))
             .resizable()
             .frame(width: 48, height: 48)
     }
@@ -99,17 +99,5 @@ public struct SelectEntrypointNavigation: View {
         hText("För skador som rör din lägenhet, dig själv, dina medförsäkrade och dina saker", style: .footnote)
             .foregroundColor(hLabelColor.secondary)
             .fixedSize(horizontal: false, vertical: true)
-    }
-}
-
-extension Image {
-    func data(url: URL) -> Self {
-        if let data = try? Data(contentsOf: url) {
-            return Image(uiImage: UIImage(data: data)!)
-                .resizable()
-        }
-        return
-            self
-            .resizable()
     }
 }
