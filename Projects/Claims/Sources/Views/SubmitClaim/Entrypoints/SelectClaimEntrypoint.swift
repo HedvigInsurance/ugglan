@@ -57,13 +57,12 @@ public struct SelectClaimEntrypoint: View {
                                 .foregroundColor(hLabelColor.primary)
                                 .lineLimit(1)
                         }
+                        .onAppear {
+                            selectedClaimType = claimEntrypoint.last?.displayName ?? ""
+                        }
                         .onTapGesture {
                             withAnimation {
-                                if selectedClaimType == tag {
-                                    selectedClaimType = ""
-                                } else {
-                                    selectedClaimType = tag
-                                }
+                                selectedClaimType = tag
                             }
                         }
                         .padding([.leading, .trailing], 16)

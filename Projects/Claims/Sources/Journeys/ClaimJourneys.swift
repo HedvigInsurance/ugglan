@@ -317,10 +317,7 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypoint(entrypointGroupId: origin.id),
-            style: .detented(.large),
-            options: [
-                .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
-            ]
+            style: .detented(.large, modally: false)
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
                 GroupJourney { context in
