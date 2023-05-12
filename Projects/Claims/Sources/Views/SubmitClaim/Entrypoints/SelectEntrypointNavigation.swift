@@ -79,10 +79,10 @@ public struct SelectEntrypointNavigation: View {
                                             //                                        )
                                         },
                                         //                                    mainContent: switchContent(entrypointGroup: entrypointGroup),
-                                        mainContent: hCoreUIAssets.pillowHome.view
+                                        mainContent: hCoreUIAssets.pillowAccident.view
                                             .resizable()
                                             .frame(width: 48, height: 48),
-                                        subTitle: "subtitle here",
+                                        subTitle: "Du +1",
                                         topTitle: contract.displayName
                                     )
                                 }

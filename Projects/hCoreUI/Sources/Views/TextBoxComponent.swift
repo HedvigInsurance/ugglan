@@ -31,7 +31,7 @@ public struct TextBoxComponent<MainContent>: View where MainContent: View {
                         .padding(.leading, 16)
                 }
                 if let subTitle = subTitle {
-                    hText(subTitle, style: .caption1)
+                    hText(subTitle, style: .body)
                         .foregroundColor(hLabelColor.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 16)

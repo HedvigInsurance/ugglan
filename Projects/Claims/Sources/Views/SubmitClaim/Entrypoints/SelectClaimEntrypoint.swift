@@ -90,7 +90,7 @@ public struct SelectClaimEntrypoint: View {
                 }
             }
         }
-        .navigationTitle("Bellmansgatan 19A")
+        //        .navigationTitle("Bellmansgatan 19A")
     }
 
     @hColorBuilder
