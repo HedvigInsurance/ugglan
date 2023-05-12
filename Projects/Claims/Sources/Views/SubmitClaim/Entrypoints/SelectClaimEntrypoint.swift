@@ -58,7 +58,9 @@ public struct SelectClaimEntrypoint: View {
                                 .lineLimit(1)
                         }
                         .onAppear {
-                            selectedClaimType = claimEntrypoint.last?.displayName ?? ""
+                            if selectedClaimType == "" {
+                                selectedClaimType = claimEntrypoint.last?.displayName ?? ""
+                            }
                         }
                         .onTapGesture {
                             withAnimation {
