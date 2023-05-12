@@ -19,6 +19,7 @@ public enum ExternalDependencies: CaseIterable {
     case datadog
     case hAnalytics
     case authlib
+    case tagkit
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -90,6 +91,10 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("0.0.20"))
             ]
+        case .tagkit:
+            return [
+                .package(url: "https://github.com/danielsaidi/TagKit.git", .upToNextMajor(from: "0.1.1"))
+            ]
         }
     }
 
@@ -149,6 +154,10 @@ public enum ExternalDependencies: CaseIterable {
         case .authlib:
             return [
                 .package(product: "authlib")
+            ]
+        case .tagkit:
+            return [
+                .package(product: "TagKit")
             ]
         }
     }
