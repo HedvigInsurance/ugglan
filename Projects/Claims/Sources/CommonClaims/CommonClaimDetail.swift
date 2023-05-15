@@ -7,7 +7,7 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import Contracts
+
 public struct CommonClaimDetail {
     let claim: CommonClaim
     public init(
