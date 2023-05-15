@@ -234,7 +234,8 @@ public struct Contract: Codable, Hashable, Equatable {
     public var hasTravelInsurance: Bool {
         let suitableType = Contract.TypeOfContract.insurancesSuitableForTravelInsurance.contains(self.typeOfContract)
         let suitableStatus = [ContractStatus.active, ContractStatus.activeInFuture].contains(self.currentAgreement?.status ?? .terminated)
-        return suitableType && suitableStatus
+        let noTerminationDate = currentAgreement?.activeTo == nil
+        return suitableType && suitableStatus && noTerminationDate
     }
     
 
