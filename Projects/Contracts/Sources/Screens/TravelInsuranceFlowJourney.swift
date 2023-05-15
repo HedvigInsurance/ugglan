@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public struct TravelInsuranceFlowJourney {
-
+    
     public static func start() -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
@@ -13,8 +13,8 @@ public struct TravelInsuranceFlowJourney {
             style: .detented(.large)
         ) { action in
             if case let .navigation(navigationAction) = action {
-                if case .openTravelInsuranceForm = navigationAction {
-                    TravelInsuranceFlowJourney.showForm()
+                if case let .openEmailScreen(email) = navigationAction {
+                    TravelInsuranceFlowJourney.showEmail(email: email)
                 }
             }
         }
@@ -22,6 +22,20 @@ public struct TravelInsuranceFlowJourney {
             let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
             store.send(.getTravelInsuranceData)
         }
+    }
+    
+    private static func showEmail(email: String) -> some JourneyPresentation {
+        HostingJourney(
+            TravelInsuranceStore.self,
+            rootView: TravelInsuranceEmailScreen(email: email)) { action in
+                if case let .navigation(navigationAction) = action {
+                    if case .openTravelInsuranceForm = navigationAction {
+                        TravelInsuranceFlowJourney.showForm()
+                    }
+                }
+            }
+            .hidesBackButton
+            .addDismissFlow()
     }
     
     private static func showForm() -> some JourneyPresentation {
@@ -34,11 +48,12 @@ public struct TravelInsuranceFlowJourney {
                     openDatePicker(for: type)
                 } else if case let .openCoinsured(member) = navigationAction {
                     openCoinsured(member: member)
+                } else if case let .openTravelInsurance(url, title) = navigationAction {
+                    openDocument(url: url, title: title)
                 }
             }
         }
-        .hidesBackButton
-        .addDismissClaimsFlow()
+        .addDismissFlow()
     }
     
     
@@ -49,13 +64,13 @@ public struct TravelInsuranceFlowJourney {
             case .startDate:
                 return store.state.travelInsuranceModel?.startDate
             case .endDate:
-                return store.state.travelInsuranceModel?.endDate
+                return nil
             }
         }()
         let model = GeneralDatePickerViewModel(title: type.title,
                                                buttonTitle: L10n.generalContinueButton,
-                                               minDate: store.state.travelInsuranceConfig?.minimumDate,
-                                               maxDate: store.state.travelInsuranceConfig?.maximumDate,
+                                               minDate: store.state.travelInsuranceConfig?.minStartDate,
+                                               maxDate: store.state.travelInsuranceConfig?.maxStartDate,
                                                selectedDate: selectedDate,
                                                onDateSelected: { date in
             store.send(.setDate(value: date, type: type))
@@ -90,10 +105,19 @@ public struct TravelInsuranceFlowJourney {
             
         }
     }
+    
+    private static func openDocument(url: URL, title: String) -> some JourneyPresentation {
+        Journey(
+            Document(url: url, title: title)
+        )
+        .hidesBackButton
+        .withJourneyDismissButton
+        .disableModalInPresentation
+    }
 }
 
 extension JourneyPresentation {
-    func addDismissClaimsFlow() -> some JourneyPresentation {
+    func addDismissFlow() -> some JourneyPresentation {
         self.withJourneyDismissButtonWithConfirmation(
             withTitle: L10n.General.areYouSure,
             andBody: L10n.Claims.Alert.body,

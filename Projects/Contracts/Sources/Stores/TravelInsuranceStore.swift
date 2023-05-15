@@ -18,15 +18,19 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
         var newState = state
         switch action {
         case .getTravelInsuranceData:
-            let maxDate = Date().addingTimeInterval(60 * 60 * 24 * 100)
-            newState.travelInsuranceConfig = TravelInsuranceConfig(minimumDate: Date(),
-                                                                   maximumDate: maxDate,
-                                                                   maxNumberOfConisuredPersons: 2,
-                                                                   maxTravelInsuraceDays: 45)
+            newState.travelInsuranceConfig = TravelInsuranceConfig(contractId: "contractId",
+                                                                   minStartDate: Date(),
+                                                                   maxStartDate: Date().addingTimeInterval(60 * 60 * 24 * 20),
+                                                                   numberOfCoInsured: 1,
+                                                                   maxDuration: 45,
+                                                                   email: "email@email.com")
             newState.travelInsuranceModel = TravelInsuranceModel(startDate: Date())
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                self.send(.navigation(.openTravelInsuranceForm))
+            let email = newState.travelInsuranceConfig?.email ?? ""
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.send(.navigation(.openEmailScreen(email: email)))
             }
+        case let .setEmail(value):
+            send(.navigation(.openTravelInsuranceForm))
         case .toogleMyselfAsInsured:
             newState.travelInsuranceModel?.isPolicyHolderIncluded.toggle()
         case let .setPolicyCoInsured(data):
@@ -44,16 +48,12 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
             switch type {
             case .startDate:
                 newState.travelInsuranceModel?.startDate = date
-                if let endDate = newState.travelInsuranceModel?.endDate,
-                endDate < date{
-                    newState.travelInsuranceModel?.endDate = nil
-                }
             case .endDate:
-                newState.travelInsuranceModel?.endDate = date
-                if let startDate = newState.travelInsuranceModel?.startDate,
-                   startDate > date {
-                    newState.travelInsuranceModel?.startDate = date
-                }
+                break
+            }
+        case .postForm:
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.send(.navigation(.openTravelInsurance(url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!, title: "Travel Certificate")))
             }
         default:
             break

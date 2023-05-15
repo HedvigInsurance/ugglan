@@ -65,7 +65,6 @@ public struct GeneralDatePicker: View {
                 displayedComponents: [.date]
             )
         }
-
     }
 }
 

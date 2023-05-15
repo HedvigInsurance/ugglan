@@ -14,26 +14,24 @@ struct TravelInsuranceState: StateProtocol {
 
 struct TravelInsuranceModel: Codable, Equatable, Hashable {
     var startDate: Date = Date()
-    var endDate: Date?
     var isPolicyHolderIncluded: Bool = true
     var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
 }
 
 struct TravelInsuranceConfig: Codable, Equatable, Hashable {
-    let minimumDate: Date
-    let maximumDate: Date
-    let maxNumberOfConisuredPersons: Int
-    let maxTravelInsuraceDays: Int
-    init(
-        minimumDate: Date,
-        maximumDate: Date,
-        maxNumberOfConisuredPersons: Int,
-        maxTravelInsuraceDays: Int
-    ) {
-        self.maxNumberOfConisuredPersons = maxNumberOfConisuredPersons
-        self.maxTravelInsuraceDays = maxTravelInsuraceDays
-        self.minimumDate =  minimumDate
-        self.maximumDate =  maximumDate
+    let contractId: String
+    let minStartDate: Date
+    let maxStartDate: Date
+    let numberOfCoInsured: Int
+    let maxDuration: Int
+    let email: String
+    init(contractId: String, minStartDate: Date, maxStartDate: Date, numberOfCoInsured: Int, maxDuration: Int, email: String) {
+        self.contractId = contractId
+        self.minStartDate = minStartDate
+        self.maxStartDate = maxStartDate
+        self.numberOfCoInsured = numberOfCoInsured
+        self.maxDuration = maxDuration
+        self.email = email
     }
 }
 
