@@ -26,7 +26,7 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                                                                    email: "email@email.com")
             newState.travelInsuranceModel = TravelInsuranceModel(startDate: Date())
             let email = newState.travelInsuranceConfig?.email ?? ""
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
                 self.send(.navigation(.openEmailScreen(email: email)))
             }
         case let .setEmail(value):
