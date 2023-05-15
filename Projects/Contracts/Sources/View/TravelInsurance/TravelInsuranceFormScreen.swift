@@ -5,6 +5,7 @@ import hCoreUI
 
 struct TravelInsuranceFormScreen: View {
     let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+    @State var dateOfOccurrence = Date()
     var body: some View {
         PresentableStoreLens(
             TravelInsuranceStore.self,
@@ -18,8 +19,8 @@ struct TravelInsuranceFormScreen: View {
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
-
                     UIApplication.dismissKeyboard()
+                    store.send(.postForm)
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
@@ -30,49 +31,59 @@ struct TravelInsuranceFormScreen: View {
             .navigationTitle("Travel certificate")
     }
 
-    @ViewBuilder
+//    @ViewBuilder
     private func datesSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
-        hSection {
-            hRow {
-                HStack {
-                    hText("Start date")
-                }
-            }.withCustomAccessory {
-                Spacer()
-                hText(travelInsuranceModel.startDate.localDateString, style: .body)
-                    .foregroundColor(hLabelColor.secondary)
-            }.onTap {
-                let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-                store.send(.navigation(.openDatePicker(type: .startDate)))
-            }
-
-            hRow {
-                HStack {
-                    hText("End date")
-                }
-            }.withCustomAccessory {
-                Spacer()
-                Group {
-                    if let endDate = travelInsuranceModel.endDate?.localDateString {
-                        hText(endDate)
-                    } else {
-                        Image(uiImage: hCoreUIAssets.calendar.image)
-                            .renderingMode(.template)
-                    }
-                }
-                .foregroundColor(hLabelColor.secondary)
-            }.onTap {
-                let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-                store.send(.navigation(.openDatePicker(type: .endDate)))
-            }
+//        let model = GeneralDatePickerViewModel(title: "Start Date",
+//                                               buttonTitle: L10n.generalContinueButton,
+//                                               minDate: store.state.travelInsuranceConfig?.minStartDate,
+//                                               maxDate: store.state.travelInsuranceConfig?.maxStartDate,
+//                                               selectedDate: store.state.travelInsuranceModel?.startDate,
+//                                               onDateSelected: { date in
+//            store.send(.setDate(value: date, type: .startDate))
+//        })
+        //
+        //        return GeneralDatePicker(model)
+        let model = store.state.travelInsuranceConfig
+        return hSection {
+            DatePicker(
+                "Start Date",
+                selection: self.$dateOfOccurrence,
+                in: (model?.minStartDate ?? Date())...(model?.maxStartDate ?? Date()),
+                displayedComponents: [.date]
+            ).environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
+                .datePickerStyle(.graphical)
+                .padding([.leading, .trailing], 16)
+                .padding([.top], 5)
         }
         .withHeader {
             hText(
-                "Traveling dates",
+                "Start Date",
                 style: .title2
             )
         }
         .slideUpAppearAnimation()
+        
+//        hSection {
+//            hRow {
+//                HStack {
+//                    hText("Start date")
+//                }
+//            }.withCustomAccessory {
+//                Spacer()
+//                hText(travelInsuranceModel.startDate.localDateString, style: .body)
+//                    .foregroundColor(hLabelColor.secondary)
+//            }.onTap {
+//                let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+//                store.send(.navigation(.openDatePicker(type: .startDate)))
+//            }
+//        }
+//        .withHeader {
+//            hText(
+//                "Start Date",
+//                style: .title2
+//            )
+//        }
+//        .slideUpAppearAnimation()
     }
 
     @ViewBuilder
@@ -104,7 +115,7 @@ struct TravelInsuranceFormScreen: View {
             )
         }
         .slideUpAppearAnimation()
-        if travelInsuranceModel.policyCoinsuredPersons.count < store.state.travelInsuranceConfig?.maxNumberOfConisuredPersons ?? 0 {
+        if travelInsuranceModel.policyCoinsuredPersons.count < store.state.travelInsuranceConfig?.numberOfCoInsured ?? 0 {
             Button {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
                 store.send(.navigation(.openCoinsured(member: nil)))
