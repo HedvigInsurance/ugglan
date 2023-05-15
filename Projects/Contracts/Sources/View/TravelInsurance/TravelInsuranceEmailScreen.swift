@@ -61,6 +61,7 @@ struct TravelInsuranceEmailScreen: View {
                 .padding(.bottom, 6)
             }
         }
+        .navigationTitle("Travel certificate")
     }
 }
 

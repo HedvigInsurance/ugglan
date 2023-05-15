@@ -62,17 +62,6 @@ struct TravelInsuranceInsuredMemberScreen: View {
             .padding(.bottom, 6)
         }
         .navigationTitle(title)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                if let policyCoinsuredPerson {
-                    Button("Remove") {
-                        store.send(
-                            .removePolicyCoInsured(policyCoinsuredPerson)
-                        )
-                    }
-                }
-            }
-        }
     }
 }
 

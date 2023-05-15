@@ -47,33 +47,11 @@ struct TravelInsuranceFormScreen: View {
         }
         .withHeader {
             hText(
-                "Start Date",
+                "When does your trip starts?",
                 style: .title2
             )
         }
         .slideUpAppearAnimation()
-        
-//        hSection {
-//            hRow {
-//                HStack {
-//                    hText("Start date")
-//                }
-//            }.withCustomAccessory {
-//                Spacer()
-//                hText(travelInsuranceModel.startDate.localDateString, style: .body)
-//                    .foregroundColor(hLabelColor.secondary)
-//            }.onTap {
-//                let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-//                store.send(.navigation(.openDatePicker(type: .startDate)))
-//            }
-//        }
-//        .withHeader {
-//            hText(
-//                "Start Date",
-//                style: .title2
-//            )
-//        }
-//        .slideUpAppearAnimation()
     }
 
     @ViewBuilder
@@ -91,8 +69,16 @@ struct TravelInsuranceFormScreen: View {
                     hText(member.fullName, style: .body)
                 }.withCustomAccessory {
                     Spacer()
-                    hText(member.personalNumber, style: .body)
-                        .foregroundColor(hLabelColor.secondary)
+                    HStack(spacing: 8) {
+                        hText(member.personalNumber, style: .body)
+                            .foregroundColor(hLabelColor.secondary)
+                        Button {
+                            store.send(.removePolicyCoInsured(member))
+                        } label: {
+                            Image(uiImage: hCoreUIAssets.close.image)
+                        }
+
+                    }
                 }.onTap {
                     store.send(.navigation(.openCoinsured(member: member)))
                 }
@@ -100,7 +86,7 @@ struct TravelInsuranceFormScreen: View {
         }
         .withHeader {
             hText(
-                "Insured persons",
+                "Who is traveling?",
                 style: .title2
             )
         }
