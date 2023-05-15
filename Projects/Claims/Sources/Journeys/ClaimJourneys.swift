@@ -290,7 +290,8 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectEntrypointNavigation(),
-            style: .detented(.large),
+            //            style: .detented(.large),
+            style: .detented(.large, modally: false),
             options: [
                 .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
             ]

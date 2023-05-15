@@ -7,11 +7,25 @@ import hCore
 import hCoreUI
 
 public struct SelectEntrypointNavigation: View {
+    @State var subTitle = ""
 
     @PresentableStore var store: SubmitClaimStore
     public init() {
         store.send(.fetchEntrypointGroups)
     }
+
+    //    func getSubTitle(entrypointGroupString: String) -> String {
+    //        if entrypointGroupString == "Car Insurance" {
+    //            return "WUZ 742"
+    //        } else if entrypointGroupString == "Pet Insurance" {
+    //            return "Douglas"
+    //        } else if entrypointGroupString == "Accident Insurance" {
+    //            return "You +1"
+    //        } else if entrypointGroupString == "Home Insurance" {
+    //            return "Malmskillnadsgatan 32"
+    //        }
+    //        return ""
+    //    }
 
     public var body: some View {
         LoadingViewWithContent(.fetchClaimEntrypoints) {
@@ -33,11 +47,13 @@ public struct SelectEntrypointNavigation: View {
                             hText(L10n.claimTriagingAboutTitile(name), style: .prominentTitle)
                                 .multilineTextAlignment(.center)
                                 .frame(maxWidth: .infinity, alignment: .center)
-                                .padding(.bottom, 40)
+                                .padding([.top, .bottom], 72)
+                                //                                .padding(.bottom, 72)
                                 .padding([.trailing, .leading], 16)
                         }
                     }
                     ForEach(claimEntrypoint, id: \.self) { entrypointGroup in
+
                         VStack(spacing: 0) {
                             TextBoxComponent(
                                 onSelected: {
@@ -82,7 +98,7 @@ public struct SelectEntrypointNavigation: View {
                                         mainContent: hCoreUIAssets.pillowAccident.view
                                             .resizable()
                                             .frame(width: 48, height: 48),
-                                        subTitle: "Du +1",
+                                        subTitle: "You +1",
                                         topTitle: contract.displayName
                                     )
                                 }

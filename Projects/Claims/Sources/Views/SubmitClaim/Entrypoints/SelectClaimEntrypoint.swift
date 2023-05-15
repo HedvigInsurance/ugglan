@@ -40,7 +40,8 @@ public struct SelectClaimEntrypoint: View {
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding([.trailing, .leading], 16)
-                    .padding([.bottom], 100)
+                    .padding([.bottom, .top], 82)
+                //                    .padding(.top, 170)
 
                 PresentableStoreLens(
                     SubmitClaimStore.self,
