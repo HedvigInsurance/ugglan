@@ -87,6 +87,42 @@ public struct hGrayscaleColorNew {
             Color(hexString: "CFCFCF")
         )
     }
+
+    public static var greyScale500: some hColor {
+        hColorScheme(
+            Color(hexString: "#B4B4B4")
+        )
+    }
+
+    public static var greyScale600: some hColor {
+        hColorScheme(
+            Color(hexString: "#969696")
+        )
+    }
+
+    public static var greyScale700: some hColor {
+        hColorScheme(
+            Color(hexString: "#727272")
+        )
+    }
+
+    public static var greyScale800: some hColor {
+        hColorScheme(
+            Color(hexString: "#505050")
+        )
+    }
+
+    public static var greyScale900: some hColor {
+        hColorScheme(
+            Color(hexString: "#303030")
+        )
+    }
+
+    public static var greyScale1000: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212")
+        )
+    }
 }
 
 public struct hOverlayColorNew {

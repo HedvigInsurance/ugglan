@@ -31,66 +31,20 @@ extension JourneyPresentation {
 
 extension AppJourney {
 
-    public static var movingFlow: some JourneyPresentation {
+    static var movingFlow: some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
+            // LoadingViewWithContent(.startClaim) { MovingFlowHousingType() }
             rootView: MovingFlowHousingType(),
-            style: .detented(.large, modally: false),
-            options: [
-                .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
-            ]
+            style: .detented(.large, modally: false)
         ) { action in
-            if case .goToFreeTextChat = action {
-                AppJourney.freeTextChat(style: .default).withJourneyDismissButton
+            if case .navigationActionMovingFlow = action {
+                MovingFlowJourneyNew.getScreenForAction(for: action, withHidesBack: true)
+            } else {
+                MovingFlowJourneyNew.getScreenForAction(for: action, withHidesBack: true)
             }
         }
-        //        {
-        //            action in
-        //            if case let .entrypointGroupSelected(origin) = action {
-        //                GroupJourney { context in
-        //                    switch origin {
-        //                    case .generic:
-        //                        ContinueJourney()
-        //                    case let .commonClaims(id):
-        //                        redirectJourney(ClaimsOrigin.commonClaims(id: id))
-        //                    }
-        //                }
-        //            }
-        //        }
     }
-
-    //    @JourneyBuilder
-    //    static var movingFlow: some JourneyPresentation {
-    //        Journey(
-    //            MovingFlowHousingType(),
-    //            style: .detented(.large)
-    //            )
-    //        ) { introRoute in
-    //            switch introRoute {
-    //            case .chat:
-    //                AppJourney.freeTextChat(style: .default).withJourneyDismissButton
-    //            case let .embark(name):
-    //                AppJourney.embark(Embark(name: name), storeOffer: false) { offerResult in
-    //                    switch offerResult {
-    //                    case .chat:
-    //                        AppJourney.freeTextChat().withDismissButton
-    //                    case .close:
-    //                        DismissJourney()
-    //                    case .menu:
-    //                        ContinueJourney()
-    //                    case let .signed(_, startDates), let .signedQuoteCart(_, startDates):
-    //                        Journey(MovingFlowSuccess(startDate: startDates.first?.value)) { _ in
-    //                            DismissJourney()
-    //                                .sendActionImmediately(ContractStore.self, .fetch)
-    //                                .withCompletedToast
-    //                        }
-    //                        .hidesBackButton.withJourneyDismissButton
-    //                    }
-    //                }
-    //            }
-    //        }
-    //        .withDismissButton
-    //    }
 
     static var movingFlowEmbark: some JourneyPresentation {
         Journey(
