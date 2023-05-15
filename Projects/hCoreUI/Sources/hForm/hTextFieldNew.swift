@@ -86,8 +86,7 @@ public struct hTextFieldNew: View {
                 SwiftUI.TextField(placeholder ?? "", text: $innerValue)
                     .modifier(hFontModifier(style: .title3))
                     .modifier(masking)
-                    .foregroundColor(hGrayscaleColorNew.greyScale700)  //?
-                    //                    .tint(hGrayscaleColorNew.greyScale700)
+                foregroundColor(hGrayscaleColorNew.greyScale700)
                     .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
                         if shouldUpdate {
                             value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
@@ -117,14 +116,14 @@ public struct hTextFieldNew: View {
     }
 }
 
-//struct hTextFieldPreview: PreviewProvider {
-//    static var previews: some View {
-//        hTextField(masking: Masking(type: .personalNumber), value: .constant(""))
-//            .padding(20)
-//            .previewLayout(.sizeThatFits)
-//            .previewDisplayName("Masked with Swedish Personal Number")
-//    }
-//}
+struct hTextFieldNewPreview: PreviewProvider {
+    static var previews: some View {
+        hTextField(masking: Masking(type: .personalNumber), value: .constant(""))
+            .padding(20)
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("Masked with Swedish Personal Number")
+    }
+}
 //
 //@propertyWrapper public struct hTextFieldFocusState<Value: Hashable>: DynamicProperty {
 //    @State var field: Value?

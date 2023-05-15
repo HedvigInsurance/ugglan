@@ -93,12 +93,12 @@ struct MovingFlowSelectAddress: View {
     func numberOfCoinsuredField() -> some View {
         HStack(spacing: 0) {
             if let coinsured = nbOfCoInsured {
-                hText(String(coinsured), style: .title2)
+                hText(String(coinsured), style: .title3)
                     .foregroundColor(hGrayscaleColorNew.greyScale700)
                     .padding(.leading, 16)
             } else {
-                hText(L10n.changeAddressCoInsuredLabel, style: .title2)
-                    .foregroundColor(hGrayscaleColorNew.greyScale700)
+                hText(L10n.changeAddressCoInsuredLabel, style: .title3)
+                    .foregroundColor(hGrayscaleColorNew.greyScale400)
                     .padding(.leading, 16)
             }
 
@@ -140,7 +140,7 @@ struct MovingFlowSelectAddress: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 16)
             HStack(alignment: .top) {
-                hText(L10n.changeAddressSelectMovingDateLabel, style: .title1)
+                hText(L10n.changeAddressSelectMovingDateLabel, style: .title3)
                     .foregroundColor(hGrayscaleColorNew.greyScale700)
                     .padding(.leading, 16)
                 Spacer()

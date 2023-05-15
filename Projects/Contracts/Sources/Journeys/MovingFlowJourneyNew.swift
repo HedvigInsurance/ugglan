@@ -23,6 +23,9 @@ public struct MovingFlowJourneyNew {
             if case let .navigationActionMovingFlow(navigationAction) = action {
                 if case .openAddressFillScreen = navigationAction {
                     MovingFlowJourneyNew.openAddressFillScreen()
+                } else if case .openDatePicker = navigationAction {
+                    MovingFlowJourneyNew.openAddressFillScreen() /* TODO: FIX */
+                    //                    MovingFlowJourneyNew.openDatePickerScreen()
                 }
             }
         }
@@ -39,5 +42,29 @@ public struct MovingFlowJourneyNew {
         }
         .withJourneyDismissButton
     }
+
+    //    static func openDatePickerScreen() -> some JourneyPresentation {
+    //        let screen = DatePickerScreen(type: type)
+    //
+    //        return HostingJourney(
+    //            SubmitClaimStore.self,
+    //            rootView: DatePickerScreen(),
+    //            style: .detented(.scrollViewContentSize),
+    //            options: [
+    //                .defaults,
+    //                .largeTitleDisplayMode(.always),
+    //                .prefersLargeTitles(true),
+    //            ]
+    //        ) {
+    //            action in
+    //            if case .setNewDate = action {
+    //                PopJourney()
+    //            } else if case .setSingleItemPurchaseDate = action {
+    //                PopJourney()
+    //            }
+    //        }
+    //        .configureTitle(screen.title)
+    //        .withDismissButton
+    //    }
 
 }

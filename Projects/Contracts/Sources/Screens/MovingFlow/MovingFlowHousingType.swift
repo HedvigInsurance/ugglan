@@ -19,7 +19,7 @@ public struct MovingFlowHousingType: View {
                     hText(L10n.changeAddressSelectHousingTypeTitle, style: .title1)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity, alignment: .center)
-                        .padding([.top, .bottom], 100)
+                        .padding([.top, .bottom], 50)
 
                     ForEach(housingTypes, id: \.self) { type in
                         setCheckBoxComponent(text: type)
@@ -38,7 +38,7 @@ public struct MovingFlowHousingType: View {
                 .padding([.leading, .trailing], 16)
             }
         }
-        //        .navigationTitle(L10n.InsuranceDetails.changeAddressButton)
+        .navigationTitle(L10n.InsuranceDetails.changeAddressButton)
     }
 
     @ViewBuilder
@@ -56,7 +56,7 @@ public struct MovingFlowHousingType: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 28, height: 28)
         }
-        .padding([.top, .bottom], 28)
+        .padding([.top, .bottom], 16)
         .padding([.leading, .trailing], 16)
         .background(
             Squircle.default()
