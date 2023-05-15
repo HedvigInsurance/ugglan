@@ -12,7 +12,7 @@ extension AppJourney {
     static func onboarding() -> some JourneyPresentation {
         var webUrl = Environment.current.webBaseURL
         webUrl.appendPathComponent(Localization.Locale.currentLocale.webPath)
-        webUrl.appendPathComponent("new-member")
+        webUrl.appendPathComponent(Localization.Locale.currentLocale.priceQoutePath)
         webUrl =
             webUrl
             .appending("utm_source", value: "ios")
