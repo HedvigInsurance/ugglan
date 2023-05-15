@@ -33,20 +33,10 @@ struct TravelInsuranceFormScreen: View {
 
 //    @ViewBuilder
     private func datesSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
-//        let model = GeneralDatePickerViewModel(title: "Start Date",
-//                                               buttonTitle: L10n.generalContinueButton,
-//                                               minDate: store.state.travelInsuranceConfig?.minStartDate,
-//                                               maxDate: store.state.travelInsuranceConfig?.maxStartDate,
-//                                               selectedDate: store.state.travelInsuranceModel?.startDate,
-//                                               onDateSelected: { date in
-//            store.send(.setDate(value: date, type: .startDate))
-//        })
-        //
-        //        return GeneralDatePicker(model)
         let model = store.state.travelInsuranceConfig
         return hSection {
             DatePicker(
-                "Start Date",
+                "When does your trip starts?",
                 selection: self.$dateOfOccurrence,
                 in: (model?.minStartDate ?? Date())...(model?.maxStartDate ?? Date()),
                 displayedComponents: [.date]

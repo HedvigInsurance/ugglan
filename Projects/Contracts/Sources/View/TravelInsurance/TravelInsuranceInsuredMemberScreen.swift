@@ -40,13 +40,23 @@ struct TravelInsuranceInsuredMemberScreen: View {
             }
         }
         .hFormAttachToBottom {
-            hButton.LargeButtonFilled {
-                UIApplication.dismissKeyboard()
-                store.send(
-                    .setPolicyCoInsured(PolicyCoinsuredPersonModel(fullName: fullName, personalNumber: personalNumber))
-                )
-            } content: {
-                hText(title)
+            VStack(spacing: 8) {
+                hButton.LargeButtonFilled {
+                    UIApplication.dismissKeyboard()
+                    store.send(
+                        .setPolicyCoInsured(PolicyCoinsuredPersonModel(fullName: fullName, personalNumber: personalNumber))
+                    )
+                } content: {
+                    hText(title)
+                }
+                
+                hButton.SmallButtonText {
+                    store.send(.navigation(.dismissAddUpdateCoinsured))
+                } content: {
+                    hText("Cancel")
+                }
+
+                
             }
             .padding([.leading, .trailing], 16)
             .padding(.bottom, 6)

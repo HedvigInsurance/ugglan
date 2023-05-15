@@ -26,6 +26,7 @@ enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
     case openCoinsured(member: PolicyCoinsuredPersonModel?)
     case openTravelInsurance(url: URL, title: String)
     case openSomethingWentWrongScreen
+    case dismissAddUpdateCoinsured
 }
 
 enum TravelInsuranceDatePickerType: ActionProtocol, Hashable {

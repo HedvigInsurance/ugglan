@@ -94,8 +94,8 @@ public struct TravelInsuranceFlowJourney {
             style: .detented(.scrollViewContentSize)
         ) { action in
             if case let .navigation(navigationAction) = action {
-                if case .openDatePicker = navigationAction {
-                    ContinueJourney()
+                if case .dismissAddUpdateCoinsured = navigationAction {
+                    PopJourney()
                 }
             } else if case .setPolicyCoInsured = action {
                 PopJourney()
@@ -108,7 +108,7 @@ public struct TravelInsuranceFlowJourney {
     
     private static func openDocument(url: URL, title: String) -> some JourneyPresentation {
         Journey(
-            Document(url: url, title: title)
+            Document(url: url, title: title, showDownloadButton: true)
         )
         .hidesBackButton
         .withJourneyDismissButton
