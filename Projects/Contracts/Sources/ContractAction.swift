@@ -81,6 +81,10 @@ public indirect enum ContractAction: ActionProtocol, Hashable {
     case stepModelAction(action: TerminationStepModelAction)
     case navigationAction(action: TerminationNavigationAction)
     case terminationInitialNavigation(action: TerminationNavigationAction)
+
+    case navigationActionMovingFlow(action: MovingFlowNavigationAction)
+    case getMoveIntent
+    case setMoveIntent
 }
 
 public enum TerminationNavigationAction: ActionProtocol, Hashable {
@@ -89,4 +93,8 @@ public enum TerminationNavigationAction: ActionProtocol, Hashable {
     case openTerminationUpdateAppScreen
     case openTerminationFailScreen
     case openTerminationDeletionScreen
+}
+
+public enum MovingFlowNavigationAction: ActionProtocol, Hashable {
+    case openMovingFlowHousingTypeScreen
 }

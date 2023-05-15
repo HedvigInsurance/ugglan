@@ -131,6 +131,67 @@ public struct hTintColorNew {
             Color(hexString: "B8D194")
         )
     }
+
+    public static var blue50: some hColor {
+        hColorScheme(
+            Color(hexString: "#EAF7FF")
+        )
+    }
+
+    public static var blue100: some hColor {
+        hColorScheme(
+            Color(hexString: "#E0F0F9")
+        )
+    }
+
+    public static var blue200: some hColor {
+        hColorScheme(
+            Color(hexString: "#CFE5F2")
+        )
+    }
+
+    public static var blue300: some hColor {
+        hColorScheme(
+            Color(hexString: "#BDDBED")
+        )
+    }
+
+    public static var blue400: some hColor {
+        hColorScheme(
+            Color(hexString: "#A9CDE2")
+        )
+    }
+
+    public static var blue500: some hColor {
+        hColorScheme(
+            Color(hexString: "#98C2DA")
+        )
+    }
+
+    public static var blue600: some hColor {
+        hColorScheme(
+            Color(hexString: "#59BFFA")
+        )
+    }
+
+    public static var blue700: some hColor {
+        hColorScheme(
+            Color(hexString: "#4B739B")
+        )
+    }
+
+    public static var blue800: some hColor {
+        hColorScheme(
+            Color(hexString: "#30577E")
+        )
+    }
+
+    public static var blue900: some hColor {
+        hColorScheme(
+            Color(hexString: "#1F3D5C")
+        )
+    }
+
 }
 
 public struct hSeparatorColorNew {

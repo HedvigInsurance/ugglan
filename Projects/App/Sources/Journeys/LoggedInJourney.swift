@@ -22,6 +22,7 @@ extension AppJourney {
             HomeView.journey(claimsContent: claims, commonClaimsContent: commonClaims) { result in
                 switch result {
                 case .startMovingFlow:
+                    //                    AppJourney.movingFlowEmbark
                     AppJourney.movingFlow
                 case .openFreeTextChat:
                     AppJourney.freeTextChat().withDismissButton
@@ -59,6 +60,7 @@ extension AppJourney {
         Contracts.journey { result in
             switch result {
             case .movingFlow:
+                //                AppJourney.movingFlowEmbark
                 AppJourney.movingFlow
             case .openFreeTextChat:
                 AppJourney.freeTextChat().withDismissButton
