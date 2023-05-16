@@ -38,7 +38,6 @@ extension UIColor { private enum BrandColorBaseNew {
             ? UIColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 0.15) : BrandColorBaseNew.grayBorder
     })
     static let grayBorder = UIColor(red: 0.071, green: 0.071, blue: 0.071, alpha: 0.12)
-    //    static let link = UIColor.tint(.lavenderOneNew)
     static let caution = UIColor(red: 0.95, green: 0.783, blue: 0.321, alpha: 1)
     static let destructive = UIColor(dynamic: { trait -> UIColor in
         trait.userInterfaceStyle == .dark
@@ -60,7 +59,6 @@ public enum BrandColorNew {
     case secondaryText
     case tertiaryText
     case primaryTintColor
-    //    case link
     case primaryButtonBackgroundColor
     case secondaryButtonBackgroundColor
     case primaryButtonTextColor

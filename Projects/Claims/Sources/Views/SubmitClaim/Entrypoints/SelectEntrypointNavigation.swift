@@ -14,21 +14,8 @@ public struct SelectEntrypointNavigation: View {
         store.send(.fetchEntrypointGroups)
     }
 
-    //    func getSubTitle(entrypointGroupString: String) -> String {
-    //        if entrypointGroupString == "Car Insurance" {
-    //            return "WUZ 742"
-    //        } else if entrypointGroupString == "Pet Insurance" {
-    //            return "Douglas"
-    //        } else if entrypointGroupString == "Accident Insurance" {
-    //            return "You +1"
-    //        } else if entrypointGroupString == "Home Insurance" {
-    //            return "Malmskillnadsgatan 32"
-    //        }
-    //        return ""
-    //    }
-
     public var body: some View {
-        LoadingViewWithContent(.fetchClaimEntrypoints) {
+        LoadingViewWithContent(.fetchClaimEntrypointGroups) {
             PresentableStoreLens(
                 SubmitClaimStore.self,
                 getter: { state in
@@ -48,12 +35,10 @@ public struct SelectEntrypointNavigation: View {
                                 .multilineTextAlignment(.center)
                                 .frame(maxWidth: .infinity, alignment: .center)
                                 .padding([.top, .bottom], 72)
-                                //                                .padding(.bottom, 72)
                                 .padding([.trailing, .leading], 16)
                         }
                     }
                     ForEach(claimEntrypoint, id: \.self) { entrypointGroup in
-
                         VStack(spacing: 0) {
                             TextBoxComponent(
                                 onSelected: {
@@ -64,7 +49,7 @@ public struct SelectEntrypointNavigation: View {
                                     )
                                 },
                                 mainContent: switchContent(entrypointGroup: entrypointGroup),
-                                subTitle: "subtitle here",
+                                subTitle: "",
                                 topTitle: entrypointGroup.displayName
                             )
                         }
@@ -87,18 +72,10 @@ public struct SelectEntrypointNavigation: View {
                             if contract.currentAgreement?.status == .terminated {
                                 VStack(spacing: 0) {
                                     TextBoxComponent(
-                                        onSelected: {
-                                            //                                        store.send(
-                                            //                                            .entrypointGroupSelected(
-                                            //                                                entrypointGroup: ClaimsOrigin.commonClaims(id: entrypointGroup.id)
-                                            //                                            )
-                                            //                                        )
-                                        },
-                                        //                                    mainContent: switchContent(entrypointGroup: entrypointGroup),
                                         mainContent: hCoreUIAssets.pillowAccident.view
                                             .resizable()
                                             .frame(width: 48, height: 48),
-                                        subTitle: "You +1",
+                                        subTitle: "",
                                         topTitle: contract.displayName
                                     )
                                 }
@@ -121,7 +98,7 @@ public struct SelectEntrypointNavigation: View {
 
     @ViewBuilder
     public func returnBottomComponent() -> some View {
-        hText("För skador som rör din lägenhet, dig själv, dina medförsäkrade och dina saker", style: .footnote)
+        hText("", style: .footnote)
             .foregroundColor(hLabelColor.secondary)
             .fixedSize(horizontal: false, vertical: true)
     }

@@ -1,6 +1,7 @@
 import Presentation
 import SwiftUI
 import TagKit
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -8,7 +9,7 @@ public struct SelectClaimEntrypoint: View {
     @PresentableStore var store: SubmitClaimStore
     @State private var height = CGFloat.zero
     @State private var tmpHeight = CGFloat.zero
-    @State var selectedClaimType: String = ""
+    @State var selectedClaimType: String? = nil
 
     public init(
         entrypointGroupId: String
@@ -36,63 +37,94 @@ public struct SelectClaimEntrypoint: View {
     public var body: some View {
         LoadingViewWithContent(.fetchClaimEntrypoints) {
             hForm {
-                hText(L10n.claimTriagingTitle, style: .prominentTitle)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding([.trailing, .leading], 16)
-                    .padding([.bottom, .top], 82)
-                //                    .padding(.top, 170)
-
                 PresentableStoreLens(
                     SubmitClaimStore.self,
                     getter: { state in
                         state.claimEntrypoints
                     }
                 ) { claimEntrypoint in
-
-                    let arrayList = entrypointToStringArray(input: claimEntrypoint)
-
-                    TagList(tags: arrayList) { tag in
-                        HStack {
-                            hText(tag, style: .body)
-                                .foregroundColor(hLabelColor.primary)
-                                .lineLimit(1)
-                        }
-                        .onAppear {
-                            if selectedClaimType == "" {
-                                selectedClaimType = claimEntrypoint.last?.displayName ?? ""
-                            }
-                        }
-                        .onTapGesture {
-                            withAnimation {
-                                selectedClaimType = tag
-                            }
-                        }
-                        .padding([.leading, .trailing], 16)
-                        .padding([.top, .bottom], 8)
-                        .background(
-                            Squircle.default()
-                                .fill(retColor(claimId: tag))
-                                .hShadow()
-                        )
-
+                    if hAnalyticsExperiment.claimsTriaging {
+                        entrypointPills(claimEntrypoint: claimEntrypoint)
+                    } else {
+                        entrypointList(claimEntrypoint: claimEntrypoint)
                     }
-                    .padding([.leading, .trailing], 16)
-                    hButton.LargeButtonFilled {
-                        store.send(
-                            .commonClaimOriginSelected(
-                                commonClaim: ClaimsOrigin.commonClaims(id: mapNametoId(input: claimEntrypoint))
-                            )
-                        )
-                    } content: {
-                        hText(L10n.generalContinueButton)
-                            .foregroundColor(hLabelColor.primary).colorInvert()
-                    }
-                    .padding([.trailing, .leading], 16)
                 }
             }
         }
-        //        .navigationTitle("Bellmansgatan 19A")
+    }
+
+    @ViewBuilder
+    public func entrypointPills(claimEntrypoint: [ClaimEntryPointResponseModel]) -> some View {
+
+        hText(L10n.claimTriagingTitle, style: .prominentTitle)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding([.trailing, .leading], 16)
+            .padding([.bottom, .top], 82)
+
+        let arrayList = entrypointToStringArray(input: claimEntrypoint)
+
+        TagList(tags: arrayList) { tag in
+            HStack {
+                hText(tag, style: .body)
+                    .foregroundColor(hLabelColor.primary)
+                    .lineLimit(1)
+            }
+            .onAppear {
+                if selectedClaimType == "" {
+                    selectedClaimType = claimEntrypoint.last?.displayName ?? ""
+                }
+            }
+            .onTapGesture {
+                withAnimation {
+                    selectedClaimType = tag
+                }
+            }
+            .padding([.leading, .trailing], 16)
+            .padding([.top, .bottom], 8)
+            .background(
+                Squircle.default()
+                    .fill(retColor(claimId: tag))
+                    .hShadow()
+            )
+
+        }
+        .padding([.leading, .trailing], 16)
+
+        if let selectedClaimType = selectedClaimType {
+            hButton.LargeButtonFilled {
+                store.send(
+                    .commonClaimOriginSelected(
+                        commonClaim: ClaimsOrigin.commonClaims(id: mapNametoId(input: claimEntrypoint))
+                    )
+                )
+            } content: {
+                hText(L10n.generalContinueButton)
+                    .foregroundColor(hLabelColor.primary).colorInvert()
+            }
+            .padding([.trailing, .leading], 16)
+        }
+    }
+
+    public func entrypointList(claimEntrypoint: [ClaimEntryPointResponseModel]) -> some View {
+        hSection(claimEntrypoint, id: \.id) { claimType in
+            hRow {
+                hText(claimType.displayName, style: .body)
+                    .foregroundColor(hLabelColor.primary)
+            }
+            .onTap {
+                store.send(
+                    .commonClaimOriginSelected(commonClaim: ClaimsOrigin.commonClaims(id: claimType.id))
+                )
+            }
+        }
+        .withHeader {
+            hText(L10n.claimTriagingTitle, style: .prominentTitle)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.bottom, 30)
+        }
+        .presentableStoreLensAnimation(.easeInOut)
     }
 
     @hColorBuilder

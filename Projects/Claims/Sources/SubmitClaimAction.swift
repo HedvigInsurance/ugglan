@@ -11,7 +11,6 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setClaimEntrypointGroupsForSelection([ClaimEntryPointGroupResponseModel])
     case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
     case entrypointGroupSelected(entrypointGroup: ClaimsOrigin)
-    case entrypointNavigationSelected(commonClaim: ClaimsOrigin)
 
     case submitAudioRecording(audioURL: URL)
     case resetAudioRecording
