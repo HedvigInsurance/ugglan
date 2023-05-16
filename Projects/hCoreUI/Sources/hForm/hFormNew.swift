@@ -5,22 +5,22 @@ import SwiftUI
 import UIKit
 import hCore
 
-private struct EnvironmentHFormBottomAttachedView: EnvironmentKey {
+private struct EnvironmentHFormBottomAttachedViewNew: EnvironmentKey {
     static let defaultValue: AnyView? = nil
 }
 
-//extension EnvironmentValues {
-//    public var hFormBottomAttachedView: AnyView? {
-//        get { self[EnvironmentHFormBottomAttachedView.self] }
-//        set { self[EnvironmentHFormBottomAttachedView.self] = newValue }
-//    }
-//}
-//
-//extension View {
-//    public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-//        self.environment(\.hFormBottomAttachedView, AnyView(content()))
-//    }
-//}
+extension EnvironmentValues {
+    public var hFormBottomAttachedViewNew: AnyView? {
+        get { self[EnvironmentHFormBottomAttachedViewNew.self] }
+        set { self[EnvironmentHFormBottomAttachedViewNew.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hFormBottomAttachedView, AnyView(content()))
+    }
+}
 
 struct BackgroundViewNew: UIViewRepresentable {
     func updateUIView(_ uiView: UIViewType, context: Context) {
