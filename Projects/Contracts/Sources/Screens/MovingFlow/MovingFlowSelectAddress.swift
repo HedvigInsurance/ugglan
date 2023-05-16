@@ -11,7 +11,7 @@ struct MovingFlowSelectAddress: View {
 
     var body: some View {
         LoadingViewWithContent(.setMoveIntent) {
-            hForm {
+            hFormNew {
                 hText(L10n.changeAddressEnterNewAddressTitle, style: .title1)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, alignment: .center)

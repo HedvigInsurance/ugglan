@@ -5,28 +5,30 @@ import hCoreUI
 
 public struct MovingFlowJourneyNew {
 
-    @JourneyBuilder
-    public static func getScreenForAction(
-        for action: ContractAction,
-        withHidesBack: Bool = false
-    ) -> some JourneyPresentation {
-        if withHidesBack {
-            getScreen(for: action).hidesBackButton
-        } else {
-            getScreen(for: action).showsBackButton
-        }
-    }
+    //    @JourneyBuilder
+    //    public static func getScreenForAction(
+    //        for action: ContractAction,
+    //        withHidesBack: Bool = false
+    //    ) -> some JourneyPresentation {
+    //        if withHidesBack {
+    //            getScreen(for: action).hidesBackButton
+    //        } else {
+    //            getScreen(for: action).showsBackButton
+    //        }
+    //    }
 
     @JourneyBuilder
-    public static func getScreen(for action: ContractAction) -> some JourneyPresentation {
+    public static func getMovingFlowScreen(for action: ContractAction) -> some JourneyPresentation {
         GroupJourney {
             if case let .navigationActionMovingFlow(navigationAction) = action {
                 if case .openAddressFillScreen = navigationAction {
                     MovingFlowJourneyNew.openAddressFillScreen()
-                } else if case .openDatePicker = navigationAction {
-                    MovingFlowJourneyNew.openAddressFillScreen() /* TODO: FIX */
-                    //                    MovingFlowJourneyNew.openDatePickerScreen()
+                    //                    DismissJourney()
                 }
+                //                else if case .openDatePicker = navigationAction {
+                //                    MovingFlowJourneyNew.openAddressFillScreen() /* TODO: FIX */
+                //                    //                    MovingFlowJourneyNew.openDatePickerScreen()
+                //                }
             }
         }
     }
@@ -38,7 +40,7 @@ public struct MovingFlowJourneyNew {
             style: .detented(.large)
         ) {
             action in
-            getScreenForAction(for: action)
+            getMovingFlowScreen(for: action)
         }
         .withJourneyDismissButton
     }

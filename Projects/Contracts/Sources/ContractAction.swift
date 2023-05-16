@@ -96,8 +96,8 @@ public enum TerminationNavigationAction: ActionProtocol, Hashable {
 }
 
 public enum MovingFlowNavigationAction: ActionProtocol, Hashable {
-    case openMovingFlowHousingTypeScreen
-    case openDatePickerScreen
+    //    case openMovingFlowHousingTypeScreen
+    //    case openDatePickerScreen
     case openAddressFillScreen
-    case openDatePicker
+    //    case openDatePicker
 }

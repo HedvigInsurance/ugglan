@@ -14,7 +14,7 @@ public struct MovingFlowHousingType: View {
 
     public var body: some View {
         LoadingViewWithContent(.setMoveIntent) {
-            hForm {
+            hFormNew {
                 VStack {
                     hText(L10n.changeAddressSelectHousingTypeTitle, style: .title1)
                         .multilineTextAlignment(.center)

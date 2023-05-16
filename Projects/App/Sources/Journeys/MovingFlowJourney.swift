@@ -38,11 +38,14 @@ extension AppJourney {
             rootView: MovingFlowHousingType(),
             style: .detented(.large, modally: false)
         ) { action in
-            if case .navigationActionMovingFlow = action {
-                MovingFlowJourneyNew.getScreenForAction(for: action, withHidesBack: true)
-            } else {
-                MovingFlowJourneyNew.getScreenForAction(for: action, withHidesBack: true)
-            }
+            DismissJourney()
+            //            if case .navigationActionMovingFlow = action {
+            ////                MovingFlowJourneyNew.getScreenForAction(for: action, withHidesBack: true)
+            //                MovingFlowJourneyNew.getMovingFlowScreen(for: action)
+            //            } else {
+            ////                MovingFlowJourneyNew.getScreenForAction(for: action, withHidesBack: true)
+            //                MovingFlowJourneyNew.getMovingFlowScreen(for: action)
+            //            }
         }
     }
 
