@@ -9,7 +9,7 @@ public struct SelectClaimEntrypoint: View {
     @PresentableStore var store: SubmitClaimStore
     @State private var height = CGFloat.zero
     @State private var tmpHeight = CGFloat.zero
-    @State var selectedClaimType: String = ""
+    @State var selectedClaimType: String? = nil
 
     public init(
         entrypointGroupId: String
@@ -90,17 +90,20 @@ public struct SelectClaimEntrypoint: View {
 
         }
         .padding([.leading, .trailing], 16)
-        hButton.LargeButtonFilled {
-            store.send(
-                .commonClaimOriginSelected(
-                    commonClaim: ClaimsOrigin.commonClaims(id: mapNametoId(input: claimEntrypoint))
+
+        if let selectedClaimType = selectedClaimType {
+            hButton.LargeButtonFilled {
+                store.send(
+                    .commonClaimOriginSelected(
+                        commonClaim: ClaimsOrigin.commonClaims(id: mapNametoId(input: claimEntrypoint))
+                    )
                 )
-            )
-        } content: {
-            hText(L10n.generalContinueButton)
-                .foregroundColor(hLabelColor.primary).colorInvert()
+            } content: {
+                hText(L10n.generalContinueButton)
+                    .foregroundColor(hLabelColor.primary).colorInvert()
+            }
+            .padding([.trailing, .leading], 16)
         }
-        .padding([.trailing, .leading], 16)
     }
 
     public func entrypointList(claimEntrypoint: [ClaimEntryPointResponseModel]) -> some View {
