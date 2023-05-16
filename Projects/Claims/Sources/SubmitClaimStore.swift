@@ -157,44 +157,44 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                     return disposeBag
                 }
             }
-        //        case .fetchEntrypointGroups:
-        //            let entrypointType = OctopusGraphQL.EntrypointType.claim
-        //            let query = OctopusGraphQL.EntrypointGroupsQuery(type: entrypointType)
-        //            return FiniteSignal { callback in
-        //                let disposeBag = DisposeBag()
-        //                disposeBag +=
-        //                    self.octopus.client.fetch(query: query)
-        //                    .onValue { data in
-        //                        let model = data.entrypointGroups.map {
-        //                            ClaimEntryPointGroupResponseModel(id: $0.id, displayName: $0.displayName, icon: $0.iconUrl)
-        //                        }
-        //                        callback(.value(.setClaimEntrypointGroupsForSelection(model)))
-        //                        callback(.value(.setLoadingState(action: .fetchClaimEntrypointGroups, state: nil)))
-        //                    }
-        //                    .onError { error in
-        //                        callback(
-        //                            .value(
-        //                                .setLoadingState(
-        //                                    action: .fetchClaimEntrypointGroups,
-        //                                    state: .error(error: L10n.General.errorBody)
-        //                                )
-        //                            )
-        //                        )
-        //                    }
-        //                    .disposable
-        //                return disposeBag
-        //            }
+        case .fetchEntrypointGroups:
+            let entrypointType = OctopusGraphQL.EntrypointType.claim
+            let query = OctopusGraphQL.EntrypointGroupsQuery(type: entrypointType)
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag +=
+                    self.octopus.client.fetch(query: query)
+                    .onValue { data in
+                        let model = data.entrypointGroups.map {
+                            ClaimEntryPointGroupResponseModel(id: $0.id, displayName: $0.displayName, icon: $0.iconUrl)
+                        }
+                        callback(.value(.setClaimEntrypointGroupsForSelection(model)))
+                        callback(.value(.setLoadingState(action: .fetchClaimEntrypointGroups, state: nil)))
+                    }
+                    .onError { error in
+                        callback(
+                            .value(
+                                .setLoadingState(
+                                    action: .fetchClaimEntrypointGroups,
+                                    state: .error(error: L10n.General.errorBody)
+                                )
+                            )
+                        )
+                    }
+                    .disposable
+                return disposeBag
+            }
 
         case let .fetchClaimEntrypointsForSelection(entrypointGroupId):
             var entryPointInput: OctopusGraphQL.EntrypointSearchInput
-            //            var groupId: String? = nil
+            var groupId: String? = nil
 
-            //            if hAnalyticsExperiment.claimsTriaging {
-            //                groupId = entrypointGroupId
-            //            }
+            if hAnalyticsExperiment.claimsTriaging {
+                groupId = entrypointGroupId
+            }
 
             entryPointInput = OctopusGraphQL.EntrypointSearchInput(
-                //                entrypointGroupId: groupId,
+                entrypointGroupId: groupId,
                 type: OctopusGraphQL.EntrypointType.claim
             )
 
