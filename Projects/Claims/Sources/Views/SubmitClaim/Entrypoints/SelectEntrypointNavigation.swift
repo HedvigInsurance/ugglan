@@ -15,7 +15,7 @@ public struct SelectEntrypointNavigation: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(.fetchClaimEntrypoints) {
+        LoadingViewWithContent(.fetchClaimEntrypointGroups) {
             PresentableStoreLens(
                 SubmitClaimStore.self,
                 getter: { state in
