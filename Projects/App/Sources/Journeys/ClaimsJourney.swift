@@ -39,12 +39,12 @@ extension AppJourney {
         if hAnalyticsExperiment.claimsFlow {
             if hAnalyticsExperiment.claimsTriaging {
                 ClaimJourneys.showClaimEntrypointGroups(origin: origin) { newOrigin in
-                    ClaimJourneys.showClaimEntrypoints(origin: newOrigin) { newOrigin in
+                    ClaimJourneys.showClaimEntrypointsNew(origin: newOrigin) { newOrigin in
                         honestyPledge(from: newOrigin)
                     }
                 }
             } else {
-                ClaimJourneys.showClaimEntrypoints(origin: origin) { newOrigin in
+                ClaimJourneys.showClaimEntrypointsOld(origin: origin) { newOrigin in
                     honestyPledge(from: newOrigin)
                 }
             }

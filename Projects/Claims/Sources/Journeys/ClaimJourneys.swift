@@ -290,8 +290,7 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectEntrypointNavigation(),
-            //            style: .detented(.large),
-            style: .detented(.large, modally: false),
+            style: .detented(.large),
             options: [
                 .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
             ]
@@ -311,14 +310,39 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    public static func showClaimEntrypoints(
+    public static func showClaimEntrypointsOld(
         origin: ClaimsOrigin,
         @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypoint(entrypointGroupId: origin.id),
-            style: .detented(.large, modally: false)
+            style: .detented(.large),
+            options: [
+                .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
+            ]
+        ) { action in
+            if case let .commonClaimOriginSelected(origin) = action {
+                GroupJourney { context in
+                    switch origin {
+                    case .generic:
+                        ContinueJourney()
+                    case let .commonClaims(id):
+                        redirectJourney(ClaimsOrigin.commonClaims(id: id))
+                    }
+                }
+            }
+        }
+    }
+
+    @JourneyBuilder
+    public static func showClaimEntrypointsNew(
+        origin: ClaimsOrigin,
+        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
+    ) -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SelectClaimEntrypoint(entrypointGroupId: origin.id)
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
                 GroupJourney { context in
