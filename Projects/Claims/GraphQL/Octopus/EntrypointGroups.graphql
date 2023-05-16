@@ -1,7 +1,0 @@
-query EntrypointGroups($type: EntrypointType!) {
-  entrypointGroups(type: $type) {
-    displayName
-    iconUrl
-    id
-  }
-}
