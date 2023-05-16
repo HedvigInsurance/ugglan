@@ -187,14 +187,14 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
 
         case let .fetchClaimEntrypointsForSelection(entrypointGroupId):
             var entryPointInput: OctopusGraphQL.EntrypointSearchInput
-            var groupId: String? = nil
+            //            var groupId: String? = nil
 
             //            if hAnalyticsExperiment.claimsTriaging {
             //                groupId = entrypointGroupId
             //            }
 
             entryPointInput = OctopusGraphQL.EntrypointSearchInput(
-                entrypointGroupId: groupId,
+                //                entrypointGroupId: groupId,
                 type: OctopusGraphQL.EntrypointType.claim
             )
 
