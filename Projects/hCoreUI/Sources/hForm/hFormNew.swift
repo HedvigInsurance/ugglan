@@ -17,8 +17,8 @@ extension EnvironmentValues {
 }
 
 extension View {
-    public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hFormBottomAttachedView, AnyView(content()))
+    public func hFormAttachToBottomNew<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hFormBottomAttachedViewNew, AnyView(content()))
     }
 }
 
