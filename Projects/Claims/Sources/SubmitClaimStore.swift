@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hGraphQL
 
@@ -185,10 +186,18 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             }
 
         case let .fetchClaimEntrypointsForSelection(entrypointGroupId):
-            let entryPointInput = OctopusGraphQL.EntrypointSearchInput(
-                entrypointGroupId: entrypointGroupId,
+            var entryPointInput: OctopusGraphQL.EntrypointSearchInput
+            var groupId: String? = nil
+
+            if hAnalyticsExperiment.claimsTriaging {
+                groupId = entrypointGroupId
+            }
+
+            entryPointInput = OctopusGraphQL.EntrypointSearchInput(
+                entrypointGroupId: groupId,
                 type: OctopusGraphQL.EntrypointType.claim
             )
+
             let query = OctopusGraphQL.EntrypointSearchQuery(input: entryPointInput)
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
