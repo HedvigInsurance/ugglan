@@ -31,7 +31,7 @@ public struct MovingFlowHousingType: View {
                         .padding([.leading, .trailing], 16)
                 }
             }
-            .hFormAttachToBottom {
+            .hFormAttachToBottomNew {
                 hButton.LargeButtonFilled {
                     store.send(.navigationActionMovingFlow(action: .openAddressFillScreen))
                     // send isSelected to next view

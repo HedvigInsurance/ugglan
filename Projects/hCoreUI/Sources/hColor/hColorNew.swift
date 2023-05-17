@@ -228,6 +228,126 @@ public struct hTintColorNew {
         )
     }
 
+    public static var yellow50: some hColor {
+        hColorScheme(
+            Color(hexString: "#FFFBCF")
+        )
+    }
+
+    public static var yellow100: some hColor {
+        hColorScheme(
+            Color(hexString: "#F6F1C0")
+        )
+    }
+
+    public static var yellow200: some hColor {
+        hColorScheme(
+            Color(hexString: "#EBE5AD")
+        )
+    }
+
+    public static var yellow300: some hColor {
+        hColorScheme(
+            Color(hexString: "#E3DDA0")
+        )
+    }
+
+    public static var yellow400: some hColor {
+        hColorScheme(
+            Color(hexString: "#DBD593")
+        )
+    }
+
+    public static var yellow500: some hColor {
+        hColorScheme(
+            Color(hexString: "#D5CE82")
+        )
+    }
+
+    public static var yellow600: some hColor {
+        hColorScheme(
+            Color(hexString: "#FFF266")
+        )
+    }
+
+    public static var yellow700: some hColor {
+        hColorScheme(
+            Color(hexString: "#A49758")
+        )
+    }
+
+    public static var yellow800: some hColor {
+        hColorScheme(
+            Color(hexString: "#827535")
+        )
+    }
+
+    public static var yellow900: some hColor {
+        hColorScheme(
+            Color(hexString: "#5E500A")
+        )
+    }
+
+    public static var amber50: some hColor {
+        hColorScheme(
+            Color(hexString: "#FFF4D5")
+        )
+    }
+
+    public static var amber100: some hColor {
+        hColorScheme(
+            Color(hexString: "#FBEDC5")
+        )
+    }
+
+    public static var amber200: some hColor {
+        hColorScheme(
+            Color(hexString: "#F6E5B2")
+        )
+    }
+
+    public static var amber300: some hColor {
+        hColorScheme(
+            Color(hexString: "#F5E0A3")
+        )
+    }
+
+    public static var amber400: some hColor {
+        hColorScheme(
+            Color(hexString: "#F2D98C")
+        )
+    }
+
+    public static var amber500: some hColor {
+        hColorScheme(
+            Color(hexString: "#EED077")
+        )
+    }
+
+    public static var amber600: some hColor {
+        hColorScheme(
+            Color(hexString: "#FFBF00")
+        )
+    }
+
+    public static var amber700: some hColor {
+        hColorScheme(
+            Color(hexString: "#AC7339")
+        )
+    }
+
+    public static var amber800: some hColor {
+        hColorScheme(
+            Color(hexString: "#8A4C0F")
+        )
+    }
+
+    public static var amber900: some hColor {
+        hColorScheme(
+            Color(hexString: "#6B3806")
+        )
+    }
+
 }
 
 public struct hSeparatorColorNew {

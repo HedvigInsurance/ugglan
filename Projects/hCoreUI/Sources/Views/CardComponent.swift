@@ -45,7 +45,7 @@ where MainContent: View, BottomContent: View, TopSubContent: View {
     let topSubTitle: TopSubContent?
     let title: String?
     let subTitle: String?
-    let bottomComponent: () -> BottomContent
+    let bottomComponent: BottomContent
     let isNew: Bool?
 
     public init(
@@ -55,7 +55,7 @@ where MainContent: View, BottomContent: View, TopSubContent: View {
         subTitle: String? = nil,
         topTitle: String? = nil,
         topSubTitle: TopSubContent? = nil,
-        bottomComponent: @escaping () -> BottomContent,
+        bottomComponent: BottomContent,
         isNew: Bool? = false
     ) {
         self.onSelected = onSelected
@@ -106,7 +106,7 @@ where MainContent: View, BottomContent: View, TopSubContent: View {
                     .padding([.leading, .trailing], 16)
             }
             Spacer().frame(height: 16)
-            bottomComponent()
+            bottomComponent
                 .padding([.leading, .trailing], 16)
         }
         .padding([.top, .bottom], 16)

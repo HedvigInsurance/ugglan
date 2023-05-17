@@ -26,11 +26,18 @@ public struct MovingFlowJourneyNew {
                         .configureTitle(L10n.InsuranceDetails.changeAddressButton)
                 } else if case .openHousingTypeScreen = navigationAction {
                     MovingFlowJourneyNew.openSelectHousingScreen()
+                        .configureTitle(L10n.InsuranceDetails.changeAddressButton)
                 } else if case .openConfirmScreen = navigationAction {
-                    MovingFlowJourneyNew.openConfirmScreen()
+                    MovingFlowJourneyNew.openConfirmScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
                 } else if case .openDatePickerScreen = navigationAction {
                     MovingFlowJourneyNew.openDatePickerScreen()
+                } else if case .openFailureScreen = navigationAction {
+                    MovingFlowJourneyNew.openFailureScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
+                } else if case .dismissMovingFlow = navigationAction {
+                    DismissJourney()
                 }
+            } else if case .goToFreeTextChat = action {
+                DismissJourney()
             }
         }
     }
@@ -90,6 +97,18 @@ public struct MovingFlowJourneyNew {
             if case .setMovingDate = action {
                 PopJourney()
             }
+        }
+        .withJourneyDismissButton
+    }
+
+    @JourneyBuilder
+    static func openFailureScreen() -> some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: MovingFlowFailure()
+        ) {
+            action in
+            getMovingFlowScreenForAction(for: action)
         }
         .withJourneyDismissButton
     }

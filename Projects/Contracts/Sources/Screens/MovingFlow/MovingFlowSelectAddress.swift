@@ -24,7 +24,7 @@ struct MovingFlowSelectAddress: View {
                 numberOfCoinsuredField()
                 accessDateField()
             }
-            .hFormAttachToBottom {
+            .hFormAttachToBottomNew {
                 hButton.LargeButtonFilled {
                     store.send(.navigationActionMovingFlow(action: .openConfirmScreen))
                 } content: {

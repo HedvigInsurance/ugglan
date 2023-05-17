@@ -101,4 +101,6 @@ public enum MovingFlowNavigationAction: ActionProtocol, Hashable {
     case openDatePickerScreen
     case openAddressFillScreen
     case openConfirmScreen
+    case openFailureScreen
+    case dismissMovingFlow
 }

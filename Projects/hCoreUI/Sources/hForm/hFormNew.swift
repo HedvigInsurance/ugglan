@@ -38,8 +38,8 @@ public struct hFormNew<Content: View>: View {
 
     @State var shouldAnimateGradient = true
 
-    @State var bottomAttachedViewHeight: CGFloat = 0
-    @Environment(\.hFormBottomAttachedView) var bottomAttachedView
+    @State var bottomAttachedViewHeightNew: CGFloat = 0
+    @Environment(\.hFormBottomAttachedViewNew) var bottomAttachedViewNew
     var content: Content
 
     public init(
@@ -77,19 +77,19 @@ public struct hFormNew<Content: View>: View {
                 .frame(maxWidth: .infinity)
                 .tint(hTintColor.lavenderOne)
                 Color.clear
-                    .frame(height: bottomAttachedViewHeight)
+                    .frame(height: bottomAttachedViewHeightNew)
             }
-            .modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeight))
+            .modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeightNew))
             .introspectScrollView { scrollView in
                 if #available(iOS 15, *) {
                     scrollView.viewController?.setContentScrollView(scrollView)
                 }
             }
-            bottomAttachedView
+            bottomAttachedViewNew
                 .background(
                     GeometryReader { geo in
                         Color.clear.onReceive(Just(geo.size.height)) { height in
-                            self.bottomAttachedViewHeight = height
+                            self.bottomAttachedViewHeightNew = height
                         }
                     }
                 )
