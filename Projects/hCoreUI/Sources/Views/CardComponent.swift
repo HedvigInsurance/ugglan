@@ -42,7 +42,7 @@ where MainContent: View, BottomContent: View, TopSubContent: View {
     var onSelected: (() -> Void)?
     let mainContent: MainContent?
     let topTitle: String?
-    let topSubTitle: (() -> TopSubContent)?
+    let topSubTitle: TopSubContent?
     let title: String?
     let subTitle: String?
     let bottomComponent: () -> BottomContent
@@ -54,7 +54,7 @@ where MainContent: View, BottomContent: View, TopSubContent: View {
         title: String? = nil,
         subTitle: String? = nil,
         topTitle: String? = nil,
-        topSubTitle: (() -> TopSubContent)? = nil,
+        topSubTitle: TopSubContent? = nil,
         bottomComponent: @escaping () -> BottomContent,
         isNew: Bool? = false
     ) {
@@ -77,7 +77,7 @@ where MainContent: View, BottomContent: View, TopSubContent: View {
                         hText(topTitle, style: .body)
                     }
                     if let topSubTitle = topSubTitle {
-                        topSubTitle()
+                        topSubTitle
                     }
                 }
                 .padding(.leading, 16)

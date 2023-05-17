@@ -3,6 +3,7 @@ import hCore
 import hCoreUI
 
 struct MovingFlowSelectAddress: View {
+    @PresentableStore var store: ContractStore
     @State var address: String = ""
     @State var postalCode: String = ""
     @State var squareArea: String = ""
@@ -15,7 +16,7 @@ struct MovingFlowSelectAddress: View {
                 hText(L10n.changeAddressEnterNewAddressTitle, style: .title1)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding([.top, .bottom], 100)
+                    .padding([.top, .bottom], 24)
 
                 addressField()
                 postalAndSquareField()
@@ -24,12 +25,13 @@ struct MovingFlowSelectAddress: View {
             }
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
-                    // send isSelected to SelectDate
+                    store.send(.navigationActionMovingFlow(action: .openConfirmScreen))
                 } content: {
                     hText(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary).colorInvert()
                 }
                 .padding([.leading, .trailing], 16)
+                .padding(.bottom, 8)
             }
         }
     }
@@ -37,10 +39,9 @@ struct MovingFlowSelectAddress: View {
     @ViewBuilder
     func addressField() -> some View {
         HStack {
-            hTextFieldNew(
-                masking: Masking(type: .none),
-                value: $address,
-                placeholder: L10n.changeAddressNewAddressLabel
+            hTextField(
+                masking: Masking(type: .address),
+                value: $address
             )
             .hTextFieldOptions([])
             .padding(.leading, 16)
@@ -57,8 +58,8 @@ struct MovingFlowSelectAddress: View {
     @ViewBuilder
     func postalAndSquareField() -> some View {
         HStack(spacing: 0) {
-            hTextFieldNew(
-                masking: Masking(type: .digits),
+            hTextField(
+                masking: Masking(type: .postalCode),
                 value: $postalCode,
                 placeholder: L10n.changeAddressNewPostalCodeLabel
             )
@@ -73,7 +74,7 @@ struct MovingFlowSelectAddress: View {
 
             Spacer()
 
-            hTextFieldNew(
+            hTextField(
                 masking: Masking(type: .digits),
                 value: $squareArea,
                 placeholder: L10n.changeAddressNewLivingSpaceLabel

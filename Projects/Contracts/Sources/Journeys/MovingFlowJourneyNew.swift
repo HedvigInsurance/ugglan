@@ -5,17 +5,17 @@ import hCoreUI
 
 public struct MovingFlowJourneyNew {
 
-    //    @JourneyBuilder
-    //    public static func getScreenForAction(
-    //        for action: ContractAction,
-    //        withHidesBack: Bool = false
-    //    ) -> some JourneyPresentation {
-    //        if withHidesBack {
-    //            getScreen(for: action).hidesBackButton
-    //        } else {
-    //            getScreen(for: action).showsBackButton
-    //        }
-    //    }
+    @JourneyBuilder
+    public static func getMovingFlowScreenForAction(
+        for action: ContractAction,
+        withHidesBack: Bool = false
+    ) -> some JourneyPresentation {
+        if withHidesBack {
+            getMovingFlowScreen(for: action).hidesBackButton
+        } else {
+            getMovingFlowScreen(for: action).showsBackButton
+        }
+    }
 
     @JourneyBuilder
     public static func getMovingFlowScreen(for action: ContractAction) -> some JourneyPresentation {
@@ -23,50 +23,52 @@ public struct MovingFlowJourneyNew {
             if case let .navigationActionMovingFlow(navigationAction) = action {
                 if case .openAddressFillScreen = navigationAction {
                     MovingFlowJourneyNew.openAddressFillScreen()
-                    //                    DismissJourney()
+                } else if case .openHousingTypeScreen = navigationAction {
+                    MovingFlowJourneyNew.openSelectHousingScreen()
+                } else if case .openConfirmScreen = navigationAction {
+                    MovingFlowJourneyNew.openConfirmScreen()
                 }
-                //                else if case .openDatePicker = navigationAction {
-                //                    MovingFlowJourneyNew.openAddressFillScreen() /* TODO: FIX */
-                //                    //                    MovingFlowJourneyNew.openDatePickerScreen()
-                //                }
             }
         }
     }
 
+    @JourneyBuilder
     static func openAddressFillScreen() -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: MovingFlowSelectAddress(),
-            style: .detented(.large)
+            rootView: MovingFlowSelectAddress()
         ) {
             action in
-            getMovingFlowScreen(for: action)
+            getMovingFlowScreenForAction(for: action)
         }
         .withJourneyDismissButton
     }
 
-    //    static func openDatePickerScreen() -> some JourneyPresentation {
-    //        let screen = DatePickerScreen(type: type)
-    //
-    //        return HostingJourney(
-    //            SubmitClaimStore.self,
-    //            rootView: DatePickerScreen(),
-    //            style: .detented(.scrollViewContentSize),
-    //            options: [
-    //                .defaults,
-    //                .largeTitleDisplayMode(.always),
-    //                .prefersLargeTitles(true),
-    //            ]
-    //        ) {
-    //            action in
-    //            if case .setNewDate = action {
-    //                PopJourney()
-    //            } else if case .setSingleItemPurchaseDate = action {
-    //                PopJourney()
-    //            }
-    //        }
-    //        .configureTitle(screen.title)
-    //        .withDismissButton
-    //    }
+    @JourneyBuilder
+    public static func openSelectHousingScreen() -> some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: MovingFlowHousingType()
+                //            style: .detented(.large),
+                //            options: [
+                //                .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
+                //            ]
+        ) {
+            action in
+            getMovingFlowScreenForAction(for: action)
+        }
+        .withJourneyDismissButton
+    }
 
+    @JourneyBuilder
+    static func openConfirmScreen() -> some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: MovingFlowConfirm()
+        ) {
+            action in
+            getMovingFlowScreenForAction(for: action)
+        }
+        .withJourneyDismissButton
+    }
 }

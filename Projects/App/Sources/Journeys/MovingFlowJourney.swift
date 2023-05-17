@@ -31,22 +31,9 @@ extension JourneyPresentation {
 
 extension AppJourney {
 
-    static var movingFlow: some JourneyPresentation {
-        HostingJourney(
-            ContractStore.self,
-            // LoadingViewWithContent(.startClaim) { MovingFlowHousingType() }
-            rootView: MovingFlowHousingType(),
-            style: .detented(.large, modally: false)
-        ) { action in
-            DismissJourney()
-            //            if case .navigationActionMovingFlow = action {
-            ////                MovingFlowJourneyNew.getScreenForAction(for: action, withHidesBack: true)
-            //                MovingFlowJourneyNew.getMovingFlowScreen(for: action)
-            //            } else {
-            ////                MovingFlowJourneyNew.getScreenForAction(for: action, withHidesBack: true)
-            //                MovingFlowJourneyNew.getMovingFlowScreen(for: action)
-            //            }
-        }
+    @JourneyBuilder
+    static func movingFlow() -> some JourneyPresentation {
+        MovingFlowJourneyNew.openSelectHousingScreen()
     }
 
     static var movingFlowEmbark: some JourneyPresentation {

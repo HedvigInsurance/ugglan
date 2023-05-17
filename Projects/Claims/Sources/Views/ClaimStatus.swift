@@ -40,9 +40,7 @@ struct ClaimStatusButtonStyle: ButtonStyle {
             mainContent: ClaimPills(claim: claim),
             title: claim.title,
             subTitle: claim.subtitle,
-            topSubTitle: {
-                EmptyView()
-            },
+            topSubTitle: EmptyView(), /* TODO: */
             bottomComponent: {
                 HStack(spacing: 6) {
                     ForEach(claim.segments, id: \.text) { segment in

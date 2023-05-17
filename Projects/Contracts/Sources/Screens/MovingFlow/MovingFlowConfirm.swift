@@ -9,12 +9,13 @@ struct MovingFlowConfirm: View {
             hText("Bekräfta ändringar", style: .title1)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .padding([.top, .bottom], 100)
+                .padding(.bottom, 50)
 
             overviewComponent
             infoComponent
             whatIsCovered
             questionAnswerComponent
+            chatComponent
         }
     }
 
@@ -60,9 +61,7 @@ struct MovingFlowConfirm: View {
             mainContent: Image(uiImage: hCoreUIAssets.pillowHome.image).resizable()
                 .frame(width: 49, height: 49),
             topTitle: "Hemförsäkring",
-            topSubTitle: {
-                returnSubComponent()
-            },
+            topSubTitle: returnSubComponent(),
             bottomComponent: returnBottomComponent,
             isNew: true
         )
@@ -166,21 +165,38 @@ struct MovingFlowConfirm: View {
             mainContent: returnMainContent()
         )
         .padding([.leading, .trailing], 16)
+        .padding(.bottom, 80)
     }
 
     @ViewBuilder
     var questionAnswerComponent: some View {
         hText("Frågor och svar", style: .title1)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 16)
         TextBoxComponent(
             mainContent: answerMainComponent
         )
+        .padding([.leading, .trailing], 16)
+        .padding(.bottom, 80)
     }
 
     @ViewBuilder
     var answerMainComponent: some View {
-        hText("Vad ingår i en hemförsäkring?")
-        Spacer()
-        Image(uiImage: hCoreUIAssets.plusIcon.image)
+        HStack {
+            hText("Vad ingår i en hemförsäkring?", style: .body)
+            Spacer()
+            Image(uiImage: hCoreUIAssets.plusIcon.image)
+        }
+    }
+
+    @ViewBuilder
+    var chatComponent: some View {
+        hText("Hittar du inte det du söker?", style: .body)
+        hButton.SmallButtonFilled {
+            //open chat
+        } content: {
+            hText("Öppna chatten")
+        }
     }
 }
 

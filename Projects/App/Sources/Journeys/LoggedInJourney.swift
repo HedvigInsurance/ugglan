@@ -23,7 +23,7 @@ extension AppJourney {
                 switch result {
                 case .startMovingFlow:
                     //                    AppJourney.movingFlowEmbark
-                    AppJourney.movingFlow
+                    AppJourney.movingFlow()
                 case .openFreeTextChat:
                     AppJourney.freeTextChat().withDismissButton
                 case .openConnectPayments:
@@ -61,7 +61,7 @@ extension AppJourney {
             switch result {
             case .movingFlow:
                 //                AppJourney.movingFlowEmbark
-                AppJourney.movingFlow
+                AppJourney.movingFlow()
             case .openFreeTextChat:
                 AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingDetail(crossSell):
