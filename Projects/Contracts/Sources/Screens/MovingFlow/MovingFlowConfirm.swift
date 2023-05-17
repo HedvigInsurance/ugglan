@@ -3,6 +3,8 @@ import hCore
 import hCoreUI
 
 struct MovingFlowConfirm: View {
+    @State var showDetails = false
+
     var body: some View {
         hFormNew {
 
@@ -39,20 +41,68 @@ struct MovingFlowConfirm: View {
         .foregroundColor(hGrayscaleColorNew.greyScale700)
     }
 
+    @ViewBuilder
     func returnBottomComponent() -> some View {
         HStack {
-            HStack {
-                hText("Detaljer", style: .body)
-                Image(uiImage: hCoreUIAssets.chevronDown.image)
-                    .foregroundColor(hGrayscaleColorNew.greyScale500)
-            }
-            .onTapGesture {
-                //show details
-            }
+            hText("Detaljer", style: .body)
+            Image(uiImage: hCoreUIAssets.chevronDown.image)
+                .foregroundColor(hGrayscaleColorNew.greyScale500)
             Spacer()
             hText("179 kr/mån", style: .body)
         }
         .padding([.leading, .trailing], 16)
+        .onTapGesture {
+            if showDetails {
+                showDetails = false
+            } else {
+                showDetails = true
+            }
+        }
+
+        if showDetails {
+            VStack(alignment: .leading) {
+                HStack {
+                    hText("Bostadstyp")
+                    Spacer()
+                    hText("Bostadsrätt")
+                }
+
+                HStack {
+                    hText("Adress")
+                    Spacer()
+                    hText("Bellmansgatan 19A")
+                }
+
+                HStack {
+                    hText("Postkod")
+                    Spacer()
+                    hText("11847")
+                }
+
+                HStack {
+                    hText("Postkod")
+                    Spacer()
+                    hText("11847")
+                }
+
+                HStack {
+                    hText("Postkod")
+                    Spacer()
+                    hText("11847")
+                }
+                //                .padding([.leading, .trailing, .top], 16)
+
+                hText("Dokument", style: .body)
+                    .foregroundColor(hLabelColor.primary)
+                    .padding([.top, .bottom], 16)
+
+                hText("Försäkringsvillkor")
+                hText("Försäkringsinformation")
+                hText("Produktfaktablad")
+            }
+            .padding([.leading, .trailing, .top], 16)
+            .foregroundColor(hGrayscaleColorNew.greyScale700)
+        }
     }
 
     @ViewBuilder

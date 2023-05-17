@@ -33,7 +33,7 @@ extension AppJourney {
 
     @JourneyBuilder
     static func movingFlow() -> some JourneyPresentation {
-        MovingFlowJourneyNew.openSelectHousingScreen()
+        MovingFlowJourneyNew.openSelectHousingScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
     }
 
     static var movingFlowEmbark: some JourneyPresentation {

@@ -24,7 +24,11 @@ public struct MovingFlowHousingType: View {
                     ForEach(housingTypes, id: \.self) { type in
                         setCheckBoxComponent(text: type)
                     }
+
                     NoticeComponent(text: L10n.changeAddressCoverageInfoText)
+                        .padding(.top, 116)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding([.leading, .trailing], 16)
                 }
             }
             .hFormAttachToBottom {
@@ -38,7 +42,6 @@ public struct MovingFlowHousingType: View {
                 .padding([.leading, .trailing], 16)
             }
         }
-        .navigationTitle(L10n.InsuranceDetails.changeAddressButton)
     }
 
     @ViewBuilder

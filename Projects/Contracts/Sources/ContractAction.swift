@@ -85,6 +85,7 @@ public indirect enum ContractAction: ActionProtocol, Hashable {
     case navigationActionMovingFlow(action: MovingFlowNavigationAction)
     case getMoveIntent
     case setMoveIntent
+    case setMovingDate(movingDate: Date)
 }
 
 public enum TerminationNavigationAction: ActionProtocol, Hashable {

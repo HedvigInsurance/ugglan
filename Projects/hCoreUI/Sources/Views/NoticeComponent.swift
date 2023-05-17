@@ -17,7 +17,7 @@ public struct NoticeComponent: View {
 
             hText(text, style: .body)
                 .foregroundColor(hTintColorNew.blue900)
-                .fixedSize(horizontal: false, vertical: false)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding([.top, .bottom], 12)
         .padding([.leading, .trailing], 16)

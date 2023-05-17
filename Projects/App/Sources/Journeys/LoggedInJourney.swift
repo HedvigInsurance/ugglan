@@ -22,8 +22,11 @@ extension AppJourney {
             HomeView.journey(claimsContent: claims, commonClaimsContent: commonClaims) { result in
                 switch result {
                 case .startMovingFlow:
-                    //                    AppJourney.movingFlowEmbark
-                    AppJourney.movingFlow()
+                    if hAnalyticsExperiment.movingFlowClient {
+                        AppJourney.movingFlow()
+                    } else {
+                        AppJourney.movingFlowEmbark
+                    }
                 case .openFreeTextChat:
                     AppJourney.freeTextChat().withDismissButton
                 case .openConnectPayments:
@@ -60,8 +63,11 @@ extension AppJourney {
         Contracts.journey { result in
             switch result {
             case .movingFlow:
-                //                AppJourney.movingFlowEmbark
-                AppJourney.movingFlow()
+                if hAnalyticsExperiment.movingFlowClient {
+                    AppJourney.movingFlow()
+                } else {
+                    AppJourney.movingFlowEmbark
+                }
             case .openFreeTextChat:
                 AppJourney.freeTextChat().withDismissButton
             case let .openCrossSellingDetail(crossSell):

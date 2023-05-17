@@ -16,7 +16,8 @@ struct MovingFlowSelectAddress: View {
                 hText(L10n.changeAddressEnterNewAddressTitle, style: .title1)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding([.top, .bottom], 24)
+                    .padding(.bottom, 64)
+                    .padding(.top, 56)
 
                 addressField()
                 postalAndSquareField()
@@ -118,7 +119,7 @@ struct MovingFlowSelectAddress: View {
                 .foregroundColor(hGrayscaleColorNew.greyScale1000)
                 .padding(.trailing, 16)
                 .onTapGesture {
-                    if let coinsured = nbOfCoInsured {
+                    if nbOfCoInsured != nil {
                         nbOfCoInsured! += 1
                     } else {
                         nbOfCoInsured = 1
@@ -148,9 +149,6 @@ struct MovingFlowSelectAddress: View {
                 Image(uiImage: hCoreUIAssets.chevronDown.image)
                     .foregroundColor(hGrayscaleColorNew.greyScale1000)
                     .padding(.trailing, 16)
-                    .onTapGesture {
-                        //open date picker screen
-                    }
             }
         }
         .padding([.top, .bottom], 11)
@@ -159,6 +157,9 @@ struct MovingFlowSelectAddress: View {
                 .fill(hGrayscaleColorNew.greyScale100)
         )
         .padding([.leading, .trailing], 16)
+        .onTapGesture {
+            store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
+        }
     }
 
 }
