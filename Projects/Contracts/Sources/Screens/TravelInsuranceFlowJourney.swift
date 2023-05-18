@@ -6,15 +6,22 @@ import hCoreUI
 
 public struct TravelInsuranceFlowJourney {
     
-    public static func start() -> some JourneyPresentation {
+    public static func start(openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
-            rootView: ProgressView(),
+            rootView: TravelInsuranceLoadingView( onError: {
+                let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+                store.send(.navigation(.openSomethingWentWrongScreen))
+            }, .getTravelInsurance) {Text("")},
             style: .detented(.large)
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case let .openEmailScreen(email) = navigationAction {
                     TravelInsuranceFlowJourney.showEmail(email: email)
+                } else if case .dismissCreateTravelCertificate = navigationAction {
+                    DismissJourney()
+                } else if case .openSomethingWentWrongScreen = navigationAction {
+                    openFailScreen(openChat: openChat)
                 }
             }
         }
@@ -104,6 +111,19 @@ public struct TravelInsuranceFlowJourney {
             }
             
         }
+    }
+    
+    private static func openFailScreen(openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation {
+        HostingJourney(TravelInsuranceStore.self,
+                       rootView: TravelInsuranceFailScreen()) { action in
+            if case let .navigation(navigationAction) = action {
+                if case .dismissCreateTravelCertificate = navigationAction {
+                    DismissJourney()
+                }else if case .openFreeTextChat = navigationAction {
+                    openChat()
+                }
+            }
+        }.hidesBackButton
     }
     
     private static func openDocument(url: URL, title: String) -> some JourneyPresentation {

@@ -7,6 +7,7 @@ import hGraphQL
 
 enum TravelInsuranceAction: ActionProtocol, Hashable {
     case getTravelInsuranceData
+    case setTravelInsuranceData(config:TravelInsuranceConfig)
     case postTravelInsuranceForm
     
     case setEmail(value: String)
@@ -15,8 +16,8 @@ enum TravelInsuranceAction: ActionProtocol, Hashable {
     case setPolicyCoInsured(PolicyCoinsuredPersonModel)
     case removePolicyCoInsured(PolicyCoinsuredPersonModel)
     
-    case postForm
     case navigation(TravelInsuranceNavigationAction)
+    case setLoadingState(action: TravelInsuranceLoadingAction, state: LoadingState<String>?)
 }
 
 enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
@@ -27,6 +28,13 @@ enum TravelInsuranceNavigationAction: ActionProtocol, Hashable {
     case openTravelInsurance(url: URL, title: String)
     case openSomethingWentWrongScreen
     case dismissAddUpdateCoinsured
+    case dismissCreateTravelCertificate
+    case openFreeTextChat
+}
+
+enum TravelInsuranceLoadingAction: ActionProtocol, Hashable {
+    case getTravelInsurance
+    case postTravelInsurance
 }
 
 enum TravelInsuranceDatePickerType: ActionProtocol, Hashable {

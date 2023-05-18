@@ -7,53 +7,57 @@ struct TravelInsuranceFormScreen: View {
     let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
     @State var dateOfOccurrence = Date()
     var body: some View {
-        PresentableStoreLens(
-            TravelInsuranceStore.self,
-            getter: { state in
-                state.travelInsuranceModel!
-            }
-        ) { travelInsuranceModel in
-            hForm {
-                datesSection(travelInsuranceModel)
-                insuredMembers(travelInsuranceModel)
-            }
-            .hFormAttachToBottom {
-                hButton.LargeButtonFilled {
-                    UIApplication.dismissKeyboard()
-                    store.send(.postForm)
-                } content: {
-                    hText(L10n.generalContinueButton)
+        TravelInsuranceLoadingView(.postTravelInsurance) {
+            PresentableStoreLens(
+                TravelInsuranceStore.self,
+                getter: { state in
+                    state.travelInsuranceModel!
                 }
-                .padding([.leading, .trailing], 16)
-                .padding(.bottom, 6)
-            }
-        }.presentableStoreLensAnimation(.spring())
-            .navigationTitle("Travel certificate")
-    }
+            ) { travelInsuranceModel in
+                hForm {
+                    datesSection(travelInsuranceModel)
+                    insuredMembers(travelInsuranceModel)
+                }
+                .hFormAttachToBottom {
+                    hButton.LargeButtonFilled {
+                        UIApplication.dismissKeyboard()
+                        store.send(.postTravelInsuranceForm)
+                    } content: {
+                        hText(L10n.generalContinueButton)
+                    }
+                    .padding([.leading, .trailing], 16)
+                    .padding(.bottom, 6)
+                }
+                .navigationTitle("Travel certificate")
+            }.presentableStoreLensAnimation(.spring())
 
-//    @ViewBuilder
+        }
+    }
+    
     private func datesSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
         let model = store.state.travelInsuranceConfig
         return hSection {
             DatePicker(
-                "When does your trip starts?",
+                "",
                 selection: self.$dateOfOccurrence,
                 in: (model?.minStartDate ?? Date())...(model?.maxStartDate ?? Date()),
                 displayedComponents: [.date]
-            ).environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
+            )
+            
+            .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
                 .datePickerStyle(.graphical)
                 .padding([.leading, .trailing], 16)
                 .padding([.top], 5)
         }
         .withHeader {
             hText(
-                "When does your trip starts?",
+                "Start date",
                 style: .title2
             )
         }
         .slideUpAppearAnimation()
     }
-
+    
     @ViewBuilder
     private func insuredMembers(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
         hSection {
@@ -77,7 +81,7 @@ struct TravelInsuranceFormScreen: View {
                         } label: {
                             Image(uiImage: hCoreUIAssets.close.image)
                         }
-
+                        
                     }
                 }.onTap {
                     store.send(.navigation(.openCoinsured(member: member)))
@@ -96,11 +100,11 @@ struct TravelInsuranceFormScreen: View {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
                 store.send(.navigation(.openCoinsured(member: nil)))
             } label: {
-                hText("Add")
+                hText("Add conisured member")
             }
             .slideUpAppearAnimation()
         }
-
+        
     }
 }
 

@@ -5,6 +5,7 @@ import UIKit
 
 public enum MaskType: String {
     case none = "None"
+    case disabledSuggestion = "DisabledSuggestion"
     case personalNumber = "PersonalNumber"
     case norwegianPersonalNumber = "NorwegianPersonalNumber"
     case danishPersonalNumber = "DanishPersonalNumber"
@@ -65,6 +66,7 @@ public struct Masking {
         case .postalCode: return unmask(text: text).count == 5
         case .digits: return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
         case .none: return true
+        case .disabledSuggestion: return true
         }
     }
 
@@ -82,6 +84,7 @@ public struct Masking {
         case .email, .norwegianPostalCode, .digits, .norwegianPersonalNumber: return text
         case .danishPersonalNumber: return text.replacingOccurrences(of: "-", with: "")
         case .none: return text
+        case .disabledSuggestion: return text
         }
     }
 
@@ -142,12 +145,14 @@ public struct Masking {
             return .numberPad
         case .email: return .emailAddress
         case .none: return .default
+        case .disabledSuggestion: return .default
         }
     }
 
     public var textContentType: UITextContentType? {
         switch type {
         case .email: return .emailAddress
+        case .disabledSuggestion: return .oneTimeCode
         default: return nil
         }
     }
@@ -181,6 +186,8 @@ public struct Masking {
             return nil
         case .digits:
             return nil
+        case .disabledSuggestion:
+            return nil
         }
     }
 
@@ -206,6 +213,16 @@ public struct Masking {
             return nil
         case .digits:
             return nil
+        case .disabledSuggestion:
+            return nil
+        }
+    }
+    
+    public var disableAutocorrection: Bool {
+        switch type {
+        case .none, .disabledSuggestion:
+            return true
+        default: return false
         }
     }
 
@@ -264,6 +281,7 @@ public struct Masking {
         case .danishPersonalNumber:
             return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
         case .none: return text
+        case .disabledSuggestion: return text
         }
     }
 }
@@ -274,6 +292,7 @@ extension Masking: ViewModifier {
             .keyboardType(keyboardType)
             .textContentType(textContentType)
             .autocapitalization(autocapitalizationType)
-            .disableAutocorrection(type != .none)
+            .disableAutocorrection(disableAutocorrection)
+            .autocorrectionDisabled()
     }
 }

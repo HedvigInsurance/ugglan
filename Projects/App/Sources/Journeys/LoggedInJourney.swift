@@ -180,7 +180,9 @@ extension JourneyPresentation {
                         }
                     }
             } else if case .openTravelInsurance = action {
-                TravelInsuranceFlowJourney.start()
+                TravelInsuranceFlowJourney.start {
+                    AppJourney.freeTextChat()
+                }
             } else if case .openHowClaimsWork = action {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {

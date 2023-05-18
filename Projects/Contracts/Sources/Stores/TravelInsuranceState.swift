@@ -9,12 +9,13 @@ struct TravelInsuranceState: StateProtocol {
     init() {}
     @OptionalTransient var travelInsuranceModel: TravelInsuranceModel?
     @OptionalTransient var travelInsuranceConfig: TravelInsuranceConfig?
-
+    @Transient(defaultValue: [:]) var loadingStates: [TravelInsuranceLoadingAction: LoadingState<String>]
 }
 
 struct TravelInsuranceModel: Codable, Equatable, Hashable {
-    var startDate: Date = Date()
+    var startDate: Date
     var isPolicyHolderIncluded: Bool = true
+    var email: String
     var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
 }
 
@@ -33,9 +34,19 @@ struct TravelInsuranceConfig: Codable, Equatable, Hashable {
         self.maxDuration = maxDuration
         self.email = email
     }
+    
+    init(model: OctopusGraphQL.CurrentMemberQuery.Data.CurrentMember.TravelCertificateSpecification) {
+        self.contractId = model.contractId
+        self.minStartDate = model.minStartDate.localDateToDate ?? Date()
+        self.maxStartDate = model.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90)
+        self.numberOfCoInsured = model.numberOfCoInsured
+        self.maxDuration = model.maxDurationDays
+        self.email = model.email ?? ""
+        
+    }
 }
 
 struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
-    let fullName: String
-    let personalNumber: String
+    var fullName: String
+    var personalNumber: String
 }

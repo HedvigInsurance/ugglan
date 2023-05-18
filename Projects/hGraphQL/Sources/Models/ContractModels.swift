@@ -242,6 +242,7 @@ public enum TypeOfContract: String, Codable {
     }
     
     
+    
     public var hasTravelInsurance: Bool {
         let suitableType = Contract.TypeOfContract.insurancesSuitableForTravelInsurance.contains(self.typeOfContract)
         let isNotInTerminationProcess = terminationDate == nil
