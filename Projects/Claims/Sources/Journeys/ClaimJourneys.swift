@@ -316,7 +316,7 @@ public class ClaimJourneys {
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectClaimEntrypoint(entrypointGroupId: origin.id),
+            rootView: SelectClaimEntrypoint(entrypointGroupId: nil),
             style: .detented(.large),
             options: [
                 .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
