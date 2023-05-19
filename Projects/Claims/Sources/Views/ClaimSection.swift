@@ -17,7 +17,6 @@ struct ClaimSection: View {
     }
 
     var body: some View {
-        EmptyView()
         hCarousel(
             spacing: 16,
             items: claims,
