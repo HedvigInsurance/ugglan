@@ -28,18 +28,24 @@ extension String {
 }
 
 public enum HFontTextStyleNew {
-    case bodyNew
-    case titleNew
-    case footnoteNew
+    case body
+    case title1
+    case title2
+    case title3
+    case footnote
 
-    var uifontTextStyleNew: Font {
+    var uifontTextStyleNew: UIFont {
         switch self {
-        case .titleNew:
-            return .system(size: 24)
-        case .bodyNew:
-            return .system(size: 18)
-        case .footnoteNew:
-            return .system(size: 14)
+        case .title1:
+            return .systemFont(ofSize: 48)
+        case .title2:
+            return .systemFont(ofSize: 32)
+        case .title3:
+            return .systemFont(ofSize: 24)
+        case .body:
+            return .systemFont(ofSize: 18)
+        case .footnote:
+            return .systemFont(ofSize: 14)
         }
     }
 }
@@ -47,26 +53,29 @@ public enum HFontTextStyleNew {
 struct hFontModifierNew: ViewModifier {
     public var style: HFontTextStyleNew
 
-    var fontNew: Font {
+    var fontNew: UIFont {
         FontsNew.fontForNew(style: style)
     }
 
     var lineSpacingNew: CGFloat {
         switch style {
-        case .bodyNew:
-            return 23.76
-        case .titleNew:
-            return 30.24
-        case .footnoteNew:
-            return 19.6
+        case .title1:
+            return 60.48 - fontNew.lineHeight
+        case .title2:
+            return 40.32 - fontNew.lineHeight
+        case .title3:
+            return 30.24 - fontNew.lineHeight
+        case .body:
+            return 23.76 - fontNew.lineHeight
+        case .footnote:
+            return 19.6 - fontNew.lineHeight
         default:
             return 0
         }
     }
 
     func body(content: Content) -> some View {
-        content
-            .font(fontNew)
+        content.font(Font(fontNew))
             .lineSpacing(lineSpacingNew)
     }
 }
@@ -92,6 +101,6 @@ public struct hTextNew: View {
     }
 
     public var body: some View {
-        Text(text).modifier(hFontModifierNew(style: style ?? defaultStyleNew ?? .bodyNew))
+        Text(text).modifier(hFontModifierNew(style: style ?? defaultStyleNew ?? .body))
     }
 }
