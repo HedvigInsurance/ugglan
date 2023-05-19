@@ -71,8 +71,7 @@ public struct hTextField: View {
     @Binding var value: String
     public init(
         masking: Masking,
-        value: Binding<String>,
-        currentlyFocused: String? = nil)
+        value: Binding<String>)
     {
         self.masking = masking
         self.placeholder = masking.placeholderText ?? ""
