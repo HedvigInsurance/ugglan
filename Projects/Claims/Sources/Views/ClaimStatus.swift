@@ -36,35 +36,17 @@ struct ClaimStatusButtonStyle: ButtonStyle {
     let claim: Claim
 
     func makeBody(configuration: Configuration) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .top) {
-                ClaimPills(claim: claim)
-                Spacer()
-                hCoreUIAssets.chevronRight.view
-            }
-            .padding([.leading, .trailing], 16)
-            Spacer().frame(height: 20)
-            hText(claim.title)
-                .padding([.leading, .trailing], 16)
-            Spacer().frame(height: 4)
-            hText(claim.subtitle, style: .caption1)
-                .foregroundColor(hLabelColor.secondary)
-                .padding([.leading, .trailing], 16)
-            Spacer().frame(height: 20)
-            SwiftUI.Divider()
-            Spacer().frame(height: 16)
-            HStack(spacing: 6) {
-                ForEach(claim.segments, id: \.text) { segment in
-                    ClaimStatusBar(status: segment)
+        CardComponent(
+            mainContent: ClaimPills(claim: claim),
+            title: claim.title,
+            subTitle: claim.subtitle,
+            bottomComponent: {
+                HStack(spacing: 6) {
+                    ForEach(claim.segments, id: \.text) { segment in
+                        ClaimStatusBar(status: segment)
+                    }
                 }
             }
-            .padding([.leading, .trailing], 16)
-        }
-        .padding([.top, .bottom], 16)
-        .background(
-            Squircle.default()
-                .fill(hBackgroundColor.tertiary)
-                .hShadow()
         )
     }
 }
