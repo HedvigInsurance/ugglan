@@ -48,7 +48,6 @@ extension AppJourney {
                     honestyPledge(from: newOrigin)
                 }
             }
-
         } else {
             claimsJourneyPledgeAndNotificationWrapper { redirect in
                 switch redirect {

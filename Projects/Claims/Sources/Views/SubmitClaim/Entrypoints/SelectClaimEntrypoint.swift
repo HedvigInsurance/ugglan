@@ -10,10 +10,12 @@ public struct SelectClaimEntrypoint: View {
     @State private var height = CGFloat.zero
     @State private var tmpHeight = CGFloat.zero
     @State var selectedClaimType: String? = nil
+    let entrypointGroupId: String?
 
     public init(
-        entrypointGroupId: String
+        entrypointGroupId: String? = nil
     ) {
+        self.entrypointGroupId = entrypointGroupId
         store.send(.fetchClaimEntrypointsForSelection(entrypointGroupId: entrypointGroupId))
     }
 

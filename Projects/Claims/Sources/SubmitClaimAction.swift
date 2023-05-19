@@ -5,7 +5,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dissmissNewClaimFlow
     case submitClaimOpenFreeTextChat
 
-    case fetchClaimEntrypointsForSelection(entrypointGroupId: String)
+    case fetchClaimEntrypointsForSelection(entrypointGroupId: String?)
     case fetchEntrypointGroups
     case setClaimEntrypointsForSelection([ClaimEntryPointResponseModel])
     case setClaimEntrypointGroupsForSelection([ClaimEntryPointGroupResponseModel])

@@ -1,7 +1,3 @@
-import Foundation
-import hCoreUI
-import hGraphQL
-
 public struct ClaimEntryPointGroupResponseModel: Codable, Equatable, Hashable {
     let id: String
     let displayName: String

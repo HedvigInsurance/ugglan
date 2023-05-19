@@ -45,8 +45,7 @@ private enum Grayscale {
     static let hGray5 = UIColor(red: 0.145, green: 0.145, blue: 0.145, alpha: 1)
 }
 
-public enum BrandColor {
-    case primaryBackground(_ negative: Bool = false)
+public enum BrandColor { case primaryBackground(_ negative: Bool = false)
     case secondaryBackground(_ negative: Bool = false)
     case primaryText(_ negative: Bool = false)
     case primaryTextMuted
