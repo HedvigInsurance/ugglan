@@ -300,10 +300,13 @@ struct hTextFieldFocusStateModifierIOS15<Value: hTextFieldFocusStateCompliant>: 
             .onSubmit {
                 equals = value.next
                 onReturn()
-            }
-            .onChange(of: equals) { value in
+            }.onChange(of: equals) { value in
                 if self.value == value {
                     focus = value
+                }
+            }.onChange(of: focus) { newValue in
+                if newValue != nil && equals != newValue{
+                    equals = newValue
                 }
             }
     }
