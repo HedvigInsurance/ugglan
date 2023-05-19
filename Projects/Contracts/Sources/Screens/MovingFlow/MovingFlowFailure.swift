@@ -10,12 +10,13 @@ struct MovingFlowFailure: View {
                 .resizable()
                 .frame(width: 22, height: 22)
                 .foregroundColor(hTintColorNew.amber600)
-                .padding(.top, 220)
+                .padding(.top, 270)
 
             hText(
                 "Tyvärr kan vi inte ändra din adress just nu. Skriv till oss i chatten så hjälper vi dig vidare.",
                 style: .title2
             )
+            .multilineTextAlignment(.center)
             .padding([.leading, .trailing], 16)
         }
         .hFormAttachToBottomNew {
