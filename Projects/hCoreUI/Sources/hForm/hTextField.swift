@@ -95,6 +95,9 @@ public struct hTextField: View {
                         }
                     }
                     .frame(minHeight: options.minimumHeight)
+                    .onChange(of: value) { newValue in
+                        innerValue = newValue
+                    }
                 if errorMessage != nil {
                     Image(uiImage: hCoreUIAssets.circularExclamationPoint.image)
                         .resizable()
@@ -273,5 +276,47 @@ extension hTextField {
         onReturn: @escaping () -> Void = {}
     ) -> some View {
         self.modifier(hTextFieldFocusStateModifier(focusedField: focusedField, equals: equals, onReturn: onReturn))
+    }
+}
+
+extension View {
+    @ViewBuilder
+    public func addOnDone<Value: hTextFieldFocusStateCompliant>(binding: Binding<Value?>,
+                                                                itemsToShowDone: [Value],
+                                                                onDone: @escaping () -> Void) -> some View {
+        self.modifier(KeyboardOnDone<Value>(value: binding,
+                                            itemsToShowDone:itemsToShowDone,
+                                            onDone: onDone))
+    }
+}
+
+
+public struct KeyboardOnDone<Value: hTextFieldFocusStateCompliant> : ViewModifier {
+    @Binding var value: Value?
+    @State var currentValue: Value?
+    let itemsToShowDone: [Value]
+    let onDone: () -> Void
+    
+    @ViewBuilder
+    public func body(content: Content) -> some View {
+        if #available(iOS 15.0, *) {
+            
+            content.toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    if let value,
+                       itemsToShowDone.contains(value) {
+                        Spacer()
+                        
+                        SwiftUI.Button("Done") {
+                            onDone()
+                        }
+                    }
+                }
+            }.onChange(of: value) { newValue in
+                self.currentValue = newValue
+            }
+        }else {
+            content
+        }
     }
 }
