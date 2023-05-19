@@ -14,7 +14,11 @@ public struct SelectClaimEntrypoint: View {
     public init(
         entrypointGroupId: String
     ) {
-        store.send(.fetchClaimEntrypointsForSelection(entrypointGroupId: entrypointGroupId))
+        if hAnalyticsExperiment.claimsTriaging {
+            store.send(.fetchClaimEntrypointsForSelection(entrypointGroupId: entrypointGroupId))
+        } else {
+            store.send(.fetchClaimEntrypointsForSelection(entrypointGroupId: nil))
+        }
     }
 
     func entrypointToStringArray(input: [ClaimEntryPointResponseModel]) -> [String] {
