@@ -238,17 +238,15 @@ struct MovingFlowConfirm: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding([.leading, .trailing], 16)
 
-        hSection {
-            ForEach(fields, id: \.self) { field in
-                hRow {
-                    hText(field.name)
-                    Spacer()
-                    hText(field.price)
-                    Image(uiImage: hCoreUIAssets.infoSmall.image)
-                        .resizable()
-                        .frame(width: 14, height: 14)
-                        .foregroundColor(hGrayscaleColorNew.greyScale500)
-                }
+        hSection(fields, id: \.self) { field in
+            hRow {
+                hText(field.name)
+                Spacer()
+                hText(field.price)
+                Image(uiImage: hCoreUIAssets.infoSmall.image)
+                    .resizable()
+                    .frame(width: 14, height: 14)
+                    .foregroundColor(hGrayscaleColorNew.greyScale500)
             }
         }
         .sectionContainerStyle(.transparent)
