@@ -19,7 +19,7 @@ extension Set where Element == hTextFieldOptions {
         }
         .first ?? 0.0
     }
-    
+
     var showDivider: Bool {
         self.contains(.showDivider)
     }
@@ -67,7 +67,7 @@ public struct hTextField: View {
     @State var previousInnerValue: String
     @State private var innerValue: String
     @Binding var value: String
-    
+
     public init(
         masking: Masking,
         value: Binding<String>,
@@ -79,7 +79,7 @@ public struct hTextField: View {
         self.previousInnerValue = value.wrappedValue
         self.innerValue = value.wrappedValue
     }
-    
+
     public var body: some View {
         VStack {
             HStack {
@@ -130,14 +130,14 @@ struct hTextFieldPreview: PreviewProvider {
 
 @propertyWrapper public struct hTextFieldFocusState<Value: Hashable>: DynamicProperty {
     @State var field: Value?
-    
+
     public var projectedValue: Binding<Value?> {
         Binding(
             get: { wrappedValue },
             set: { wrappedValue = $0 }
         )
     }
-    
+
     public var wrappedValue: Value? {
         get {
             return field
@@ -146,7 +146,7 @@ struct hTextFieldPreview: PreviewProvider {
             field = newValue
         }
     }
-    
+
     public init(
         wrappedValue: Value?
     ) {
@@ -157,12 +157,12 @@ struct hTextFieldPreview: PreviewProvider {
 class TextFieldObserver: NSObject, UITextFieldDelegate {
     var onReturnTap: () -> Void = {}
     var onDidEndEditing: () -> Void = {}
-    
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         onReturnTap()
         return false
     }
-    
+
     func textFieldDidEndEditing(_ textField: UITextField) {
         onDidEndEditing()
     }
@@ -178,33 +178,33 @@ struct hTextFieldFocusStateModifier<Value: hTextFieldFocusStateCompliant>: ViewM
     @State var navigationControllerHasFinishedTransition: Bool = false
     @State var textField: UITextField? = nil
     @State var observer = TextFieldObserver()
-    
+
     @Binding var focusedField: Value?
     var equals: Value?
     var onReturn: () -> Void
-    
+
     func setup() {
         textField?.delegate = observer
-        
+
         observer.onReturnTap = {
             if let next = focusedField?.next {
                 focusedField = next
             }
-            
+
             onReturn()
         }
-        
+
         observer.onDidEndEditing = {
             focusedField = nil
         }
-        
+
         if equals.hashValue == Value.last.hashValue {
             textField?.returnKeyType = .done
         } else {
             textField?.returnKeyType = .next
         }
     }
-    
+
     func body(content: Content) -> some View {
         content.introspectTextField { textField in
             self.textField = textField
@@ -213,9 +213,9 @@ struct hTextFieldFocusStateModifier<Value: hTextFieldFocusStateCompliant>: ViewM
             guard navigationControllerHasFinishedTransition else {
                 return
             }
-            
+
             setup()
-            
+
             if focusedField == equals {
                 textField?.becomeFirstResponder()
             } else {
@@ -233,7 +233,7 @@ struct hTextFieldFocusStateModifier<Value: hTextFieldFocusStateCompliant>: ViewM
             guard let textField = textField else {
                 return
             }
-            
+
             if let navigationController = textField.viewController?.navigationController {
                 if isFirstAppear && navigationController.viewControllers.count == 1 {
                     // skip waiting for transition if viewController is single viewController in UINavigationController
@@ -263,7 +263,7 @@ extension Bool: hTextFieldFocusStateCompliant {
     public static var last: Bool {
         true
     }
-    
+
     public var next: Bool? {
         return nil
     }
@@ -277,8 +277,8 @@ extension hTextField {
         onReturn: @escaping () -> Void = {}
     ) -> some View {
         if #available(iOS 15.0, *) {
-            self.modifier(hTextFieldFocusStateModifierIOS15( equals: focusedField, value: equals, onReturn: onReturn))
-        }else {
+            self.modifier(hTextFieldFocusStateModifierIOS15(equals: focusedField, value: equals, onReturn: onReturn))
+        } else {
             self.modifier(hTextFieldFocusStateModifier(focusedField: focusedField, equals: equals, onReturn: onReturn))
         }
     }
@@ -286,41 +286,48 @@ extension hTextField {
 
 extension View {
     @ViewBuilder
-    public func addOnDone<Value: hTextFieldFocusStateCompliant>(binding: Binding<Value?>,
-                                                                itemsToShowDone: [Value],
-                                                                onDone: @escaping () -> Void) -> some View {
-        self.modifier(KeyboardOnDone<Value>(value: binding,
-                                            itemsToShowDone:itemsToShowDone,
-                                            onDone: onDone))
+    public func addOnDone<Value: hTextFieldFocusStateCompliant>(
+        binding: Binding<Value?>,
+        itemsToShowDone: [Value],
+        onDone: @escaping () -> Void
+    ) -> some View {
+        self.modifier(
+            KeyboardOnDone<Value>(
+                value: binding,
+                itemsToShowDone: itemsToShowDone,
+                onDone: onDone
+            )
+        )
     }
 }
 
-
-public struct KeyboardOnDone<Value: hTextFieldFocusStateCompliant> : ViewModifier {
+public struct KeyboardOnDone<Value: hTextFieldFocusStateCompliant>: ViewModifier {
     @Binding var value: Value?
     @State var currentValue: Value?
     let itemsToShowDone: [Value]
     let onDone: () -> Void
-    
+
     @ViewBuilder
     public func body(content: Content) -> some View {
         if #available(iOS 15.0, *) {
-            
+
             content.toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     if let value,
-                       itemsToShowDone.contains(value) {
+                        itemsToShowDone.contains(value)
+                    {
                         Spacer()
-                        
+
                         SwiftUI.Button("Done") {
                             onDone()
                         }
                     }
                 }
-            }.onChange(of: value) { newValue in
+            }
+            .onChange(of: value) { newValue in
                 self.currentValue = newValue
             }
-        }else {
+        } else {
             content
         }
     }
@@ -332,28 +339,30 @@ struct hTextFieldFocusStateModifierIOS15<Value: hTextFieldFocusStateCompliant>: 
     @Binding var equals: Value?
     let value: Value
     let onReturn: () -> Void
-    
+
     init(equals: Binding<Value?>, value: Value, onReturn: @escaping () -> Void = {}) {
         self.value = value
         self._equals = equals
         self.onReturn = onReturn
         self.focus = value
     }
-    
+
     func body(content: Content) -> some View {
         content.focused($focus, equals: value)
             .onSubmit {
                 equals = value.next
                 onReturn()
-            }.onChange(of: equals) { value in
+            }
+            .onChange(of: equals) { value in
                 if self.value == value {
                     focus = value
                 }
-            }.onChange(of: focus) { newValue in
-                if newValue != nil && equals != newValue{
+            }
+            .onChange(of: focus) { newValue in
+                if newValue != nil && equals != newValue {
                     equals = newValue
                 }
             }
     }
-    
+
 }
