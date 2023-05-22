@@ -58,6 +58,7 @@ public struct MovingFlowHousingType: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 28, height: 28)
+                .foregroundColor(setColorFor((isSelected == text)))
         }
         .padding([.top, .bottom], 16)
         .padding([.leading, .trailing], 16)
@@ -68,6 +69,14 @@ public struct MovingFlowHousingType: View {
         .padding([.leading, .trailing], 16)
         .onTapGesture {
             isSelected = text
+        }
+    }
+    @hColorBuilder
+    private func setColorFor(_ isSelected: Bool) -> some hColor {
+        if isSelected {
+            hGrayscaleColorNew.greyScale1000
+        } else {
+            hGrayscaleColorNew.greyScale500
         }
     }
 }

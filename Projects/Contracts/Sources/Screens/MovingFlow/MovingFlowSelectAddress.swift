@@ -19,7 +19,7 @@ struct MovingFlowSelectAddress: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.bottom, 64)
                     .padding(.top, 56)
-
+                
                 addressField()
                 postalAndSquareField()
                 numberOfCoinsuredField()
@@ -44,8 +44,9 @@ struct MovingFlowSelectAddress: View {
                 UIApplication.dismissKeyboard()
                 store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
             }
-        }
+        }.dismissKeyboard()
     }
+    
     
     
 
