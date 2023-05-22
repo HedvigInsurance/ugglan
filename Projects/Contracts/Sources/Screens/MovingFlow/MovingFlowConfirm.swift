@@ -10,7 +10,7 @@ struct MovingFlowConfirm: View {
     var body: some View {
         hFormNew {
 
-            hText("Bekräfta ändringar", style: .title1)
+            hText(L10n.changeAddressAcceptOffer, style: .title1)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 50)
@@ -177,7 +177,8 @@ struct MovingFlowConfirm: View {
     func showCardComponent(insuranceName: String, price: String) -> some View {
         CardComponent(
             mainContent: Image(uiImage: hCoreUIAssets.pillowHome.image).resizable()
-                .frame(width: 49, height: 49),
+                .frame(width: 49, height: 49)
+                .foregroundColor(hGrayscaleColorNew.greyScale900),
             topTitle: insuranceName,
             topSubTitle: returnSubComponent(),
             bottomComponent: returnBottomComponent(
@@ -246,7 +247,7 @@ struct MovingFlowConfirm: View {
                 Image(uiImage: hCoreUIAssets.infoSmall.image)
                     .resizable()
                     .frame(width: 14, height: 14)
-                    .foregroundColor(hGrayscaleColorNew.greyScale500)
+                    .foregroundColor(hGrayscaleColorNew.greyScale700)
             }
         }
         .sectionContainerStyle(.transparent)
@@ -317,7 +318,7 @@ struct MovingFlowConfirm: View {
         hButton.SmallButtonFilled {
             //open chat
         } content: {
-            hText("Öppna chatten")
+            hText(L10n.openChat)
         }
     }
 }
