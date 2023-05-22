@@ -10,6 +10,7 @@ struct MovingFlowSelectAddress: View {
     @State var squareArea: String = ""
     @State var nbOfCoInsured: String = ""
     @State var accessDate: String = ""
+    @State var selectedField: FieldType? = nil
 
     var body: some View {
         LoadingViewWithContent(.setMoveIntent) {
@@ -62,10 +63,16 @@ struct MovingFlowSelectAddress: View {
             .padding(.leading, 16)
             Spacer()
         }
+        .onUpdate(of: address) { data in
+            selectedField = .address
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(800)) {
+                selectedField = nil
+            }
+        }
         .padding([.top, .bottom], 21)
         .background(
             Squircle.default()
-                .fill(hGrayscaleColorNew.greyScale100)
+                .fill(textFieldColor(text: .address))
         )
         .padding([.leading, .trailing], 16)
     }
@@ -80,11 +87,17 @@ struct MovingFlowSelectAddress: View {
             )
             .focused($type, equals: .postalCode)
             .hTextFieldOptions([])
+            .onUpdate(of: postalCode) { data in
+                selectedField = .postal
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
+                    selectedField = nil
+                }
+            }
             .padding(.leading, 16)
             .padding([.top, .bottom], 21)
             .background(
                 Squircle.default()
-                    .fill(hGrayscaleColorNew.greyScale100)
+                    .fill(textFieldColor(text: .postal))
             )
             .padding(.leading, 16)
             Spacer()
@@ -96,11 +109,17 @@ struct MovingFlowSelectAddress: View {
             )
             .focused($type, equals: .squareArea)
             .hTextFieldOptions([])
+            .onUpdate(of: squareArea) { data in
+                selectedField = .square
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
+                    selectedField = nil
+                }
+            }
             .padding(.leading, 16)
             .padding([.top, .bottom], 21)
             .background(
                 Squircle.default()
-                    .fill(hGrayscaleColorNew.greyScale100)
+                    .fill(textFieldColor(text: .square))
             )
             .padding(.trailing, 16)
         }
@@ -117,10 +136,6 @@ struct MovingFlowSelectAddress: View {
             .focused($type, equals: .nbOfCoInsured)
             .hTextFieldOptions([])
             .padding(.leading, 16)
-            .background(
-                Squircle.default()
-                    .fill(hGrayscaleColorNew.greyScale100)
-            )
 
             Spacer()
 
@@ -147,11 +162,16 @@ struct MovingFlowSelectAddress: View {
                     .foregroundColor(hGrayscaleColorNew.greyScale1000)
             }
             .frame(width: 30, height: 60)
-
+        }
+        .onUpdate(of: nbOfCoInsured) { data in
+            selectedField = .nbOfCoinsured
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
+                selectedField = nil
+            }
         }
         .background(
             Squircle.default()
-                .fill(hGrayscaleColorNew.greyScale100)
+                .fill(textFieldColor(text: .nbOfCoinsured))
         )
         .padding([.leading, .trailing], 16)
     }
@@ -182,6 +202,15 @@ struct MovingFlowSelectAddress: View {
         .onTapGesture {
             store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
             self.type = nil
+        }
+    }
+
+    @hColorBuilder
+    func textFieldColor(text: FieldType) -> some hColor {
+        if text == selectedField {
+            hTintColorNew.green100
+        } else {
+            hGrayscaleColorNew.greyScale100
         }
     }
 }
@@ -218,4 +247,11 @@ enum MovingFlowSelectAddressFieldType: hTextFieldFocusStateCompliant {
     case nbOfCoInsured
     case accessDate
 
+}
+
+enum FieldType {
+    case address
+    case postal
+    case square
+    case nbOfCoinsured
 }

@@ -5,8 +5,7 @@ import hCore
 public struct DatePickerView: View {
     @State private var movingDate = Date()
     var onSelect: (Date) -> Void
-    //    private let buttonTitle: String?
-    //    private let maxDate: Date?
+
     public init(
         onSelect: @escaping (Date) -> Void
     ) {
@@ -29,7 +28,7 @@ public struct DatePickerView: View {
                 .padding([.top], 5)
             }
         }
-        .hFormAttachToBottom {
+        .hFormAttachToBottomNew {
             VStack {
                 hButton.LargeButtonFilled {
                     onSelect(movingDate)
@@ -40,7 +39,7 @@ public struct DatePickerView: View {
                 .padding([.leading, .trailing], 16)
 
                 hButton.LargeButtonText {
-                    //action
+                    onSelect(movingDate)
                 } content: {
                     hText(L10n.generalNotSure, style: .body)
                         .foregroundColor(hLabelColor.primary)
