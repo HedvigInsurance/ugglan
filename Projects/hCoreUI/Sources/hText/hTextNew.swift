@@ -1,18 +1,18 @@
 import SwiftUI
 
 private struct EnvironmentDefaultHTextStyleNew: EnvironmentKey {
-    static let defaultValue: HFontTextStyleNew? = nil
+    static let defaultValue: HFontTextStyle? = nil
 }
 
 extension EnvironmentValues {
-    public var defaultHTextStyleNew: HFontTextStyleNew? {
+    public var defaultHTextStyleNew: HFontTextStyle? {
         get { self[EnvironmentDefaultHTextStyleNew.self] }
         set { self[EnvironmentDefaultHTextStyleNew.self] = newValue }
     }
 }
 
 extension View {
-    public func hTextStyleNew(_ style: HFontTextStyleNew? = nil) -> some View {
+    public func hTextStyleNew(_ style: HFontTextStyle? = nil) -> some View {
         self.environment(\.defaultHTextStyleNew, style)
     }
 }
@@ -101,6 +101,6 @@ public struct hTextNew: View {
     }
 
     public var body: some View {
-        Text(text).modifier(hFontModifierNew(style: style ?? defaultStyleNew ?? .body))
+        Text(text).modifier(hFontModifierNew(style: style ?? .body))
     }
 }
