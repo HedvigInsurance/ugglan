@@ -156,8 +156,48 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                     return disposeBag
                 }
             }
-        case .fetchCommonClaimsForSelection:
-            let entryPointInput = OctopusGraphQL.EntrypointSearchInput(type: OctopusGraphQL.EntrypointType.claim)
+        case .fetchEntrypointGroups:
+            let entrypointType = OctopusGraphQL.EntrypointType.claim
+            let query = OctopusGraphQL.EntrypointGroupsQuery(type: entrypointType)
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag +=
+                    self.octopus.client.fetch(query: query)
+                    .onValue { data in
+                        let model = data.entrypointGroups.map {
+                            ClaimEntryPointGroupResponseModel(id: $0.id, displayName: $0.displayName, icon: $0.iconUrl)
+                        }
+                        callback(.value(.setClaimEntrypointGroupsForSelection(model)))
+                        callback(.value(.setLoadingState(action: .fetchClaimEntrypointGroups, state: nil)))
+                    }
+                    .onError { error in
+                        callback(
+                            .value(
+                                .setLoadingState(
+                                    action: .fetchClaimEntrypointGroups,
+                                    state: .error(error: L10n.General.errorBody)
+                                )
+                            )
+                        )
+                    }
+                    .disposable
+                return disposeBag
+            }
+
+        case let .fetchClaimEntrypointsForSelection(entrypointGroupId):
+            var entryPointInput: OctopusGraphQL.EntrypointSearchInput
+
+            if let entrypointGroupId = entrypointGroupId {
+                entryPointInput = OctopusGraphQL.EntrypointSearchInput(
+                    entrypointGroupId: entrypointGroupId,
+                    type: OctopusGraphQL.EntrypointType.claim
+                )
+            } else {
+                entryPointInput = OctopusGraphQL.EntrypointSearchInput(
+                    type: OctopusGraphQL.EntrypointType.claim
+                )
+            }
+
             let query = OctopusGraphQL.EntrypointSearchQuery(input: entryPointInput)
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
@@ -168,14 +208,14 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                             ClaimEntryPointResponseModel(id: $0.id, displayName: $0.displayName)
                         }
 
-                        callback(.value(.setCommonClaimsForSelection(model)))
-                        callback(.value(.setLoadingState(action: .fetchCommonClaims, state: nil)))
+                        callback(.value(.setClaimEntrypointsForSelection(model)))
+                        callback(.value(.setLoadingState(action: .fetchClaimEntrypoints, state: nil)))
                     }
                     .onError { error in
                         callback(
                             .value(
                                 .setLoadingState(
-                                    action: .fetchCommonClaims,
+                                    action: .fetchClaimEntrypoints,
                                     state: .error(error: L10n.General.errorBody)
                                 )
                             )
@@ -217,8 +257,10 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             }
         case let .setNewClaimContext(context):
             newState.currentClaimContext = context
-        case let .setCommonClaimsForSelection(commonClaims):
-            newState.entryPointCommonClaims = commonClaims
+        case let .setClaimEntrypointsForSelection(commonClaims):
+            newState.claimEntrypoints = commonClaims
+        case let .setClaimEntrypointGroupsForSelection(entrypointGroups):
+            newState.claimEntrypointGroups = entrypointGroups
         case .submitAudioRecording:
             newState.loadingStates[.postAudioRecording] = .loading
         case .resetAudioRecording:
@@ -290,8 +332,10 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.loadingStates[.postSummary] = .loading
         case .singleItemCheckoutRequest:
             newState.loadingStates[.postSingleItemCheckout] = .loading
-        case .fetchCommonClaimsForSelection:
-            newState.loadingStates[.fetchCommonClaims] = .loading
+        case .fetchClaimEntrypointsForSelection:
+            newState.loadingStates[.fetchClaimEntrypoints] = .loading
+        case .fetchEntrypointGroups:
+            newState.loadingStates[.fetchClaimEntrypointGroups] = .loading
         default:
             break
         }
