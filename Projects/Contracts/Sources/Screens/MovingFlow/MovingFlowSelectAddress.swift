@@ -19,7 +19,7 @@ struct MovingFlowSelectAddress: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.bottom, 64)
                     .padding(.top, 56)
-                
+
                 addressField()
                 postalAndSquareField()
                 numberOfCoinsuredField()
@@ -35,20 +35,20 @@ struct MovingFlowSelectAddress: View {
                 .padding([.leading, .trailing], 16)
                 .padding(.bottom, 8)
             }
-        }.addOnDone(binding: $type, itemsToShowDone: [.postalCode, .squareArea, .nbOfCoInsured]) {
+        }
+        .addOnDone(binding: $type, itemsToShowDone: [.postalCode, .squareArea, .nbOfCoInsured]) {
             type = type?.next
-        }.onChange(of: type) { newValue in
+        }
+        .onChange(of: type) { newValue in
             if newValue == nil {
                 UIApplication.dismissKeyboard()
-            }else if newValue == .accessDate {
+            } else if newValue == .accessDate {
                 UIApplication.dismissKeyboard()
                 store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
             }
-        }.dismissKeyboard()
+        }
+        .dismissKeyboard()
     }
-    
-    
-    
 
     @ViewBuilder
     func addressField() -> some View {
@@ -121,7 +121,7 @@ struct MovingFlowSelectAddress: View {
                 Squircle.default()
                     .fill(hGrayscaleColorNew.greyScale100)
             )
-            
+
             Spacer()
 
             Button {
@@ -135,21 +135,18 @@ struct MovingFlowSelectAddress: View {
             } label: {
                 Image(uiImage: hCoreUIAssets.minusIcon.image)
                     .foregroundColor(hGrayscaleColorNew.greyScale1000.opacity((Int(nbOfCoInsured) ?? 0) == 0 ? 0.4 : 1))
-                
 
             }
             .frame(width: 30, height: 60)
 
             Button {
-                    let conisured = Int(nbOfCoInsured) ?? 0
-                    nbOfCoInsured = "\(conisured + 1)"
+                let conisured = Int(nbOfCoInsured) ?? 0
+                nbOfCoInsured = "\(conisured + 1)"
             } label: {
                 Image(uiImage: hCoreUIAssets.plusIcon.image)
                     .foregroundColor(hGrayscaleColorNew.greyScale1000)
             }
             .frame(width: 30, height: 60)
-
-
 
         }
         .background(
@@ -195,13 +192,11 @@ struct SelectAddress_Previews: PreviewProvider {
     }
 }
 
-enum MovingFlowSelectAddressFieldType: hTextFieldFocusStateCompliant{
+enum MovingFlowSelectAddressFieldType: hTextFieldFocusStateCompliant {
     static var last: MovingFlowSelectAddressFieldType {
-        get {
-            return MovingFlowSelectAddressFieldType.accessDate
-        }
+        return MovingFlowSelectAddressFieldType.accessDate
     }
-    
+
     var next: MovingFlowSelectAddressFieldType? {
         switch self {
         case .address:
@@ -216,12 +211,11 @@ enum MovingFlowSelectAddressFieldType: hTextFieldFocusStateCompliant{
             return nil
         }
     }
-    
+
     case address
     case postalCode
     case squareArea
     case nbOfCoInsured
     case accessDate
-    
-    
+
 }
