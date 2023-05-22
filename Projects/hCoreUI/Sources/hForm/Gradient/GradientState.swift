@@ -14,17 +14,17 @@ public class GradientState: ObservableObject {
 
     @Published public var gradientType: GradientType = .none {
         didSet {
-            if gradientType != oldValue && oldValue != .none {
+            if gradientType != oldValue && oldGradientType != .none {
                 oldGradientType = oldValue
 
                 if gradientType == .none {
-                    gradientType = oldValue
-                    gradientTypeBeforeNone = oldValue
+                    gradientType = oldGradientType
+                    gradientTypeBeforeNone = oldGradientType
                 }
             }
 
-            if gradientType != oldValue && oldValue == .none && !hasAnimatedInitial {
-                oldGradientType = oldValue
+            if gradientType != oldGradientType && oldGradientType == .none && !hasAnimatedInitial {
+                oldGradientType = gradientType
                 hasAnimatedInitial = true
             }
         }

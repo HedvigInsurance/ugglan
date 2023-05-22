@@ -48,7 +48,6 @@ public struct hForm<Content: View>: View {
     ) {
         self.content = builder()
         self.gradientType = gradientType
-        gradientState.gradientType = gradientType
     }
 
     public var body: some View {
@@ -94,6 +93,9 @@ public struct hForm<Content: View>: View {
                     }
                 )
                 .frame(maxHeight: .infinity, alignment: .bottom)
+        }.onAppear {
+            self.gradientState.gradientType = gradientType
         }
+        
     }
 }
