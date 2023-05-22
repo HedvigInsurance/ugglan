@@ -54,9 +54,9 @@ public struct MovingFlowHousingType: View {
 
             hText(text, style: .body)
             Spacer()
-            Image(uiImage: (isSelected == text) ? hCoreUIAssets.circleFill.image : hCoreUIAssets.circleEmpty.image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
+            Circle()
+                .strokeBorder(hGrayscaleColorNew.greyScale900)
+                .background(Circle().foregroundColor(retColor(text: text)))
                 .frame(width: 28, height: 28)
                 .foregroundColor(setColorFor((isSelected == text)))
         }
@@ -71,12 +71,13 @@ public struct MovingFlowHousingType: View {
             isSelected = text
         }
     }
+
     @hColorBuilder
-    private func setColorFor(_ isSelected: Bool) -> some hColor {
-        if isSelected {
-            hGrayscaleColorNew.greyScale1000
+    func retColor(text: String) -> some hColor {
+        if isSelected == text {
+            hGrayscaleColorNew.greyScale900
         } else {
-            hGrayscaleColorNew.greyScale500
+            hGrayscaleColorNew.greyScale100
         }
     }
 }
