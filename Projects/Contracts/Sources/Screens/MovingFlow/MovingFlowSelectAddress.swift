@@ -160,6 +160,7 @@ struct MovingFlowSelectAddress: View {
             } label: {
                 Image(uiImage: hCoreUIAssets.plusIcon.image)
                     .foregroundColor(hGrayscaleColorNew.greyScale1000)
+                    .padding(.trailing, 16)
             }
             .frame(width: 30, height: 60)
         }
