@@ -15,7 +15,7 @@ public struct NoticeComponent: View {
             Image(uiImage: hCoreUIAssets.infoSmall.image)
                 .foregroundColor(hTintColorNew.blue600)
 
-            hText(text, style: .body)
+            hTextNew(text, style: .footnote)
                 .foregroundColor(hTintColorNew.blue900)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -25,7 +25,6 @@ public struct NoticeComponent: View {
             Squircle.default()
                 .fill(hTintColorNew.blue200)
         )
-        //        .padding([.leading, .trailing], 16)
     }
 }
 

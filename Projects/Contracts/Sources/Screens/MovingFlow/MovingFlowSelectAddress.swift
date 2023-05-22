@@ -15,7 +15,7 @@ struct MovingFlowSelectAddress: View {
     var body: some View {
         LoadingViewWithContent(.setMoveIntent) {
             hFormNew {
-                hText(L10n.changeAddressEnterNewAddressTitle, style: .title1)
+                hTextNew(L10n.changeAddressEnterNewAddressTitle, style: .title1)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.bottom, 64)
@@ -30,7 +30,7 @@ struct MovingFlowSelectAddress: View {
                 hButton.LargeButtonFilled {
                     store.send(.navigationActionMovingFlow(action: .openConfirmScreen))
                 } content: {
-                    hText(L10n.generalContinueButton, style: .body)
+                    hTextNew(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary).colorInvert()
                 }
                 .padding([.leading, .trailing], 16)
@@ -179,12 +179,12 @@ struct MovingFlowSelectAddress: View {
     @ViewBuilder
     func accessDateField() -> some View {
         VStack {
-            hText(L10n.changeAddressMovingDateLabel, style: .footnote)
+            hTextNew(L10n.changeAddressMovingDateLabel, style: .footnote)
                 .foregroundColor(hGrayscaleColorNew.greyScale700)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 16)
             HStack(alignment: .top) {
-                hText(L10n.changeAddressSelectMovingDateLabel, style: .title3)
+                hTextNew(L10n.changeAddressSelectMovingDateLabel, style: .title3)
                     .foregroundColor(hGrayscaleColorNew.greyScale700)
                     .padding(.leading, 16)
                 Spacer()

@@ -10,7 +10,7 @@ struct MovingFlowConfirm: View {
     var body: some View {
         hFormNew {
 
-            hText(L10n.changeAddressAcceptOffer, style: .title1)
+            hTextNew(L10n.changeAddressAcceptOffer, style: .title3)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 50)
@@ -93,7 +93,7 @@ struct MovingFlowConfirm: View {
     func returnMainContent(coverageName: String) -> some View {
         HStack {
             Image(uiImage: hCoreUIAssets.plusIcon.image)
-            hText(coverageName, style: .title1)
+            hTextNew(coverageName, style: .title3)
             Spacer()
             Image(uiImage: hCoreUIAssets.plusIcon.image)
         }
@@ -101,7 +101,7 @@ struct MovingFlowConfirm: View {
 
     func returnSubComponent() -> some View {
         HStack {
-            hText("Aktiveras 02.12.24", style: .body)
+            hTextNew(L10n.changeAddressActivationDate("02.12.24"), style: .body)
             Image(uiImage: hCoreUIAssets.infoSmall.image)
                 .resizable()
                 .frame(width: 14, height: 14)
@@ -112,11 +112,11 @@ struct MovingFlowConfirm: View {
     @ViewBuilder
     func returnBottomComponent(insuranceName: String, price: String) -> some View {
         HStack {
-            hText("Detaljer", style: .body)
+            hTextNew(L10n.changeAddressDetails, style: .body)
             Image(uiImage: hCoreUIAssets.chevronDown.image)
                 .foregroundColor(hGrayscaleColorNew.greyScale500)
             Spacer()
-            hText(price, style: .body)
+            hTextNew(price, style: .body)
         }
         .padding([.leading, .trailing], 16)
         .onTapGesture {
@@ -131,42 +131,42 @@ struct MovingFlowConfirm: View {
         if selectedInsurances.contains(insuranceName) {
             VStack(alignment: .leading) {
                 HStack {
-                    hText("Bostadstyp")
+                    hTextNew("Bostadstyp", style: .body)
                     Spacer()
-                    hText("Bostadsrätt")
+                    hTextNew("Bostadsrätt", style: .body)
                 }
 
                 HStack {
-                    hText("Adress")
+                    hTextNew("Adress", style: .body)
                     Spacer()
-                    hText("Bellmansgatan 19A")
+                    hTextNew("Bellmansgatan 19A", style: .body)
                 }
 
                 HStack {
-                    hText("Postkod")
+                    hTextNew("Postkod", style: .body)
                     Spacer()
-                    hText("11847")
+                    hTextNew("11847", style: .body)
                 }
 
                 HStack {
-                    hText("Postkod")
+                    hTextNew("Postkod", style: .body)
                     Spacer()
-                    hText("11847")
+                    hTextNew("11847", style: .body)
                 }
 
                 HStack {
-                    hText("Postkod")
+                    hTextNew("Postkod", style: .body)
                     Spacer()
-                    hText("11847")
+                    hTextNew("11847", style: .body)
                 }
 
                 hText("Dokument", style: .body)
                     .foregroundColor(hLabelColor.primary)
                     .padding([.top, .bottom], 16)
 
-                hText("Försäkringsvillkor")
-                hText("Försäkringsinformation")
-                hText("Produktfaktablad")
+                hTextNew("Försäkringsvillkor", style: .body)
+                hTextNew("Försäkringsinformation", style: .body)
+                hTextNew("Produktfaktablad", style: .body)
             }
             .padding([.leading, .trailing, .top], 16)
             .foregroundColor(hGrayscaleColorNew.greyScale700)
@@ -196,7 +196,7 @@ struct MovingFlowConfirm: View {
     var noticeComponent: some View {
         NoticeComponent(
             text:
-                "Din Olycksfallsförsäkring påverkas när du byter till en ny adress. Ditt pris kan ha ändrats men du behåller samma skydd som tidigare."
+                L10n.changeAddressAccidentNotice
         )
         .padding([.leading, .trailing], 16)
         .padding(.bottom, 16)
@@ -205,9 +205,9 @@ struct MovingFlowConfirm: View {
     @ViewBuilder
     func overviewComponent() -> some View {
         HStack {
-            hText("Totalt", style: .body)
+            hTextNew(L10n.changeAddressTotal, style: .body)
             Spacer()
-            hText("278 kr/mån", style: .body)
+            hTextNew("278 kr/mån", style: .body)
         }
         .padding([.leading, .trailing], 16)
         .padding(.bottom, 16)
@@ -215,19 +215,19 @@ struct MovingFlowConfirm: View {
         hButton.LargeButtonFilled {
             store.send(.navigationActionMovingFlow(action: .openFailureScreen))
         } content: {
-            hText("Bekräfta ändringar", style: .body)
+            hTextNew(L10n.changeAddressAcceptOffer, style: .body)
         }
         .padding([.leading, .trailing], 16)
         .padding(.bottom, 22)
 
-        hText("Se vad som ingår", style: .body)
+        hTextNew(L10n.changeAddressIncluded, style: .body)
             .padding(.bottom, 98)
     }
 
     @ViewBuilder
     func whatIsCovered(insuranceName: String, fields: [FieldInfo]) -> some View {
         VStack {
-            hText(insuranceName, style: .footnote)
+            hTextNew(insuranceName, style: .footnote)
                 .padding([.top, .bottom], 4)
                 .padding([.leading, .trailing], 8)
 
@@ -241,9 +241,9 @@ struct MovingFlowConfirm: View {
 
         hSection(fields, id: \.self) { field in
             hRow {
-                hText(field.name)
+                hTextNew(field.name, style: .body)
                 Spacer()
-                hText(field.price)
+                hTextNew(field.price, style: .body)
                 Image(uiImage: hCoreUIAssets.infoSmall.image)
                     .resizable()
                     .frame(width: 14, height: 14)
@@ -253,7 +253,7 @@ struct MovingFlowConfirm: View {
         .sectionContainerStyle(.transparent)
 
         VStack {
-            hText("Vad som täcks", style: .footnote)
+            hTextNew(L10n.changeAddressCovered, style: .footnote)
                 .padding([.top, .bottom], 4)
                 .padding([.leading, .trailing], 8)
 
@@ -293,7 +293,7 @@ struct MovingFlowConfirm: View {
 
     @ViewBuilder
     var questionAnswerComponent: some View {
-        hText("Frågor och svar", style: .title1)
+        hTextNew(L10n.changeAddressQa, style: .title3)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.leading, 16)
         TextBoxComponent(
@@ -306,7 +306,7 @@ struct MovingFlowConfirm: View {
     @ViewBuilder
     var answerMainComponent: some View {
         HStack {
-            hText("Vad ingår i en hemförsäkring?", style: .body)
+            hTextNew("Vad ingår i en hemförsäkring?", style: .body)
             Spacer()
             Image(uiImage: hCoreUIAssets.plusIcon.image)
         }
@@ -314,11 +314,11 @@ struct MovingFlowConfirm: View {
 
     @ViewBuilder
     var chatComponent: some View {
-        hText("Hittar du inte det du söker?", style: .body)
+        hTextNew(L10n.changeAddressNoFind, style: .body)
         hButton.SmallButtonFilled {
             //open chat
         } content: {
-            hText(L10n.openChat)
+            hTextNew(L10n.openChat, style: .body)
         }
     }
 }

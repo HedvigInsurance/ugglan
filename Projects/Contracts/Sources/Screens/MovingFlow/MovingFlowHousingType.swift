@@ -16,7 +16,7 @@ public struct MovingFlowHousingType: View {
         LoadingViewWithContent(.setMoveIntent) {
             hFormNew {
                 VStack {
-                    hText(L10n.changeAddressSelectHousingTypeTitle, style: .title1)
+                    hTextNew(L10n.changeAddressSelectHousingTypeTitle, style: .title3)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding([.top, .bottom], 50)
@@ -36,7 +36,7 @@ public struct MovingFlowHousingType: View {
                     store.send(.navigationActionMovingFlow(action: .openAddressFillScreen))
                     // send isSelected to next view
                 } content: {
-                    hText(L10n.generalContinueButton, style: .body)
+                    hTextNew(L10n.generalContinueButton, style: .body)
                         .foregroundColor(hLabelColor.primary).colorInvert()
                 }
                 .padding([.leading, .trailing], 16)
@@ -52,7 +52,7 @@ public struct MovingFlowHousingType: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 48, height: 48)
 
-            hText(text, style: .body)
+            hTextNew(text, style: .body)
             Spacer()
             Circle()
                 .strokeBorder(hGrayscaleColorNew.greyScale900)

@@ -12,9 +12,9 @@ struct MovingFlowFailure: View {
                 .foregroundColor(hTintColorNew.amber600)
                 .padding(.top, 270)
 
-            hText(
-                "Tyvärr kan vi inte ändra din adress just nu. Skriv till oss i chatten så hjälper vi dig vidare.",
-                style: .title2
+            hTextNew(
+                L10n.changeAddressErrorMessage,
+                style: .body
             )
             .multilineTextAlignment(.center)
             .padding([.leading, .trailing], 16)
@@ -24,14 +24,14 @@ struct MovingFlowFailure: View {
                 hButton.LargeButtonFilled {
                     store.send(.goToFreeTextChat)
                 } content: {
-                    hText(L10n.openChat)
+                    hTextNew(L10n.openChat, style: .body)
                 }
                 .padding([.leading, .trailing], 16)
 
                 hButton.LargeButtonText {
                     store.send(.navigationActionMovingFlow(action: .dismissMovingFlow))
                 } content: {
-                    hText(L10n.generalCancelButton)
+                    hTextNew(L10n.generalCancelButton, style: .body)
                 }
                 .padding([.leading, .trailing], 16)
             }
