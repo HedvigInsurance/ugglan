@@ -28,7 +28,7 @@ struct TravelInsuranceFormScreen: View {
                     .padding([.leading, .trailing], 16)
                     .padding(.bottom, 6)
                 }
-                .navigationTitle("Travel certificate")
+                .navigationTitle(L10n.TravelCertificate.cardTitle)
             }.presentableStoreLensAnimation(.spring())
 
         }
@@ -51,7 +51,7 @@ struct TravelInsuranceFormScreen: View {
         }
         .withHeader {
             hText(
-                "Start date",
+                L10n.TravelCertificate.startDateTitle,
                 style: .title2
             )
         }
@@ -62,7 +62,7 @@ struct TravelInsuranceFormScreen: View {
     private func insuredMembers(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
         hSection {
             hRow {
-                hText("Me", style: .body)
+                hText(L10n.TravelCertificate.me, style: .body)
             }
             .withSelectedAccessory(travelInsuranceModel.isPolicyHolderIncluded)
             .onTap {
@@ -90,7 +90,7 @@ struct TravelInsuranceFormScreen: View {
         }
         .withHeader {
             hText(
-                "Who is traveling?",
+                L10n.TravelCertificate.includedMembersTitle,
                 style: .title2
             )
         }
@@ -100,7 +100,7 @@ struct TravelInsuranceFormScreen: View {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
                 store.send(.navigation(.openCoinsured(member: nil)))
             } label: {
-                hText("Add conisured member")
+                hText(L10n.TravelCertificate.addMember)
             }
             .slideUpAppearAnimation()
         }

@@ -73,7 +73,7 @@ extension CommonClaimDetail: Presentable {
                     ) {
                         UIApplication.shared.open(url)
                     }
-                } else if claim.id == CommonClaim.travelInsuranceCommonClaim.id {
+                } else if claim.id == ClaimsState.travelInsuranceCommonClaim.id {
                     store.send(.openTravelInsurance)
                 } else {
                     store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))

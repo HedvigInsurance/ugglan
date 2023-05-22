@@ -16,7 +16,7 @@ struct TravelInsuranceEmailScreen: View {
         hForm {
             HStack(spacing: 0) {
                 
-                hText("In order to send you a certificate we need your email?", style: .body)
+                hText(L10n.TravelCertificate.emailStepDescription, style: .body)
                     .foregroundColor(hLabelColor.primary)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding([.trailing, .leading], 12)
@@ -61,7 +61,7 @@ struct TravelInsuranceEmailScreen: View {
                 .padding(.bottom, 6)
             }
         }
-        .navigationTitle("Travel certificate")
+        .navigationTitle(L10n.TravelCertificate.cardTitle)
     }
 }
 

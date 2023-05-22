@@ -1,5 +1,4 @@
 import Foundation
-
 public struct CommonClaim: Codable, Equatable, Hashable {
     public let id: String
     public let icon: IconEnvelope?
@@ -24,16 +23,7 @@ public struct CommonClaim: Codable, Equatable, Hashable {
         
     }
     
-    public static let travelInsuranceCommonClaim: CommonClaim = {
-        let titleAndBulletPoint = CommonClaim.Layout.TitleAndBulletPoints(color: "Red",
-                                                                          buttonTitle: "Get travel certificate",
-                                                                          title: "TITLE 2",
-                                                                          bulletPoints: [])
-        let emergency = CommonClaim.Layout.Emergency(title: "Our travel protection is eligible during the first 45 days of your travel and will reimburse you for costs due to acute illness, injury and acute dental injury. If considered necessary, we can provide you with a flight back home to Sweden for further medical. In the event of war or a natural catastrophe during your outbound travel, we will reimburse you for the cost of a flight home and other necessary and reasonable costs.", color: "Red")
-        let layout = CommonClaim.Layout(titleAndBulletPoint: titleAndBulletPoint, emergency: emergency)
-        let commonClaim = CommonClaim(id: "travelInsurance", icon: nil, iconColor: "#febf03", displayTitle: "Travel Certificate", layout: layout)
-        return commonClaim
-    }()
+
     
     
     public init(

@@ -24,7 +24,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
     init(
         _ policyCoinsuredPerson: PolicyCoinsuredPersonModel?
     ) {
-        self.title = "Enter coinsured member data"
+        self.title = L10n.TravelCertificate.includedMembersTitle
         self.policyCoinsuredPerson = policyCoinsuredPerson
         self.fullName = policyCoinsuredPerson?.fullName ?? ""
         self.personalNumber = policyCoinsuredPerson?.personalNumber ?? ""
@@ -47,13 +47,13 @@ struct TravelInsuranceInsuredMemberScreen: View {
                 hButton.LargeButtonFilled {
                     submit()
                 } content: {
-                    hText("Add coinsured member")
+                    hText(L10n.TravelCertificate.addMember)
                 }
 
                 hButton.SmallButtonText {
                     store.send(.navigation(.dismissAddUpdateCoinsured))
                 } content: {
-                    hText("Cancel")
+                    hText(L10n.generalCancelButton)
                 }
 
 
