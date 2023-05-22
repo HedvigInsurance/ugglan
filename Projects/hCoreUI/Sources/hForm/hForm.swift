@@ -93,9 +93,10 @@ public struct hForm<Content: View>: View {
                     }
                 )
                 .frame(maxHeight: .infinity, alignment: .bottom)
-        }.onAppear {
+        }
+        .onAppear {
             self.gradientState.gradientType = gradientType
         }
-        
+
     }
 }

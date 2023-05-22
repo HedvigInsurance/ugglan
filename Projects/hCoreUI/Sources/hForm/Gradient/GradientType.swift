@@ -3,7 +3,9 @@ import SwiftUI
 import hCore
 
 public enum GradientType: Equatable {
-    case none, home, insurance(filter: Int), forever, profile
+    case none, home
+    case insurance(filter: Int)
+    case forever, profile
 
     public func colors(for scheme: ColorScheme) -> [Color] {
         switch self {
