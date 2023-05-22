@@ -58,7 +58,6 @@ public struct MovingFlowHousingType: View {
                 .strokeBorder(hGrayscaleColorNew.greyScale900)
                 .background(Circle().foregroundColor(retColor(text: text)))
                 .frame(width: 28, height: 28)
-                .foregroundColor(setColorFor((isSelected == text)))
         }
         .padding([.top, .bottom], 16)
         .padding([.leading, .trailing], 16)
