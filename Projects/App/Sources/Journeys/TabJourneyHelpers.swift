@@ -5,7 +5,8 @@ import Presentation
 import UIKit
 import hCore
 import hCoreUI
-
+import Contracts
+import Claims
 extension JourneyPresentation {
     func syncTabIndex() -> Self where P.Matter: UITabBarController {
         return addConfiguration { presenter in
@@ -116,12 +117,19 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         let tabBarController = UITabBarController()
         addChild(tabBarController)
         self.view.addSubview(tabBarController.view)
-
+        
         tabBarController.viewControllers = [Loader(tabBarController: tabBarController).materialize(into: bag)]
+        
+        
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        bag += contractStore.stateSignal.onValue { state in
+            let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+            claimsStore.send(.setShowTravelInsurance(to: state.isTravelInsuranceIncluded))
+        }
     }
 }
 

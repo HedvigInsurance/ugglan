@@ -19,20 +19,33 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                 disposeBag += self.octopus.client
                     .fetch(query: OctopusGraphQL.CurrentMemberQuery())
                     .onValue { data in
-                        if let travelCertificateSpecifications = data.currentMember.travelCertificateSpecifications {
-                            let config = TravelInsuranceConfig(model: travelCertificateSpecifications)
-                            callback(.value(.setTravelInsuranceData(config: config)))
-                        }else {
-//                            callback(.value(.setLoadingState(action: .getTravelInsurance, state: .error(error: L10n.General.errorBody))))
-                            let config = TravelInsuranceConfig(contractId: "b9e24439-1f3e-405a-ae87-6a1b712cc6e8",
-                                                               minStartDate: Date(),
-                                                               maxStartDate: Date().addingTimeInterval(60 * 60 * 24 * 90),
-                                                               numberOfCoInsured: 2,
-                                                               maxDuration: 45,
-                                                               email: "sladjann@gmail.com")
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                callback(.value(.setTravelInsuranceData(config: config)))
-                            }
+                        let data = data.currentMember.travelCertificateSpecifications
+                        let configs = data.compactMap({TravelInsuranceConfig(model: $0)})
+                        callback(.value(.setTravelInsuranceData(config: configs[0])))
+                    }
+                    .onError { error in
+                        callback(.value(.setLoadingState(action: .getTravelInsurance, state: .error(error: L10n.General.errorBody))))
+                    }
+                return disposeBag
+            }
+        case .postTravelInsuranceForm:
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                guard let config = self.state.travelInsuranceConfig, let travelInsuranceModel = self.state.travelInsuranceModel else {
+                    return disposeBag
+                }
+                let input = OctopusGraphQL.TravelCertificateCreateInput(contractId: config.contractId,
+                                                                        startDate: travelInsuranceModel.startDate.localDateString,
+                                                                        isMemberIncluded: travelInsuranceModel.isPolicyHolderIncluded,
+                                                                        coInsured: travelInsuranceModel.policyCoinsuredPersons.map( {OctopusGraphQL.TravelCertificateCreateCoInsured(fullName: $0.fullName, ssn: $0.personalNumber) }),
+                                                                        email: travelInsuranceModel.email)
+                let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
+                disposeBag += self.octopus.client.perform(mutation: mutation)
+                    .onValue { data in
+                        if let url = URL(string: data.travelCertificateCreate.signedUrl) {
+                            callback(.value(.navigation(.openTravelInsurance(url: url, title: "Travel Certificate"))))
+                        } else {
+                            callback(.value(.setLoadingState(action: .postTravelInsurance, state: .error(error: L10n.General.errorBody))))
                         }
                     }
                     .onError { error in
@@ -40,31 +53,6 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                     }
                 return disposeBag
             }
-//        case .postTravelInsuranceForm:
-//            return FiniteSignal { callback in
-//                let disposeBag = DisposeBag()
-//                guard let config = self.state.travelInsuranceConfig, let travelInsuranceModel = self.state.travelInsuranceModel else {
-//                    return disposeBag
-//                }
-//                let input = OctopusGraphQL.TravelCertificateCreateInput(contractId: config.contractId,
-//                                                                        startDate: travelInsuranceModel.startDate.localDateString,
-//                                                                        isMemberIncluded: travelInsuranceModel.isPolicyHolderIncluded,
-//                                                                        coInsured: travelInsuranceModel.policyCoinsuredPersons.map( {OctopusGraphQL.TravelCertificateCreateCoInsured(fullName: $0.fullName, ssn: $0.personalNumber) }),
-//                                                                        email: travelInsuranceModel.email)
-//                let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
-//                disposeBag += self.octopus.client.perform(mutation: mutation)
-//                    .onValue { data in
-//                        if let url = URL(string: data.travelCertificateCreate.signedUrl) {
-//                            callback(.value(.navigation(.openTravelInsurance(url: url, title: "Travel Certificate"))))
-//                        } else {
-//                            callback(.value(.setLoadingState(action: .postTravelInsurance, state: .error(error: L10n.General.errorBody))))
-//                        }
-//                    }
-//                    .onError { error in
-//                        callback(.value(.setLoadingState(action: .postTravelInsurance, state: .error(error: L10n.General.errorBody))))
-//                    }
-//                return disposeBag
-//            }
         default:
             return nil
         }
@@ -80,7 +68,9 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
             newState.travelInsuranceConfig = config
             newState.travelInsuranceModel = TravelInsuranceModel(startDate: config.minStartDate, email: config.email)
             let email = newState.travelInsuranceConfig?.email ?? ""
-            self.send(.navigation(.openEmailScreen(email: email)))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                self.send(.navigation(.openEmailScreen(email: email)))
+            }
         case let .setEmail(value):
             newState.travelInsuranceModel?.email = value
             send(.navigation(.openTravelInsuranceForm))
@@ -104,19 +94,34 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
             case .endDate:
                 break
             }
-//        case .postTravelInsuranceForm:
-//            newState.loadingStates[.postTravelInsurance] = .loading
+        case .postTravelInsuranceForm:
+            newState.loadingStates[.postTravelInsurance] = .loading
+        case let .navigation(type):
+            switch type {
+            case .openEmailScreen(let email):
+                newState.loadingStates.removeValue(forKey: .getTravelInsurance)
+            case .openTravelInsuranceForm:
+                break
+            case .openDatePicker(let type):
+                break
+            case .openCoinsured(let member):
+                break
+            case .openTravelInsurance(let url, let title):
+                newState.loadingStates.removeValue(forKey: .postTravelInsurance)
+            case .openSomethingWentWrongScreen:
+                break
+            case .dismissAddUpdateCoinsured:
+                break
+            case .dismissCreateTravelCertificate:
+                break
+            case .openFreeTextChat:
+                break
+            }
         case let .setLoadingState(action, state):
             if let state {
                 newState.loadingStates[action] = state
             } else {
                 newState.loadingStates.removeValue(forKey: action)
-            }
-        case .postTravelInsuranceForm:
-            let urlPath = Bundle.main.url(forResource: "7d458459-3c34-4e5f-9b5a-755b888c7368", withExtension: "pdf")
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.send(.navigation(.openTravelInsurance(url: urlPath!, title: "Travel Certificate")))
             }
         default:
             break
