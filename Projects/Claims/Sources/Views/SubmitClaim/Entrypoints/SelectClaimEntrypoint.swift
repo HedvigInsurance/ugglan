@@ -132,7 +132,7 @@ public struct SelectClaimEntrypoint: View {
     @hColorBuilder
     func retColor(claimId: String) -> some hColor {
         if selectedClaimType == claimId {
-            hTintColorNew.green50
+            hGreenColorNew.green50
         } else {
             hGrayscaleColorNew.greyScale100
         }

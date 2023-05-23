@@ -20,9 +20,7 @@ public enum FontsNew {
         error?.release()
 
         let fontName = font?.postScriptName as String?
-        //        return Font(CTFont.init(fontName, size: 23))
         return UIFont(name: fontName!, size: UIFont.labelFontSize)!
-        //        return Font(CTFont(CTFontUIFontType.label, size: 24)) /* TODO: CHANGE */
     }
 
     public static var hedvigLettersStandardNew: UIFont = {
@@ -42,10 +40,6 @@ public enum FontsNew {
     public static func fontForNew(style: HFontTextStyleNew) -> UIFont {
         func getFontNew(_ font: UIFont) -> UIFont {
 
-            //            let defaultDescriptor = UIFontDescriptor.preferredFontDescriptor(
-            //                withTextStyle: style.uifontTextStyleNew.,
-            //                compatibleWith: forceTraitCollectionNew
-            //            )
             let defaultDescriptor = UIFontDescriptor(
                 name: style.uifontTextStyleNew.fontName,
                 size: style.uifontTextStyleNew.pointSize
