@@ -69,7 +69,7 @@ public struct SelectClaimEntrypoint: View {
         TagList(tags: arrayList) { tag in
             HStack {
                 hText(tag, style: .body)
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hLabelColorNew.primary)
                     .lineLimit(1)
             }
             .onAppear {
@@ -102,7 +102,7 @@ public struct SelectClaimEntrypoint: View {
                 )
             } content: {
                 hText(L10n.generalContinueButton)
-                    .foregroundColor(hLabelColor.primary).colorInvert()
+                    .foregroundColor(hLabelColorNew.primary).colorInvert()
             }
             .padding([.trailing, .leading], 16)
         }
@@ -112,7 +112,7 @@ public struct SelectClaimEntrypoint: View {
         hSection(claimEntrypoint, id: \.id) { claimType in
             hRow {
                 hText(claimType.displayName, style: .body)
-                    .foregroundColor(hLabelColor.primary)
+                    .foregroundColor(hLabelColorNew.primary)
             }
             .onTap {
                 store.send(

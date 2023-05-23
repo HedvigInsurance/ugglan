@@ -99,7 +99,7 @@ public struct SelectEntrypointNavigation: View {
     @ViewBuilder
     public func returnBottomComponent() -> some View {
         hText("", style: .footnote)
-            .foregroundColor(hLabelColor.secondary)
+            .foregroundColor(hLabelColorNew.secondary)
             .fixedSize(horizontal: false, vertical: true)
     }
 }
