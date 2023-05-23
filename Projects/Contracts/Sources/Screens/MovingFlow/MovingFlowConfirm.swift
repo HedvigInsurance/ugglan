@@ -198,7 +198,6 @@ struct MovingFlowConfirm: View {
             text:
                 L10n.changeAddressAccidentNotice
         )
-        .padding([.leading, .trailing], 16)
         .padding(.bottom, 16)
     }
 

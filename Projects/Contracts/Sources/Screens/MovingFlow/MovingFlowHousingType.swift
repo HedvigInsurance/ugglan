@@ -19,7 +19,8 @@ public struct MovingFlowHousingType: View {
                     hTextNew(L10n.changeAddressSelectHousingTypeTitle, style: .title3)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity, alignment: .center)
-                        .padding([.top, .bottom], 50)
+                        .padding(.top, 54)
+                        .padding(.bottom, 64)
 
                     ForEach(housingTypes, id: \.self) { type in
                         setCheckBoxComponent(text: type)
@@ -27,8 +28,6 @@ public struct MovingFlowHousingType: View {
 
                     NoticeComponent(text: L10n.changeAddressCoverageInfoText)
                         .padding(.top, 116)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding([.leading, .trailing], 16)
                 }
             }
             .hFormAttachToBottomNew {

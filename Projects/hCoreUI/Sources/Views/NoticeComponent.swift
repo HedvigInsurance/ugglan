@@ -11,20 +11,23 @@ public struct NoticeComponent: View {
     }
 
     public var body: some View {
-        HStack(alignment: .top) {
+        HStack(alignment: .top, spacing: 0) {
             Image(uiImage: hCoreUIAssets.infoSmall.image)
                 .foregroundColor(hTintColorNew.blue600)
 
             hTextNew(text, style: .footnote)
                 .foregroundColor(hTintColorNew.blue900)
-                .fixedSize(horizontal: false, vertical: true)
+                .padding(.leading, 9)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding([.top, .bottom], 12)
         .padding([.leading, .trailing], 16)
         .background(
             Squircle.default()
                 .fill(hTintColorNew.blue200)
         )
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding([.leading, .trailing], 16)
     }
 }
 
