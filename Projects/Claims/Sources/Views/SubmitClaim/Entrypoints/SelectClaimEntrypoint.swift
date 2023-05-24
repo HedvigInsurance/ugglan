@@ -126,6 +126,7 @@ public struct SelectClaimEntrypoint: View {
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 30)
         }
+        .hUseNewStyle
         .presentableStoreLensAnimation(.easeInOut)
     }
 
