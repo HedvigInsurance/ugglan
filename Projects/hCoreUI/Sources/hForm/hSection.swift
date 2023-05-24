@@ -149,7 +149,8 @@ struct hSectionContainer<Content: View>: View {
 
 public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-
+    @Environment(\.hUseNewStyle) var useNewStyle
+    
     var header: Header?
     var content: Content
     var footer: Footer?
@@ -199,15 +200,12 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         }
         .frame(maxWidth: .infinity)
         .padding([.leading, .trailing], horizontalSizeClass == .regular ? 60 : 15)
-        .padding([.top, .bottom], 15)
+        .padding([.top, .bottom], useNewStyle ? 0 : 15)
     }
 
     /// removes hSection bottom padding
     public var withoutBottomPadding: some View {
-        self.padding(.bottom, -15)
-    }
-    public var withoutVerticalPadding: some View {
-        self.padding(.vertical, -15)
+        self.padding(.bottom, useNewStyle ? 0 : -15)
     }
 
     /// removes hSection leading and trailing padding

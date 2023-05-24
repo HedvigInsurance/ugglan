@@ -10,7 +10,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
     @State var inputType: TravelInsuranceFieldTypeInt? = .fullName
     @State var validInput = false
     var personalNumberMaskeing: Masking {
-        Masking(type: .personalNumber)
+        Masking(type: .personalNumberCoInsured)
     }
     
     private let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
@@ -74,7 +74,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
     private func ssnField() -> some View {
         hRow {
             hTextField(
-                masking: Masking(type: .personalNumber),
+                masking: Masking(type: .personalNumberCoInsured),
                 value: $personalNumber
             )
             .focused($inputType, equals: .ssn) {
