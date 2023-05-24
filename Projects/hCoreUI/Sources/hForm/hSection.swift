@@ -113,8 +113,7 @@ extension hSectionContainerStyle: ViewModifier {
             content
         case .opaque:
             content.background(
-                //                hBackgroundColor.tertiary // TODO: here
-                self.getColor(type: .opaque)
+                hBackgroundColor.tertiary  // TODO: here
             )
             .clipShape(Squircle.default())
             .hShadow()
