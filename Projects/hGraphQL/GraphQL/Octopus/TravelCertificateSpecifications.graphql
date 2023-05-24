@@ -1,12 +1,15 @@
 query CurrentMember {
   currentMember {
+    email
     travelCertificateSpecifications {
       contractId
       minStartDate
       maxStartDate
       maxDurationDays
       numberOfCoInsured
-      email
+      location {
+        street
+      }
     }
   }
 }

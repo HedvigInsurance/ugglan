@@ -9,7 +9,7 @@ private struct EnvironmentUserInterfaceLevel: EnvironmentKey {
 public struct hBackgroundColorNew {
     public static var primary: some hColor {
         let baseColor = hColorScheme(
-            light: Color(hexString: "F6F6F6"),
+            light: Color(hexString: "F0F0F0"),
             dark: Color(hexString: "000000")
         )
 
@@ -37,7 +37,7 @@ public struct hBackgroundColorNew {
 
     public static var tertiary: some hColor {
         let baseColor = hColorScheme(
-            light: Color(hexString: "FFFFFF"),
+            light: Color(hexString: "F0F0F0"),
             dark: Color(hexString: "2A2A2A")
         )
 
@@ -93,6 +93,19 @@ public struct hOverlayColorNew {
 }
 
 public struct hLabelColorNew {
+    public static var primary: some hColor {
+        hColorScheme(
+            light: Color(hexString: "121212"),
+            dark: Color(hexString: "FAFAFA")
+        )
+    }
+    
+    public static var tertiary: some hColor {
+        hColorScheme(
+            light: Color(hexString: "B4B4B4"),
+            dark: Color(hexString: "FAFAFA")
+        )
+    }
 }
 
 public struct hTintColorNew {

@@ -2,7 +2,7 @@ import Foundation
 public struct CommonClaim: Codable, Equatable, Hashable {
     public let id: String
     public let icon: IconEnvelope?
-    public let iconColor: String?
+    public let imageName: String?
     public let displayTitle: String
     public let layout: Layout
 
@@ -12,12 +12,12 @@ public struct CommonClaim: Codable, Equatable, Hashable {
     
     public init(id: String,
                 icon: IconEnvelope?,
-                iconColor: String?,
+                imageName: String?,
                 displayTitle: String,
                 layout: Layout){
         self.id = id
         self.icon = icon
-        self.iconColor = iconColor
+        self.imageName = imageName
         self.displayTitle = displayTitle
         self.layout = layout
         
@@ -32,7 +32,7 @@ public struct CommonClaim: Codable, Equatable, Hashable {
         self.id = claim.id
         self.displayTitle = claim.title
         self.icon = IconEnvelope(fragment: claim.icon.fragments.iconFragment)
-        self.iconColor = nil
+        self.imageName = nil
         self.layout = Layout(layout: claim.layout)
     }
 

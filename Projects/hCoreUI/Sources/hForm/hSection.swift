@@ -79,6 +79,7 @@ public enum hSectionContainerStyle {
     case transparent
     case opaque
     case caution
+    case opaqueNew
 }
 
 private struct EnvironmentHSectionContainerStyle: EnvironmentKey {
@@ -108,6 +109,11 @@ extension hSectionContainerStyle: ViewModifier {
                 hTintColor.yellowTwo
             )
             .border(Color(UIColor.brand(.primaryBorderColor)))
+        case .opaqueNew:
+            content.background(
+                hBackgroundColorNew.tertiary
+            )
+            .clipShape(Squircle.default())
         }
     }
 }
@@ -199,6 +205,9 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
     /// removes hSection bottom padding
     public var withoutBottomPadding: some View {
         self.padding(.bottom, -15)
+    }
+    public var withoutVerticalPadding: some View {
+        self.padding(.vertical, -15)
     }
 
     /// removes hSection leading and trailing padding

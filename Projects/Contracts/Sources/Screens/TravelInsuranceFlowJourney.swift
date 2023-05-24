@@ -12,7 +12,9 @@ public struct TravelInsuranceFlowJourney {
             rootView: TravelInsuranceLoadingView( onError: {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
                 store.send(.navigation(.openSomethingWentWrongScreen))
-            }, .getTravelInsurance) {Text("")},
+            }, .getTravelInsurance) {
+                TravelInsuranceContractsScreen()
+            },
             style: .detented(.large)
         ) { action in
             if case let .navigation(navigationAction) = action {
@@ -25,6 +27,7 @@ public struct TravelInsuranceFlowJourney {
                 }
             }
         }
+        .addDismissFlow()
         .onPresent {
             let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
             store.send(.getTravelInsuranceData)
@@ -32,7 +35,7 @@ public struct TravelInsuranceFlowJourney {
     }
     
     private static func showEmail(email: String) -> some JourneyPresentation {
-        HostingJourney(
+        let hosting = HostingJourney(
             TravelInsuranceStore.self,
             rootView: TravelInsuranceEmailScreen(email: email)) { action in
                 if case let .navigation(navigationAction) = action {
@@ -41,8 +44,15 @@ public struct TravelInsuranceFlowJourney {
                     }
                 }
             }
-            .hidesBackButton
-            .addDismissFlow()
+        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+        if store.state.travelInsuranceConfigs == nil {
+            return hosting
+                .hidesBackButton
+                .addDismissFlow()
+        } else  {
+            return hosting.addDismissFlow()
+        }
+        
     }
     
     private static func showForm() -> some JourneyPresentation {

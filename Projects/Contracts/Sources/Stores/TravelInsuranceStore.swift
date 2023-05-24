@@ -14,14 +14,15 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
     ) -> FiniteSignal<TravelInsuranceAction>? {
         switch action {
         case .getTravelInsuranceData:
+//            return nil
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 disposeBag += self.octopus.client
                     .fetch(query: OctopusGraphQL.CurrentMemberQuery())
                     .onValue { data in
-                        let data = data.currentMember.travelCertificateSpecifications
-                        let configs = data.compactMap({TravelInsuranceConfig(model: $0)})
-                        callback(.value(.setTravelInsuranceData(config: configs[0])))
+                        let specifications = data.currentMember.travelCertificateSpecifications
+                        let configs = specifications.compactMap({TravelInsuranceConfig(model: $0, email: data.currentMember.email)})
+                        callback(.value(.setTravelInsurancesData(configs: configs)))
                     }
                     .onError { error in
                         callback(.value(.setLoadingState(action: .getTravelInsurance, state: .error(error: L10n.General.errorBody))))
@@ -63,14 +64,24 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
         switch action {
         case .getTravelInsuranceData:
             newState.loadingStates[.getTravelInsurance] = .loading
-        case let .setTravelInsuranceData(config):
+        case let .setTravelInsurancesData(configs):
             newState.loadingStates.removeValue(forKey: .getTravelInsurance)
-            newState.travelInsuranceConfig = config
-            newState.travelInsuranceModel = TravelInsuranceModel(startDate: config.minStartDate, email: config.email)
-            let email = newState.travelInsuranceConfig?.email ?? ""
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                self.send(.navigation(.openEmailScreen(email: email)))
+            if let config = configs.first {
+                newState.travelInsuranceConfig = config
+                newState.travelInsuranceModel = TravelInsuranceModel(startDate: config.minStartDate, email: config.email)
+                if configs.count == 1 {
+                    let email = config.email
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.send(.navigation(.openEmailScreen(email: email)))
+                    }
+                } else {
+                    newState.travelInsuranceConfig = configs.first
+                    newState.travelInsuranceConfigs = configs
+                }
             }
+        case let .setTravelInsuranceData(config):
+            newState.travelInsuranceModel = TravelInsuranceModel(startDate: config.minStartDate, email: config.email)
+            newState.travelInsuranceConfig = config
         case let .setEmail(value):
             newState.travelInsuranceModel?.email = value
             send(.navigation(.openTravelInsuranceForm))
@@ -98,15 +109,15 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
             newState.loadingStates[.postTravelInsurance] = .loading
         case let .navigation(type):
             switch type {
-            case .openEmailScreen(let email):
+            case .openEmailScreen:
                 newState.loadingStates.removeValue(forKey: .getTravelInsurance)
             case .openTravelInsuranceForm:
                 break
-            case .openDatePicker(let type):
+            case .openDatePicker:
                 break
-            case .openCoinsured(let member):
+            case .openCoinsured:
                 break
-            case .openTravelInsurance(let url, let title):
+            case .openTravelInsurance:
                 newState.loadingStates.removeValue(forKey: .postTravelInsurance)
             case .openSomethingWentWrongScreen:
                 break

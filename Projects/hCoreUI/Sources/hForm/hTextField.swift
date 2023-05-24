@@ -80,7 +80,7 @@ public struct hTextField: View {
     }
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
                 SwiftUI.TextField(placeholder ?? "", text: $innerValue)
                     .modifier(hFontModifier(style: .body))
@@ -94,13 +94,16 @@ public struct hTextField: View {
                         }
                     }
                     .frame(minHeight: options.minimumHeight)
-                if errorMessage != nil {
-                    Image(uiImage: hCoreUIAssets.circularExclamationPoint.image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(hTintColor.red)
-                }
+//                if errorMessage != nil {
+//                    Image(uiImage: hCoreUIAssets.circularExclamationPoint.image)
+//                        .resizable()
+//                        .aspectRatio(contentMode: .fit)
+//                        .frame(width: 40, height: 40)
+//                        .foregroundColor(hTintColor.red)
+//                        .onTapGesture {
+//                            
+//                        }
+//                }
             }
             if options.showDivider {
                 SwiftUI.Divider()

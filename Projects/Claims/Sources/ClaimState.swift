@@ -45,7 +45,7 @@ public struct ClaimsState: StateProtocol {
                                                                           bulletPoints: [])
         let emergency = CommonClaim.Layout.Emergency(title: L10n.TravelCertificate.description, color: "Red")
         let layout = CommonClaim.Layout(titleAndBulletPoint: titleAndBulletPoint, emergency: emergency)
-        let commonClaim = CommonClaim(id: "travelInsurance", icon: nil, iconColor: "#febf03", displayTitle: L10n.TravelCertificate.cardTitle, layout: layout)
+        let commonClaim = CommonClaim(id: "travelInsurance", icon: nil, imageName: "travelCertificate", displayTitle: L10n.TravelCertificate.cardTitle, layout: layout)
         return commonClaim
     }()
 }

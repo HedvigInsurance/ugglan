@@ -9,7 +9,6 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import Contracts
 
 public struct HomeView<Content: View, Claims: View, CommonClaims: View>: View {
     @PresentableStore var store: HomeStore

@@ -5,15 +5,10 @@ import hCoreUI
 struct TravelInsuranceInsuredMemberScreen: View {
     @State var fullName: String
     @State var personalNumber: String
-    @State var error: String? {
-        didSet{
-            showError = error != nil && error != ""
-        }
-    }
-    
-    @State var showError = false
-
-    @State var validInput = true
+    @State var fullNameError: String?
+    @State var personalNumberError: String?
+    @State var inputType: TravelInsuranceFieldTypeInt? = .fullName
+    @State var validInput = false
     var personalNumberMaskeing: Masking {
         Masking(type: .personalNumber)
     }
@@ -38,9 +33,6 @@ struct TravelInsuranceInsuredMemberScreen: View {
                 ssnField()
             }
             .navigationTitle(title)
-            .alert(isPresented: $showError) {
-                Alert(title: Text(self.error ?? ""), dismissButton: .default(Text("Ok")))
-            }
         }
         .hFormAttachToBottom {
             VStack(spacing: 8) {
@@ -72,6 +64,8 @@ struct TravelInsuranceInsuredMemberScreen: View {
                 value: $fullName,
                 placeholder: L10n.fullNameText
             )
+            .focused($inputType, equals: .fullName)
+            .hTextFieldError(fullNameError)
             .hTextFieldOptions([])
         }
     }
@@ -83,13 +77,17 @@ struct TravelInsuranceInsuredMemberScreen: View {
                 masking: Masking(type: .personalNumber),
                 value: $personalNumber
             )
+            .focused($inputType, equals: .ssn) {
+                submit()
+            }
+            .hTextFieldError(personalNumberError)
             .hTextFieldOptions([])
         }
     }
     
     private func submit() {
         validate()
-        if error == nil {
+        if validInput {
             UIApplication.dismissKeyboard()
             store.send(
                 .setPolicyCoInsured(PolicyCoinsuredPersonModel(fullName: fullName, personalNumber: personalNumber))
@@ -100,15 +98,17 @@ struct TravelInsuranceInsuredMemberScreen: View {
     }
     
     private func validate(){
-        error = nil
-//        var errors = [String]()
-//        if !personalNumberMaskeing.isValid(text: personalNumber) {
-//            errors.append("Personal number should be valid")
-//        }
-//        if fullName.count < 2 {
-//            errors.append("Full Name should be at least 2 characters long")
-//        }
-//        error = errors.joined(separator: "\n\r")
+        if !personalNumberMaskeing.isValid(text: personalNumber) {
+            personalNumberError = "Personal number should be valid"
+        } else {
+            personalNumberError = nil
+        }
+        if fullName.count < 2 {
+            fullNameError = "Full Name should be at least 2 characters long"
+        } else {
+            fullNameError = nil
+        }
+        validInput = personalNumberError == nil && fullNameError == nil
     }
 }
 
@@ -145,9 +145,26 @@ enum TravelInsuranceFieldType: String, Hashable, hTextFieldFocusStateCompliant {
     }
 }
 
-enum TravelInsuranceFieldTypeInt: Int {
+enum TravelInsuranceFieldTypeInt: Int, hTextFieldFocusStateCompliant {
+    static var last: TravelInsuranceFieldTypeInt {
+        get{
+            TravelInsuranceFieldTypeInt.ssn
+        }
+    }
+    
+    var next: TravelInsuranceFieldTypeInt? {
+        get {
+            switch self {
+            case .fullName:
+                return .ssn
+            case .ssn:
+                return nil
+            }
+        }
+    }
+    
 
     case fullName
-    case personalNumber
+    case ssn
 
 }

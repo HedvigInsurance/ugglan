@@ -7,6 +7,7 @@ import hGraphQL
 
 enum TravelInsuranceAction: ActionProtocol, Hashable {
     case getTravelInsuranceData
+    case setTravelInsurancesData(configs:[TravelInsuranceConfig])
     case setTravelInsuranceData(config:TravelInsuranceConfig)
     case postTravelInsuranceForm
     
