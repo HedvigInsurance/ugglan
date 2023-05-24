@@ -22,8 +22,8 @@ public struct SelectEntrypointNavigation: View {
                     state.claimEntrypointGroups
                 }
             ) { claimEntrypoint in
-
-                hFormNew {
+                
+                hForm {
                     PresentableStoreLens(
                         HomeStore.self,
                         getter: { state in
@@ -84,7 +84,7 @@ public struct SelectEntrypointNavigation: View {
                             }
                         }
                     }
-                }
+                }.hUseNewStyle
             }
             .presentableStoreLensAnimation(.easeInOut)
         }
