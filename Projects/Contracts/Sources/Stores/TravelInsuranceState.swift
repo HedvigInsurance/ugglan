@@ -8,8 +8,8 @@ import hGraphQL
 struct TravelInsuranceState: StateProtocol {
     init() {}
     @OptionalTransient var travelInsuranceModel: TravelInsuranceModel?
-    @OptionalTransient var travelInsuranceConfigs: [TravelInsuranceConfig]?
-    @OptionalTransient var travelInsuranceConfig: TravelInsuranceConfig?
+    @OptionalTransient var travelInsuranceConfigs: TravelInsuranceSpecification?
+    @OptionalTransient var travelInsuranceConfig: TravelInsuranceContractSpecification?
     @Transient(defaultValue: [:]) var loadingStates: [TravelInsuranceLoadingAction: LoadingState<String>]
 }
 
@@ -20,32 +20,50 @@ struct TravelInsuranceModel: Codable, Equatable, Hashable {
     var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
 }
 
-struct TravelInsuranceConfig: Codable, Equatable, Hashable {
+struct TravelInsuranceSpecification: Codable, Equatable, Hashable {
+    let infoSpecifications: [TravelInsuranceInfoSpecification]
+    let travelCertificateSpecifications: [TravelInsuranceContractSpecification]
+    let email: String?
+    init(_ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecification, email: String) {
+        self.email = email
+        infoSpecifications = data.infoSpecifications.map({TravelInsuranceInfoSpecification($0)})
+        travelCertificateSpecifications = data.contractSpecifications.map({TravelInsuranceContractSpecification($0)})
+    }
+}
+
+struct TravelInsuranceInfoSpecification: Codable, Equatable, Hashable {
+    let title: String
+    let body: String
+    
+    init(_ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecification.InfoSpecification) {
+        title = data.title
+        body = data.body
+    }
+}
+
+struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable {
     let contractId: String
     let minStartDate: Date
     let maxStartDate: Date
     let numberOfCoInsured: Int
     let maxDuration: Int
     let street: String
-    let email: String
-    init(contractId: String, minStartDate: Date, maxStartDate: Date, numberOfCoInsured: Int, maxDuration: Int, street: String, email: String) {
+    init(contractId: String, minStartDate: Date, maxStartDate: Date, numberOfCoInsured: Int, maxDuration: Int, street: String) {
         self.contractId = contractId
         self.minStartDate = minStartDate
         self.maxStartDate = maxStartDate
         self.numberOfCoInsured = numberOfCoInsured
         self.maxDuration = maxDuration
         self.street = street
-        self.email = email
     }
     
-    init(model: OctopusGraphQL.CurrentMemberQuery.Data.CurrentMember.TravelCertificateSpecification, email: String) {
-        self.contractId = model.contractId
-        self.minStartDate = model.minStartDate.localDateToDate ?? Date()
-        self.maxStartDate = model.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90)
-        self.numberOfCoInsured = model.numberOfCoInsured
-        self.maxDuration = model.maxDurationDays
-        self.street = model.location?.street ?? ""
-        self.email = email
+    init(_ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecification.ContractSpecification) {
+        self.contractId = data.contractId
+        self.minStartDate = data.minStartDate.localDateToDate ?? Date()
+        self.maxStartDate = data.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90)
+        self.numberOfCoInsured = data.numberOfCoInsured
+        self.maxDuration = data.maxDurationDays
+        self.street = data.location?.street ?? ""
         
     }
 }

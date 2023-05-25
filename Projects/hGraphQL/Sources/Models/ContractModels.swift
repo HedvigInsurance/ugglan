@@ -237,8 +237,7 @@ public enum TypeOfContract: String, Codable {
                                                                                                  .seApartmentBrf,
                                                                                                  .seApartmentRent,
                                                                                                  .seApartmentStudentBrf,
-                                                                                                 .seApartmentStudentRent,
-                                                                                                 .seGroupApartmentRent]
+                                                                                                 .seApartmentStudentRent]
     }
     
     

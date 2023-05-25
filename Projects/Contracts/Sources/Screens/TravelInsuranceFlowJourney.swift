@@ -18,8 +18,8 @@ public struct TravelInsuranceFlowJourney {
             style: .detented(.large)
         ) { action in
             if case let .navigation(navigationAction) = action {
-                if case let .openEmailScreen(email) = navigationAction {
-                    TravelInsuranceFlowJourney.showEmail(email: email)
+                if case let .openEmailScreen = navigationAction {
+                    TravelInsuranceFlowJourney.showEmail()
                 } else if case .dismissCreateTravelCertificate = navigationAction {
                     DismissJourney()
                 } else if case .openSomethingWentWrongScreen = navigationAction {
@@ -34,10 +34,10 @@ public struct TravelInsuranceFlowJourney {
         }
     }
     
-    private static func showEmail(email: String) -> some JourneyPresentation {
+    private static func showEmail() -> some JourneyPresentation {
         let hosting = HostingJourney(
             TravelInsuranceStore.self,
-            rootView: TravelInsuranceEmailScreen(email: email)) { action in
+            rootView: TravelInsuranceEmailScreen()) { action in
                 if case let .navigation(navigationAction) = action {
                     if case .openTravelInsuranceForm = navigationAction {
                         TravelInsuranceFlowJourney.showForm()

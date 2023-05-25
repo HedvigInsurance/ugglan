@@ -15,7 +15,7 @@ struct TravelInsuranceContractsScreen: View {
                 PresentableStoreLens(
                     TravelInsuranceStore.self,
                     getter: { state in
-                        state.travelInsuranceConfigs ?? []
+                        state.travelInsuranceConfigs?.travelCertificateSpecifications ?? []
                     }
                 ) { travelInsuranceModels in
                     if !travelInsuranceModels.isEmpty  {
@@ -25,25 +25,12 @@ struct TravelInsuranceContractsScreen: View {
                                 .padding(.horizontal, 16)
                                 .multilineTextAlignment(.center)
                             ForEach(travelInsuranceModels, id: \.contractId) { item in
-                                hSection {
-                                    hRow {
-                                        HStack {
-                                            hCoreUIAssets.pillowHome.view.resizable().frame(width: 48, height: 48)
-                                            hText(item.street)
-                                        }
-                                    }.withCustomAccessory {
-                                        getCustomAccessory(item: item, and: travelInsuranceConfig)
-                                    }.onTap {
-                                        store.send(.setTravelInsuranceData(config: item))
-                                    }
-                                }
-                                .sectionContainerStyle(.opaqueNew)
+                                getContractView(for: item, and: travelInsuranceConfig)
                             }
                         }
                         .hFormAttachToBottom {
                             hButton.LargeButtonFilled {
-                                let email = travelInsuranceConfig?.email ?? ""
-                                store.send(.navigation(.openEmailScreen(email: email)))
+                                store.send(.navigation(.openEmailScreen))
                             } content: {
                                 hText(L10n.generalContinueButton)
                             }
@@ -59,8 +46,24 @@ struct TravelInsuranceContractsScreen: View {
         }
     }
     
+    private func getContractView(for item: TravelInsuranceContractSpecification, and selectedOne: TravelInsuranceContractSpecification?) -> some View {
+        hSection {
+            hRow {
+                HStack {
+                    hCoreUIAssets.pillowHome.view.resizable().frame(width: 48, height: 48)
+                    hText(item.street)
+                }
+            }.withCustomAccessory {
+                getCustomAccessory(item: item, and: selectedOne)
+            }.onTap {
+                store.send(.setTravelInsuranceData(specification: item))
+            }
+        }
+        .sectionContainerStyle(.opaque)
+    }
+    
     @ViewBuilder
-    private func getCustomAccessory(item: TravelInsuranceConfig, and selectedOne: TravelInsuranceConfig?) -> some View {
+    private func getCustomAccessory(item: TravelInsuranceContractSpecification, and selectedOne: TravelInsuranceContractSpecification?) -> some View {
         HStack {
             Spacer()
             if item.contractId == selectedOne?.contractId {

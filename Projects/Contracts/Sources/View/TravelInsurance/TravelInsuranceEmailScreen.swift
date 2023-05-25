@@ -1,15 +1,15 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import Presentation
 
 struct TravelInsuranceEmailScreen: View {
     @PresentableStore var store: TravelInsuranceStore
     @State var email: String
     
-    public init(
-        email: String
-    ) {
-        self.email = email
+    public init() {
+        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+        self.email = store.state.travelInsuranceConfigs?.email ?? ""
     }
     public var body: some View {
         
@@ -67,6 +67,6 @@ struct TravelInsuranceEmailScreen: View {
 
 struct TravelInsuranceEmailScreen_Previews: PreviewProvider {
     static var previews: some View {
-        TravelInsuranceEmailScreen(email: "email@email.com")
+        TravelInsuranceEmailScreen()
     }
 }
