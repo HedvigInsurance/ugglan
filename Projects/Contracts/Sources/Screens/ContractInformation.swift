@@ -73,18 +73,6 @@ struct ContractInformationView: View {
                                 }
                             }
                             .sectionContainerStyle(.transparent)
-                        } else {
-                            hSection {
-                                hButton.LargeButtonText {
-                                    showChangeInfoAlert = true
-                                } content: {
-                                    hText(L10n.contractDetailHomeChangeInfo)
-                                }
-                                .alert(isPresented: $showChangeInfoAlert) {
-                                    changeInfoAlert
-                                }
-                            }
-                            .sectionContainerStyle(.transparent)
                         }
 
                         if contract.canChangeCoInsured {
