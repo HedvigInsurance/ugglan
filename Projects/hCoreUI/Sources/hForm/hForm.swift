@@ -23,10 +23,16 @@ extension View {
 }
 
 struct BackgroundView: UIViewRepresentable {
+    @Environment(\.hUseNewStyle) var hUseNewStyle
+
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.backgroundColor = .brand(.primaryBackground())
+        if hUseNewStyle {
+            uiView.backgroundColor = .brandNew(.primaryBackground())
+        } else {
+            uiView.backgroundColor = .brand(.primaryBackground())
+        }
     }
-    
+
     func makeUIView(context: Context) -> some UIView {
         UIView()
     }
@@ -35,14 +41,14 @@ struct BackgroundView: UIViewRepresentable {
 public struct hForm<Content: View>: View {
     @ObservedObject var gradientState = GradientState.shared
     let gradientType: GradientType
-    
+
     @State var shouldAnimateGradient = true
-    
+
     @State var bottomAttachedViewHeight: CGFloat = 0
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hUseNewStyle) var hUseNewStyle
     var content: Content
-    
+
     public init(
         gradientType: GradientType = .none,
         @ViewBuilder _ builder: () -> Content
@@ -50,7 +56,7 @@ public struct hForm<Content: View>: View {
         self.content = builder()
         self.gradientType = gradientType
     }
-    
+
     public var body: some View {
         ZStack {
             if gradientType != .none {
@@ -75,7 +81,7 @@ public struct hForm<Content: View>: View {
                     content
                 }
                 .frame(maxWidth: .infinity)
-                .tint(hTintColor.lavenderOne)
+                .tint(hForm<Content>.returnTintColor(useNewStyle: hUseNewStyle))
                 Color.clear
                     .frame(height: bottomAttachedViewHeight)
             }
@@ -100,9 +106,16 @@ public struct hForm<Content: View>: View {
         }
 
     }
+
+    @hColorBuilder
+    static func returnTintColor(useNewStyle: Bool) -> some hColor {
+        if useNewStyle {
+            hGreenColorNew.green100
+        } else {
+            hTintColor.lavenderOne
+        }
+    }
 }
-
-
 
 private struct EnvironmentHUseNewStyle: EnvironmentKey {
     static let defaultValue = false

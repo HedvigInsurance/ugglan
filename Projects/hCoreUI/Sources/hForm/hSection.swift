@@ -77,12 +77,12 @@ extension View {
 
 public enum hSectionContainerStyle {
     case transparent
-    case opaque
-    case caution
+    case opaque(useNewDesign: Bool)
+    case caution(useNewDesign: Bool)
 }
 
 private struct EnvironmentHSectionContainerStyle: EnvironmentKey {
-    static let defaultValue = hSectionContainerStyle.opaque
+    static let defaultValue = hSectionContainerStyle.opaque(useNewDesign: false)
 }
 
 extension EnvironmentValues {
@@ -97,17 +97,37 @@ extension hSectionContainerStyle: ViewModifier {
         switch self {
         case .transparent:
             content
-        case .opaque:
+        case let .opaque(useNewStyle):
             content.background(
-                hBackgroundColor.tertiary
+                getOpaqueBackground(useNewStyle: useNewStyle)
             )
             .clipShape(Squircle.default())
             .hShadow()
-        case .caution:
+        case let .caution(useNewStyle):
             content.background(
-                hTintColor.yellowTwo
+                getCautionBackground(useNewStyle: useNewStyle)
             )
-            .border(Color(UIColor.brand(.primaryBorderColor)))
+            .border(
+                useNewStyle ? Color(UIColor.brandNew(.primaryBorderColor)) : Color(UIColor.brand(.primaryBorderColor))
+            )
+        }
+    }
+
+    @hColorBuilder
+    private func getOpaqueBackground(useNewStyle: Bool) -> some hColor {
+        if useNewStyle {
+            hGrayscaleColorNew.greyScale100
+        } else {
+            hBackgroundColor.tertiary
+        }
+    }
+
+    @hColorBuilder
+    private func getCautionBackground(useNewStyle: Bool) -> some hColor {
+        if useNewStyle {
+            hYellowColorNew.yellow600
+        } else {
+            hTintColor.yellowTwo
         }
     }
 }
@@ -143,6 +163,7 @@ struct hSectionContainer<Content: View>: View {
 
 public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.hUseNewStyle) var hUseNewStyle
 
     var header: Header?
     var content: Content
@@ -170,12 +191,18 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+
             if header != nil {
                 VStack(alignment: .leading) {
-                    header
+                    if hUseNewStyle {
+                        header
+                            .environment(\.defaultHTextStyleNew, .title1)
+                    } else {
+                        header
+                            .environment(\.defaultHTextStyle, .title3)
+                    }
                 }
-                .environment(\.defaultHTextStyle, .title3)
-                .foregroundColor(hLabelColor.primary)
+                .foregroundColor(hSection<Header, Content, Footer>.returnLabelColorPrimary(useNewStyle: hUseNewStyle))
                 .padding(.bottom, 10)
             }
             hSectionContainer {
@@ -183,10 +210,15 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
             }
             if footer != nil {
                 VStack(alignment: .leading) {
-                    footer
+                    if hUseNewStyle {
+                        footer
+                            .environment(\.defaultHTextStyleNew, .footnote)
+                    } else {
+                        footer
+                            .environment(\.defaultHTextStyle, .footnote)
+                    }
                 }
-                .environment(\.defaultHTextStyle, .footnote)
-                .foregroundColor(hLabelColor.secondary)
+                .foregroundColor(hSection<Header, Content, Footer>.returnLabelColorSecondary(useNewStyle: hUseNewStyle))
                 .padding([.leading, .trailing], 15)
                 .padding(.top, 10)
             }
@@ -194,6 +226,24 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         .frame(maxWidth: .infinity)
         .padding([.leading, .trailing], horizontalSizeClass == .regular ? 60 : 15)
         .padding([.top, .bottom], 15)
+    }
+
+    @hColorBuilder
+    static func returnLabelColorPrimary(useNewStyle: Bool) -> some hColor {
+        if useNewStyle {
+            hLabelColorNew.primary
+        } else {
+            hLabelColor.primary
+        }
+    }
+
+    @hColorBuilder
+    static func returnLabelColorSecondary(useNewStyle: Bool) -> some hColor {
+        if useNewStyle {
+            hLabelColorNew.secondary
+        } else {
+            hLabelColor.secondary
+        }
     }
 
     /// removes hSection bottom padding

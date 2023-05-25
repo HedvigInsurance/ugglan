@@ -20,12 +20,17 @@ extension EnvironmentValues {
 }
 
 struct RowButtonStyle: SwiftUI.ButtonStyle {
+    @Environment(\.hUseNewStyle) var hUseNewStyle
+
     func makeBody(configuration: Configuration) -> some View {
         configuration
             .label
             .background(
                 configuration.isPressed
-                    ? Color(UIColor.brand(.primaryBackground(true))).opacity(0.1) : Color.clear
+                    ? (hUseNewStyle
+                        ? Color(UIColor.brandNew(.primaryBackground(true))).opacity(0.1)
+                        : Color(UIColor.brand(.primaryBackground(true))).opacity(0.1))
+                    : Color.clear
             )
             .animation(
                 .easeOut(duration: 0.2).delay(configuration.isPressed ? 0 : 0.15),
