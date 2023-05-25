@@ -56,7 +56,7 @@ extension ContractTable: View {
                 return self.filter.nonemptyFilter(state: state).displaysActiveContracts
             }
         ) { displaysActiveContracts in
-            if displaysActiveContracts {
+            if self.filter != .terminated(ifEmpty: .none) {
                 CrossSellingStack()
 
                 PresentableStoreLens(
