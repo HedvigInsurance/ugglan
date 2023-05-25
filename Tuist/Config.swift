@@ -11,6 +11,7 @@ let config = Config(
         .exact("14.1"),
         .exact("14.2"),
         .exact("14.3"),
+        .exact("14.3.1"),
     ]),
     cloud: nil,
     cache: nil,
