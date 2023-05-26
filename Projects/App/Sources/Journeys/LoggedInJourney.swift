@@ -16,7 +16,11 @@ import hCoreUI
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
-        let commonClaims = CommonClaimsView()
+        let commonClaims = CommonClaimsView(getClaimData: { forClaim, completed in
+            if forClaim.id == ClaimsState.travelInsuranceCommonClaim.id {
+                
+            }
+        })
         return
             HomeView.journey(claimsContent: claims, commonClaimsContent: commonClaims) { result in
                 switch result {

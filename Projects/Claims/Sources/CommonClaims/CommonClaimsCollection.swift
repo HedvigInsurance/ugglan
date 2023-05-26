@@ -3,15 +3,18 @@ import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
-
+public typealias GetClaimDataClosure = (_ forClaim: CommonClaim, _ completed: (CommonClaim) -> Void) -> Void
 struct CommonClaimsCollection: View {
     @PresentableStore var store: ClaimsStore
+    @State var isLoading = false
     var commonClaims: [CommonClaim]
-
+    let getClaimData: GetClaimDataClosure
     init(
-        commonClaims: [CommonClaim]
+        commonClaims: [CommonClaim],
+        getClaimData: @escaping GetClaimDataClosure
     ) {
         self.commonClaims = commonClaims
+        self.getClaimData = getClaimData
     }
 
     var body: some View {
@@ -20,7 +23,15 @@ struct CommonClaimsCollection: View {
                 HStack(spacing: 8) {
                     ForEach(claimsRow, id: \.id) { claim in
                         Button {
-                            store.send(.openCommonClaimDetail(commonClaim: claim))
+                            if claim.id == ClaimsState.travelInsuranceCommonClaim.id {
+                                isLoading = true
+                                getClaimData(claim) { newClame in
+                                    isLoading = false
+                                    store.send(.openCommonClaimDetail(commonClaim: newClame))
+                                }
+                            } else {
+                                store.send(.openCommonClaimDetail(commonClaim: claim))
+                            }
                         } label: {
 
                         }
@@ -84,8 +95,12 @@ struct CommonClaimButtonStyle: ButtonStyle {
 
 public struct CommonClaimsView: View {
     @PresentableStore var store: ClaimsStore
-    
-    public init() {}
+    private let getClaimData: GetClaimDataClosure
+    public init(
+        getClaimData: @escaping GetClaimDataClosure
+    ) {
+        self.getClaimData = getClaimData
+    }
     public var body: some View {
         hSection {
             hRow {
@@ -98,7 +113,7 @@ public struct CommonClaimsView: View {
                         .fetchCommonClaims
                     }
                 ) { commonClaims, _ in
-                    CommonClaimsCollection(commonClaims: commonClaims)
+                    CommonClaimsCollection(commonClaims: commonClaims, getClaimData: getClaimData)
                 }
             }
             .noSpacing()

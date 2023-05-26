@@ -20,7 +20,7 @@ struct TravelInsuranceModel: Codable, Equatable, Hashable {
     var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
 }
 
-struct TravelInsuranceSpecification: Codable, Equatable, Hashable {
+public struct TravelInsuranceSpecification: Codable, Equatable, Hashable {
     let infoSpecifications: [TravelInsuranceInfoSpecification]
     let travelCertificateSpecifications: [TravelInsuranceContractSpecification]
     let email: String?
@@ -31,7 +31,7 @@ struct TravelInsuranceSpecification: Codable, Equatable, Hashable {
     }
 }
 
-struct TravelInsuranceInfoSpecification: Codable, Equatable, Hashable {
+public struct TravelInsuranceInfoSpecification: Codable, Equatable, Hashable {
     let title: String
     let body: String
     
@@ -41,7 +41,7 @@ struct TravelInsuranceInfoSpecification: Codable, Equatable, Hashable {
     }
 }
 
-struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable {
+public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable {
     let contractId: String
     let minStartDate: Date
     let maxStartDate: Date
