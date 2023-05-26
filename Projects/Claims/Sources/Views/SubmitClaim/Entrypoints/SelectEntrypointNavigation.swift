@@ -23,7 +23,7 @@ public struct SelectEntrypointNavigation: View {
                 }
             ) { claimEntrypoint in
 
-                hFormNew {
+                hForm {
                     PresentableStoreLens(
                         HomeStore.self,
                         getter: { state in
@@ -85,6 +85,7 @@ public struct SelectEntrypointNavigation: View {
                         }
                     }
                 }
+                .hUseNewStyle
             }
             .presentableStoreLensAnimation(.easeInOut)
         }
@@ -99,7 +100,7 @@ public struct SelectEntrypointNavigation: View {
     @ViewBuilder
     public func returnBottomComponent() -> some View {
         hText("", style: .footnote)
-            .foregroundColor(hLabelColor.secondary)
+            .foregroundColor(hLabelColorNew.secondary)
             .fixedSize(horizontal: false, vertical: true)
     }
 }

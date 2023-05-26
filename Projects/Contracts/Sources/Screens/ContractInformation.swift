@@ -11,21 +11,7 @@ import hGraphQL
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
-    @State private var showChangeInfoAlert = false
-
     let id: String
-
-    private var changeInfoAlert: SwiftUI.Alert {
-        return Alert(
-            title: Text(L10n.myHomeChangeAlertTitle),
-            message: Text(L10n.myHomeChangeAlertMessage),
-            primaryButton: .destructive(Text(L10n.myHomeChangeAlertActionCancel)),
-            secondaryButton: .default(Text(L10n.myHomeChangeAlertActionConfirm)) {
-                store.send(.goToFreeTextChat)
-            }
-        )
-    }
-
     var body: some View {
         PresentableStoreLens(
             ContractStore.self,
@@ -70,18 +56,6 @@ struct ContractInformationView: View {
                                     store.send(.goToMovingFlow)
                                 } content: {
                                     hText(L10n.HomeTab.editingSectionChangeAddressLabel)
-                                }
-                            }
-                            .sectionContainerStyle(.transparent)
-                        } else {
-                            hSection {
-                                hButton.LargeButtonText {
-                                    showChangeInfoAlert = true
-                                } content: {
-                                    hText(L10n.contractDetailHomeChangeInfo)
-                                }
-                                .alert(isPresented: $showChangeInfoAlert) {
-                                    changeInfoAlert
                                 }
                             }
                             .sectionContainerStyle(.transparent)

@@ -79,7 +79,7 @@ extension AppJourney {
             }
         }
         .onTabSelected {
-            GradientState.shared.gradientType = .insurance
+            GradientState.shared.gradientType = .insurance(filter: 0)
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
