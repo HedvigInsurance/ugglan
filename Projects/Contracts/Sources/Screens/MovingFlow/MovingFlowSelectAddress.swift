@@ -53,33 +53,33 @@ struct MovingFlowSelectAddress: View {
 
     @ViewBuilder
     func addressField() -> some View {
-        HStack {
-            hTextField(
-                masking: Masking(type: .address),
-                value: $address
-            )
-            .focused($type, equals: .address)
-            .hTextFieldOptions([])
-            .padding(.leading, 16)
-            Spacer()
-        }
-        .onUpdate(of: address) { data in
-            selectedField = .address
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(800)) {
-                selectedField = nil
+        hSection {
+            hRow {
+                HStack {
+                    hTextField(
+                        masking: Masking(type: .address),
+                        value: $address
+                    )
+                    .focused($type, equals: .address)
+                    .hTextFieldOptions([])
+                    Spacer()
+                }
+                .onUpdate(of: address) { data in
+                    selectedField = .address
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(800)) {
+                        selectedField = nil
+                    }
+                }
             }
         }
-        .padding([.top, .bottom], 21)
-        .background(
-            Squircle.default()
-                .fill(textFieldColor(text: .address))
-        )
-        .padding([.leading, .trailing], 16)
+        .withoutBottomPadding
+        .sectionContainerStyle(.opaque(useNewDesign: true))
     }
 
     @ViewBuilder
     func postalAndSquareField() -> some View {
         HStack(spacing: 0) {
+
             hTextField(
                 masking: Masking(type: .postalCode),
                 value: $postalCode,
@@ -179,6 +179,7 @@ struct MovingFlowSelectAddress: View {
 
     @ViewBuilder
     func accessDateField() -> some View {
+
         VStack {
             hTextNew(L10n.changeAddressMovingDateLabel, style: .footnote)
                 .foregroundColor(hGrayscaleColorNew.greyScale700)

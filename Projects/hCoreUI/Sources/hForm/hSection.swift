@@ -246,6 +246,10 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         }
     }
 
+    public var withoutVerticalPadding: some View {
+        self.padding([.top, .bottom], -15)
+    }
+
     /// removes hSection bottom padding
     public var withoutBottomPadding: some View {
         self.padding(.bottom, -15)
