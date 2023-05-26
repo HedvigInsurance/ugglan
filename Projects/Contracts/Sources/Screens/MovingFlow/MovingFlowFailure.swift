@@ -5,11 +5,11 @@ import hCoreUI
 struct MovingFlowFailure: View {
     @PresentableStore var store: ContractStore
     var body: some View {
-        hFormNew {
+        hForm {
             Image(uiImage: hCoreUIAssets.warningTriangle.image)
                 .resizable()
                 .frame(width: 22, height: 22)
-                .foregroundColor(hTintColorNew.amber600)
+                .foregroundColor(hAmberColorNew.amber600)
                 .padding(.top, 270)
 
             hTextNew(
@@ -19,7 +19,8 @@ struct MovingFlowFailure: View {
             .multilineTextAlignment(.center)
             .padding([.leading, .trailing], 16)
         }
-        .hFormAttachToBottomNew {
+        .hUseNewStyle
+        .hFormAttachToBottom {
             VStack {
                 hButton.LargeButtonFilled {
                     store.send(.goToFreeTextChat)

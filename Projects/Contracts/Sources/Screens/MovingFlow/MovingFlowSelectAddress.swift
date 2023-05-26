@@ -14,7 +14,7 @@ struct MovingFlowSelectAddress: View {
 
     var body: some View {
         LoadingViewWithContent(.setMoveIntent) {
-            hFormNew {
+            hForm {
                 hTextNew(L10n.changeAddressEnterNewAddressTitle, style: .title3)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -26,12 +26,12 @@ struct MovingFlowSelectAddress: View {
                 numberOfCoinsuredField()
                 accessDateField()
             }
-            .hFormAttachToBottomNew {
+            .hUseNewStyle
+            .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
                     store.send(.navigationActionMovingFlow(action: .openConfirmScreen))
                 } content: {
                     hTextNew(L10n.generalContinueButton, style: .body)
-                        .foregroundColor(hLabelColor.primary).colorInvert()
                 }
                 .padding([.leading, .trailing], 16)
                 .padding(.bottom, 8)
@@ -209,7 +209,7 @@ struct MovingFlowSelectAddress: View {
     @hColorBuilder
     func textFieldColor(text: FieldType) -> some hColor {
         if text == selectedField {
-            hTintColorNew.green100
+            hGreenColorNew.green100
         } else {
             hGrayscaleColorNew.greyScale100
         }

@@ -8,7 +8,7 @@ struct MovingFlowConfirm: View {
     @State var selectedInsurances: [String] = [""]
 
     var body: some View {
-        hFormNew {
+        hForm {
 
             hTextNew(L10n.changeAddressAcceptOffer, style: .title3)
                 .multilineTextAlignment(.center)
@@ -87,6 +87,7 @@ struct MovingFlowConfirm: View {
             questionAnswerComponent
             chatComponent
         }
+        .hUseNewStyle
     }
 
     @ViewBuilder
@@ -233,7 +234,7 @@ struct MovingFlowConfirm: View {
         }
         .background(
             Squircle.default()
-                .fill(hTintColorNew.blue100)
+                .fill(hBlueColorNew.blue100)
         )
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding([.leading, .trailing], 16)
@@ -259,7 +260,7 @@ struct MovingFlowConfirm: View {
         }
         .background(
             Squircle.default()
-                .fill(hTintColorNew.blue100)
+                .fill(hBlueColorNew.blue100)
         )
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding([.leading, .trailing], 16)

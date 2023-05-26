@@ -14,7 +14,7 @@ public struct DatePickerView: View {
 
     public var body: some View {
         //        LoadingViewWithContent(.postDateOfOccurrence) {
-        hFormNew {
+        hForm {
             hSection {
                 DatePicker(
                     L10n.Claims.Item.Screen.Date.Of.Incident.button,
@@ -27,22 +27,23 @@ public struct DatePickerView: View {
                 .padding([.leading, .trailing], 16)
                 .padding([.top], 5)
             }
+            .sectionContainerStyle(.opaque(useNewDesign: true))
         }
-        .hFormAttachToBottomNew {
+        .hUseNewStyle
+        .hFormAttachToBottom {
             VStack {
                 hButton.LargeButtonFilled {
                     onSelect(movingDate)
                 } content: {
-                    hText(L10n.Claims.Save.button, style: .body)
-                        .foregroundColor(hLabelColor.primary.inverted)
+                    hTextNew(L10n.Claims.Save.button, style: .body)
                 }
                 .padding([.leading, .trailing], 16)
 
                 hButton.LargeButtonText {
                     onSelect(movingDate)
                 } content: {
-                    hText(L10n.generalNotSure, style: .body)
-                        .foregroundColor(hLabelColor.primary)
+                    hTextNew(L10n.generalNotSure, style: .body)
+                        .foregroundColor(hLabelColorNew.primary)
                 }
                 .padding([.leading, .trailing], 16)
             }
