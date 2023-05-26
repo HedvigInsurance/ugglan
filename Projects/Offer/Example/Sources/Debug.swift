@@ -181,53 +181,5 @@ extension Debug {
 
             return mockData
         }
-
-        SubscriptionMock(
-            GiraffeGraphQL.SignStatusSubscription.self,
-            timeline: { operation in
-                TimelineEntry(
-                    after: 0,
-                    data: GiraffeGraphQL.SignStatusSubscription.Data(
-                        signStatus: .init(
-                            status: .init(
-                                collectStatus: .init(
-                                    status: .pending,
-                                    code: "outstandingTransaction"
-                                ),
-                                signState: .inProgress
-                            )
-                        )
-                    )
-                )
-                TimelineEntry(
-                    after: 5,
-                    data: GiraffeGraphQL.SignStatusSubscription.Data(
-                        signStatus: .init(
-                            status: .init(
-                                collectStatus: .init(
-                                    status: .pending,
-                                    code: "userSign"
-                                ),
-                                signState: .inProgress
-                            )
-                        )
-                    )
-                )
-                TimelineEntry(
-                    after: 10,
-                    data: GiraffeGraphQL.SignStatusSubscription.Data(
-                        signStatus: .init(
-                            status: .init(
-                                collectStatus: .init(
-                                    status: .failed,
-                                    code: "userCancel"
-                                ),
-                                signState: .failed
-                            )
-                        )
-                    )
-                )
-            }
-        )
     }
 }
