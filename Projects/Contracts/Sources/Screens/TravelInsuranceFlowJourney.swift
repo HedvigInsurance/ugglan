@@ -5,21 +5,27 @@ import hCore
 import hCoreUI
 
 public struct TravelInsuranceFlowJourney {
-    
+    @JourneyBuilder
     public static func start(openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation {
+        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+        let numberOfContracts = store.state.travelInsuranceConfigs?.travelCertificateSpecifications.count ?? 0
+        if numberOfContracts > 1 {
+            showContractsList(openChat)
+        } else {
+            showForm(openChat, detended: true)
+        }
+        
+    }
+    
+    private static func showContractsList(_ openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
-            rootView: TravelInsuranceLoadingView( onError: {
-                let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-                store.send(.navigation(.openSomethingWentWrongScreen))
-            }, .getTravelInsurance) {
-                TravelInsuranceContractsScreen()
-            },
+            rootView: TravelInsuranceContractsScreen(),
             style: .detented(.large)
         ) { action in
             if case let .navigation(navigationAction) = action {
-                if case let .openEmailScreen = navigationAction {
-                    TravelInsuranceFlowJourney.showEmail()
+                if case .openTravelInsuranceForm = navigationAction {
+                    TravelInsuranceFlowJourney.showForm(openChat, detended: false)
                 } else if case .dismissCreateTravelCertificate = navigationAction {
                     DismissJourney()
                 } else if case .openSomethingWentWrongScreen = navigationAction {
@@ -28,22 +34,22 @@ public struct TravelInsuranceFlowJourney {
             }
         }
         .addDismissFlow()
-        .onPresent {
-            let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
-            store.send(.getTravelInsuranceData)
-        }
     }
     
-    private static func showEmail() -> some JourneyPresentation {
+    private static func showForm(_ openChat: @escaping (() -> some JourneyPresentation), detended: Bool) -> some JourneyPresentation {
         let hosting = HostingJourney(
             TravelInsuranceStore.self,
-            rootView: TravelInsuranceEmailScreen()) { action in
-                if case let .navigation(navigationAction) = action {
-                    if case .openTravelInsuranceForm = navigationAction {
-                        TravelInsuranceFlowJourney.showForm()
-                    }
+            rootView: TravelInsuranceFormScreen(),
+            style: detended ? .detented(.large) : .default
+        ) { action in
+            if case let .navigation(navigationAction) = action {
+                if case let .openTravelInsurance(url, title) = navigationAction {
+                    TravelInsuranceFlowJourney.openDocument(url: url, title: title)
+                } else if case .openSomethingWentWrongScreen = navigationAction {
+                    openFailScreen(openChat: openChat)
                 }
             }
+        }
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
         if store.state.travelInsuranceConfigs == nil {
             return hosting
@@ -53,24 +59,6 @@ public struct TravelInsuranceFlowJourney {
             return hosting.addDismissFlow()
         }
         
-    }
-    
-    private static func showForm() -> some JourneyPresentation {
-        HostingJourney(
-            TravelInsuranceStore.self,
-            rootView: TravelInsuranceFormScreen()
-        ) { action in
-            if case let .navigation(navigationAction) = action {
-                if case let .openDatePicker(type) = navigationAction {
-                    openDatePicker(for: type)
-                } else if case let .openCoinsured(member) = navigationAction {
-                    openCoinsured(member: member)
-                } else if case let .openTravelInsurance(url, title) = navigationAction {
-                    openDocument(url: url, title: title)
-                }
-            }
-        }
-        .addDismissFlow()
     }
     
     

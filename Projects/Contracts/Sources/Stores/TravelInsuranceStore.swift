@@ -13,22 +13,6 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
         _ action: TravelInsuranceAction
     ) -> FiniteSignal<TravelInsuranceAction>? {
         switch action {
-        case .getTravelInsuranceData:
-//            return nil
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag += self.octopus.client
-                    .fetch(query: OctopusGraphQL.TravelCertificateQuery())
-                    .onValue { data in
-                        let email = data.currentMember.email
-                        let specification = TravelInsuranceSpecification(data.currentMember.travelCertificateSpecifications, email: email)
-                        callback(.value(.setTravelInsurancesData(specification: specification)))
-                    }
-                    .onError { error in
-                        callback(.value(.setLoadingState(action: .getTravelInsurance, state: .error(error: L10n.General.errorBody))))
-                    }
-                return disposeBag
-            }
         case .postTravelInsuranceForm:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
@@ -62,21 +46,15 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
     override func reduce(_ state: TravelInsuranceState, _ action: TravelInsuranceAction) -> TravelInsuranceState {
         var newState = state
         switch action {
-        case .getTravelInsuranceData:
-            newState.loadingStates[.getTravelInsurance] = .loading
+            
         case let .setTravelInsurancesData(config):
             newState.loadingStates.removeValue(forKey: .getTravelInsurance)
             if let contractSpecification = config.travelCertificateSpecifications.first {
                 newState.travelInsuranceConfig = contractSpecification
                 newState.travelInsuranceModel = TravelInsuranceModel(startDate: contractSpecification.minStartDate, email: config.email ?? "")
-                if config.travelCertificateSpecifications.count == 1 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        self.send(.navigation(.openEmailScreen))
-                    }
-                } else {
-                    newState.travelInsuranceConfig = config.travelCertificateSpecifications.first
-                    newState.travelInsuranceConfigs = config
-                }
+                newState.travelInsuranceConfig = config.travelCertificateSpecifications.first
+                newState.travelInsuranceConfigs = config
+                
             }
         case let .setTravelInsuranceData(config):
             newState.travelInsuranceModel = TravelInsuranceModel(startDate: config.minStartDate, email: newState.travelInsuranceConfigs?.email ?? "")
@@ -108,8 +86,6 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
             newState.loadingStates[.postTravelInsurance] = .loading
         case let .navigation(type):
             switch type {
-            case .openEmailScreen:
-                newState.loadingStates.removeValue(forKey: .getTravelInsurance)
             case .openTravelInsuranceForm:
                 break
             case .openDatePicker:

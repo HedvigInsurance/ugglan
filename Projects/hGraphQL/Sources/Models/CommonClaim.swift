@@ -1,4 +1,5 @@
 import Foundation
+
 public struct CommonClaim: Codable, Equatable, Hashable {
     public let id: String
     public let icon: IconEnvelope?
@@ -9,6 +10,8 @@ public struct CommonClaim: Codable, Equatable, Hashable {
     public enum CommonClaimItemType: String {
         case phone = "PHONE"
     }
+    
+    
     
     public init(id: String,
                 icon: IconEnvelope?,

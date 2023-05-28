@@ -39,11 +39,11 @@ public struct ClaimsState: StateProtocol {
     }
     
     public static let travelInsuranceCommonClaim: CommonClaim = {
-        let titleAndBulletPoint = CommonClaim.Layout.TitleAndBulletPoints(color: "Red",
+        let titleAndBulletPoint = CommonClaim.Layout.TitleAndBulletPoints(color: "",
                                                                           buttonTitle: L10n.TravelCertificate.getTravelCertificateButton,
-                                                                          title: "TITLE 2",
+                                                                          title: "",
                                                                           bulletPoints: [])
-        let emergency = CommonClaim.Layout.Emergency(title: L10n.TravelCertificate.description, color: "Red")
+        let emergency = CommonClaim.Layout.Emergency(title: L10n.TravelCertificate.description, color: "")
         let layout = CommonClaim.Layout(titleAndBulletPoint: titleAndBulletPoint, emergency: emergency)
         let commonClaim = CommonClaim(id: "travelInsurance", icon: nil, imageName: "travelCertificate", displayTitle: L10n.TravelCertificate.cardTitle, layout: layout)
         return commonClaim

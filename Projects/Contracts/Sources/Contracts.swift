@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public indirect enum ContractFilter {
+public indirect enum ContractFilter: Equatable, Hashable {
     var displaysActiveContracts: Bool {
         switch self {
         case .terminated: return false
@@ -78,7 +78,7 @@ extension Contracts: View {
     }
 
     public var body: some View {
-        hForm(gradientType: .insurance) {
+        hForm(gradientType: .insurance(filter: filter.hashValue)) {
             ContractTable(filter: filter)
         }
         .withChatButton {

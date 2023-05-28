@@ -23,6 +23,7 @@ public struct ContractState: StateProtocol {
     var successStep: TerminationFlowSuccessNextModel?
     var failedStep: TerminationFlowFailedNextModel?
     var loadingStates: [ContractAction: LoadingState<String>] = [:]
+    
 
     func contractForId(_ id: String) -> Contract? {
         if let inBundleContract = contractBundles.flatMap({ $0.contracts })

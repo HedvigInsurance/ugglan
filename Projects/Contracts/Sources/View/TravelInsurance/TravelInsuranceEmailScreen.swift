@@ -16,7 +16,7 @@ struct TravelInsuranceEmailScreen: View {
         hForm {
             HStack(spacing: 0) {
                 
-                hText(L10n.TravelCertificate.emailStepDescription, style: .body)
+                hText("", style: .body)
                     .foregroundColor(hLabelColor.primary)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding([.trailing, .leading], 12)

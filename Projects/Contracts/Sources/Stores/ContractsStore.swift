@@ -46,7 +46,21 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                     }
                 return disposeBag
             }
-
+        case .getTravelCertificateSpecification:
+            return FiniteSignal { callback in
+                let disposeBag = DisposeBag()
+                disposeBag += self.octopus.client
+                    .fetch(query: OctopusGraphQL.TravelCertificateQuery())
+                    .onValue { data in
+                        let email = data.currentMember.email
+                        let specification = TravelInsuranceSpecification(data.currentMember.travelCertificateSpecifications, email: email)
+                        callback(.value(.setTravelCertificateSpecification(specification: specification)))
+                    }
+                    .onError { error in
+                        // TODO
+                    }
+                return disposeBag
+            }
         case .fetchContracts:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
@@ -230,6 +244,9 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
             } else {
                 newState.loadingStates.removeValue(forKey: action)
             }
+        case let .setTravelCertificateSpecification(specification):
+            let travelStore: TravelInsuranceStore = globalPresentableStoreContainer.get()
+            travelStore.send(.setTravelInsurancesData(specification: specification))
         default:
             break
         }

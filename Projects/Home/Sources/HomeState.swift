@@ -4,7 +4,6 @@ import Foundation
 import Presentation
 import hCore
 import hGraphQL
-
 public struct ImportantMessage: Codable, Equatable {
     let message: String?
     let link: String?
@@ -68,6 +67,7 @@ public enum HomeAction: ActionProtocol {
     case fetchImportantMessages
     case setImportantMessage(message: ImportantMessage)
     case openMovingFlow
+    case openTravelInsurance
     case connectPayments
     case setMemberContractState(state: MemberStateData, contracts: [Contract])
     case fetchFutureStatus
@@ -85,7 +85,7 @@ public enum FutureStatus: Codable, Equatable {
 
 public final class HomeStore: StateStore<HomeState, HomeAction> {
     @Inject var giraffe: hGiraffe
-
+    @Inject var octopus: hOctopus
     public override func effects(
         _ getState: @escaping () -> HomeState,
         _ action: HomeAction
@@ -148,6 +148,22 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                     }
                 }
                 .valueThenEndSignal
+//        case .getTravelInsuranceData:
+//            return FiniteSignal { callback in
+//                let disposeBag = DisposeBag()
+//                disposeBag += self.octopus.client
+//                    .fetch(query: OctopusGraphQL.TravelCertificateQuery())
+//                    .onValue { data in
+//                        let email = data.currentMember.email
+//                        
+//                        let specification = TravelInsuranceSpecification(data.currentMember.travelCertificateSpecifications, email: email)
+////                        callback(.value(.setTravelInsurancesData(specification: specification)))
+//                    }
+//                    .onError { error in
+////                        callback(.value(.setLoadingState(action: .getTravelInsurance, state: .error(error: L10n.General.errorBody))))
+//                    }
+//                return disposeBag
+//            }
         default:
             return nil
         }

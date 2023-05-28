@@ -24,7 +24,7 @@ public struct TravelInsuranceSpecification: Codable, Equatable, Hashable {
     let infoSpecifications: [TravelInsuranceInfoSpecification]
     let travelCertificateSpecifications: [TravelInsuranceContractSpecification]
     let email: String?
-    init(_ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecification, email: String) {
+    public init(_ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecification, email: String) {
         self.email = email
         infoSpecifications = data.infoSpecifications.map({TravelInsuranceInfoSpecification($0)})
         travelCertificateSpecifications = data.contractSpecifications.map({TravelInsuranceContractSpecification($0)})
@@ -71,4 +71,18 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
 struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
     var fullName: String
     var personalNumber: String
+}
+
+public extension TravelInsuranceSpecification {
+    func asCommonClaim() -> CommonClaim {
+        let bulletPoints = self.infoSpecifications.compactMap({CommonClaim.Layout.TitleAndBulletPoints.BulletPoint(title: $0.title, description: $0.body, icon: nil)})
+        let titleAndBulletPoint = CommonClaim.Layout.TitleAndBulletPoints(color: "",
+                                                                          buttonTitle: L10n.TravelCertificate.getTravelCertificateButton,
+                                                                          title: "",
+                                                                          bulletPoints: bulletPoints)
+        let emergency = CommonClaim.Layout.Emergency(title: L10n.TravelCertificate.description, color: "")
+        let layout = CommonClaim.Layout(titleAndBulletPoint: titleAndBulletPoint, emergency: emergency)
+        let commonClaim = CommonClaim(id: "travelInsurance", icon: nil, imageName: "travelCertificate", displayTitle: L10n.TravelCertificate.cardTitle, layout: layout)
+        return commonClaim
+    }
 }

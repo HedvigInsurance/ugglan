@@ -16,11 +16,7 @@ import hCoreUI
 extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
-        let commonClaims = CommonClaimsView(getClaimData: { forClaim, completed in
-            if forClaim.id == ClaimsState.travelInsuranceCommonClaim.id {
-                
-            }
-        })
+        let commonClaims = CommonClaimsView()
         return
             HomeView.journey(claimsContent: claims, commonClaimsContent: commonClaims) { result in
                 switch result {
@@ -56,6 +52,12 @@ extension AppJourney {
             .onDismiss {
                 ApplicationContext.shared.$isLoggedIn.value = false
             }
+            .onAction(HomeStore.self) { action, _ in
+                if case .openTravelInsurance = action {
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    contractStore.send(.getTravelCertificateSpecification)
+                }
+            }
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -74,13 +76,18 @@ extension AppJourney {
             }
         }
         .onTabSelected {
-            GradientState.shared.gradientType = .insurance
+            GradientState.shared.gradientType = .insurance(filter: 0)
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
                 return deepLink == .insurances
             } else {
                 return false
+            }
+        }.onAction(ContractStore.self) { action, _ in
+            if case let .setTravelCertificateSpecification(data) = action {
+                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                claimsStore.send(.openCommonClaimDetail(commonClaim: data.asCommonClaim()))
             }
         }
     }

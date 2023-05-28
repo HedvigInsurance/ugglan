@@ -6,6 +6,8 @@ import hCoreUI
 struct TravelInsuranceFormScreen: View {
     let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
     @State var dateOfOccurrence = Date()
+    @State private var focusField: FormFieldType? = .email
+    @State var email = ""
     var body: some View {
         TravelInsuranceLoadingView(.postTravelInsurance) {
             PresentableStoreLens(
@@ -15,9 +17,10 @@ struct TravelInsuranceFormScreen: View {
                 }
             ) { travelInsuranceModel in
                 hForm {
-                    datesSection(travelInsuranceModel)
+                    getYourInformationSection(travelInsuranceModel)
                     insuredMembers(travelInsuranceModel)
                 }
+                .hFormTitle(L10n.TravelCertificate.yourTravelInformation)
                 .hFormAttachToBottom {
                     hButton.LargeButtonFilled {
                         UIApplication.dismissKeyboard()
@@ -28,10 +31,23 @@ struct TravelInsuranceFormScreen: View {
                     .padding([.leading, .trailing], 16)
                     .padding(.bottom, 6)
                 }
+                .hUseNewStyle
                 .navigationTitle(L10n.TravelCertificate.cardTitle)
             }.presentableStoreLensAnimation(.spring())
+            
 
         }
+    }
+    
+    private func getYourInformationSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
+        hSection {
+            hFloatingTextField(
+                masking: Masking(type: .email),
+                value: $email,
+                equals: $focusField,
+                focusValue: .email,
+                placeholder: L10n.TravelCertificate.yourEmail)
+        }.hUseNewStyle
     }
     
     private func datesSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
@@ -106,6 +122,24 @@ struct TravelInsuranceFormScreen: View {
         }
         
     }
+    
+    fileprivate enum FormFieldType: hTextFieldFocusStateCompliant {
+        static var last: TravelInsuranceFormScreen.FormFieldType {
+            return .startDate
+        }
+        
+        var next: TravelInsuranceFormScreen.FormFieldType? {
+            switch self {
+            case .email:
+                return .startDate
+            case .startDate:
+                return nil
+            }
+        }
+        
+        case email
+        case startDate
+    }
 }
 
 struct TravelInsuranceFormScreen_Previews: PreviewProvider {
@@ -113,3 +147,5 @@ struct TravelInsuranceFormScreen_Previews: PreviewProvider {
         TravelInsuranceFormScreen()
     }
 }
+
+

@@ -30,7 +30,7 @@ struct TravelInsuranceContractsScreen: View {
                         }
                         .hFormAttachToBottom {
                             hButton.LargeButtonFilled {
-                                store.send(.navigation(.openEmailScreen))
+                                store.send(.navigation(.openTravelInsuranceForm))
                             } content: {
                                 hText(L10n.generalContinueButton)
                             }
@@ -59,7 +59,7 @@ struct TravelInsuranceContractsScreen: View {
                 store.send(.setTravelInsuranceData(specification: item))
             }
         }
-        .sectionContainerStyle(.opaque)
+        .sectionContainerStyle(.opaque(useNewDesign: true))
     }
     
     @ViewBuilder

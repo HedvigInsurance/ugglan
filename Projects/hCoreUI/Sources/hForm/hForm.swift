@@ -22,11 +22,34 @@ extension View {
     }
 }
 
-struct BackgroundView: UIViewRepresentable {
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.backgroundColor = .brand(.primaryBackground())
+private struct EnvironmentHFormTitle: EnvironmentKey {
+    static let defaultValue: String? = nil
+}
+
+extension EnvironmentValues {
+    public var hFormTitle: String? {
+        get { self[EnvironmentHFormTitle.self] }
+        set { self[EnvironmentHFormTitle.self] = newValue }
     }
-    
+}
+
+extension View {
+    public func hFormTitle(_ title: String) -> some View {
+        self.environment(\.hFormTitle, title)
+    }
+}
+
+struct BackgroundView: UIViewRepresentable {
+    @Environment(\.hUseNewStyle) var hUseNewStyle
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        if hUseNewStyle {
+            uiView.backgroundColor = .brandNew(.primaryBackground())
+        } else {
+            uiView.backgroundColor = .brand(.primaryBackground())
+        }
+    }
+
     func makeUIView(context: Context) -> some UIView {
         UIView()
     }
@@ -35,23 +58,23 @@ struct BackgroundView: UIViewRepresentable {
 public struct hForm<Content: View>: View {
     @ObservedObject var gradientState = GradientState.shared
     let gradientType: GradientType
-    
+
     @State var shouldAnimateGradient = true
-    
+
     @State var bottomAttachedViewHeight: CGFloat = 0
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hUseNewStyle) var hUseNewStyle
+    @Environment(\.hFormTitle) var hFormTitle
     var content: Content
-    
+
     public init(
         gradientType: GradientType = .none,
         @ViewBuilder _ builder: () -> Content
     ) {
         self.content = builder()
         self.gradientType = gradientType
-        gradientState.gradientType = gradientType
     }
-    
+
     public var body: some View {
         ZStack {
             if gradientType != .none {
@@ -73,15 +96,18 @@ public struct hForm<Content: View>: View {
             }
             ScrollView {
                 VStack {
+                    if let hFormTitle, hUseNewStyle{
+                        Text(hFormTitle)
+                    }
                     content
                 }
                 .frame(maxWidth: .infinity)
-                .tint(hTintColor.lavenderOne)
+                .tint(hForm<Content>.returnTintColor(useNewStyle: hUseNewStyle))
                 Color.clear
                     .frame(height: bottomAttachedViewHeight)
             }
             .modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeight))
-            .introspectScrollView { scrollView in
+            .findScrollView { scrollView in
                 if #available(iOS 15, *) {
                     scrollView.viewController?.setContentScrollView(scrollView)
                 }
@@ -96,10 +122,21 @@ public struct hForm<Content: View>: View {
                 )
                 .frame(maxHeight: .infinity, alignment: .bottom)
         }
+        .onAppear {
+            self.gradientState.gradientType = gradientType
+        }
+
+    }
+
+    @hColorBuilder
+    static func returnTintColor(useNewStyle: Bool) -> some hColor {
+        if useNewStyle {
+            hGreenColorNew.green100
+        } else {
+            hTintColor.lavenderOne
+        }
     }
 }
-
-
 
 private struct EnvironmentHUseNewStyle: EnvironmentKey {
     static let defaultValue = false
