@@ -40,6 +40,8 @@ struct TravelInsuranceFormScreen: View {
     }
     
     private func getYourInformationSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
+        
+
         hSection {
             hFloatingTextField(
                 masking: Masking(type: .email),
@@ -47,6 +49,11 @@ struct TravelInsuranceFormScreen: View {
                 equals: $focusField,
                 focusValue: .email,
                 placeholder: L10n.TravelCertificate.yourEmail)
+        }.withHeader {
+            hText(
+                L10n.TravelCertificate.includedMembersTitle,
+                style: .title2
+            )
         }.hUseNewStyle
     }
     
