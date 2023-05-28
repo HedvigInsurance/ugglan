@@ -66,12 +66,8 @@ struct ViewIntrospector<ViewType: UIView>: UIViewRepresentable {
 }
 
 extension View {
-    public func introspectScrollView(_ foundScrollView: @escaping (_ scrollView: UIScrollView) -> Void) -> some View {
+    public func findScrollView(_ foundScrollView: @escaping (_ scrollView: UIScrollView) -> Void) -> some View {
         self.background(ViewIntrospector<UIScrollView>(foundView: foundScrollView))
-    }
-
-    public func introspectTextField(_ foundTextField: @escaping (_ textField: UITextField) -> Void) -> some View {
-        self.background(ViewIntrospector<UITextField>(foundView: foundTextField))
     }
 }
 
@@ -94,7 +90,7 @@ public struct ForceScrollViewIndicatorInset: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        content.introspectScrollView { scrollView in
+        content.findScrollView { scrollView in
             self.scrollView = scrollView
 
             if #available(iOS 15.0, *) {
@@ -129,7 +125,7 @@ public struct ContentOffsetModifier<Modifier: ViewModifier>: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        content.introspectScrollView { scrollView in
+        content.findScrollView { scrollView in
             self.scrollView = scrollView
         }
         .modifier(modifier(scrollView ?? UIScrollView(), contentOffset))

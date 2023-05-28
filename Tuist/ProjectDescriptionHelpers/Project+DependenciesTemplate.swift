@@ -20,6 +20,7 @@ public enum ExternalDependencies: CaseIterable {
     case hAnalytics
     case authlib
     case tagkit
+    case introspect
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -95,6 +96,10 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(url: "https://github.com/danielsaidi/TagKit.git", .upToNextMajor(from: "0.1.1"))
             ]
+        case .introspect:
+            return [
+                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("0.3.1"))
+            ]
         }
     }
 
@@ -159,6 +164,8 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(product: "TagKit")
             ]
+        case .introspect:
+            return [.package(product: "Introspect")]
         }
     }
 }

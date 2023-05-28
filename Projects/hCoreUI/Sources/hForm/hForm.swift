@@ -86,7 +86,7 @@ public struct hForm<Content: View>: View {
                     .frame(height: bottomAttachedViewHeight)
             }
             .modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeight))
-            .introspectScrollView { scrollView in
+            .findScrollView { scrollView in
                 if #available(iOS 15, *) {
                     scrollView.viewController?.setContentScrollView(scrollView)
                 }
