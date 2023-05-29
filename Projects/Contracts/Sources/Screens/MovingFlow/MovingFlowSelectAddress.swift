@@ -37,9 +37,6 @@ struct MovingFlowSelectAddress: View {
                 .padding(.bottom, 8)
             }
         }
-        .addOnDone(binding: $type, itemsToShowDone: [.postalCode, .squareArea, .nbOfCoInsured]) {
-            type = type?.next
-        }
         .onChange(of: type) { newValue in
             if newValue == nil {
                 UIApplication.dismissKeyboard()
@@ -54,23 +51,12 @@ struct MovingFlowSelectAddress: View {
     @ViewBuilder
     func addressField() -> some View {
         hSection {
-            hRow {
-                HStack {
-                    hTextField(
-                        masking: Masking(type: .address),
-                        value: $address
-                    )
-                    .focused($type, equals: .address)
-                    .hTextFieldOptions([])
-                    Spacer()
-                }
-                .onUpdate(of: address) { data in
-                    selectedField = .address
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(800)) {
-                        selectedField = nil
-                    }
-                }
-            }
+            hFloatingTextField(
+                masking: Masking(type: .address),
+                value: $address,
+                equals: $type,
+                focusValue: .address
+            )
         }
         .withoutBottomPadding
         .sectionContainerStyle(.opaque(useNewDesign: true))

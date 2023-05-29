@@ -22,6 +22,23 @@ extension View {
     }
 }
 
+private struct EnvironmentHFormTitle: EnvironmentKey {
+    static let defaultValue: String? = nil
+}
+
+extension EnvironmentValues {
+    public var hFormTitle: String? {
+        get { self[EnvironmentHFormTitle.self] }
+        set { self[EnvironmentHFormTitle.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFormTitle(_ title: String) -> some View {
+        self.environment(\.hFormTitle, title)
+    }
+}
+
 struct BackgroundView: UIViewRepresentable {
     @Environment(\.hUseNewStyle) var hUseNewStyle
 
@@ -47,6 +64,7 @@ public struct hForm<Content: View>: View {
     @State var bottomAttachedViewHeight: CGFloat = 0
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hUseNewStyle) var hUseNewStyle
+    @Environment(\.hFormTitle) var hFormTitle
     var content: Content
 
     public init(
@@ -78,6 +96,9 @@ public struct hForm<Content: View>: View {
             }
             ScrollView {
                 VStack {
+                    if let hFormTitle, hUseNewStyle {
+                        Text(hFormTitle)
+                    }
                     content
                 }
                 .frame(maxWidth: .infinity)
@@ -86,7 +107,7 @@ public struct hForm<Content: View>: View {
                     .frame(height: bottomAttachedViewHeight)
             }
             .modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeight))
-            .introspectScrollView { scrollView in
+            .findScrollView { scrollView in
                 if #available(iOS 15, *) {
                     scrollView.viewController?.setContentScrollView(scrollView)
                 }
