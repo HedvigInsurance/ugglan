@@ -17,7 +17,7 @@ struct TravelInsuranceFormScreen: View {
                 }
             ) { travelInsuranceModel in
                 hForm {
-                    getYourInformationSection(travelInsuranceModel)
+                    yourInformationSection(travelInsuranceModel)
                     insuredMembers(travelInsuranceModel)
                 }
                 .hFormTitle(L10n.TravelCertificate.yourTravelInformation)
@@ -39,9 +39,7 @@ struct TravelInsuranceFormScreen: View {
         }
     }
     
-    private func getYourInformationSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
-        
-
+    private func yourInformationSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
         hSection {
             hFloatingTextField(
                 masking: Masking(type: .email),
@@ -51,7 +49,7 @@ struct TravelInsuranceFormScreen: View {
                 placeholder: L10n.TravelCertificate.yourEmail)
         }.withHeader {
             hText(
-                L10n.TravelCertificate.includedMembersTitle,
+                L10n.TravelCertificate.yourTravelInformation,
                 style: .title2
             )
         }.hUseNewStyle
