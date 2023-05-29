@@ -28,10 +28,9 @@ extension BulletPointCard: Reusable {
         contentView.layoutMargins = UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 20)
         contentView.isLayoutMarginsRelativeArrangement = true
         contentView.insetsLayoutMarginsFromSafeArea = false
-
         cardContainer.addSubview(contentView)
-
-        contentView.snp.makeConstraints { make in make.leading.equalToSuperview().inset(40)
+        contentView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(40)
             make.trailing.equalToSuperview()
             make.top.equalToSuperview()
             make.bottom.equalToSuperview()
@@ -58,17 +57,21 @@ extension BulletPointCard: Reusable {
                 }
 
                 bag += contentView.addArranged(descriptionLabel)
-
+                
                 titleLabel.value = bulletPointCard.title
                 descriptionLabel.value = bulletPointCard.description
-
+                contentView.snp.makeConstraints { make in
+                    make.leading.equalToSuperview().inset(bulletPointCard.icon.hasIcon ? 40 : 16)
+                    make.trailing.equalToSuperview()
+                    make.top.equalToSuperview()
+                    make.bottom.equalToSuperview()
+                }
                 bag += cardContainer.add(bulletPointCard.icon) { iconView in
                     iconView.snp.makeConstraints { make in make.width.height.equalTo(20)
                         make.top.equalTo(21)
                         make.left.equalTo(15)
                     }
                 }
-
                 return bag
             }
         )

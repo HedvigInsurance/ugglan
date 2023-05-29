@@ -57,8 +57,8 @@ extension CommonClaimDetail: Presentable {
             let claimButton = Button(
                 title: claim.layout.titleAndBulletPoint?.buttonTitle ?? "",
                 type: .standard(
-                    backgroundColor: .brand(.primaryButtonBackgroundColor),
-                    textColor: .brand(.primaryButtonTextColor)
+                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                    textColor: .brand(.secondaryButtonTextColor)
                 )
             )
             bag += topCardContentView.addArranged(claimButton)

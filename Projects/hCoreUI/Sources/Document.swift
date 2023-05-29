@@ -9,15 +9,15 @@ import hCore
 public struct Document {
     let url: URL
     let title: String
-    let showDownloadButton: Bool
+    let downloadButtonTitle: String?
     public init(
         url: URL,
         title: String,
-        showDownloadButton: Bool = false
+        downloadButtonTitle: String? = nil
     ) {
         self.url = url
         self.title = title
-        self.showDownloadButton = showDownloadButton
+        self.downloadButtonTitle = downloadButtonTitle
     }
 }
 
@@ -31,7 +31,7 @@ extension Document: Presentable {
         viewController.navigationItem.scrollEdgeAppearance = DefaultStyling.standardNavigationBarAppearance()
         viewController.title = title
 
-        let pdfViewer = PDFViewer(showDownloadButton: showDownloadButton)
+        let pdfViewer = PDFViewer(downloadButtonTitle: downloadButtonTitle)
         bag += viewController.install(pdfViewer)
         
         pdfViewer.url.value = url

@@ -10,11 +10,11 @@ public struct PDFViewer {
     public let data: ReadSignal<Data?>
     public let downloadButtonPressed = ReadWriteSignal<Bool>(false)
     private let dataReadWriteSignal: ReadWriteSignal<Data?>
-    private let showDownloadButton: Bool
-    public init(showDownloadButton: Bool) {
+    private let downloadButtonTitle: String?
+    public init(downloadButtonTitle: String?) {
         dataReadWriteSignal = ReadWriteSignal(nil)
         data = dataReadWriteSignal.readOnly()
-        self.showDownloadButton = showDownloadButton
+        self.downloadButtonTitle = downloadButtonTitle
     }
 }
 
@@ -47,13 +47,13 @@ extension PDFViewer: Viewable {
         let loadingView = UIView()
         loadingView.alpha = 1
         loadingView.backgroundColor = .brand(.primaryBackground())
-        if showDownloadButton {
+        if let downloadButtonTitle {
             
             let downloadButton = Button(
-                title: "Download",
+                title: downloadButtonTitle,
                 type: .standard(
-                    backgroundColor: .brand(.primaryButtonBackgroundColor),
-                    textColor: .brand(.primaryButtonTextColor)
+                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                    textColor: .brand(.secondaryButtonTextColor)
                 )
             )
             bag += downloadButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) {_ in

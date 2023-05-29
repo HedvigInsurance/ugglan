@@ -6,7 +6,9 @@ import Presentation
 struct TravelInsuranceEmailScreen: View {
     @PresentableStore var store: TravelInsuranceStore
     @State var email: String
-    
+    @State var emailError: String?
+
+    private let masking = Masking(type: .email)
     public init() {
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
         self.email = store.state.travelInsuranceConfigs?.email ?? ""
@@ -14,54 +16,55 @@ struct TravelInsuranceEmailScreen: View {
     public var body: some View {
         
         hForm {
-            HStack(spacing: 0) {
-                
-                hText("", style: .body)
-                    .foregroundColor(hLabelColor.primary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding([.trailing, .leading], 12)
-                    .padding([.top, .bottom], 16)
-                    
+            hSection {
+                hRow {
+                    hText(L10n.TravelCertificate.emailStepDescription, style: .body)
+                        .foregroundColor(hLabelColor.primary)
+                }
+            }.withoutBottomPadding
+            hSection {
+                hRow {
+                    hText(L10n.TravelCertificate.emailStepDescription2, style: .body)
+                        .foregroundColor(hLabelColor.primary)
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(hBackgroundColor.tertiary)
-            .cornerRadius(12)
-            .padding(.leading, 16)
-            .padding(.trailing, 32)
-            .padding(.top, 20)
-            .hShadow()
         }
         .hFormAttachToBottom {
             VStack {
-                HStack {
-                    VStack {
+                hSection {
+                    hRow {
                         hTextField(
-                            masking: Masking(type: .email),
+                            masking: masking,
                             value: $email,
-                            placeholder: L10n.emailPlaceholder
+                            placeholder: L10n.TravelCertificate.enterEmailPlaceholder
                         )
+                        .hTextFieldOptions([])
+                        .hTextFieldError(emailError)
                         .multilineTextAlignment(.center)
-                        .hTextFieldOptions([.minimumHeight(height: 60)])
                     }
-                    .padding([.top, .bottom], 5)
                 }
-                .frame(maxWidth: .infinity, alignment: .center)
-                .background(hBackgroundColor.tertiary)
-                .cornerRadius(12)
-                .padding([.leading, .trailing], 16)
-                hButton.LargeButtonFilled {
-                    store.send(.setEmail(value: email))
-                    UIApplication.dismissKeyboard()
-                } content: {
-                    hText(L10n.generalContinueButton, style: .body)
-                        .foregroundColor(hLabelColor.primary.inverted)
+                hSection {
+                    hButton.LargeButtonFilled {
+                        validateAndSubmit()
+                    } content: {
+                        hText(L10n.generalContinueButton, style: .body)
+                            .foregroundColor(hLabelColor.primary.inverted)
+                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .bottom)
-                .padding([.leading, .trailing], 16)
-                .padding(.bottom, 6)
             }
         }
         .navigationTitle(L10n.TravelCertificate.cardTitle)
+    }
+    
+    
+    private func validateAndSubmit() {
+        if masking.isValid(text: email) {
+            emailError = nil
+            store.send(.setEmail(value: email))
+            UIApplication.dismissKeyboard()
+        } else {
+            emailError = L10n.myInfoEmailMalformedError
+        }
     }
 }
 

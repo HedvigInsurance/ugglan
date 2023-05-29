@@ -3,11 +3,10 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+
 struct TravelInsuranceFormScreen: View {
     let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
     @State var dateOfOccurrence = Date()
-    @State private var focusField: FormFieldType? = .email
-    @State var email = ""
     var body: some View {
         TravelInsuranceLoadingView(.postTravelInsurance) {
             PresentableStoreLens(
@@ -17,10 +16,9 @@ struct TravelInsuranceFormScreen: View {
                 }
             ) { travelInsuranceModel in
                 hForm {
-                    yourInformationSection(travelInsuranceModel)
+                    datesSection(travelInsuranceModel)
                     insuredMembers(travelInsuranceModel)
                 }
-                .hFormTitle(L10n.TravelCertificate.yourTravelInformation)
                 .hFormAttachToBottom {
                     hButton.LargeButtonFilled {
                         UIApplication.dismissKeyboard()
@@ -31,28 +29,10 @@ struct TravelInsuranceFormScreen: View {
                     .padding([.leading, .trailing], 16)
                     .padding(.bottom, 6)
                 }
-                .hUseNewStyle
                 .navigationTitle(L10n.TravelCertificate.cardTitle)
             }.presentableStoreLensAnimation(.spring())
-            
 
         }
-    }
-    
-    private func yourInformationSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
-        hSection {
-            hFloatingTextField(
-                masking: Masking(type: .email),
-                value: $email,
-                equals: $focusField,
-                focusValue: .email,
-                placeholder: L10n.TravelCertificate.yourEmail)
-        }.withHeader {
-            hText(
-                L10n.TravelCertificate.travelInformation,
-                style: .title2
-            )
-        }.hUseNewStyle
     }
     
     private func datesSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
@@ -64,19 +44,19 @@ struct TravelInsuranceFormScreen: View {
                 in: (model?.minStartDate ?? Date())...(model?.maxStartDate ?? Date()),
                 displayedComponents: [.date]
             )
-            
             .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
-                .datePickerStyle(.graphical)
-                .padding([.leading, .trailing], 16)
-                .padding([.top], 5)
+            .datePickerStyle(.graphical)
+            .padding([.leading, .trailing], 16)
+            .padding([.top], 5)
         }
         .withHeader {
             hText(
                 L10n.TravelCertificate.startDateTitle,
                 style: .title2
             )
-        }
-        .slideUpAppearAnimation()
+        }.withFooter({
+            hText(L10n.TravelCertificate.startDateInfo(store.state.travelInsuranceConfig?.maxDuration ?? 0), style: .footnote)
+        })
     }
     
     @ViewBuilder
@@ -101,12 +81,16 @@ struct TravelInsuranceFormScreen: View {
                             store.send(.removePolicyCoInsured(member))
                         } label: {
                             Image(uiImage: hCoreUIAssets.close.image)
+                                .resizable()
+                                .frame(width: 15, height: 15)
+                                .padding(.horizontal, 3)
+                                .foregroundColor(hLabelColor.primary)
                         }
                         
                     }
                 }.onTap {
                     store.send(.navigation(.openCoinsured(member: member)))
-                }
+                } 
             }
         }
         .withHeader {
@@ -115,7 +99,6 @@ struct TravelInsuranceFormScreen: View {
                 style: .title2
             )
         }
-        .slideUpAppearAnimation()
         if travelInsuranceModel.policyCoinsuredPersons.count < store.state.travelInsuranceConfig?.numberOfCoInsured ?? 0 {
             Button {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
@@ -123,27 +106,8 @@ struct TravelInsuranceFormScreen: View {
             } label: {
                 hText(L10n.TravelCertificate.addMember)
             }
-            .slideUpAppearAnimation()
         }
         
-    }
-    
-    fileprivate enum FormFieldType: hTextFieldFocusStateCompliant {
-        static var last: TravelInsuranceFormScreen.FormFieldType {
-            return .startDate
-        }
-        
-        var next: TravelInsuranceFormScreen.FormFieldType? {
-            switch self {
-            case .email:
-                return .startDate
-            case .startDate:
-                return nil
-            }
-        }
-        
-        case email
-        case startDate
     }
 }
 
@@ -152,5 +116,3 @@ struct TravelInsuranceFormScreen_Previews: PreviewProvider {
         TravelInsuranceFormScreen()
     }
 }
-
-

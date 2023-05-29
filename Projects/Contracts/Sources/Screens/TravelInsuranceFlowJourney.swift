@@ -12,9 +12,8 @@ public struct TravelInsuranceFlowJourney {
         if numberOfContracts > 1 {
             showContractsList(openChat)
         } else {
-            showForm(openChat, detended: true)
+            showEmail(openChat, detended: true)
         }
-        
     }
     
     private static func showContractsList(_ openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation {
@@ -25,7 +24,7 @@ public struct TravelInsuranceFlowJourney {
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .openTravelInsuranceForm = navigationAction {
-                    TravelInsuranceFlowJourney.showForm(openChat, detended: false)
+                    TravelInsuranceFlowJourney.showEmail(openChat, detended: false)
                 } else if case .dismissCreateTravelCertificate = navigationAction {
                     DismissJourney()
                 } else if case .openSomethingWentWrongScreen = navigationAction {
@@ -36,17 +35,41 @@ public struct TravelInsuranceFlowJourney {
         .addDismissFlow()
     }
     
-    private static func showForm(_ openChat: @escaping (() -> some JourneyPresentation), detended: Bool) -> some JourneyPresentation {
+    private static func showEmail(_ openChat: @escaping (() -> some JourneyPresentation), detended: Bool) -> some JourneyPresentation {
         let hosting = HostingJourney(
             TravelInsuranceStore.self,
-            rootView: TravelInsuranceFormScreen(),
+            rootView: TravelInsuranceEmailScreen(),
             style: detended ? .detented(.large) : .default
+        ) { action in
+            if case let .navigation(navigationAction) = action {
+                if case .openSomethingWentWrongScreen = navigationAction {
+                    openFailScreen(openChat: openChat)
+                } else if case .openTravelInsuranceForm = navigationAction {
+                    showForm()
+                }
+            }
+        }
+        let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
+        if store.state.travelInsuranceConfigs == nil {
+            return hosting
+                .hidesBackButton
+                .addDismissFlow()
+        } else  {
+            return hosting.addDismissFlow()
+        }
+        
+    }
+    
+    private static func showForm() -> some JourneyPresentation {
+        let hosting = HostingJourney(
+            TravelInsuranceStore.self,
+            rootView: TravelInsuranceFormScreen()
         ) { action in
             if case let .navigation(navigationAction) = action {
                 if case let .openTravelInsurance(url, title) = navigationAction {
                     TravelInsuranceFlowJourney.openDocument(url: url, title: title)
-                } else if case .openSomethingWentWrongScreen = navigationAction {
-                    openFailScreen(openChat: openChat)
+                } else if case let .openCoinsured(member) = navigationAction {
+                    openCoinsured(member: member)
                 }
             }
         }
@@ -107,7 +130,6 @@ public struct TravelInsuranceFlowJourney {
             } else if case .removePolicyCoInsured = action {
                 PopJourney()
             }
-            
         }
     }
     
@@ -126,7 +148,7 @@ public struct TravelInsuranceFlowJourney {
     
     private static func openDocument(url: URL, title: String) -> some JourneyPresentation {
         Journey(
-            Document(url: url, title: title, showDownloadButton: true)
+            Document(url: url, title: title, downloadButtonTitle: L10n.TravelCertificate.download)
         )
         .hidesBackButton
         .withJourneyDismissButton

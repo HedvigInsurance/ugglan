@@ -99,12 +99,12 @@ struct TravelInsuranceInsuredMemberScreen: View {
     
     private func validate(){
         if !personalNumberMaskeing.isValid(text: personalNumber) {
-            personalNumberError = "Personal number should be valid"
+            personalNumberError = L10n.TravelCertificate.ssnErrorLabel
         } else {
             personalNumberError = nil
         }
         if fullName.count < 2 {
-            fullNameError = "Full Name should be at least 2 characters long"
+            fullNameError = L10n.TravelCertificate.nameErrorLabel
         } else {
             fullNameError = nil
         }
