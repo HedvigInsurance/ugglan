@@ -64,103 +64,77 @@ struct MovingFlowSelectAddress: View {
 
     @ViewBuilder
     func postalAndSquareField() -> some View {
-        HStack(spacing: 0) {
 
-            hTextField(
-                masking: Masking(type: .postalCode),
-                value: $postalCode,
-                placeholder: L10n.changeAddressNewPostalCodeLabel
-            )
-            .focused($type, equals: .postalCode)
-            .hTextFieldOptions([])
-            .onUpdate(of: postalCode) { data in
-                selectedField = .postal
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
-                    selectedField = nil
-                }
-            }
-            .padding(.leading, 16)
-            .padding([.top, .bottom], 21)
-            .background(
-                Squircle.default()
-                    .fill(textFieldColor(text: .postal))
-            )
-            .padding(.leading, 16)
-            Spacer()
+        hSection {
+            HStack(spacing: 0) {
 
-            hTextField(
-                masking: Masking(type: .digits),
-                value: $squareArea,
-                placeholder: L10n.changeAddressNewLivingSpaceLabel
-            )
-            .focused($type, equals: .squareArea)
-            .hTextFieldOptions([])
-            .onUpdate(of: squareArea) { data in
-                selectedField = .square
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
-                    selectedField = nil
-                }
+                hFloatingTextField(
+                    masking: Masking(type: .postalCode),
+                    value: $postalCode,
+                    equals: $type,
+                    focusValue: .postalCode,
+                    placeholder: L10n.changeAddressNewPostalCodeLabel
+                )
+
+                Spacer()
+
+                hFloatingTextField(
+                    masking: Masking(type: .digits),
+                    value: $squareArea,
+                    equals: $type,
+                    focusValue: .squareArea,
+                    placeholder: L10n.changeAddressNewLivingSpaceLabel
+                )
             }
-            .padding(.leading, 16)
-            .padding([.top, .bottom], 21)
-            .background(
-                Squircle.default()
-                    .fill(textFieldColor(text: .square))
-            )
-            .padding(.trailing, 16)
         }
+        .withoutVerticalPadding
+        .sectionContainerStyle(.transparent)
     }
 
     @ViewBuilder
     func numberOfCoinsuredField() -> some View {
-        HStack(spacing: 0) {
-            hTextField(
-                masking: Masking(type: .digits),
-                value: $nbOfCoInsured,
-                placeholder: L10n.changeAddressCoInsuredLabel
-            )
-            .focused($type, equals: .nbOfCoInsured)
-            .hTextFieldOptions([])
-            .padding(.leading, 16)
+        hSection {
+            HStack(spacing: 0) {
+                hFloatingTextField(
+                    masking: Masking(type: .digits),
+                    value: $nbOfCoInsured,
+                    equals: $type,
+                    focusValue: .squareArea,
+                    placeholder: L10n.changeAddressCoInsuredLabel
+                )
 
-            Spacer()
+                Spacer()
 
-            Button {
-                if let coinsured = Int(nbOfCoInsured), coinsured > 0 {
-                    if coinsured == 1 {
-                        nbOfCoInsured = ""
-                    } else {
-                        nbOfCoInsured = "\(coinsured - 1)"
+                Button {
+                    if let coinsured = Int(nbOfCoInsured), coinsured > 0 {
+                        if coinsured == 1 {
+                            nbOfCoInsured = ""
+                        } else {
+                            nbOfCoInsured = "\(coinsured - 1)"
+                        }
                     }
+                } label: {
+                    Image(uiImage: hCoreUIAssets.minusIcon.image)
+                        .foregroundColor(
+                            hGrayscaleColorNew.greyScale1000.opacity((Int(nbOfCoInsured) ?? 0) == 0 ? 0.4 : 1)
+                        )
+
                 }
-            } label: {
-                Image(uiImage: hCoreUIAssets.minusIcon.image)
-                    .foregroundColor(hGrayscaleColorNew.greyScale1000.opacity((Int(nbOfCoInsured) ?? 0) == 0 ? 0.4 : 1))
+                .frame(width: 30, height: 60)
 
-            }
-            .frame(width: 30, height: 60)
-
-            Button {
-                let conisured = Int(nbOfCoInsured) ?? 0
-                nbOfCoInsured = "\(conisured + 1)"
-            } label: {
-                Image(uiImage: hCoreUIAssets.plusIcon.image)
-                    .foregroundColor(hGrayscaleColorNew.greyScale1000)
-                    .padding(.trailing, 16)
-            }
-            .frame(width: 30, height: 60)
-        }
-        .onUpdate(of: nbOfCoInsured) { data in
-            selectedField = .nbOfCoinsured
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
-                selectedField = nil
+                Button {
+                    let conisured = Int(nbOfCoInsured) ?? 0
+                    nbOfCoInsured = "\(conisured + 1)"
+                } label: {
+                    Image(uiImage: hCoreUIAssets.plusIcon.image)
+                        .foregroundColor(hGrayscaleColorNew.greyScale1000)
+                        .padding(.trailing, 16)
+                }
+                .frame(width: 30, height: 60)
             }
         }
-        .background(
-            Squircle.default()
-                .fill(textFieldColor(text: .nbOfCoinsured))
-        )
-        .padding([.leading, .trailing], 16)
+        .withoutVerticalPadding
+        .sectionContainerStyle(.opaque(useNewDesign: true))
     }
 
     @ViewBuilder

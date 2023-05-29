@@ -27,7 +27,7 @@ public struct MovingFlowHousingType: View {
                     }
 
                     NoticeComponent(text: L10n.changeAddressCoverageInfoText)
-                        .padding(.top, 116)
+                        .padding(.top, 100)
                 }
             }
             .hUseNewStyle
