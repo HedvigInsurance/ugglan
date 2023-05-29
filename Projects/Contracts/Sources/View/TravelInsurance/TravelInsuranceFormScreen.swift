@@ -49,7 +49,7 @@ struct TravelInsuranceFormScreen: View {
                 placeholder: L10n.TravelCertificate.yourEmail)
         }.withHeader {
             hText(
-                L10n.TravelCertificate.yourTravelInformation,
+                L10n.TravelCertificate.travelInformation,
                 style: .title2
             )
         }.hUseNewStyle
