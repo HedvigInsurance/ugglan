@@ -58,12 +58,14 @@ struct TravelInsuranceEmailScreen: View {
     
     
     private func validateAndSubmit() {
-        if masking.isValid(text: email) {
-            emailError = nil
-            store.send(.setEmail(value: email))
-            UIApplication.dismissKeyboard()
-        } else {
-            emailError = L10n.myInfoEmailMalformedError
+        withAnimation {
+            if masking.isValid(text: email) {
+                emailError = nil
+                store.send(.setEmail(value: email))
+                UIApplication.dismissKeyboard()
+            } else {
+                emailError = L10n.myInfoEmailMalformedError
+            }
         }
     }
 }
