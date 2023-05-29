@@ -30,10 +30,11 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         value: Binding<String>,
         equals: Binding<Value?>,
         focusValue: Value,
+        placeholder: String? = nil,
         onReturn: @escaping () -> Void = {}
     ) {
         self.masking = masking
-        self.placeholder = masking.placeholderText ?? ""
+        self.placeholder = placeholder ?? masking.placeholderText ?? ""
         self._value = value
         
         self._equals = equals
@@ -128,7 +129,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     
     
     private func getFieldLabel() -> some View {
-        Text("PlaceHolderText")
+        Text(placeholder)
             .modifier(hFontModifierNew(style: .body))
             .foregroundColor (hLabelColorNew.secondary)
             .padding(shouldMoveLabel ?
