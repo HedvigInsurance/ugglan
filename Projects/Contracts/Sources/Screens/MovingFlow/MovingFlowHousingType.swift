@@ -47,22 +47,21 @@ public struct MovingFlowHousingType: View {
     func setCheckBoxComponent(text: String) -> some View {
         hSection {
             hRow {
-                HStack {
-                    Image(uiImage: hCoreUIAssets.pillowHome.image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 48, height: 48)
+                Image(uiImage: hCoreUIAssets.pillowHome.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 48, height: 48)
 
-                    hTextNew(text, style: .body)
-                    Spacer()
-                    Circle()
-                        .strokeBorder(hGrayscaleColorNew.greyScale900)
-                        .background(Circle().foregroundColor(retColor(text: text)))
-                        .frame(width: 28, height: 28)
-                }
-                .onTapGesture {
-                    isSelected = text
-                }
+                hTextNew(text, style: .body)
+                Spacer()
+                Circle()
+                    .strokeBorder(hGrayscaleColorNew.greyScale900)
+                    .background(Circle().foregroundColor(retColor(text: text)))
+                    .frame(width: 28, height: 28)
+            }
+            .withEmptyAccessory
+            .onTap {
+                isSelected = text
             }
         }
         .withoutVerticalPadding
