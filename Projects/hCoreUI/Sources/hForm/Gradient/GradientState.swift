@@ -14,7 +14,7 @@ public class GradientState: ObservableObject {
 
     @Published public var gradientType: GradientType = .none {
         didSet {
-            if gradientType != oldValue && oldGradientType != .none {
+            if gradientType != oldValue && oldValue != .none {
                 oldGradientType = oldValue
 
                 if gradientType == .none {
