@@ -17,12 +17,10 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @State private var shouldMoveLabel: Bool = false
     @State private var textField: UITextField?
     @State private var observer = TextFieldObserver()
-
     @Binding var value: String
     @Binding var equals: Value?
     let focusValue: Value
     let onReturn: () -> Void
-    @StateObject var model = hFloatingTextFieldModel()
 
     public init(
         masking: Masking,
@@ -42,7 +40,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
         self.previousInnerValue = value.wrappedValue
         self.innerValue = value.wrappedValue
-
     }
 
     public var body: some View {
@@ -115,9 +112,13 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
     private func updateMoveLabel() {
         if ((textField?.isEditing ?? false) || innerValue != "") && !shouldMoveLabel {
-            shouldMoveLabel = true
+            withAnimation {
+                shouldMoveLabel = true
+            }
         } else if shouldMoveLabel && innerValue == "" {
-            shouldMoveLabel = false
+            withAnimation {
+                shouldMoveLabel = false
+            }
         }
     }
 
@@ -132,20 +133,19 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
     private func getFieldLabel() -> some View {
         Text(placeholder)
-            .modifier(hFontModifierNew(style: .body))
+            .modifier(hFontModifierNew(style: .title3))
             .foregroundColor(hLabelColorNew.secondary)
             .padding(
                 shouldMoveLabel
                     ? EdgeInsets(top: 0, leading: 0, bottom: 40, trailing: 0)
                     : EdgeInsets(top: 20, leading: 0, bottom: 20, trailing: 0)
             )
-            .scaleEffect(shouldMoveLabel ? 0.8 : 1, anchor: .leading)
-            .animation(.easeOut(duration: 0.1))
+            .scaleEffect(shouldMoveLabel ? 0.6 : 1, anchor: .leading)
     }
 
     private func getTextField() -> some View {
         SwiftUI.TextField("", text: $innerValue)
-            .modifier(hFontModifierNew(style: .body))
+            .modifier(hFontModifierNew(style: .title3))
             .modifier(masking)
             .tint(hLabelColorNew.primary)
             .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
@@ -161,9 +161,5 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
     private func startAnimation() {
         self.animate = true
-    }
-
-    class hFloatingTextFieldModel: ObservableObject {
-        var cancellables = Set<AnyCancellable>()
     }
 }

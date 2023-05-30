@@ -1,16 +1,19 @@
-import SwiftUI
 import Combine
+import SwiftUI
+
 public struct hCheckmarkField: View {
     private let text: String
     @Binding var selected: Bool
     @State private var animate = false
 
-    public init(text: String, selected: Binding<Bool>) {
+    public init(
+        text: String,
+        selected: Binding<Bool>
+    ) {
         self._selected = selected
         self.text = text
-        self.animate = animate
     }
-    
+
     public var body: some View {
         HStack {
             Text(text)
@@ -22,7 +25,7 @@ public struct hCheckmarkField: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 20)
         .modifier(hFontModifierNew(style: .body))
-        .foregroundColor (hLabelColorNew.primary)
+        .foregroundColor(hLabelColorNew.primary)
         .animation(.easeOut(duration: 0.1))
         .background(getColor())
         .animation(.easeInOut(duration: 0.4), value: animate)
@@ -36,7 +39,7 @@ public struct hCheckmarkField: View {
         }
 
     }
-    
+
     @hColorBuilder
     private func getColor() -> some hColor {
         if animate {
