@@ -141,6 +141,7 @@ extension View {
 
 struct hSectionContainer<Content: View>: View {
     @Environment(\.hSectionContainerStyle) var containerStyle
+    @Environment(\.hUseNewStyle) var useNewStyle
     var content: Content
     
     init(
@@ -155,9 +156,20 @@ struct hSectionContainer<Content: View>: View {
                 content
             }
             .frame(maxWidth: .infinity)
-            .modifier(containerStyle)
+            .modifier(getProperContainerStyle())
         }
         .frame(maxWidth: .infinity)
+    }
+    
+    func getProperContainerStyle() -> hSectionContainerStyle{
+        switch containerStyle {
+        case .caution:
+            return .caution(useNewDesign: useNewStyle)
+        case .opaque:
+            return .opaque(useNewDesign: useNewStyle)
+        case .transparent:
+            return .transparent
+        }
     }
 }
 

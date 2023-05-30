@@ -8,7 +8,6 @@ public struct hCheckmarkField: View {
     public init(text: String, selected: Binding<Bool>) {
         self._selected = selected
         self.text = text
-        self.animate = animate
     }
     
     public var body: some View {
