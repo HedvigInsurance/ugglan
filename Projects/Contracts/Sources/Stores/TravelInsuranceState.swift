@@ -18,6 +18,15 @@ struct TravelInsuranceModel: Codable, Equatable, Hashable {
     var isPolicyHolderIncluded: Bool = true
     var email: String
     var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
+    
+    func isValidWithMessage() -> (valid: Bool, message: String?) {
+        let isValid = isPolicyHolderIncluded || policyCoinsuredPersons.count > 0
+        var message: String? = nil
+        if !isValid {
+            message = L10n.TravelCertificate.coinsuredErrorLabel
+        }
+        return (isValid, message)
+    }
 }
 
 public struct TravelInsuranceSpecification: Codable, Equatable, Hashable {

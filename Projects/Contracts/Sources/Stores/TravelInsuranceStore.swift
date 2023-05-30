@@ -66,10 +66,13 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
             newState.travelInsuranceModel?.isPolicyHolderIncluded.toggle()
         case let .setPolicyCoInsured(data):
             let indexOfUser = newState.travelInsuranceModel?.policyCoinsuredPersons.firstIndex(where: {$0.personalNumber == data.personalNumber})
-            if let indexOfUser {
-                newState.travelInsuranceModel?.policyCoinsuredPersons[indexOfUser] = data
-            } else {
+            if indexOfUser == nil {
                 newState.travelInsuranceModel?.policyCoinsuredPersons.append(data)
+            }
+        case let .updatePolicyCoInsured(old, new):
+            let indexOfUser = newState.travelInsuranceModel?.policyCoinsuredPersons.firstIndex(where: {$0.personalNumber == old.personalNumber})
+            if let indexOfUser {
+                newState.travelInsuranceModel?.policyCoinsuredPersons[indexOfUser] = new
             }
         case let .removePolicyCoInsured(data):
             newState.travelInsuranceModel?.policyCoinsuredPersons.removeAll(where: { model in

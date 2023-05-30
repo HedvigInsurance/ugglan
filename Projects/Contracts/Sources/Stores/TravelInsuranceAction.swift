@@ -14,6 +14,7 @@ enum TravelInsuranceAction: ActionProtocol, Hashable {
     case setDate(value: Date, type: TravelInsuranceDatePickerType)
     case toogleMyselfAsInsured
     case setPolicyCoInsured(PolicyCoinsuredPersonModel)
+    case updatePolicyCoInsured(PolicyCoinsuredPersonModel, with: PolicyCoinsuredPersonModel)
     case removePolicyCoInsured(PolicyCoinsuredPersonModel)
     
     case navigation(TravelInsuranceNavigationAction)

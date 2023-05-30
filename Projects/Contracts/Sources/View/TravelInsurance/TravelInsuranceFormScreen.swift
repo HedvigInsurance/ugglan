@@ -7,6 +7,7 @@ import hCoreUI
 struct TravelInsuranceFormScreen: View {
     let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
     @State var dateOfOccurrence = Date()
+    @State var errorMessage: String?
     var body: some View {
         TravelInsuranceLoadingView(.postTravelInsurance) {
             PresentableStoreLens(
@@ -20,14 +21,24 @@ struct TravelInsuranceFormScreen: View {
                     insuredMembers(travelInsuranceModel)
                 }
                 .hFormAttachToBottom {
-                    hButton.LargeButtonFilled {
-                        UIApplication.dismissKeyboard()
-                        store.send(.postTravelInsuranceForm)
-                    } content: {
-                        hText(L10n.generalContinueButton)
+                    VStack {
+                        if let errorMessage {
+                            HStack {
+                                hText(errorMessage, style: .footnote)
+                                    .padding(.top, 7)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .foregroundColor(hTintColor.red)
+                            }
+                            .padding([.leading, .trailing], 16)
+                        }
+                        hButton.LargeButtonFilled {
+                            validateAndSubmit()
+                        } content: {
+                            hText(L10n.generalContinueButton)
+                        }
+                        .padding([.leading, .trailing], 16)
+                        .padding(.bottom, 6)
                     }
-                    .padding([.leading, .trailing], 16)
-                    .padding(.bottom, 6)
                 }
                 .navigationTitle(L10n.TravelCertificate.cardTitle)
             }.presentableStoreLensAnimation(.spring())
@@ -104,10 +115,21 @@ struct TravelInsuranceFormScreen: View {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
                 store.send(.navigation(.openCoinsured(member: nil)))
             } label: {
-                hText(L10n.TravelCertificate.addMember)
+                hText(L10n.TravelCertificate.changeMemberTitle)
             }
         }
-        
+    }
+    
+    func validateAndSubmit() {
+        if let (valid, message) = store.state.travelInsuranceModel?.isValidWithMessage() {
+            if valid {
+                UIApplication.dismissKeyboard()
+                store.send(.postTravelInsuranceForm)
+            }
+            withAnimation {
+                errorMessage = message
+            }
+        }
     }
 }
 

@@ -76,7 +76,7 @@ public struct hTextField: View {
         placeholder: String? = nil
     ) {
         self.masking = masking
-        self.placeholder = masking.placeholderText ?? placeholder
+        self.placeholder = placeholder ?? masking.placeholderText
         self._value = value
         self.previousInnerValue = value.wrappedValue
         self.innerValue = value.wrappedValue
@@ -97,25 +97,17 @@ public struct hTextField: View {
                         }
                     }
                     .frame(minHeight: options.minimumHeight)
-//                if errorMessage != nil {
-//                    Image(uiImage: hCoreUIAssets.circularExclamationPoint.image)
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 40, height: 40)
-//                        .foregroundColor(hTintColor.red)
-//                        .onTapGesture {
-//                            
-//                        }
-//                }
             }
             if options.showDivider {
                 SwiftUI.Divider()
             }
             if let errorMessage = errorMessage {
-                hText(errorMessage, style: .footnote)
-                    .padding(.top, 7)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .foregroundColor(hTintColor.red)
+                HStack {
+                    hText(errorMessage, style: .footnote)
+                        .padding(.top, 7)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .foregroundColor(hTintColor.red)
+                }
             }
         }
     }

@@ -127,6 +127,8 @@ public struct TravelInsuranceFlowJourney {
                 }
             } else if case .setPolicyCoInsured = action {
                 PopJourney()
+            } else if case .updatePolicyCoInsured = action {
+                PopJourney()
             } else if case .removePolicyCoInsured = action {
                 PopJourney()
             }

@@ -19,7 +19,11 @@ struct TravelInsuranceInsuredMemberScreen: View {
     init(
         _ policyCoinsuredPerson: PolicyCoinsuredPersonModel?
     ) {
-        self.title = L10n.TravelCertificate.includedMembersTitle
+        if policyCoinsuredPerson == nil {
+            self.title = L10n.TravelCertificate.changeMemberTitle
+        } else {
+            self.title = L10n.TravelCertificate.editMemberTitle
+        }
         self.policyCoinsuredPerson = policyCoinsuredPerson
         self.fullName = policyCoinsuredPerson?.fullName ?? ""
         self.personalNumber = policyCoinsuredPerson?.personalNumber ?? ""
@@ -51,8 +55,6 @@ struct TravelInsuranceInsuredMemberScreen: View {
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
-
-
             }
             .padding([.leading, .trailing], 16)
             .padding(.bottom, 6)
@@ -93,26 +95,33 @@ struct TravelInsuranceInsuredMemberScreen: View {
         validate()
         if validInput {
             UIApplication.dismissKeyboard()
-            store.send(
-                .setPolicyCoInsured(PolicyCoinsuredPersonModel(fullName: fullName, personalNumber: personalNumber))
-            )
+            let newPolicyCoInsured = PolicyCoinsuredPersonModel(fullName: fullName, personalNumber: personalNumber)
+            if let policyCoinsuredPerson {
+                store.send(.updatePolicyCoInsured(policyCoinsuredPerson, with: newPolicyCoInsured))
+            }else {
+                store.send(
+                    .setPolicyCoInsured(newPolicyCoInsured)
+                )
+            }
         } else {
             
         }
     }
     
     private func validate(){
-        if !personalNumberMaskeing.isValid(text: personalNumber) {
-            personalNumberError = L10n.TravelCertificate.ssnErrorLabel
-        } else {
-            personalNumberError = nil
+        withAnimation {
+            if !personalNumberMaskeing.isValid(text: personalNumber) {
+                personalNumberError = L10n.TravelCertificate.ssnErrorLabel
+            } else {
+                personalNumberError = nil
+            }
+            if fullName.count < 2 {
+                fullNameError = L10n.TravelCertificate.nameErrorLabel
+            } else {
+                fullNameError = nil
+            }
+            validInput = personalNumberError == nil && fullNameError == nil
         }
-        if fullName.count < 2 {
-            fullNameError = L10n.TravelCertificate.nameErrorLabel
-        } else {
-            fullNameError = nil
-        }
-        validInput = personalNumberError == nil && fullNameError == nil
     }
 }
 

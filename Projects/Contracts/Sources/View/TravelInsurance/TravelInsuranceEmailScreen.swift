@@ -29,10 +29,11 @@ struct TravelInsuranceEmailScreen: View {
                 }
             }
         }
+        .sectionContainerStyle(.opaque(useNewDesign: false))
         .hFormAttachToBottom {
             VStack {
-                hSection {
-                    hRow {
+                hRow {
+                    VStack(alignment: .center) {
                         hTextField(
                             masking: masking,
                             value: $email,
@@ -43,6 +44,9 @@ struct TravelInsuranceEmailScreen: View {
                         .multilineTextAlignment(.center)
                     }
                 }
+                .background(hBackgroundColor.tertiary)
+                .clipShape(Squircle.default())
+                .padding(.horizontal, 16)
                 hSection {
                     hButton.LargeButtonFilled {
                         validateAndSubmit()
