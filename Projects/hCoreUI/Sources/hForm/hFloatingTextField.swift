@@ -26,16 +26,16 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     public init(
         masking: Masking,
         value: Binding<String>,
-        suffix: String? = nil,
         equals: Binding<Value?>,
         focusValue: Value,
         placeholder: String? = nil,
+        suffix: String? = nil,
         onReturn: @escaping () -> Void = {}
     ) {
         self.masking = masking
         self.placeholder = placeholder ?? masking.placeholderText ?? ""
-        self._value = value
         self.suffix = suffix
+        self._value = value
 
         self._equals = equals
         self.focusValue = focusValue
@@ -135,7 +135,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     private func getFieldLabel() -> some View {
-
         Text(placeholder)
             .modifier(hFontModifierNew(style: .title3))
             .foregroundColor(hLabelColorNew.secondary)
@@ -158,13 +157,13 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
                     if suffix != nil && value != "" {
                         innerValue = value + " " + (suffix ?? "")
+                        let endPosition = textField?.position(from: textField!.beginningOfDocument, offset: value.count)
+                        textField?.selectedTextRange = textField?.textRange(from: endPosition!, to: endPosition!)
                     } else {
                         innerValue = value
                     }
                     previousInnerValue = value
                 }
-                let endPosition = textField?.position(from: textField!.beginningOfDocument, offset: value.count)
-                textField?.selectedTextRange = textField?.textRange(from: endPosition!, to: endPosition!)
             }
             .frame(minHeight: options.minimumHeight)
             .padding(EdgeInsets(top: 26.67, leading: 0, bottom: 13.33, trailing: 0))
