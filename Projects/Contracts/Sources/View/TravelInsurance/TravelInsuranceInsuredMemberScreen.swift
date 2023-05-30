@@ -39,7 +39,11 @@ struct TravelInsuranceInsuredMemberScreen: View {
                 hButton.LargeButtonFilled {
                     submit()
                 } content: {
-                    hText(L10n.TravelCertificate.addMember)
+                    if policyCoinsuredPerson == nil {
+                        hText(L10n.generalContinueButton)
+                    } else {
+                        hText(L10n.TravelCertificate.confirmButtonChangeMember)
+                    }
                 }
 
                 hButton.SmallButtonText {
