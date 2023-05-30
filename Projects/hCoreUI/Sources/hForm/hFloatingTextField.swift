@@ -11,6 +11,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
     private var masking: Masking
     private var placeholder: String
+    private var suffix: String?
     @State private var innerValue: String = ""
     @State private var animate = false
     @State private var previousInnerValue: String = ""
@@ -28,10 +29,12 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         equals: Binding<Value?>,
         focusValue: Value,
         placeholder: String? = nil,
+        suffix: String? = nil,
         onReturn: @escaping () -> Void = {}
     ) {
         self.masking = masking
         self.placeholder = placeholder ?? masking.placeholderText ?? ""
+        self.suffix = suffix
         self._value = value
 
         self._equals = equals
@@ -151,7 +154,16 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
                 if shouldUpdate {
                     value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
-                    innerValue = value
+
+                    if suffix != nil && value != "" {
+                        innerValue = value + " " + (suffix ?? "")
+                        let endPosition = textField?.position(from: textField!.beginningOfDocument, offset: value.count)
+                        if let endPosition = endPosition {
+                            textField?.selectedTextRange = textField?.textRange(from: endPosition, to: endPosition)
+                        }
+                    } else {
+                        innerValue = value
+                    }
                     previousInnerValue = value
                 }
             }
