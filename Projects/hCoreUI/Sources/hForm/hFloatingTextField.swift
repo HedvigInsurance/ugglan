@@ -158,7 +158,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     if suffix != nil && value != "" {
                         innerValue = value + " " + (suffix ?? "")
                         let endPosition = textField?.position(from: textField!.beginningOfDocument, offset: value.count)
-                        textField?.selectedTextRange = textField?.textRange(from: endPosition!, to: endPosition!)
+                        if let endPosition = endPosition {
+                            textField?.selectedTextRange = textField?.textRange(from: endPosition, to: endPosition)
+                        }
                     } else {
                         innerValue = value
                     }
