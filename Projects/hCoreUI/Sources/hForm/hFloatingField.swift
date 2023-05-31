@@ -7,19 +7,16 @@ import hCore
 public struct hFloatingField: View {
     @Environment(\.hTextFieldError) var errorMessage
 
-    private var masking: Masking
     private var placeholder: String
     @State private var animate = false
     private var value: String
     private let onTap: () -> Void
     public init(
-        masking: Masking,
         value: String,
         placeholder: String? = nil,
         onTap: @escaping () -> Void
     ) {
 
-        self.masking = masking
         self.placeholder = placeholder ?? ""
         self.onTap = onTap
         self.value = value
