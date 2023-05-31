@@ -2,13 +2,14 @@ import Apollo
 import Flow
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import hAnalytics
+
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     @Inject var giraffe: hGiraffe
-    
+
     public override func effects(
         _ getState: @escaping () -> ClaimsState,
         _ action: ClaimsAction
@@ -59,7 +60,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             return nil
         }
     }
-    
+
     public override func reduce(_ state: ClaimsState, _ action: ClaimsAction) -> ClaimsState {
         var newState = state
         switch action {

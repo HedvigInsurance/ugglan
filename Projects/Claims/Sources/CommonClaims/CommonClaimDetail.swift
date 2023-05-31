@@ -94,7 +94,6 @@ extension CommonClaimDetail: Presentable {
     }
 }
 
-
 public enum ComonClaimsRedirectionType {
     case travelInsurace
 }

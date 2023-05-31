@@ -9,14 +9,14 @@ enum TravelInsuranceAction: ActionProtocol, Hashable {
     case setTravelInsurancesData(specification: TravelInsuranceSpecification)
     case setTravelInsuranceData(specification: TravelInsuranceContractSpecification)
     case postTravelInsuranceForm
-    
+
     case setEmail(value: String)
     case setDate(value: Date, type: TravelInsuranceDatePickerType)
     case toogleMyselfAsInsured
     case setPolicyCoInsured(PolicyCoinsuredPersonModel)
     case updatePolicyCoInsured(PolicyCoinsuredPersonModel, with: PolicyCoinsuredPersonModel)
     case removePolicyCoInsured(PolicyCoinsuredPersonModel)
-    
+
     case navigation(TravelInsuranceNavigationAction)
     case setLoadingState(action: TravelInsuranceLoadingAction, state: LoadingState<String>?)
 }
@@ -40,7 +40,7 @@ enum TravelInsuranceLoadingAction: ActionProtocol, Hashable {
 enum TravelInsuranceDatePickerType: ActionProtocol, Hashable {
     case startDate
     case endDate
-    
+
     var title: String {
         switch self {
         case .startDate:

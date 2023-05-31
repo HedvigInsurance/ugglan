@@ -3,7 +3,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-
 struct TravelInsuranceFormScreen: View {
     let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
     @State var dateOfOccurrence = Date()
@@ -41,11 +40,12 @@ struct TravelInsuranceFormScreen: View {
                     }
                 }
                 .navigationTitle(L10n.TravelCertificate.cardTitle)
-            }.presentableStoreLensAnimation(.spring())
+            }
+            .presentableStoreLensAnimation(.spring())
 
         }
     }
-    
+
     private func datesSection(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
         let model = store.state.travelInsuranceConfig
         return hSection {
@@ -65,11 +65,15 @@ struct TravelInsuranceFormScreen: View {
                 L10n.TravelCertificate.startDateTitle,
                 style: .title2
             )
-        }.withFooter({
-            hText(L10n.TravelCertificate.startDateInfo(store.state.travelInsuranceConfig?.maxDuration ?? 0), style: .footnote)
+        }
+        .withFooter({
+            hText(
+                L10n.TravelCertificate.startDateInfo(store.state.travelInsuranceConfig?.maxDuration ?? 0),
+                style: .footnote
+            )
         })
     }
-    
+
     @ViewBuilder
     private func insuredMembers(_ travelInsuranceModel: TravelInsuranceModel) -> some View {
         hSection {
@@ -83,7 +87,8 @@ struct TravelInsuranceFormScreen: View {
             ForEach(travelInsuranceModel.policyCoinsuredPersons, id: \.personalNumber) { member in
                 hRow {
                     hText(member.fullName, style: .body)
-                }.withCustomAccessory {
+                }
+                .withCustomAccessory {
                     Spacer()
                     HStack(spacing: 8) {
                         hText(member.personalNumber, style: .body)
@@ -97,11 +102,12 @@ struct TravelInsuranceFormScreen: View {
                                 .padding(.horizontal, 3)
                                 .foregroundColor(hLabelColor.primary)
                         }
-                        
+
                     }
-                }.onTap {
+                }
+                .onTap {
                     store.send(.navigation(.openCoinsured(member: member)))
-                } 
+                }
             }
         }
         .withHeader {
@@ -110,7 +116,8 @@ struct TravelInsuranceFormScreen: View {
                 style: .title2
             )
         }
-        if travelInsuranceModel.policyCoinsuredPersons.count < store.state.travelInsuranceConfig?.numberOfCoInsured ?? 0 {
+        if travelInsuranceModel.policyCoinsuredPersons.count < store.state.travelInsuranceConfig?.numberOfCoInsured ?? 0
+        {
             Button {
                 let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
                 store.send(.navigation(.openCoinsured(member: nil)))
@@ -119,7 +126,7 @@ struct TravelInsuranceFormScreen: View {
             }
         }
     }
-    
+
     func validateAndSubmit() {
         if let (valid, message) = store.state.travelInsuranceModel?.isValidWithMessage() {
             if valid {

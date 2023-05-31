@@ -7,7 +7,7 @@ extension JourneyPresentation {
             presenter.viewController.isModalInPresentation = true
         }
     }
-    
+
     public var disableModalInPresentation: Self {
         addConfiguration { presenter in
             presenter.viewController.isModalInPresentation = false

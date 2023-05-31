@@ -1,23 +1,24 @@
 import SwiftUI
 import hCore
+
 public struct GeneralDatePicker: View {
     @State private var dateOfOccurrence = Date()
-    
+
     private let model: GeneralDatePickerViewModel
-    
+
     public init(_ model: GeneralDatePickerViewModel) {
         self.model = model
         dateOfOccurrence = model.selectedDate ?? Date()
     }
-    
+
     public var body: some View {
         hForm {
             hSection {
                 getDatePicker
-                .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
-                .datePickerStyle(.graphical)
-                .padding([.leading, .trailing], 16)
-                .padding([.top], 5)
+                    .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
+                    .datePickerStyle(.graphical)
+                    .padding([.leading, .trailing], 16)
+                    .padding([.top], 5)
             }
         }
         .hFormAttachToBottom {
@@ -30,9 +31,10 @@ public struct GeneralDatePicker: View {
                 }
                 .padding([.leading, .trailing], 16)
             }
-        }.navigationTitle(model.title)
+        }
+        .navigationTitle(model.title)
     }
-    
+
     @ViewBuilder
     private var getDatePicker: some View {
         let minDate = model.minDate
@@ -44,21 +46,21 @@ public struct GeneralDatePicker: View {
                 in: minDate...maxDate,
                 displayedComponents: [.date]
             )
-        }else if let minDate {
+        } else if let minDate {
             DatePicker(
                 model.title,
                 selection: self.$dateOfOccurrence,
                 in: minDate...,
                 displayedComponents: [.date]
             )
-        }else if let maxDate {
+        } else if let maxDate {
             DatePicker(
                 model.title,
                 selection: self.$dateOfOccurrence,
                 in: ...maxDate,
                 displayedComponents: [.date]
             )
-        }else {
+        } else {
             DatePicker(
                 model.title,
                 selection: self.$dateOfOccurrence,
@@ -70,7 +72,7 @@ public struct GeneralDatePicker: View {
 
 struct GeneralDatePicker_Previews: PreviewProvider {
     static let model = GeneralDatePickerViewModel(title: "", buttonTitle: "") { _ in
-        
+
     }
     static var previews: some View {
         GeneralDatePicker(model)
@@ -80,23 +82,25 @@ struct GeneralDatePicker_Previews: PreviewProvider {
 public struct GeneralDatePickerViewModel {
     let title: String
     let buttonTitle: String
-    let onDateSelected:(_ date: Date) -> ()
+    let onDateSelected: (_ date: Date) -> Void
     let minDate: Date?
     let maxDate: Date?
     let selectedDate: Date?
-    
-    public init(title: String,
-                buttonTitle: String,
-                minDate: Date? = nil,
-                maxDate: Date? = nil,
-                selectedDate: Date? = nil,
-                onDateSelected: @escaping (_: Date) -> Void) {
+
+    public init(
+        title: String,
+        buttonTitle: String,
+        minDate: Date? = nil,
+        maxDate: Date? = nil,
+        selectedDate: Date? = nil,
+        onDateSelected: @escaping (_: Date) -> Void
+    ) {
         self.title = title
         self.buttonTitle = buttonTitle
         self.onDateSelected = onDateSelected
         self.minDate = minDate
         self.maxDate = maxDate
         self.selectedDate = selectedDate
-        
+
     }
 }

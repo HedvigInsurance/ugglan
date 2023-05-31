@@ -76,7 +76,7 @@ public struct Masking {
 
     private func unmask(text: String) -> String {
         switch type {
-        case .personalNumber, .personalNumberCoInsured : return text.replacingOccurrences(of: "-", with: "")
+        case .personalNumber, .personalNumberCoInsured: return text.replacingOccurrences(of: "-", with: "")
         case .postalCode: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .birthDate: return text
         case .birthDateReverse:
@@ -144,7 +144,8 @@ public struct Masking {
 
     public var keyboardType: UIKeyboardType {
         switch type {
-        case .birthDate, .birthDateReverse, .personalNumber, .personalNumberCoInsured, .norwegianPostalCode, .postalCode, .digits,
+        case .birthDate, .birthDateReverse, .personalNumber, .personalNumberCoInsured, .norwegianPostalCode,
+            .postalCode, .digits,
             .norwegianPersonalNumber, .danishPersonalNumber:
             return .numberPad
         case .email: return .emailAddress
@@ -221,7 +222,7 @@ public struct Masking {
             return nil
         }
     }
-    
+
     public var disableAutocorrection: Bool {
         switch type {
         case .none, .disabledSuggestion:

@@ -1,8 +1,8 @@
+import Flow
+import Presentation
 import SwiftUI
 import hCore
-import Flow
 import hCoreUI
-import Presentation
 
 struct TravelInsuranceLoadingView<Content: View>: View {
     var content: () -> Content
@@ -20,7 +20,7 @@ struct TravelInsuranceLoadingView<Content: View>: View {
         _ action: TravelInsuranceLoadingAction,
         @ViewBuilder content: @escaping () -> Content
     ) {
-        
+
         self.onError = onError
         self.action = action
         self.content = content
@@ -32,9 +32,12 @@ struct TravelInsuranceLoadingView<Content: View>: View {
                     Alert(
                         title: Text(L10n.somethingWentWrong),
                         message: Text(error),
-                        dismissButton: .default(Text(L10n.alertOk), action: {
-                            store.send(.setLoadingState(action: action, state: nil))
-                        })
+                        dismissButton: .default(
+                            Text(L10n.alertOk),
+                            action: {
+                                store.send(.setLoadingState(action: action, state: nil))
+                            }
+                        )
                     )
                 }
             if isLoading {
@@ -59,7 +62,7 @@ struct TravelInsuranceLoadingView<Content: View>: View {
                     case let .error(error):
                         if let onError {
                             onError()
-                        }else {
+                        } else {
                             withAnimation {
                                 self.isLoading = false
                                 self.error = error

@@ -7,18 +7,18 @@ public struct RowViewBuilder {
     public static func buildBlock<V: View>(_ view: V) -> some View {
         return view
     }
-    
+
     public static func buildOptional<V: View>(_ view: V?) -> some View {
         TupleView(view)
     }
-    
+
     public static func buildBlock<A: View, B: View>(
         _ viewA: A,
         _ viewB: B
     ) -> some View {
         return TupleView((viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .bottom)))
     }
-    
+
     public static func buildBlock<A: View, B: View, C: View>(
         _ viewA: A,
         _ viewB: B,
@@ -31,7 +31,7 @@ public struct RowViewBuilder {
             )
         )
     }
-    
+
     public static func buildBlock<A: View, B: View, C: View, D: View>(
         _ viewA: A,
         _ viewB: B,
@@ -143,13 +143,13 @@ struct hSectionContainer<Content: View>: View {
     @Environment(\.hSectionContainerStyle) var containerStyle
     @Environment(\.hUseNewStyle) var useNewStyle
     var content: Content
-    
+
     init(
         @ViewBuilder _ builder: @escaping () -> Content
     ) {
         self.content = builder()
     }
-    
+
     var body: some View {
         HStack {
             VStack(spacing: 0) {
@@ -160,8 +160,8 @@ struct hSectionContainer<Content: View>: View {
         }
         .frame(maxWidth: .infinity)
     }
-    
-    func getProperContainerStyle() -> hSectionContainerStyle{
+
+    func getProperContainerStyle() -> hSectionContainerStyle {
         switch containerStyle {
         case .caution:
             return .caution(useNewDesign: useNewStyle)
@@ -180,7 +180,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
     var header: Header?
     var content: Content
     var footer: Footer?
-    
+
     public init(
         header: Header? = nil,
         footer: Footer? = nil,
@@ -190,7 +190,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         self.footer = footer
         self.content = builder()
     }
-    
+
     init(
         header: Header? = nil,
         content: Content,
@@ -200,7 +200,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         self.footer = footer
         self.content = content
     }
-    
+
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
 
@@ -262,20 +262,20 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
     public var withoutBottomPadding: some View {
         self.padding(.bottom, hUseNewStyle ? 0 : -15)
     }
-    
+
     /// removes hSection leading and trailing padding
     public var withoutHorizontalPadding: some View {
         self
             .padding(.leading, horizontalSizeClass == .regular ? -60 : -15)
             .padding(.trailing, horizontalSizeClass == .regular ? -60 : -15)
     }
-    
+
     public func withHeader<Header: View>(
         @ViewBuilder _ builder: @escaping () -> Header
     ) -> hSection<Header, Content, Footer> {
         return hSection<Header, Content, Footer>(header: builder(), content: content, footer: footer)
     }
-    
+
     public func withFooter<Footer: View>(
         @ViewBuilder _ builder: @escaping () -> Footer
     ) -> hSection<Header, Content, Footer> {
@@ -315,23 +315,23 @@ extension hSection where Content == AnyView, Header == EmptyView, Footer == Empt
         var position: hRowPosition
         var content: Content
     }
-    
+
     public init<Element, BuilderContent: View>(
         _ list: [Element],
         @ViewBuilder _ builder: @escaping (_ element: Element) -> BuilderContent
     ) where Element: Identifiable {
-        
+
         let count = list.count
         let unique = count == 1
         let lastOffset = count - 1
-        
+
         let list: [IdentifiableContent] = list.enumerated()
             .map { offset, element in
                 var position: hRowPosition {
                     if unique {
                         return .unique
                     }
-                    
+
                     switch offset {
                     case lastOffset:
                         return .bottom
@@ -341,14 +341,14 @@ extension hSection where Content == AnyView, Header == EmptyView, Footer == Empt
                         return .middle
                     }
                 }
-                
+
                 return IdentifiableContent(
                     id: element.id.hashValue,
                     position: position,
                     content: AnyView(builder(element))
                 )
             }
-        
+
         self.content = AnyView(
             ForEach(list) { element in
                 VStack(spacing: 0) {
@@ -357,9 +357,9 @@ extension hSection where Content == AnyView, Header == EmptyView, Footer == Empt
                 .environment(\.hRowPosition, element.position)
             }
         )
-        
+
     }
-    
+
     public init<Element, Hash: Hashable, BuilderContent: View>(
         _ list: [Element],
         id: KeyPath<Element, Hash>,
@@ -368,14 +368,14 @@ extension hSection where Content == AnyView, Header == EmptyView, Footer == Empt
         let count = list.count
         let unique = count == 1
         let lastOffset = count - 1
-        
+
         let list: [IdentifiableContent] = list.enumerated()
             .map { offset, element in
                 var position: hRowPosition {
                     if unique {
                         return .unique
                     }
-                    
+
                     switch offset {
                     case lastOffset:
                         return .bottom
@@ -385,14 +385,14 @@ extension hSection where Content == AnyView, Header == EmptyView, Footer == Empt
                         return .middle
                     }
                 }
-                
+
                 return IdentifiableContent(
                     id: element[keyPath: id].hashValue,
                     position: position,
                     content: AnyView(builder(element))
                 )
             }
-        
+
         self.content = AnyView(
             ForEach(list) { element in
                 VStack(spacing: 0) {

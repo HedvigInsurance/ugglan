@@ -53,7 +53,10 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                     .fetch(query: OctopusGraphQL.TravelCertificateQuery())
                     .onValue { data in
                         let email = data.currentMember.email
-                        let specification = TravelInsuranceSpecification(data.currentMember.travelCertificateSpecifications, email: email)
+                        let specification = TravelInsuranceSpecification(
+                            data.currentMember.travelCertificateSpecifications,
+                            email: email
+                        )
                         callback(.value(.setTravelCertificateSpecification(specification: specification)))
                     }
                     .onError { error in

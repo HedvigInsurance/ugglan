@@ -1,9 +1,10 @@
+import Home
 import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
-import Home
+
 struct CommonClaimsCollection: View {
     @PresentableStore var store: ClaimsStore
     var commonClaims: [CommonClaim]
@@ -55,7 +56,7 @@ struct CommonClaimButtonStyle: ButtonStyle {
                 if let icon = claim.icon {
                     RemoteVectorIconView(icon: icon, backgroundFetch: true)
                         .frame(width: 24, height: 24)
-                }else if let imageName = claim.imageName {
+                } else if let imageName = claim.imageName {
                     Image(imageName, bundle: ClaimsResources.bundle)
                         .resizable()
                         .aspectRatio(contentMode: .fit)

@@ -1,7 +1,7 @@
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
-import Presentation
 
 struct TravelInsuranceEmailScreen: View {
     @PresentableStore var store: TravelInsuranceStore
@@ -14,14 +14,15 @@ struct TravelInsuranceEmailScreen: View {
         self.email = store.state.travelInsuranceConfigs?.email ?? ""
     }
     public var body: some View {
-        
+
         hForm {
             hSection {
                 hRow {
                     hText(L10n.TravelCertificate.emailStepDescription, style: .body)
                         .foregroundColor(hLabelColor.primary)
                 }
-            }.withoutBottomPadding
+            }
+            .withoutBottomPadding
             hSection {
                 hRow {
                     hText(L10n.TravelCertificate.emailStepDescription2, style: .body)
@@ -59,8 +60,7 @@ struct TravelInsuranceEmailScreen: View {
         }
         .navigationTitle(L10n.TravelCertificate.cardTitle)
     }
-    
-    
+
     private func validateAndSubmit() {
         withAnimation {
             if masking.isValid(text: email) {

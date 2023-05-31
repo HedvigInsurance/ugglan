@@ -2,9 +2,10 @@ import Apollo
 import Flow
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hGraphQL
-import hAnalytics
+
 public struct ContractState: StateProtocol {
 
     public init() {}
@@ -23,7 +24,6 @@ public struct ContractState: StateProtocol {
     var successStep: TerminationFlowSuccessNextModel?
     var failedStep: TerminationFlowFailedNextModel?
     var loadingStates: [ContractAction: LoadingState<String>] = [:]
-    
 
     func contractForId(_ id: String) -> Contract? {
         if let inBundleContract = contractBundles.flatMap({ $0.contracts })
@@ -50,9 +50,10 @@ extension ContractState {
     public var hasActiveContracts: Bool {
         !(contractBundles.flatMap { $0.contracts }.isEmpty)
     }
-    
+
     public var isTravelInsuranceIncluded: Bool {
-        return contractBundles.flatMap({$0.contracts}).contains(where: {$0.hasTravelInsurance}) && hAnalyticsExperiment.travelInsurance
+        return contractBundles.flatMap({ $0.contracts }).contains(where: { $0.hasTravelInsurance })
+            && hAnalyticsExperiment.travelInsurance
     }
 }
 

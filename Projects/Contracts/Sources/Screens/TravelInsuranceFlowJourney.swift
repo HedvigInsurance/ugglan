@@ -15,8 +15,10 @@ public struct TravelInsuranceFlowJourney {
             showEmail(openChat, detended: true)
         }
     }
-    
-    private static func showContractsList(_ openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation {
+
+    private static func showContractsList(
+        _ openChat: @escaping (() -> some JourneyPresentation)
+    ) -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
             rootView: TravelInsuranceContractsScreen(),
@@ -34,8 +36,11 @@ public struct TravelInsuranceFlowJourney {
         }
         .addDismissFlow()
     }
-    
-    private static func showEmail(_ openChat: @escaping (() -> some JourneyPresentation), detended: Bool) -> some JourneyPresentation {
+
+    private static func showEmail(
+        _ openChat: @escaping (() -> some JourneyPresentation),
+        detended: Bool
+    ) -> some JourneyPresentation {
         let hosting = HostingJourney(
             TravelInsuranceStore.self,
             rootView: TravelInsuranceEmailScreen(),
@@ -54,12 +59,12 @@ public struct TravelInsuranceFlowJourney {
             return hosting
                 .hidesBackButton
                 .addDismissFlow()
-        } else  {
+        } else {
             return hosting.addDismissFlow()
         }
-        
+
     }
-    
+
     private static func showForm() -> some JourneyPresentation {
         let hosting = HostingJourney(
             TravelInsuranceStore.self,
@@ -78,14 +83,13 @@ public struct TravelInsuranceFlowJourney {
             return hosting
                 .hidesBackButton
                 .addDismissFlow()
-        } else  {
+        } else {
             return hosting.addDismissFlow()
         }
-        
+
     }
-    
-    
-    private static func openDatePicker(for type: TravelInsuranceDatePickerType) -> some JourneyPresentation{
+
+    private static func openDatePicker(for type: TravelInsuranceDatePickerType) -> some JourneyPresentation {
         let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
         let selectedDate: Date? = {
             switch type {
@@ -95,26 +99,30 @@ public struct TravelInsuranceFlowJourney {
                 return nil
             }
         }()
-        let model = GeneralDatePickerViewModel(title: type.title,
-                                               buttonTitle: L10n.generalContinueButton,
-                                               minDate: store.state.travelInsuranceConfig?.minStartDate,
-                                               maxDate: store.state.travelInsuranceConfig?.maxStartDate,
-                                               selectedDate: selectedDate,
-                                               onDateSelected: { date in
-            store.send(.setDate(value: date, type: type))
-        })
+        let model = GeneralDatePickerViewModel(
+            title: type.title,
+            buttonTitle: L10n.generalContinueButton,
+            minDate: store.state.travelInsuranceConfig?.minStartDate,
+            maxDate: store.state.travelInsuranceConfig?.maxStartDate,
+            selectedDate: selectedDate,
+            onDateSelected: { date in
+                store.send(.setDate(value: date, type: type))
+            }
+        )
         return HostingJourney(
             TravelInsuranceStore.self,
             rootView: GeneralDatePicker(model),
             style: .detented(.scrollViewContentSize),
-            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]) { action in
-                if case  .setDate = action {
-                    PopJourney()
-                }
-                
-            }.withDismissButton
+            options: [.defaults, .prefersLargeTitles(true), .largeTitleDisplayMode(.always)]
+        ) { action in
+            if case .setDate = action {
+                PopJourney()
+            }
+
+        }
+        .withDismissButton
     }
-    
+
     private static func openCoinsured(member: PolicyCoinsuredPersonModel?) -> some JourneyPresentation {
         HostingJourney(
             TravelInsuranceStore.self,
@@ -134,20 +142,24 @@ public struct TravelInsuranceFlowJourney {
             }
         }
     }
-    
-    private static func openFailScreen(openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation {
-        HostingJourney(TravelInsuranceStore.self,
-                       rootView: TravelInsuranceFailScreen()) { action in
+
+    private static func openFailScreen(openChat: @escaping (() -> some JourneyPresentation)) -> some JourneyPresentation
+    {
+        HostingJourney(
+            TravelInsuranceStore.self,
+            rootView: TravelInsuranceFailScreen()
+        ) { action in
             if case let .navigation(navigationAction) = action {
                 if case .dismissCreateTravelCertificate = navigationAction {
                     DismissJourney()
-                }else if case .openFreeTextChat = navigationAction {
+                } else if case .openFreeTextChat = navigationAction {
                     openChat()
                 }
             }
-        }.hidesBackButton
+        }
+        .hidesBackButton
     }
-    
+
     private static func openDocument(url: URL, title: String) -> some JourneyPresentation {
         Journey(
             Document(url: url, title: title, downloadButtonTitle: L10n.TravelCertificate.download)
