@@ -146,18 +146,27 @@ public struct hForm<Content: View>: View {
                     BackgroundView().edgesIgnoringSafeArea(.all)
                 }
             }
-            if hDisableScroll {
-                displayContent
-                    .frame(maxHeight: .infinity, alignment: .top)
-            } else {
-                ScrollView {
-                    displayContent
-                }
-                .modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeight))
-                .findScrollView { scrollView in
-                    if #available(iOS 15, *) {
-                        scrollView.viewController?.setContentScrollView(scrollView)
+            ScrollView {
+                VStack {
+                    if let hFormTitle, hUseNewStyle {
+                        Text(hFormTitle.1)
+                            .padding(.top, hFormTitle.0.topMargin)
+                            .padding(.bottom, hFormTitle.0.bottomMargin)
                     }
+                    content
+                }
+                .frame(maxWidth: .infinity)
+                .tint(hForm<Content>.returnTintColor(useNewStyle: hUseNewStyle))
+                Color.clear
+                    .frame(height: bottomAttachedViewHeight)
+            }
+            .modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeight))
+            .findScrollView { scrollView in
+                if #available(iOS 15, *) {
+                    scrollView.viewController?.setContentScrollView(scrollView)
+                }
+                if hDisableScroll {
+                    scrollView.addGestureRecognizer(UIPanGestureRecognizer())
                 }
             }
             bottomAttachedView
@@ -183,22 +192,6 @@ public struct hForm<Content: View>: View {
         } else {
             hTintColor.lavenderOne
         }
-    }
-
-    @ViewBuilder
-    private var displayContent: some View {
-        VStack {
-            if let hFormTitle, hUseNewStyle {
-                Text(hFormTitle.1)
-                    .padding(.top, hFormTitle.0.topMargin)
-                    .padding(.bottom, hFormTitle.0.bottomMargin)
-            }
-            content
-        }
-        .frame(maxWidth: .infinity)
-        .tint(hForm<Content>.returnTintColor(useNewStyle: hUseNewStyle))
-        Color.clear
-            .frame(height: bottomAttachedViewHeight)
     }
 }
 
