@@ -7,7 +7,6 @@ import hCore
 public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Environment(\.hTextFieldOptions) var options
     @Environment(\.hTextFieldError) var errorMessage
-    @Environment(\.hUseNewStyle) var hUseNewStyle
 
     private var masking: Masking
     private var placeholder: String
@@ -47,32 +46,22 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
     public var body: some View {
         VStack {
-            ZStack(alignment: .leading) {
-                getFieldLabel()
-                getTextField()
+            VStack(alignment: .leading, spacing: 0) {
+                getFieldLabel
+                getTextField
             }
             .padding(.horizontal, 16)
+            .padding(.vertical, shouldMoveLabel ? 10 : 16)
             .background(getColor())
-            .animation(.easeInOut(duration: 0.4), value: animate)
             .clipShape(Squircle.default())
-            if let errorMessage = errorMessage {
-                HStack {
-                    Image(uiImage: hCoreUIAssets.circularExclamationPoint.image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(hTintColor.red)
-                    hText(errorMessage, style: .footnote)
-                        .padding(.top, 7)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(hTintColor.red)
-                }
-            }
         }
         .introspectTextField { textField in
             if self.textField != textField {
                 self.textField = textField
             }
+        }
+        .onTapGesture {
+            textField?.becomeFirstResponder()
         }
         .onChange(of: textField) { textField in
             textField?.delegate = observer
@@ -81,6 +70,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             }
             observer.onBeginEditing = {
                 updateMoveLabel()
+                startAnimation(self.innerValue)
                 equals = focusValue
             }
             observer.onDidEndEditing = {
@@ -91,12 +81,11 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     equals = next
                 } else {
                     equals = nil
+                    textField?.resignFirstResponder()
                 }
                 updateMoveLabel()
-                textField?.resignFirstResponder()
                 onReturn()
             }
-
         }
         .onChange(of: equals) { equals in
             if equals == focusValue {
@@ -104,22 +93,26 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             }
         }
         .onChange(of: innerValue) { currentValue in
-            startAnimation()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                if currentValue == innerValue {
-                    self.animate = false
-                }
+            startAnimation(currentValue)
+        }
+    }
+
+    private func startAnimation(_ value: String) {
+        self.animate = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            if value == innerValue {
+                self.animate = false
             }
         }
     }
 
     private func updateMoveLabel() {
         if ((textField?.isEditing ?? false) || innerValue != "") && !shouldMoveLabel {
-            withAnimation {
+            withAnimation(Animation.easeInOut(duration: 0.2)) {
                 shouldMoveLabel = true
             }
         } else if shouldMoveLabel && innerValue == "" {
-            withAnimation {
+            withAnimation(Animation.easeInOut(duration: 0.2)) {
                 shouldMoveLabel = false
             }
         }
@@ -134,27 +127,27 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
     }
 
-    private func getFieldLabel() -> some View {
-        Text(placeholder)
+    private var getFieldLabel: some View {
+        let sizeToScaleFrom = HFontTextStyleNew.title3.uifontTextStyleNew.pointSize
+        let sizeToScaleTo = HFontTextStyleNew.footnote.uifontTextStyleNew.pointSize
+        let ratio = sizeToScaleTo / sizeToScaleFrom
+        let difference = sizeToScaleTo - sizeToScaleFrom
+        return Text(placeholder)
             .modifier(hFontModifierNew(style: .title3))
+            .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
             .foregroundColor(hLabelColorNew.secondary)
-            .padding(
-                shouldMoveLabel
-                    ? EdgeInsets(top: 0, leading: 0, bottom: 40, trailing: 0)
-                    : EdgeInsets(top: 20, leading: 0, bottom: 20, trailing: 0)
-            )
-            .scaleEffect(shouldMoveLabel ? 0.6 : 1, anchor: .leading)
+            .padding(.vertical, shouldMoveLabel ? difference / 2 : 0)
     }
 
-    private func getTextField() -> some View {
-        SwiftUI.TextField("", text: $innerValue)
+    private var getTextField: some View {
+        let fieldPointSize = HFontTextStyleNew.title3.uifontTextStyleNew.pointSize
+        return SwiftUI.TextField("", text: $innerValue)
             .modifier(hFontModifierNew(style: .title3))
             .modifier(masking)
             .tint(hLabelColorNew.primary)
             .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
                 if shouldUpdate {
                     value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
-
                     if suffix != nil && value != "" {
                         innerValue = value + " " + (suffix ?? "")
                         let endPosition = textField?.position(from: textField!.beginningOfDocument, offset: value.count)
@@ -167,11 +160,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     previousInnerValue = value
                 }
             }
-            .frame(minHeight: options.minimumHeight)
-            .padding(EdgeInsets(top: 26.67, leading: 0, bottom: 13.33, trailing: 0))
-    }
-
-    private func startAnimation() {
-        self.animate = true
+            .frame(maxHeight: shouldMoveLabel ? fieldPointSize * 1.25 : 0)
     }
 }
