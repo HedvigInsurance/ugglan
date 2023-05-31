@@ -148,7 +148,7 @@ public struct HostingJourney<RootView: View, Result>: JourneyPresentation {
         self.presentable = AnyPresentable(materialize: {
             let controller = HostingJourneyController(rootView: rootView)
             controller.debugPresentationTitle = "\(RootView.self)"
-            
+
             return (
                 controller,
                 NilDisposer()
