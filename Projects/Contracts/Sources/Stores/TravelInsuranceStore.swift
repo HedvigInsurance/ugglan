@@ -28,7 +28,7 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                 disposeBag += self.octopus.client.perform(mutation: mutation)
                     .onValue { data in
                         if let url = URL(string: data.travelCertificateCreate.signedUrl) {
-                            callback(.value(.navigation(.openTravelInsurance(url: url, title: "Travel Certificate"))))
+                            callback(.value(.navigation(.openTravelInsurance(url: url, title: L10n.TravelCertificate.cardTitle))))
                         } else {
                             callback(.value(.setLoadingState(action: .postTravelInsurance, state: .error(error: L10n.General.errorBody))))
                         }

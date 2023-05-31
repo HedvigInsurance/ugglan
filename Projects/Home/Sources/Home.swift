@@ -38,7 +38,7 @@ extension HomeView {
     public var body: some View {
         hForm(gradientType: .home) {
             ImportantMessagesView()
-
+            
             PresentableStoreLens(
                 HomeStore.self,
                 getter: { state in
