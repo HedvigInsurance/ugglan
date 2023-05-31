@@ -96,7 +96,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             startAnimation(currentValue)
         }
     }
-    
+
     private func startAnimation(_ value: String) {
         self.animate = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -105,7 +105,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             }
         }
     }
-    
+
     private func updateMoveLabel() {
         if ((textField?.isEditing ?? false) || innerValue != "") && !shouldMoveLabel {
             withAnimation(Animation.easeInOut(duration: 0.2)) {
@@ -117,7 +117,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             }
         }
     }
-    
+
     @hColorBuilder
     private func getColor() -> some hColor {
         if animate {
@@ -159,6 +159,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     }
                     previousInnerValue = value
                 }
-            }.frame(maxHeight: shouldMoveLabel ? fieldPointSize * 1.25 : 0)
+            }
+            .frame(maxHeight: shouldMoveLabel ? fieldPointSize * 1.25 : 0)
     }
 }

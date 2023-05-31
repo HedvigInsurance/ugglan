@@ -1,7 +1,7 @@
+import Flow
+import Presentation
 import SwiftUI
 import hCore
-import Presentation
-import Flow
 
 public struct hDatePickerField: View {
     private let config: HDatePickerFieldConfig
@@ -9,19 +9,21 @@ public struct hDatePickerField: View {
     private let onContinue: (_ date: Date) -> Void
     @State private var animate = false
     @State private var date = Date()
-    @Binding private var selectedDate:Date?
+    @Binding private var selectedDate: Date?
     @State private var disposeBag = DisposeBag()
-    public init(config: HDatePickerFieldConfig,
-                selectedDate: Binding<Date?>,
-                onUpdate: @escaping (_ date: Date) -> Void = {_ in},
-                onContinue: @escaping (_ date: Date) -> Void = {_ in}) {
+    public init(
+        config: HDatePickerFieldConfig,
+        selectedDate: Binding<Date?>,
+        onUpdate: @escaping (_ date: Date) -> Void = { _ in },
+        onContinue: @escaping (_ date: Date) -> Void = { _ in }
+    ) {
         self.config = config
         self.onUpdate = onUpdate
         self.onContinue = onContinue
         self._selectedDate = selectedDate
         self.date = selectedDate.wrappedValue ?? Date()
     }
-    
+
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             getFieldLabel()
@@ -37,16 +39,18 @@ public struct hDatePickerField: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 self.animate = false
             }
-        }.onChange(of: date) { date in
+        }
+        .onChange(of: date) { date in
             selectedDate = date
-        }.onChange(of: selectedDate) { date in
+        }
+        .onChange(of: selectedDate) { date in
             if let date {
                 onUpdate(date)
             }
         }
-        
+
     }
-    
+
     @hColorBuilder
     private func getColor() -> some hColor {
         if animate {
@@ -55,39 +59,39 @@ public struct hDatePickerField: View {
             hBackgroundColorNew.inputBackground
         }
     }
-    
+
     private func getFieldLabel() -> some View {
         HStack {
             Text(config.placeholder)
                 .modifier(hFontModifierNew(style: .footnote))
-                .foregroundColor (hLabelColorNew.secondary)
+                .foregroundColor(hLabelColorNew.secondary)
             Spacer()
         }
-        
-        
+
     }
-    
+
     private func getValueLabel() -> some View {
         HStack {
             Text(selectedDate?.localDateString ?? L10n.generalSelectButton)
                 .modifier(hFontModifierNew(style: .title3))
-                .foregroundColor (hLabelColorNew.primary)
+                .foregroundColor(hLabelColorNew.primary)
             Spacer()
         }
-        
+
     }
-    
-    private func showDatePicker(){
+
+    private func showDatePicker() {
         let referenceAction = ReferenceAction {}
         let view = DatePickerView(action: referenceAction, date: $date)
         let journey = HostingJourney(
             rootView: view,
             style: .detented(.scrollViewContentSize),
             options: .prefersNavigationBarHidden(true)
-        ).withDismissButton
-        
+        )
+        .withDismissButton
+
         let calendarJourney = journey.addConfiguration { presenter in
-            referenceAction.execute  = {
+            referenceAction.execute = {
                 self.onContinue(date)
                 presenter.dismisser(JourneyError.cancelled)
             }
@@ -97,12 +101,12 @@ public struct hDatePickerField: View {
             disposeBag += vc.present(calendarJourney)
         }
     }
-    
+
     public struct HDatePickerFieldConfig {
         let minDate: Date?
         let maxDate: Date?
         let placeholder: String
-        
+
         public init(minDate: Date? = nil, maxDate: Date? = nil, placeholder: String) {
             self.minDate = minDate
             self.maxDate = maxDate
@@ -111,20 +115,24 @@ public struct hDatePickerField: View {
     }
 }
 
-fileprivate struct DatePickerView: View {
+private struct DatePickerView: View {
     fileprivate let action: ReferenceAction
     @Binding fileprivate var date: Date
     public var body: some View {
         ScrollView {
             hForm {
                 hSection {
-                    DatePicker("",
-                               selection: $date,
-                               displayedComponents: [.date])
+                    DatePicker(
+                        "",
+                        selection: $date,
+                        displayedComponents: [.date]
+                    )
                     .datePickerStyle(.graphical)
                     .frame(height: 350)
-                }.sectionContainerStyle(.transparent)
-            }.hFormAttachToBottom {
+                }
+                .sectionContainerStyle(.transparent)
+            }
+            .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
                     action.execute()
                 } content: {
@@ -136,12 +144,11 @@ fileprivate struct DatePickerView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding([.leading, .trailing], 16)
-            }.hUseNewStyle
+            }
+            .hUseNewStyle
         }
     }
 }
-
-
 
 struct hDatePickerField_Previews: PreviewProvider {
     @State private static var date: Date?
@@ -153,9 +160,9 @@ struct hDatePickerField_Previews: PreviewProvider {
     }
 }
 
-fileprivate class ReferenceAction {
+private class ReferenceAction {
     var execute: () -> (Void)
-    
+
     init(execute: @escaping () -> Void) {
         self.execute = execute
     }
