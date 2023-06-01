@@ -22,6 +22,23 @@ extension View {
     }
 }
 
+private struct EnvironmentHDisableScroll: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hDisableScroll: Bool {
+        get { self[EnvironmentHDisableScroll.self] }
+        set { self[EnvironmentHDisableScroll.self] = newValue }
+    }
+}
+
+extension View {
+    public var hDisableScroll: some View {
+        self.environment(\.hDisableScroll, true)
+    }
+}
+
 private struct EnvironmentHFormTitle: EnvironmentKey {
     static let defaultValue: (type: HFormTitleSpacingType, title: String)? = nil
 }
@@ -73,16 +90,29 @@ struct BackgroundView: UIViewRepresentable {
     }
 }
 
+struct BackgroundBlurView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        DispatchQueue.main.async {
+            view.superview?.superview?.backgroundColor = UIColor.white.withAlphaComponent(0.4)
+        }
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}
+
 public struct hForm<Content: View>: View {
     @ObservedObject var gradientState = GradientState.shared
     let gradientType: GradientType
 
     @State var shouldAnimateGradient = true
-
     @State var bottomAttachedViewHeight: CGFloat = 0
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hUseNewStyle) var hUseNewStyle
+    @Environment(\.hUseBlur) var hUseBlur
     @Environment(\.hFormTitle) var hFormTitle
+    @Environment(\.hDisableScroll) var hDisableScroll
     var content: Content
 
     public init(
@@ -110,7 +140,11 @@ public struct hForm<Content: View>: View {
                     }
                 }
             } else {
-                BackgroundView().edgesIgnoringSafeArea(.all)
+                if hUseBlur {
+                    BackgroundBlurView().edgesIgnoringSafeArea(.all)
+                } else {
+                    BackgroundView().edgesIgnoringSafeArea(.all)
+                }
             }
             ScrollView {
                 VStack {
@@ -130,6 +164,9 @@ public struct hForm<Content: View>: View {
             .findScrollView { scrollView in
                 if #available(iOS 15, *) {
                     scrollView.viewController?.setContentScrollView(scrollView)
+                }
+                if hDisableScroll {
+                    scrollView.addGestureRecognizer(UIPanGestureRecognizer())
                 }
             }
             bottomAttachedView
@@ -172,5 +209,22 @@ extension EnvironmentValues {
 extension View {
     public var hUseNewStyle: some View {
         self.environment(\.hUseNewStyle, true)
+    }
+}
+
+private struct EnvironmentHUseBlur: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hUseBlur: Bool {
+        get { self[EnvironmentHUseBlur.self] }
+        set { self[EnvironmentHUseBlur.self] = newValue }
+    }
+}
+
+extension View {
+    public var hUseBlur: some View {
+        self.environment(\.hUseBlur, true)
     }
 }
