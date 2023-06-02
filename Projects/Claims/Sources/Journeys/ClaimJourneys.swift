@@ -22,7 +22,9 @@ public class ClaimJourneys {
     private static func getScreen(for action: SubmitClaimsAction) -> some JourneyPresentation {
         if case let .navigationAction(navigationAction) = action {
             if hAnalyticsExperiment.claimsTriaging {
-                if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
+                if case let .openPhoneNumberScreen(model) = navigationAction {
+                    submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
+                } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
                     submitClaimOccurrancePlusLocationScreen().addDismissClaimsFlow()
                 } else if case .openAudioRecordingScreen = navigationAction {
                     openAudioRecordingSceen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)

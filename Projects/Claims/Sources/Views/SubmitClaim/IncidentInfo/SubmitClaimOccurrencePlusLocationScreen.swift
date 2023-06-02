@@ -16,6 +16,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     .padding([.top, .leading, .trailing], 16)
                     .multilineTextAlignment(.center)
             }
+            .hDisableScroll
             .hUseNewStyle
             .hFormAttachToBottom {
                 VStack(spacing: 0) {

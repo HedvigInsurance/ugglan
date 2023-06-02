@@ -278,6 +278,8 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
                 send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
+                newState.progress = 0.3
+                send(.setProgress(progress: newState.progress))
                 let currentProgress = state.progress
                 let newProgress = currentProgress + 0.2
                 send(.setProgress(progress: newProgress))
