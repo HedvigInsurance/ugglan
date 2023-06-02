@@ -17,6 +17,7 @@ public struct SubmitClaimsState: StateProtocol {
     @OptionalTransient var successStep: FlowClaimSuccessStepModel?
     @OptionalTransient var failedStep: FlowClaimFailedStepModel?
     @OptionalTransient var audioRecordingStep: FlowClaimAudioRecordingStepModel?
+    @Transient(defaultValue: 0) var progress: Float
 
     public init() {}
 }

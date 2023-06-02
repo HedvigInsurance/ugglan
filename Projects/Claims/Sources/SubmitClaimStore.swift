@@ -270,11 +270,17 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             case let .setPhoneNumber(model):
                 newState.phoneNumberStep = model
                 send(.navigationAction(action: .openPhoneNumberScreen(model: model)))
+                let currentProgress = state.progress
+                let newProgress = currentProgress + 0.2
+                send(.setProgress(progress: newProgress))
             case let .setDateOfOccurrencePlusLocation(model):
                 newState.dateOfOccurrencePlusLocationStep = model.dateOfOccurencePlusLocationModel
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
                 send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
+                let currentProgress = state.progress
+                let newProgress = currentProgress + 0.2
+                send(.setProgress(progress: newProgress))
             case let .setDateOfOccurence(model):
                 newState.dateOfOccurenceStep = model
                 send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
@@ -284,24 +290,34 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             case let .setSingleItem(model):
                 newState.singleItemStep = model
                 send(.navigationAction(action: .openSingleItemScreen))
+                newState.progress = 0.5
+                send(.setProgress(progress: state.progress))
             case let .setSummaryStep(model):
                 newState.summaryStep = model.summaryStep
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
                 newState.singleItemStep = model.singleItemStepModel
                 send(.navigationAction(action: .openSummaryScreen))
+                newState.progress = 0.6
+                send(.setProgress(progress: newState.progress))
             case let .setSingleItemCheckoutStep(model):
                 newState.singleItemCheckoutStep = model
                 send(.navigationAction(action: .openCheckoutNoRepairScreen))
             case let .setFailedStep(model):
                 newState.failedStep = model
                 send(.navigationAction(action: .openFailureSceen))
+                newState.progress = 0.8
+                send(.setProgress(progress: newState.progress))
             case let .setSuccessStep(model):
                 newState.successStep = model
                 send(.navigationAction(action: .openSuccessScreen))
+                newState.progress = 1
+                send(.setProgress(progress: newState.progress))
             case let .setAudioStep(model):
                 newState.audioRecordingStep = model
                 send(.navigationAction(action: .openAudioRecordingScreen))
+                let newProgress = state.progress + 0.2
+                send(.setProgress(progress: newProgress))
             }
         case .startClaimRequest:
             newState.loadingStates[.startClaim] = .loading
@@ -336,6 +352,8 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.loadingStates[.fetchClaimEntrypoints] = .loading
         case .fetchEntrypointGroups:
             newState.loadingStates[.fetchClaimEntrypointGroups] = .loading
+        case let .setProgress(progress):
+            newState.progress = progress
         default:
             break
         }
