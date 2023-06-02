@@ -1,5 +1,6 @@
 import Foundation
 import Presentation
+import hAnalytics
 import hCore
 import hCoreUI
 

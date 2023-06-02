@@ -33,6 +33,7 @@ public struct hFloatingField: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 16)
             .padding(.vertical, value.isEmpty ? 16 : 10)
+            .frame(height: 72)
             .background(getColor())
             .animation(.easeInOut(duration: 0.4), value: animate)
             .clipShape(Squircle.default())
