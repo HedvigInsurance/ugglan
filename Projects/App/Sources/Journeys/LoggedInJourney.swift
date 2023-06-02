@@ -47,12 +47,6 @@ extension AppJourney {
             .configureClaimsNavigation
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
-            .onPresent {
-                ApplicationContext.shared.$isLoggedIn.value = true
-            }
-            .onDismiss {
-                ApplicationContext.shared.$isLoggedIn.value = false
-            }
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -148,11 +142,16 @@ extension AppJourney {
                     freeTextChat(style: .unlessAlreadyPresented(style: .detented(.large)))
                         .withDismissButton
                 }
+            }.onPresent {
+                ApplicationState.preserveState(.loggedIn)
+                AnalyticsCoordinator().setUserId()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    ApplicationContext.shared.$isLoggedIn.value = true
+                }
             }
         }
-        .onPresent {
-            ApplicationState.preserveState(.loggedIn)
-            AnalyticsCoordinator().setUserId()
+        .onDismiss {
+            ApplicationContext.shared.$isLoggedIn.value = false
         }
     }
 }
