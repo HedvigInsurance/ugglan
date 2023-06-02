@@ -142,7 +142,8 @@ extension AppJourney {
                     freeTextChat(style: .unlessAlreadyPresented(style: .detented(.large)))
                         .withDismissButton
                 }
-            }.onPresent {
+            }
+            .onPresent {
                 ApplicationState.preserveState(.loggedIn)
                 AnalyticsCoordinator().setUserId()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
