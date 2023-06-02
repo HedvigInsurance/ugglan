@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 public struct TravelInsuranceFailScreen: View {
     @PresentableStore var store: TravelInsuranceStore

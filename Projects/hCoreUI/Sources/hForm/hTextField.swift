@@ -1,8 +1,8 @@
 import Combine
 import Foundation
+import Introspect
 import SwiftUI
 import hCore
-import Introspect
 
 public enum hTextFieldOptions: Hashable {
     case showDivider
@@ -161,7 +161,7 @@ class TextFieldObserver: NSObject, UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         onDidEndEditing()
     }
-    
+
     func textFieldDidBeginEditing(_ textField: UITextField) {
         onBeginEditing()
     }
@@ -196,7 +196,6 @@ struct hTextFieldFocusStateModifier<Value: hTextFieldFocusStateCompliant>: ViewM
         }
 
         observer.onDidEndEditing = {}
-        
 
         if equals == Value.last {
             textField?.returnKeyType = .done

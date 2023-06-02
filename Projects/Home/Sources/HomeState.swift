@@ -4,6 +4,7 @@ import Foundation
 import Presentation
 import hCore
 import hGraphQL
+
 public struct ImportantMessage: Codable, Equatable {
     let message: String?
     let link: String?
@@ -148,22 +149,22 @@ public final class HomeStore: StateStore<HomeState, HomeAction> {
                     }
                 }
                 .valueThenEndSignal
-//        case .getTravelInsuranceData:
-//            return FiniteSignal { callback in
-//                let disposeBag = DisposeBag()
-//                disposeBag += self.octopus.client
-//                    .fetch(query: OctopusGraphQL.TravelCertificateQuery())
-//                    .onValue { data in
-//                        let email = data.currentMember.email
-//                        
-//                        let specification = TravelInsuranceSpecification(data.currentMember.travelCertificateSpecifications, email: email)
-////                        callback(.value(.setTravelInsurancesData(specification: specification)))
-//                    }
-//                    .onError { error in
-////                        callback(.value(.setLoadingState(action: .getTravelInsurance, state: .error(error: L10n.General.errorBody))))
-//                    }
-//                return disposeBag
-//            }
+        //        case .getTravelInsuranceData:
+        //            return FiniteSignal { callback in
+        //                let disposeBag = DisposeBag()
+        //                disposeBag += self.octopus.client
+        //                    .fetch(query: OctopusGraphQL.TravelCertificateQuery())
+        //                    .onValue { data in
+        //                        let email = data.currentMember.email
+        //
+        //                        let specification = TravelInsuranceSpecification(data.currentMember.travelCertificateSpecifications, email: email)
+        ////                        callback(.value(.setTravelInsurancesData(specification: specification)))
+        //                    }
+        //                    .onError { error in
+        ////                        callback(.value(.setLoadingState(action: .getTravelInsurance, state: .error(error: L10n.General.errorBody))))
+        //                    }
+        //                return disposeBag
+        //            }
         default:
             return nil
         }

@@ -18,7 +18,7 @@ struct TravelInsuranceContractsScreen: View {
                         state.travelInsuranceConfigs?.travelCertificateSpecifications ?? []
                     }
                 ) { travelInsuranceModels in
-                    if !travelInsuranceModels.isEmpty  {
+                    if !travelInsuranceModels.isEmpty {
                         hForm {
                             hTextNew(L10n.TravelCertificate.selectContractTitle, style: .title3)
                                 .padding(.vertical, 100)
@@ -41,34 +41,43 @@ struct TravelInsuranceContractsScreen: View {
                         .hUseNewStyle
                     }
                 }
-            }.presentableStoreLensAnimation(.spring())
-            
+            }
+            .presentableStoreLensAnimation(.spring())
+
         }
     }
-    
-    private func getContractView(for item: TravelInsuranceContractSpecification, and selectedOne: TravelInsuranceContractSpecification?) -> some View {
+
+    private func getContractView(
+        for item: TravelInsuranceContractSpecification,
+        and selectedOne: TravelInsuranceContractSpecification?
+    ) -> some View {
         hSection {
             hRow {
                 HStack {
                     hCoreUIAssets.pillowHome.view.resizable().frame(width: 48, height: 48)
                     hText(item.street)
                 }
-            }.withCustomAccessory {
+            }
+            .withCustomAccessory {
                 getCustomAccessory(item: item, and: selectedOne)
-            }.onTap {
+            }
+            .onTap {
                 store.send(.setTravelInsuranceData(specification: item))
             }
         }
         .sectionContainerStyle(.opaque(useNewDesign: true))
     }
-    
+
     @ViewBuilder
-    private func getCustomAccessory(item: TravelInsuranceContractSpecification, and selectedOne: TravelInsuranceContractSpecification?) -> some View {
+    private func getCustomAccessory(
+        item: TravelInsuranceContractSpecification,
+        and selectedOne: TravelInsuranceContractSpecification?
+    ) -> some View {
         HStack {
             Spacer()
             if item.contractId == selectedOne?.contractId {
                 Circle().fill(hLabelColorNew.primary).frame(width: 22, height: 22)
-            } else  {
+            } else {
                 Circle().stroke(hLabelColorNew.tertiary)
                     .frame(width: 22, height: 22)
             }

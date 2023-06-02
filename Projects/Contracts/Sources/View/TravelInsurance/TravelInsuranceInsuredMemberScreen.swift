@@ -2,6 +2,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+
 struct TravelInsuranceInsuredMemberScreen: View {
     @State var fullName: String
     @State var personalNumber: String
@@ -12,7 +13,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
     var personalNumberMaskeing: Masking {
         Masking(type: .personalNumberCoInsured)
     }
-    
+
     private let store: TravelInsuranceStore = globalPresentableStoreContainer.get()
     private let title: String
     private let policyCoinsuredPerson: PolicyCoinsuredPersonModel?
@@ -27,7 +28,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
         self.policyCoinsuredPerson = policyCoinsuredPerson
         self.fullName = policyCoinsuredPerson?.fullName ?? ""
         self.personalNumber = policyCoinsuredPerson?.personalNumber ?? ""
-        
+
     }
 
     var body: some View {
@@ -61,7 +62,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
         }
 
     }
-    
+
     @ViewBuilder
     private func fullNameField() -> some View {
         hRow {
@@ -75,7 +76,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
             .hTextFieldOptions([])
         }
     }
-    
+
     @ViewBuilder
     private func ssnField() -> some View {
         hRow {
@@ -90,7 +91,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
             .hTextFieldOptions([])
         }
     }
-    
+
     private func submit() {
         validate()
         if validInput {
@@ -98,17 +99,17 @@ struct TravelInsuranceInsuredMemberScreen: View {
             let newPolicyCoInsured = PolicyCoinsuredPersonModel(fullName: fullName, personalNumber: personalNumber)
             if let policyCoinsuredPerson {
                 store.send(.updatePolicyCoInsured(policyCoinsuredPerson, with: newPolicyCoInsured))
-            }else {
+            } else {
                 store.send(
                     .setPolicyCoInsured(newPolicyCoInsured)
                 )
             }
         } else {
-            
+
         }
     }
-    
-    private func validate(){
+
+    private func validate() {
         withAnimation {
             if !personalNumberMaskeing.isValid(text: personalNumber) {
                 personalNumberError = L10n.TravelCertificate.ssnErrorLabel
@@ -133,26 +134,21 @@ struct TravelInsuranceInsuredMemberScreen_Previews: PreviewProvider {
 
 enum TravelInsuranceFieldType: String, Hashable, hTextFieldFocusStateCompliant {
     static var last: TravelInsuranceFieldType {
-        get {
-            return .personalNumber
-        }
+        return .personalNumber
     }
-    
+
     var next: TravelInsuranceFieldType? {
-        get {
-            switch self {
-            case .fullName:
-                return .personalNumber
-            case .personalNumber:
-                return nil
-            }
-            
+        switch self {
+        case .fullName:
+            return .personalNumber
+        case .personalNumber:
+            return nil
         }
     }
-    
+
     case fullName
     case personalNumber
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(self.rawValue)
     }
@@ -160,22 +156,17 @@ enum TravelInsuranceFieldType: String, Hashable, hTextFieldFocusStateCompliant {
 
 enum TravelInsuranceFieldTypeInt: Int, hTextFieldFocusStateCompliant {
     static var last: TravelInsuranceFieldTypeInt {
-        get{
-            TravelInsuranceFieldTypeInt.ssn
-        }
+        TravelInsuranceFieldTypeInt.ssn
     }
-    
+
     var next: TravelInsuranceFieldTypeInt? {
-        get {
-            switch self {
-            case .fullName:
-                return .ssn
-            case .ssn:
-                return nil
-            }
+        switch self {
+        case .fullName:
+            return .ssn
+        case .ssn:
+            return nil
         }
     }
-    
 
     case fullName
     case ssn

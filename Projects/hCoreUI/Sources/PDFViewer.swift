@@ -48,7 +48,7 @@ extension PDFViewer: Viewable {
         loadingView.alpha = 1
         loadingView.backgroundColor = .brand(.primaryBackground())
         if let downloadButtonTitle {
-            
+
             let downloadButton = Button(
                 title: downloadButtonTitle,
                 type: .standard(
@@ -56,11 +56,11 @@ extension PDFViewer: Viewable {
                     textColor: .brand(.secondaryButtonTextColor)
                 )
             )
-            bag += downloadButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) {_ in
+            bag += downloadButton.onTapSignal.animated(style: SpringAnimationStyle.lightBounce()) { _ in
                 downloadButtonPressed.value = true
             }
             let stackVieww = UIStackView()
-            bag += stackVieww.addArranged(downloadButton.wrappedIn(UIStackView())) { stackView   in
+            bag += stackVieww.addArranged(downloadButton.wrappedIn(UIStackView())) { stackView in
                 stackView.axis = .vertical
                 stackView.alignment = .trailing
             }
@@ -70,7 +70,7 @@ extension PDFViewer: Viewable {
                 make.bottom.equalTo(pdfView.safeAreaLayoutGuide)
             }
         }
-        
+
         pdfView.addSubview(loadingView)
 
         loadingView.snp.makeConstraints { make in make.width.equalToSuperview()

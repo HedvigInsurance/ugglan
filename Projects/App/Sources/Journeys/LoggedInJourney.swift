@@ -84,7 +84,8 @@ extension AppJourney {
             } else {
                 return false
             }
-        }.onAction(ContractStore.self) { action, _ in
+        }
+        .onAction(ContractStore.self) { action, _ in
             if case let .setTravelCertificateSpecification(data) = action {
                 let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                 claimsStore.send(.openCommonClaimDetail(commonClaim: data.asCommonClaim()))

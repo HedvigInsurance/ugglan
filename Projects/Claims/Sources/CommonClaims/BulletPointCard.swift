@@ -57,7 +57,7 @@ extension BulletPointCard: Reusable {
                 }
 
                 bag += contentView.addArranged(descriptionLabel)
-                
+
                 titleLabel.value = bulletPointCard.title
                 descriptionLabel.value = bulletPointCard.description
                 contentView.snp.makeConstraints { make in

@@ -10,25 +10,22 @@ public struct CommonClaim: Codable, Equatable, Hashable {
     public enum CommonClaimItemType: String {
         case phone = "PHONE"
     }
-    
-    
-    
-    public init(id: String,
-                icon: IconEnvelope?,
-                imageName: String?,
-                displayTitle: String,
-                layout: Layout){
+
+    public init(
+        id: String,
+        icon: IconEnvelope?,
+        imageName: String?,
+        displayTitle: String,
+        layout: Layout
+    ) {
         self.id = id
         self.icon = icon
         self.imageName = imageName
         self.displayTitle = displayTitle
         self.layout = layout
-        
-    }
-    
 
-    
-    
+    }
+
     public init(
         claim: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim
     ) {
@@ -43,13 +40,14 @@ public struct CommonClaim: Codable, Equatable, Hashable {
         public var titleAndBulletPoint: TitleAndBulletPoints?
         public var emergency: Emergency?
 
-        
-        public init(titleAndBulletPoint: TitleAndBulletPoints?,
-                    emergency: Emergency?){
+        public init(
+            titleAndBulletPoint: TitleAndBulletPoints?,
+            emergency: Emergency?
+        ) {
             self.titleAndBulletPoint = titleAndBulletPoint
             self.emergency = emergency
         }
-        
+
         public init(
             layout: GiraffeGraphQL.CommonClaimsQuery.Data.CommonClaim.Layout
         ) {
@@ -85,12 +83,12 @@ public struct CommonClaim: Codable, Equatable, Hashable {
                 self.title = title
                 self.bulletPoints = bulletPoints
             }
-            
+
             public struct BulletPoint: Codable, Hashable, Equatable {
                 public let title: String
                 public let description: String
                 public let icon: IconEnvelope?
-                
+
                 public init(title: String, description: String, icon: IconEnvelope?) {
                     self.title = title
                     self.description = description
@@ -102,7 +100,7 @@ public struct CommonClaim: Codable, Equatable, Hashable {
         public struct Emergency: Codable, Hashable, Equatable {
             public let title: String
             public let color: String
-            
+
             public init(title: String, color: String) {
                 self.title = title
                 self.color = color

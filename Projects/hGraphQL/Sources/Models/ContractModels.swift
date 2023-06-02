@@ -179,7 +179,7 @@ public struct Contract: Codable, Hashable, Equatable {
         case unknown
     }
 
-public enum TypeOfContract: String, Codable {
+    public enum TypeOfContract: String, Codable {
         case seHouse = "SE_HOUSE"
         case seApartmentBrf = "SE_APARTMENT_BRF"
         case seApartmentRent = "SE_APARTMENT_RENT"
@@ -233,21 +233,20 @@ public enum TypeOfContract: String, Codable {
             )
             return .unknown
         }
-        fileprivate static let insurancesSuitableForTravelInsurance:[Contract.TypeOfContract] = [.seHouse,
-                                                                                                 .seApartmentBrf,
-                                                                                                 .seApartmentRent,
-                                                                                                 .seApartmentStudentBrf,
-                                                                                                 .seApartmentStudentRent]
+        fileprivate static let insurancesSuitableForTravelInsurance: [Contract.TypeOfContract] = [
+            .seHouse,
+            .seApartmentBrf,
+            .seApartmentRent,
+            .seApartmentStudentBrf,
+            .seApartmentStudentRent,
+        ]
     }
-    
-    
-    
+
     public var hasTravelInsurance: Bool {
         let suitableType = Contract.TypeOfContract.insurancesSuitableForTravelInsurance.contains(self.typeOfContract)
         let isNotInTerminationProcess = terminationDate == nil
         return suitableType && isNotInTerminationProcess
     }
-    
 
 }
 
