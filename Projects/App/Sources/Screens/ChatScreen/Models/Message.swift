@@ -89,29 +89,6 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
         case gif(url: URL?)
     }
 
-    var shouldShowEditButton: Bool {
-        cachedComputedProperties?
-            .compute("shouldShowEditButton") { () -> Bool in if self.richTextCompatible { return false }
-
-                if self.editingDisabledSignal.value { return false }
-
-                if !self.fromMyself { return false }
-
-                guard let list = self.listSignal?.value else { return false }
-
-                guard let myIndex = list.firstIndex(of: .left(self)) else { return false }
-                guard
-                    let indexOfFirstMyself = list.firstIndex(where: { message -> Bool in
-                        guard let left = message.left else { return false }
-
-                        return left.fromMyself == true
-                    })
-                else { return false }
-
-                return myIndex <= indexOfFirstMyself
-            } ?? false
-    }
-
     var hasTypingIndicatorNext: Bool {
         cachedComputedProperties?
             .compute("hasTypingIndicatorNext") { () -> Bool in
