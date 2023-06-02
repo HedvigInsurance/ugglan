@@ -145,7 +145,6 @@ extension Message: Reusable {
 
         bubbleContainer.addArrangedSubview(bubble)
 
-
         let editButtonViewContainer = UIView()
         editButtonViewContainer.snp.makeConstraints { make in make.width.equalTo(20) }
 
@@ -206,7 +205,6 @@ extension Message: Reusable {
                     }
 
                     handleTimeStamp()
-
 
                     bag += editButton.signal(for: .touchUpInside)
                         .onValue { _ in message.onEditCallbacker.callAll() }
