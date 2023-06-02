@@ -46,12 +46,6 @@ extension AppJourney {
             .configureClaimsNavigation
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
-            .onPresent {
-                ApplicationContext.shared.$isLoggedIn.value = true
-            }
-            .onDismiss {
-                ApplicationContext.shared.$isLoggedIn.value = false
-            }
             .onAction(HomeStore.self) { action, _ in
                 if case .openTravelInsurance = action {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -160,10 +154,16 @@ extension AppJourney {
                         .withDismissButton
                 }
             }
+            .onPresent {
+                ApplicationState.preserveState(.loggedIn)
+                AnalyticsCoordinator().setUserId()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    ApplicationContext.shared.$isLoggedIn.value = true
+                }
+            }
         }
-        .onPresent {
-            ApplicationState.preserveState(.loggedIn)
-            AnalyticsCoordinator().setUserId()
+        .onDismiss {
+            ApplicationContext.shared.$isLoggedIn.value = false
         }
     }
 }

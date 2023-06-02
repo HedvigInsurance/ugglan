@@ -7,6 +7,7 @@ public enum FontsNew {
     private static let favoritStdBookFontName = "FavoritStd-Book"
     private static let hedvigLettersStandardFontName = "HedvigLetters-Standard"
     private static let hedvigLettersSmallFontName = "HedvigLetters-Small"
+    private static let hedvigLettersBigFontName = "HedvigLetters-Big"
 
     private static func loadFontNew(resourceName: String) -> UIFont {
         let fontPath = Bundle(for: FontBundleToken.self).path(forResource: resourceName, ofType: "otf")
@@ -29,6 +30,10 @@ public enum FontsNew {
 
     public static var hedvigLettersSmallNew: UIFont = {
         loadFontNew(resourceName: hedvigLettersSmallFontName)
+    }()
+
+    public static var hedvigLettersBigNew: UIFont = {
+        loadFontNew(resourceName: hedvigLettersBigFontName)
     }()
 
     public static var favoritStdBookNew: UIFont = {
@@ -60,7 +65,7 @@ public enum FontsNew {
 
         switch style {
         case .title2:
-            return getFontNew(hedvigLettersSmallNew)
+            return getFontNew(hedvigLettersBigNew)
         default:
             return getFontNew(hedvigLettersStandardNew)
         }
