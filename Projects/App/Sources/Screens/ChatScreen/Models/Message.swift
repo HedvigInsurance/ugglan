@@ -38,49 +38,50 @@ func hash(into hasher: inout Hasher) { hasher.combine(globalId) }
         case text, audio, none
     }
 
-    enum MessageType: Equatable { static func == (lhs: Message.MessageType, rhs: Message.MessageType) -> Bool {
-        switch (lhs, rhs) {
-        case (.file, .file): return true
-        case (.text, .text): return true
-        case (.image, .image): return true
-        case (.video, .video): return true
-        case (.gif, .gif): return true
-        default: return false
+    enum MessageType: Equatable {
+        static func == (lhs: Message.MessageType, rhs: Message.MessageType) -> Bool {
+            switch (lhs, rhs) {
+            case (.file, .file): return true
+            case (.text, .text): return true
+            case (.image, .image): return true
+            case (.video, .video): return true
+            case (.gif, .gif): return true
+            default: return false
+            }
         }
-    }
 
-    var isRichType: Bool {
-        switch self {
-        case .text: return false
-        case .image: return true
-        case .video: return true
-        case .gif: return true
-        case .file: return true
+        var isRichType: Bool {
+            switch self {
+            case .text: return false
+            case .image: return true
+            case .video: return true
+            case .gif: return true
+            case .file: return true
+            }
         }
-    }
 
-    var isImageType: Bool {
-        switch self {
-        case .image: return true
-        default: return false
+        var isImageType: Bool {
+            switch self {
+            case .image: return true
+            default: return false
+            }
         }
-    }
 
-    var isVideoType: Bool {
-        switch self {
-        case .video: return true
-        default: return false
+        var isVideoType: Bool {
+            switch self {
+            case .video: return true
+            default: return false
+            }
         }
-    }
 
-    var isGIFType: Bool {
-        switch self {
-        case .gif: return true
-        default: return false
+        var isGIFType: Bool {
+            switch self {
+            case .gif: return true
+            default: return false
+            }
         }
-    }
 
-    var isVideoOrImageType: Bool { isImageType || isVideoType || isGIFType }
+        var isVideoOrImageType: Bool { isImageType || isVideoType || isGIFType }
 
         case text
         case image(url: URL?)
