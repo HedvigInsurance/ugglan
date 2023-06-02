@@ -145,16 +145,8 @@ extension Message: Reusable {
 
         bubbleContainer.addArrangedSubview(bubble)
 
-        let editbuttonStackContainer = UIStackView()
-        editbuttonStackContainer.axis = .vertical
-        editbuttonStackContainer.alignment = .top
-
-        bubbleContainer.addArrangedSubview(editbuttonStackContainer)
-
         let editButtonViewContainer = UIView()
         editButtonViewContainer.snp.makeConstraints { make in make.width.equalTo(20) }
-
-        editbuttonStackContainer.addArrangedSubview(editButtonViewContainer)
 
         let editButton = UIControl()
         editButtonViewContainer.addSubview(editButton)
@@ -214,8 +206,6 @@ extension Message: Reusable {
 
                     handleTimeStamp()
 
-                    editbuttonStackContainer.animationSafeIsHidden = !message.shouldShowEditButton
-
                     bag += editButton.signal(for: .touchUpInside)
                         .onValue { _ in message.onEditCallbacker.callAll() }
 
@@ -269,13 +259,7 @@ extension Message: Reusable {
 
                     bag += message.listSignal?.toVoid()
                         .animated(style: SpringAnimationStyle.lightBounce()) { _ in
-                            editbuttonStackContainer.animationSafeIsHidden = !message
-                                .shouldShowEditButton
-                            editbuttonStackContainer.alpha =
-                                message.shouldShowEditButton ? 1 : 0
-
                             applySpacing()
-
                             spacingContainer.layoutSuperviewsIfNeeded()
                         }
 
