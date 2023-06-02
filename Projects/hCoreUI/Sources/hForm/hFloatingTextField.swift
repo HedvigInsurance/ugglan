@@ -39,9 +39,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         self._equals = equals
         self.focusValue = focusValue
         self.onReturn = onReturn
-
-        self.previousInnerValue = value.wrappedValue
-        self.innerValue = value.wrappedValue
+        
+        self._previousInnerValue = State(initialValue: value.wrappedValue)
+        self._innerValue = State(initialValue: value.wrappedValue)
     }
 
     public var body: some View {
@@ -94,6 +94,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .onChange(of: innerValue) { currentValue in
             startAnimation(currentValue)
+        }.onAppear {
+            updateMoveLabel()
         }
     }
 
