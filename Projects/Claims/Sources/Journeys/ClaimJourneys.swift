@@ -24,6 +24,29 @@ public class ClaimJourneys {
             if hAnalyticsExperiment.claimsTriaging {
                 if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
                     submitClaimOccurrancePlusLocationScreen().addDismissClaimsFlow()
+                } else if case .openAudioRecordingScreen = navigationAction {
+                    openAudioRecordingSceen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+                } else if case .openSuccessScreen = navigationAction {
+                    openSuccessScreen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+                } else if case .openSingleItemScreen = navigationAction {
+                    openSingleItemScreen().addDismissClaimsFlow()
+                } else if case .openSummaryScreen = navigationAction {
+                    openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
+                } else if case .openDamagePickerScreen = navigationAction {
+                    openDamagePickerScreen().addDismissClaimsFlow()
+                } else if case .openCheckoutNoRepairScreen = navigationAction {
+                    openCheckoutNoRepairScreen().addDismissClaimsFlow()
+                        .configureTitle(L10n.Claims.Payout.Summary.title)
+                } else if case .openFailureSceen = navigationAction {
+                    showClaimFailureScreen().addDismissClaimsFlow()
+                } else if case .openSummaryEditScreen = navigationAction {
+                    openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
+                } else if case let .openLocationPicker(type) = navigationAction {
+                    openLocationScreen(type: type).addDismissClaimsFlow()
+                } else if case .openUpdateAppScreen = navigationAction {
+                    openUpdateAppTerminationScreen().addDismissClaimsFlow()
+                } else if case let .openDatePicker(type) = navigationAction {
+                    openDatePickerScreen(type: type)
                 }
             } else {
                 GroupJourney {
