@@ -17,6 +17,7 @@ public struct SubmitClaimsState: StateProtocol {
     @OptionalTransient var successStep: FlowClaimSuccessStepModel?
     @OptionalTransient var failedStep: FlowClaimFailedStepModel?
     @OptionalTransient var audioRecordingStep: FlowClaimAudioRecordingStepModel?
+    @Transient(defaultValue: 0) var progress: Float
 
     public init() {}
 }
@@ -29,13 +30,29 @@ public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & E
 public enum ClaimsOrigin: Codable, Equatable, Hashable {
     case generic
     case commonClaims(id: String)
+    case commonClaimsWithOption(id: String, optionId: String)
 
-    public var id: String {
+    public var id: commonClaimId {
         switch self {
         case .generic:
-            return ""
-        case .commonClaims(let id):
-            return id
+            return commonClaimId()
+        case let .commonClaims(id):
+            return commonClaimId(id: id)
+        case let .commonClaimsWithOption(id, optionId):
+            return commonClaimId(id: id, entrypointOptionId: optionId)
         }
+    }
+}
+
+public struct commonClaimId {
+    public let id: String
+    public let entrypointOptionId: String?
+
+    init(
+        id: String = "",
+        entrypointOptionId: String? = nil
+    ) {
+        self.id = id
+        self.entrypointOptionId = entrypointOptionId
     }
 }

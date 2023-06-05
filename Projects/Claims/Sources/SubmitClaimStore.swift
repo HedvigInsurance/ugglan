@@ -15,11 +15,15 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
         _ action: SubmitClaimsAction
     ) -> FiniteSignal<SubmitClaimsAction>? {
         let newClaimContext = state.currentClaimContext ?? ""
+        let currentProgress = state.progress
         switch action {
         case .submitClaimOpenFreeTextChat:
             return nil
-        case let .startClaimRequest(id):
-            let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: id)
+        case let .startClaimRequest(entrypointId, entrypointOptionId):
+            let startInput = OctopusGraphQL.FlowClaimStartInput(
+                entrypointId: entrypointId,
+                entrypointOptionId: entrypointOptionId
+            )
             let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput)
             return mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
         case let .phoneNumberRequest(phoneNumberInput):
@@ -136,7 +140,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             )
             return mutation.execute(\.flowClaimSummaryNext.fragments.flowClaimFragment.currentStep)
         case .singleItemCheckoutRequest:
-            if let claimSingleItemCheckoutInput = self.state.singleItemCheckoutStep!.returnSingleItemCheckoutInfo() {
+            if let claimSingleItemCheckoutInput = self.state.singleItemCheckoutStep?.returnSingleItemCheckoutInfo() {
                 let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
                     input: claimSingleItemCheckoutInput,
                     context: newClaimContext
@@ -164,8 +168,12 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 disposeBag +=
                     self.octopus.client.fetch(query: query)
                     .onValue { data in
-                        let model = data.entrypointGroups.map {
-                            ClaimEntryPointGroupResponseModel(id: $0.id, displayName: $0.displayName, icon: $0.iconUrl)
+
+                        let newProgress = currentProgress + 0.2
+                        callback(.value(.setProgress(progress: newProgress)))
+
+                        let model = data.entrypointGroups.map { data in
+                            ClaimEntryPointGroupResponseModel(with: data.fragments.entrypointGroupFragment)
                         }
                         callback(.value(.setClaimEntrypointGroupsForSelection(model)))
                         callback(.value(.setLoadingState(action: .fetchClaimEntrypointGroups, state: nil)))
@@ -204,8 +212,12 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 disposeBag +=
                     self.octopus.client.fetch(query: query)
                     .onValue { data in
-                        let model = data.entrypointSearch.map {
-                            ClaimEntryPointResponseModel(id: $0.id, displayName: $0.displayName)
+
+                        let newProgress = currentProgress + 0.2
+                        callback(.value(.setProgress(progress: newProgress)))
+
+                        let model = data.entrypointSearch.map { data in
+                            ClaimEntryPointResponseModel(with: data.fragments.entrypointFragment)
                         }
 
                         callback(.value(.setClaimEntrypointsForSelection(model)))
@@ -270,11 +282,16 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             case let .setPhoneNumber(model):
                 newState.phoneNumberStep = model
                 send(.navigationAction(action: .openPhoneNumberScreen(model: model)))
+                let currentProgress = state.progress
+                let newProgress = currentProgress + 0.2
+                send(.setProgress(progress: newProgress))
             case let .setDateOfOccurrencePlusLocation(model):
                 newState.dateOfOccurrencePlusLocationStep = model.dateOfOccurencePlusLocationModel
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
                 send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
+                newState.progress = 0.3
+                send(.setProgress(progress: newState.progress))
             case let .setDateOfOccurence(model):
                 newState.dateOfOccurenceStep = model
                 send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
@@ -284,24 +301,34 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             case let .setSingleItem(model):
                 newState.singleItemStep = model
                 send(.navigationAction(action: .openSingleItemScreen))
+                newState.progress = 0.5
+                send(.setProgress(progress: state.progress))
             case let .setSummaryStep(model):
                 newState.summaryStep = model.summaryStep
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
                 newState.singleItemStep = model.singleItemStepModel
                 send(.navigationAction(action: .openSummaryScreen))
+                send(.navigationAction(action: .openCheckoutNoRepairScreen))
+                newState.progress = 0.6
+                send(.setProgress(progress: newState.progress))
             case let .setSingleItemCheckoutStep(model):
                 newState.singleItemCheckoutStep = model
                 send(.navigationAction(action: .openCheckoutNoRepairScreen))
+                send(.setProgress(progress: 0.8))
             case let .setFailedStep(model):
                 newState.failedStep = model
                 send(.navigationAction(action: .openFailureSceen))
             case let .setSuccessStep(model):
                 newState.successStep = model
                 send(.navigationAction(action: .openSuccessScreen))
+                newState.progress = 1
+                send(.setProgress(progress: newState.progress))
             case let .setAudioStep(model):
                 newState.audioRecordingStep = model
                 send(.navigationAction(action: .openAudioRecordingScreen))
+                let newProgress = state.progress + 0.2
+                send(.setProgress(progress: newProgress))
             }
         case .startClaimRequest:
             newState.loadingStates[.startClaim] = .loading
@@ -336,6 +363,8 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.loadingStates[.fetchClaimEntrypoints] = .loading
         case .fetchEntrypointGroups:
             newState.loadingStates[.fetchClaimEntrypointGroups] = .loading
+        case let .setProgress(progress):
+            newState.progress = progress
         default:
             break
         }

@@ -1,6 +1,5 @@
 query EntrypointSearch($input: EntrypointSearchInput) {
   entrypointSearch(input: $input) {
-    id
-    displayName
+    ...EntrypointFragment
   }
 }

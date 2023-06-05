@@ -283,26 +283,25 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    public static func showClaimEntrypointGroups(
+    public static func showClaimEntrypointsNew(
         origin: ClaimsOrigin,
         @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectEntrypointNavigation(),
-            style: .detented(.large),
-            options: [
-                .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
-            ]
-        ) {
-            action in
-            if case let .entrypointGroupSelected(origin) = action {
+            rootView: SelectClaimEntrypoint(),
+            //            style: .detented(.large, modally: true)
+            style: .modal
+        ) { action in
+            if case let .commonClaimOriginSelected(origin) = action {
                 GroupJourney { context in
                     switch origin {
                     case .generic:
                         ContinueJourney()
                     case let .commonClaims(id):
                         redirectJourney(ClaimsOrigin.commonClaims(id: id))
+                    case let .commonClaimsWithOption(id, optionId):
+                        redirectJourney(ClaimsOrigin.commonClaimsWithOption(id: id, optionId: optionId))
                     }
                 }
             }
@@ -316,7 +315,7 @@ public class ClaimJourneys {
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectClaimEntrypoint(entrypointGroupId: nil),
+            rootView: SelectClaimEntrypointOld(entrypointGroupId: nil),
             style: .detented(.large),
             options: [
                 .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
@@ -329,29 +328,8 @@ public class ClaimJourneys {
                         ContinueJourney()
                     case let .commonClaims(id):
                         redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                    }
-                }
-            }
-        }
-    }
-
-    @JourneyBuilder
-    public static func showClaimEntrypointsNew(
-        origin: ClaimsOrigin,
-        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SelectClaimEntrypoint(entrypointGroupId: origin.id),
-            style: .detented(.large, modally: false)
-        ) { action in
-            if case let .commonClaimOriginSelected(origin) = action {
-                GroupJourney { context in
-                    switch origin {
-                    case .generic:
-                        ContinueJourney()
-                    case let .commonClaims(id):
-                        redirectJourney(ClaimsOrigin.commonClaims(id: id))
+                    case let .commonClaimsWithOption(id, optionId):
+                        redirectJourney(ClaimsOrigin.commonClaimsWithOption(id: id, optionId: optionId))
                     }
                 }
             }

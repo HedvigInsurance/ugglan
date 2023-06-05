@@ -38,10 +38,8 @@ extension AppJourney {
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
         if hAnalyticsExperiment.claimsFlow {
             if hAnalyticsExperiment.claimsTriaging {
-                ClaimJourneys.showClaimEntrypointGroups(origin: origin) { newOrigin in
-                    ClaimJourneys.showClaimEntrypointsNew(origin: newOrigin) { newOrigin in
-                        honestyPledge(from: newOrigin)
-                    }
+                ClaimJourneys.showClaimEntrypointsNew(origin: origin) { newOrigin in
+                    honestyPledge(from: newOrigin)
                 }
             } else {
                 ClaimJourneys.showClaimEntrypointsOld(origin: origin) { newOrigin in
@@ -81,7 +79,12 @@ extension AppJourney {
                         store.send(.navigationAction(action: .openNotificationsPermissionScreen))
                     } else {
                         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        store.send(.startClaimRequest(with: origin.id))
+                        store.send(
+                            .startClaimRequest(
+                                entrypointId: origin.id.id,
+                                entrypointOptionId: origin.id.entrypointOptionId
+                            )
+                        )
                     }
                 }
             },
@@ -99,7 +102,12 @@ extension AppJourney {
                                 text: L10n.claimsActivateNotificationsBody,
                                 onActionExecuted: {
                                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                                    store.send(.startClaimRequest(with: origin.id))
+                                    store.send(
+                                        .startClaimRequest(
+                                            entrypointId: origin.id.id,
+                                            entrypointOptionId: origin.id.entrypointOptionId
+                                        )
+                                    )
                                 }
                             )
                         },

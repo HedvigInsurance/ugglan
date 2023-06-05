@@ -148,6 +148,12 @@ public struct hGrayscaleTranslucentColorNew {
             Color(hexString: "#121212").opacity(0.87)
         )
     }
+
+    public static var greyScaleTranslucentField: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.05)
+        )
+    }
 }
 
 public struct hLabelColorNew {
