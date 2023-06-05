@@ -1,3 +1,4 @@
+import Home
 import Presentation
 import SwiftUI
 import hCore
@@ -7,7 +8,6 @@ import hGraphQL
 struct CommonClaimsCollection: View {
     @PresentableStore var store: ClaimsStore
     var commonClaims: [CommonClaim]
-
     init(
         commonClaims: [CommonClaim]
     ) {
@@ -20,7 +20,12 @@ struct CommonClaimsCollection: View {
                 HStack(spacing: 8) {
                     ForEach(claimsRow, id: \.id) { claim in
                         Button {
-                            store.send(.openCommonClaimDetail(commonClaim: claim))
+                            if claim.id == ClaimsState.travelInsuranceCommonClaim.id {
+                                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                                homeStore.send(.openTravelInsurance)
+                            } else {
+                                store.send(.openCommonClaimDetail(commonClaim: claim))
+                            }
                         } label: {
 
                         }
@@ -51,6 +56,12 @@ struct CommonClaimButtonStyle: ButtonStyle {
                 if let icon = claim.icon {
                     RemoteVectorIconView(icon: icon, backgroundFetch: true)
                         .frame(width: 24, height: 24)
+                } else if let imageName = claim.imageName {
+                    Image(imageName, bundle: ClaimsResources.bundle)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 24, height: 24).clipShape(Circle())
+                        .foregroundColor(hLabelColor.primary)
                 }
 
                 Spacer()
@@ -78,7 +89,6 @@ struct CommonClaimButtonStyle: ButtonStyle {
 
 public struct CommonClaimsView: View {
     @PresentableStore var store: ClaimsStore
-
     public init() {}
     public var body: some View {
         hSection {
@@ -86,7 +96,7 @@ public struct CommonClaimsView: View {
                 PresentableStoreLens(
                     ClaimsStore.self,
                     getter: { state in
-                        return state.commonClaims ?? []
+                        return state.getRecommendedForYou
                     },
                     setter: { _ in
                         .fetchCommonClaims

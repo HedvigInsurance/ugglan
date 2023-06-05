@@ -1,0 +1,21 @@
+query TravelCertificate {
+  currentMember {
+    email
+    travelCertificateSpecifications {
+      contractSpecifications {
+        contractId
+        minStartDate
+        maxStartDate
+        maxDurationDays
+        numberOfCoInsured
+        location {
+          street
+        }
+      }
+      infoSpecifications {
+        title
+        body
+      }
+    }
+  }
+}

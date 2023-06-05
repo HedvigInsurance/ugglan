@@ -1,8 +1,8 @@
 import Combine
 import Foundation
+import Introspect
 import SwiftUI
 import hCore
-import Introspect
 
 public enum hTextFieldOptions: Hashable {
     case showDivider
@@ -66,25 +66,26 @@ public struct hTextField: View {
     @Environment(\.hUseNewStyle) var hUseNewStyle
 
     var masking: Masking
-    var placeholder: String
+    var placeholder: String?
     @State var previousInnerValue: String
     @State private var innerValue: String
     @Binding var value: String
     public init(
         masking: Masking,
-        value: Binding<String>
+        value: Binding<String>,
+        placeholder: String? = nil
     ) {
         self.masking = masking
-        self.placeholder = masking.placeholderText ?? ""
+        self.placeholder = placeholder ?? masking.placeholderText
         self._value = value
         self.previousInnerValue = value.wrappedValue
         self.innerValue = value.wrappedValue
     }
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
-                SwiftUI.TextField(placeholder, text: $innerValue)
+                SwiftUI.TextField(placeholder ?? "", text: $innerValue)
                     .modifier(hFontModifier(style: .body))
                     .modifier(masking)
                     .tint(hLabelColor.primary)
@@ -96,22 +97,17 @@ public struct hTextField: View {
                         }
                     }
                     .frame(minHeight: options.minimumHeight)
-                if errorMessage != nil {
-                    Image(uiImage: hCoreUIAssets.circularExclamationPoint.image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(hTintColor.red)
-                }
             }
             if options.showDivider {
                 SwiftUI.Divider()
             }
             if let errorMessage = errorMessage {
-                hText(errorMessage, style: .footnote)
-                    .padding(.top, 7)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .foregroundColor(hTintColor.red)
+                HStack {
+                    hText(errorMessage, style: .footnote)
+                        .padding(.top, 7)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .foregroundColor(hTintColor.red)
+                }
             }
         }
     }
@@ -119,7 +115,7 @@ public struct hTextField: View {
 
 struct hTextFieldPreview: PreviewProvider {
     static var previews: some View {
-        hTextField(masking: Masking(type: .personalNumber), value: .constant(""))
+        hTextField(masking: Masking(type: .personalNumber), value: .constant(""), placeholder: "")
             .padding(20)
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Masked with Swedish Personal Number")
@@ -165,7 +161,7 @@ class TextFieldObserver: NSObject, UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         onDidEndEditing()
     }
-    
+
     func textFieldDidBeginEditing(_ textField: UITextField) {
         onBeginEditing()
     }
@@ -200,7 +196,6 @@ struct hTextFieldFocusStateModifier<Value: hTextFieldFocusStateCompliant>: ViewM
         }
 
         observer.onDidEndEditing = {}
-        
 
         if equals == Value.last {
             textField?.returnKeyType = .done
