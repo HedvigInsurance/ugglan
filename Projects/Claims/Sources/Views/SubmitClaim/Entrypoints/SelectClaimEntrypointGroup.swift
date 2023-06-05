@@ -36,40 +36,40 @@ struct SelectClaimEntrypointGroup: View {
                         state.claimEntrypointGroups
                     }
                 ) { claimEntrypointGroup in
-                    showValid
-                    showTagList(
-                        tagsToShow: entrypointGroupToStringArray(input: claimEntrypointGroup),
-                        onTap: { tag in
-                            selectedClaimGroup = tag
-                            selection = tag  // needed?
+                    VStack {
+                        ShowNotValid(notValid: $notValid)
+                        showTagList(
+                            tagsToShow: entrypointGroupToStringArray(input: claimEntrypointGroup),
+                            onTap: { tag in
+                                selectedClaimGroup = tag
+                                selection = tag  // needed?
 
-                            for claimGroup in claimEntrypointGroup {
-                                if claimGroup.displayName == selectedClaimGroup {
-                                    claimEntrypoints = claimGroup.entrypoints
+                                for claimGroup in claimEntrypointGroup {
+                                    if claimGroup.displayName == selectedClaimGroup {
+                                        claimEntrypoints = claimGroup.entrypoints
+                                    }
+                                }
+                            },
+                            onButtonClick: {
+
+                                if let selectedClaimGroup = selectedClaimGroup {
+                                    selectedEntrypoints(claimEntrypoints)
+                                    store.send(
+                                        .commonClaimOriginSelected(
+                                            commonClaim: ClaimsOrigin.commonClaimsWithOption(
+                                                id: "",
+                                                optionId: ""
+                                            )
+                                        )
+                                    )
+                                } else {
+                                    notValid = true
                                 }
                             }
-                        },
-                        onButtonClick: {
-                            selectedEntrypoints(claimEntrypoints)
-                            store.send(
-                                .commonClaimOriginSelected(
-                                    commonClaim: ClaimsOrigin.commonClaimsWithOption(
-                                        id: "",
-                                        optionId: ""
-                                    )
-                                )
-                            )
-                        }
-                    )
+                        )
+                    }
                 }
             }
-        }
-    }
-
-    @ViewBuilder
-    private var showValid: some View {
-        if notValid {
-            hTextNew("Välj en kategori", style: .body)
         }
     }
 
@@ -177,50 +177,49 @@ struct SelectClaimEntrypointType: View {
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {
-            showValid
+            VStack {
+                ShowNotValid(notValid: $notValid)
 
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.entrypoints
-                }
-            ) { entrypoints in
+                PresentableStoreLens(
+                    SubmitClaimStore.self,
+                    getter: { state in
+                        state.entrypoints
+                    }
+                ) { entrypoints in
 
-                showTagList(
-                    tagsToShow: entrypointsToStringArray(entrypoints: entrypoints.selectedEntrypoints ?? []),
-                    onTap: { tag in
-                        selectedClaimEntrypoint = tag
-                        selection = tag
+                    showTagList(
+                        tagsToShow: entrypointsToStringArray(entrypoints: entrypoints.selectedEntrypoints ?? []),
+                        onTap: { tag in
+                            selectedClaimEntrypoint = tag
+                            selection = tag
 
-                        for claimEntrypoint in entrypoints.selectedEntrypoints ?? [] {
-                            if claimEntrypoint.displayName == selectedClaimEntrypoint {
-                                claimOptions = claimEntrypoint.options
+                            for claimEntrypoint in entrypoints.selectedEntrypoints ?? [] {
+                                if claimEntrypoint.displayName == selectedClaimEntrypoint {
+                                    claimOptions = claimEntrypoint.options
+                                }
+                            }
+                        },
+                        onButtonClick: {
+                            if let selectedClaimEntrypoint = selectedClaimEntrypoint {
+                                selectedEntrypointOptions(
+                                    claimOptions,
+                                    mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? [])
+                                )
+                                store.send(
+                                    .commonClaimOriginSelected(
+                                        commonClaim: ClaimsOrigin.commonClaimsWithOption(
+                                            id: mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? []),
+                                            optionId: ""
+                                        )
+                                    )
+                                )
+                            } else {
+                                notValid = true
                             }
                         }
-                    },
-                    onButtonClick: {
-                        selectedEntrypointOptions(
-                            claimOptions,
-                            mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? [])
-                        )
-                        store.send(
-                            .commonClaimOriginSelected(
-                                commonClaim: ClaimsOrigin.commonClaimsWithOption(
-                                    id: mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? []),
-                                    optionId: ""
-                                )
-                            )
-                        )
-                    }
-                )
+                    )
+                }
             }
-        }
-    }
-
-    @ViewBuilder
-    private var showValid: some View {
-        if notValid {
-            hTextNew("Välj en kategori", style: .body)
         }
     }
 
@@ -326,43 +325,42 @@ struct SelectClaimEntrypointOption: View {
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {
-            showValid
+            VStack {
+                ShowNotValid(notValid: $notValid)
 
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.entrypoints
-                }
-            ) { entrypoints in
+                PresentableStoreLens(
+                    SubmitClaimStore.self,
+                    getter: { state in
+                        state.entrypoints
+                    }
+                ) { entrypoints in
 
-                showTagList(
-                    tagsToShow: entrypointOptionsToStringArray(input: entrypoints.selectedEntrypointOptions ?? []),
-                    onTap: { tag in
-                        selectedClaimOption = tag
-                        selection = tag
-                    },
-                    onButtonClick: {
+                    showTagList(
+                        tagsToShow: entrypointOptionsToStringArray(input: entrypoints.selectedEntrypointOptions ?? []),
+                        onTap: { tag in
+                            selectedClaimOption = tag
+                            selection = tag
+                        },
+                        onButtonClick: {
 
-                        store.send(
-                            .commonClaimOriginSelected(
-                                commonClaim: ClaimsOrigin.commonClaimsWithOption(
-                                    id: entrypoints.selectedEntrypointId ?? "",
-                                    optionId: mapNametoEntrypointOptionId(
-                                        input: entrypoints.selectedEntrypointOptions ?? []
+                            if let selectedClaimOption = selectedClaimOption {
+                                store.send(
+                                    .commonClaimOriginSelected(
+                                        commonClaim: ClaimsOrigin.commonClaimsWithOption(
+                                            id: entrypoints.selectedEntrypointId ?? "",
+                                            optionId: mapNametoEntrypointOptionId(
+                                                input: entrypoints.selectedEntrypointOptions ?? []
+                                            )
+                                        )
                                     )
                                 )
-                            )
-                        )
-                    }
-                )
+                            } else {
+                                notValid = false
+                            }
+                        }
+                    )
+                }
             }
-        }
-    }
-
-    @ViewBuilder
-    private var showValid: some View {
-        if notValid {
-            hTextNew("Välj en kategori", style: .body)
         }
     }
 
@@ -446,6 +444,22 @@ struct SelectClaimEntrypointOption: View {
         } else {
             Squircle.default()
                 .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentField)
+        }
+    }
+}
+
+struct ShowNotValid: View {
+    @Binding var notValid: Bool
+
+    init(
+        notValid: Binding<Bool>
+    ) {
+        self._notValid = notValid
+    }
+
+    var body: some View {
+        if notValid {
+            hTextNew("Välj en kategori", style: .body)
         }
     }
 }

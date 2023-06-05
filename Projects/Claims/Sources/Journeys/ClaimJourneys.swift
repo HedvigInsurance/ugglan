@@ -294,7 +294,6 @@ public class ClaimJourneys {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
                 }),
-            //            style: .detented(.large, modally: true)
             style: .modal
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
@@ -325,8 +324,6 @@ public class ClaimJourneys {
                 store.send(.setSelectedEntrypointOptions(entrypoints: options))
                 store.send(.setSelectedEntrypointId(entrypoints: selectedEntrypoint))
             })
-            //            style: .detented(.large, modally: true)
-            //            style: .modal
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
                 GroupJourney { context in
@@ -352,8 +349,6 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypointOption()
-                //            style: .detented(.large, modally: true)
-                //            style: .modal
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
                 GroupJourney { context in
