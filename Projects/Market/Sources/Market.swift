@@ -77,7 +77,7 @@ public enum Market: String, CaseIterable, Codable {
         case .fr: return .france
         }
     }
-    
+
     var showGetQuote: Bool {
         switch self {
         case .sweden:
