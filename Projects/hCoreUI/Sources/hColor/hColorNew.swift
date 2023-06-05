@@ -68,6 +68,12 @@ public struct hGrayscaleColorNew {
             Color(hexString: "CFCFCF")
         )
     }
+    
+    public static var greyScale1000: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212")
+        )
+    }
 }
 
 public struct hGrayscaleTranslucentColorNew {
