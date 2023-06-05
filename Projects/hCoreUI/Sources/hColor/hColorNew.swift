@@ -18,13 +18,13 @@ public struct hBackgroundColorNew {
             Color(hexString: "FAFAFA").opacity(0.75)
         )
     }
-    
+
     public static var inputBackground: some hColor {
         hColorScheme(
             Color(hexString: "F0F0F0")
         )
     }
-    
+
     public static var inputBackgroundActive: some hColor {
         hColorScheme(
             Color(hexString: "E9FFC8")
@@ -68,7 +68,7 @@ public struct hGrayscaleColorNew {
             Color(hexString: "CFCFCF")
         )
     }
-    
+
     public static var greyScale1000: some hColor {
         hColorScheme(
             Color(hexString: "#121212")
