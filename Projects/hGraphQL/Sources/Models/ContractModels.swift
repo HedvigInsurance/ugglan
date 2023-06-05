@@ -53,7 +53,8 @@ public struct Contract: Codable, Hashable, Equatable {
         statusPills: [String],
         detailPills: [String],
         showsMovingFlowButton: Bool = false,
-        upcomingAgreementDate: Date? = nil
+        upcomingAgreementDate: Date? = nil,
+        terminationDate: Date? = nil
     ) {
         self.id = id
         self.typeOfContract = typeOfContract
@@ -71,6 +72,7 @@ public struct Contract: Codable, Hashable, Equatable {
         self.detailPills = detailPills
         self.showsMovingFlowButton = showsMovingFlowButton
         self.upcomingAgreementDate = nil
+        self.terminationDate = terminationDate
     }
 
     public let id: String
@@ -97,6 +99,7 @@ public struct Contract: Codable, Hashable, Equatable {
     public let detailPills: [String]
     public let showsMovingFlowButton: Bool
     public let upcomingAgreementDate: Date?
+    public let terminationDate: Date?
 
     init(
         contract: GiraffeGraphQL.ActiveContractBundlesQuery.Data.ActiveContractBundle.Contract
@@ -121,7 +124,6 @@ public struct Contract: Codable, Hashable, Equatable {
         switchedFromInsuranceProvider = contract.switchedFromInsuranceProvider
         statusPills = contract.statusPills
         detailPills = contract.detailPills
-
         if let logo = contract.logo {
             self.logo = .init(fragment: logo.fragments.iconFragment)
         } else {
@@ -131,6 +133,7 @@ public struct Contract: Codable, Hashable, Equatable {
         showsMovingFlowButton = contract.supportsAddressChange
         upcomingAgreementDate =
             contract.status.asActiveStatus?.upcomingAgreementChange?.newAgreement.activeFrom?.localDateToDate
+        terminationDate = contract.termination?.localDateToDate
     }
 
     public init(
@@ -163,6 +166,7 @@ public struct Contract: Codable, Hashable, Equatable {
 
         showsMovingFlowButton = false
         upcomingAgreementDate = nil
+        terminationDate = nil
     }
 
     public enum GradientOption: Codable {
@@ -229,7 +233,21 @@ public struct Contract: Codable, Hashable, Equatable {
             )
             return .unknown
         }
+        fileprivate static let insurancesSuitableForTravelInsurance: [Contract.TypeOfContract] = [
+            .seHouse,
+            .seApartmentBrf,
+            .seApartmentRent,
+            .seApartmentStudentBrf,
+            .seApartmentStudentRent,
+        ]
     }
+
+    public var hasTravelInsurance: Bool {
+        let suitableType = Contract.TypeOfContract.insurancesSuitableForTravelInsurance.contains(self.typeOfContract)
+        let isNotInTerminationProcess = terminationDate == nil
+        return suitableType && isNotInTerminationProcess
+    }
+
 }
 
 extension Contract.TypeOfContract {

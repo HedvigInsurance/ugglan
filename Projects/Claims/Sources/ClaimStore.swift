@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
@@ -73,6 +74,8 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case let .setCommonClaims(commonClaims):
             newState.loadingStates.removeValue(forKey: .fetchCommonClaims)
             newState.commonClaims = commonClaims
+        case let .setShowTravelInsurance(shouldIncludeTravelInsurance):
+            newState.showTravelInsurance = shouldIncludeTravelInsurance
         case let .setLoadingState(action, state):
             if let state {
                 newState.loadingStates[action] = state

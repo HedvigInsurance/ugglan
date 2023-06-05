@@ -160,8 +160,8 @@ struct hSectionContainer<Content: View>: View {
         }
         .frame(maxWidth: .infinity)
     }
-    
-    func getProperContainerStyle() -> hSectionContainerStyle{
+
+    func getProperContainerStyle() -> hSectionContainerStyle {
         switch containerStyle {
         case .caution:
             return .caution(useNewDesign: useNewStyle)
@@ -237,7 +237,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         }
         .frame(maxWidth: .infinity)
         .padding([.leading, .trailing], horizontalSizeClass == .regular ? 60 : 15)
-        .padding([.top, .bottom], 15)
+        .padding([.top, .bottom], hUseNewStyle ? 0 : 15)
     }
 
     @hColorBuilder
@@ -260,7 +260,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
 
     /// removes hSection bottom padding
     public var withoutBottomPadding: some View {
-        self.padding(.bottom, -15)
+        self.padding(.bottom, hUseNewStyle ? 0 : -15)
     }
 
     /// removes hSection leading and trailing padding

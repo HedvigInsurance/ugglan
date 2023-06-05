@@ -81,6 +81,8 @@ public indirect enum ContractAction: ActionProtocol, Hashable {
     case stepModelAction(action: TerminationStepModelAction)
     case navigationAction(action: TerminationNavigationAction)
     case terminationInitialNavigation(action: TerminationNavigationAction)
+    case getTravelCertificateSpecification
+    case setTravelCertificateSpecification(specification: TravelInsuranceSpecification)
 }
 
 public enum TerminationNavigationAction: ActionProtocol, Hashable {

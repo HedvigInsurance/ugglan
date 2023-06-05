@@ -17,7 +17,6 @@ extension AppJourney {
     fileprivate static var homeTab: some JourneyPresentation {
         let claims = Claims()
         let commonClaims = CommonClaimsView()
-
         return
             HomeView.journey(claimsContent: claims, commonClaimsContent: commonClaims) { result in
                 switch result {
@@ -47,6 +46,12 @@ extension AppJourney {
             .configureClaimsNavigation
             .configureSubmitClaimsNavigation
             .configurePaymentNavigation
+            .onAction(HomeStore.self) { action, _ in
+                if case .openTravelInsurance = action {
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    contractStore.send(.getTravelCertificateSpecification)
+                }
+            }
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
@@ -72,6 +77,12 @@ extension AppJourney {
                 return deepLink == .insurances
             } else {
                 return false
+            }
+        }
+        .onAction(ContractStore.self) { action, _ in
+            if case let .setTravelCertificateSpecification(data) = action {
+                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                claimsStore.send(.openCommonClaimDetail(commonClaim: data.asCommonClaim()))
             }
         }
     }
@@ -180,6 +191,10 @@ extension JourneyPresentation {
                             DismissJourney()
                         }
                     }
+            } else if case .openTravelInsurance = action {
+                TravelInsuranceFlowJourney.start {
+                    AppJourney.freeTextChat()
+                }
             } else if case .openHowClaimsWork = action {
                 AppJourney.claimsInfoJourney()
             } else if case let .openCommonClaimDetail(commonClaim) = action {

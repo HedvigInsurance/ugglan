@@ -13,6 +13,7 @@ public struct RemoteVectorIcon {
     let finishedLoadingCallback = Callbacker<Void>()
     let threaded: Bool
 
+    public let hasIcon: Bool
     public init(
         _ icon: GiraffeGraphQL.IconFragment? = nil,
         threaded: Bool? = false
@@ -21,6 +22,7 @@ public struct RemoteVectorIcon {
         iconSignal.value = hIcon
         finishedLoadingSignal = finishedLoadingCallback.providedSignal
         self.threaded = threaded ?? false
+        self.hasIcon = iconSignal.value != nil
     }
 
     public init(
@@ -30,6 +32,7 @@ public struct RemoteVectorIcon {
         iconSignal.value = icon
         finishedLoadingSignal = finishedLoadingCallback.providedSignal
         self.threaded = threaded ?? false
+        self.hasIcon = iconSignal.value != nil
     }
 }
 

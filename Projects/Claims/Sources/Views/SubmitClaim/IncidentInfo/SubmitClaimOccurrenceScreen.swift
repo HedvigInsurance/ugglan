@@ -21,7 +21,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                         }
                         .withCustomAccessory {
                             Spacer()
-
                             Group {
                                 if let dateOfOccurrence = dateOfOccurenceStep?.dateOfOccurence {
                                     hText(dateOfOccurrence)

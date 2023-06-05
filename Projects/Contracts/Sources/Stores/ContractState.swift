@@ -2,6 +2,7 @@ import Apollo
 import Flow
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hGraphQL
 
@@ -48,6 +49,11 @@ extension ContractState {
 
     public var hasActiveContracts: Bool {
         !(contractBundles.flatMap { $0.contracts }.isEmpty)
+    }
+
+    public var isTravelInsuranceIncluded: Bool {
+        return contractBundles.flatMap({ $0.contracts }).contains(where: { $0.hasTravelInsurance })
+            && hAnalyticsExperiment.travelInsurance
     }
 }
 
