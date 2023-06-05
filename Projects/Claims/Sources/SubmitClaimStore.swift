@@ -365,6 +365,12 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.loadingStates[.fetchClaimEntrypointGroups] = .loading
         case let .setProgress(progress):
             newState.progress = progress
+        case let .setSelectedEntrypoints(entrypoints):
+            newState.entrypoints.selectedEntrypoints = entrypoints
+        case let .setSelectedEntrypointOptions(entrypointOptions):
+            newState.entrypoints.selectedEntrypointOptions = entrypointOptions
+        case let .setSelectedEntrypointId(entrypointId):
+            newState.entrypoints.selectedEntrypointId = entrypointId
         default:
             break
         }

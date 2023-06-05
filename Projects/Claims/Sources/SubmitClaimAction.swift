@@ -41,6 +41,10 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case navigationAction(action: ClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
     case setProgress(progress: Float)
+    case setSelectedEntrypoints(entrypoints: [ClaimEntryPointResponseModel])
+    case setSelectedEntrypoint(entrypoint: ClaimEntryPointResponseModel)
+    case setSelectedEntrypointOptions(entrypoints: [ClaimEntryPointOptionResponseModel])
+    case setSelectedEntrypointId(entrypoints: String?)
 }
 
 public enum ClaimsNavigationAction: ActionProtocol, Hashable {

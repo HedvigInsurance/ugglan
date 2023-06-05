@@ -18,6 +18,7 @@ public struct SubmitClaimsState: StateProtocol {
     @OptionalTransient var failedStep: FlowClaimFailedStepModel?
     @OptionalTransient var audioRecordingStep: FlowClaimAudioRecordingStepModel?
     @Transient(defaultValue: 0) var progress: Float
+    @Transient(defaultValue: EntrypointState()) var entrypoints: EntrypointState
 
     public init() {}
 }
@@ -55,4 +56,12 @@ public struct commonClaimId {
         self.id = id
         self.entrypointOptionId = entrypointOptionId
     }
+}
+
+struct EntrypointState: Codable, Equatable, Hashable {
+    var selectedEntrypoints: [ClaimEntryPointResponseModel]?
+    var selectedEntrypointId: String?
+    var selectedEntrypointOptions: [ClaimEntryPointOptionResponseModel]?
+
+    init() {}
 }
