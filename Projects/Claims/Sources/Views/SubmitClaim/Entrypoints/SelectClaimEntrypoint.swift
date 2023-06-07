@@ -288,7 +288,7 @@ struct ShowTagList: View {
                 .padding(.vertical, 8)
                 .background(getColorAndShadow(claimId: tag))
                 .scaleEffect(animate && selection == tag ? 1.05 : 1)
-                
+
             }
             .padding([.leading, .trailing], 16)
 
