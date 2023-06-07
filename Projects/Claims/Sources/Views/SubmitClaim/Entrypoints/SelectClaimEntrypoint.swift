@@ -4,11 +4,82 @@ import TagKit
 import hCore
 import hCoreUI
 
-struct SelectClaimEntrypointGroup: View {
-    @PresentableStore var store: SubmitClaimStore
-    @State var selection: String? = nil
+struct ShowTagList: View {
+    var tagsToShow: [String]
+    var onTap: (String) -> Void
+    var onButtonClick: () -> Void
     @State var addPadding = true
     @State var notValid = false
+    @State var selection: String? = nil
+
+    var body: some View {
+        VStack(spacing: 0) {
+            showNotValid
+            TagList(tags: tagsToShow) { tag in
+                HStack {
+                    hTextNew(tag, style: .body)
+                        .foregroundColor(hLabelColorNew.secondary)
+                        .lineLimit(1)
+                }
+                .onTapGesture {
+                    onTap(tag)
+                    selection = tag
+                    addPadding = true
+                    let generator = UIImpactFeedbackGenerator(style: .soft)
+                    generator.impactOccurred()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        addPadding = false
+                    }
+                }
+                .padding(.horizontal, ((selection == tag) && addPadding) ? 20 : 16)
+                .padding(.vertical, 8)
+                .background(getColorAndShadow(claimId: tag))
+            }
+            .padding([.leading, .trailing], 16)
+            .padding(.bottom, 24)
+
+            hButton.LargeButtonFilled {
+                if selection != nil {
+                    notValid = false
+                    onButtonClick()
+                } else {
+                    notValid = true
+                }
+                selection = ""
+            } content: {
+                hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
+            }
+            .padding([.trailing, .leading], 16)
+        }
+    }
+
+    @ViewBuilder
+    var showNotValid: some View {
+        if notValid {
+            HStack {
+                Image(uiImage: hCoreUIAssets.infoSmall.image)
+                    .foregroundColor(hAmberColorNew.amber600)
+                hTextNew(L10n.claimsSelectCategory, style: .body)
+            }
+        }
+    }
+
+    @ViewBuilder
+    func getColorAndShadow(claimId: String) -> some View {
+        if selection == claimId {
+            Squircle.default()
+                .foregroundColor(hGreenColorNew.green50)
+                .hShadow()
+
+        } else {
+            Squircle.default()
+                .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentField)
+        }
+    }
+}
+
+struct SelectClaimEntrypointGroup: View {
+    @PresentableStore var store: SubmitClaimStore
 
     @State var selectedClaimGroup: String? = nil
     @State var claimEntrypoints: [ClaimEntryPointResponseModel] = []
@@ -38,12 +109,10 @@ struct SelectClaimEntrypointGroup: View {
                     }
                 ) { claimEntrypointGroup in
                     VStack {
-                        ShowNotValid(notValid: $notValid)
-                        showTagList(
+                        ShowTagList(
                             tagsToShow: entrypointGroupToStringArray(input: claimEntrypointGroup),
                             onTap: { tag in
                                 selectedClaimGroup = tag
-                                selection = tag  // needed?
 
                                 for claimGroup in claimEntrypointGroup {
                                     if claimGroup.displayName == selectedClaimGroup {
@@ -52,7 +121,6 @@ struct SelectClaimEntrypointGroup: View {
                                 }
                             },
                             onButtonClick: {
-
                                 if selectedClaimGroup != nil {
                                     selectedEntrypoints(claimEntrypoints)
                                     store.send(
@@ -63,57 +131,12 @@ struct SelectClaimEntrypointGroup: View {
                                             )
                                         )
                                     )
-                                } else {
-                                    notValid = true
                                 }
                             }
                         )
                     }
                 }
             }
-        }
-    }
-
-    private func showTagList(
-        tagsToShow: [String],
-        onTap: @escaping (String) -> Void,
-        onButtonClick: @escaping () -> Void
-    ) -> some View {
-        VStack(spacing: 0) {
-            TagList(tags: tagsToShow) { tag in
-                HStack {
-                    hTextNew(tag, style: .body)
-                        .foregroundColor(hLabelColorNew.secondary)
-                        .lineLimit(1)
-                }
-                .onTapGesture {
-                    onTap(tag)
-                    addPadding = true
-                    let generator = UIImpactFeedbackGenerator(style: .soft)
-                    generator.impactOccurred()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        addPadding = false
-                    }
-                }
-                .padding(.horizontal, ((selection == tag) && addPadding) ? 20 : 16)
-                .padding(.vertical, 8)
-                .background(getColorAndShadow(claimId: tag))
-            }
-            .padding([.leading, .trailing], 16)
-            .padding(.bottom, 24)
-
-            hButton.LargeButtonFilled {
-                if selection != "" {
-                    notValid = false
-                    onButtonClick()
-                } else {
-                    notValid = true
-                }
-                selection = ""
-            } content: {
-                hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
-            }
-            .padding([.trailing, .leading], 16)
         }
     }
 
@@ -124,28 +147,11 @@ struct SelectClaimEntrypointGroup: View {
         }
         return arr
     }
-
-    @ViewBuilder
-    func getColorAndShadow(claimId: String) -> some View {
-        if selection == claimId {
-            Squircle.default()
-                .foregroundColor(hGreenColorNew.green50)
-                .hShadow()
-
-        } else {
-            Squircle.default()
-                .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentField)
-        }
-    }
 }
 
 struct SelectClaimEntrypointType: View {
     @PresentableStore var store: SubmitClaimStore
-    @State var selection: String? = nil
-    @State var addPadding = true
-    @State var notValid = false
     var selectedEntrypointOptions: ([ClaimEntryPointOptionResponseModel], String?) -> Void
-
     @State var claimOptions: [ClaimEntryPointOptionResponseModel] = []
     @State var selectedClaimEntrypoint: String? = nil
 
@@ -164,92 +170,43 @@ struct SelectClaimEntrypointType: View {
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {
-            VStack {
-                ShowNotValid(notValid: $notValid)
 
-                PresentableStoreLens(
-                    SubmitClaimStore.self,
-                    getter: { state in
-                        state.entrypoints
-                    }
-                ) { entrypoints in
+            PresentableStoreLens(
+                SubmitClaimStore.self,
+                getter: { state in
+                    state.entrypoints
+                }
+            ) { entrypoints in
 
-                    showTagList(
-                        tagsToShow: entrypointsToStringArray(entrypoints: entrypoints.selectedEntrypoints ?? []),
-                        onTap: { tag in
-                            selectedClaimEntrypoint = tag
-                            selection = tag
+                ShowTagList(
+                    tagsToShow: entrypointsToStringArray(entrypoints: entrypoints.selectedEntrypoints ?? []),
+                    onTap: { tag in
 
-                            for claimEntrypoint in entrypoints.selectedEntrypoints ?? [] {
-                                if claimEntrypoint.displayName == selectedClaimEntrypoint {
-                                    claimOptions = claimEntrypoint.options
-                                }
-                            }
-                        },
-                        onButtonClick: {
-                            if selectedClaimEntrypoint != nil {
-                                selectedEntrypointOptions(
-                                    claimOptions,
-                                    mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? [])
-                                )
-                                store.send(
-                                    .commonClaimOriginSelected(
-                                        commonClaim: ClaimsOrigin.commonClaimsWithOption(
-                                            id: mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? []),
-                                            optionId: ""
-                                        )
-                                    )
-                                )
-                            } else {
-                                notValid = true
+                        selectedClaimEntrypoint = tag
+                        for claimEntrypoint in entrypoints.selectedEntrypoints ?? [] {
+                            if claimEntrypoint.displayName == selectedClaimEntrypoint {
+                                claimOptions = claimEntrypoint.options
                             }
                         }
-                    )
-                }
-            }
-        }
-    }
-
-    private func showTagList(
-        tagsToShow: [String],
-        onTap: @escaping (String) -> Void,
-        onButtonClick: @escaping () -> Void
-    ) -> some View {
-        VStack(spacing: 0) {
-            TagList(tags: tagsToShow) { tag in
-                HStack {
-                    hTextNew(tag, style: .body)
-                        .foregroundColor(hLabelColorNew.secondary)
-                        .lineLimit(1)
-                }
-                .onTapGesture {
-                    onTap(tag)
-                    addPadding = true
-                    let generator = UIImpactFeedbackGenerator(style: .soft)
-                    generator.impactOccurred()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        addPadding = false
+                    },
+                    onButtonClick: {
+                        if selectedClaimEntrypoint != nil {
+                            selectedEntrypointOptions(
+                                claimOptions,
+                                mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? [])
+                            )
+                            store.send(
+                                .commonClaimOriginSelected(
+                                    commonClaim: ClaimsOrigin.commonClaimsWithOption(
+                                        id: mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? []),
+                                        optionId: ""
+                                    )
+                                )
+                            )
+                        }
                     }
-                }
-                .padding(.horizontal, ((selection == tag) && addPadding) ? 20 : 16)
-                .padding(.vertical, 8)
-                .background(getColorAndShadow(claimId: tag))
+                )
             }
-            .padding([.leading, .trailing], 16)
-            .padding(.bottom, 24)
-
-            hButton.LargeButtonFilled {
-                if selection != "" {
-                    notValid = false
-                    onButtonClick()
-                } else {
-                    notValid = true
-                }
-                selection = ""
-            } content: {
-                hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
-            }
-            .padding([.trailing, .leading], 16)
         }
     }
 
@@ -273,27 +230,10 @@ struct SelectClaimEntrypointType: View {
         }
         return ""
     }
-
-    @ViewBuilder
-    func getColorAndShadow(claimId: String) -> some View {
-        if selection == claimId {
-            Squircle.default()
-                .foregroundColor(hGreenColorNew.green50)
-                .hShadow()
-
-        } else {
-            Squircle.default()
-                .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentField)
-        }
-    }
 }
 
 struct SelectClaimEntrypointOption: View {
     @PresentableStore var store: SubmitClaimStore
-    @State var selection: String? = nil
-    @State var addPadding = true
-    @State var notValid = false
-
     @State var selectedClaimOption: String? = nil
 
     public init() {}
@@ -307,85 +247,34 @@ struct SelectClaimEntrypointOption: View {
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {
-            VStack {
-                ShowNotValid(notValid: $notValid)
+            PresentableStoreLens(
+                SubmitClaimStore.self,
+                getter: { state in
+                    state.entrypoints
+                }
+            ) { entrypoints in
 
-                PresentableStoreLens(
-                    SubmitClaimStore.self,
-                    getter: { state in
-                        state.entrypoints
-                    }
-                ) { entrypoints in
-
-                    showTagList(
-                        tagsToShow: entrypointOptionsToStringArray(input: entrypoints.selectedEntrypointOptions ?? []),
-                        onTap: { tag in
-                            selectedClaimOption = tag
-                            selection = tag
-                        },
-                        onButtonClick: {
-
-                            if selectedClaimOption != nil {
-                                store.send(
-                                    .commonClaimOriginSelected(
-                                        commonClaim: ClaimsOrigin.commonClaimsWithOption(
-                                            id: entrypoints.selectedEntrypointId ?? "",
-                                            optionId: mapNametoEntrypointOptionId(
-                                                input: entrypoints.selectedEntrypointOptions ?? []
-                                            )
+                ShowTagList(
+                    tagsToShow: entrypointOptionsToStringArray(input: entrypoints.selectedEntrypointOptions ?? []),
+                    onTap: { tag in
+                        selectedClaimOption = tag
+                    },
+                    onButtonClick: {
+                        if selectedClaimOption != nil {
+                            store.send(
+                                .commonClaimOriginSelected(
+                                    commonClaim: ClaimsOrigin.commonClaimsWithOption(
+                                        id: entrypoints.selectedEntrypointId ?? "",
+                                        optionId: mapNametoEntrypointOptionId(
+                                            input: entrypoints.selectedEntrypointOptions ?? []
                                         )
                                     )
                                 )
-                            } else {
-                                notValid = false
-                            }
+                            )
                         }
-                    )
-                }
-            }
-        }
-    }
-
-    private func showTagList(
-        tagsToShow: [String],
-        onTap: @escaping (String) -> Void,
-        onButtonClick: @escaping () -> Void
-    ) -> some View {
-        VStack(spacing: 0) {
-            TagList(tags: tagsToShow) { tag in
-                HStack {
-                    hTextNew(tag, style: .body)
-                        .foregroundColor(hLabelColorNew.secondary)
-                        .lineLimit(1)
-                }
-                .onTapGesture {
-                    onTap(tag)
-                    addPadding = true
-                    let generator = UIImpactFeedbackGenerator(style: .soft)
-                    generator.impactOccurred()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        addPadding = false
                     }
-                }
-                .padding(.horizontal, ((selection == tag) && addPadding) ? 20 : 16)
-                .padding(.vertical, 8)
-                .background(getColorAndShadow(claimId: tag))
+                )
             }
-            .padding([.leading, .trailing], 16)
-            .padding(.bottom, 24)
-
-            hButton.LargeButtonFilled {
-                if selection != "" {
-                    notValid = false
-                    onButtonClick()
-                } else {
-                    notValid = true
-                }
-                selection = ""
-            } content: {
-                hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
-            }
-            .padding([.trailing, .leading], 16)
         }
     }
 
@@ -408,38 +297,5 @@ struct SelectClaimEntrypointOption: View {
             }
         }
         return arr
-    }
-
-    @ViewBuilder
-    func getColorAndShadow(claimId: String) -> some View {
-        if selection == claimId {
-            Squircle.default()
-                .foregroundColor(hGreenColorNew.green50)
-                .hShadow()
-
-        } else {
-            Squircle.default()
-                .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentField)
-        }
-    }
-}
-
-struct ShowNotValid: View {
-    @Binding var notValid: Bool
-
-    init(
-        notValid: Binding<Bool>
-    ) {
-        self._notValid = notValid
-    }
-
-    var body: some View {
-        if notValid {
-            HStack {
-                Image(uiImage: hCoreUIAssets.infoSmall.image)
-                    .foregroundColor(hAmberColorNew.amber600)
-                hTextNew(L10n.claimsSelectCategory, style: .body)
-            }
-        }
     }
 }
