@@ -31,7 +31,7 @@ public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & E
 public enum ClaimsOrigin: Codable, Equatable, Hashable {
     case generic
     case commonClaims(id: String)
-    case commonClaimsWithOption(id: String, optionId: String)
+    case commonClaimsWithOption(id: String, optionId: String, hasEntrypointTypes: Bool?, hasEntrypointOptions: Bool?)
 
     public var id: commonClaimId {
         switch self {
@@ -39,8 +39,13 @@ public enum ClaimsOrigin: Codable, Equatable, Hashable {
             return commonClaimId()
         case let .commonClaims(id):
             return commonClaimId(id: id)
-        case let .commonClaimsWithOption(id, optionId):
-            return commonClaimId(id: id, entrypointOptionId: optionId)
+        case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
+            return commonClaimId(
+                id: id,
+                entrypointOptionId: optionId,
+                hasEntrypointTypes: hasEntrypointTypes,
+                hasEntrypointOptions: hasEntrypointOptions
+            )
         }
     }
 }
@@ -48,13 +53,19 @@ public enum ClaimsOrigin: Codable, Equatable, Hashable {
 public struct commonClaimId {
     public let id: String
     public let entrypointOptionId: String?
+    public let hasEntrypointTypes: Bool?
+    public let hasEntrypointOptions: Bool?
 
     init(
         id: String = "",
-        entrypointOptionId: String? = nil
+        entrypointOptionId: String? = nil,
+        hasEntrypointTypes: Bool? = true,
+        hasEntrypointOptions: Bool? = true
     ) {
         self.id = id
         self.entrypointOptionId = entrypointOptionId
+        self.hasEntrypointTypes = hasEntrypointTypes
+        self.hasEntrypointOptions = hasEntrypointOptions
     }
 }
 
@@ -62,6 +73,4 @@ struct EntrypointState: Codable, Equatable, Hashable {
     var selectedEntrypoints: [ClaimEntryPointResponseModel]?
     var selectedEntrypointId: String?
     var selectedEntrypointOptions: [ClaimEntryPointOptionResponseModel]?
-
-    init() {}
 }

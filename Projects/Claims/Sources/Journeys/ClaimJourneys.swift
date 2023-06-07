@@ -294,7 +294,7 @@ public class ClaimJourneys {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
                 }),
-            style: .modal
+            style: .modally()
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
                 GroupJourney { context in
@@ -303,8 +303,15 @@ public class ClaimJourneys {
                         ContinueJourney()
                     case let .commonClaims(id):
                         redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                    case let .commonClaimsWithOption(id, optionId):
-                        redirectJourney(ClaimsOrigin.commonClaimsWithOption(id: id, optionId: optionId))
+                    case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
+                        redirectJourney(
+                            ClaimsOrigin.commonClaimsWithOption(
+                                id: id,
+                                optionId: optionId,
+                                hasEntrypointTypes: hasEntrypointTypes,
+                                hasEntrypointOptions: hasEntrypointOptions
+                            )
+                        )
                     }
                 }
             }
@@ -332,8 +339,15 @@ public class ClaimJourneys {
                         ContinueJourney()
                     case let .commonClaims(id):
                         redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                    case let .commonClaimsWithOption(id, optionId):
-                        redirectJourney(ClaimsOrigin.commonClaimsWithOption(id: id, optionId: optionId))
+                    case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
+                        redirectJourney(
+                            ClaimsOrigin.commonClaimsWithOption(
+                                id: id,
+                                optionId: optionId,
+                                hasEntrypointTypes: hasEntrypointTypes,
+                                hasEntrypointOptions: hasEntrypointOptions
+                            )
+                        )
                     }
                 }
             }
@@ -348,7 +362,11 @@ public class ClaimJourneys {
 
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectClaimEntrypointOption()
+            rootView: SelectClaimEntrypointOption(),
+            //            style: .detented(.large, modally: true),
+            options: [
+                .defaults
+            ]
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
                 GroupJourney { context in
@@ -357,8 +375,15 @@ public class ClaimJourneys {
                         ContinueJourney()
                     case let .commonClaims(id):
                         redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                    case let .commonClaimsWithOption(id, optionId):
-                        redirectJourney(ClaimsOrigin.commonClaimsWithOption(id: id, optionId: optionId))
+                    case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
+                        redirectJourney(
+                            ClaimsOrigin.commonClaimsWithOption(
+                                id: id,
+                                optionId: optionId,
+                                hasEntrypointTypes: hasEntrypointTypes,
+                                hasEntrypointOptions: hasEntrypointOptions
+                            )
+                        )
                     }
                 }
             }
@@ -385,8 +410,15 @@ public class ClaimJourneys {
                         ContinueJourney()
                     case let .commonClaims(id):
                         redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                    case let .commonClaimsWithOption(id, optionId):
-                        redirectJourney(ClaimsOrigin.commonClaimsWithOption(id: id, optionId: optionId))
+                    case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
+                        redirectJourney(
+                            ClaimsOrigin.commonClaimsWithOption(
+                                id: id,
+                                optionId: optionId,
+                                hasEntrypointTypes: hasEntrypointTypes,
+                                hasEntrypointOptions: hasEntrypointOptions
+                            )
+                        )
                     }
                 }
             }

@@ -52,7 +52,9 @@ struct SelectClaimEntrypointGroup: View {
                                         .commonClaimOriginSelected(
                                             commonClaim: ClaimsOrigin.commonClaimsWithOption(
                                                 id: "",
-                                                optionId: ""
+                                                optionId: "",
+                                                hasEntrypointTypes: hasClaimEntrypoints,
+                                                hasEntrypointOptions: true
                                             )
                                         )
                                     )
@@ -63,6 +65,14 @@ struct SelectClaimEntrypointGroup: View {
                     }
                 }
             }
+        }
+    }
+
+    var hasClaimEntrypoints: Bool {
+        if claimEntrypoints != [] {
+            return true
+        } else {
+            return false
         }
     }
 
@@ -78,6 +88,7 @@ struct SelectClaimEntrypointGroup: View {
 struct SelectClaimEntrypointType: View {
     @PresentableStore var store: SubmitClaimStore
     var selectedEntrypointOptions: ([ClaimEntryPointOptionResponseModel], String?) -> Void
+    @State var entrypointList: [ClaimEntryPointResponseModel] = []
     @State var claimOptions: [ClaimEntryPointOptionResponseModel] = []
     @State var selectedClaimEntrypoint: String? = nil
 
@@ -124,7 +135,9 @@ struct SelectClaimEntrypointType: View {
                                 .commonClaimOriginSelected(
                                     commonClaim: ClaimsOrigin.commonClaimsWithOption(
                                         id: mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? []),
-                                        optionId: ""
+                                        optionId: "",
+                                        hasEntrypointTypes: true,
+                                        hasEntrypointOptions: hasClaimEntrypointOptions
                                     )
                                 )
                             )
@@ -155,6 +168,14 @@ struct SelectClaimEntrypointType: View {
             }
         }
         return ""
+    }
+
+    var hasClaimEntrypointOptions: Bool {
+        if claimOptions != [] {
+            return true
+        } else {
+            return false
+        }
     }
 }
 
@@ -193,7 +214,9 @@ struct SelectClaimEntrypointOption: View {
                                         id: entrypoints.selectedEntrypointId ?? "",
                                         optionId: mapNametoEntrypointOptionId(
                                             input: entrypoints.selectedEntrypointOptions ?? []
-                                        )
+                                        ),
+                                        hasEntrypointTypes: true,
+                                        hasEntrypointOptions: true
                                     )
                                 )
                             )
