@@ -10,22 +10,22 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
     var body: some View {
         LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
-                hForm {
+            hForm {
+            }
+            .hFormTitle(.small, L10n.claimsLocatonOccuranceTitle)
+            .hDisableScroll
+            .hUseNewStyle
+            .hFormAttachToBottom {
+                VStack(spacing: 0) {
+                    displayFieldsAndNotice
+                    continueButton
                 }
-                .hFormTitle(.small, L10n.Claims.Incident.Screen.Date.Of.incident)
-                .hDisableScroll
-                .hUseNewStyle
-                .hFormAttachToBottom {
-                    VStack(spacing: 0) {
-                        displayFieldsAndNotice()
-                        displayButton()
-                    }
-                }
+            }
         }
     }
 
     @ViewBuilder
-    private func displayFieldsAndNotice() -> some View {
+    private var displayFieldsAndNotice: some View {
         hSection {
             PresentableStoreLens(
                 SubmitClaimStore.self,
@@ -72,7 +72,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     }
 
     @ViewBuilder
-    private func displayButton() -> some View {
+    private var continueButton: some View {
         hButton.LargeButtonFilled {
             store.send(.dateOfOccurrenceAndLocationRequest)
         } content: {
