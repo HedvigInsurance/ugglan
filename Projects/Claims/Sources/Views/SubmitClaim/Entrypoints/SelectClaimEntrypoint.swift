@@ -25,8 +25,9 @@ struct SelectClaimEntrypointGroup: View {
         LoadingViewWithContent(.fetchClaimEntrypoints) {
             hForm {
                 ProgressBar()
-                getTitle
             }
+            .hUseNewStyle
+            .hFormTitle(.small, "Vem eller vad har tagit skada?")
             .hDisableScroll
             .hUseBlur
             .hFormAttachToBottom {
@@ -52,7 +53,7 @@ struct SelectClaimEntrypointGroup: View {
                             },
                             onButtonClick: {
 
-                                if let selectedClaimGroup = selectedClaimGroup {
+                                if selectedClaimGroup != nil {
                                     selectedEntrypoints(claimEntrypoints)
                                     store.send(
                                         .commonClaimOriginSelected(
@@ -73,11 +74,11 @@ struct SelectClaimEntrypointGroup: View {
         }
     }
 
-    private var getTitle: some View {
-        hTextNew("Vem eller vad har tagit skada?", style: .title2)
-            .multilineTextAlignment(.center)
-            .padding([.top, .leading, .trailing], 16)
-    }
+    //    private var getTitle: some View {
+    //        hTextNew("Vem eller vad har tagit skada?", style: .title2)
+    //            .multilineTextAlignment(.center)
+    //            .padding([.top, .leading, .trailing], 16)
+    //    }
 
     private func showTagList(
         tagsToShow: [String],
@@ -172,8 +173,9 @@ struct SelectClaimEntrypointType: View {
     var body: some View {
         hForm {
             ProgressBar()
-            getTitle
         }
+        .hUseNewStyle
+        .hFormTitle(.small, "Vad är det som har hänt?")
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {
@@ -223,12 +225,6 @@ struct SelectClaimEntrypointType: View {
         }
     }
 
-    private var getTitle: some View {
-        hTextNew("Vad är det som har hänt?", style: .title2)
-            .multilineTextAlignment(.center)
-            .padding([.top, .leading, .trailing], 16)
-    }
-
     private func showTagList(
         tagsToShow: [String],
         onTap: @escaping (String) -> Void,
@@ -237,7 +233,7 @@ struct SelectClaimEntrypointType: View {
         VStack(spacing: 0) {
             TagList(tags: tagsToShow) { tag in
                 HStack {
-                    hText(tag, style: .body)
+                    hTextNew(tag, style: .body)
                         .foregroundColor(hLabelColorNew.secondary)
                         .lineLimit(1)
                 }
@@ -320,8 +316,9 @@ struct SelectClaimEntrypointOption: View {
     var body: some View {
         hForm {
             ProgressBar()
-            getTitle
         }
+        .hUseNewStyle
+        .hFormTitle(.small, "Vad är det som har gått sönder?")
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {
@@ -362,12 +359,6 @@ struct SelectClaimEntrypointOption: View {
                 }
             }
         }
-    }
-
-    private var getTitle: some View {
-        hTextNew("Vad är det som har gått sönder?", style: .title2)
-            .multilineTextAlignment(.center)
-            .padding([.top, .leading, .trailing], 16)
     }
 
     private func showTagList(
