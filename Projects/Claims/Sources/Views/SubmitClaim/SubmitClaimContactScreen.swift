@@ -8,9 +8,9 @@ public struct SubmitClaimContactScreen: View {
     @State var type: ClaimsFlowContactType?
 
     public init(
-        model: FlowClaimPhoneNumberStepModel? = nil
+        model: FlowClaimPhoneNumberStepModel
     ) {
-        self.phoneNumber = model?.phoneNumber ?? "0987654"
+        self.phoneNumber = model.phoneNumber
     }
     public var body: some View {
 
@@ -67,10 +67,4 @@ enum ClaimsFlowContactType: hTextFieldFocusStateCompliant {
     }
 
     case phoneNumber
-}
-
-struct SubmitClaimContactScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        SubmitClaimContactScreen(model: nil)
-    }
 }
