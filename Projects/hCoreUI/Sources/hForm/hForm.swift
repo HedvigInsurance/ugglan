@@ -154,7 +154,8 @@ public struct hForm<Content: View>: View {
             ScrollView {
                 VStack {
                     if let hFormTitle, hUseNewStyle {
-                        Text(hFormTitle.1)
+                        hTextNew(hFormTitle.1, style: .title2)
+                            .multilineTextAlignment(.center)
                             .padding(.top, hFormTitle.0.topMargin)
                             .padding(.bottom, hFormTitle.0.bottomMargin)
                     }
