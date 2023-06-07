@@ -1,21 +1,27 @@
 import SwiftUI
 
 public struct hCounterField: View {
-    @Environment(\.hTextFieldError) var errorMessage
-
     private var placeholder: String
     @State private var animate = false
     @Binding var value: Int
+    @Binding var error: String?
     let minValue: Int?
     let maxValue: Int?
     @State var textToShow: String = ""
     private let textForValue: (_ value: Int) -> String?
 
+    var shouldMoveLabel: Binding<Bool> {
+        Binding(
+            get: { !textToShow.isEmpty },
+            set: { _ in }
+        )
+    }
     public init(
         value: Binding<Int>,
         placeholder: String? = nil,
-        minValue: Int?,
-        maxValue: Int?,
+        minValue: Int? = nil,
+        maxValue: Int? = nil,
+        error: Binding<String?>? = nil,
         textForValue: @escaping (Int) -> String?
     ) {
 
@@ -24,24 +30,33 @@ public struct hCounterField: View {
         self.minValue = minValue
         self.maxValue = maxValue
         self._value = value
+        self._error = error ?? Binding.constant(nil)
     }
 
     public var body: some View {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
-                    getPlaceHolderLabel
+                    hFieldLabel(
+                        placeholder: placeholder,
+                        animate: $animate,
+                        error: $error,
+                        shouldMoveLabel: shouldMoveLabel
+                    )
                     if !textToShow.isEmpty {
                         getTextLabel
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 16)
                 .padding(.vertical, textToShow.isEmpty ? 16 : 10)
             }
 
             SwiftUI.Button {
-                decrease()
+                if let minValue, minValue < value {
+                    decrease()
+                } else {
+                    decrease()
+                }
             } label: {
                 Image(uiImage: hCoreUIAssets.minusIcon.image)
                     .foregroundColor(
@@ -52,7 +67,11 @@ public struct hCounterField: View {
             }
 
             SwiftUI.Button {
-                increase()
+                if let maxValue, maxValue > value {
+                    increase()
+                } else {
+                    increase()
+                }
             } label: {
                 Image(uiImage: hCoreUIAssets.plusIcon.image)
                     .foregroundColor(hGrayscaleColorNew.greyScale1000)
@@ -60,12 +79,10 @@ public struct hCounterField: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .addFieldBackground(animate: $animate, error: $error)
         .onTapGesture {
             self.startAnimation()
         }
-        .background(getColor())
-        .animation(.easeInOut(duration: 0.4), value: animate)
-        .clipShape(Squircle.default())
         .onAppear {
             self.textToShow = textForValue(value) ?? ""
         }
@@ -85,21 +102,6 @@ public struct hCounterField: View {
             startAnimation()
             self.textToShow = textForValue(value) ?? ""
         }
-    }
-
-    @hColorBuilder
-    private func getColor() -> some hColor {
-        if animate {
-            hBackgroundColorNew.inputBackgroundActive
-        } else {
-            hBackgroundColorNew.inputBackground
-        }
-    }
-
-    private var getPlaceHolderLabel: some View {
-        Text(placeholder)
-            .modifier(hFontModifierNew(style: !textToShow.isEmpty ? .footnote : .title3))
-            .foregroundColor(hLabelColorNew.secondary)
     }
 
     private var getTextLabel: some View {

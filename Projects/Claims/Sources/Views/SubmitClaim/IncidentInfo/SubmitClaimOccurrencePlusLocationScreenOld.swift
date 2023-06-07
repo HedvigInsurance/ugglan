@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct SubmitClaimOccurrencePlusLocationScreen: View {
+struct SubmitClaimOccurrencePlusLocationScreenOld: View {
     @PresentableStore var store: SubmitClaimStore
 
     var body: some View {
@@ -78,8 +78,8 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     }
 }
 
-struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
+struct SubmitClaimOccurrencePlusLocationScreenOld_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimOccurrencePlusLocationScreen()
+        SubmitClaimOccurrencePlusLocationScreenOld()
     }
 }

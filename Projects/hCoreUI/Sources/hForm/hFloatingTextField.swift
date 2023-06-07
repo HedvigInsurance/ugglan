@@ -6,8 +6,6 @@ import hCore
 
 public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Environment(\.hTextFieldOptions) var options
-    @Environment(\.hTextFieldError) var errorMessage
-
     private var masking: Masking
     private var placeholder: String
     private var suffix: String?
@@ -17,6 +15,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @State private var shouldMoveLabel: Bool = false
     @State private var textField: UITextField?
     @State private var observer = TextFieldObserver()
+    @Binding var error: String?
     @Binding var value: String
     @Binding var equals: Value?
     let focusValue: Value
@@ -29,6 +28,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         focusValue: Value,
         placeholder: String? = nil,
         suffix: String? = nil,
+        error: Binding<String?>? = nil,
         onReturn: @escaping () -> Void = {}
     ) {
         self.masking = masking
@@ -39,7 +39,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         self._equals = equals
         self.focusValue = focusValue
         self.onReturn = onReturn
-        
+        self._error = error ?? Binding.constant(nil)
         self._previousInnerValue = State(initialValue: value.wrappedValue)
         self._innerValue = State(initialValue: value.wrappedValue)
     }
@@ -47,21 +47,20 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     public var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 0) {
-                getFieldLabel
+                hFieldLabel(
+                    placeholder: placeholder,
+                    animate: $animate,
+                    error: $error,
+                    shouldMoveLabel: $shouldMoveLabel
+                )
                 getTextField
             }
-            .padding(.horizontal, 16)
             .padding(.vertical, shouldMoveLabel ? 10 : 16)
-            .background(getColor())
-            .clipShape(Squircle.default())
         }
         .introspectTextField { textField in
             if self.textField != textField {
                 self.textField = textField
             }
-        }
-        .onTapGesture {
-            textField?.becomeFirstResponder()
         }
         .onChange(of: textField) { textField in
             textField?.delegate = observer
@@ -69,6 +68,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 textField?.returnKeyType = .done
             }
             observer.onBeginEditing = {
+                withAnimation {
+                    self.error = nil
+                }
                 updateMoveLabel()
                 startAnimation(self.innerValue)
                 equals = focusValue
@@ -94,8 +96,13 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .onChange(of: innerValue) { currentValue in
             startAnimation(currentValue)
-        }.onAppear {
+        }
+        .onAppear {
             updateMoveLabel()
+        }
+        .addFieldBackground(animate: $animate, error: $error)
+        .onTapGesture {
+            textField?.becomeFirstResponder()
         }
     }
 
@@ -118,27 +125,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 shouldMoveLabel = false
             }
         }
-    }
-
-    @hColorBuilder
-    private func getColor() -> some hColor {
-        if animate {
-            hBackgroundColorNew.inputBackgroundActive
-        } else {
-            hBackgroundColorNew.inputBackground
-        }
-    }
-
-    private var getFieldLabel: some View {
-        let sizeToScaleFrom = HFontTextStyleNew.title3.uifontTextStyleNew.pointSize
-        let sizeToScaleTo = HFontTextStyleNew.footnote.uifontTextStyleNew.pointSize
-        let ratio = sizeToScaleTo / sizeToScaleFrom
-        let difference = sizeToScaleTo - sizeToScaleFrom
-        return Text(placeholder)
-            .modifier(hFontModifierNew(style: .title3))
-            .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
-            .foregroundColor(hLabelColorNew.secondary)
-            .padding(.vertical, shouldMoveLabel ? difference / 2 : 0)
     }
 
     private var getTextField: some View {
