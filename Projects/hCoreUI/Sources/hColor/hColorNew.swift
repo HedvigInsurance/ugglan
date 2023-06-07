@@ -26,11 +26,11 @@ public struct hBackgroundColorNew {
     public static var inputBackgroundActive: some hColor {
         hGreenColorNew.green100
     }
-    
+
     public static var inputBackgroundWarning: some hColor {
         hAmberColorNew.amber100
     }
-    
+
 }
 
 public struct hGrayscaleColorNew {
@@ -176,11 +176,11 @@ public struct hLabelColorNew {
             Color(hexString: "CFCFCF")
         )
     }
-    
+
     public static var active: some hColor {
         hGreenColorNew.green800
     }
-    
+
     public static var warning: some hColor {
         hAmberColorNew.amber900
     }
@@ -222,7 +222,7 @@ public struct hGreenColorNew {
             Color(hexString: "B8D194")
         )
     }
-    
+
     public static var green800: some hColor {
         hColorScheme(
             Color(hexString: "4C6440")
@@ -654,11 +654,11 @@ public struct hBorderColorNew {
             Color(hexString: "303030").opacity(0.84)
         )
     }
-    
+
     public static var active: some hColor {
         hGreenColorNew.green300
     }
-    
+
     public static var warning: some hColor {
         hAmberColorNew.amber300
     }

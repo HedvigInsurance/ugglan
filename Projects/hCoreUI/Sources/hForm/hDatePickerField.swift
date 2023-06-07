@@ -12,14 +12,14 @@ public struct hDatePickerField: View {
     @Binding private var selectedDate: Date?
     @Binding var error: String?
     @State private var disposeBag = DisposeBag()
-    
+
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
             get: { true },
             set: { _ in }
         )
     }
-    
+
     public init(
         config: HDatePickerFieldConfig,
         selectedDate: Binding<Date?>,
@@ -37,10 +37,12 @@ public struct hDatePickerField: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            hFieldLabel(placeholder: config.placeholder,
-                        animate: $animate,
-                        error: $error,
-                        shouldMoveLabel: shouldMoveLabel)
+            hFieldLabel(
+                placeholder: config.placeholder,
+                animate: $animate,
+                error: $error,
+                shouldMoveLabel: shouldMoveLabel
+            )
             getValueLabel()
         }
         .padding(.vertical, 10)

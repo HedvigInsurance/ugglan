@@ -1,5 +1,6 @@
-import SwiftUI
 import Combine
+import SwiftUI
+
 public struct hCheckmarkField: View {
     private let text: String
     @Binding var selected: Bool
@@ -11,7 +12,7 @@ public struct hCheckmarkField: View {
         self.text = text
         self._error = error ?? Binding.constant(nil)
     }
-    
+
     public var body: some View {
         HStack {
             hTextNew(text, style: .title3)
@@ -22,7 +23,7 @@ public struct hCheckmarkField: View {
         }
         .padding(.vertical, 20)
         .modifier(hFontModifierNew(style: .body))
-        .foregroundColor (hLabelColorNew.primary)
+        .foregroundColor(hLabelColorNew.primary)
         .addFieldBackground(animate: $animate, error: $error)
         .onTapGesture {
             self.selected.toggle()
