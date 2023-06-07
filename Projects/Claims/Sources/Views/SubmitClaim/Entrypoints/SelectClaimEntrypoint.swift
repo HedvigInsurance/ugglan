@@ -27,7 +27,7 @@ struct SelectClaimEntrypointGroup: View {
                 ProgressBar()
             }
             .hUseNewStyle
-            .hFormTitle(.small, "Vem eller vad har tagit skada?")
+            .hFormTitle(.small, L10n.claimTriagingNavigationTitle)
             .hDisableScroll
             .hUseBlur
             .hFormAttachToBottom {
@@ -74,12 +74,6 @@ struct SelectClaimEntrypointGroup: View {
         }
     }
 
-    //    private var getTitle: some View {
-    //        hTextNew("Vem eller vad har tagit skada?", style: .title2)
-    //            .multilineTextAlignment(.center)
-    //            .padding([.top, .leading, .trailing], 16)
-    //    }
-
     private func showTagList(
         tagsToShow: [String],
         onTap: @escaping (String) -> Void,
@@ -88,7 +82,7 @@ struct SelectClaimEntrypointGroup: View {
         VStack(spacing: 0) {
             TagList(tags: tagsToShow) { tag in
                 HStack {
-                    hText(tag, style: .body)
+                    hTextNew(tag, style: .body)
                         .foregroundColor(hLabelColorNew.secondary)
                         .lineLimit(1)
                 }
@@ -102,7 +96,6 @@ struct SelectClaimEntrypointGroup: View {
                     }
                 }
                 .padding(.horizontal, ((selection == tag) && addPadding) ? 20 : 16)
-                //                            .padding(.horizontal, ((selectedClaimGroup == tag) && addPadding) ? 20 : 16)
                 .padding(.vertical, 8)
                 .background(getColorAndShadow(claimId: tag))
             }
@@ -118,7 +111,7 @@ struct SelectClaimEntrypointGroup: View {
                 }
                 selection = ""
             } content: {
-                hText("Spara och fortsätt")
+                hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
             }
             .padding([.trailing, .leading], 16)
         }
@@ -131,14 +124,6 @@ struct SelectClaimEntrypointGroup: View {
         }
         return arr
     }
-
-    //    private func getVerticalPadding(claimId: String) -> CGFloat {
-    //        if selectedClaimGroup == claimId && addPadding {
-    //            return 12
-    //        } else {
-    //            return 8
-    //        }
-    //    }
 
     @ViewBuilder
     func getColorAndShadow(claimId: String) -> some View {
@@ -175,7 +160,7 @@ struct SelectClaimEntrypointType: View {
             ProgressBar()
         }
         .hUseNewStyle
-        .hFormTitle(.small, "Vad är det som har hänt?")
+        .hFormTitle(.small, L10n.claimsTriagingWhatHappenedTitle)
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {
@@ -202,7 +187,7 @@ struct SelectClaimEntrypointType: View {
                             }
                         },
                         onButtonClick: {
-                            if let selectedClaimEntrypoint = selectedClaimEntrypoint {
+                            if selectedClaimEntrypoint != nil {
                                 selectedEntrypointOptions(
                                     claimOptions,
                                     mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? [])
@@ -262,7 +247,7 @@ struct SelectClaimEntrypointType: View {
                 }
                 selection = ""
             } content: {
-                hText("Spara och fortsätt")
+                hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
             }
             .padding([.trailing, .leading], 16)
         }
@@ -318,7 +303,7 @@ struct SelectClaimEntrypointOption: View {
             ProgressBar()
         }
         .hUseNewStyle
-        .hFormTitle(.small, "Vad är det som har gått sönder?")
+        .hFormTitle(.small, L10n.claimsTriagingWhatBrokeTitle)
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {
@@ -340,7 +325,7 @@ struct SelectClaimEntrypointOption: View {
                         },
                         onButtonClick: {
 
-                            if let selectedClaimOption = selectedClaimOption {
+                            if selectedClaimOption != nil {
                                 store.send(
                                     .commonClaimOriginSelected(
                                         commonClaim: ClaimsOrigin.commonClaimsWithOption(
@@ -369,7 +354,7 @@ struct SelectClaimEntrypointOption: View {
         VStack(spacing: 0) {
             TagList(tags: tagsToShow) { tag in
                 HStack {
-                    hText(tag, style: .body)
+                    hTextNew(tag, style: .body)
                         .foregroundColor(hLabelColorNew.secondary)
                         .lineLimit(1)
                 }
@@ -398,7 +383,7 @@ struct SelectClaimEntrypointOption: View {
                 }
                 selection = ""
             } content: {
-                hText("Spara och fortsätt")
+                hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
             }
             .padding([.trailing, .leading], 16)
         }
@@ -450,7 +435,11 @@ struct ShowNotValid: View {
 
     var body: some View {
         if notValid {
-            hTextNew("Välj en kategori", style: .body)
+            HStack {
+                Image(uiImage: hCoreUIAssets.infoSmall.image)
+                    .foregroundColor(hAmberColorNew.amber600)
+                hTextNew(L10n.claimsSelectCategory, style: .body)
+            }
         }
     }
 }
