@@ -45,11 +45,14 @@ private struct EnvironmentHFormTitle: EnvironmentKey {
 
 public enum HFormTitleSpacingType {
     case standard
+    case small
 
     var topMargin: CGFloat {
         switch self {
         case .standard:
             return 56
+        case .small:
+            return 16
         }
     }
 
@@ -57,6 +60,8 @@ public enum HFormTitleSpacingType {
         switch self {
         case .standard:
             return 64
+        case .small:
+            return 0
         }
     }
 }
@@ -149,7 +154,8 @@ public struct hForm<Content: View>: View {
             ScrollView {
                 VStack {
                     if let hFormTitle, hUseNewStyle {
-                        Text(hFormTitle.1)
+                        hTextNew(hFormTitle.1, style: .title2)
+                            .multilineTextAlignment(.center)
                             .padding(.top, hFormTitle.0.topMargin)
                             .padding(.bottom, hFormTitle.0.bottomMargin)
                     }
