@@ -4,7 +4,6 @@ import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
-    @State var type: ClaimsFlowOccurrenceType?
     @State private var orientation = UIDeviceOrientation.unknown
 
     init() {
@@ -14,9 +13,10 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
             if orientation.isLandscape || UIWindow.isLandscape {
                 hForm {
-                    displayTitleAndProgressBar()
+                    ProgressBar()
                     displayFieldsAndNotice()
                 }
+                .hFormTitle(.small, L10n.Claims.Incident.Screen.Date.Of.incident)
                 .hUseNewStyle
                 .hFormAttachToBottom {
                     displayButton()
@@ -24,8 +24,9 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             } else {
 
                 hForm {
-                    displayTitleAndProgressBar()
+                    ProgressBar()
                 }
+                .hFormTitle(.small, L10n.Claims.Incident.Screen.Date.Of.incident)
                 .hDisableScroll
                 .hUseNewStyle
                 .hFormAttachToBottom {
@@ -36,27 +37,9 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                 }
             }
         }
-        .onChange(of: type) { newValue in
-            if newValue == nil {
-                UIApplication.dismissKeyboard()
-                store.send(.dateOfOccurrenceAndLocationRequest)
-            } else if newValue == .occurenceDate {
-                UIApplication.dismissKeyboard()
-            }
-        }
         .onRotate { newOrientation in
             orientation = newOrientation
         }
-    }
-
-    @ViewBuilder
-    private func displayTitleAndProgressBar() -> some View {
-        ProgressBar()
-        hTextNew(L10n.Claims.Incident.Screen.Date.Of.incident, style: .title2)
-            .foregroundColor(hLabelColorNew.primary)
-            .fixedSize(horizontal: false, vertical: true)
-            .padding([.top, .leading, .trailing], 16)
-            .multilineTextAlignment(.center)
     }
 
     @ViewBuilder
