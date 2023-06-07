@@ -5,8 +5,6 @@ import hCoreUI
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
 
-    //    init() {}
-
     var body: some View {
         LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
             hForm {
