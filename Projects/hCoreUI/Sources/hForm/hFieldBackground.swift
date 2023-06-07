@@ -1,8 +1,9 @@
 import SwiftUI
+
 struct hFieldBackgroundModifier: ViewModifier {
     @Binding var animate: Bool
     @Binding var error: String?
-    
+
     func body(content: Content) -> some View {
         VStack(spacing: 0) {
             if #available(iOS 15.0, *) {
@@ -21,12 +22,12 @@ struct hFieldBackgroundModifier: ViewModifier {
             }
             if let errorMessage = error {
                 HStack {
-                    
+
                     Image(uiImage: HCoreUIAsset.warningFilledTriangle.image)
                         .foregroundColor(hAmberColorNew.amber600)
                     hText(errorMessage, style: .footnote)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        
+
                 }
                 .padding(.top, 6)
                 .padding(.horizontal, 6)
@@ -34,7 +35,7 @@ struct hFieldBackgroundModifier: ViewModifier {
             }
         }
     }
-    
+
     @hColorBuilder
     private func getBorderColor() -> some hColor {
         if error != nil {
@@ -45,7 +46,7 @@ struct hFieldBackgroundModifier: ViewModifier {
             hBorderColorNew.opaqueTwo
         }
     }
-    
+
     @hColorBuilder
     private func getBackgroundColor() -> some hColor {
         if error != nil {
@@ -58,19 +59,17 @@ struct hFieldBackgroundModifier: ViewModifier {
     }
 }
 extension View {
-    func addFieldBackground( animate: Binding<Bool>, error: Binding<String?>) -> some View {
+    func addFieldBackground(animate: Binding<Bool>, error: Binding<String?>) -> some View {
         modifier(hFieldBackgroundModifier(animate: animate, error: error))
     }
 }
 
-
-
-struct hFieldLabel : View {
+struct hFieldLabel: View {
     let placeholder: String
     @Binding var animate: Bool
     @Binding var error: String?
     @Binding var shouldMoveLabel: Bool
-    
+
     var body: some View {
         let sizeToScaleFrom = HFontTextStyleNew.title3.uifontTextStyleNew.pointSize
         let sizeToScaleTo = HFontTextStyleNew.footnote.uifontTextStyleNew.pointSize
@@ -81,7 +80,7 @@ struct hFieldLabel : View {
             .foregroundColor(getTextColor())
             .padding(.vertical, shouldMoveLabel ? difference / 2 : 0)
     }
-    
+
     @hColorBuilder
     private func getTextColor() -> some hColor {
         if error != nil {

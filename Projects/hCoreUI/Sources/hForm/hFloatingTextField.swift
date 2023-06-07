@@ -20,7 +20,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Binding var equals: Value?
     let focusValue: Value
     let onReturn: () -> Void
-    
+
     public init(
         masking: Masking,
         value: Binding<String>,
@@ -35,7 +35,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         self.placeholder = placeholder ?? masking.placeholderText ?? ""
         self.suffix = suffix
         self._value = value
-        
+
         self._equals = equals
         self.focusValue = focusValue
         self.onReturn = onReturn
@@ -43,13 +43,16 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         self._previousInnerValue = State(initialValue: value.wrappedValue)
         self._innerValue = State(initialValue: value.wrappedValue)
     }
-    
+
     public var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 0) {
-                hFieldLabel(placeholder: placeholder, animate: $animate,
-                            error: $error,
-                            shouldMoveLabel: $shouldMoveLabel)
+                hFieldLabel(
+                    placeholder: placeholder,
+                    animate: $animate,
+                    error: $error,
+                    shouldMoveLabel: $shouldMoveLabel
+                )
                 getTextField
             }
             .padding(.vertical, shouldMoveLabel ? 10 : 16)
@@ -93,7 +96,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .onChange(of: innerValue) { currentValue in
             startAnimation(currentValue)
-        }.onAppear {
+        }
+        .onAppear {
             updateMoveLabel()
         }
         .addFieldBackground(animate: $animate, error: $error)
@@ -101,7 +105,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             textField?.becomeFirstResponder()
         }
     }
-    
+
     private func startAnimation(_ value: String) {
         self.animate = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -110,7 +114,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             }
         }
     }
-    
+
     private func updateMoveLabel() {
         if ((textField?.isEditing ?? false) || innerValue != "") && !shouldMoveLabel {
             withAnimation(Animation.easeInOut(duration: 0.2)) {
@@ -122,7 +126,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             }
         }
     }
-    
+
     private var getTextField: some View {
         let fieldPointSize = HFontTextStyleNew.title3.uifontTextStyleNew.pointSize
         return SwiftUI.TextField("", text: $innerValue)

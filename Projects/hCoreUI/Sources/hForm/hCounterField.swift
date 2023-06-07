@@ -37,9 +37,12 @@ public struct hCounterField: View {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
-                    hFieldLabel(placeholder: placeholder, animate: $animate,
-                                error: $error,
-                                shouldMoveLabel: shouldMoveLabel)
+                    hFieldLabel(
+                        placeholder: placeholder,
+                        animate: $animate,
+                        error: $error,
+                        shouldMoveLabel: shouldMoveLabel
+                    )
                     if !textToShow.isEmpty {
                         getTextLabel
                     }
