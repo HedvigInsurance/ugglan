@@ -57,7 +57,8 @@ struct SelectClaimEntrypointGroup: View {
                                         )
                                     )
                                 }
-                            }
+                            },
+                            oldValue: $selectedClaimGroup
                         )
                     }
                 }
@@ -106,7 +107,6 @@ struct SelectClaimEntrypointType: View {
                 ShowTagList(
                     tagsToShow: entrypointsToStringArray(entrypoints: entrypoints.selectedEntrypoints ?? []),
                     onTap: { tag in
-
                         selectedClaimEntrypoint = tag
                         for claimEntrypoint in entrypoints.selectedEntrypoints ?? [] {
                             if claimEntrypoint.displayName == selectedClaimEntrypoint {
@@ -129,7 +129,8 @@ struct SelectClaimEntrypointType: View {
                                 )
                             )
                         }
-                    }
+                    },
+                    oldValue: $selectedClaimEntrypoint
                 )
             }
         }
@@ -197,7 +198,8 @@ struct SelectClaimEntrypointOption: View {
                                 )
                             )
                         }
-                    }
+                    },
+                    oldValue: $selectedClaimOption
                 )
             }
         }
@@ -232,6 +234,7 @@ struct ShowTagList: View {
     @State var addPadding = true
     @State var notValid = false
     @State var selection: String? = nil
+    @Binding var oldValue: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -241,6 +244,9 @@ struct ShowTagList: View {
                     hTextNew(tag, style: .body)
                         .foregroundColor(hLabelColorNew.secondary)
                         .lineLimit(1)
+                }
+                .onAppear {
+                    selection = oldValue
                 }
                 .onTapGesture {
                     onTap(tag)
