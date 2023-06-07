@@ -5,8 +5,7 @@ import hCoreUI
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
 
-    init() {
-    }
+    //    init() {}
 
     var body: some View {
         LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
@@ -83,24 +82,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         .padding([.leading, .trailing], 16)
         .padding(.bottom, 20)
     }
-}
-
-enum ClaimsFlowOccurrenceType: hTextFieldFocusStateCompliant {
-    static var last: ClaimsFlowOccurrenceType {
-        return ClaimsFlowOccurrenceType.occurenceDate
-    }
-
-    var next: ClaimsFlowOccurrenceType? {
-        switch self {
-        case .occurencePlace:
-            return .occurenceDate
-        case .occurenceDate:
-            return nil
-        }
-    }
-
-    case occurencePlace
-    case occurenceDate
 }
 
 struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
