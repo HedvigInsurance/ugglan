@@ -4,24 +4,12 @@ import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
-    @State private var orientation = UIDeviceOrientation.unknown
 
     init() {
     }
 
     var body: some View {
         LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
-            if orientation.isLandscape || UIWindow.isLandscape {
-                hForm {
-                    displayFieldsAndNotice()
-                }
-                .hFormTitle(.small, L10n.Claims.Incident.Screen.Date.Of.incident)
-                .hUseNewStyle
-                .hFormAttachToBottom {
-                    displayButton()
-                }
-            } else {
-
                 hForm {
                 }
                 .hFormTitle(.small, L10n.Claims.Incident.Screen.Date.Of.incident)
@@ -33,10 +21,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                         displayButton()
                     }
                 }
-            }
-        }
-        .onRotate { newOrientation in
-            orientation = newOrientation
         }
     }
 
@@ -57,11 +41,10 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                         store.send(.navigationAction(action: .openLocationPicker(type: .setLocation)))
                     }
                 )
-                .frame(height: 72)
             }
         }
-        .withoutBottomPadding
-        .sectionContainerStyle(.opaque(useNewDesign: true))
+        .sectionContainerStyle(.transparent)
+        .padding(.bottom, 8)
 
         hSection {
             PresentableStoreLens(
@@ -82,8 +65,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                 )
             }
         }
-        .withoutBottomPadding
-        .sectionContainerStyle(.opaque(useNewDesign: true))
+        .sectionContainerStyle(.transparent)
 
         NoticeComponent(text: L10n.claimsDateNotSureNoticeLabel)
             .padding([.bottom, .top], 8)
@@ -124,38 +106,5 @@ enum ClaimsFlowOccurrenceType: hTextFieldFocusStateCompliant {
 struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
     static var previews: some View {
         SubmitClaimOccurrencePlusLocationScreen()
-    }
-}
-
-extension UIWindow {
-    static var isLandscape: Bool {
-        if #available(iOS 13.0, *) {
-            return
-                UIApplication.shared.windows
-                .first?
-                .windowScene?
-                .interfaceOrientation
-                .isLandscape ?? false
-        } else {
-            return UIApplication.shared.statusBarOrientation.isLandscape
-        }
-    }
-}
-
-extension View {
-    func onRotate(perform action: @escaping (UIDeviceOrientation) -> Void) -> some View {
-        self.modifier(DeviceRotationViewModifier(action: action))
-    }
-}
-
-struct DeviceRotationViewModifier: ViewModifier {
-    let action: (UIDeviceOrientation) -> Void
-
-    func body(content: Content) -> some View {
-        content
-            .onAppear()
-            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-                action(UIDevice.current.orientation)
-            }
     }
 }
