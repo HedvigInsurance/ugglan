@@ -13,7 +13,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
             if orientation.isLandscape || UIWindow.isLandscape {
                 hForm {
-                    ProgressBar()
                     displayFieldsAndNotice()
                 }
                 .hFormTitle(.small, L10n.Claims.Incident.Screen.Date.Of.incident)
@@ -24,7 +23,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             } else {
 
                 hForm {
-                    ProgressBar()
                 }
                 .hFormTitle(.small, L10n.Claims.Incident.Screen.Date.Of.incident)
                 .hDisableScroll
