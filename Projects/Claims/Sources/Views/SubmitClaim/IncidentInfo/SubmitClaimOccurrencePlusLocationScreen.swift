@@ -5,27 +5,24 @@ import hCoreUI
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
 
-    init() {
-    }
-
     var body: some View {
         LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
-                hForm {
+            hForm {
+            }
+            .hFormTitle(.small, L10n.claimsLocatonOccuranceTitle)
+            .hDisableScroll
+            .hUseNewStyle
+            .hFormAttachToBottom {
+                VStack(spacing: 0) {
+                    displayFieldsAndNotice
+                    continueButton
                 }
-                .hFormTitle(.small, L10n.Claims.Incident.Screen.Date.Of.incident)
-                .hDisableScroll
-                .hUseNewStyle
-                .hFormAttachToBottom {
-                    VStack(spacing: 0) {
-                        displayFieldsAndNotice()
-                        displayButton()
-                    }
-                }
+            }
         }
     }
 
     @ViewBuilder
-    private func displayFieldsAndNotice() -> some View {
+    private var displayFieldsAndNotice: some View {
         hSection {
             PresentableStoreLens(
                 SubmitClaimStore.self,
@@ -72,7 +69,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     }
 
     @ViewBuilder
-    private func displayButton() -> some View {
+    private var continueButton: some View {
         hButton.LargeButtonFilled {
             store.send(.dateOfOccurrenceAndLocationRequest)
         } content: {
@@ -83,24 +80,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         .padding([.leading, .trailing], 16)
         .padding(.bottom, 20)
     }
-}
-
-enum ClaimsFlowOccurrenceType: hTextFieldFocusStateCompliant {
-    static var last: ClaimsFlowOccurrenceType {
-        return ClaimsFlowOccurrenceType.occurenceDate
-    }
-
-    var next: ClaimsFlowOccurrenceType? {
-        switch self {
-        case .occurencePlace:
-            return .occurenceDate
-        case .occurenceDate:
-            return nil
-        }
-    }
-
-    case occurencePlace
-    case occurenceDate
 }
 
 struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
