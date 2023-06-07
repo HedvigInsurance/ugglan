@@ -33,14 +33,14 @@ public enum ClaimsOrigin: Codable, Equatable, Hashable {
     case commonClaims(id: String)
     case commonClaimsWithOption(id: String, optionId: String, hasEntrypointTypes: Bool?, hasEntrypointOptions: Bool?)
 
-    public var id: commonClaimId {
+    public var id: CommonClaimId {
         switch self {
         case .generic:
-            return commonClaimId()
+            return CommonClaimId()
         case let .commonClaims(id):
-            return commonClaimId(id: id)
+            return CommonClaimId(id: id)
         case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
-            return commonClaimId(
+            return CommonClaimId(
                 id: id,
                 entrypointOptionId: optionId,
                 hasEntrypointTypes: hasEntrypointTypes,
@@ -50,7 +50,7 @@ public enum ClaimsOrigin: Codable, Equatable, Hashable {
     }
 }
 
-public struct commonClaimId {
+public struct CommonClaimId {
     public let id: String
     public let entrypointOptionId: String?
     public let hasEntrypointTypes: Bool?

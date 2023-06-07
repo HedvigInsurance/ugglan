@@ -172,7 +172,7 @@ public struct hForm<Content: View>: View {
                     scrollView.viewController?.setContentScrollView(scrollView)
                 }
                 if hDisableScroll {
-                    scrollView.addGestureRecognizer(UIPanGestureRecognizer())
+                    scrollView.bounces = false
                 }
             }
             bottomAttachedView

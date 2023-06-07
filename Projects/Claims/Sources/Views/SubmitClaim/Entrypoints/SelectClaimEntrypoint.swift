@@ -254,13 +254,13 @@ struct ShowTagList: View {
     var tagsToShow: [String]
     var onTap: (String) -> Void
     var onButtonClick: () -> Void
-    @State var addPadding = true
     @State var notValid = false
+    @State var animate = false
     @State var selection: String? = nil
     @Binding var oldValue: String?
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 24) {
             showNotValid
             TagList(tags: tagsToShow) { tag in
                 HStack {
@@ -273,28 +273,33 @@ struct ShowTagList: View {
                 }
                 .onTapGesture {
                     onTap(tag)
-                    selection = tag
-                    addPadding = true
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        selection = tag
+                        animate = true
+                    }
+                    withAnimation(.easeInOut(duration: 0.2).delay(0.2)) {
+                        animate = false
+                    }
                     notValid = false
                     let generator = UIImpactFeedbackGenerator(style: .soft)
                     generator.impactOccurred()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        addPadding = false
-                    }
                 }
-                .padding(.horizontal, ((selection == tag) && addPadding) ? 20 : 16)
+                .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(getColorAndShadow(claimId: tag))
+                .scaleEffect(animate && selection == tag ? 1.05 : 1)
+                
             }
             .padding([.leading, .trailing], 16)
-            .padding(.bottom, 24)
 
             hButton.LargeButtonFilled {
                 if selection != nil && selection != "" {
                     notValid = false
                     onButtonClick()
                 } else {
-                    notValid = true
+                    withAnimation {
+                        notValid = true
+                    }
                 }
                 selection = ""
             } content: {
