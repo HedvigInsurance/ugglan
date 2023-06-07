@@ -40,6 +40,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
 
     case navigationAction(action: ClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
+    case setProgress(progress: Float)
 }
 
 public enum ClaimsNavigationAction: ActionProtocol, Hashable {

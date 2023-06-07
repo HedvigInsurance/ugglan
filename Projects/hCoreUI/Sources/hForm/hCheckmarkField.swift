@@ -7,7 +7,11 @@ public struct hCheckmarkField: View {
     @Binding private var error: String?
     @State private var animate = false
 
-    public init(text: String, selected: Binding<Bool>, error: Binding<String?>? = nil) {
+    public init(
+        text: String,
+        selected: Binding<Bool>,
+        error: Binding<String?>? = nil
+    ) {
         self._selected = selected
         self.text = text
         self._error = error ?? Binding.constant(nil)

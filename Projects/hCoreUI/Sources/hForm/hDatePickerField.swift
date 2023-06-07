@@ -101,7 +101,11 @@ public struct hDatePickerField: View {
         let maxDate: Date?
         let placeholder: String
 
-        public init(minDate: Date? = nil, maxDate: Date? = nil, placeholder: String) {
+        public init(
+            minDate: Date? = nil,
+            maxDate: Date? = nil,
+            placeholder: String
+        ) {
             self.minDate = minDate
             self.maxDate = maxDate
             self.placeholder = placeholder
@@ -157,7 +161,9 @@ struct hDatePickerField_Previews: PreviewProvider {
 private class ReferenceAction {
     var execute: () -> (Void)
 
-    init(execute: @escaping () -> Void) {
+    init(
+        execute: @escaping () -> Void
+    ) {
         self.execute = execute
     }
 }
