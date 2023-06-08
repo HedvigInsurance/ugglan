@@ -187,7 +187,7 @@ struct SelectClaimEntrypointOption: View {
         hForm {
         }
         .hUseNewStyle
-        .hFormTitle(.small, L10n.claimsTriagingWhatBrokeTitle)
+        .hFormTitle(.small, L10n.claimsTriagingWhatItemTitle)
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {
