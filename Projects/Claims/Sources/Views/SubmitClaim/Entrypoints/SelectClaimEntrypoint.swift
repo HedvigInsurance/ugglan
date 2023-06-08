@@ -20,7 +20,6 @@ struct SelectClaimEntrypointGroup: View {
     var body: some View {
         LoadingViewWithContent(.fetchClaimEntrypoints) {
             hForm {
-                ProgressBar()
             }
             .hUseNewStyle
             .hFormTitle(.small, L10n.claimTriagingNavigationTitle)
@@ -100,7 +99,6 @@ struct SelectClaimEntrypointType: View {
 
     var body: some View {
         hForm {
-            ProgressBar()
         }
         .hUseNewStyle
         .hFormTitle(.small, L10n.claimsTriagingWhatHappenedTitle)
@@ -187,7 +185,6 @@ struct SelectClaimEntrypointOption: View {
 
     var body: some View {
         hForm {
-            ProgressBar()
         }
         .hUseNewStyle
         .hFormTitle(.small, L10n.claimsTriagingWhatBrokeTitle)
