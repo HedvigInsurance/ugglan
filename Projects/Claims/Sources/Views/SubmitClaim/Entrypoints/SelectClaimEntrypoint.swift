@@ -9,14 +9,14 @@ struct SelectClaimEntrypointGroup: View {
     @State var selectedClaimGroup: String? = nil
     @State var claimEntrypoints: [ClaimEntryPointResponseModel] = []
     var selectedEntrypoints: ([ClaimEntryPointResponseModel]) -> Void
-    
+
     public init(
         selectedEntrypoints: @escaping ([ClaimEntryPointResponseModel]) -> Void
     ) {
         self.selectedEntrypoints = selectedEntrypoints
         store.send(.fetchEntrypointGroups)
     }
-    
+
     var body: some View {
         LoadingViewWithContent(.fetchClaimEntrypoints) {
             hForm {
@@ -38,7 +38,7 @@ struct SelectClaimEntrypointGroup: View {
                             tagsToShow: entrypointGroupToStringArray(input: claimEntrypointGroup),
                             onTap: { tag in
                                 selectedClaimGroup = tag
-                                
+
                                 for claimGroup in claimEntrypointGroup {
                                     if claimGroup.displayName == selectedClaimGroup {
                                         claimEntrypoints = claimGroup.entrypoints
@@ -67,7 +67,7 @@ struct SelectClaimEntrypointGroup: View {
             }
         }
     }
-    
+
     var hasClaimEntrypoints: Bool {
         if claimEntrypoints != [] {
             return true
@@ -75,7 +75,7 @@ struct SelectClaimEntrypointGroup: View {
             return false
         }
     }
-    
+
     func entrypointGroupToStringArray(input: [ClaimEntryPointGroupResponseModel]) -> [String] {
         var arr: [String] = []
         for i in input {
@@ -91,13 +91,13 @@ struct SelectClaimEntrypointType: View {
     @State var entrypointList: [ClaimEntryPointResponseModel] = []
     @State var claimOptions: [ClaimEntryPointOptionResponseModel] = []
     @State var selectedClaimEntrypoint: String? = nil
-    
+
     public init(
         selectedEntrypointOptions: @escaping ([ClaimEntryPointOptionResponseModel], String?) -> Void
     ) {
         self.selectedEntrypointOptions = selectedEntrypointOptions
     }
-    
+
     var body: some View {
         hForm {
             ProgressBar()
@@ -107,14 +107,14 @@ struct SelectClaimEntrypointType: View {
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {
-            
+
             PresentableStoreLens(
                 SubmitClaimStore.self,
                 getter: { state in
                     state.entrypoints
                 }
             ) { entrypoints in
-                
+
                 ShowTagList(
                     tagsToShow: entrypointsToStringArray(entrypoints: entrypoints.selectedEntrypoints ?? []),
                     onTap: { tag in
@@ -148,7 +148,7 @@ struct SelectClaimEntrypointType: View {
             }
         }
     }
-    
+
     func entrypointsToStringArray(entrypoints: [ClaimEntryPointResponseModel]) -> [String] {
         var arr: [String] = []
         var maxNum = 0
@@ -160,7 +160,7 @@ struct SelectClaimEntrypointType: View {
         }
         return arr
     }
-    
+
     func mapNametoEntrypointId(input: [ClaimEntryPointResponseModel]) -> String {
         for entrypoint in input {
             if entrypoint.displayName == selectedClaimEntrypoint {
@@ -169,7 +169,7 @@ struct SelectClaimEntrypointType: View {
         }
         return ""
     }
-    
+
     var hasClaimEntrypointOptions: Bool {
         if claimOptions != [] {
             return true
@@ -182,9 +182,9 @@ struct SelectClaimEntrypointType: View {
 struct SelectClaimEntrypointOption: View {
     @PresentableStore var store: SubmitClaimStore
     @State var selectedClaimOption: String? = nil
-    
+
     public init() {}
-    
+
     var body: some View {
         hForm {
             ProgressBar()
@@ -200,7 +200,7 @@ struct SelectClaimEntrypointOption: View {
                     state.entrypoints
                 }
             ) { entrypoints in
-                
+
                 ShowTagList(
                     tagsToShow: entrypointOptionsToStringArray(input: entrypoints.selectedEntrypointOptions ?? []),
                     onTap: { tag in
@@ -227,7 +227,7 @@ struct SelectClaimEntrypointOption: View {
             }
         }
     }
-    
+
     func mapNametoEntrypointOptionId(input: [ClaimEntryPointOptionResponseModel]) -> String {
         for option in input {
             if option.displayName == selectedClaimOption {
@@ -236,7 +236,7 @@ struct SelectClaimEntrypointOption: View {
         }
         return ""
     }
-    
+
     func entrypointOptionsToStringArray(input: [ClaimEntryPointOptionResponseModel]) -> [String] {
         var arr: [String] = []
         var maxNum = 0
@@ -289,7 +289,12 @@ struct ShowTagList: View {
                     .padding(.vertical, 8)
                     .background(getColorAndShadow(claimId: tag))
                     .scaleEffect(animate && selection == tag ? 1.05 : 1)
-                    .transition(.scale.animation(.spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1).delay(Double.random(in: 0.3...0.6))))
+                    .transition(
+                        .scale.animation(
+                            .spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)
+                                .delay(Double.random(in: 0.3...0.6))
+                        )
+                    )
                 }
             }
             .padding(.horizontal, 16)
@@ -308,16 +313,17 @@ struct ShowTagList: View {
                 hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
             }
             .padding([.trailing, .leading], 16)
-        }.padding([.leading, .trailing], 16)
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    withAnimation {
-                        showTags = true
-                    }
+        }
+        .padding([.leading, .trailing], 16)
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                withAnimation {
+                    showTags = true
                 }
             }
+        }
     }
-    
+
     @ViewBuilder
     var showNotValid: some View {
         if notValid {
@@ -328,14 +334,14 @@ struct ShowTagList: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func getColorAndShadow(claimId: String) -> some View {
         if selection == claimId {
             Squircle.default()
                 .foregroundColor(hGreenColorNew.green50)
                 .hShadow()
-            
+
         } else {
             Squircle.default()
                 .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentField)
