@@ -20,16 +20,17 @@ public struct hBackgroundColorNew {
     }
 
     public static var inputBackground: some hColor {
-        hColorScheme(
-            Color(hexString: "F0F0F0")
-        )
+        hGrayscaleColorNew.greyScale100
     }
 
     public static var inputBackgroundActive: some hColor {
-        hColorScheme(
-            Color(hexString: "E9FFC8")
-        )
+        hGreenColorNew.green100
     }
+
+    public static var inputBackgroundWarning: some hColor {
+        hAmberColorNew.amber100
+    }
+
 }
 
 public struct hGrayscaleColorNew {
@@ -205,6 +206,14 @@ public struct hLabelColorNew {
             Color(hexString: "CFCFCF")
         )
     }
+
+    public static var active: some hColor {
+        hGreenColorNew.green800
+    }
+
+    public static var warning: some hColor {
+        hAmberColorNew.amber900
+    }
 }
 
 public struct hGreenColorNew {
@@ -244,183 +253,9 @@ public struct hGreenColorNew {
         )
     }
 
-    public static var blue50: some hColor {
+    public static var green800: some hColor {
         hColorScheme(
-            Color(hexString: "#EAF7FF")
-        )
-    }
-
-    public static var blue100: some hColor {
-        hColorScheme(
-            Color(hexString: "#E0F0F9")
-        )
-    }
-
-    public static var blue200: some hColor {
-        hColorScheme(
-            Color(hexString: "#CFE5F2")
-        )
-    }
-
-    public static var blue300: some hColor {
-        hColorScheme(
-            Color(hexString: "#BDDBED")
-        )
-    }
-
-    public static var blue400: some hColor {
-        hColorScheme(
-            Color(hexString: "#A9CDE2")
-        )
-    }
-
-    public static var blue500: some hColor {
-        hColorScheme(
-            Color(hexString: "#98C2DA")
-        )
-    }
-
-    public static var blue600: some hColor {
-        hColorScheme(
-            Color(hexString: "#59BFFA")
-        )
-    }
-
-    public static var blue700: some hColor {
-        hColorScheme(
-            Color(hexString: "#4B739B")
-        )
-    }
-
-    public static var blue800: some hColor {
-        hColorScheme(
-            Color(hexString: "#30577E")
-        )
-    }
-
-    public static var blue900: some hColor {
-        hColorScheme(
-            Color(hexString: "#1F3D5C")
-        )
-    }
-
-    public static var yellow50: some hColor {
-        hColorScheme(
-            Color(hexString: "#FFFBCF")
-        )
-    }
-
-    public static var yellow100: some hColor {
-        hColorScheme(
-            Color(hexString: "#F6F1C0")
-        )
-    }
-
-    public static var yellow200: some hColor {
-        hColorScheme(
-            Color(hexString: "#EBE5AD")
-        )
-    }
-
-    public static var yellow300: some hColor {
-        hColorScheme(
-            Color(hexString: "#E3DDA0")
-        )
-    }
-
-    public static var yellow400: some hColor {
-        hColorScheme(
-            Color(hexString: "#DBD593")
-        )
-    }
-
-    public static var yellow500: some hColor {
-        hColorScheme(
-            Color(hexString: "#D5CE82")
-        )
-    }
-
-    public static var yellow600: some hColor {
-        hColorScheme(
-            Color(hexString: "#FFF266")
-        )
-    }
-
-    public static var yellow700: some hColor {
-        hColorScheme(
-            Color(hexString: "#A49758")
-        )
-    }
-
-    public static var yellow800: some hColor {
-        hColorScheme(
-            Color(hexString: "#827535")
-        )
-    }
-
-    public static var yellow900: some hColor {
-        hColorScheme(
-            Color(hexString: "#5E500A")
-        )
-    }
-
-    public static var amber50: some hColor {
-        hColorScheme(
-            Color(hexString: "#FFF4D5")
-        )
-    }
-
-    public static var amber100: some hColor {
-        hColorScheme(
-            Color(hexString: "#FBEDC5")
-        )
-    }
-
-    public static var amber200: some hColor {
-        hColorScheme(
-            Color(hexString: "#F6E5B2")
-        )
-    }
-
-    public static var amber300: some hColor {
-        hColorScheme(
-            Color(hexString: "#F5E0A3")
-        )
-    }
-
-    public static var amber400: some hColor {
-        hColorScheme(
-            Color(hexString: "#F2D98C")
-        )
-    }
-
-    public static var amber500: some hColor {
-        hColorScheme(
-            Color(hexString: "#EED077")
-        )
-    }
-
-    public static var amber600: some hColor {
-        hColorScheme(
-            Color(hexString: "#FFBF00")
-        )
-    }
-
-    public static var amber700: some hColor {
-        hColorScheme(
-            Color(hexString: "#AC7339")
-        )
-    }
-
-    public static var amber800: some hColor {
-        hColorScheme(
-            Color(hexString: "#8A4C0F")
-        )
-    }
-
-    public static var amber900: some hColor {
-        hColorScheme(
-            Color(hexString: "#6B3806")
+            Color(hexString: "4C6440")
         )
     }
 
@@ -849,6 +684,14 @@ public struct hBorderColorNew {
         hColorScheme(
             Color(hexString: "303030").opacity(0.84)
         )
+    }
+
+    public static var active: some hColor {
+        hGreenColorNew.green300
+    }
+
+    public static var warning: some hColor {
+        hAmberColorNew.amber300
     }
 }
 

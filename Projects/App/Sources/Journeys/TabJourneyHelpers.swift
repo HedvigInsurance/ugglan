@@ -1,3 +1,5 @@
+import Claims
+import Contracts
 import Flow
 import Form
 import Foundation
@@ -122,6 +124,12 @@ class PlaceholderViewController: UIViewController, PresentingViewController {
         self.view.addSubview(tabBarController.view)
 
         tabBarController.viewControllers = [Loader(tabBarController: tabBarController).materialize(into: bag)]
+
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        bag += contractStore.stateSignal.onValue { state in
+            let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+            claimsStore.send(.setShowTravelInsurance(to: state.isTravelInsuranceIncluded))
+        }
     }
 }
 

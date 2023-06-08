@@ -117,6 +117,7 @@ extension AppJourney {
         }
     }
 
+    @JourneyBuilder
     static func commonClaimDetailJourney(claim: CommonClaim) -> some JourneyPresentation {
         Journey(
             CommonClaimDetail(claim: claim),
@@ -125,6 +126,8 @@ extension AppJourney {
         )
         .onAction(ClaimsStore.self) { action in
             if case .submitNewClaim = action {
+                DismissJourney()
+            } else if case .openTravelInsurance = action {
                 DismissJourney()
             }
         }

@@ -10,7 +10,6 @@ import hGraphQL
 
 public struct CommonClaimDetail {
     let claim: CommonClaim
-
     public init(
         claim: CommonClaim
     ) {
@@ -48,7 +47,7 @@ extension CommonClaimDetail: Presentable {
 
         topCardContentView.snp.makeConstraints { make in
             make.bottom.trailing.leading.equalToSuperview()
-            make.top.equalTo(40)
+            make.top.equalTo(0)
         }
 
         let layoutTitle = MultilineLabel(value: self.layoutTitle, style: .brand(.title2(color: .primary)))
@@ -58,14 +57,13 @@ extension CommonClaimDetail: Presentable {
             let claimButton = Button(
                 title: claim.layout.titleAndBulletPoint?.buttonTitle ?? "",
                 type: .standard(
-                    backgroundColor: .brand(.primaryButtonBackgroundColor),
-                    textColor: .brand(.primaryButtonTextColor)
+                    backgroundColor: .brand(.secondaryButtonBackgroundColor),
+                    textColor: .brand(.secondaryButtonTextColor)
                 )
             )
             bag += topCardContentView.addArranged(claimButton)
 
             let store: ClaimsStore = self.get()
-
             bag += claimButton.onTapSignal.onValue {
                 hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
 
@@ -75,6 +73,8 @@ extension CommonClaimDetail: Presentable {
                     ) {
                         UIApplication.shared.open(url)
                     }
+                } else if claim.id == ClaimsState.travelInsuranceCommonClaim.id {
+                    store.send(.openTravelInsurance)
                 } else {
                     store.send(.submitNewClaim(from: .commonClaims(id: claim.id)))
                 }
@@ -92,4 +92,8 @@ extension CommonClaimDetail: Presentable {
 
         return (viewController, bag)
     }
+}
+
+public enum ComonClaimsRedirectionType {
+    case travelInsurace
 }

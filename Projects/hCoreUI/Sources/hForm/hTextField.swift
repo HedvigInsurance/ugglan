@@ -66,7 +66,7 @@ public struct hTextField: View {
     @Environment(\.hUseNewStyle) var hUseNewStyle
 
     var masking: Masking
-    let placeholder: String?
+    var placeholder: String?
     @State var previousInnerValue: String
     @State private var innerValue: String
     @Binding var value: String
@@ -84,7 +84,7 @@ public struct hTextField: View {
     }
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
                 SwiftUI.TextField(placeholder ?? "", text: $innerValue)
                     .modifier(hFontModifier(style: .body))
@@ -98,25 +98,17 @@ public struct hTextField: View {
                         }
                     }
                     .frame(minHeight: options.minimumHeight)
-                    .onChange(of: value) { newValue in
-                        innerValue = newValue
-                    }
-                if errorMessage != nil {
-                    Image(uiImage: hCoreUIAssets.circularExclamationPoint.image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(hTintColor.red)
-                }
             }
             if options.showDivider {
                 SwiftUI.Divider()
             }
             if let errorMessage = errorMessage {
-                hText(errorMessage, style: .footnote)
-                    .padding(.top, 7)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .foregroundColor(hTintColor.red)
+                HStack {
+                    hText(errorMessage, style: .footnote)
+                        .padding(.top, 7)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .foregroundColor(hTintColor.red)
+                }
             }
         }
     }
@@ -124,7 +116,7 @@ public struct hTextField: View {
 
 struct hTextFieldPreview: PreviewProvider {
     static var previews: some View {
-        hTextField(masking: Masking(type: .personalNumber), value: .constant(""))
+        hTextField(masking: Masking(type: .personalNumber), value: .constant(""), placeholder: "")
             .padding(20)
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Masked with Swedish Personal Number")

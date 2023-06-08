@@ -73,7 +73,6 @@ public struct TerminationFlowJourney {
         }
         .withJourneyDismissButton
         .hidesBackButton
-
     }
 
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {

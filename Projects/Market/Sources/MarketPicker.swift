@@ -78,13 +78,15 @@ public struct MarketPickerView: View {
             .frame(width: 150, height: 40)
         Spacer()
 
-        hButton.LargeButtonFilled {
-            hAnalyticsEvent.buttonClickMarketingOnboard().send()
-            store.send(.onboard)
-        } content: {
-            hText(L10n.marketingGetHedvig, style: .body)
+        if store.state.market.showGetQuote {
+            hButton.LargeButtonFilled {
+                hAnalyticsEvent.buttonClickMarketingOnboard().send()
+                store.send(.onboard)
+            } content: {
+                hText(L10n.marketingGetHedvig, style: .body)
+            }
+            .hButtonFilledStyle(.overImage)
         }
-        .hButtonFilledStyle(.overImage)
 
         hButton.LargeButtonOutlined {
             hAnalyticsEvent.buttonClickMarketingLogin().send()

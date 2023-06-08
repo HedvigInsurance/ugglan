@@ -17,7 +17,6 @@ public struct HomeView<Content: View, Claims: View, CommonClaims: View>: View {
 
     var claimsContent: Claims
     var commonClaims: CommonClaims
-
     public init(
         claimsContent: Claims,
         commonClaimsContent: CommonClaims,

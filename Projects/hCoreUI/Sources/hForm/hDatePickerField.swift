@@ -10,10 +10,20 @@ public struct hDatePickerField: View {
     @State private var animate = false
     @State private var date = Date()
     @Binding private var selectedDate: Date?
+    @Binding var error: String?
     @State private var disposeBag = DisposeBag()
+
+    public var shouldMoveLabel: Binding<Bool> {
+        Binding(
+            get: { true },
+            set: { _ in }
+        )
+    }
+
     public init(
         config: HDatePickerFieldConfig,
         selectedDate: Binding<Date?>,
+        error: Binding<String?>? = nil,
         onUpdate: @escaping (_ date: Date) -> Void = { _ in },
         onContinue: @escaping (_ date: Date) -> Void = { _ in }
     ) {
@@ -21,25 +31,21 @@ public struct hDatePickerField: View {
         self.onUpdate = onUpdate
         self.onContinue = onContinue
         self._selectedDate = selectedDate
+        self._error = error ?? Binding.constant(nil)
         self.date = selectedDate.wrappedValue ?? Date()
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            getFieldLabel()
+            hFieldLabel(
+                placeholder: config.placeholder,
+                animate: $animate,
+                error: $error,
+                shouldMoveLabel: shouldMoveLabel
+            )
             getValueLabel()
         }
-        .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .background(getColor())
-        .clipShape(Squircle.default())
-        .onTapGesture {
-            showDatePicker()
-            animate = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                self.animate = false
-            }
-        }
         .onChange(of: date) { date in
             selectedDate = date
         }
@@ -48,26 +54,14 @@ public struct hDatePickerField: View {
                 onUpdate(date)
             }
         }
-
-    }
-
-    @hColorBuilder
-    private func getColor() -> some hColor {
-        if animate {
-            hBackgroundColorNew.inputBackgroundActive
-        } else {
-            hBackgroundColorNew.inputBackground
+        .addFieldBackground(animate: $animate, error: $error)
+        .onTapGesture {
+            showDatePicker()
+            animate = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                self.animate = false
+            }
         }
-    }
-
-    private func getFieldLabel() -> some View {
-        HStack {
-            Text(config.placeholder)
-                .modifier(hFontModifierNew(style: .footnote))
-                .foregroundColor(hLabelColorNew.secondary)
-            Spacer()
-        }
-
     }
 
     private func getValueLabel() -> some View {
