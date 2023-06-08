@@ -68,8 +68,6 @@ extension AppJourney {
         }
     }
 
-    //    private static func
-
     private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
