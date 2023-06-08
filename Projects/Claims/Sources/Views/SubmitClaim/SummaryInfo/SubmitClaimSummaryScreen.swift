@@ -1,3 +1,4 @@
+import Kingfisher
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,25 +11,98 @@ public struct SubmitClaimSummaryScreen: View {
     public var body: some View {
         LoadingViewWithContent(.postSummary) {
             hForm {
-                VStack(alignment: .center) {
+                hSection {
+                    VStack(alignment: .leading, spacing: 24) {
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                hTextNew("Trasig telefon", style: .body)
+                                    .foregroundColor(hLabelColorNew.primary)
+                                hTextNew("Anmäld 2023.02.31", style: .body)
+                                    .foregroundColor(hLabelColorNew.secondary)
+                            }
+                        }
 
-                    displayTitleField()
-                    displayDateAndLocationOfOccurrenceField()
-                    displayModelField()
-                    displayDateOfPurchase()
-                    displayDamageField()
+                        .padding([.leading, .trailing, .top], 16)
+
+                        HStack {
+                            VStack {
+                                Rectangle()
+                                    .fill(hAmberColorNew.amber600)
+                                    .frame(height: 4)
+                                hText("Anmäld", style: .caption1)
+                                    .foregroundColor(hLabelColorNew.primary)
+                            }
+                            .frame(maxWidth: .infinity)
+
+                            VStack {
+                                Rectangle()
+                                    .fill(hGrayscaleColorNew.greyScale400)
+                                    .frame(height: 4)
+                                hText("Hanteras", style: .caption1)
+                                    .foregroundColor(hGrayscaleColorNew.greyScale400)
+                            }
+                            .frame(maxWidth: .infinity)
+
+                            VStack {
+                                Rectangle()
+                                    .fill(hGrayscaleColorNew.greyScale400)
+                                    .frame(height: 4)
+                                hText("Avslutad", style: .caption1)
+                                    .foregroundColor(hGrayscaleColorNew.greyScale400)
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                        .padding([.leading, .trailing], 16)
+
+                        displayExpandedView()
+                    }
+
+                }
+                .sectionContainerStyle(.opaque(useNewDesign: true))
+            }
+            .hFormTitle(.small, L10n.claimsCheckInformationTitle)
+            .hUseNewStyle
+            .hFormAttachToBottom {
+                VStack {
+                    NoticeComponent(text: L10n.claimsComplementClaim)
+
+                    hButton.LargeButtonFilled {
+                        store.send(.summaryRequest)
+                    } content: {
+                        hText(L10n.embarkSubmitClaim)
+                    }
+                    .padding([.leading, .trailing], 16)
                 }
             }
-            .hFormAttachToBottom {
-                hButton.LargeButtonFilled {
-                    store.send(.summaryRequest)
-                } content: {
-                    hText(L10n.generalContinueButton)
+        }
+    }
+
+    private func displayExpandedView() -> some View {
+        VStack {
+            displayTitleField()
+            displayModelField()
+            displayDateOfPurchase()
+            displayPurchasePriceField()
+            displayDateOfOccurrenceField()
+            displayPlaceOfOccurrenceField()
+            displayDamageField()
+
+            PresentableStoreLens(
+                SubmitClaimStore.self,
+                getter: { state in
+                    state.audioRecordingStep
                 }
-                .padding([.leading, .trailing], 16)
+            ) { audioRecordingStep in
+                let audioPlayer = AudioPlayer(url: audioRecordingStep?.getUrl())
+                TrackPlayer(audioPlayer: audioPlayer)
+                    .hUseNewStyle
+                    .hWithoutFootnote
             }
 
         }
+        .padding(.bottom, 24)
+        .padding(.horizontal, 16)
+        .foregroundColor(hLabelColorNew.secondary)
     }
 
     @ViewBuilder func displayTitleField() -> some View {
@@ -38,13 +112,16 @@ public struct SubmitClaimSummaryScreen: View {
                 state.summaryStep
             }
         ) { summaryStep in
-            hText(summaryStep?.title ?? "", style: .title3)
-                .padding(.top, UIScreen.main.bounds.size.height / 5)
-                .foregroundColor(hLabelColor.secondary)
+            HStack {
+                hTextNew("Ärende", style: .body)
+                Spacer()
+                hTextNew(summaryStep?.title ?? "", style: .body)
+                    .padding(.trailing, 14)
+            }
         }
     }
 
-    @ViewBuilder func displayDateAndLocationOfOccurrenceField() -> some View {
+    @ViewBuilder func displayDateOfOccurrenceField() -> some View {
         PresentableStoreLens(
             SubmitClaimStore.self,
             getter: { state in
@@ -52,15 +129,15 @@ public struct SubmitClaimSummaryScreen: View {
             }
         ) { dateOfOccurenceStep in
             HStack {
-                Image(uiImage: hCoreUIAssets.calendar.image)
-                    .resizable()
-                    .frame(width: 12.0, height: 12.0)
-                    .foregroundColor(.secondary)
-                hText(dateOfOccurenceStep?.dateOfOccurence ?? L10n.Claims.Summary.Screen.Not.selected)
-                    .padding(.top, 1)
-                    .foregroundColor(.secondary)
+                hTextNew("Skadedatum:", style: .body)
+                Spacer()
+                hTextNew(dateOfOccurenceStep?.dateOfOccurence ?? "", style: .body)
+                    .padding(.trailing, 14)
             }
         }
+    }
+
+    @ViewBuilder func displayPlaceOfOccurrenceField() -> some View {
         PresentableStoreLens(
             SubmitClaimStore.self,
             getter: { state in
@@ -68,11 +145,29 @@ public struct SubmitClaimSummaryScreen: View {
             }
         ) { locationStep in
             HStack {
-                Image(uiImage: hCoreUIAssets.location.image)
-                    .foregroundColor(hLabelColor.secondary)
-                hText(locationStep?.getSelectedOption()?.displayName ?? L10n.Claims.Summary.Screen.Not.selected)
-                    .padding(.top, 1)
-                    .foregroundColor(.secondary)
+                hTextNew("Plats:", style: .body)
+                Spacer()
+                hTextNew(locationStep?.getSelectedOption()?.displayName ?? "", style: .body)
+                    .padding(.trailing, 14)
+            }
+        }
+    }
+
+    @ViewBuilder func displayPurchasePriceField() -> some View {
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.singleItemStep
+            }
+        ) { singleItemStep in
+
+            let stringToDisplay = singleItemStep?.returnDisplayStringForSummaryPrice
+
+            HStack {
+                hTextNew(L10n.Claims.Payout.Purchase.price, style: .body)
+                Spacer()
+                hTextNew(stringToDisplay ?? "", style: .body)
+                    .padding(.trailing, 14)
             }
         }
     }
@@ -85,9 +180,12 @@ public struct SubmitClaimSummaryScreen: View {
             }
         ) { singleItemStep in
             if let modelName = singleItemStep?.getBrandOrModelName() {
-                hText(modelName)
-                    .padding(.top, 40)
-                    .foregroundColor(hLabelColor.primary)
+                HStack {
+                    hTextNew("Modell:", style: .body)
+                    Spacer()
+                    hTextNew(modelName, style: .body)
+                        .padding(.trailing, 14)
+                }
             }
         }
     }
@@ -100,11 +198,14 @@ public struct SubmitClaimSummaryScreen: View {
             }
         ) { singleItemStep in
 
-            let stringToDisplay = singleItemStep?.returnDisplayStringForSummary
+            let stringToDisplay = singleItemStep?.returnDisplayStringForSummaryDate
 
-            hText(stringToDisplay ?? L10n.Claims.Summary.Screen.Not.selected)
-                .padding(.top, 1)
-                .foregroundColor(hLabelColor.primary)
+            HStack {
+                hTextNew("Inköpsdatum:", style: .body)
+                Spacer()
+                hTextNew(stringToDisplay ?? "", style: .body)
+                    .padding(.trailing, 14)
+            }
         }
     }
 
@@ -116,8 +217,12 @@ public struct SubmitClaimSummaryScreen: View {
             }
         ) { singleItemStep in
             if let chosenDamages = singleItemStep?.getChoosenDamagesAsText() {
-                hText(L10n.summarySelectedProblemDescription(chosenDamages)).foregroundColor(hLabelColor.primary)
-                    .padding(.top, 1)
+                HStack {
+                    hTextNew("Skador:", style: .body)
+                    Spacer()
+                    hTextNew(L10n.summarySelectedProblemDescription(chosenDamages), style: .body)
+                        .padding(.trailing, 14)
+                }
             }
         }
     }

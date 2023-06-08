@@ -27,13 +27,13 @@ public class ClaimJourneys {
                 } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
                     submitClaimOccurrancePlusLocationScreen().addDismissClaimsFlow()
                 } else if case .openAudioRecordingScreen = navigationAction {
-                    openAudioRecordingSceen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+                    openAudioRecordingSceen().addDismissClaimsFlow()
                 } else if case .openSuccessScreen = navigationAction {
-                    openSuccessScreen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+                    openSuccessScreen().addDismissClaimsFlow()
                 } else if case .openSingleItemScreen = navigationAction {
                     openSingleItemScreen().addDismissClaimsFlow()
                 } else if case .openSummaryScreen = navigationAction {
-                    openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
+                    openSummaryScreen().addDismissClaimsFlow()
                 } else if case .openDamagePickerScreen = navigationAction {
                     openDamagePickerScreen().addDismissClaimsFlow()
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
@@ -42,7 +42,7 @@ public class ClaimJourneys {
                 } else if case .openFailureSceen = navigationAction {
                     showClaimFailureScreen().addDismissClaimsFlow()
                 } else if case .openSummaryEditScreen = navigationAction {
-                    openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
+                    openSummaryEditScreen().addDismissClaimsFlow()
                 } else if case let .openLocationPicker(type) = navigationAction {
                     openLocationScreen(type: type).addDismissClaimsFlow()
                 } else if case .openUpdateAppScreen = navigationAction {
@@ -62,7 +62,7 @@ public class ClaimJourneys {
                 } else if case .openSingleItemScreen = navigationAction {
                     openSingleItemScreen().addDismissClaimsFlow()
                 } else if case .openSummaryScreen = navigationAction {
-                    openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
+                    openSummaryScreenOld().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
                 } else if case .openDamagePickerScreen = navigationAction {
                     openDamagePickerScreen().addDismissClaimsFlow()
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
@@ -278,6 +278,17 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimSummaryScreen(),
+            style: .detented(.large, modally: false)
+        ) {
+            action in
+            getScreenForAction(for: action)
+        }
+    }
+
+    private static func openSummaryScreenOld() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimSummaryScreenOld(),
             style: .detented(.large, modally: false)
         ) {
             action in
