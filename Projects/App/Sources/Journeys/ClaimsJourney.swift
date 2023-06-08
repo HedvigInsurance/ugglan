@@ -39,19 +39,7 @@ extension AppJourney {
         if hAnalyticsExperiment.claimsFlow {
             if hAnalyticsExperiment.claimsTriaging {
                 ClaimJourneys.showClaimEntrypointsNew(origin: origin) { newOrigin in
-                    if newOrigin.id.hasEntrypointTypes ?? true {
-                        ClaimJourneys.showClaimEntrypointType(origin: newOrigin) { origin in
-                            if newOrigin.id.hasEntrypointOptions ?? true {
-                                ClaimJourneys.showClaimEntrypointOption(origin: origin) { newOrigin in
-                                    honestyPledge(from: newOrigin)
-                                }
-                            } else {
-                                honestyPledge(from: newOrigin)
-                            }
-                        }
-                    } else {
-                        honestyPledge(from: newOrigin)
-                    }
+                    honestyPledge(from: newOrigin)
                 }
             } else {
                 ClaimJourneys.showClaimEntrypointsOld(origin: origin) { newOrigin in
@@ -79,6 +67,8 @@ extension AppJourney {
             }
         }
     }
+    
+//    private static func
 
     private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
         HostingJourney(

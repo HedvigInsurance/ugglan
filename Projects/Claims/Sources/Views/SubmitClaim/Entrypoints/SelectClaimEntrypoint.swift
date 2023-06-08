@@ -258,54 +258,62 @@ struct ShowTagList: View {
     @State var animate = false
     @State var selection: String? = nil
     @Binding var oldValue: String?
-
+    @State private var showTags = false
     var body: some View {
         VStack(spacing: 24) {
-            showNotValid
-            TagList(tags: tagsToShow) { tag in
-                HStack {
-                    hTextNew(tag, style: .body)
-                        .foregroundColor(hLabelColorNew.secondary)
-                        .lineLimit(1)
-                }
-                .onAppear {
-                    selection = oldValue
-                }
-                .onTapGesture {
-                    onTap(tag)
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        selection = tag
-                        animate = true
+                showNotValid
+                TagList(tags: tagsToShow) { tag in
+                    if showTags {
+                        HStack {
+                            hTextNew(tag, style: .body)
+                                .foregroundColor(hLabelColorNew.secondary)
+                                .lineLimit(1)
+                        }
+                        .onAppear {
+                            selection = oldValue
+                        }
+                        .onTapGesture {
+                            onTap(tag)
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                selection = tag
+                                animate = true
+                            }
+                            withAnimation(.easeInOut(duration: 0.2).delay(0.2)) {
+                                animate = false
+                            }
+                            notValid = false
+                            let generator = UIImpactFeedbackGenerator(style: .soft)
+                            generator.impactOccurred()
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(getColorAndShadow(claimId: tag))
+                        .scaleEffect(animate && selection == tag ? 1.05 : 1)
+                        .transition(.scale.animation(.spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1).delay(Double.random(in: 0.3...0.6))))
                     }
-                    withAnimation(.easeInOut(duration: 0.2).delay(0.2)) {
-                        animate = false
-                    }
-                    notValid = false
-                    let generator = UIImpactFeedbackGenerator(style: .soft)
-                    generator.impactOccurred()
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(getColorAndShadow(claimId: tag))
-                .scaleEffect(animate && selection == tag ? 1.05 : 1)
+                .padding([.leading, .trailing], 16)
                 
-            }
-            .padding([.leading, .trailing], 16)
-
-            hButton.LargeButtonFilled {
-                if selection != nil && selection != "" {
-                    notValid = false
-                    onButtonClick()
-                } else {
-                    withAnimation {
-                        notValid = true
+                hButton.LargeButtonFilled {
+                    if selection != nil && selection != "" {
+                        notValid = false
+                        onButtonClick()
+                    } else {
+                        withAnimation {
+                            notValid = true
+                        }
                     }
+                    selection = ""
+                } content: {
+                    hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
                 }
-                selection = ""
-            } content: {
-                hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
+                .padding([.trailing, .leading], 16)
+        }.onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                withAnimation {
+                    showTags = true
+                }
             }
-            .padding([.trailing, .leading], 16)
         }
     }
 

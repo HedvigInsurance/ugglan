@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public class ClaimJourneys {
-
+    
     @JourneyBuilder
     public static func getScreenForAction(
         for action: SubmitClaimsAction,
@@ -16,44 +16,44 @@ public class ClaimJourneys {
             getScreen(for: action).showsBackButton
         }
     }
-
+    
     @JourneyBuilder
     private static func getScreen(for action: SubmitClaimsAction) -> some JourneyPresentation {
-        GroupJourney {
-            if case let .navigationAction(navigationAction) = action {
-                if case let .openPhoneNumberScreen(model) = navigationAction {
-                    submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
-                        .configureTitle(L10n.embarkSubmitClaim)
-                } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
-                    submitClaimOccurrancePlusLocationScreen().addDismissClaimsFlow()
-                        .configureTitle(L10n.Claims.Incident.Screen.header)
-                } else if case .openAudioRecordingScreen = navigationAction {
-                    openAudioRecordingSceen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
-                } else if case .openSuccessScreen = navigationAction {
-                    openSuccessScreen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
-                } else if case .openSingleItemScreen = navigationAction {
-                    openSingleItemScreen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
-                } else if case .openSummaryScreen = navigationAction {
-                    openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
-                } else if case .openDamagePickerScreen = navigationAction {
-                    openDamagePickerScreen().addDismissClaimsFlow()
-                } else if case .openCheckoutNoRepairScreen = navigationAction {
-                    openCheckoutNoRepairScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Payout.Summary.title)
-                } else if case .openFailureSceen = navigationAction {
-                    showClaimFailureScreen().addDismissClaimsFlow()
-                } else if case .openSummaryEditScreen = navigationAction {
-                    openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
-                } else if case let .openLocationPicker(type) = navigationAction {
-                    openLocationScreen(type: type).addDismissClaimsFlow()
-                } else if case .openUpdateAppScreen = navigationAction {
-                    openUpdateAppTerminationScreen().addDismissClaimsFlow()
-                } else if case let .openDatePicker(type) = navigationAction {
-                    openDatePickerScreen(type: type)
-                }
+        //        GroupJourney {
+        if case let .navigationAction(navigationAction) = action {
+            if case let .openPhoneNumberScreen(model) = navigationAction {
+                submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
+                    .configureTitle(L10n.embarkSubmitClaim)
+            } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
+                submitClaimOccurrancePlusLocationScreen().addDismissClaimsFlow()
+                    .configureTitle(L10n.Claims.Incident.Screen.header)
+            } else if case .openAudioRecordingScreen = navigationAction {
+                openAudioRecordingSceen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+            } else if case .openSuccessScreen = navigationAction {
+                openSuccessScreen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+            } else if case .openSingleItemScreen = navigationAction {
+                openSingleItemScreen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+            } else if case .openSummaryScreen = navigationAction {
+                openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
+            } else if case .openDamagePickerScreen = navigationAction {
+                openDamagePickerScreen().addDismissClaimsFlow()
+            } else if case .openCheckoutNoRepairScreen = navigationAction {
+                openCheckoutNoRepairScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Payout.Summary.title)
+            } else if case .openFailureSceen = navigationAction {
+                showClaimFailureScreen().addDismissClaimsFlow()
+            } else if case .openSummaryEditScreen = navigationAction {
+                openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
+            } else if case let .openLocationPicker(type) = navigationAction {
+                openLocationScreen(type: type).addDismissClaimsFlow()
+            } else if case .openUpdateAppScreen = navigationAction {
+                openUpdateAppTerminationScreen().addDismissClaimsFlow()
+            } else if case let .openDatePicker(type) = navigationAction {
+                openDatePickerScreen(type: type)
             }
         }
+        //        }
     }
-
+    
     private static func submitClaimPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -63,7 +63,7 @@ public class ClaimJourneys {
             getScreenForAction(for: action)
         }
     }
-
+    
     static func submitClaimOccurrancePlusLocationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -74,10 +74,10 @@ public class ClaimJourneys {
             getScreenForAction(for: action)
         }
     }
-
+    
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
         let screen = DatePickerScreen(type: type)
-
+        
         return HostingJourney(
             SubmitClaimStore.self,
             rootView: screen,
@@ -98,9 +98,9 @@ public class ClaimJourneys {
         .configureTitle(screen.title)
         .withDismissButton
     }
-
+    
     static func openLocationScreen(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
-
+        
         HostingJourney(
             SubmitClaimStore.self,
             rootView: LocationPickerScreen(type: type),
@@ -114,7 +114,7 @@ public class ClaimJourneys {
             }
         }
     }
-
+    
     static func openBrandPickerScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -152,16 +152,16 @@ public class ClaimJourneys {
             }
         )
     }
-
+    
     static func openModelPickerScreen() -> some JourneyPresentation {
-
+        
         HostingJourney(
             SubmitClaimStore.self,
             rootView: ItemPickerScreen<ClaimFlowItemModelOptionModel>(
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     return store.state.singleItemStep?.getListOfModels()?.compactMap({ ($0, $0.displayName) }) ?? []
-
+                    
                 }(),
                 onSelected: { item in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -181,9 +181,9 @@ public class ClaimJourneys {
             }
         )
     }
-
+    
     static func openDamagePickerScreen() -> some JourneyPresentation {
-
+        
         HostingJourney(
             SubmitClaimStore.self,
             rootView: DamamagePickerScreen(),
@@ -197,7 +197,7 @@ public class ClaimJourneys {
             }
         }
     }
-
+    
     static func openAudioRecordingSceen() -> some JourneyPresentation {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let url = store.state.audioRecordingStep?.getUrl()
@@ -209,7 +209,7 @@ public class ClaimJourneys {
             getScreenForAction(for: action)
         }
     }
-
+    
     private static func openSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
             rootView: SubmitClaimSuccessScreen(),
@@ -233,7 +233,7 @@ public class ClaimJourneys {
             }
         }
     }
-
+    
     private static func openSummaryScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -244,9 +244,9 @@ public class ClaimJourneys {
             getScreenForAction(for: action)
         }
     }
-
+    
     private static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
-
+        
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimCheckoutNoRepairScreen(),
@@ -262,17 +262,17 @@ public class ClaimJourneys {
             }
         }
     }
-
+    
     static func openCheckoutTransferringScreen() -> some JourneyPresentation {
-
+        
         HostingJourney(
             rootView: SubmitClaimCheckoutTransferringScreen(),
             style: .modally(presentationStyle: .fullScreen, transitionStyle: .crossDissolve)
         )
     }
-
+    
     private static func openSummaryEditScreen() -> some JourneyPresentation {
-
+        
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimEditSummaryScreen()
@@ -281,7 +281,7 @@ public class ClaimJourneys {
             getScreenForAction(for: action)
         }
     }
-
+    
     @JourneyBuilder
     public static func showClaimEntrypointsNew(
         origin: ClaimsOrigin,
@@ -297,33 +297,29 @@ public class ClaimJourneys {
             style: .modally()
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
-                GroupJourney { context in
-                    switch origin {
-                    case .generic:
-                        ContinueJourney()
-                    case let .commonClaims(id):
-                        redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                    case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
-                        redirectJourney(
-                            ClaimsOrigin.commonClaimsWithOption(
-                                id: id,
-                                optionId: optionId,
-                                hasEntrypointTypes: hasEntrypointTypes,
-                                hasEntrypointOptions: hasEntrypointOptions
-                            )
-                        )
+                if origin.id.hasEntrypointTypes ?? true {
+                    ClaimJourneys.showClaimEntrypointType(origin: origin) { typeOrigin in
+                        if origin.id.hasEntrypointOptions ?? true {
+                            ClaimJourneys.showClaimEntrypointOption(origin: typeOrigin) { optionOrigin in
+                                redirectJourney(optionOrigin)
+                            }
+                        }else {
+                            redirectJourney(typeOrigin)
+                        }
                     }
+                }else {
+                    redirectJourney(origin)
                 }
             }
         }
     }
-
+    
     @JourneyBuilder
     public static func showClaimEntrypointType(
         origin: ClaimsOrigin,
         @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
     ) -> some JourneyPresentation {
-
+        
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypointType(selectedEntrypointOptions: { options, selectedEntrypoint in
@@ -333,33 +329,17 @@ public class ClaimJourneys {
             })
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
-                GroupJourney { context in
-                    switch origin {
-                    case .generic:
-                        ContinueJourney()
-                    case let .commonClaims(id):
-                        redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                    case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
-                        redirectJourney(
-                            ClaimsOrigin.commonClaimsWithOption(
-                                id: id,
-                                optionId: optionId,
-                                hasEntrypointTypes: hasEntrypointTypes,
-                                hasEntrypointOptions: hasEntrypointOptions
-                            )
-                        )
-                    }
-                }
+                redirectJourney(origin)
             }
         }
     }
-
+    
     @JourneyBuilder
     public static func showClaimEntrypointOption(
         origin: ClaimsOrigin,
         @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
     ) -> some JourneyPresentation {
-
+        
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypointOption(),
@@ -369,27 +349,11 @@ public class ClaimJourneys {
             ]
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
-                GroupJourney { context in
-                    switch origin {
-                    case .generic:
-                        ContinueJourney()
-                    case let .commonClaims(id):
-                        redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                    case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
-                        redirectJourney(
-                            ClaimsOrigin.commonClaimsWithOption(
-                                id: id,
-                                optionId: optionId,
-                                hasEntrypointTypes: hasEntrypointTypes,
-                                hasEntrypointOptions: hasEntrypointOptions
-                            )
-                        )
-                    }
-                }
+                redirectJourney(origin)
             }
         }
     }
-
+    
     @JourneyBuilder
     public static func showClaimEntrypointsOld(
         origin: ClaimsOrigin,
@@ -424,12 +388,12 @@ public class ClaimJourneys {
             }
         }
     }
-
+    
     private static func showClaimFailureScreen() -> some JourneyPresentation {
         HostingJourney(rootView: ClaimFailureScreen())
             .hidesBackButton
     }
-
+    
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
