@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public class ClaimJourneys {
-    
+
     @JourneyBuilder
     public static func getScreenForAction(
         for action: SubmitClaimsAction,
@@ -17,7 +17,7 @@ public class ClaimJourneys {
             getScreen(for: action).showsBackButton
         }
     }
-    
+
     @JourneyBuilder
     private static func getScreen(for action: SubmitClaimsAction) -> some JourneyPresentation {
         if case let .navigationAction(navigationAction) = action {
@@ -83,7 +83,7 @@ public class ClaimJourneys {
         }
         //        }
     }
-    
+
     private static func submitClaimPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -93,7 +93,7 @@ public class ClaimJourneys {
             getScreenForAction(for: action)
         }
     }
-    
+
     static func submitClaimOccurrancePlusLocationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -118,7 +118,7 @@ public class ClaimJourneys {
 
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
         let screen = DatePickerScreen(type: type)
-        
+
         return HostingJourney(
             SubmitClaimStore.self,
             rootView: screen,
@@ -139,9 +139,9 @@ public class ClaimJourneys {
         .configureTitle(screen.title)
         .withDismissButton
     }
-    
+
     static func openLocationScreen(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
-        
+
         HostingJourney(
             SubmitClaimStore.self,
             rootView: LocationPickerScreen(type: type),
@@ -155,7 +155,7 @@ public class ClaimJourneys {
             }
         }
     }
-    
+
     static func openBrandPickerScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -193,16 +193,16 @@ public class ClaimJourneys {
             }
         )
     }
-    
+
     static func openModelPickerScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             SubmitClaimStore.self,
             rootView: ItemPickerScreen<ClaimFlowItemModelOptionModel>(
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     return store.state.singleItemStep?.getListOfModels()?.compactMap({ ($0, $0.displayName) }) ?? []
-                    
+
                 }(),
                 onSelected: { item in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -222,9 +222,9 @@ public class ClaimJourneys {
             }
         )
     }
-    
+
     static func openDamagePickerScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             SubmitClaimStore.self,
             rootView: DamamagePickerScreen(),
@@ -238,7 +238,7 @@ public class ClaimJourneys {
             }
         }
     }
-    
+
     static func openAudioRecordingSceen() -> some JourneyPresentation {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let url = store.state.audioRecordingStep?.getUrl()
@@ -250,7 +250,7 @@ public class ClaimJourneys {
             getScreenForAction(for: action)
         }
     }
-    
+
     private static func openSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
             rootView: SubmitClaimSuccessScreen(),
@@ -274,7 +274,7 @@ public class ClaimJourneys {
             }
         }
     }
-    
+
     private static func openSummaryScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -285,9 +285,9 @@ public class ClaimJourneys {
             getScreenForAction(for: action)
         }
     }
-    
+
     private static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimCheckoutNoRepairScreen(),
@@ -303,17 +303,17 @@ public class ClaimJourneys {
             }
         }
     }
-    
+
     static func openCheckoutTransferringScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             rootView: SubmitClaimCheckoutTransferringScreen(),
             style: .modally(presentationStyle: .fullScreen, transitionStyle: .crossDissolve)
         )
     }
-    
+
     private static func openSummaryEditScreen() -> some JourneyPresentation {
-        
+
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimEditSummaryScreen()
@@ -322,7 +322,7 @@ public class ClaimJourneys {
             getScreenForAction(for: action)
         }
     }
-    
+
     @JourneyBuilder
     public static func showClaimEntrypointsNew(
         origin: ClaimsOrigin,
@@ -344,23 +344,23 @@ public class ClaimJourneys {
                             ClaimJourneys.showClaimEntrypointOption(origin: typeOrigin) { optionOrigin in
                                 redirectJourney(optionOrigin)
                             }
-                        }else {
+                        } else {
                             redirectJourney(typeOrigin)
                         }
                     }
-                }else {
+                } else {
                     redirectJourney(origin)
                 }
             }
         }
     }
-    
+
     @JourneyBuilder
     public static func showClaimEntrypointType(
         origin: ClaimsOrigin,
         @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
     ) -> some JourneyPresentation {
-        
+
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypointType(selectedEntrypointOptions: { options, selectedEntrypoint in
@@ -374,13 +374,13 @@ public class ClaimJourneys {
             }
         }
     }
-    
+
     @JourneyBuilder
     public static func showClaimEntrypointOption(
         origin: ClaimsOrigin,
         @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
     ) -> some JourneyPresentation {
-        
+
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypointOption(),
@@ -394,7 +394,7 @@ public class ClaimJourneys {
             }
         }
     }
-    
+
     @JourneyBuilder
     public static func showClaimEntrypointsOld(
         origin: ClaimsOrigin,
@@ -429,12 +429,12 @@ public class ClaimJourneys {
             }
         }
     }
-    
+
     private static func showClaimFailureScreen() -> some JourneyPresentation {
         HostingJourney(rootView: ClaimFailureScreen())
             .hidesBackButton
     }
-    
+
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
