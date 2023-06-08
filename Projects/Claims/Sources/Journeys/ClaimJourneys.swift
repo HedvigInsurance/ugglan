@@ -21,7 +21,7 @@ public class ClaimJourneys {
     @JourneyBuilder
     private static func getScreen(for action: SubmitClaimsAction) -> some JourneyPresentation {
         if case let .navigationAction(navigationAction) = action {
-            if hAnalyticsExperiment.claimsTriaging {
+            if hAnalyticsExperiment.claimsFlowNewDesign {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
                     submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
                 } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
@@ -81,7 +81,6 @@ public class ClaimJourneys {
                 }
             }
         }
-        //        }
     }
 
     private static func submitClaimPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel) -> some JourneyPresentation {
