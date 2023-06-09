@@ -10,7 +10,6 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setClaimEntrypointsForSelection([ClaimEntryPointResponseModel])
     case setClaimEntrypointGroupsForSelection([ClaimEntryPointGroupResponseModel])
     case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
-    case entrypointGroupSelected(entrypointGroup: ClaimsOrigin)
 
     case submitAudioRecording(audioURL: URL)
     case resetAudioRecording
@@ -19,7 +18,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setNewClaimId(with: String)
     case setNewClaimContext(context: String)
 
-    case startClaimRequest(with: String)
+    case startClaimRequest(entrypointId: String, entrypointOptionId: String?)
     case phoneNumberRequest(phoneNumber: String)
     case dateOfOccurrenceRequest(dateOfOccurrence: Date?)
     case dateOfOccurrenceAndLocationRequest
@@ -40,6 +39,10 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
 
     case navigationAction(action: ClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
+    case setSelectedEntrypoints(entrypoints: [ClaimEntryPointResponseModel])
+    case setSelectedEntrypoint(entrypoint: ClaimEntryPointResponseModel)
+    case setSelectedEntrypointOptions(entrypoints: [ClaimEntryPointOptionResponseModel])
+    case setSelectedEntrypointId(entrypoints: String?)
 }
 
 public enum ClaimsNavigationAction: ActionProtocol, Hashable {

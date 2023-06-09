@@ -1,7 +1,26 @@
 query EntrypointGroups($type: EntrypointType!) {
   entrypointGroups(type: $type) {
-    displayName
-    iconUrl
-    id
+    ...EntrypointGroupFragment
   }
+}
+
+fragment EntrypointGroupFragment on EntrypointGroup {
+    displayName
+    id
+    entrypoints {
+        ...EntrypointFragment
+    }
+}
+
+fragment EntrypointFragment on Entrypoint {
+    displayName
+    id
+    options {
+        ...EntrypointOptionFragment
+    }
+}
+
+fragment EntrypointOptionFragment on EntrypointOption {
+    displayName
+    id
 }
