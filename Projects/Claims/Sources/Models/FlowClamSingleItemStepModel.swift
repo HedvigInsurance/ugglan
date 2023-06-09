@@ -132,6 +132,20 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
 
         return textParts.joined(separator: " · ")
     }
+
+    var returnDisplayStringForSummaryDate: String {
+        if let purchaseDate {
+            return L10n.summaryPurchaseDateDescription(purchaseDate)
+        }
+        return ""
+    }
+
+    var returnDisplayStringForSummaryPrice: String {
+        if let purchasePrice {
+            return L10n.summaryPurchasePriceDescription(Int(purchasePrice)) + " " + (currencyCode ?? "")
+        }
+        return ""
+    }
 }
 
 public struct ClaimFlowItemBrandOptionModel: Codable, Equatable, Hashable {

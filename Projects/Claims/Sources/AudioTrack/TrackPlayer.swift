@@ -4,6 +4,8 @@ import hCoreUI
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
+    @Environment(\.hUseNewStyle) var hUseNewStyle
+    @Environment(\.hWithoutFootnote) var hWithoutFootnote
 
     let playbackTint: some hColor = hColorScheme(
         light: hTintColor.lavenderOne,
@@ -15,14 +17,19 @@ struct TrackPlayer: View {
         dark: hLabelColor.primary
     )
 
+    let backgroundColorOld: some hColor = hColorScheme(
+        light: hTintColor.lavenderTwo,
+        dark: hTintColor.lavenderOne
+    )
+
     @ViewBuilder var image: some View {
         switch audioPlayer.playbackState {
         case let .playing(paused):
             Image(uiImage: paused ? hCoreUIAssets.play.image : hCoreUIAssets.pause.image)
-                .foregroundColor(playbackTint)
+                .foregroundColor(getWaveColor)
         default:
             Image(uiImage: hCoreUIAssets.play.image)
-                .foregroundColor(playbackTint)
+                .foregroundColor(getWaveColor)
         }
     }
 
@@ -34,12 +41,12 @@ struct TrackPlayer: View {
                         style: .large,
                         color: hLabelColor.primary
                     )
-                    .foregroundColor(loadingColor)
+                    .foregroundColor(loadingColor)  // change
                 } else {
                     image
 
                     let waveform = WaveformView(
-                        stripeColor: playbackTint,
+                        stripeColor: getWaveColor,
                         sampleHeights: audioPlayer.sampleHeights
                     )
                     .frame(maxWidth: .infinity)
@@ -56,7 +63,7 @@ struct TrackPlayer: View {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                    .fill(hColorScheme(light: hTintColor.lavenderTwo, dark: hTintColor.lavenderOne))
+                    .fill(getBackgroundColor)
                     .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
             )
             .onTapGesture {
@@ -65,8 +72,45 @@ struct TrackPlayer: View {
                 }
             }
 
-            hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
-                .foregroundColor(hLabelColor.secondary)
+            if !hWithoutFootnote {
+                hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
+                    .foregroundColor(hLabelColor.secondary)
+            }
         }
+    }
+
+    @hColorBuilder
+    var getWaveColor: some hColor {
+        if hUseNewStyle {
+            hLabelColorNew.primary
+        } else {
+            playbackTint
+        }
+    }
+
+    @hColorBuilder
+    var getBackgroundColor: some hColor {
+        if hUseNewStyle {
+            hBackgroundColorNew.primary
+        } else {
+            backgroundColorOld
+        }
+    }
+}
+
+private struct EnvironmentHWithoutFootnote: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutFootnote: Bool {
+        get { self[EnvironmentHWithoutFootnote.self] }
+        set { self[EnvironmentHWithoutFootnote.self] = newValue }
+    }
+}
+
+extension View {
+    public var hWithoutFootnote: some View {
+        self.environment(\.hWithoutFootnote, true)
     }
 }
