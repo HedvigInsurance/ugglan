@@ -15,7 +15,6 @@ public struct SubmitClaimContactScreen: View {
     public var body: some View {
         LoadingViewWithContent(.postPhoneNumber) {
             hForm {}
-                .hUseNewStyle
                 .hFormTitle(.small, L10n.claimsConfirmNumberTitle)
                 .hFormAttachToBottom {
                     VStack(spacing: 24) {
@@ -32,7 +31,7 @@ public struct SubmitClaimContactScreen: View {
                             store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
                             UIApplication.dismissKeyboard()
                         } content: {
-                            hTextNew(L10n.generalContinueButton, style: .body)
+                            hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
                         }
                         .frame(maxWidth: .infinity, alignment: .bottom)
                         .padding([.leading, .trailing], 16)
@@ -40,6 +39,7 @@ public struct SubmitClaimContactScreen: View {
                     }
                 }
         }
+        .hUseNewStyle
     }
 }
 
