@@ -52,7 +52,7 @@ public class ClaimJourneys {
                 }
             } else {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
-                    submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
+                    submitClaimPhoneNumberScreenOld(model: model).addDismissClaimsFlow()
                 } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
                     submitClaimOccurrancePlusLocationScreenOld().addDismissClaimsFlow()
                 } else if case .openAudioRecordingScreen = navigationAction {
@@ -87,6 +87,18 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimContactScreen(model: model),
+            style: .detented(.large, modally: false)
+        ) { action in
+            getScreenForAction(for: action)
+        }
+    }
+
+    private static func submitClaimPhoneNumberScreenOld(
+        model: FlowClaimPhoneNumberStepModel
+    ) -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimContactScreenOld(model: model),
             style: .detented(.large, modally: false)
         ) { action in
             getScreenForAction(for: action)
