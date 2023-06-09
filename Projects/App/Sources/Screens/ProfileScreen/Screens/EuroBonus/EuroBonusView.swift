@@ -139,7 +139,6 @@ class EuroBonusViewModel: ObservableObject {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         self.number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
         self.previousValue = store.state.partnerData?.sas?.eurobonusNumber ?? ""
-
     }
     
     func submit() {
