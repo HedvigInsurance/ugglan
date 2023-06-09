@@ -3,16 +3,26 @@ import hCoreUI
 
 struct OverlayView: View {
     @ObservedObject var audioPlayer: AudioPlayer
+    @Environment(\.hUseNewStyle) var hUseNewStyle
 
-    let staplesMaskColor: some hColor = hColorScheme(
+    let staplesMaskColorOld: some hColor = hColorScheme(
         light: hLabelColor.link.inverted,
         dark: hLabelColor.primary
     )
 
+    @hColorBuilder
+    var getStaplesMaskColor: some hColor {
+        if hUseNewStyle {
+            hGreenColorNew.green400
+        } else {
+            staplesMaskColorOld
+        }
+    }
+
     var body: some View {
         GeometryReader { geometry in
             RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                .fill(staplesMaskColor)
+                .fill(getStaplesMaskColor)
                 .frame(width: geometry.size.width * audioPlayer.progress)
         }
     }

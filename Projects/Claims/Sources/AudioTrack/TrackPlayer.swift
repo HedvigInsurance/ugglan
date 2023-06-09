@@ -12,11 +12,6 @@ struct TrackPlayer: View {
         dark: hLabelColor.tertiary
     )
 
-    let loadingColor: some hColor = hColorScheme(
-        light: hLabelColor.link,
-        dark: hLabelColor.primary
-    )
-
     let backgroundColorOld: some hColor = hColorScheme(
         light: hTintColor.lavenderTwo,
         dark: hTintColor.lavenderOne
@@ -41,7 +36,7 @@ struct TrackPlayer: View {
                         style: .large,
                         color: hLabelColor.primary
                     )
-                    .foregroundColor(loadingColor)  // change
+                    .foregroundColor(hLabelColor.primary)  // change
                 } else {
                     image
 
@@ -73,8 +68,13 @@ struct TrackPlayer: View {
             }
 
             if !hWithoutFootnote {
-                hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
-                    .foregroundColor(hLabelColor.secondary)
+                if hUseNewStyle {
+                    hTextNew(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
+                        .foregroundColor(hLabelColorNew.secondary)
+                } else {
+                    hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
+                        .foregroundColor(hLabelColor.secondary)
+                }
             }
         }
     }
