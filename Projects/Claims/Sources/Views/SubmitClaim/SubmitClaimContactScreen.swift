@@ -13,10 +13,8 @@ public struct SubmitClaimContactScreen: View {
         self.phoneNumber = model.phoneNumber
     }
     public var body: some View {
-
         LoadingViewWithContent(.postPhoneNumber) {
-            hForm {
-            }
+            hForm {}
             .hUseNewStyle
             .hFormTitle(.small, L10n.claimsConfirmNumberTitle)
             .hFormAttachToBottom {
@@ -30,7 +28,6 @@ public struct SubmitClaimContactScreen: View {
                             placeholder: L10n.phoneNumberRowTitle
                         )
                     }
-
                     hButton.LargeButtonFilled {
                         store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
                         UIApplication.dismissKeyboard()
@@ -41,14 +38,6 @@ public struct SubmitClaimContactScreen: View {
                     .padding([.leading, .trailing], 16)
                     .padding(.bottom, 24)
                 }
-            }
-        }
-        .onChange(of: type) { newValue in
-            if newValue == nil {
-                UIApplication.dismissKeyboard()
-                store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
-            } else if newValue == .phoneNumber {
-                UIApplication.dismissKeyboard()
             }
         }
     }
