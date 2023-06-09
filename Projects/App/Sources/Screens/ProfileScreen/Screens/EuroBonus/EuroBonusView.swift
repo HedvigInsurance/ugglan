@@ -1,8 +1,8 @@
-import SwiftUI
-import hCoreUI
-import hCore
-import Presentation
 import Flow
+import Presentation
+import SwiftUI
+import hCore
+import hCoreUI
 
 struct EuroBonusView: View {
     @StateObject var vm = EuroBonusViewModel()
@@ -45,42 +45,46 @@ struct EuroBonusView: View {
         .navigationTitle(L10n.SasIntegration.title)
         .alert(isPresented: $vm.showCancelAlert) {
             cancelAlert
-        }.slideUpFadeAppearAnimation()
+        }
+        .slideUpFadeAppearAnimation()
     }
-    
+
     @ToolbarContentBuilder
     private var toolbars: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             Button(L10n.myInfoCancelButton) {
                 vm.showCancelAlert = true
-            }.foregroundColor(hLabelColor.primary)
-                .opacity(vm.inEditMode ? 1 : 0)
-                .disabled(!vm.inEditMode)
+            }
+            .foregroundColor(hLabelColor.primary)
+            .opacity(vm.inEditMode ? 1 : 0)
+            .disabled(!vm.inEditMode)
         }
         ToolbarItem(placement: .navigationBarTrailing) {
             if vm.state == .loading {
                 ProgressView().foregroundColor(hLabelColor.link)
-                
+
             } else {
                 Button(L10n.myInfoSaveButton) {
                     UIApplication.dismissKeyboard()
                     vm.submit()
-                }.foregroundColor(hLabelColor.link)
-                    .opacity(vm.inEditMode ? 1 : 0)
-                    .animation(.easeInOut(duration: 0.2))
-                    .disabled(!vm.inEditMode)
+                }
+                .foregroundColor(hLabelColor.link)
+                .opacity(vm.inEditMode ? 1 : 0)
+                .animation(.easeInOut(duration: 0.2))
+                .disabled(!vm.inEditMode)
             }
         }
     }
-    
+
     @ViewBuilder
     private var form: some View {
         hForm {
-            hRow {hText(L10n.SasIntegration.connectYourEurobonus, style: .title3)}
+            hRow { hText(L10n.SasIntegration.connectYourEurobonus, style: .title3) }
             hRow {
                 hText(L10n.SasIntegration.number)
                     .foregroundColor(hLabelColor.primary)
-            }.withCustomAccessory {
+            }
+            .withCustomAccessory {
                 hTextField(
                     masking: Masking(type: .euroBonus),
                     value: $vm.number,
@@ -95,14 +99,17 @@ struct EuroBonusView: View {
                 VStack(alignment: .leading) {
                     Divider()
                     if let errorMessage = vm.errorMessage {
-                        hText(errorMessage, style: .footnote).foregroundColor(hTintColor.red).transition(.opacity.animation(.default))
+                        hText(errorMessage, style: .footnote).foregroundColor(hTintColor.red)
+                            .transition(.opacity.animation(.default))
                     }
                 }
-            }.verticalPadding(0)
+            }
+            .verticalPadding(0)
             hRow {
                 hText(L10n.SasIntegration.info, style: .callout)
                     .foregroundColor(hLabelColor.secondary)
-            }.verticalPadding(10)
+            }
+            .verticalPadding(10)
         }
     }
     private var cancelAlert: SwiftUI.Alert {
@@ -123,7 +130,6 @@ struct EuroBonusView_Previews: PreviewProvider {
     }
 }
 
-
 class EuroBonusViewModel: ObservableObject {
     @Published var number: String
     @Published var previousValue: String
@@ -134,20 +140,20 @@ class EuroBonusViewModel: ObservableObject {
     @Published var state: LoadingState<String>?
     let disposeBag = DisposeBag()
     let store: ProfileStore = globalPresentableStoreContainer.get()
-    
+
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         self.number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
         self.previousValue = store.state.partnerData?.sas?.eurobonusNumber ?? ""
     }
-    
+
     func submit() {
         if number.count == 0 {
             errorMessage = L10n.SasIntegration.incorrectNumber
             return
         }
         disposeBag.dispose()
-        disposeBag += store.stateSignal.onValue({[weak self] state in
+        disposeBag += store.stateSignal.onValue({ [weak self] state in
             if self?.state != state.updateEurobonusState {
                 self?.state = state.updateEurobonusState
                 if self?.state == nil {
