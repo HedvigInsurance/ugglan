@@ -11,7 +11,7 @@ public struct SubmitClaimSingleItem: View {
     @State var type: ClaimsFlowSingleItemFieldType?
 
     public init() {}
-    
+
     public var body: some View {
         LoadingViewWithContent(.postSingleItem) {
             hForm {
@@ -19,7 +19,7 @@ public struct SubmitClaimSingleItem: View {
             .hUseNewStyle
             .hFormTitle(.small, L10n.claimsSingleItemDetails)
             .hFormAttachToBottom {
-                
+
                 VStack(spacing: 8) {
                     PresentableStoreLens(
                         SubmitClaimStore.self,
@@ -33,7 +33,7 @@ public struct SubmitClaimSingleItem: View {
                         displayDamageField(claim: singleItemStep)
                         NoticeComponent(text: L10n.claimsSingleItemNoticeLabel)
                     }
-                    
+
                     hButton.LargeButtonFilled {
                         store.send(.singleItemRequest(purchasePrice: Double(purchasePrice)))
                         UIApplication.dismissKeyboard()
@@ -46,7 +46,7 @@ public struct SubmitClaimSingleItem: View {
             }
         }
     }
-    
+
     @ViewBuilder func displayBrandAndModelField(singleItemStep: FlowClamSingleItemStepModel?) -> some View {
         if (singleItemStep?.availableItemModelOptions.count) ?? 0 > 0
             || (singleItemStep?.availableItemBrandOptions.count) ?? 0 > 0
