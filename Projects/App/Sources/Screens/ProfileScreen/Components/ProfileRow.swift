@@ -24,7 +24,8 @@ struct ProfileRow: View {
                 Image(uiImage: row.icon)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 40, height: 40)
+                    .frame(width: row.imageSize, height: row.imageSize)
+                    .padding(row.paddings)
                 VStack(alignment: .leading, spacing: 2) {
                     hText(row.title)
                     if let subtitle = subtitle, subtitle != "" {

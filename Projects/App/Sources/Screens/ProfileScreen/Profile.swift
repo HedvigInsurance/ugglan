@@ -43,6 +43,14 @@ struct ProfileView: View {
                     if hAnalyticsExperiment.showCharity {
                         ProfileRow(row: .myCharity, subtitle: stateData.memberCharityName)
                     }
+                    if store.state.partnerData?.shouldShowEuroBonus ?? false {
+                        let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
+                        let hasEntereNumber = !number.isEmpty
+                        ProfileRow(
+                            row: .eurobonus(hasEnteredNumber: hasEntereNumber),
+                            subtitle: hasEntereNumber ? number : L10n.SasIntegration.connectYourNumber
+                        )
+                    }
                     if hAnalyticsExperiment.paymentScreen {
                         ProfileRow(row: .payment, subtitle: "\(stateData.monthlyNet) \(L10n.paymentCurrencyOccurrence)")
                     }
@@ -140,6 +148,11 @@ extension ProfileView {
                 )
             } else if case .openFreeTextChat = action {
                 resultJourney(.openFreeTextChat)
+            } else if case .openEuroBonus = action {
+                HostingJourney(
+                    rootView: EuroBonusView(),
+                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
+                )
             }
         }
         .configureTitle(L10n.profileTitle)
