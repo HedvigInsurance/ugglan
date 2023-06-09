@@ -16,6 +16,7 @@ public struct SubmitClaimSingleItem: View {
         LoadingViewWithContent(.postSingleItem) {
             hForm {
             }
+            .hUseNewStyle
             .hFormTitle(.small, L10n.claimsSingleItemDetails)
             .hFormAttachToBottom {
 
@@ -44,19 +45,9 @@ public struct SubmitClaimSingleItem: View {
                 }
             }
         }
-        .hUseNewStyle
-        .onChange(of: type) { newValue in
-            if newValue == nil {
-                UIApplication.dismissKeyboard()
-                store.send(.singleItemRequest(purchasePrice: Double(purchasePrice)))
-            } else if newValue == .damage {
-                UIApplication.dismissKeyboard()
-            }
-        }
     }
 
     @ViewBuilder func displayBrandAndModelField(singleItemStep: FlowClamSingleItemStepModel?) -> some View {
-
         if (singleItemStep?.availableItemModelOptions.count) ?? 0 > 0
             || (singleItemStep?.availableItemBrandOptions.count) ?? 0 > 0
         {
@@ -120,26 +111,17 @@ public struct SubmitClaimSingleItem: View {
 
 enum ClaimsFlowSingleItemFieldType: hTextFieldFocusStateCompliant {
     static var last: ClaimsFlowSingleItemFieldType {
-        return ClaimsFlowSingleItemFieldType.damage
+        return ClaimsFlowSingleItemFieldType.purchasePrice
     }
 
     var next: ClaimsFlowSingleItemFieldType? {
         switch self {
-        case .brandAndModel:
-            return .purchaseDate
-        case .purchaseDate:
-            return .purchasePrice
         case .purchasePrice:
-            return .damage
-        case .damage:
             return nil
         }
     }
 
-    case brandAndModel
-    case purchaseDate
     case purchasePrice
-    case damage
 }
 
 struct SubmitClaimSingleItem_Previews: PreviewProvider {
