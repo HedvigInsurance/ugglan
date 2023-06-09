@@ -339,7 +339,7 @@ public class ClaimJourneys {
             if case let .commonClaimOriginSelected(origin) = action {
                 if origin.id.hasEntrypointTypes ?? true {
                     ClaimJourneys.showClaimEntrypointType(origin: origin) { typeOrigin in
-                        if origin.id.hasEntrypointOptions ?? true {
+                        if typeOrigin.id.hasEntrypointOptions ?? true {
                             ClaimJourneys.showClaimEntrypointOption(origin: typeOrigin) { optionOrigin in
                                 redirectJourney(optionOrigin)
                             }
