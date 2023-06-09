@@ -16,7 +16,6 @@ public struct SubmitClaimSingleItem: View {
         LoadingViewWithContent(.postSingleItem) {
             hForm {
             }
-            .hUseNewStyle
             .hFormTitle(.small, L10n.claimsSingleItemDetails)
             .hFormAttachToBottom {
 
@@ -45,6 +44,7 @@ public struct SubmitClaimSingleItem: View {
                 }
             }
         }
+        .hUseNewStyle
         .onChange(of: type) { newValue in
             if newValue == nil {
                 UIApplication.dismissKeyboard()
