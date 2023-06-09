@@ -2,8 +2,9 @@ import Apollo
 import Flow
 import Presentation
 import hCore
-import hGraphQL
 import hCoreUI
+import hGraphQL
+
 public struct ProfileState: StateProtocol {
     var memberFullName: String = ""
     var memberCharityName: String = ""
@@ -36,7 +37,7 @@ public enum ProfileAction: ActionProtocol {
 public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
-    
+
     public override func effects(
         _ getState: @escaping () -> ProfileState,
         _ action: ProfileAction
@@ -45,7 +46,7 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
         case .fetchProfileState:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-                
+
                 let getProfileData = self.giraffe.client
                     .fetch(
                         query: GiraffeGraphQL.ProfileQuery(),
@@ -63,11 +64,12 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                             let name = (profileData.member.firstName ?? "") + " " + (profileData.member.lastName ?? "")
                             let charity = profileData.cashback?.name ?? ""
                             let monthlyNet = Int(
-                                profileData.chargeEstimation.subscription.fragments.monetaryAmountFragment.monetaryAmount.floatAmount
+                                profileData.chargeEstimation.subscription.fragments.monetaryAmountFragment
+                                    .monetaryAmount.floatAmount
                             )
                             callback(.value(.setProfileState(name: name, charity: charity, monthlyNet: monthlyNet)))
                         }
-                        if let partnerData = partnerData.value{
+                        if let partnerData = partnerData.value {
                             let partner = PartnerData(with: partnerData.currentMember.fragments.partnerDataFragment)
                             callback(.value(.setEurobonusNumber(partnerData: partner)))
                         }
@@ -78,17 +80,23 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
                 let input = OctopusGraphQL.MemberUpdateEurobonusNumberInput(eurobonusNumber: number)
-                disposeBag += self.octopus.client.perform(mutation: OctopusGraphQL.UpdateEurobonusNumberMutation(input:input))
+                disposeBag += self.octopus.client
+                    .perform(mutation: OctopusGraphQL.UpdateEurobonusNumberMutation(input: input))
                     .onValue { result in
                         if let error = result.memberUpdateEurobonusNumber.userError?.message, error != "" {
                             callback(.value(.updateEurobonusState(with: .error(error: error))))
-                        }else if let partnerData = result.memberUpdateEurobonusNumber.member?.fragments.partnerDataFragment {
-                            callback(.value(.setEurobonusNumber(partnerData: PartnerData(with:partnerData))))
+                        } else if let partnerData = result.memberUpdateEurobonusNumber.member?.fragments
+                            .partnerDataFragment
+                        {
+                            callback(.value(.setEurobonusNumber(partnerData: PartnerData(with: partnerData))))
                             callback(.value(.updateEurobonusState(with: nil)))
                         } else {
-                            callback(.value(.updateEurobonusState(with: .error(error: L10n.SasIntegration.incorrectNumber))))
+                            callback(
+                                .value(.updateEurobonusState(with: .error(error: L10n.SasIntegration.incorrectNumber)))
+                            )
                         }
-                    }.onError { _ in
+                    }
+                    .onError { _ in
                         callback(.value(.updateEurobonusState(with: .error(error: L10n.General.errorBody))))
                     }
                 return disposeBag
@@ -97,7 +105,7 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             return nil
         }
     }
-    
+
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
@@ -122,18 +130,18 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
         default:
             break
         }
-        
+
         return newState
     }
 }
 
 public struct PartnerData: Codable, Equatable {
     let sas: PartnerDataSas?
-    
+
     var shouldShowEuroBonus: Bool {
         return sas?.eligible ?? false
     }
-    
+
     init?(with data: OctopusGraphQL.PartnerDataFragment) {
         guard let sasData = data.partnerData?.sas else { return nil }
         self.sas = PartnerDataSas(with: sasData)
@@ -143,7 +151,7 @@ public struct PartnerData: Codable, Equatable {
 public struct PartnerDataSas: Codable, Equatable {
     let eligible: Bool
     let eurobonusNumber: String?
-    
+
     init(with data: OctopusGraphQL.PartnerDataFragment.PartnerDatum.Sa) {
         self.eligible = data.eligible
         self.eurobonusNumber = data.eurobonusNumber

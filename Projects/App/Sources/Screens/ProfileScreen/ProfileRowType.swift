@@ -4,7 +4,8 @@ import hCore
 import hCoreUI
 
 enum ProfileRowType {
-    case myInfo, myCharity, payment, appInfo, settings, eurobonus(hasEnteredNumber: Bool)
+    case myInfo, myCharity, payment, appInfo, settings
+    case eurobonus(hasEnteredNumber: Bool)
 
     var title: String {
         switch self {
@@ -60,7 +61,7 @@ enum ProfileRowType {
             return .openEuroBonus
         }
     }
-    
+
     var imageSize: CGFloat {
         switch self {
         case .myInfo:
@@ -77,7 +78,7 @@ enum ProfileRowType {
             return hasEnteredNumber ? 25 : 40
         }
     }
-    
+
     var paddings: CGFloat {
         return (40 - imageSize) / 2
     }

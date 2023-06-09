@@ -84,7 +84,7 @@ public struct Masking {
         case .birthDateReverse:
             let reverseDateFormatter = DateFormatter()
             reverseDateFormatter.dateFormat = "dd-MM-yyyy"
-            
+
             guard let date = reverseDateFormatter.date(from: text) else { return text }
             return date.localDateString
         case .email, .norwegianPostalCode, .digits, .norwegianPersonalNumber: return text
@@ -273,7 +273,7 @@ public struct Masking {
             }
             return previousText
         }
-        
+
         func uppercasedAlphaNumeric(maxCount: Int) -> String {
             if text.count < previousText.count {
                 return text
@@ -281,8 +281,8 @@ public struct Masking {
 
             if text.count <= maxCount {
                 var sanitizedText = String(
-                    text.filter {$0.isNumber || $0.isLetter}.enumerated()
-                        .map { _, char in char}
+                    text.filter { $0.isNumber || $0.isLetter }.enumerated()
+                        .map { _, char in char }
                 )
                 return sanitizedText.uppercased()
             }
