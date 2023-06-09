@@ -15,30 +15,30 @@ public struct SubmitClaimContactScreen: View {
     public var body: some View {
         LoadingViewWithContent(.postPhoneNumber) {
             hForm {}
-            .hUseNewStyle
-            .hFormTitle(.small, L10n.claimsConfirmNumberTitle)
-            .hFormAttachToBottom {
-                VStack(spacing: 24) {
-                    hSection {
-                        hFloatingTextField(
-                            masking: Masking(type: .digits),
-                            value: $phoneNumber,
-                            equals: $type,
-                            focusValue: .phoneNumber,
-                            placeholder: L10n.phoneNumberRowTitle
-                        )
+                .hUseNewStyle
+                .hFormTitle(.small, L10n.claimsConfirmNumberTitle)
+                .hFormAttachToBottom {
+                    VStack(spacing: 24) {
+                        hSection {
+                            hFloatingTextField(
+                                masking: Masking(type: .digits),
+                                value: $phoneNumber,
+                                equals: $type,
+                                focusValue: .phoneNumber,
+                                placeholder: L10n.phoneNumberRowTitle
+                            )
+                        }
+                        hButton.LargeButtonFilled {
+                            store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
+                            UIApplication.dismissKeyboard()
+                        } content: {
+                            hTextNew(L10n.generalContinueButton, style: .body)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .bottom)
+                        .padding([.leading, .trailing], 16)
+                        .padding(.bottom, 24)
                     }
-                    hButton.LargeButtonFilled {
-                        store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
-                        UIApplication.dismissKeyboard()
-                    } content: {
-                        hTextNew(L10n.generalContinueButton, style: .body)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .bottom)
-                    .padding([.leading, .trailing], 16)
-                    .padding(.bottom, 24)
                 }
-            }
         }
     }
 }
