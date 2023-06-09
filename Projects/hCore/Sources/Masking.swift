@@ -16,6 +16,7 @@ public enum MaskType: String {
     case birthDateReverse = "BirthDateReverse"
     case norwegianPostalCode = "NorwegianPostalCode"
     case digits = "Digits"
+    case euroBonus = "EuroBonus"
 }
 
 public struct Masking {
@@ -71,6 +72,7 @@ public struct Masking {
         case .digits: return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
         case .none: return true
         case .disabledSuggestion: return true
+        case .euroBonus: return true
         }
     }
 
@@ -82,13 +84,14 @@ public struct Masking {
         case .birthDateReverse:
             let reverseDateFormatter = DateFormatter()
             reverseDateFormatter.dateFormat = "dd-MM-yyyy"
-
+            
             guard let date = reverseDateFormatter.date(from: text) else { return text }
             return date.localDateString
         case .email, .norwegianPostalCode, .digits, .norwegianPersonalNumber: return text
         case .danishPersonalNumber: return text.replacingOccurrences(of: "-", with: "")
         case .none: return text
         case .disabledSuggestion: return text
+        case .euroBonus: return text.replacingOccurrences(of: "-", with: "")
         }
     }
 
@@ -151,6 +154,7 @@ public struct Masking {
         case .email: return .emailAddress
         case .none: return .default
         case .disabledSuggestion: return .default
+        case .euroBonus: return .default
         }
     }
 
@@ -193,6 +197,8 @@ public struct Masking {
             return nil
         case .disabledSuggestion:
             return nil
+        case .euroBonus:
+            return nil
         }
     }
 
@@ -219,6 +225,8 @@ public struct Masking {
         case .digits:
             return nil
         case .disabledSuggestion:
+            return nil
+        case .euroBonus:
             return nil
         }
     }
@@ -263,6 +271,21 @@ public struct Masking {
 
                 return sanitizedText
             }
+            return previousText
+        }
+        
+        func uppercasedAlphaNumeric(maxCount: Int) -> String {
+            if text.count < previousText.count {
+                return text
+            }
+
+            if text.count <= maxCount {
+                var sanitizedText = String(
+                    text.filter {$0.isNumber || $0.isLetter}.enumerated()
+                        .map { _, char in char}
+                )
+                return sanitizedText.uppercased()
+            }
 
             return previousText
         }
@@ -286,6 +309,8 @@ public struct Masking {
             return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
         case .none: return text
         case .disabledSuggestion: return text
+        case .euroBonus:
+            return uppercasedAlphaNumeric(maxCount: 12)
         }
     }
 }

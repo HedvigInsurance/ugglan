@@ -1,0 +1,14 @@
+query ParnerData {
+  currentMember {
+    ...PartnerDataFragment
+  }
+}
+
+fragment PartnerDataFragment on Member {
+      partnerData {
+        sas {
+          eurobonusNumber
+          eligible
+        }
+      }
+}
