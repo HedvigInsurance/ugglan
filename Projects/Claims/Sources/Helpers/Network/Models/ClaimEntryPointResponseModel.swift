@@ -1,28 +1,44 @@
+import SwiftUI
+import hGraphQL
+
 public struct ClaimEntryPointGroupResponseModel: Codable, Equatable, Hashable {
     let id: String
     let displayName: String
-    let icon: String
+    var entrypoints: [ClaimEntryPointResponseModel]
 
     init(
-        id: String,
-        displayName: String,
-        icon: String
+        with data: OctopusGraphQL.EntrypointGroupFragment
     ) {
-        self.id = id
-        self.displayName = displayName
-        self.icon = icon
+        self.id = data.id
+        self.displayName = data.displayName
+        self.entrypoints = data.entrypoints.map({ ClaimEntryPointResponseModel(with: $0.fragments.entrypointFragment) })
     }
 }
 
 public struct ClaimEntryPointResponseModel: Codable, Equatable, Hashable {
     let id: String
     let displayName: String
+    var options: [ClaimEntryPointOptionResponseModel]
 
     init(
-        id: String,
-        displayName: String
+        with data: OctopusGraphQL.EntrypointFragment
+
     ) {
-        self.id = id
-        self.displayName = displayName
+        self.id = data.id
+        self.displayName = data.displayName
+        options =
+            data.options?.map({ ClaimEntryPointOptionResponseModel(with: $0.fragments.entrypointOptionFragment) }) ?? []
+    }
+}
+
+public struct ClaimEntryPointOptionResponseModel: Codable, Equatable, Hashable {
+    let id: String
+    let displayName: String
+
+    init(
+        with data: OctopusGraphQL.EntrypointOptionFragment
+    ) {
+        self.id = data.id
+        self.displayName = data.displayName
     }
 }

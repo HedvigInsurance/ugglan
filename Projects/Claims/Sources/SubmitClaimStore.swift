@@ -15,11 +15,15 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
         _ action: SubmitClaimsAction
     ) -> FiniteSignal<SubmitClaimsAction>? {
         let newClaimContext = state.currentClaimContext ?? ""
+        let currentProgress = state.progress
         switch action {
         case .submitClaimOpenFreeTextChat:
             return nil
-        case let .startClaimRequest(id):
-            let startInput = OctopusGraphQL.FlowClaimStartInput(entrypointId: id)
+        case let .startClaimRequest(entrypointId, entrypointOptionId):
+            let startInput = OctopusGraphQL.FlowClaimStartInput(
+                entrypointId: entrypointId,
+                entrypointOptionId: entrypointOptionId
+            )
             let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput)
             return mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
         case let .phoneNumberRequest(phoneNumberInput):
@@ -136,7 +140,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             )
             return mutation.execute(\.flowClaimSummaryNext.fragments.flowClaimFragment.currentStep)
         case .singleItemCheckoutRequest:
-            if let claimSingleItemCheckoutInput = self.state.singleItemCheckoutStep!.returnSingleItemCheckoutInfo() {
+            if let claimSingleItemCheckoutInput = self.state.singleItemCheckoutStep?.returnSingleItemCheckoutInfo() {
                 let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
                     input: claimSingleItemCheckoutInput,
                     context: newClaimContext
@@ -164,8 +168,8 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 disposeBag +=
                     self.octopus.client.fetch(query: query)
                     .onValue { data in
-                        let model = data.entrypointGroups.map {
-                            ClaimEntryPointGroupResponseModel(id: $0.id, displayName: $0.displayName, icon: $0.iconUrl)
+                        let model = data.entrypointGroups.map { data in
+                            ClaimEntryPointGroupResponseModel(with: data.fragments.entrypointGroupFragment)
                         }
                         callback(.value(.setClaimEntrypointGroupsForSelection(model)))
                         callback(.value(.setLoadingState(action: .fetchClaimEntrypointGroups, state: nil)))
@@ -204,8 +208,8 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 disposeBag +=
                     self.octopus.client.fetch(query: query)
                     .onValue { data in
-                        let model = data.entrypointSearch.map {
-                            ClaimEntryPointResponseModel(id: $0.id, displayName: $0.displayName)
+                        let model = data.entrypointSearch.map { data in
+                            ClaimEntryPointResponseModel(with: data.fragments.entrypointFragment)
                         }
 
                         callback(.value(.setClaimEntrypointsForSelection(model)))
@@ -290,9 +294,9 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
                 newState.singleItemStep = model.singleItemStepModel
                 send(.navigationAction(action: .openSummaryScreen))
+                send(.navigationAction(action: .openCheckoutNoRepairScreen))
             case let .setSingleItemCheckoutStep(model):
                 newState.singleItemCheckoutStep = model
-                send(.navigationAction(action: .openCheckoutNoRepairScreen))
             case let .setFailedStep(model):
                 newState.failedStep = model
                 send(.navigationAction(action: .openFailureSceen))
@@ -336,6 +340,12 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.loadingStates[.fetchClaimEntrypoints] = .loading
         case .fetchEntrypointGroups:
             newState.loadingStates[.fetchClaimEntrypointGroups] = .loading
+        case let .setSelectedEntrypoints(entrypoints):
+            newState.entrypoints.selectedEntrypoints = entrypoints
+        case let .setSelectedEntrypointOptions(entrypointOptions):
+            newState.entrypoints.selectedEntrypointOptions = entrypointOptions
+        case let .setSelectedEntrypointId(entrypointId):
+            newState.entrypoints.selectedEntrypointId = entrypointId
         default:
             break
         }

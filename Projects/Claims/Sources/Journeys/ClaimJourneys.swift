@@ -21,7 +21,7 @@ public class ClaimJourneys {
     @JourneyBuilder
     private static func getScreen(for action: SubmitClaimsAction) -> some JourneyPresentation {
         if case let .navigationAction(navigationAction) = action {
-            if hAnalyticsExperiment.claimsTriaging {
+            if hAnalyticsExperiment.claimsFlowNewDesign {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
                     submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
                 } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
@@ -340,28 +340,73 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    public static func showClaimEntrypointGroups(
+    public static func showClaimEntrypointsNew(
         origin: ClaimsOrigin,
         @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectEntrypointNavigation(),
-            style: .detented(.large),
-            options: [
-                .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
-            ]
-        ) {
-            action in
-            if case let .entrypointGroupSelected(origin) = action {
-                GroupJourney { context in
-                    switch origin {
-                    case .generic:
-                        ContinueJourney()
-                    case let .commonClaims(id):
-                        redirectJourney(ClaimsOrigin.commonClaims(id: id))
+            rootView: SelectClaimEntrypointGroup(
+                selectedEntrypoints: { entrypoints in
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
+                }),
+            style: .modally()
+        ) { action in
+            if case let .commonClaimOriginSelected(origin) = action {
+                if origin.id.hasEntrypointTypes ?? true {
+                    ClaimJourneys.showClaimEntrypointType(origin: origin) { typeOrigin in
+                        if origin.id.hasEntrypointOptions ?? true {
+                            ClaimJourneys.showClaimEntrypointOption(origin: typeOrigin) { optionOrigin in
+                                redirectJourney(optionOrigin)
+                            }
+                        } else {
+                            redirectJourney(typeOrigin)
+                        }
                     }
+                } else {
+                    redirectJourney(origin)
                 }
+            }
+        }
+    }
+
+    @JourneyBuilder
+    public static func showClaimEntrypointType(
+        origin: ClaimsOrigin,
+        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
+    ) -> some JourneyPresentation {
+
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SelectClaimEntrypointType(selectedEntrypointOptions: { options, selectedEntrypoint in
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(.setSelectedEntrypointOptions(entrypoints: options))
+                store.send(.setSelectedEntrypointId(entrypoints: selectedEntrypoint))
+            })
+        ) { action in
+            if case let .commonClaimOriginSelected(origin) = action {
+                redirectJourney(origin)
+            }
+        }
+    }
+
+    @JourneyBuilder
+    public static func showClaimEntrypointOption(
+        origin: ClaimsOrigin,
+        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
+    ) -> some JourneyPresentation {
+
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SelectClaimEntrypointOption(),
+            //            style: .detented(.large, modally: true),
+            options: [
+                .defaults
+            ]
+        ) { action in
+            if case let .commonClaimOriginSelected(origin) = action {
+                redirectJourney(origin)
             }
         }
     }
@@ -373,7 +418,7 @@ public class ClaimJourneys {
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectClaimEntrypoint(entrypointGroupId: nil),
+            rootView: SelectClaimEntrypointOld(entrypointGroupId: nil),
             style: .detented(.large),
             options: [
                 .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
@@ -386,29 +431,15 @@ public class ClaimJourneys {
                         ContinueJourney()
                     case let .commonClaims(id):
                         redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                    }
-                }
-            }
-        }
-    }
-
-    @JourneyBuilder
-    public static func showClaimEntrypointsNew(
-        origin: ClaimsOrigin,
-        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SelectClaimEntrypoint(entrypointGroupId: origin.id),
-            style: .detented(.large, modally: false)
-        ) { action in
-            if case let .commonClaimOriginSelected(origin) = action {
-                GroupJourney { context in
-                    switch origin {
-                    case .generic:
-                        ContinueJourney()
-                    case let .commonClaims(id):
-                        redirectJourney(ClaimsOrigin.commonClaims(id: id))
+                    case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
+                        redirectJourney(
+                            ClaimsOrigin.commonClaimsWithOption(
+                                id: id,
+                                optionId: optionId,
+                                hasEntrypointTypes: hasEntrypointTypes,
+                                hasEntrypointOptions: hasEntrypointOptions
+                            )
+                        )
                     }
                 }
             }
