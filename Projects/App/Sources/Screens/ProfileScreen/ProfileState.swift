@@ -59,22 +59,19 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                     )
                 disposeBag += combineLatest(getProfileData.resultSignal, getPartnerData.resultSignal)
                     .onValue { (profileData, partnerData) in
-                        guard let profileData = profileData.value, let partnerData = partnerData.value else {
-                            callback(.value(.setProfileState(name: "", charity: "", monthlyNet: 0)))
-                            return
+                        if let profileData = profileData.value {
+                            let name = (profileData.member.firstName ?? "") + " " + (profileData.member.lastName ?? "")
+                            let charity = profileData.cashback?.name ?? ""
+                            let monthlyNet = Int(
+                                profileData.chargeEstimation.subscription.fragments.monetaryAmountFragment.monetaryAmount.floatAmount
+                            )
+                            callback(.value(.setProfileState(name: name, charity: charity, monthlyNet: monthlyNet)))
                         }
-                        let name = (profileData.member.firstName ?? "") + " " + (profileData.member.lastName ?? "")
-                        let charity = profileData.cashback?.name ?? ""
-                        let monthlyNet = Int(
-                            profileData.chargeEstimation.subscription.fragments.monetaryAmountFragment.monetaryAmount.floatAmount
-                        )
-                        
-                        let partner = PartnerData(with: partnerData.currentMember.fragments.partnerDataFragment)
-                        callback(.value(.setProfileState(name: name, charity: charity, monthlyNet: monthlyNet)))
-                        callback(.value(.setEurobonusNumber(partnerData: partner)))
-                        
+                        if let partnerData = partnerData.value{
+                            let partner = PartnerData(with: partnerData.currentMember.fragments.partnerDataFragment)
+                            callback(.value(.setEurobonusNumber(partnerData: partner)))
+                        }
                     }
-                
                 return disposeBag
             }
         case let .updateEurobonusNumber(number):
