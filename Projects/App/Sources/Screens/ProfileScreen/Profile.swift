@@ -108,10 +108,13 @@ struct ProfileView: View {
             let refreshControl = UIRefreshControl()
             scrollView.refreshControl = refreshControl
             disposeBag.dispose()
-            disposeBag += refreshControl.store(store,
-                                 send: {
-                ProfileAction.fetchProfileState
-            }, endOn: .fetchProfileStateCompleted)
+            disposeBag += refreshControl.store(
+                store,
+                send: {
+                    ProfileAction.fetchProfileState
+                },
+                endOn: .fetchProfileStateCompleted
+            )
         }
     }
 }
