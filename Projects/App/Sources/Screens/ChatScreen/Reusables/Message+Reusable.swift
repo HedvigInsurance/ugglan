@@ -208,17 +208,17 @@ extension Message: Reusable {
 
                     bag += editButton.signal(for: .touchUpInside)
                         .onValue { _ in message.onEditCallbacker.callAll() }
-
+                    
                     func applySpacing() {
                         if message.type.isVideoOrImageType {
                             contentContainer.layoutMargins = UIEdgeInsets.zero
                         } else {
                             contentContainer.layoutMargins = UIEdgeInsets(
                                 horizontalInset: 10,
-                                verticalInset: 10
+                                verticalInset:  message.shouldShowTimeStamp ? 10 : 0
                             )
                         }
-
+                        
                         if message.isRelatedToPreviousMessage {
                             spacingContainer.layoutMargins = UIEdgeInsets(
                                 top: message.smallerMarginTop,
