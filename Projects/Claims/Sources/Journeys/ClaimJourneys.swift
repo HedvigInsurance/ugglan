@@ -352,9 +352,8 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    public static func showClaimEntrypointsNew(
-        origin: ClaimsOrigin,
-        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
+    public static func showClaimEntrypointGroup(
+        origin: ClaimsOrigin
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -363,32 +362,22 @@ public class ClaimJourneys {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
                 }),
-            style: .modally()
+            style: .modal
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
                 if origin.id.hasEntrypointTypes ?? true {
-                    ClaimJourneys.showClaimEntrypointType(origin: origin) { typeOrigin in
-                        if typeOrigin.id.hasEntrypointOptions ?? true {
-                            ClaimJourneys.showClaimEntrypointOption(origin: typeOrigin) { optionOrigin in
-                                redirectJourney(optionOrigin)
-                            }
-                        } else {
-                            redirectJourney(typeOrigin)
-                        }
-                    }
-                } else {
-                    redirectJourney(origin)
+                    ClaimJourneys.showClaimEntrypointType(origin: origin)
                 }
             }
         }
+        .hidesBackButton
+        .withJourneyDismissButton
     }
 
     @JourneyBuilder
     public static func showClaimEntrypointType(
-        origin: ClaimsOrigin,
-        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
+        origin: ClaimsOrigin
     ) -> some JourneyPresentation {
-
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypointType(selectedEntrypointOptions: { options, selectedEntrypoint in
@@ -398,35 +387,30 @@ public class ClaimJourneys {
             })
         ) { action in
             if case let .commonClaimOriginSelected(origin) = action {
-                redirectJourney(origin)
+                if origin.id.hasEntrypointOptions ?? false {
+                    ClaimJourneys.showClaimEntrypointOption(origin: origin)
+                }
             }
         }
+        .withJourneyDismissButton
     }
 
     @JourneyBuilder
     public static func showClaimEntrypointOption(
-        origin: ClaimsOrigin,
-        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
+        origin: ClaimsOrigin
     ) -> some JourneyPresentation {
-
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectClaimEntrypointOption(),
-            //            style: .detented(.large, modally: true),
-            options: [
-                .defaults
-            ]
+            rootView: SelectClaimEntrypointOption()
         ) { action in
-            if case let .commonClaimOriginSelected(origin) = action {
-                redirectJourney(origin)
-            }
+            getScreen(for: action)
         }
+        .withJourneyDismissButton
     }
 
     @JourneyBuilder
     public static func showClaimEntrypointsOld(
-        origin: ClaimsOrigin,
-        @JourneyBuilder redirectJourney: @escaping (_ newOrigin: ClaimsOrigin) -> some JourneyPresentation
+        origin: ClaimsOrigin
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -436,25 +420,7 @@ public class ClaimJourneys {
                 .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
             ]
         ) { action in
-            if case let .commonClaimOriginSelected(origin) = action {
-                GroupJourney { context in
-                    switch origin {
-                    case .generic:
-                        ContinueJourney()
-                    case let .commonClaims(id):
-                        redirectJourney(ClaimsOrigin.commonClaims(id: id))
-                    case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
-                        redirectJourney(
-                            ClaimsOrigin.commonClaimsWithOption(
-                                id: id,
-                                optionId: optionId,
-                                hasEntrypointTypes: hasEntrypointTypes,
-                                hasEntrypointOptions: hasEntrypointOptions
-                            )
-                        )
-                    }
-                }
-            }
+            getScreen(for: action)
         }
     }
 

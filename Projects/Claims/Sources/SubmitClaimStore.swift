@@ -15,7 +15,6 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
         _ action: SubmitClaimsAction
     ) -> FiniteSignal<SubmitClaimsAction>? {
         let newClaimContext = state.currentClaimContext ?? ""
-        let currentProgress = state.progress
         switch action {
         case .submitClaimOpenFreeTextChat:
             return nil

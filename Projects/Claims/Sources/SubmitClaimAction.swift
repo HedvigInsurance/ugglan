@@ -63,6 +63,8 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openFailureSceen
     case openUpdateAppScreen
     case openNotificationsPermissionScreen
+    case openEntrypointScreen
+    case openNewTriagingScreen
 
     public enum LocationPickerType: ActionProtocol {
         case setLocation

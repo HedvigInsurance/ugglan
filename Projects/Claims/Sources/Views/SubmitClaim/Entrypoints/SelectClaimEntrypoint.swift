@@ -4,7 +4,7 @@ import TagKit
 import hCore
 import hCoreUI
 
-struct SelectClaimEntrypointGroup: View {
+public struct SelectClaimEntrypointGroup: View {
     @PresentableStore var store: SubmitClaimStore
     @State var selectedClaimGroup: String? = nil
     @State var claimEntrypoints: [ClaimEntryPointResponseModel] = []
@@ -17,7 +17,7 @@ struct SelectClaimEntrypointGroup: View {
         store.send(.fetchEntrypointGroups)
     }
 
-    var body: some View {
+    public var body: some View {
         LoadingViewWithContent(.fetchClaimEntrypoints) {
             hForm {
             }
@@ -206,14 +206,10 @@ struct SelectClaimEntrypointOption: View {
                     onButtonClick: {
                         if selectedClaimOption != nil {
                             store.send(
-                                .commonClaimOriginSelected(
-                                    commonClaim: ClaimsOrigin.commonClaimsWithOption(
-                                        id: entrypoints.selectedEntrypointId ?? "",
-                                        optionId: mapNametoEntrypointOptionId(
-                                            input: entrypoints.selectedEntrypointOptions ?? []
-                                        ),
-                                        hasEntrypointTypes: true,
-                                        hasEntrypointOptions: true
+                                .startClaimRequest(
+                                    entrypointId: entrypoints.selectedEntrypointId ?? "",
+                                    entrypointOptionId: mapNametoEntrypointOptionId(
+                                        input: entrypoints.selectedEntrypointOptions ?? []
                                     )
                                 )
                             )

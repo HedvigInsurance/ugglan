@@ -19,23 +19,6 @@ public struct SelectClaimEntrypointOld: View {
         store.send(.fetchClaimEntrypointsForSelection(entrypointGroupId: entrypointGroupId))
     }
 
-    func entrypointToStringArray(input: [ClaimEntryPointResponseModel]) -> [String] {
-        var arr: [String] = []
-        for i in input {
-            arr.append(i.displayName)
-        }
-        return arr
-    }
-
-    func mapNametoId(input: [ClaimEntryPointResponseModel]) -> String {
-        for claimType in input {
-            if claimType.displayName == selectedClaimType {
-                return claimType.id
-            }
-        }
-        return ""
-    }
-
     public var body: some View {
         LoadingViewWithContent(.fetchClaimEntrypoints) {
             hForm {
@@ -45,66 +28,9 @@ public struct SelectClaimEntrypointOld: View {
                         state.claimEntrypoints
                     }
                 ) { claimEntrypoint in
-                    if hAnalyticsExperiment.claimsTriaging {
-                        entrypointPills(claimEntrypoint: claimEntrypoint)
-                    } else {
-                        entrypointList(claimEntrypoint: claimEntrypoint)
-                    }
+                    entrypointList(claimEntrypoint: claimEntrypoint)
                 }
             }
-        }
-    }
-
-    @ViewBuilder
-    public func entrypointPills(claimEntrypoint: [ClaimEntryPointResponseModel]) -> some View {
-
-        hText(L10n.claimTriagingTitle, style: .prominentTitle)
-            .multilineTextAlignment(.center)
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding([.trailing, .leading], 16)
-            .padding([.bottom, .top], 82)
-
-        let arrayList = entrypointToStringArray(input: claimEntrypoint)
-
-        TagList(tags: arrayList) { tag in
-            HStack {
-                hText(tag, style: .body)
-                    .foregroundColor(hLabelColorNew.primary)
-                    .lineLimit(1)
-            }
-            .onAppear {
-                if selectedClaimType == "" {
-                    selectedClaimType = claimEntrypoint.last?.displayName ?? ""
-                }
-            }
-            .onTapGesture {
-                withAnimation {
-                    selectedClaimType = tag
-                }
-            }
-            .padding([.leading, .trailing], 16)
-            .padding([.top, .bottom], 8)
-            .background(
-                Squircle.default()
-                    .fill(retColor(claimId: tag))
-                    .hShadow()
-            )
-
-        }
-        .padding([.leading, .trailing], 16)
-
-        if let selectedClaimType = selectedClaimType {
-            hButton.LargeButtonFilled {
-                store.send(
-                    .commonClaimOriginSelected(
-                        commonClaim: ClaimsOrigin.commonClaims(id: mapNametoId(input: claimEntrypoint))
-                    )
-                )
-            } content: {
-                hText(L10n.generalContinueButton)
-                    .foregroundColor(hLabelColorNew.primary).colorInvert()
-            }
-            .padding([.trailing, .leading], 16)
         }
     }
 
@@ -116,7 +42,10 @@ public struct SelectClaimEntrypointOld: View {
             }
             .onTap {
                 store.send(
-                    .commonClaimOriginSelected(commonClaim: ClaimsOrigin.commonClaims(id: claimType.id))
+                    .startClaimRequest(
+                        entrypointId: claimType.id,
+                        entrypointOptionId: nil
+                    )
                 )
             }
         }
@@ -130,12 +59,4 @@ public struct SelectClaimEntrypointOld: View {
         .presentableStoreLensAnimation(.easeInOut)
     }
 
-    @hColorBuilder
-    func retColor(claimId: String) -> some hColor {
-        if selectedClaimType == claimId {
-            hGreenColorNew.green50
-        } else {
-            hGrayscaleColorNew.greyScale100
-        }
-    }
 }
