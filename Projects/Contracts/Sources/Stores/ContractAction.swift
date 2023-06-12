@@ -44,7 +44,6 @@ public indirect enum ContractAction: ActionProtocol, Hashable {
     case fetchContracts
     case fetchContractsDone
 
-    
     case setContractBundles(activeContractBundles: [ActiveContractBundle])
     case setCrossSells(crossSells: [CrossSell])
     case setContracts(contracts: [Contract])
