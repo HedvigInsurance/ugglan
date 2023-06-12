@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct SubmitClaimContactScreen: View {
+public struct SubmitClaimContactScreenOld: View {
 
     @PresentableStore var store: SubmitClaimStore
     @State var phoneNumber: String
