@@ -79,7 +79,6 @@ extension AppJourney {
                     }
                 }
             },
-            //            style: .detented(.large, modally: true)
             style: .detented(.scrollViewContentSize)
         ) { action in
             if case let .navigationAction(navigationAction) = action {

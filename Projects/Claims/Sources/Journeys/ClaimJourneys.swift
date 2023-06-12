@@ -364,9 +364,11 @@ public class ClaimJourneys {
                 }),
             style: .modal
         ) { action in
-            if case let .commonClaimOriginSelected(origin) = action {
-                if origin.id.hasEntrypointTypes ?? true {
+            if case let .setSelectedEntrypoints(entrypoints) = action {
+                if entrypoints != [] {
                     ClaimJourneys.showClaimEntrypointType(origin: origin)
+                } else {
+                    getScreen(for: action)
                 }
             }
         }
@@ -384,12 +386,23 @@ public class ClaimJourneys {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(.setSelectedEntrypointOptions(entrypoints: options))
                 store.send(.setSelectedEntrypointId(entrypoints: selectedEntrypoint))
+
+                if options == [] {
+                    store.send(
+                        .startClaimRequest(
+                            entrypointId: selectedEntrypoint ?? "",
+                            entrypointOptionId: nil
+                        )
+                    )
+                }
             })
         ) { action in
-            if case let .commonClaimOriginSelected(origin) = action {
-                if origin.id.hasEntrypointOptions ?? false {
+            if case let .setSelectedEntrypointOptions(options) = action {
+                if options != [] {
                     ClaimJourneys.showClaimEntrypointOption(origin: origin)
                 }
+            } else {
+                getScreen(for: action)
             }
         }
         .withJourneyDismissButton
@@ -401,7 +414,15 @@ public class ClaimJourneys {
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectClaimEntrypointOption()
+            rootView: SelectClaimEntrypointOption(onButtonClick: { entrypointId, entrypointOptionId in
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .startClaimRequest(
+                        entrypointId: entrypointId,
+                        entrypointOptionId: entrypointOptionId
+                    )
+                )
+            })
         ) { action in
             getScreen(for: action)
         }

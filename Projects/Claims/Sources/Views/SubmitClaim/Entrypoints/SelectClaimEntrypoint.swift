@@ -47,16 +47,6 @@ public struct SelectClaimEntrypointGroup: View {
                             onButtonClick: {
                                 if selectedClaimGroup != nil {
                                     selectedEntrypoints(claimEntrypoints)
-                                    store.send(
-                                        .commonClaimOriginSelected(
-                                            commonClaim: ClaimsOrigin.commonClaimsWithOption(
-                                                id: "",
-                                                optionId: "",
-                                                hasEntrypointTypes: hasClaimEntrypoints,
-                                                hasEntrypointOptions: true
-                                            )
-                                        )
-                                    )
                                 }
                             },
                             oldValue: $selectedClaimGroup
@@ -129,16 +119,6 @@ struct SelectClaimEntrypointType: View {
                                 claimOptions,
                                 mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? [])
                             )
-                            store.send(
-                                .commonClaimOriginSelected(
-                                    commonClaim: ClaimsOrigin.commonClaimsWithOption(
-                                        id: mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? []),
-                                        optionId: "",
-                                        hasEntrypointTypes: true,
-                                        hasEntrypointOptions: hasClaimEntrypointOptions
-                                    )
-                                )
-                            )
                         }
                     },
                     oldValue: $selectedClaimEntrypoint
@@ -180,8 +160,13 @@ struct SelectClaimEntrypointType: View {
 struct SelectClaimEntrypointOption: View {
     @PresentableStore var store: SubmitClaimStore
     @State var selectedClaimOption: String? = nil
+    var onButtonClick: (String, String) -> Void
 
-    public init() {}
+    public init(
+        onButtonClick: @escaping (String, String) -> Void
+    ) {
+        self.onButtonClick = onButtonClick
+    }
 
     var body: some View {
         hForm {
@@ -205,12 +190,10 @@ struct SelectClaimEntrypointOption: View {
                     },
                     onButtonClick: {
                         if selectedClaimOption != nil {
-                            store.send(
-                                .startClaimRequest(
-                                    entrypointId: entrypoints.selectedEntrypointId ?? "",
-                                    entrypointOptionId: mapNametoEntrypointOptionId(
-                                        input: entrypoints.selectedEntrypointOptions ?? []
-                                    )
+                            onButtonClick(
+                                entrypoints.selectedEntrypointId ?? "",
+                                mapNametoEntrypointOptionId(
+                                    input: entrypoints.selectedEntrypointOptions ?? []
                                 )
                             )
                         }
