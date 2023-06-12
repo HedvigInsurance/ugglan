@@ -22,10 +22,35 @@ extension AppDelegate {
                     .journeyThenDismiss
             )
             .onValue { _ in
-
+                
             }
+        }else if path == .sasEuroBonus {
+            deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+                .onValue {[weak self] _ in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                        self?.deepLinkDisposeBag += profileStore.stateSignal.onValue {[weak self] state in
+                            if let shouldShowEuroBonus = state.partnerData?.shouldShowEuroBonus {
+                                self?.deepLinkDisposeBag.dispose()
+                                if shouldShowEuroBonus {
+                                    profileStore.send(.openEuroBonus)
+                                }
+                            }
+                        }
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        store.send(.makeTabActive(deeplink: .sasEuroBonus))
+                        if let shouldShowEuroBonus = profileStore.state.partnerData?.shouldShowEuroBonus {
+                            self?.deepLinkDisposeBag.dispose()
+                            if shouldShowEuroBonus {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    profileStore.send(.openEuroBonus)
+                                }
+                            }
+                        }
+                    }
+                }
         } else {
-            bag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
+            deepLinkDisposeBag += ApplicationContext.shared.$hasFinishedBootstrapping.atOnce().filter { $0 }
                 .onValue { _ in
                     let store: UgglanStore = globalPresentableStoreContainer.get()
                     store.send(.makeTabActive(deeplink: path))
@@ -40,6 +65,7 @@ public enum DeepLink: String, Codable {
     case profile
     case insurances
     case home
+    case sasEuroBonus = "eurobonus"
 }
 
 extension DeepLink {
