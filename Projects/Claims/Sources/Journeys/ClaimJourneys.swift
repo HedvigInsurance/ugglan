@@ -382,15 +382,15 @@ public class ClaimJourneys {
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectClaimEntrypointType(selectedEntrypointOptions: { options, selectedEntrypoint in
+            rootView: SelectClaimEntrypointType(selectedEntrypointOptions: { options, selectedEntrypointId in
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(.setSelectedEntrypointOptions(entrypoints: options))
-                store.send(.setSelectedEntrypointId(entrypoints: selectedEntrypoint))
+                store.send(.setSelectedEntrypointId(entrypoints: selectedEntrypointId))
 
                 if options == [] {
                     store.send(
                         .startClaimRequest(
-                            entrypointId: selectedEntrypoint ?? "",
+                            entrypointId: selectedEntrypointId ?? "",
                             entrypointOptionId: nil
                         )
                     )
