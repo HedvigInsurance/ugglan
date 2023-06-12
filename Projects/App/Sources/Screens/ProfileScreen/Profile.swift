@@ -11,7 +11,7 @@ import hGraphQL
 struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
-
+    private let disposeBag = DisposeBag()
     private func getLogoutIcon() -> UIImage {
         let icon = Asset.logoutIcon.image.withTintColor(.brand(.destructive))
         return icon
@@ -104,6 +104,15 @@ struct ProfileView: View {
             store.send(.fetchProfileState)
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .profile))
+        .introspectScrollView { scrollView in
+            let refreshControl = UIRefreshControl()
+            scrollView.refreshControl = refreshControl
+            disposeBag.dispose()
+            disposeBag += refreshControl.store(store,
+                                 send: {
+                ProfileAction.fetchProfileState
+            }, endOn: .fetchProfileStateCompleted)
+        }
     }
 }
 

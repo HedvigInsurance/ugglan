@@ -30,6 +30,7 @@ public enum ProfileAction: ActionProtocol {
     case openAppSettings
     case setProfileState(name: String, charity: String, monthlyNet: Int)
     case setEurobonusNumber(partnerData: PartnerData?)
+    case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
     case updateEurobonusState(with: LoadingState<String>?)
 }
@@ -37,7 +38,7 @@ public enum ProfileAction: ActionProtocol {
 public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     @Inject var giraffe: hGiraffe
     @Inject var octopus: hOctopus
-
+    
     public override func effects(
         _ getState: @escaping () -> ProfileState,
         _ action: ProfileAction
@@ -46,13 +47,13 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
         case .fetchProfileState:
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
-
+                
                 let getProfileData = self.giraffe.client
                     .fetch(
                         query: GiraffeGraphQL.ProfileQuery(),
                         cachePolicy: .fetchIgnoringCacheData
                     )
-
+                
                 let getPartnerData = self.octopus.client
                     .fetch(
                         query: OctopusGraphQL.ParnerDataQuery(),
@@ -73,7 +74,9 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                             let partner = PartnerData(with: partnerData.currentMember.fragments.partnerDataFragment)
                             callback(.value(.setEurobonusNumber(partnerData: partner)))
                         }
+                        callback(.value(.fetchProfileStateCompleted))
                     }
+                
                 return disposeBag
             }
         case let .updateEurobonusNumber(number):
@@ -105,7 +108,7 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             return nil
         }
     }
-
+    
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
@@ -130,18 +133,18 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
         default:
             break
         }
-
+        
         return newState
     }
 }
 
 public struct PartnerData: Codable, Equatable {
     let sas: PartnerDataSas?
-
+    
     var shouldShowEuroBonus: Bool {
         return sas?.eligible ?? false
     }
-
+    
     init?(with data: OctopusGraphQL.PartnerDataFragment) {
         guard let sasData = data.partnerData?.sas else { return nil }
         self.sas = PartnerDataSas(with: sasData)
@@ -151,7 +154,7 @@ public struct PartnerData: Codable, Equatable {
 public struct PartnerDataSas: Codable, Equatable {
     let eligible: Bool
     let eurobonusNumber: String?
-
+    
     init(with data: OctopusGraphQL.PartnerDataFragment.PartnerDatum.Sa) {
         self.eligible = data.eligible
         self.eurobonusNumber = data.eurobonusNumber
