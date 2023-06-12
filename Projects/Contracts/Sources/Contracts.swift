@@ -1,5 +1,6 @@
 import Flow
 import Foundation
+import Introspect
 import Presentation
 import SwiftUI
 import UIKit
@@ -7,7 +8,6 @@ import hAnalytics
 import hCore
 import hCoreUI
 import hGraphQL
-import Introspect
 
 public indirect enum ContractFilter: Equatable, Hashable {
     var displaysActiveContracts: Bool {
@@ -96,11 +96,15 @@ extension Contracts: View {
             let refreshControl = UIRefreshControl()
             disposeBag.dispose()
             scrollView.refreshControl = refreshControl
-            disposeBag += refreshControl.store(store,
-                                               send: {
-                ContractAction.fetch
-            }, endOn: .fetchContractBundlesDone, .fetchContractsDone)
-            
+            disposeBag += refreshControl.store(
+                store,
+                send: {
+                    ContractAction.fetch
+                },
+                endOn: .fetchContractBundlesDone,
+                .fetchContractsDone
+            )
+
         }
     }
 }
