@@ -17,6 +17,8 @@ public struct SubmitClaimsState: StateProtocol {
     @OptionalTransient var successStep: FlowClaimSuccessStepModel?
     @OptionalTransient var failedStep: FlowClaimFailedStepModel?
     @OptionalTransient var audioRecordingStep: FlowClaimAudioRecordingStepModel?
+    @Transient(defaultValue: 0) var progress: Float
+    @Transient(defaultValue: EntrypointState()) var entrypoints: EntrypointState
 
     public init() {}
 }
@@ -29,13 +31,46 @@ public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & E
 public enum ClaimsOrigin: Codable, Equatable, Hashable {
     case generic
     case commonClaims(id: String)
+    case commonClaimsWithOption(id: String, optionId: String, hasEntrypointTypes: Bool?, hasEntrypointOptions: Bool?)
 
-    public var id: String {
+    public var id: CommonClaimId {
         switch self {
         case .generic:
-            return ""
-        case .commonClaims(let id):
-            return id
+            return CommonClaimId()
+        case let .commonClaims(id):
+            return CommonClaimId(id: id)
+        case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
+            return CommonClaimId(
+                id: id,
+                entrypointOptionId: optionId,
+                hasEntrypointTypes: hasEntrypointTypes,
+                hasEntrypointOptions: hasEntrypointOptions
+            )
         }
     }
+}
+
+public struct CommonClaimId {
+    public let id: String
+    public let entrypointOptionId: String?
+    public let hasEntrypointTypes: Bool?
+    public let hasEntrypointOptions: Bool?
+
+    init(
+        id: String = "",
+        entrypointOptionId: String? = nil,
+        hasEntrypointTypes: Bool? = true,
+        hasEntrypointOptions: Bool? = true
+    ) {
+        self.id = id
+        self.entrypointOptionId = entrypointOptionId
+        self.hasEntrypointTypes = hasEntrypointTypes
+        self.hasEntrypointOptions = hasEntrypointOptions
+    }
+}
+
+struct EntrypointState: Codable, Equatable, Hashable {
+    var selectedEntrypoints: [ClaimEntryPointResponseModel]?
+    var selectedEntrypointId: String?
+    var selectedEntrypointOptions: [ClaimEntryPointOptionResponseModel]?
 }

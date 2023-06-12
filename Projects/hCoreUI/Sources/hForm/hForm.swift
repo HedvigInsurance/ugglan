@@ -158,6 +158,7 @@ public struct hForm<Content: View>: View {
                             .multilineTextAlignment(.center)
                             .padding(.top, hFormTitle.0.topMargin)
                             .padding(.bottom, hFormTitle.0.bottomMargin)
+                            .padding([.leading, .trailing], 16)
                     }
                     content
                 }
@@ -172,7 +173,7 @@ public struct hForm<Content: View>: View {
                     scrollView.viewController?.setContentScrollView(scrollView)
                 }
                 if hDisableScroll {
-                    scrollView.addGestureRecognizer(UIPanGestureRecognizer())
+                    scrollView.bounces = false
                 }
             }
             bottomAttachedView

@@ -17,6 +17,7 @@ public enum MaskType: String {
     case birthDateReverse = "BirthDateReverse"
     case norwegianPostalCode = "NorwegianPostalCode"
     case digits = "Digits"
+    case euroBonus = "EuroBonus"
 }
 
 public struct Masking {
@@ -76,6 +77,7 @@ public struct Masking {
         case .digits: return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
         case .none: return true
         case .disabledSuggestion: return true
+        case .euroBonus: return true
         }
     }
 
@@ -95,6 +97,7 @@ public struct Masking {
         case .none: return text
         case .address: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .disabledSuggestion: return text
+        case .euroBonus: return text.replacingOccurrences(of: "-", with: "")
         }
     }
 
@@ -158,6 +161,7 @@ public struct Masking {
         case .none: return .default
         case .address: return .default
         case .disabledSuggestion: return .default
+        case .euroBonus: return .default
         }
     }
 
@@ -203,6 +207,8 @@ public struct Masking {
             return L10n.changeAddressNewAddressLabel
         case .disabledSuggestion:
             return nil
+        case .euroBonus:
+            return nil
         }
     }
 
@@ -231,6 +237,8 @@ public struct Masking {
         case .address:
             return nil
         case .disabledSuggestion:
+            return nil
+        case .euroBonus:
             return nil
         }
     }
@@ -275,6 +283,21 @@ public struct Masking {
 
                 return sanitizedText
             }
+            return previousText
+        }
+
+        func uppercasedAlphaNumeric(maxCount: Int) -> String {
+            if text.count < previousText.count {
+                return text
+            }
+
+            if text.count <= maxCount {
+                var sanitizedText = String(
+                    text.filter { $0.isNumber || $0.isLetter }.enumerated()
+                        .map { _, char in char }
+                )
+                return sanitizedText.uppercased()
+            }
 
             return previousText
         }
@@ -299,6 +322,8 @@ public struct Masking {
         case .none: return text
         case .address: return text
         case .disabledSuggestion: return text
+        case .euroBonus:
+            return uppercasedAlphaNumeric(maxCount: 12)
         }
     }
 }
