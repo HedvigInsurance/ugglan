@@ -32,7 +32,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         callback(.value(ClaimsAction.setClaims(claims: claimData.claims)))
                     }
                     .onError { error in
-                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                        if ApplicationContext.shared.isDemoMode {
+                            callback(.value(.setLoadingState(action: action, state: nil)))
+                        } else {
+                            callback(
+                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
+                            )
+                        }
                     }
                 return disposeBag
             }
@@ -52,7 +58,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
                         callback(.value(ClaimsAction.setCommonClaims(commonClaims: commonClaims)))
                     }
                     .onError { error in
-                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                        if ApplicationContext.shared.isDemoMode {
+                            callback(.value(.setLoadingState(action: action, state: nil)))
+                        } else {
+                            callback(
+                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
+                            )
+                        }
                     }
                 return disposeBag
             }

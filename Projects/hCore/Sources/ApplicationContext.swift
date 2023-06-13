@@ -5,4 +5,5 @@ public struct ApplicationContext {
     @ReadWriteState public var isLoggedIn = false
     @ReadWriteState public var hasFinishedBootstrapping = false
     @ReadWriteState public var hasLoadedExperiments: Bool? = nil
+    @ReadWriteState public var isDemoMode: Bool = false
 }

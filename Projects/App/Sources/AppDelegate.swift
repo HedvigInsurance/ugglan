@@ -325,6 +325,13 @@ import hGraphQL
                         }
                     }
             }
+
+        bag += ApplicationContext.shared.$isDemoMode.onValue { value in
+            let store: UgglanStore = globalPresentableStoreContainer.get()
+            store.send(.setIsDemoMode(to: value))
+        }
+        let store: UgglanStore = globalPresentableStoreContainer.get()
+        ApplicationContext.shared.$isDemoMode.value = store.state.isDemoMode
         return true
     }
 }

@@ -165,6 +165,14 @@ class EuroBonusViewModel: ObservableObject {
                 }
             }
         })
-        store.send(.updateEurobonusNumber(number: number))
+        store.send(.updateEurobonusNumber(number: number.toAlphaNumeric.uppercased()))
+    }
+}
+
+extension String {
+    var toAlphaNumeric: String {
+        let pattern = "[^A-Za-z0-9]+"
+
+        return self.replacingOccurrences(of: pattern, with: "", options: [.regularExpression])
     }
 }
