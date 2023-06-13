@@ -31,7 +31,7 @@ public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & E
 public enum ClaimsOrigin: Codable, Equatable, Hashable {
     case generic
     case commonClaims(id: String)
-    case commonClaimsWithOption(id: String, optionId: String, hasEntrypointTypes: Bool?, hasEntrypointOptions: Bool?)
+    case commonClaimsWithOption(id: String, optionId: String)
 
     public var id: CommonClaimId {
         switch self {
@@ -39,12 +39,10 @@ public enum ClaimsOrigin: Codable, Equatable, Hashable {
             return CommonClaimId()
         case let .commonClaims(id):
             return CommonClaimId(id: id)
-        case let .commonClaimsWithOption(id, optionId, hasEntrypointTypes, hasEntrypointOptions):
+        case let .commonClaimsWithOption(id, optionId):
             return CommonClaimId(
                 id: id,
-                entrypointOptionId: optionId,
-                hasEntrypointTypes: hasEntrypointTypes,
-                hasEntrypointOptions: hasEntrypointOptions
+                entrypointOptionId: optionId
             )
         }
     }
@@ -53,19 +51,13 @@ public enum ClaimsOrigin: Codable, Equatable, Hashable {
 public struct CommonClaimId {
     public let id: String
     public let entrypointOptionId: String?
-    public let hasEntrypointTypes: Bool?
-    public let hasEntrypointOptions: Bool?
 
     init(
         id: String = "",
-        entrypointOptionId: String? = nil,
-        hasEntrypointTypes: Bool? = true,
-        hasEntrypointOptions: Bool? = true
+        entrypointOptionId: String? = nil
     ) {
         self.id = id
         self.entrypointOptionId = entrypointOptionId
-        self.hasEntrypointTypes = hasEntrypointTypes
-        self.hasEntrypointOptions = hasEntrypointOptions
     }
 }
 

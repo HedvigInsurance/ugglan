@@ -4,7 +4,7 @@ import TagKit
 import hCore
 import hCoreUI
 
-struct SelectClaimEntrypointGroup: View {
+public struct SelectClaimEntrypointGroup: View {
     @PresentableStore var store: SubmitClaimStore
     @State var selectedClaimGroup: String? = nil
     @State var claimEntrypoints: [ClaimEntryPointResponseModel] = []
@@ -17,7 +17,7 @@ struct SelectClaimEntrypointGroup: View {
         store.send(.fetchEntrypointGroups)
     }
 
-    var body: some View {
+    public var body: some View {
         LoadingViewWithContent(.fetchClaimEntrypoints) {
             hForm {
             }
@@ -34,29 +34,16 @@ struct SelectClaimEntrypointGroup: View {
                 ) { claimEntrypointGroup in
                     VStack {
                         ShowTagList(
-                            tagsToShow: entrypointGroupToStringArray(input: claimEntrypointGroup),
+                            tagsToShow: claimEntrypointGroup.map({ $0.displayName }),
                             onTap: { tag in
                                 selectedClaimGroup = tag
-
-                                for claimGroup in claimEntrypointGroup {
-                                    if claimGroup.displayName == selectedClaimGroup {
-                                        claimEntrypoints = claimGroup.entrypoints
-                                    }
-                                }
+                                claimEntrypoints =
+                                    claimEntrypointGroup.first(where: { $0.displayName == selectedClaimGroup })?
+                                    .entrypoints ?? []
                             },
                             onButtonClick: {
                                 if selectedClaimGroup != nil {
                                     selectedEntrypoints(claimEntrypoints)
-                                    store.send(
-                                        .commonClaimOriginSelected(
-                                            commonClaim: ClaimsOrigin.commonClaimsWithOption(
-                                                id: "",
-                                                optionId: "",
-                                                hasEntrypointTypes: hasClaimEntrypoints,
-                                                hasEntrypointOptions: true
-                                            )
-                                        )
-                                    )
                                 }
                             },
                             oldValue: $selectedClaimGroup
@@ -73,14 +60,6 @@ struct SelectClaimEntrypointGroup: View {
         } else {
             return false
         }
-    }
-
-    func entrypointGroupToStringArray(input: [ClaimEntryPointGroupResponseModel]) -> [String] {
-        var arr: [String] = []
-        for i in input {
-            arr.append(i.displayName)
-        }
-        return arr
     }
 }
 
@@ -129,16 +108,6 @@ struct SelectClaimEntrypointType: View {
                                 claimOptions,
                                 mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? [])
                             )
-                            store.send(
-                                .commonClaimOriginSelected(
-                                    commonClaim: ClaimsOrigin.commonClaimsWithOption(
-                                        id: mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? []),
-                                        optionId: "",
-                                        hasEntrypointTypes: true,
-                                        hasEntrypointOptions: hasClaimEntrypointOptions
-                                    )
-                                )
-                            )
                         }
                     },
                     oldValue: $selectedClaimEntrypoint
@@ -180,8 +149,13 @@ struct SelectClaimEntrypointType: View {
 struct SelectClaimEntrypointOption: View {
     @PresentableStore var store: SubmitClaimStore
     @State var selectedClaimOption: String? = nil
+    var onButtonClick: (String, String) -> Void
 
-    public init() {}
+    public init(
+        onButtonClick: @escaping (String, String) -> Void
+    ) {
+        self.onButtonClick = onButtonClick
+    }
 
     var body: some View {
         hForm {
@@ -205,16 +179,10 @@ struct SelectClaimEntrypointOption: View {
                     },
                     onButtonClick: {
                         if selectedClaimOption != nil {
-                            store.send(
-                                .commonClaimOriginSelected(
-                                    commonClaim: ClaimsOrigin.commonClaimsWithOption(
-                                        id: entrypoints.selectedEntrypointId ?? "",
-                                        optionId: mapNametoEntrypointOptionId(
-                                            input: entrypoints.selectedEntrypointOptions ?? []
-                                        ),
-                                        hasEntrypointTypes: true,
-                                        hasEntrypointOptions: true
-                                    )
+                            onButtonClick(
+                                entrypoints.selectedEntrypointId ?? "",
+                                mapNametoEntrypointOptionId(
+                                    input: entrypoints.selectedEntrypointOptions ?? []
                                 )
                             )
                         }
@@ -248,6 +216,7 @@ struct SelectClaimEntrypointOption: View {
 }
 
 struct ShowTagList: View {
+    private let scaleSize = 1.05
     var tagsToShow: [String]
     var onTap: (String) -> Void
     var onButtonClick: () -> Void
@@ -263,19 +232,20 @@ struct ShowTagList: View {
                 if showTags {
                     HStack {
                         hTextNew(tag, style: .body)
-                            .foregroundColor(hLabelColorNew.secondary)
+                            .foregroundColor(hLabelColorNew.primary)
                             .lineLimit(1)
+                            .scaleEffect(animate && selection == tag ? 1 / scaleSize : 1)
                     }
                     .onAppear {
                         selection = oldValue
                     }
                     .onTapGesture {
                         onTap(tag)
-                        withAnimation(.easeInOut(duration: 0.2)) {
+                        withAnimation(.easeInOut(duration: 0.15)) {
                             selection = tag
                             animate = true
                         }
-                        withAnimation(.easeInOut(duration: 0.2).delay(0.2)) {
+                        withAnimation(.easeInOut(duration: 0.15).delay(0.15)) {
                             animate = false
                         }
                         notValid = false
@@ -285,7 +255,7 @@ struct ShowTagList: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(getColorAndShadow(claimId: tag))
-                    .scaleEffect(animate && selection == tag ? 1.05 : 1)
+                    .scaleEffect(animate && selection == tag ? scaleSize : 1)
                     .transition(
                         .scale.animation(
                             .spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)
@@ -334,12 +304,12 @@ struct ShowTagList: View {
     func getColorAndShadow(claimId: String) -> some View {
         if selection == claimId {
             Squircle.default()
-                .foregroundColor(hGreenColorNew.green50)
+                .foregroundColor(hBackgroundColorNew.semanticButton)
                 .hShadow()
 
         } else {
             Squircle.default()
-                .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentField)
+                .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentBlack100)
         }
     }
 }

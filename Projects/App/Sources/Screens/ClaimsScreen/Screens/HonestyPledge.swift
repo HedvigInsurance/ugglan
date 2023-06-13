@@ -174,6 +174,7 @@ struct HonestyPledge: View {
             .padding(.trailing, 15)
             .fixedSize(horizontal: false, vertical: true)
         }
+        .hUseBlur
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
     }
 }
