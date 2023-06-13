@@ -30,6 +30,7 @@ public enum ProfileAction: ActionProtocol {
     case openAppSettings
     case setProfileState(name: String, charity: String, monthlyNet: Int)
     case setEurobonusNumber(partnerData: PartnerData?)
+    case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
     case updateEurobonusState(with: LoadingState<String>?)
 }
@@ -73,7 +74,9 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                             let partner = PartnerData(with: partnerData.currentMember.fragments.partnerDataFragment)
                             callback(.value(.setEurobonusNumber(partnerData: partner)))
                         }
+                        callback(.value(.fetchProfileStateCompleted))
                     }
+
                 return disposeBag
             }
         case let .updateEurobonusNumber(number):
