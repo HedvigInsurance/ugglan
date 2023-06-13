@@ -361,15 +361,24 @@ public class ClaimJourneys {
                 selectedEntrypoints: { entrypoints in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
+
+                    if entrypoints == [] {
+                        store.send(
+                            .startClaimRequest(
+                                entrypointId: nil,
+                                entrypointOptionId: nil
+                            )
+                        )
+                    }
                 }),
             style: .detented(.large, modally: false)
         ) { action in
             if case let .setSelectedEntrypoints(entrypoints) = action {
                 if !entrypoints.isEmpty {
                     ClaimJourneys.showClaimEntrypointType(origin: origin)
-                } else {
-                    getScreen(for: action)
                 }
+            } else {
+                getScreen(for: action)
             }
         }
         .hidesBackButton
@@ -390,7 +399,7 @@ public class ClaimJourneys {
                 if options == [] {
                     store.send(
                         .startClaimRequest(
-                            entrypointId: selectedEntrypointId ?? "",
+                            entrypointId: selectedEntrypointId,
                             entrypointOptionId: nil
                         )
                     )
