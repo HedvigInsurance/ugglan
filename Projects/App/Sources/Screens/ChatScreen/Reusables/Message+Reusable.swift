@@ -215,7 +215,7 @@ extension Message: Reusable {
                         } else {
                             contentContainer.layoutMargins = UIEdgeInsets(
                                 horizontalInset: 10,
-                                verticalInset: 10
+                                verticalInset: message.shouldShowTimeStamp ? 10 : 0
                             )
                         }
 
