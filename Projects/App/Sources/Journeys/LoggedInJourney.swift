@@ -118,7 +118,7 @@ extension AppJourney {
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
-                return deepLink == .profile
+                return deepLink == .profile || deepLink == .sasEuroBonus
             } else {
                 return false
             }
@@ -145,7 +145,6 @@ extension AppJourney {
             )
             .sendActionImmediately(ContractStore.self, .fetch)
             .sendActionImmediately(ForeverStore.self, .fetch)
-            .sendActionImmediately(ProfileStore.self, .fetchProfileState)
             .sendActionImmediately(ClaimsStore.self, .fetchClaims)
             .syncTabIndex()
             .onAction(UgglanStore.self) { action in

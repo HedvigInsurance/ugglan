@@ -11,7 +11,7 @@ import hGraphQL
 struct ProfileView: View {
     @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
-
+    private let disposeBag = DisposeBag()
     private func getLogoutIcon() -> UIImage {
         let icon = Asset.logoutIcon.image.withTintColor(.brand(.destructive))
         return icon
@@ -42,6 +42,14 @@ struct ProfileView: View {
 
                     if hAnalyticsExperiment.showCharity {
                         ProfileRow(row: .myCharity, subtitle: stateData.memberCharityName)
+                    }
+                    if store.state.partnerData?.shouldShowEuroBonus ?? false {
+                        let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
+                        let hasEntereNumber = !number.isEmpty
+                        ProfileRow(
+                            row: .eurobonus(hasEnteredNumber: hasEntereNumber),
+                            subtitle: hasEntereNumber ? number : L10n.SasIntegration.connectYourNumber
+                        )
                     }
                     if hAnalyticsExperiment.paymentScreen {
                         ProfileRow(row: .payment, subtitle: "\(stateData.monthlyNet) \(L10n.paymentCurrencyOccurrence)")
@@ -96,6 +104,18 @@ struct ProfileView: View {
             store.send(.fetchProfileState)
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .profile))
+        .introspectScrollView { scrollView in
+            let refreshControl = UIRefreshControl()
+            scrollView.refreshControl = refreshControl
+            disposeBag.dispose()
+            disposeBag += refreshControl.store(
+                store,
+                send: {
+                    ProfileAction.fetchProfileState
+                },
+                endOn: .fetchProfileStateCompleted
+            )
+        }
     }
 }
 
@@ -140,6 +160,11 @@ extension ProfileView {
                 )
             } else if case .openFreeTextChat = action {
                 resultJourney(.openFreeTextChat)
+            } else if case .openEuroBonus = action {
+                HostingJourney(
+                    rootView: EuroBonusView(),
+                    options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
+                )
             }
         }
         .configureTitle(L10n.profileTitle)

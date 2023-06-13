@@ -29,6 +29,7 @@ import hGraphQL
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
+    let deepLinkDisposeBag = DisposeBag()
     let window: UIWindow = {
         var window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = UIViewController()
