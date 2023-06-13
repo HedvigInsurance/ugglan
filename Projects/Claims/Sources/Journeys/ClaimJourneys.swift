@@ -64,7 +64,7 @@ public class ClaimJourneys {
                 } else if case .openSummaryScreen = navigationAction {
                     openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
                 } else if case .openDamagePickerScreen = navigationAction {
-                    openDamagePickerScreen().addDismissClaimsFlow()
+                    openDamagePickerScreenOld().addDismissClaimsFlow()
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
                     openCheckoutNoRepairScreen().addDismissClaimsFlow()
                         .configureTitle(L10n.Claims.Payout.Summary.title)
@@ -235,10 +235,24 @@ public class ClaimJourneys {
     }
 
     static func openDamagePickerScreen() -> some JourneyPresentation {
-
         HostingJourney(
             SubmitClaimStore.self,
             rootView: DamamagePickerScreen(),
+            style: .default
+        ) {
+            action in
+            if case .setSingleItemDamage(_) = action {
+                PopJourney()
+            } else {
+                getScreenForAction(for: action)
+            }
+        }
+    }
+
+    static func openDamagePickerScreenOld() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: DamamagePickerScreenOld(),
             style: .default
         ) {
             action in
