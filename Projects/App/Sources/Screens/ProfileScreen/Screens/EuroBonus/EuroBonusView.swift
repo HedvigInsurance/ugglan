@@ -152,6 +152,7 @@ class EuroBonusViewModel: ObservableObject {
             errorMessage = L10n.SasIntegration.incorrectNumber
             return
         }
+        errorMessage = nil
         disposeBag.dispose()
         disposeBag += store.stateSignal.onValue({ [weak self] state in
             if self?.state != state.updateEurobonusState {

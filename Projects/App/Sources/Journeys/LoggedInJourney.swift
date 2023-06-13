@@ -126,7 +126,7 @@ extension AppJourney {
         }
         .makeTabSelected(UgglanStore.self) { action in
             if case .makeTabActive(let deepLink) = action {
-                return deepLink == .profile
+                return deepLink == .profile || deepLink == .sasEuroBonus
             } else {
                 return false
             }
