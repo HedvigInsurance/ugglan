@@ -242,7 +242,7 @@ struct ShowTagList: View {
                 if showTags {
                     HStack {
                         hTextNew(tag, style: .body)
-                            .foregroundColor(hLabelColorNew.secondary)
+                            .foregroundColor(hLabelColorNew.primary)
                             .lineLimit(1)
                     }
                     .onAppear {
@@ -313,12 +313,12 @@ struct ShowTagList: View {
     func getColorAndShadow(claimId: String) -> some View {
         if selection == claimId {
             Squircle.default()
-                .foregroundColor(hGreenColorNew.green50)
+                .foregroundColor(hBackgroundColorNew.semanticButton)
                 .hShadow()
 
         } else {
             Squircle.default()
-                .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentField)
+                .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentBlack100)
         }
     }
 }

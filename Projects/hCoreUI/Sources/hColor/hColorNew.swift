@@ -31,6 +31,9 @@ public struct hBackgroundColorNew {
         hAmberColorNew.amber100
     }
 
+    public static var semanticButton: some hColor {
+        hGreenColorNew.greenSemantic
+    }
 }
 
 public struct hGrayscaleColorNew {
@@ -99,6 +102,12 @@ public struct hGrayscaleTranslucentColorNew {
     public static var greyScaleTranslucent100: some hColor {
         hColorScheme(
             Color(hexString: "EAEAEA").opacity(0.60)
+        )
+    }
+
+    public static var greyScaleTranslucentBlack100: some hColor {
+        hColorScheme(
+            Color(hexString: "121212").opacity(0.045)
         )
     }
 
@@ -232,6 +241,12 @@ public struct hGreenColorNew {
     public static var green800: some hColor {
         hColorScheme(
             Color(hexString: "4C6440")
+        )
+    }
+
+    public static var greenSemantic: some hColor {
+        hColorScheme(
+            Color(hexString: "E9FFC8")
         )
     }
 }
