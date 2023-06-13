@@ -236,7 +236,7 @@ struct ShowTagList: View {
     @Binding var oldValue: String?
     @State private var showTags = false
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 16) {
             showNotValid
             TagList(tags: tagsToShow) { tag in
                 if showTags {
@@ -273,8 +273,6 @@ struct ShowTagList: View {
                     )
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
             hButton.LargeButtonFilled {
                 if selection != nil && selection != "" {
                     notValid = false
@@ -288,7 +286,7 @@ struct ShowTagList: View {
             } content: {
                 hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
             }
-            .padding([.trailing, .leading], 16)
+            .padding(.bottom, 32)
         }
         .padding([.leading, .trailing], 16)
         .onAppear {
