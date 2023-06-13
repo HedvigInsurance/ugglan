@@ -293,9 +293,9 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
                 newState.singleItemStep = model.singleItemStepModel
                 send(.navigationAction(action: .openSummaryScreen))
-                send(.navigationAction(action: .openCheckoutNoRepairScreen))
             case let .setSingleItemCheckoutStep(model):
                 newState.singleItemCheckoutStep = model
+                send(.navigationAction(action: .openCheckoutNoRepairScreen))
             case let .setFailedStep(model):
                 newState.failedStep = model
                 send(.navigationAction(action: .openFailureSceen))

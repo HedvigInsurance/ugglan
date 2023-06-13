@@ -362,10 +362,10 @@ public class ClaimJourneys {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
                 }),
-            style: .modal
+            style: .detented(.large, modally: false)
         ) { action in
             if case let .setSelectedEntrypoints(entrypoints) = action {
-                if entrypoints != [] {
+                if !entrypoints.isEmpty {
                     ClaimJourneys.showClaimEntrypointType(origin: origin)
                 } else {
                     getScreen(for: action)
@@ -396,15 +396,17 @@ public class ClaimJourneys {
                     )
                 }
             })
+
         ) { action in
             if case let .setSelectedEntrypointOptions(options) = action {
-                if options != [] {
+                if !options.isEmpty {
                     ClaimJourneys.showClaimEntrypointOption(origin: origin)
                 }
             } else {
                 getScreen(for: action)
             }
         }
+        .showsBackButton
         .withJourneyDismissButton
     }
 
@@ -436,13 +438,12 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypointOld(entrypointGroupId: nil),
-            style: .detented(.large),
-            options: [
-                .defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.always),
-            ]
+            style: .detented(.large, modally: false)
         ) { action in
-            getScreen(for: action)
+            getScreen(for: action).hidesBackButton
         }
+        .hidesBackButton
+        .withJourneyDismissButton
     }
 
     private static func showClaimFailureScreen() -> some JourneyPresentation {

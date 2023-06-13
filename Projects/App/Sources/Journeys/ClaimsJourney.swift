@@ -63,7 +63,7 @@ extension AppJourney {
     private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: LoadingViewWithContent(.startClaim) {
+            rootView:
                 HonestyPledge {
                     let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                     if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
@@ -77,9 +77,8 @@ extension AppJourney {
                             store.send(.navigationAction(action: .openEntrypointScreen))
                         }
                     }
-                }
-            },
-            style: .detented(.scrollViewContentSize)
+                },
+            style: .detented(.scrollViewContentSize, bgColor: nil)
         ) { action in
             if case let .navigationAction(navigationAction) = action {
                 if case .openNotificationsPermissionScreen = navigationAction {
@@ -98,7 +97,7 @@ extension AppJourney {
                                 }
                             )
                         },
-                        style: .detented(.large, modally: false)
+                        style: .detented(.large, modally: false, bgColor: nil)
                     ) { action in
                         if case let .navigationAction(navigationAction) = action {
                             if case .openNewTriagingScreen = navigationAction {

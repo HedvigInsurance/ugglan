@@ -34,15 +34,12 @@ public struct SelectClaimEntrypointGroup: View {
                 ) { claimEntrypointGroup in
                     VStack {
                         ShowTagList(
-                            tagsToShow: entrypointGroupToStringArray(input: claimEntrypointGroup),
+                            tagsToShow: claimEntrypointGroup.map({ $0.displayName }),
                             onTap: { tag in
                                 selectedClaimGroup = tag
-
-                                for claimGroup in claimEntrypointGroup {
-                                    if claimGroup.displayName == selectedClaimGroup {
-                                        claimEntrypoints = claimGroup.entrypoints
-                                    }
-                                }
+                                claimEntrypoints =
+                                    claimEntrypointGroup.first(where: { $0.displayName == selectedClaimGroup })?
+                                    .entrypoints ?? []
                             },
                             onButtonClick: {
                                 if selectedClaimGroup != nil {
@@ -63,14 +60,6 @@ public struct SelectClaimEntrypointGroup: View {
         } else {
             return false
         }
-    }
-
-    func entrypointGroupToStringArray(input: [ClaimEntryPointGroupResponseModel]) -> [String] {
-        var arr: [String] = []
-        for i in input {
-            arr.append(i.displayName)
-        }
-        return arr
     }
 }
 
@@ -227,6 +216,7 @@ struct SelectClaimEntrypointOption: View {
 }
 
 struct ShowTagList: View {
+    private let scaleSize = 1.05
     var tagsToShow: [String]
     var onTap: (String) -> Void
     var onButtonClick: () -> Void
@@ -244,17 +234,18 @@ struct ShowTagList: View {
                         hTextNew(tag, style: .body)
                             .foregroundColor(hLabelColorNew.secondary)
                             .lineLimit(1)
+                            .scaleEffect(animate && selection == tag ? 1 / scaleSize : 1)
                     }
                     .onAppear {
                         selection = oldValue
                     }
                     .onTapGesture {
                         onTap(tag)
-                        withAnimation(.easeInOut(duration: 0.2)) {
+                        withAnimation(.easeInOut(duration: 0.15)) {
                             selection = tag
                             animate = true
                         }
-                        withAnimation(.easeInOut(duration: 0.2).delay(0.2)) {
+                        withAnimation(.easeInOut(duration: 0.15).delay(0.15)) {
                             animate = false
                         }
                         notValid = false
@@ -264,7 +255,7 @@ struct ShowTagList: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(getColorAndShadow(claimId: tag))
-                    .scaleEffect(animate && selection == tag ? 1.05 : 1)
+                    .scaleEffect(animate && selection == tag ? scaleSize : 1)
                     .transition(
                         .scale.animation(
                             .spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)

@@ -490,7 +490,8 @@ extension PresentationStyle {
         _ from: UIViewController,
         _ options: PresentationOptions,
         detents: [Detent],
-        modally: Bool
+        modally: Bool,
+        bgColor: UIColor?
     ) -> PresentingViewController.Result {
         viewController.setLargeTitleDisplayMode(options)
 
@@ -508,7 +509,7 @@ extension PresentationStyle {
             bag.hold(delegate)
             vc.transitioningDelegate = delegate
             vc.modalPresentationStyle = .custom
-            vc.view.backgroundColor = .brand(.primaryBackground())
+            vc.view.backgroundColor = bgColor
 
             return from.modallyPresentQueued(vc, options: options) {
                 return Future { completion in
@@ -612,7 +613,11 @@ extension PresentationStyle {
         }
     }
 
-    public static func detented(_ detents: Detent..., modally: Bool = true) -> PresentationStyle {
+    public static func detented(
+        _ detents: Detent...,
+        modally: Bool = true,
+        bgColor: UIColor? = .brand(.primaryBackground())
+    ) -> PresentationStyle {
         PresentationStyle(
             name: "detented",
             present: { viewController, from, options in
@@ -621,7 +626,8 @@ extension PresentationStyle {
                     from,
                     options,
                     detents: detents,
-                    modally: modally
+                    modally: modally,
+                    bgColor: bgColor
                 )
             }
         )
