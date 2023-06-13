@@ -13,8 +13,8 @@ struct EuroBonusView: View {
                     toolbars
                 }
                 .introspectViewController(customize: { vc in
-                    if self.vm.vc != vc {
-                        self.vm.vc = vc
+                    if vm.vc != vc {
+                        vm.vc = vc
                     }
                 })
                 .onChange(of: vm.number) { newValue in
@@ -135,11 +135,10 @@ class EuroBonusViewModel: ObservableObject {
     @Published var previousValue: String
     @Published var inEditMode = false
     @Published var showCancelAlert = false
-    @Published var vc: UIViewController?
+    weak var vc: UIViewController?
     @Published var errorMessage: String?
     @Published var state: LoadingState<String>?
     let disposeBag = DisposeBag()
-    let store: ProfileStore = globalPresentableStoreContainer.get()
 
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -154,6 +153,7 @@ class EuroBonusViewModel: ObservableObject {
         }
         errorMessage = nil
         disposeBag.dispose()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         disposeBag += store.stateSignal.onValue({ [weak self] state in
             if self?.state != state.updateEurobonusState {
                 self?.state = state.updateEurobonusState
