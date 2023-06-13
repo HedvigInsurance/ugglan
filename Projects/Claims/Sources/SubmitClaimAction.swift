@@ -18,7 +18,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setNewClaimId(with: String)
     case setNewClaimContext(context: String)
 
-    case startClaimRequest(entrypointId: String, entrypointOptionId: String?)
+    case startClaimRequest(entrypointId: String?, entrypointOptionId: String?)
     case phoneNumberRequest(phoneNumber: String)
     case dateOfOccurrenceRequest(dateOfOccurrence: Date?)
     case dateOfOccurrenceAndLocationRequest
@@ -63,6 +63,8 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openFailureSceen
     case openUpdateAppScreen
     case openNotificationsPermissionScreen
+    case openEntrypointScreen
+    case openNewTriagingScreen
 
     public enum LocationPickerType: ActionProtocol {
         case setLocation

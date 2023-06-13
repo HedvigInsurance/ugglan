@@ -37,15 +37,7 @@ extension AppJourney {
     @JourneyBuilder
     static func startClaimsJourney(from origin: ClaimsOrigin) -> some JourneyPresentation {
         if hAnalyticsExperiment.claimsFlow {
-            if hAnalyticsExperiment.claimsTriaging {
-                ClaimJourneys.showClaimEntrypointsNew(origin: origin) { newOrigin in
-                    honestyPledge(from: newOrigin)
-                }
-            } else {
-                ClaimJourneys.showClaimEntrypointsOld(origin: origin) { newOrigin in
-                    honestyPledge(from: newOrigin)
-                }
-            }
+            honestyPledge(from: origin)
         } else {
             claimsJourneyPledgeAndNotificationWrapper { redirect in
                 switch redirect {
@@ -71,7 +63,7 @@ extension AppJourney {
     private static func honestyPledge(from origin: ClaimsOrigin) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: LoadingViewWithContent(.startClaim) {
+            rootView:
                 HonestyPledge {
                     let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                     if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
@@ -79,15 +71,14 @@ extension AppJourney {
                         store.send(.navigationAction(action: .openNotificationsPermissionScreen))
                     } else {
                         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        store.send(
-                            .startClaimRequest(
-                                entrypointId: origin.id.id,
-                                entrypointOptionId: origin.id.entrypointOptionId
-                            )
-                        )
+                        if hAnalyticsExperiment.claimsTriaging {
+                            store.send(.navigationAction(action: .openNewTriagingScreen))
+                        } else {
+                            store.send(.navigationAction(action: .openEntrypointScreen))
+                        }
                     }
-                }
-            }
+                },
+            style: .detented(.scrollViewContentSize, bgColor: nil)
         ) { action in
             if case let .navigationAction(navigationAction) = action {
                 if case .openNotificationsPermissionScreen = navigationAction {
@@ -98,20 +89,31 @@ extension AppJourney {
                                 text: L10n.claimsActivateNotificationsBody,
                                 onActionExecuted: {
                                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                                    store.send(
-                                        .startClaimRequest(
-                                            entrypointId: origin.id.id,
-                                            entrypointOptionId: origin.id.entrypointOptionId
-                                        )
-                                    )
+                                    if hAnalyticsExperiment.claimsTriaging {
+                                        store.send(.navigationAction(action: .openNewTriagingScreen))
+                                    } else {
+                                        store.send(.navigationAction(action: .openEntrypointScreen))
+                                    }
                                 }
                             )
                         },
-                        style: .detented(.large, modally: false)
+                        style: .detented(.large, modally: false, bgColor: nil)
                     ) { action in
-                        ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+                        if case let .navigationAction(navigationAction) = action {
+                            if case .openNewTriagingScreen = navigationAction {
+                                ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                            } else if case .openEntrypointScreen = navigationAction {
+                                ClaimJourneys.showClaimEntrypointsOld(origin: origin)
+                            }
+                        } else {
+                            ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+                        }
                     }
                     .hidesBackButton
+                } else if case .openNewTriagingScreen = navigationAction {
+                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                } else if case .openEntrypointScreen = navigationAction {
+                    ClaimJourneys.showClaimEntrypointsOld(origin: origin)
                 } else {
                     ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
                 }
