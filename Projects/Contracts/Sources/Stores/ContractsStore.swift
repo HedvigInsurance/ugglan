@@ -36,6 +36,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         callback(
                             .value(ContractAction.setContractBundles(activeContractBundles: activeContractBundles))
                         )
+                        callback(.value(.fetchContractBundlesDone))
                     }
                     .onError { error in
                         if !self.state.hasLoadedContractBundlesOnce {
@@ -43,6 +44,7 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                                 .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
                             )
                         }
+                        callback(.value(.fetchContractBundlesDone))
                     }
                 return disposeBag
             }
@@ -75,9 +77,11 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         } else {
                             callback(.value(.setLoadingState(action: action, state: nil)))
                         }
+                        callback(.value(.fetchContractsDone))
                     }
                     .onError { error in
                         callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                        callback(.value(.fetchContractsDone))
                     }
                 return disposeBag
             }
