@@ -41,7 +41,11 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
     @hColorBuilder
     var getInnerCircleColor: some hColor {
         if hUseNewStyle {
-            hBackgroundColorNew.primary
+            if isRecording {
+                hLabelColor.primary
+            } else {
+                hBackgroundColorNew.signalBackground
+            }
         } else {
             innerCircleColorOld
         }
@@ -50,7 +54,7 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
     @hColorBuilder
     var getBackgroundColor: some hColor {
         if hUseNewStyle {
-            hLabelColorNew.primary
+            hBackgroundColorNew.primary
         } else {
             hBackgroundColor.secondary
         }

@@ -15,8 +15,8 @@ public struct SubmitClaimAudioRecordingScreen: View {
     let onSubmit: (_ url: URL) -> Void
 
     public init(
-        //        url: URL?
-        url: URL? = URL(string: "")
+        url: URL?
+            //        url: URL? = URL(string: "")
     ) {
         audioPlayer = AudioPlayer(url: url)
 
@@ -29,81 +29,80 @@ public struct SubmitClaimAudioRecordingScreen: View {
     public var body: some View {
         LoadingViewWithContent(.postAudioRecording) {
             hForm {
+                PresentableStoreLens(
+                    SubmitClaimStore.self,
+                    getter: { state in
+                        state.audioRecordingStep
+                    }
+                ) { audioRecordingStep in
+                    ForEach(audioRecordingStep?.questions ?? [], id: \.self) { question in
+                        HStack {
+                            hTextNew(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                                .foregroundColor(hLabelColorNew.primary)
+                        }
+                        .padding(16)
+                        .background(
+                            Squircle.default()
+                                .fill(hGrayscaleColorNew.greyScale100)
+                        )
+                        .padding(.leading, 16)
+                        .padding(.trailing, 88)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
             }
             .hUseNewStyle
             .hFormAttachToBottom {
-                VStack {
-
-                    PresentableStoreLens(
-                        SubmitClaimStore.self,
-                        getter: { state in
-                            state.audioRecordingStep
-                        }
-                    ) { audioRecordingStep in
-                        ForEach(audioRecordingStep?.questions ?? [], id: \.self) { question in
-                            hSection {
-                                hRow {
-                                    hTextNew(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                        .foregroundColor(hLabelColorNew.primary)
+                ZStack(alignment: .bottom) {
+                    Group {
+                        if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
+                            VStack(spacing: 12) {
+                                TrackPlayer(audioPlayer: audioPlayer)
+                                    .hWithoutFootnote
+                                hButton.LargeButtonFilled {
+                                    onSubmit(url)
+                                    store.send(.submitAudioRecording(audioURL: url))
+                                } content: {
+                                    hTextNew(L10n.saveAndContinueButtonLabel)
                                 }
-                            }
-                        }
-                    }
-
-                    ZStack(alignment: .bottom) {
-                        Group {
-                            if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
-                                VStack(spacing: 12) {
-                                    TrackPlayer(audioPlayer: audioPlayer)
-                                        .hUseNewStyle
-                                        .hWithoutFootnote
-                                    hButton.LargeButtonFilled {
-                                        onSubmit(url)
-                                        store.send(.submitAudioRecording(audioURL: url))
-                                    } content: {
-                                        hText(L10n.generalContinueButton)
-                                    }
-                                    hButton.LargeButtonText {
-                                        withAnimation(.spring()) {
-                                            store.send(.resetAudioRecording)
-                                            audioRecorder.restart()
-                                        }
-                                    } content: {
-                                        hText(L10n.embarkRecordAgain)
-                                    }
-                                }
-                                .transition(.move(edge: .bottom).combined(with: .opacity))
-                                .onAppear {
-                                    self.audioPlayer.url = url
-                                }
-                            } else {
-
-                                RecordButton(isRecording: audioRecorder.isRecording) {
-                                    if audioRecorder.isRecording {
-                                    } else {
-                                    }
+                                hButton.LargeButtonText {
                                     withAnimation(.spring()) {
-                                        audioRecorder.toggleRecording()
+                                        store.send(.resetAudioRecording)
+                                        audioRecorder.restart()
                                     }
+                                } content: {
+                                    hTextNew(L10n.embarkRecordAgain)
                                 }
-                                .hUseNewStyle
-                                .frame(height: 112)
-                                .transition(
-                                    .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
-                                )
                             }
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                            .onAppear {
+                                self.audioPlayer.url = url
+                            }
+                        } else {
+                            RecordButton(isRecording: audioRecorder.isRecording) {
+                                if audioRecorder.isRecording {
+                                } else {
+                                }
+                                withAnimation(.spring()) {
+                                    audioRecorder.toggleRecording()
+                                }
+                            }
+                            .frame(height: 112)
+                            .transition(
+                                .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
+                            )
                         }
-                        .padding(16)
                     }
-                    .environmentObject(audioRecorder)
+                    .padding(16)
                 }
+                .environmentObject(audioRecorder)
             }
         }
     }
 }
 
-struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        SubmitClaimAudioRecordingScreen()
-    }
-}
+//struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
+//    static var previews: some View {
+//        SubmitClaimAudioRecordingScreen()
+//    }
+//}

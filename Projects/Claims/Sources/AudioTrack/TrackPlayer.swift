@@ -36,7 +36,7 @@ struct TrackPlayer: View {
                         style: .large,
                         color: hLabelColor.primary
                     )
-                    .foregroundColor(hLabelColor.primary)  // change
+                    .foregroundColor(hLabelColor.primary)
                 } else {
                     image
 
@@ -91,7 +91,7 @@ struct TrackPlayer: View {
     @hColorBuilder
     var getBackgroundColor: some hColor {
         if hUseNewStyle {
-            hBackgroundColorNew.primary
+            hBackgroundColorNew.opaqueOne
         } else {
             backgroundColorOld
         }
