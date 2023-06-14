@@ -58,7 +58,7 @@ public class ClaimJourneys {
                 } else if case .openAudioRecordingScreen = navigationAction {
                     openAudioRecordingSceen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSuccessScreen = navigationAction {
-                    openSuccessScreen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+                    openSuccessScreenOld().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSingleItemScreen = navigationAction {
                     openSingleItemScreenOld().addDismissClaimsFlow()
                 } else if case .openSummaryScreen = navigationAction {
@@ -269,6 +269,15 @@ public class ClaimJourneys {
         )
         .hidesBackButton
     }
+
+    private static func openSuccessScreenOld() -> some JourneyPresentation {
+        HostingJourney(
+            rootView: SubmitClaimSuccessScreenOld(),
+            style: .detented(.large, modally: false)
+        )
+        .hidesBackButton
+    }
+
     private static func openSingleItemScreenOld() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
