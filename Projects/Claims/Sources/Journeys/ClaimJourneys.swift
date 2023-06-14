@@ -385,7 +385,7 @@ public class ClaimJourneys {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
 
-                    if entrypoints == [] {
+                    if entrypoints.isEmpty {
                         store.send(
                             .startClaimRequest(
                                 entrypointId: nil,
@@ -419,7 +419,7 @@ public class ClaimJourneys {
                 store.send(.setSelectedEntrypointOptions(entrypoints: options))
                 store.send(.setSelectedEntrypointId(entrypoints: selectedEntrypointId))
 
-                if options == [] {
+                if options.isEmpty {
                     store.send(
                         .startClaimRequest(
                             entrypointId: selectedEntrypointId,
