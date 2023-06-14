@@ -35,7 +35,7 @@ public class ClaimJourneys {
                 } else if case .openSummaryScreen = navigationAction {
                     openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
                 } else if case .openDamagePickerScreen = navigationAction {
-                    openDamagePickerScreen().addDismissClaimsFlow()
+                    openDamagePickerScreen().configureTitle(L10n.Claims.Item.Screen.Damage.button)
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
                     openCheckoutNoRepairScreen().addDismissClaimsFlow()
                         .configureTitle(L10n.Claims.Payout.Summary.title)
@@ -44,7 +44,7 @@ public class ClaimJourneys {
                 } else if case .openSummaryEditScreen = navigationAction {
                     openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
                 } else if case let .openLocationPicker(type) = navigationAction {
-                    openLocationScreen(type: type).addDismissClaimsFlow()
+                    openLocationScreen(type: type).configureTitle(L10n.Claims.Incident.Screen.location)
                 } else if case .openUpdateAppScreen = navigationAction {
                     openUpdateAppTerminationScreen().addDismissClaimsFlow()
                 } else if case let .openDatePicker(type) = navigationAction {
@@ -73,7 +73,7 @@ public class ClaimJourneys {
                 } else if case .openSummaryEditScreen = navigationAction {
                     openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
                 } else if case let .openLocationPicker(type) = navigationAction {
-                    openLocationScreen(type: type).addDismissClaimsFlow()
+                    openLocationScreenOld(type: type).addDismissClaimsFlow()
                 } else if case .openUpdateAppScreen = navigationAction {
                     openUpdateAppTerminationScreen().addDismissClaimsFlow()
                 } else if case let .openDatePicker(type) = navigationAction {
@@ -152,10 +152,26 @@ public class ClaimJourneys {
     }
 
     static func openLocationScreen(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
-
         HostingJourney(
             SubmitClaimStore.self,
             rootView: LocationPickerScreen(type: type),
+            style: .detented(.scrollViewContentSize)
+        ) {
+            action in
+            if case .navigationAction(.dismissPickerScreen) = action {
+                PopJourney()
+            } else if case .setNewLocation = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
+        }
+    }
+
+    static func openLocationScreenOld(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: LocationPickerScreenOld(type: type),
             style: .default
         ) {
             action in
@@ -241,7 +257,9 @@ public class ClaimJourneys {
             style: .default
         ) {
             action in
-            if case .setSingleItemDamage(_) = action {
+            if case .navigationAction(.dismissPickerScreen) = action {
+                PopJourney()
+            } else if case .setSingleItemDamage(_) = action {
                 PopJourney()
             } else {
                 getScreenForAction(for: action)

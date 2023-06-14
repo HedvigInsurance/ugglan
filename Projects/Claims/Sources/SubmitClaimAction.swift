@@ -65,6 +65,7 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openNotificationsPermissionScreen
     case openEntrypointScreen
     case openNewTriagingScreen
+    case dismissPickerScreen
 
     public enum LocationPickerType: ActionProtocol {
         case setLocation

@@ -40,7 +40,7 @@ extension View {
 }
 
 private struct EnvironmentHFormTitle: EnvironmentKey {
-    static let defaultValue: (type: HFormTitleSpacingType, title: String)? = nil
+    static let defaultValue: (type: HFormTitleSpacingType, fontSize: HFontTextStyleNew, title: String)? = nil
 }
 
 public enum HFormTitleSpacingType {
@@ -67,15 +67,15 @@ public enum HFormTitleSpacingType {
 }
 
 extension EnvironmentValues {
-    public var hFormTitle: (HFormTitleSpacingType, String)? {
+    public var hFormTitle: (HFormTitleSpacingType, HFontTextStyleNew, String)? {
         get { self[EnvironmentHFormTitle.self] }
         set { self[EnvironmentHFormTitle.self] = newValue }
     }
 }
 
 extension View {
-    public func hFormTitle(_ type: HFormTitleSpacingType, _ title: String) -> some View {
-        self.environment(\.hFormTitle, (type, title))
+    public func hFormTitle(_ type: HFormTitleSpacingType, _ fontSize: HFontTextStyleNew, _ title: String) -> some View {
+        self.environment(\.hFormTitle, (type, fontSize, title))
     }
 }
 
@@ -154,7 +154,7 @@ public struct hForm<Content: View>: View {
             ScrollView {
                 VStack {
                     if let hFormTitle, hUseNewStyle {
-                        hTextNew(hFormTitle.1, style: .title2)
+                        hTextNew(hFormTitle.2, style: hFormTitle.1)
                             .multilineTextAlignment(.center)
                             .padding(.top, hFormTitle.0.topMargin)
                             .padding(.bottom, hFormTitle.0.bottomMargin)

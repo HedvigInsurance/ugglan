@@ -116,7 +116,7 @@ extension hSectionContainerStyle: ViewModifier {
     @hColorBuilder
     private func getOpaqueBackground(useNewStyle: Bool) -> some hColor {
         if useNewStyle {
-            hGrayscaleColorNew.greyScale100
+            hBackgroundColorNew.opaqueOne
         } else {
             hBackgroundColor.tertiary
         }

@@ -15,17 +15,17 @@ public struct DamamagePickerScreen: View {
                     state.singleItemStep
                 }
             ) { claim in
-
                 let damage = claim?.availableItemProblems ?? []
                 ForEach(damage, id: \.itemProblemId) { element in
                     hSection {
                         hRow {
+                            hTextNew(element.displayName, style: .title3)
+                                .foregroundColor(hLabelColorNew.primary)
+                            Spacer()
                             Circle()
-                                .strokeBorder(hGrayscaleColorNew.greyScale1000)
+                                .strokeBorder(hBackgroundColorNew.semanticBorderTwo)
                                 .background(Circle().foregroundColor(retColor(text: element.itemProblemId)))
                                 .frame(width: 28, height: 28)
-                            hTextNew(element.displayName, style: .title3) /*TODO CHECK FONT SIZE */
-                                .foregroundColor(hLabelColorNew.primary)
                         }
                         .withEmptyAccessory
                         .onTap {
@@ -39,19 +39,27 @@ public struct DamamagePickerScreen: View {
                             }
                         }
                     }
+                    .sectionContainerStyle(.transparent)
                 }
             }
         }
         .hUseNewStyle
         .hFormAttachToBottom {
-            hButton.LargeButtonFilled {
-                store.send(
-                    .submitDamage(
-                        damage: selectedDamages
+            VStack(spacing: 0) {
+                hButton.LargeButtonFilled {
+                    store.send(
+                        .submitDamage(
+                            damage: selectedDamages
+                        )
                     )
-                )
-            } content: {
-                hText(L10n.generalContinueButton)
+                } content: {
+                    hText(L10n.generalContinueButton)
+                }
+                hButton.LargeButtonText {
+                    store.send(.navigationAction(action: .dismissPickerScreen))
+                } content: {
+                    hTextNew(L10n.generalCancelButton, style: .body)
+                }
             }
             .padding([.leading, .trailing], 16)
         }
@@ -65,10 +73,9 @@ public struct DamamagePickerScreen: View {
         if selectedDamages.contains(text) {
             hLabelColorNew.primary
         } else {
-            hGrayscaleColorNew.greyScale25
+            hBackgroundColorNew.opaqueOne
         }
     }
-
 }
 
 struct DamagePickerScreenView_Previews: PreviewProvider {
