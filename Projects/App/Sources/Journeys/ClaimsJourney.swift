@@ -101,7 +101,7 @@ extension AppJourney {
                     ) { action in
                         if case let .navigationAction(navigationAction) = action {
                             if case .openNewTriagingScreen = navigationAction {
-                                ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                                ClaimJourneys.showClaimEntrypointGroup(origin: origin).addClaimsProgressBar
                             } else if case .openEntrypointScreen = navigationAction {
                                 ClaimJourneys.showClaimEntrypointsOld(origin: origin)
                             }
@@ -111,7 +111,7 @@ extension AppJourney {
                     }
                     .hidesBackButton
                 } else if case .openNewTriagingScreen = navigationAction {
-                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                    ClaimJourneys.showClaimEntrypointGroup(origin: origin).addClaimsProgressBar
                 } else if case .openEntrypointScreen = navigationAction {
                     ClaimJourneys.showClaimEntrypointsOld(origin: origin)
                 } else {

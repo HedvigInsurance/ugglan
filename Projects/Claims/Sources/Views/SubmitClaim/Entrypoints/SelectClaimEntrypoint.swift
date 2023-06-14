@@ -52,6 +52,9 @@ public struct SelectClaimEntrypointGroup: View {
                 }
             }
         }
+        .onAppear {
+            store.send(.setProgress(to: 0.2))
+        }
     }
 
     var hasClaimEntrypoints: Bool {
