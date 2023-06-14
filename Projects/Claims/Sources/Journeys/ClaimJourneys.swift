@@ -186,7 +186,7 @@ public class ClaimJourneys {
     static func openBrandPickerScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: ItemPickerScreen<ClaimFlowItemBrandOptionModel>(
+            rootView: ItemPickerScreenOld<ClaimFlowItemBrandOptionModel>(
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     return store.state.singleItemStep?.availableItemBrandOptions
@@ -225,7 +225,7 @@ public class ClaimJourneys {
 
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: ItemPickerScreen<ClaimFlowItemModelOptionModel>(
+            rootView: ItemPickerScreenOld<ClaimFlowItemModelOptionModel>(
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     return store.state.singleItemStep?.getListOfModels()?.compactMap({ ($0, $0.displayName) }) ?? []

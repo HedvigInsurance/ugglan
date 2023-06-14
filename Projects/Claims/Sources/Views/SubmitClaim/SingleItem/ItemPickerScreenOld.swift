@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ItemPickerScreen<T>: View {
+public struct ItemPickerScreenOld<T>: View {
     var items: [(object: T, displayName: String)]
     let onSelected: (T) -> Void
     public init(
@@ -15,19 +15,17 @@ public struct ItemPickerScreen<T>: View {
 
     public var body: some View {
         hForm {
-            ForEach(items, id: \.displayName) { item in
-                hSection {
+            hSection {
+                ForEach(items, id: \.displayName) { item in
                     hRow {
-                        hTextNew(item.displayName, style: .body)
-                            .foregroundColor(hLabelColorNew.primary)
+                        hText(item.displayName, style: .body)
+                            .foregroundColor(hLabelColor.primary)
                     }
                     .onTap {
                         onSelected(item.object)
                     }
                 }
-                .sectionContainerStyle(.transparent)
             }
         }
-        .hUseNewStyle
     }
 }
