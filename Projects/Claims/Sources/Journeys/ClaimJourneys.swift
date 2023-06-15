@@ -38,6 +38,7 @@ public class ClaimJourneys {
                     openDamagePickerScreen().addDismissClaimsFlow()
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
                     openCheckoutNoRepairScreen().addDismissClaimsFlow()
+                        .configureTitle(L10n.Claims.Payout.Summary.method)
                         .configureTitle(L10n.Claims.Payout.Summary.title)
                 } else if case .openFailureSceen = navigationAction {
                     showClaimFailureScreen().addDismissClaimsFlow()
@@ -66,7 +67,7 @@ public class ClaimJourneys {
                 } else if case .openDamagePickerScreen = navigationAction {
                     openDamagePickerScreen().addDismissClaimsFlow()
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
-                    openCheckoutNoRepairScreen().addDismissClaimsFlow()
+                    openCheckoutNoRepairScreenOld().addDismissClaimsFlow()
                         .configureTitle(L10n.Claims.Payout.Summary.title)
                 } else if case .openFailureSceen = navigationAction {
                     showClaimFailureScreen().addDismissClaimsFlow()
@@ -315,10 +316,29 @@ public class ClaimJourneys {
     }
 
     private static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
-
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimCheckoutNoRepairScreen(),
+            style: .detented(.large, modally: false)
+        ) {
+            action in
+            if case .navigationAction(.openCheckoutTransferringScreen) = action {
+                openCheckoutTransferringScreen()
+            } else if case .navigationAction(.dismiss) = action {
+                PopJourney()
+            } else if case .summaryRequest = action {
+                openCheckoutTransferringScreen()
+            } else {
+                getScreenForAction(for: action)
+            }
+        }
+    }
+
+    private static func openCheckoutNoRepairScreenOld() -> some JourneyPresentation {
+
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimCheckoutNoRepairScreenOld(),
             style: .detented(.large, modally: false)
         ) {
             action in
