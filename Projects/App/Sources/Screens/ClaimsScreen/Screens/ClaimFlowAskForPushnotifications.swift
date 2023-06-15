@@ -1,5 +1,7 @@
+import Claims
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 
@@ -63,5 +65,45 @@ struct AskForPushnotifications: View {
             }
             .padding([.leading, .trailing], 16)
         }
+    }
+}
+
+extension AskForPushnotifications {
+    static func journey(for origin: ClaimsOrigin) -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: LoadingViewWithContent(.startClaim) {
+                AskForPushnotifications(
+                    text: L10n.claimsActivateNotificationsBody,
+                    onActionExecuted: {
+                        if hAnalyticsExperiment.claimsFlowNewDesign {
+                            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                            store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
+                        } else {
+                            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                            if hAnalyticsExperiment.claimsTriaging {
+                                store.send(.navigationAction(action: .openNewTriagingScreen))
+                            } else {
+                                store.send(.navigationAction(action: .openEntrypointScreen))
+                            }
+                        }
+                    }
+                )
+            },
+            style: .detented(.large, modally: false, bgColor: nil)
+        ) { action in
+            if case let .navigationAction(navigationAction) = action {
+                if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
+                    DismissJourney()
+                } else if case .openNewTriagingScreen = navigationAction {
+                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                } else if case .openEntrypointScreen = navigationAction {
+                    ClaimJourneys.showClaimEntrypointsOld(origin: origin)
+                }
+            } else {
+                ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+            }
+        }
+        .hidesBackButton
     }
 }

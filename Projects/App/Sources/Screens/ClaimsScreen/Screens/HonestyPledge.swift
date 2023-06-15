@@ -12,21 +12,36 @@ import hCoreUI
 struct SlideTrack: View {
     var shouldAnimate: Bool
     var labelOpacity: Double
+    @Environment(\.hUseNewStyle) var hUseNewStyle
     @Binding var didFinished: Bool
 
     var body: some View {
         ZStack {
             VStack(alignment: .center) {
-                L10n.claimsPledgeSlideLabel.hText(.body)
+                if hUseNewStyle {
+                    L10n.claimsPledgeSlideLabel.hTextNew(.body)
+                        .foregroundColor(hLabelColorNew.secondary)
+                } else {
+                    L10n.claimsPledgeSlideLabel.hText(.body)
+                }
             }
             .frame(maxWidth: .infinity)
             .opacity(didFinished ? 0 : labelOpacity)
             .animation(shouldAnimate && labelOpacity == 1 ? .easeInOut : nil)
         }
-        .frame(height: 50)
+        .frame(height: hUseNewStyle ? 58 : 50)
         .frame(maxWidth: .infinity)
-        .background(hBackgroundColor.secondary)
-        .cornerRadius(25)
+        .background(backgroundColor)
+        .cornerRadius(hUseNewStyle ? 29 : 25)
+    }
+
+    @hColorBuilder
+    private var backgroundColor: some hColor {
+        if hUseNewStyle {
+            hFillColorNew.opaqueTwo
+        } else {
+            hBackgroundColor.secondary
+        }
     }
 }
 
@@ -50,6 +65,7 @@ struct SlideDragger: View {
     var shouldAnimate: Bool
     var dragOffsetX: CGFloat
     @Binding var didFinished: Bool
+    @Environment(\.hUseNewStyle) var hUseNewStyle
     static let size = CGSize(width: 50, height: 50)
 
     var body: some View {
@@ -57,10 +73,15 @@ struct SlideDragger: View {
             ZStack(alignment: .leading) {
                 ZStack(alignment: .leading) {
                     ZStack {
-                        Image(uiImage: Asset.continue.image)
+                        if hUseNewStyle {
+                            Image(uiImage: hCoreUIAssets.chevronRightRevamp.image)
+                                .foregroundColor(hLabelColorNew.primary.inverted)
+                        } else {
+                            Image(uiImage: Asset.continue.image)
+                        }
                     }
                     .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
-                    .background(hTintColor.lavenderOne)
+                    .background(background)
                     .clipShape(Circle())
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -72,6 +93,15 @@ struct SlideDragger: View {
                 )
             }
             .animation(shouldAnimate && dragOffsetX == 0 ? .spring() : nil)
+        }
+    }
+
+    @hColorBuilder
+    private var background: some hColor {
+        if hUseNewStyle {
+            hLabelColorNew.primary
+        } else {
+            hTintColor.lavenderOne
         }
     }
 }
@@ -102,6 +132,8 @@ struct SlideToConfirm: View {
     @GestureState var dragOffsetX: CGFloat = 0
     @State var draggedTillTheEnd = false
     let onConfirmAction: (() -> Void)?
+    @Environment(\.hUseNewStyle) var hUseNewStyle
+
     var labelOpacity: Double {
         1 - (Double(max(dragOffsetX, 0)) / 100)
     }
@@ -118,6 +150,7 @@ struct SlideToConfirm: View {
                 dragOffsetX: dragOffsetX,
                 didFinished: $draggedTillTheEnd
             )
+            .padding(.all, hUseNewStyle ? 4 : 0)
         }
         .background(
             DidAcceptPledgeNotifier(
@@ -150,6 +183,7 @@ struct SlideToConfirm: View {
 }
 
 struct HonestyPledge: View {
+    @Environment(\.hUseNewStyle) var hUseNewStyle
     let onConfirmAction: (() -> Void)?
 
     init(
@@ -160,21 +194,37 @@ struct HonestyPledge: View {
 
     var body: some View {
         hForm {
-            VStack {
+            VStack(alignment: .leading, spacing: 0) {
+                if hUseNewStyle {
+                    L10n.honestyPledgeTitle.hTextNew(.body)
+                        .foregroundColor(hLabelColorNew.primary)
+                        .padding(.bottom, 8)
+                }
                 HStack {
                     L10n.honestyPledgeDescription.hText(.body)
                         .foregroundColor(hLabelColor.secondary)
                 }
-                .padding(.bottom, 20)
+                .padding(.bottom, hUseNewStyle ? 32 : 20)
+
                 SlideToConfirm(onConfirmAction: onConfirmAction)
                     .frame(maxHeight: 50)
+                    .padding(.bottom, 20)
+                if hUseNewStyle {
+                    hButton.LargeButtonText {
+                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                        store.send(.dissmissNewClaimFlow)
+                    } content: {
+                        L10n.generalCancelButton.hTextNew(.body)
+                            .foregroundColor(hLabelColorNew.primary)
+                    }
+                }
+
             }
+            .padding(.top, hUseNewStyle ? -32 : 0)
             .padding(.bottom, 20)
-            .padding(.leading, 15)
-            .padding(.trailing, 15)
+            .padding(.horizontal, hUseNewStyle ? 24 : 15)
             .fixedSize(horizontal: false, vertical: true)
         }
-        .hUseBlur
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
     }
 }
@@ -198,5 +248,41 @@ extension HonestyPledge {
         }
         .configureTitle(L10n.honestyPledgeTitle)
         .withDismissButton
+    }
+}
+
+extension HonestyPledge {
+    @ViewBuilder
+    static func journey(from origin: ClaimsOrigin) -> some View {
+        if hAnalyticsExperiment.claimsFlowNewDesign {
+            HonestyPledge {
+                let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.navigationAction(action: .openNotificationsPermissionScreen))
+                } else {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
+                }
+            }
+            .hUseNewStyle
+            .hUseBlur
+            .hDisableScroll
+        } else {
+            HonestyPledge {
+                let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+                if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.navigationAction(action: .openNotificationsPermissionScreen))
+                } else {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    if hAnalyticsExperiment.claimsTriaging {
+                        store.send(.navigationAction(action: .openNewTriagingScreen))
+                    } else {
+                        store.send(.navigationAction(action: .openEntrypointScreen))
+                    }
+                }
+            }
+        }
     }
 }
