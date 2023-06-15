@@ -39,7 +39,6 @@ public struct DamamagePickerScreen: View {
                             }
                         }
                     }
-                    .sectionContainerStyle(.transparent)
                 }
             }
         }
@@ -56,7 +55,7 @@ public struct DamamagePickerScreen: View {
                     hText(L10n.generalContinueButton)
                 }
                 hButton.LargeButtonText {
-                    store.send(.navigationAction(action: .dismissPickerScreen))
+                    store.send(.navigationAction(action: .dismissScreen))
                 } content: {
                     hTextNew(L10n.generalCancelButton, style: .body)
                 }

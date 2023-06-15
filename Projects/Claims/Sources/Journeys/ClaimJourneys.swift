@@ -158,7 +158,7 @@ public class ClaimJourneys {
             style: .detented(.scrollViewContentSize)
         ) {
             action in
-            if case .navigationAction(.dismissPickerScreen) = action {
+            if case .navigationAction(.dismissScreen) = action {
                 PopJourney()
             } else if case .setNewLocation = action {
                 PopJourney()
@@ -254,10 +254,10 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: DamamagePickerScreen(),
-            style: .default
+            style: .detented(.scrollViewContentSize)
         ) {
             action in
-            if case .navigationAction(.dismissPickerScreen) = action {
+            if case .navigationAction(.dismissScreen) = action {
                 PopJourney()
             } else if case .setSingleItemDamage(_) = action {
                 PopJourney()

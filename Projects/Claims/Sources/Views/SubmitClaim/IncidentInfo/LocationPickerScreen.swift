@@ -42,7 +42,6 @@ struct LocationPickerScreen: View {
                                     }
                                 }
                             }
-                            .sectionContainerStyle(.transparent)
                         }
                     }
                 }
@@ -65,7 +64,7 @@ struct LocationPickerScreen: View {
                     }
 
                     hButton.LargeButtonText {
-                        store.send(.navigationAction(action: .dismissPickerScreen))
+                        store.send(.navigationAction(action: .dismissScreen))
                     } content: {
                         hTextNew(L10n.generalCancelButton, style: .body)
                     }
