@@ -38,7 +38,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             )
             return mutation.execute(\.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.currentStep)
         case let .locationRequest(location):
-            let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: location)
+            let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: location?.value)
             let mutation = OctopusGraphQL.FlowClaimLocationNextMutation(input: locationInput, context: newClaimContext)
             return mutation.execute(\.flowClaimLocationNext.fragments.flowClaimFragment.currentStep)
         case .dateOfOccurrenceAndLocationRequest:
@@ -238,7 +238,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
         case let .setNewClaimId(id):
             newState.currentClaimId = id
         case let .setNewLocation(location):
-            newState.locationStep?.location = location
+            newState.locationStep?.location = location?.value
         case let .setNewDate(dateOfOccurrence):
             newState.dateOfOccurenceStep?.dateOfOccurence = dateOfOccurrence
         case let .setSingleItemDamage(damages):

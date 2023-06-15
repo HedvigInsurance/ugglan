@@ -105,12 +105,30 @@ public struct StandaloneChevronAccessory: View {
     }
 }
 
+public struct StandaloneChevronNewAccessory: View {
+    public init() {}
+
+    public var body: some View {
+        Image(uiImage: hCoreUIAssets.chevronRight2.image)
+            .foregroundColor(hLabelColorNew.tertiary)
+    }
+}
+
 public struct ChevronAccessory: View {
     public init() {}
 
     public var body: some View {
         Spacer()
         StandaloneChevronAccessory()
+    }
+}
+
+public struct ChevronNewAccessory: View {
+    public init() {}
+
+    public var body: some View {
+        Spacer()
+        StandaloneChevronNewAccessory()
     }
 }
 
@@ -135,6 +153,12 @@ extension hRow {
     /// Adds a chevron to trailing, indicating a tappable row
     public var withChevronAccessory: hRow<Content, ChevronAccessory> {
         hRow<Content, ChevronAccessory>(ChevronAccessory()) {
+            content
+        }
+    }
+
+    public var withNewChevronAccessory: hRow<Content, ChevronNewAccessory> {
+        hRow<Content, ChevronNewAccessory>(ChevronNewAccessory()) {
             content
         }
     }

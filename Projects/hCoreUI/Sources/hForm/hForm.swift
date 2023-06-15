@@ -118,6 +118,7 @@ public struct hForm<Content: View>: View {
     @Environment(\.hUseBlur) var hUseBlur
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.hDisableScroll) var hDisableScroll
+    @Environment(\.hUseBottomBackground) var hUseBottomBackground
     var content: Content
 
     public init(
@@ -179,8 +180,14 @@ public struct hForm<Content: View>: View {
             bottomAttachedView
                 .background(
                     GeometryReader { geo in
-                        Color.clear.onReceive(Just(geo.size.height)) { height in
-                            self.bottomAttachedViewHeight = height
+                        if hUseBottomBackground {
+                            hBackgroundColorNew.primary.onReceive(Just(geo.size.height)) { height in
+                                self.bottomAttachedViewHeight = height
+                            }
+                        } else {
+                            Color.clear.onReceive(Just(geo.size.height)) { height in
+                                self.bottomAttachedViewHeight = height
+                            }
                         }
                     }
                 )
@@ -216,6 +223,23 @@ extension EnvironmentValues {
 extension View {
     public var hUseNewStyle: some View {
         self.environment(\.hUseNewStyle, true)
+    }
+}
+
+private struct EnvironmentHUseBottomBackground: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hUseBottomBackground: Bool {
+        get { self[EnvironmentHUseBottomBackground.self] }
+        set { self[EnvironmentHUseBottomBackground.self] = newValue }
+    }
+}
+
+extension View {
+    public var hUseBottomBackground: some View {
+        self.environment(\.hUseBottomBackground, true)
     }
 }
 

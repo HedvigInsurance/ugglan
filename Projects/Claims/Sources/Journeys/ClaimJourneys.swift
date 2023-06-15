@@ -154,7 +154,31 @@ public class ClaimJourneys {
     static func openLocationScreen(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: LocationPickerScreen(type: type),
+            rootView: CheckboxPickerScreen<ClaimFlowLocationOptionModel>(
+                items: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    return store.state.locationStep?.options
+                        .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
+                }(),
+                preSelectedItems: { nil },
+                onSelected: { selectedLocation in
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    let executedAction: SubmitClaimsAction = {
+                        switch type {
+                        case .setLocation:
+                            return .setNewLocation(location: selectedLocation.first)
+                        case .submitLocation:
+                            return .locationRequest(location: selectedLocation.first)
+                        }
+                    }()
+                    store.send(executedAction)
+                },
+                onCancel: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.navigationAction(action: .dismissScreen))
+                },
+                oneValueLimit: true
+            ),
             style: .detented(.scrollViewContentSize)
         ) {
             action in
@@ -186,6 +210,50 @@ public class ClaimJourneys {
     static func openBrandPickerScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
+            rootView: ItemPickerScreen<ClaimFlowItemBrandOptionModel>(
+                items: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    return store.state.singleItemStep?.availableItemBrandOptions
+                        .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
+                }(),
+                onSelected: { item in
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.setItemBrand(brand: item))
+                },
+                onCancel: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.navigationAction(action: .dismissScreen))
+                }
+            ),
+            style: .detented(.scrollViewContentSize)
+        ) {
+            action in
+            if case let .setItemBrand(brand) = action {
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                if store.state.singleItemStep?.shouldShowListOfModels(for: brand) ?? false {
+                    openModelPickerScreen()
+                } else {
+                    PopJourney()
+                }
+            } else if case .navigationAction(.dismissScreen) = action {
+                PopJourney()
+            } else {
+                getScreenForAction(for: action)
+            }
+        }
+        .onAction(
+            SubmitClaimStore.self,
+            { action, pre in
+                if case .setSingleItemModel(_) = action {
+                    pre.bag.dispose()
+                }
+            }
+        )
+    }
+
+    static func openBrandPickerScreenOld() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
             rootView: ItemPickerScreenOld<ClaimFlowItemBrandOptionModel>(
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -203,7 +271,7 @@ public class ClaimJourneys {
             if case let .setItemBrand(brand) = action {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 if store.state.singleItemStep?.shouldShowListOfModels(for: brand) ?? false {
-                    openModelPickerScreen()
+                    openModelPickerScreenOld()
                 } else {
                     PopJourney()
                 }
@@ -222,7 +290,35 @@ public class ClaimJourneys {
     }
 
     static func openModelPickerScreen() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: ItemPickerCheckboxScreen<ClaimFlowItemModelOptionModel>(
+                items: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    return store.state.singleItemStep?.getListOfModels()?.compactMap({ ($0, $0.displayName) }) ?? []
 
+                }(),
+                onSelected: { item in
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.setSingleItemModel(modelName: item))
+                },
+                onCancel: {}  //add
+            )
+        ) {
+            action in
+            ContinueJourney()
+        }
+        .onAction(
+            SubmitClaimStore.self,
+            { action, pre in
+                if case .setSingleItemModel = action {
+                    pre.bag.dispose()
+                }
+            }
+        )
+    }
+
+    static func openModelPickerScreenOld() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: ItemPickerScreenOld<ClaimFlowItemModelOptionModel>(
@@ -253,7 +349,40 @@ public class ClaimJourneys {
     static func openDamagePickerScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: DamamagePickerScreen(),
+            rootView: CheckboxPickerScreen<ClaimFlowItemProblemOptionModel>(
+                items: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    return store.state.singleItemStep?.availableItemProblems
+                        .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
+                }(),
+                preSelectedItems: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    var damagesArray: [ClaimFlowItemProblemOptionModel] = []
+                    for selectedDamage in store.state.singleItemStep?.selectedItemProblems ?? [] {
+                        damagesArray.append(
+                            ClaimFlowItemProblemOptionModel(displayName: selectedDamage, itemProblemId: selectedDamage)
+                        )
+                    }
+                    return damagesArray
+                },
+                onSelected: { selectedDamages in
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    var damages: [String] = []
+
+                    for damage in selectedDamages {
+                        damages.append(damage.itemProblemId)
+                    }
+                    store.send(
+                        .submitDamage(
+                            damage: damages
+                        )
+                    )
+                },
+                onCancel: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.navigationAction(action: .dismissScreen))
+                }
+            ),
             style: .detented(.scrollViewContentSize)
         ) {
             action in
@@ -311,7 +440,7 @@ public class ClaimJourneys {
             if case .navigationAction(.openDatePicker) = action {
                 openDatePickerScreen(type: .setDateOfPurchase)
             } else if case .navigationAction(.openBrandPicker) = action {
-                openBrandPickerScreen()
+                openBrandPickerScreenOld()
             } else {
                 getScreenForAction(for: action)
             }
@@ -328,7 +457,7 @@ public class ClaimJourneys {
             if case .navigationAction(.openDatePicker) = action {
                 openDatePickerScreen(type: .setDateOfPurchase)
             } else if case .navigationAction(.openBrandPicker) = action {
-                openBrandPickerScreen()
+                openBrandPickerScreen().configureTitle("Välj din modell")
             } else {
                 getScreenForAction(for: action)
             }
