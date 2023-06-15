@@ -231,7 +231,7 @@ public class ClaimJourneys {
             if case let .setItemBrand(brand) = action {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 if store.state.singleItemStep?.shouldShowListOfModels(for: brand) ?? false {
-                    openModelPickerScreen().configureTitle("Välj din modell")
+                    openModelPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
                 } else {
                     PopJourney()
                 }
@@ -460,7 +460,7 @@ public class ClaimJourneys {
             if case .navigationAction(.openDatePicker) = action {
                 openDatePickerScreen(type: .setDateOfPurchase)
             } else if case .navigationAction(.openBrandPicker) = action {
-                openBrandPickerScreen().configureTitle("Välj din modell")
+                openBrandPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
             } else {
                 getScreenForAction(for: action)
             }
