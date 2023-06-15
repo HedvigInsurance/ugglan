@@ -8,6 +8,7 @@ struct CheckboxPickerScreen<T>: View {
     let onSelected: ([T]) -> Void
     let onCancel: () -> Void
     let oneValueLimit: Bool?
+    let smallerPadding: Bool?
     @State var selectedItems: [(object: T, displayName: String)] = []
 
     public init(
@@ -15,54 +16,23 @@ struct CheckboxPickerScreen<T>: View {
         preSelectedItems: @escaping () -> [T]?,
         onSelected: @escaping ([T]) -> Void,
         onCancel: @escaping () -> Void,
-        oneValueLimit: Bool? = false
+        oneValueLimit: Bool? = false,
+        smallerPadding: Bool? = false
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems
         self.onSelected = onSelected
         self.onCancel = onCancel
         self.oneValueLimit = oneValueLimit
+        self.smallerPadding = smallerPadding
     }
 
     var body: some View {
         hForm {
             ForEach(items, id: \.displayName) { item in
                 hSection {
-                    hRow {
-                        hTextNew(item.displayName, style: .title3)
-                            .foregroundColor(hLabelColorNew.primary)
-                        Spacer()
-                        Circle()
-                            .strokeBorder(hBackgroundColorNew.semanticBorderTwo)
-                            .background(Circle().foregroundColor(retColor(currentItem: item.displayName)))
-                            .frame(width: 28, height: 28)
-                    }
-                    .withEmptyAccessory
-                    .onTap {
-                        if !(oneValueLimit ?? true) {
-                            var remove = false
-                            var index = 0
-                            for selectedItem in selectedItems {
-                                if selectedItem.displayName == item.displayName {
-                                    remove = true
-                                    break
-                                }
-                                if !remove {
-                                    index += 1
-                                }
-                            }
-                            if remove {
-                                selectedItems.remove(at: index)
-                            } else {
-                                selectedItems.append(item)
-                            }
-                        } else {
-                            if !(selectedItems.first?.displayName == item.displayName) {
-                                selectedItems = []
-                                selectedItems.append(item)
-                            }
-                        }
-                    }
+                    showSmallerPadding(item: item)
+                    showNormalPadding(item: item)
                 }
             }
         }
@@ -97,6 +67,71 @@ struct CheckboxPickerScreen<T>: View {
                 .forEach { item in
                     self.selectedItems.append((item, ""))
                 }
+        }
+    }
+
+    @ViewBuilder
+    func showSmallerPadding(item: (object: T, displayName: String)) -> some View {
+        if smallerPadding ?? false {
+            hRow {
+                displayContent(displayName: item.displayName)
+            }
+            .withEmptyAccessory
+            .verticalPadding(9)
+            .withoutDivider()
+            .onTap {
+                onTapExecute(item: item)
+            }
+        }
+    }
+
+    @ViewBuilder
+    func showNormalPadding(item: (object: T, displayName: String)) -> some View {
+        if !(smallerPadding ?? false) {
+            hRow {
+                displayContent(displayName: item.displayName)
+            }
+            .withEmptyAccessory
+            .onTap {
+                onTapExecute(item: item)
+            }
+        }
+    }
+
+    @ViewBuilder
+    func displayContent(displayName: String) -> some View {
+        hTextNew(displayName, style: .title3)
+            .foregroundColor(hLabelColorNew.primary)
+        Spacer()
+        Circle()
+            .strokeBorder(hBackgroundColorNew.semanticBorderTwo)
+            .background(Circle().foregroundColor(retColor(currentItem: displayName)))
+            .frame(width: 28, height: 28)
+    }
+
+    func onTapExecute(item: (object: T, displayName: String)) {
+        if !(oneValueLimit ?? true) {
+            var remove = false
+            var index = 0
+            for selectedItem in selectedItems {
+                if selectedItem.displayName == item.displayName {
+                    remove = true
+                    break
+                }
+                if !remove {
+                    index += 1
+                }
+            }
+            if remove {
+                selectedItems.remove(at: index)
+            } else {
+                selectedItems.append(item)
+            }
+        } else {
+            if !(selectedItems.first?.displayName == item.displayName) {
+                selectedItems = []
+                selectedItems.append(item)
+            }
         }
     }
 

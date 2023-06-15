@@ -231,7 +231,7 @@ public class ClaimJourneys {
             if case let .setItemBrand(brand) = action {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 if store.state.singleItemStep?.shouldShowListOfModels(for: brand) ?? false {
-                    openModelPickerScreen()
+                    openModelPickerScreen().configureTitle("Välj din modell")
                 } else {
                     PopJourney()
                 }
@@ -292,17 +292,20 @@ public class ClaimJourneys {
     static func openModelPickerScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: ItemPickerCheckboxScreen<ClaimFlowItemModelOptionModel>(
+            rootView: CheckboxPickerScreen<ClaimFlowItemModelOptionModel>(
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     return store.state.singleItemStep?.getListOfModels()?.compactMap({ ($0, $0.displayName) }) ?? []
 
                 }(),
+                preSelectedItems: { nil },
                 onSelected: { item in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.setSingleItemModel(modelName: item))
+                    store.send(.setSingleItemModel(modelName: item.first!))
                 },
-                onCancel: {}  //add
+                onCancel: {},
+                oneValueLimit: true,
+                smallerPadding: true
             )
         ) {
             action in
