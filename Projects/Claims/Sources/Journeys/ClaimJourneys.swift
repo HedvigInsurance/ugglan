@@ -5,7 +5,6 @@ import hCore
 import hCoreUI
 
 public class ClaimJourneys {
-    private static var shouldUseNewDesign = hAnalyticsExperiment.claimsFlowNewDesign
     @JourneyBuilder
     public static func getScreenForAction(
         for action: SubmitClaimsAction,
@@ -254,7 +253,7 @@ public class ClaimJourneys {
         return HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimAudioRecordingScreen(url: url),
-            style: hAnalyticsExperiment.claimsFlowNewDesign ? .default : .detented(.large, modally: false)
+            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
         ) { action in
             getScreen(for: action)
         }
@@ -263,7 +262,7 @@ public class ClaimJourneys {
     private static func openSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
             rootView: SubmitClaimSuccessScreen(),
-            style: hAnalyticsExperiment.claimsFlowNewDesign ? .default : .detented(.large, modally: false)
+            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
         )
         .hidesBackButton
     }
@@ -304,7 +303,7 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimSummaryScreen(),
-            style: hAnalyticsExperiment.claimsFlowNewDesign ? .default : .detented(.large, modally: false)
+            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
         ) {
             action in
             getScreen(for: action)
@@ -316,7 +315,7 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimCheckoutNoRepairScreen(),
-            style: hAnalyticsExperiment.claimsFlowNewDesign ? .default : .detented(.large, modally: false)
+            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
         ) {
             action in
             if case .navigationAction(.openCheckoutTransferringScreen) = action {
@@ -368,7 +367,7 @@ public class ClaimJourneys {
                         )
                     }
                 }),
-            style: hAnalyticsExperiment.claimsFlowNewDesign
+            style: hAnalyticsExperiment.claimsTriaging
                 ? .modally(presentationStyle: .overFullScreen) : .detented(.large, modally: false)
         ) { action in
             if case let .setSelectedEntrypoints(entrypoints) = action {
@@ -445,7 +444,7 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypointOld(entrypointGroupId: nil),
-            style: hAnalyticsExperiment.claimsFlowNewDesign
+            style: hAnalyticsExperiment.claimsTriaging
                 ? .modally(presentationStyle: .fullScreen) : .detented(.large, modally: false)
         ) { action in
             getScreen(for: action).hidesBackButton

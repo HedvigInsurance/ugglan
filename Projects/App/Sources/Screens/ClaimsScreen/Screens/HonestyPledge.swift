@@ -254,7 +254,7 @@ extension HonestyPledge {
 extension HonestyPledge {
     @ViewBuilder
     static func journey(from origin: ClaimsOrigin) -> some View {
-        if hAnalyticsExperiment.claimsFlowNewDesign {
+        if hAnalyticsExperiment.claimsTriaging {
             HonestyPledge {
                 let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                 if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {

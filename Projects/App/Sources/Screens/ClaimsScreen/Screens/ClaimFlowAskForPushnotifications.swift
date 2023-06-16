@@ -76,7 +76,7 @@ extension AskForPushnotifications {
                 AskForPushnotifications(
                     text: L10n.claimsActivateNotificationsBody,
                     onActionExecuted: {
-                        if hAnalyticsExperiment.claimsFlowNewDesign {
+                        if hAnalyticsExperiment.claimsTriaging {
                             let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                             store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
                         } else {
