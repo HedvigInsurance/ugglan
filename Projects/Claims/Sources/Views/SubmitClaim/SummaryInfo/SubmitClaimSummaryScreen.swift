@@ -1,3 +1,4 @@
+import Kingfisher
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,25 +11,63 @@ public struct SubmitClaimSummaryScreen: View {
     public var body: some View {
         LoadingViewWithContent(.postSummary) {
             hForm {
-                VStack(alignment: .center) {
-
-                    displayTitleField()
-                    displayDateAndLocationOfOccurrenceField()
-                    displayModelField()
-                    displayDateOfPurchase()
-                    displayDamageField()
+                hSection {
+                    VStack {
+                        hRow {
+                            hTextNew(L10n.changeAddressDetails, style: .body)
+                                .foregroundColor(hLabelColorNew.primary)
+                            Spacer()
+                            Image(uiImage: hCoreUIAssets.infoSmall.image)
+                                .foregroundColor(hLabelColor.secondary)
+                        }
+                        .verticalPadding(0)
+                        .padding(.bottom, 8)
+                        .padding(.top, 16)
+                        VStack(spacing: 2) {
+                            displayTitleField()
+                            displayDamageField()
+                            displayDateOfOccurrenceField()
+                            displayPlaceOfOccurrenceField()
+                            displayModelField()
+                            displayDateOfPurchase()
+                            displayPurchasePriceField()
+                        }
+                        .foregroundColor(hLabelColorNew.secondary)
+                    }
                 }
+                .sectionContainerStyle(.transparent)
             }
+            .hUseNewStyle
             .hFormAttachToBottom {
-                hButton.LargeButtonFilled {
-                    store.send(.summaryRequest)
-                } content: {
-                    hText(L10n.generalContinueButton)
-                }
-                .padding([.leading, .trailing], 16)
-            }
+                VStack {
+                    NoticeComponent(text: L10n.claimsComplementClaim)
 
+                    Group {
+                        hButton.LargeButtonFilled {
+                            store.send(.summaryRequest)
+                        } content: {
+                            hTextNew(L10n.embarkSubmitClaim, style: .body)
+                        }
+
+                        hButton.LargeButtonText {
+                            store.send(.navigationAction(action: .dismissScreen))
+                        } content: {
+                            hTextNew(L10n.embarkGoBackButton, style: .body)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                }
+            }
         }
+    }
+
+    @ViewBuilder func displayRow(leftTitle: String, rightTitle: String) -> some View {
+        hRow {
+            hTextNew(leftTitle, style: .body)
+            Spacer()
+            hTextNew(rightTitle, style: .body)
+        }
+        .verticalPadding(0)
     }
 
     @ViewBuilder func displayTitleField() -> some View {
@@ -38,42 +77,48 @@ public struct SubmitClaimSummaryScreen: View {
                 state.summaryStep
             }
         ) { summaryStep in
-            hText(summaryStep?.title ?? "", style: .title3)
-                .padding(.top, UIScreen.main.bounds.size.height / 5)
-                .foregroundColor(hLabelColor.secondary)
+            displayRow(leftTitle: L10n.claimsCase, rightTitle: summaryStep?.title ?? "")
         }
     }
 
-    @ViewBuilder func displayDateAndLocationOfOccurrenceField() -> some View {
+    @ViewBuilder func displayDateOfOccurrenceField() -> some View {
         PresentableStoreLens(
             SubmitClaimStore.self,
             getter: { state in
                 state.dateOfOccurenceStep
             }
         ) { dateOfOccurenceStep in
-            HStack {
-                Image(uiImage: hCoreUIAssets.calendar.image)
-                    .resizable()
-                    .frame(width: 12.0, height: 12.0)
-                    .foregroundColor(.secondary)
-                hText(dateOfOccurenceStep?.dateOfOccurence ?? L10n.Claims.Summary.Screen.Not.selected)
-                    .padding(.top, 1)
-                    .foregroundColor(.secondary)
-            }
+            displayRow(
+                leftTitle: L10n.Claims.Item.Screen.Date.Of.Incident.button,
+                rightTitle: dateOfOccurenceStep?.dateOfOccurence ?? ""
+            )
         }
+    }
+
+    @ViewBuilder func displayPlaceOfOccurrenceField() -> some View {
         PresentableStoreLens(
             SubmitClaimStore.self,
             getter: { state in
                 state.locationStep
             }
         ) { locationStep in
-            HStack {
-                Image(uiImage: hCoreUIAssets.location.image)
-                    .foregroundColor(hLabelColor.secondary)
-                hText(locationStep?.getSelectedOption()?.displayName ?? L10n.Claims.Summary.Screen.Not.selected)
-                    .padding(.top, 1)
-                    .foregroundColor(.secondary)
+            displayRow(
+                leftTitle: L10n.Claims.Location.Screen.title,
+                rightTitle: locationStep?.getSelectedOption()?.displayName ?? ""
+            )
+        }
+    }
+
+    @ViewBuilder func displayPurchasePriceField() -> some View {
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.singleItemStep
             }
+        ) { singleItemStep in
+
+            let stringToDisplay = singleItemStep?.returnDisplayStringForSummaryPrice
+            displayRow(leftTitle: L10n.Claims.Payout.Purchase.price, rightTitle: stringToDisplay ?? "")
         }
     }
 
@@ -85,9 +130,7 @@ public struct SubmitClaimSummaryScreen: View {
             }
         ) { singleItemStep in
             if let modelName = singleItemStep?.getBrandOrModelName() {
-                hText(modelName)
-                    .padding(.top, 40)
-                    .foregroundColor(hLabelColor.primary)
+                displayRow(leftTitle: L10n.Claims.Item.Screen.Model.button, rightTitle: modelName)
             }
         }
     }
@@ -100,11 +143,11 @@ public struct SubmitClaimSummaryScreen: View {
             }
         ) { singleItemStep in
 
-            let stringToDisplay = singleItemStep?.returnDisplayStringForSummary
-
-            hText(stringToDisplay ?? L10n.Claims.Summary.Screen.Not.selected)
-                .padding(.top, 1)
-                .foregroundColor(hLabelColor.primary)
+            let stringToDisplay = singleItemStep?.returnDisplayStringForSummaryDate
+            displayRow(
+                leftTitle: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
+                rightTitle: stringToDisplay ?? ""
+            )
         }
     }
 
@@ -116,8 +159,10 @@ public struct SubmitClaimSummaryScreen: View {
             }
         ) { singleItemStep in
             if let chosenDamages = singleItemStep?.getChoosenDamagesAsText() {
-                hText(L10n.summarySelectedProblemDescription(chosenDamages)).foregroundColor(hLabelColor.primary)
-                    .padding(.top, 1)
+                displayRow(
+                    leftTitle: L10n.claimsDamages,
+                    rightTitle: L10n.summarySelectedProblemDescription(chosenDamages)
+                )
             }
         }
     }

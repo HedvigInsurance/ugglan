@@ -14,9 +14,7 @@ public struct hBackgroundColorNew {
     }
 
     public static var secondary: some hColor {
-        hColorScheme(
-            Color(hexString: "FAFAFA").opacity(0.75)
-        )
+        hGrayscaleColorNew.greyScale700
     }
 
     public static var inputBackground: some hColor {
@@ -70,6 +68,12 @@ public struct hGrayscaleColorNew {
     public static var greyScale400: some hColor {
         hColorScheme(
             Color(hexString: "CFCFCF")
+        )
+    }
+
+    public static var greyScale700: some hColor {
+        hColorScheme(
+            Color(hexString: "707070")
         )
     }
 
