@@ -12,6 +12,8 @@ extension UIColor {
         static let grayScale300 = UIColor(hexString: "E0E0E0")
         static let grayScale400 = UIColor(hexString: "CFCFCF")
         static let grayScale700 = UIColor(hexString: "727272")
+        static let white = UIColor.white
+        static let black = UIColor.black
 
         static var primaryBorder = UIColor(dynamic: { trait -> UIColor in
             BrandColorBaseNew.grayScale25
@@ -21,7 +23,7 @@ extension UIColor {
     public enum BrandColorNew {
         case primaryBackground(_ negative: Bool = false)
         case primaryBorderColor
-
+        case primaryText(_ negative: Bool = false)
         var color: UIColor {
             switch self {
             case let .primaryBackground(negative):
@@ -36,6 +38,16 @@ extension UIColor {
                 })
             case .primaryBorderColor:
                 return BrandColorBaseNew.primaryBorder
+            case let .primaryText(negative):
+                if negative {
+                    return UIColor(dynamic: { trait -> UIColor in
+                        trait.userInterfaceStyle == .dark ? BrandColorBaseNew.black : BrandColorBaseNew.white
+                    })
+                }
+
+                return UIColor(dynamic: { trait -> UIColor in
+                    trait.userInterfaceStyle == .dark ? BrandColorBaseNew.white : BrandColorBaseNew.black
+                })
             }
         }
     }

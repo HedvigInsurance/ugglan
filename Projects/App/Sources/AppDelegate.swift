@@ -60,7 +60,7 @@ import hGraphQL
 
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
         authenticationStore.send(.logout)
-
+        ApplicationContext.shared.$isLoggedIn.value = false
         ApolloClient.deleteToken()
         self.presentMainJourney()
     }
@@ -294,8 +294,6 @@ import hGraphQL
                             self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
                                 .atValue { _ in
                                     Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
-
-                                    AnalyticsCoordinator().setUserId()
                                     self.bag += self.window.present(AppJourney.main)
                                 }
                         } else {

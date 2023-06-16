@@ -299,14 +299,27 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                                 )
                             )
                         )
-
                         callbacker(.observeLoginStatus(url: statusUrl))
+                    } else if let result = result as? AuthAttemptResultError {
+                        let error = NSError(domain: result.message, code: 1000)
+                        log.error(
+                            "Got Error when signing in with BankId",
+                            error: error,
+                            attributes: [:]
+                        )
+                    } else if let error {
+                        log.error(
+                            "Got Error when signing in with BankId",
+                            error: error,
+                            attributes: [:]
+                        )
                     }
                 }
 
                 return DisposeBag()
             }
             .finite()
+
         } else if case let .observeLoginStatus(statusUrl) = action {
             return FiniteSignal { callbacker in
                 let bag = DisposeBag()
