@@ -10,6 +10,7 @@ import hGraphQL
 struct UgglanState: StateProtocol {
     var selectedTabIndex: Int = 0
     var pushNotificationStatus: Int?
+    var isDemoMode: Bool = false
 
     init() {
         UNUserNotificationCenter.current()
@@ -37,6 +38,7 @@ enum UgglanAction: ActionProtocol {
     case businessModelDetail
     case aboutBusinessModel
     case setPushNotificationStatus(status: Int?)
+    case setIsDemoMode(to: Bool)
 }
 
 final class UgglanStore: StateStore<UgglanState, UgglanAction> {
@@ -60,6 +62,8 @@ final class UgglanStore: StateStore<UgglanState, UgglanAction> {
             newState.selectedTabIndex = tabIndex
         case let .setPushNotificationStatus(status):
             newState.pushNotificationStatus = status
+        case let .setIsDemoMode(to):
+            newState.isDemoMode = to
         default:
             break
         }
