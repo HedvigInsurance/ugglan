@@ -113,12 +113,13 @@ public struct hForm<Content: View>: View {
 
     @State var shouldAnimateGradient = true
     @State var bottomAttachedViewHeight: CGFloat = 0
+    @State var scrollViewHeight: CGFloat = 0
+
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hUseNewStyle) var hUseNewStyle
     @Environment(\.hUseBlur) var hUseBlur
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.hDisableScroll) var hDisableScroll
-    @Environment(\.hUseBottomBackground) var hUseBottomBackground
     var content: Content
 
     public init(
@@ -152,51 +153,70 @@ public struct hForm<Content: View>: View {
                     BackgroundView().edgesIgnoringSafeArea(.all)
                 }
             }
-            ScrollView {
-                VStack {
-                    if let hFormTitle, hUseNewStyle {
-                        hTextNew(hFormTitle.2, style: hFormTitle.1)
-                            .multilineTextAlignment(.center)
-                            .padding(.top, hFormTitle.0.topMargin)
-                            .padding(.bottom, hFormTitle.0.bottomMargin)
-                            .padding([.leading, .trailing], 16)
-                    }
-                    content
-                }
-                .frame(maxWidth: .infinity)
-                .tint(hForm<Content>.returnTintColor(useNewStyle: hUseNewStyle))
-                Color.clear
-                    .frame(height: bottomAttachedViewHeight)
-            }
-            .modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeight))
-            .findScrollView { scrollView in
-                if #available(iOS 15, *) {
-                    scrollView.viewController?.setContentScrollView(scrollView)
-                }
-                if hDisableScroll {
-                    scrollView.bounces = false
-                }
+            if bottomAttachedViewHeight > 0, scrollViewHeight > 0 {
+                getScrollView()
+                    .mask(
+                        LinearGradient(
+                            gradient: Gradient(stops: [
+                                .init(color: .black, location: 0),
+                                .init(color: .black, location: 1 - bottomAttachedViewHeight / scrollViewHeight),
+                                .init(color: .clear, location: 1 - bottomAttachedViewHeight / scrollViewHeight),
+                                .init(color: .clear, location: 1),
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+            } else {
+                getScrollView()
             }
             bottomAttachedView
                 .background(
                     GeometryReader { geo in
-                        if hUseBottomBackground {
-                            hBackgroundColorNew.primary.onReceive(Just(geo.size.height)) { height in
+                        Color.clear.opacity(0.4)
+                            .onReceive(Just(geo.size.height)) { height in
                                 self.bottomAttachedViewHeight = height
+
                             }
-                        } else {
-                            Color.clear.onReceive(Just(geo.size.height)) { height in
-                                self.bottomAttachedViewHeight = height
-                            }
-                        }
                     }
                 )
                 .frame(maxHeight: .infinity, alignment: .bottom)
+
         }
         .onAppear {
             self.gradientState.gradientType = gradientType
         }
 
+    }
+
+    func getScrollView() -> some View {
+        ScrollView {
+            VStack {
+                if let hFormTitle, hUseNewStyle {
+                    hTextNew(hFormTitle.2, style: hFormTitle.1)
+                        .multilineTextAlignment(.center)
+                        .padding(.top, hFormTitle.0.topMargin)
+                        .padding(.bottom, hFormTitle.0.bottomMargin)
+                        .padding([.leading, .trailing], 16)
+                }
+                content
+            }
+            .frame(maxWidth: .infinity)
+            .tint(hForm<Content>.returnTintColor(useNewStyle: hUseNewStyle))
+            Color.clear
+                .frame(height: bottomAttachedViewHeight)
+        }
+        .modifier(ForceScrollViewIndicatorInset(insetBottom: bottomAttachedViewHeight))
+        .findScrollView { scrollView in
+            if #available(iOS 15, *) {
+                scrollView.viewController?.setContentScrollView(scrollView)
+            }
+            if hDisableScroll {
+                scrollView.bounces = false
+            }
+            scrollViewHeight =
+                scrollView.frame.size.height - scrollView.contentInset.top - scrollView.contentInset.bottom
+        }
     }
 
     @hColorBuilder
@@ -223,23 +243,6 @@ extension EnvironmentValues {
 extension View {
     public var hUseNewStyle: some View {
         self.environment(\.hUseNewStyle, true)
-    }
-}
-
-private struct EnvironmentHUseBottomBackground: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hUseBottomBackground: Bool {
-        get { self[EnvironmentHUseBottomBackground.self] }
-        set { self[EnvironmentHUseBottomBackground.self] = newValue }
-    }
-}
-
-extension View {
-    public var hUseBottomBackground: some View {
-        self.environment(\.hUseBottomBackground, true)
     }
 }
 

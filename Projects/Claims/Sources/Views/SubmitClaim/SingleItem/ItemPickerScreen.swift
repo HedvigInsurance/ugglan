@@ -33,7 +33,6 @@ public struct ItemPickerScreen<T>: View {
             }
         }
         .hUseNewStyle
-        .hUseBottomBackground
         .hFormAttachToBottom {
             hButton.LargeButtonText {
                 onCancel()
