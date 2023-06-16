@@ -9,17 +9,17 @@ public struct SubmitClaimSuccessScreen: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 0) {
-                hTextNew(L10n.claimsSuccessTitle, style: .title2)
+            VStack(spacing: 16) {
+                hTextNew(L10n.claimsSuccessTitle, style: .customTitle)
                     .foregroundColor(hLabelColorNew.primary)
                     .padding(.top, 264)
-                    .padding(.bottom, 16)
                 hTextNew(L10n.claimsSuccessLabel, style: .body)
                     .foregroundColor(hLabelColorNew.secondary)
                     .padding(.horizontal, 32)
                     .multilineTextAlignment(.center)
             }
         }
+        .hUseNewStyle
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 hButton.LargeButtonFilled {

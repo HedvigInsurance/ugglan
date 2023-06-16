@@ -73,6 +73,12 @@ public struct hGrayscaleColorNew {
         )
     }
 
+    public static var greyScale700: some hColor {
+        hColorScheme(
+            Color(hexString: "707070")
+        )
+    }
+
     public static var greyScale1000: some hColor {
         hColorScheme(
             Color(hexString: "#121212")
@@ -175,9 +181,7 @@ public struct hLabelColorNew {
     }
 
     public static var secondary: some hColor {
-        hColorScheme(
-            Color(hexString: "727272")
-        )
+        return hGrayscaleColorNew.greyScale700
     }
 
     public static var tertiary: some hColor {
