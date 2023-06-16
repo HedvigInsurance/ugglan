@@ -69,13 +69,13 @@ public class ClaimJourneys {
                     openCheckoutNoRepairScreen().addDismissClaimsFlow()
                         .configureTitle(L10n.Claims.Payout.Summary.title)
                 } else if case .openFailureSceen = navigationAction {
-                    showClaimFailureScreen().addDismissClaimsFlow()
+                    showClaimFailureScreenOld().addDismissClaimsFlow()
                 } else if case .openSummaryEditScreen = navigationAction {
                     openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
                 } else if case let .openLocationPicker(type) = navigationAction {
                     openLocationScreen(type: type).addDismissClaimsFlow()
                 } else if case .openUpdateAppScreen = navigationAction {
-                    openUpdateAppTerminationScreen().addDismissClaimsFlow()
+                    openUpdateAppTerminationScreenOld().addDismissClaimsFlow()
                 } else if case let .openDatePicker(type) = navigationAction {
                     openDatePickerScreen(type: type)
                 }
@@ -460,10 +460,32 @@ public class ClaimJourneys {
             .hidesBackButton
     }
 
+    private static func showClaimFailureScreenOld() -> some JourneyPresentation {
+        HostingJourney(rootView: ClaimFailureScreenOld())
+            .hidesBackButton
+    }
+
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: UpdateAppScreen(
+                onSelected: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.dissmissNewClaimFlow)
+                }
+            ),
+            style: .detented(.large, modally: true)
+        ) {
+            action in
+            getScreenForAction(for: action)
+        }
+        .hidesBackButton
+    }
+
+    static func openUpdateAppTerminationScreenOld() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: UpdateAppScreenOld(
                 onSelected: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.dissmissNewClaimFlow)
