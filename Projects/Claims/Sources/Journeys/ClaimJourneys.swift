@@ -310,7 +310,11 @@ public class ClaimJourneys {
             style: .detented(.large, modally: false)
         ) {
             action in
-            getScreenForAction(for: action)
+            if case .navigationAction(.dismissScreen) = action {
+                PopJourney()
+            } else {
+                getScreenForAction(for: action)
+            }
         }
     }
 
