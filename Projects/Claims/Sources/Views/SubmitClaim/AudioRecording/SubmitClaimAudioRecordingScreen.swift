@@ -12,14 +12,16 @@ public struct SubmitClaimAudioRecordingScreen: View {
     @ObservedObject var audioPlayer: AudioPlayer
     @ObservedObject var audioRecorder: AudioRecorder
 
+    @State var minutes: Int = 0
+    @State var seconds: Int = 0
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
     let onSubmit: (_ url: URL) -> Void
 
     public init(
         url: URL?
-            //        url: URL? = URL(string: "")
     ) {
         audioPlayer = AudioPlayer(url: url)
-
         audioRecorder = AudioRecorder()
 
         func myFunc(_: URL) {}
@@ -43,7 +45,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         .padding(16)
                         .background(
                             Squircle.default()
-                                .fill(hGrayscaleColorNew.greyScale100)
+                                .fill(hBackgroundColorNew.opaqueOne)
                         )
                         .padding(.leading, 16)
                         .padding(.trailing, 88)
@@ -59,6 +61,10 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             VStack(spacing: 12) {
                                 TrackPlayer(audioPlayer: audioPlayer)
                                     .hWithoutFootnote
+                                    .onAppear {
+                                        minutes = 0
+                                        seconds = 0
+                                    }
                                 hButton.LargeButtonFilled {
                                     onSubmit(url)
                                     store.send(.submitAudioRecording(audioURL: url))
@@ -79,18 +85,37 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 self.audioPlayer.url = url
                             }
                         } else {
-                            RecordButton(isRecording: audioRecorder.isRecording) {
-                                if audioRecorder.isRecording {
-                                } else {
+                            VStack(spacing: 60) {
+                                RecordButton(isRecording: audioRecorder.isRecording) {
+                                    if audioRecorder.isRecording {
+                                    } else {
+                                    }
+                                    withAnimation(.spring()) {
+                                        audioRecorder.toggleRecording()
+                                    }
                                 }
-                                withAnimation(.spring()) {
-                                    audioRecorder.toggleRecording()
+                                .frame(height: 72)
+                                .transition(
+                                    .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
+                                )
+                                if !audioRecorder.isRecording {
+                                    hTextNew(L10n.claimsStartRecordingLabel, style: .body)
+                                        .foregroundColor(hLabelColorNew.primary)
+                                } else {
+                                    let minutesToString = String(format: "%02d", minutes)
+                                    let secondsToString = String(format: "%02d", seconds)
+                                    hTextNew("\(minutesToString):\(secondsToString)", style: .body)
+                                        .foregroundColor(hLabelColorNew.primary)
+                                        .onReceive(timer) { time in
+                                            if ((seconds % 59) == 0) && seconds != 0 {
+                                                minutes += 1
+                                                seconds = 0
+                                            } else {
+                                                seconds += 1
+                                            }
+                                        }
                                 }
                             }
-                            .frame(height: 112)
-                            .transition(
-                                .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
-                            )
                         }
                     }
                     .padding(16)
@@ -100,9 +125,3 @@ public struct SubmitClaimAudioRecordingScreen: View {
         }
     }
 }
-
-//struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
-//    static var previews: some View {
-//        SubmitClaimAudioRecordingScreen()
-//    }
-//}
