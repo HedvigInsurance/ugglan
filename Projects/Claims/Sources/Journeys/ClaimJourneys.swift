@@ -306,7 +306,8 @@ public class ClaimJourneys {
                 onCancel: {},
                 oneValueLimit: true,
                 smallerPadding: true
-            )
+            ),
+            style: .detented(.scrollViewContentSize, modally: false)
         ) {
             action in
             ContinueJourney()
