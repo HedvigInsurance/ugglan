@@ -23,7 +23,11 @@ extension Claims: View {
     public var body: some View {
         ClaimSectionLoading()
             .onReceive(pollTimer) { _ in
-                fetch()
+                if ApplicationContext.shared.isLoggedIn {
+                    fetch()
+                } else {
+                    pollTimer.upstream.connect().cancel()
+                }
             }
             .onAppear {
                 fetch()
