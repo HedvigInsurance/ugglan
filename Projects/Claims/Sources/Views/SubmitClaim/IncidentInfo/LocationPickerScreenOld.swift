@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct LocationPickerScreen: View {
+struct LocationPickerScreenOld: View {
     @PresentableStore var store: SubmitClaimStore
     @State var type: ClaimsNavigationAction.LocationPickerType
     init(
@@ -33,9 +33,9 @@ struct LocationPickerScreen: View {
                                     let executedAction: SubmitClaimsAction = {
                                         switch type {
                                         case .setLocation:
-                                            return .setNewLocation(location: element.value)
+                                            return .setNewLocation(location: element)
                                         case .submitLocation:
-                                            return .locationRequest(location: element.value)
+                                            return .locationRequest(location: element)
                                         }
                                     }()
                                     store.send(executedAction)

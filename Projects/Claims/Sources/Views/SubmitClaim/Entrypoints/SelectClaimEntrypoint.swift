@@ -22,7 +22,7 @@ public struct SelectClaimEntrypointGroup: View {
             hForm {
             }
             .hUseNewStyle
-            .hFormTitle(.small, L10n.claimTriagingNavigationTitle)
+            .hFormTitle(.small, .title3, L10n.claimTriagingNavigationTitle)
             .hDisableScroll
             .hUseBlur
             .hFormAttachToBottom {
@@ -80,7 +80,7 @@ struct SelectClaimEntrypointType: View {
         hForm {
         }
         .hUseNewStyle
-        .hFormTitle(.small, L10n.claimsTriagingWhatHappenedTitle)
+        .hFormTitle(.small, .title3, L10n.claimsTriagingWhatHappenedTitle)
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {
@@ -161,7 +161,7 @@ struct SelectClaimEntrypointOption: View {
         hForm {
         }
         .hUseNewStyle
-        .hFormTitle(.small, L10n.claimsTriagingWhatItemTitle)
+        .hFormTitle(.small, .title3, L10n.claimsTriagingWhatItemTitle)
         .hDisableScroll
         .hUseBlur
         .hFormAttachToBottom {

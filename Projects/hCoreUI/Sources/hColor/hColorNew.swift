@@ -34,6 +34,26 @@ public struct hBackgroundColorNew {
     public static var semanticButton: some hColor {
         hGreenColorNew.greenSemantic
     }
+
+    public static var semanticBorderOne: some hColor {
+        hGrayscaleColorNew.greyScale200
+    }
+
+    public static var semanticBorderTwo: some hColor {
+        hGrayscaleColorNew.greyScale300
+    }
+
+    public static var opaqueOne: some hColor {
+        hGrayscaleColorNew.greyScale100
+    }
+
+    public static var opaqueTwo: some hColor {
+        hGrayscaleColorNew.greyScale300
+    }
+
+    public static var opaqueThree: some hColor {
+        hGrayscaleColorNew.greyScale700
+    }
 }
 
 public struct hGrayscaleColorNew {
