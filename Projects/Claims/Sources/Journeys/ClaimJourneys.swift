@@ -40,13 +40,13 @@ public class ClaimJourneys {
                     openCheckoutNoRepairScreen().addDismissClaimsFlow()
                         .configureTitle(L10n.Claims.Payout.Summary.title)
                 } else if case .openFailureSceen = navigationAction {
-                    showClaimFailureScreen().addDismissClaimsFlow()
+                    showClaimFailureScreen().withJourneyDismissButton
                 } else if case .openSummaryEditScreen = navigationAction {
                     openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
                 } else if case let .openLocationPicker(type) = navigationAction {
                     openLocationScreen(type: type).addDismissClaimsFlow()
                 } else if case .openUpdateAppScreen = navigationAction {
-                    openUpdateAppTerminationScreen().addDismissClaimsFlow()
+                    openUpdateAppTerminationScreen().withJourneyDismissButton
                 } else if case let .openDatePicker(type) = navigationAction {
                     openDatePickerScreen(type: type)
                 }
@@ -69,13 +69,13 @@ public class ClaimJourneys {
                     openCheckoutNoRepairScreen().addDismissClaimsFlow()
                         .configureTitle(L10n.Claims.Payout.Summary.title)
                 } else if case .openFailureSceen = navigationAction {
-                    showClaimFailureScreenOld().addDismissClaimsFlow()
+                    showClaimFailureScreenOld().withJourneyDismissButton
                 } else if case .openSummaryEditScreen = navigationAction {
                     openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
                 } else if case let .openLocationPicker(type) = navigationAction {
                     openLocationScreen(type: type).addDismissClaimsFlow()
                 } else if case .openUpdateAppScreen = navigationAction {
-                    openUpdateAppTerminationScreenOld().addDismissClaimsFlow()
+                    openUpdateAppTerminationScreenOld().withJourneyDismissButton
                 } else if case let .openDatePicker(type) = navigationAction {
                     openDatePickerScreen(type: type)
                 }
