@@ -7,8 +7,8 @@ struct CheckboxPickerScreen<T>: View {
     let preSelectedItems: () -> [T]?
     let onSelected: ([T]) -> Void
     let onCancel: () -> Void
-    let oneValueLimit: Bool?
-    let smallerPadding: Bool?
+    let singleSelect: Bool?
+    let showDividers: Bool?
     @State var selectedItems: [(object: T, displayName: String)] = []
 
     public init(
@@ -16,23 +16,23 @@ struct CheckboxPickerScreen<T>: View {
         preSelectedItems: @escaping () -> [T]?,
         onSelected: @escaping ([T]) -> Void,
         onCancel: @escaping () -> Void,
-        oneValueLimit: Bool? = false,
-        smallerPadding: Bool? = false
+        singleSelect: Bool? = false,
+        showDividers: Bool? = false
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems
         self.onSelected = onSelected
         self.onCancel = onCancel
-        self.oneValueLimit = oneValueLimit
-        self.smallerPadding = smallerPadding
+        self.singleSelect = singleSelect
+        self.showDividers = showDividers
     }
 
     var body: some View {
         hForm {
             ForEach(items, id: \.displayName) { item in
                 hSection {
-                    showSmallerPadding(item: item)
-                    showNormalPadding(item: item)
+                    getCellWithoutDivider(item: item)
+                    getCellWithDivider(item: item)
                 }
             }
         }
@@ -71,8 +71,8 @@ struct CheckboxPickerScreen<T>: View {
     }
 
     @ViewBuilder
-    func showSmallerPadding(item: (object: T, displayName: String)) -> some View {
-        if smallerPadding ?? false {
+    func getCellWithoutDivider(item: (object: T, displayName: String)) -> some View {
+        if showDividers ?? false {
             hRow {
                 displayContent(displayName: item.displayName)
             }
@@ -86,8 +86,8 @@ struct CheckboxPickerScreen<T>: View {
     }
 
     @ViewBuilder
-    func showNormalPadding(item: (object: T, displayName: String)) -> some View {
-        if !(smallerPadding ?? false) {
+    func getCellWithDivider(item: (object: T, displayName: String)) -> some View {
+        if !(showDividers ?? false) {
             hRow {
                 displayContent(displayName: item.displayName)
             }
@@ -110,7 +110,7 @@ struct CheckboxPickerScreen<T>: View {
     }
 
     func onTapExecute(item: (object: T, displayName: String)) {
-        if !(oneValueLimit ?? true) {
+        if !(singleSelect ?? true) {
             var remove = false
             var index = 0
             for selectedItem in selectedItems {

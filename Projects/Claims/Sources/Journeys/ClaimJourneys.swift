@@ -174,7 +174,7 @@ public class ClaimJourneys {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.navigationAction(action: .dismissScreen))
                 },
-                oneValueLimit: true
+                singleSelect: true
             ),
             style: .detented(.scrollViewContentSize)
         ) {
@@ -301,8 +301,8 @@ public class ClaimJourneys {
                     store.send(.setSingleItemModel(modelName: item.first!))
                 },
                 onCancel: {},
-                oneValueLimit: true,
-                smallerPadding: true
+                singleSelect: true,
+                showDividers: true
             ),
             style: .detented(.scrollViewContentSize, modally: false)
         ) {
