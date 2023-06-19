@@ -60,14 +60,36 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
         }
     }
 
+    @ViewBuilder
     func makeBody(configuration: Configuration) -> some View {
-        VStack {
-            Rectangle().fill(getInnerCircleColor)
-                .frame(width: 36, height: 36)
-                .cornerRadius(isRecording ? 1 : 18)
-                .padding(36)
+        if hUseNewStyle {
+            VStack {
+                Rectangle().fill(getInnerCircleColor)
+                    .frame(width: isRecording ? 16 : 36, height: isRecording ? 16 : 36)
+                    .cornerRadius(isRecording ? 1 : 18)
+                    .padding(isRecording ? 22 : 18)
+            }
+            .background(Circle().fill(getBackgroundColor))
+            .shadow(color: .black.opacity(0.1), radius: 24, x: 0, y: 4)
+        } else {
+            VStack {
+                Rectangle().fill(getInnerCircleColor)
+                    .frame(width: 36, height: 36)
+                    .cornerRadius(isRecording ? 1 : 18)
+                    .padding(36)
+            }
+            .background(Circle().fill(getBackgroundColor))
+            .shadow(color: .black.opacity(0.1), radius: 24, x: 0, y: 4)
         }
-        .background(Circle().fill(getBackgroundColor))
-        .shadow(color: .black.opacity(0.1), radius: 24, x: 0, y: 4)
+    }
+}
+
+struct RecordButton_Previews: PreviewProvider {
+    static var previews: some View {
+        RecordButton(isRecording: true) {
+
+        }
+        .environmentObject(AudioRecorder())
+        .hUseNewStyle
     }
 }
