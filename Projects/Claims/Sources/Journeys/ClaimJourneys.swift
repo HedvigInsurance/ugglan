@@ -5,7 +5,6 @@ import hCore
 import hCoreUI
 
 public class ClaimJourneys {
-
     @JourneyBuilder
     public static func getScreenForAction(
         for action: SubmitClaimsAction,
@@ -86,10 +85,9 @@ public class ClaimJourneys {
     private static func submitClaimPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimContactScreen(model: model),
-            style: .detented(.large, modally: false)
+            rootView: SubmitClaimContactScreen(model: model)
         ) { action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
     }
 
@@ -101,18 +99,17 @@ public class ClaimJourneys {
             rootView: SubmitClaimContactScreenOld(model: model),
             style: .detented(.large, modally: false)
         ) { action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
     }
 
     static func submitClaimOccurrancePlusLocationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimOccurrencePlusLocationScreen(),
-            style: .detented(.large, modally: false)
+            rootView: SubmitClaimOccurrencePlusLocationScreen()
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
     }
 
@@ -123,7 +120,7 @@ public class ClaimJourneys {
             style: .detented(.large, modally: false)
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
     }
 
@@ -276,7 +273,7 @@ public class ClaimJourneys {
                     PopJourney()
                 }
             } else {
-                getScreenForAction(for: action)
+                getScreen(for: action)
             }
         }
         .onAction(
@@ -410,7 +407,7 @@ public class ClaimJourneys {
             if case .setSingleItemDamage(_) = action {
                 PopJourney()
             } else {
-                getScreenForAction(for: action)
+                getScreen(for: action)
             }
         }
     }
@@ -421,16 +418,16 @@ public class ClaimJourneys {
         return HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimAudioRecordingScreen(url: url),
-            style: .detented(.large, modally: false)
+            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
         ) { action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
     }
 
     private static func openSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
             rootView: SubmitClaimSuccessScreen(),
-            style: .detented(.large, modally: false)
+            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
         )
         .hidesBackButton
     }
@@ -446,7 +443,7 @@ public class ClaimJourneys {
             } else if case .navigationAction(.openBrandPicker) = action {
                 openBrandPickerScreenOld()
             } else {
-                getScreenForAction(for: action)
+                getScreen(for: action)
             }
         }
     }
@@ -454,8 +451,7 @@ public class ClaimJourneys {
     private static func openSingleItemScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimSingleItem(),
-            style: .detented(.large, modally: false)
+            rootView: SubmitClaimSingleItem()
         ) {
             action in
             if case .navigationAction(.openDatePicker) = action {
@@ -463,7 +459,7 @@ public class ClaimJourneys {
             } else if case .navigationAction(.openBrandPicker) = action {
                 openBrandPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
             } else {
-                getScreenForAction(for: action)
+                getScreen(for: action)
             }
         }
     }
@@ -472,10 +468,10 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimSummaryScreen(),
-            style: .detented(.large, modally: false)
+            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
     }
 
@@ -484,7 +480,7 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimCheckoutNoRepairScreen(),
-            style: .detented(.large, modally: false)
+            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
         ) {
             action in
             if case .navigationAction(.openCheckoutTransferringScreen) = action {
@@ -492,7 +488,7 @@ public class ClaimJourneys {
             } else if case .summaryRequest = action {
                 openCheckoutTransferringScreen()
             } else {
-                getScreenForAction(for: action)
+                getScreen(for: action)
             }
         }
     }
@@ -512,7 +508,7 @@ public class ClaimJourneys {
             rootView: SubmitClaimEditSummaryScreen()
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
     }
 
@@ -536,7 +532,8 @@ public class ClaimJourneys {
                         )
                     }
                 }),
-            style: .detented(.large, modally: false)
+            style: hAnalyticsExperiment.claimsTriaging
+                ? .modally(presentationStyle: .overFullScreen) : .detented(.large, modally: false)
         ) { action in
             if case let .setSelectedEntrypoints(entrypoints) = action {
                 if !entrypoints.isEmpty {
@@ -612,7 +609,8 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypointOld(entrypointGroupId: nil),
-            style: .detented(.large, modally: false)
+            style: hAnalyticsExperiment.claimsTriaging
+                ? .modally(presentationStyle: .fullScreen) : .detented(.large, modally: false)
         ) { action in
             getScreen(for: action).hidesBackButton
         }
@@ -625,7 +623,7 @@ public class ClaimJourneys {
             .hidesBackButton
     }
 
-    static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
+    private static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: UpdateAppScreen(
@@ -637,7 +635,7 @@ public class ClaimJourneys {
             style: .detented(.large, modally: true)
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
         .hidesBackButton
     }
