@@ -39,8 +39,24 @@ public struct hBackgroundColorNew {
         hRedColorNew.red600
     }
 
+    public static var semanticBorderOne: some hColor {
+        hGrayscaleColorNew.greyScale200
+    }
+
+    public static var semanticBorderTwo: some hColor {
+        hGrayscaleColorNew.greyScale300
+    }
+
     public static var opaqueOne: some hColor {
         hGrayscaleColorNew.greyScale100
+    }
+
+    public static var opaqueTwo: some hColor {
+        hGrayscaleColorNew.greyScale300
+    }
+
+    public static var opaqueThree: some hColor {
+        hGrayscaleColorNew.greyScale700
     }
 }
 
@@ -78,6 +94,12 @@ public struct hGrayscaleColorNew {
     public static var greyScale400: some hColor {
         hColorScheme(
             Color(hexString: "CFCFCF")
+        )
+    }
+
+    public static var greyScale700: some hColor {
+        hColorScheme(
+            Color(hexString: "707070")
         )
     }
 
@@ -183,9 +205,7 @@ public struct hLabelColorNew {
     }
 
     public static var secondary: some hColor {
-        hColorScheme(
-            Color(hexString: "727272")
-        )
+        return hGrayscaleColorNew.greyScale700
     }
 
     public static var tertiary: some hColor {
@@ -205,7 +225,7 @@ public struct hLabelColorNew {
     }
 
     public static var warning: some hColor {
-        hAmberColorNew.amber900
+        hAmberColorNew.amber600
     }
 }
 

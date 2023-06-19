@@ -41,6 +41,7 @@ struct RowButtonStyle: SwiftUI.ButtonStyle {
 
 public struct hRow<Content: View, Accessory: View>: View {
     @SwiftUI.Environment(\.hRowPosition) var position: hRowPosition
+    @Environment(\.hWithoutDivider) var hWithoutDivider
 
     var content: Content
     var accessory: Accessory
@@ -80,7 +81,7 @@ public struct hRow<Content: View, Accessory: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding([.horizontal], horizontalPadding)
             .padding([.vertical], verticalPadding)
-            if position == .middle || position == .top {
+            if (position == .middle || position == .top) && !hWithoutDivider {
                 hRowDivider()
             }
         }
@@ -98,10 +99,16 @@ extension hRow where Accessory == EmptyView {
 }
 
 public struct StandaloneChevronAccessory: View {
+    @Environment(\.hUseNewStyle) var hUseNewStyle
+
     public init() {}
 
     public var body: some View {
-        Image(uiImage: hCoreUIAssets.chevronRight.image)
+        if hUseNewStyle {
+            Image(uiImage: hCoreUIAssets.chevronRight2.image)
+        } else {
+            Image(uiImage: hCoreUIAssets.chevronRight.image)
+        }
     }
 }
 
