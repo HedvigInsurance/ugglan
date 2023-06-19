@@ -191,9 +191,17 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     }
 }
 
-struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
+public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
     let displayName: String
     let itemProblemId: String
+
+    init(
+        displayName: String,
+        itemProblemId: String
+    ) {
+        self.displayName = displayName
+        self.itemProblemId = itemProblemId
+    }
 
     init(
         with model: OctopusGraphQL.FlowClaimSingleItemStepFragment.AvailableItemProblem

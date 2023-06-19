@@ -116,7 +116,7 @@ extension hSectionContainerStyle: ViewModifier {
     @hColorBuilder
     private func getOpaqueBackground(useNewStyle: Bool) -> some hColor {
         if useNewStyle {
-            hGrayscaleColorNew.greyScale100
+            hBackgroundColorNew.opaqueOne
         } else {
             hBackgroundColor.tertiary
         }
@@ -129,6 +129,23 @@ extension hSectionContainerStyle: ViewModifier {
         } else {
             hTintColor.yellowTwo
         }
+    }
+}
+
+private struct EnvironmentHWithoutDivider: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutDivider: Bool {
+        get { self[EnvironmentHWithoutDivider.self] }
+        set { self[EnvironmentHWithoutDivider.self] = newValue }
+    }
+}
+
+extension View {
+    public var hWithoutDivider: some View {
+        self.environment(\.hWithoutDivider, true)
     }
 }
 

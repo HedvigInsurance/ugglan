@@ -8,54 +8,34 @@ public struct SubmitClaimSuccessScreen: View {
     public init() {}
 
     public var body: some View {
-        hForm {
-            HStack {
-                hText(L10n.Message.Claims.Record.ok, style: .body)
-                    .padding([.trailing, .leading], 12)
-                    .padding([.top, .bottom], 16)
+        ZStack(alignment: .bottom) {
+            VStack(spacing: 16) {
+                Spacer()
+                hTextNew(L10n.claimsSuccessTitle, style: .customTitle)
+                    .foregroundColor(hLabelColorNew.primary)
+                hTextNew(L10n.claimsSuccessLabel, style: .body)
+                    .foregroundColor(hLabelColorNew.secondary)
+                    .multilineTextAlignment(.center)
+                Spacer()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(hBackgroundColor.tertiary)
-            .cornerRadius(12)
-            .padding(.leading, 16)
-            .padding(.trailing, 32)
-            .padding(.top, 20)
-            .hShadow()
-        }
-        .hFormAttachToBottom {
-
-            HStack {
-                Button {
-                    store.send(.dissmissNewClaimFlow)
-                } label: {
-                    HStack {
-                        hText(L10n.generalCloseButton, style: .body)
-                            .foregroundColor(hLabelColor.primary)
-                    }
-                    .padding([.top, .bottom], 10)
-                    .frame(width: 180)
-                    .background(hBackgroundColor.tertiary)
-                    .cornerRadius(.defaultCornerRadius)
-                    .hShadow()
-                }
-
-                Button {
+            .padding(.horizontal, 16)
+            VStack(spacing: 8) {
+                Spacer()
+                hButton.LargeButtonFilled {
                     store.send(.dissmissNewClaimFlow)
                     store.send(.submitClaimOpenFreeTextChat)
-                } label: {
-                    HStack {
-                        hText(L10n.openChat, style: .body)
-                            .foregroundColor(hLabelColor.primary)
-                    }
-                    .padding([.top, .bottom], 10)
-                    .frame(width: 180)
-                    .background(hBackgroundColor.tertiary)
-                    .cornerRadius(.defaultCornerRadius)
-                    .hShadow()
+                } content: {
+                    hTextNew(L10n.openChat, style: .body)
+                }
+
+                hButton.LargeButtonText {
+                    store.send(.dissmissNewClaimFlow)
+                } content: {
+                    hTextNew(L10n.generalCloseButton, style: .body)
                 }
             }
-            .padding([.leading, .trailing], 16)
         }
+        .padding(.horizontal, 16)
     }
 }
 
