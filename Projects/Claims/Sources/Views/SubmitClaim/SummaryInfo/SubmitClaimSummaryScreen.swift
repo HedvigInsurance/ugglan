@@ -12,157 +12,136 @@ public struct SubmitClaimSummaryScreen: View {
         LoadingViewWithContent(.postSummary) {
             hForm {
                 hSection {
-                    VStack {
-                        hRow {
-                            hTextNew(L10n.changeAddressDetails, style: .body)
-                                .foregroundColor(hLabelColorNew.primary)
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.infoSmall.image)
-                                .foregroundColor(hLabelColor.secondary)
-                        }
-                        .verticalPadding(0)
-                        .padding(.bottom, 8)
-                        .padding(.top, 16)
-                        VStack(spacing: 2) {
-                            displayTitleField()
-                            displayDamageField()
-                            displayDateOfOccurrenceField()
-                            displayPlaceOfOccurrenceField()
-                            displayModelField()
-                            displayDateOfPurchase()
-                            displayPurchasePriceField()
-                        }
-                        .foregroundColor(hLabelColorNew.secondary)
+                    VStack(spacing: 8) {
+                        matter
+                        damageType
+                        damageDate
+                        place
+                        model
+                        dateOfPurchase
+                        purchasePrice
+                    }
+                }
+                .withHeader {
+                    HStack {
+                        L10n.changeAddressDetails.hTextNew(.body).foregroundColor(hLabelColorNew.primary)
+                        Spacer()
+                        Image(uiImage: hCoreUIAssets.infoSmall.image)
+                            .foregroundColor(hLabelColorNew.secondary)
                     }
                 }
                 .sectionContainerStyle(.transparent)
             }
             .hUseNewStyle
             .hFormAttachToBottom {
-                VStack {
+                VStack(spacing: 8) {
                     NoticeComponent(text: L10n.claimsComplementClaim)
-
-                    Group {
-                        hButton.LargeButtonFilled {
-                            store.send(.summaryRequest)
-                        } content: {
-                            hTextNew(L10n.embarkSubmitClaim, style: .body)
-                        }
-
-                        hButton.LargeButtonText {
-                            store.send(.navigationAction(action: .dismissScreen))
-                        } content: {
-                            hTextNew(L10n.embarkGoBackButton, style: .body)
-                        }
+                    hButton.LargeButtonFilled {
+                        store.send(.summaryRequest)
+                    } content: {
+                        hText(L10n.generalContinueButton)
                     }
-                    .padding(.horizontal, 16)
+                    .padding([.leading, .trailing], 16)
                 }
             }
         }
+        .hUseNewStyle
     }
 
-    @ViewBuilder func displayRow(leftTitle: String, rightTitle: String) -> some View {
-        hRow {
-            hTextNew(leftTitle, style: .body)
-            Spacer()
-            hTextNew(rightTitle, style: .body)
-        }
-        .verticalPadding(0)
-    }
-
-    @ViewBuilder func displayTitleField() -> some View {
+    @ViewBuilder
+    private var matter: some View {
         PresentableStoreLens(
             SubmitClaimStore.self,
             getter: { state in
                 state.summaryStep
             }
         ) { summaryStep in
-            displayRow(leftTitle: L10n.claimsCase, rightTitle: summaryStep?.title ?? "")
+            createRow(with: L10n.claimsCase, and: summaryStep?.title ?? "")
         }
     }
 
-    @ViewBuilder func displayDateOfOccurrenceField() -> some View {
+    @ViewBuilder
+    private var damageType: some View {
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.singleItemStep
+            }
+        ) { singleItemStep in
+            createRow(with: L10n.claimsDamages, and: singleItemStep?.getAllChoosenDamagesAsText())
+        }
+    }
+
+    @ViewBuilder
+    private var damageDate: some View {
         PresentableStoreLens(
             SubmitClaimStore.self,
             getter: { state in
                 state.dateOfOccurenceStep
             }
         ) { dateOfOccurenceStep in
-            displayRow(
-                leftTitle: L10n.Claims.Item.Screen.Date.Of.Incident.button,
-                rightTitle: dateOfOccurenceStep?.dateOfOccurence ?? ""
-            )
+            createRow(with: L10n.Claims.Item.Screen.Date.Of.Incident.button, and: dateOfOccurenceStep?.dateOfOccurence)
         }
     }
 
-    @ViewBuilder func displayPlaceOfOccurrenceField() -> some View {
+    @ViewBuilder
+    private var place: some View {
         PresentableStoreLens(
             SubmitClaimStore.self,
             getter: { state in
                 state.locationStep
             }
         ) { locationStep in
-            displayRow(
-                leftTitle: L10n.Claims.Location.Screen.title,
-                rightTitle: locationStep?.getSelectedOption()?.displayName ?? ""
+            createRow(with: L10n.Claims.Location.Screen.title, and: locationStep?.getSelectedOption()?.displayName)
+        }
+    }
+
+    @ViewBuilder
+    private var model: some View {
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.singleItemStep
+            }
+        ) { singleItemStep in
+            createRow(with: L10n.Claims.Item.Screen.Model.button, and: singleItemStep?.getBrandOrModelName())
+        }
+    }
+
+    @ViewBuilder
+    private var dateOfPurchase: some View {
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.singleItemStep
+            }
+        ) { singleItemStep in
+            createRow(with: L10n.Claims.Item.Screen.Date.Of.Purchase.button, and: singleItemStep?.purchaseDate)
+        }
+    }
+
+    @ViewBuilder
+    private var purchasePrice: some View {
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.singleItemStep
+            }
+        ) { singleItemStep in
+            createRow(
+                with: L10n.Claims.Item.Screen.Purchase.Price.button,
+                and: singleItemStep?.returnDisplayStringForSummaryPrice
             )
         }
     }
 
-    @ViewBuilder func displayPurchasePriceField() -> some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-
-            let stringToDisplay = singleItemStep?.returnDisplayStringForSummaryPrice
-            displayRow(leftTitle: L10n.Claims.Payout.Purchase.price, rightTitle: stringToDisplay ?? "")
-        }
-    }
-
-    @ViewBuilder func displayModelField() -> some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-            if let modelName = singleItemStep?.getBrandOrModelName() {
-                displayRow(leftTitle: L10n.Claims.Item.Screen.Model.button, rightTitle: modelName)
-            }
-        }
-    }
-
-    @ViewBuilder func displayDateOfPurchase() -> some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-
-            let stringToDisplay = singleItemStep?.returnDisplayStringForSummaryDate
-            displayRow(
-                leftTitle: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
-                rightTitle: stringToDisplay ?? ""
-            )
-        }
-    }
-
-    @ViewBuilder func displayDamageField() -> some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-            if let chosenDamages = singleItemStep?.getChoosenDamagesAsText() {
-                displayRow(
-                    leftTitle: L10n.claimsDamages,
-                    rightTitle: L10n.summarySelectedProblemDescription(chosenDamages)
-                )
+    @ViewBuilder
+    func createRow(with title: String?, and value: String?) -> some View {
+        if let title, let value {
+            HStack {
+                title.hTextNew(.body).foregroundColor(hLabelColorNew.secondary)
+                Spacer()
+                value.hTextNew(.body).foregroundColor(hLabelColorNew.secondary)
             }
         }
     }

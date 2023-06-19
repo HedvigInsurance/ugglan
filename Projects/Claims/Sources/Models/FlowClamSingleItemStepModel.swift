@@ -102,6 +102,19 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         return nil
     }
 
+    func getAllChoosenDamagesAsText() -> String? {
+        let chosenDamages = self.selectedItemProblems ?? []
+        let availableItemProblems =
+            availableItemProblems.filter { model in
+                return chosenDamages.contains(model.itemProblemId)
+            }
+            .map({ $0.displayName })
+        if !availableItemProblems.isEmpty {
+            return availableItemProblems.joined(separator: ", ")
+        }
+        return nil
+    }
+
     func getListOfModels() -> [ClaimFlowItemModelOptionModel]? {
         if let selectedItemBrand {
             return getListOfModels(for: selectedItemBrand)
@@ -133,18 +146,18 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         return textParts.joined(separator: " · ")
     }
 
-    var returnDisplayStringForSummaryDate: String {
+    var returnDisplayStringForSummaryDate: String? {
         if let purchaseDate {
             return L10n.summaryPurchaseDateDescription(purchaseDate)
         }
-        return ""
+        return nil
     }
 
-    var returnDisplayStringForSummaryPrice: String {
+    var returnDisplayStringForSummaryPrice: String? {
         if let purchasePrice {
             return L10n.summaryPurchasePriceDescription(Int(purchasePrice)) + " " + (currencyCode ?? "")
         }
-        return ""
+        return nil
     }
 }
 
