@@ -235,7 +235,7 @@ public class ClaimJourneys {
             } else if case .navigationAction(.dismissScreen) = action {
                 PopJourney()
             } else {
-                getScreenForAction(for: action)
+                getScreen(for: action)
             }
         }
         .onAction(
