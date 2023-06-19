@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct SubmitClaimCheckoutTransferringScreen: View {
+struct SubmitClaimCheckoutTransferringScreenOld: View {
     @PresentableStore var store: SubmitClaimStore
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
@@ -52,23 +52,15 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     }
                 ) { singleItemCheckoutStep in
 
-                    hTextNew(
+                    hText(
                         (singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""),
                         style: .title1
                     )
-                    .foregroundColor(hLabelColorNew.secondary)
+                    .foregroundColor(hLabelColor.primary)
                 }
-                hTextNew(L10n.claimsPayoutSuccessLabel, style: .body)
-                    .foregroundColor(hLabelColorNew.secondary)
+                hText(L10n.Claims.Payout.Success.message, style: .footnote)
+                    .foregroundColor(hLabelColor.primary)
                     .matchedGeometryEffect(id: "titleLabel", in: animation)
-
-                hButton.LargeButtonText {
-                    store.send(.dissmissNewClaimFlow)
-                } content: {
-                    hTextNew(L10n.generalCloseButton, style: .body)
-                        .foregroundColor(hLabelColorNew.secondary)
-                }
-                .padding(.top, 293)
             }
             .scaleEffect(
                 x: successAnimation ? 1 : 0.3,
@@ -107,7 +99,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
             Spacer()
 
             VStack(spacing: 16) {
-                hTextNew(L10n.claimsPayoutProgresLabel, style: .title3)
+                hText(L10n.Claims.Payout.Progress.title, style: .title2)
                     .matchedGeometryEffect(id: "titleLabel", in: animation)
             }
             .frame(maxHeight: .infinity, alignment: .top)
@@ -231,8 +223,8 @@ struct SubmitClaimCheckoutTransferringScreen: View {
     }
 }
 
-struct SubmitClaimCheckoutTransferringScreen_Previews: PreviewProvider {
+struct SubmitClaimCheckoutTransferringScreenOld_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimCheckoutTransferringScreen()
+        SubmitClaimCheckoutTransferringScreenOld()
     }
 }

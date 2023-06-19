@@ -37,7 +37,6 @@ public class ClaimJourneys {
                     openDamagePickerScreen().configureTitle(L10n.Claims.Item.Screen.Damage.button)
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
                     openCheckoutNoRepairScreen().addDismissClaimsFlow()
-                        .configureTitle(L10n.Claims.Payout.Summary.method)
                         .configureTitle(L10n.Claims.Payout.Summary.title)
                 } else if case .openFailureSceen = navigationAction {
                     showClaimFailureScreen().withJourneyDismissButton
@@ -49,6 +48,8 @@ public class ClaimJourneys {
                     openUpdateAppTerminationScreen().withJourneyDismissButton
                 } else if case let .openDatePicker(type) = navigationAction {
                     openDatePickerScreen(type: type)
+                } else if case let .openInfoPopUpScreen(type) = navigationAction {
+                    openInfoPopUpScreen(type: type)
                 }
             } else {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
@@ -525,9 +526,9 @@ public class ClaimJourneys {
         ) {
             action in
             if case .navigationAction(.openCheckoutTransferringScreen) = action {
-                openCheckoutTransferringScreen()
+                openCheckoutTransferringScreenOld()
             } else if case .summaryRequest = action {
-                openCheckoutTransferringScreen()
+                openCheckoutTransferringScreenOld()
             } else {
                 getScreen(for: action)
             }
@@ -538,6 +539,14 @@ public class ClaimJourneys {
 
         HostingJourney(
             rootView: SubmitClaimCheckoutTransferringScreen(),
+            style: .modally(presentationStyle: .fullScreen, transitionStyle: .crossDissolve)
+        )
+    }
+
+    static func openCheckoutTransferringScreenOld() -> some JourneyPresentation {
+
+        HostingJourney(
+            rootView: SubmitClaimCheckoutTransferringScreenOld(),
             style: .modally(presentationStyle: .fullScreen, transitionStyle: .crossDissolve)
         )
     }
@@ -699,6 +708,18 @@ public class ClaimJourneys {
         ) {
             action in
             getScreenForAction(for: action)
+        }
+        .hidesBackButton
+    }
+
+    private static func openInfoPopUpScreen(type: ClaimsNavigationAction.InfoPopUpType) -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimInfoPopUp(type: type),
+            style: .detented(.scrollViewContentSize, modally: true)
+        ) {
+            action in
+            getScreen(for: action)
         }
         .hidesBackButton
     }
