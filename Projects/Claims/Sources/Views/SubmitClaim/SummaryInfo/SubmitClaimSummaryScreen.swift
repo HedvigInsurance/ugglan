@@ -32,14 +32,20 @@ public struct SubmitClaimSummaryScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
-            .hUseNewStyle
             .hFormAttachToBottom {
                 VStack(spacing: 8) {
                     NoticeComponent(text: L10n.claimsComplementClaim)
-                    hButton.LargeButtonFilled {
-                        store.send(.summaryRequest)
-                    } content: {
-                        hText(L10n.generalContinueButton)
+                    Group {
+                        hButton.LargeButtonFilled {
+                            store.send(.summaryRequest)
+                        } content: {
+                            hText(L10n.generalContinueButton)
+                        }
+                        hButton.LargeButtonText {
+                            store.send(.navigationAction(action: .dismissScreen))
+                        } content: {
+                            hText(L10n.embarkGoBackButton)
+                        }
                     }
                     .padding([.leading, .trailing], 16)
                 }

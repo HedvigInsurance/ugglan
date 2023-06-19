@@ -306,7 +306,11 @@ public class ClaimJourneys {
             style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
         ) {
             action in
-            getScreen(for: action)
+            if case .navigationAction(.dismissScreen) = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
         }
     }
 
@@ -317,13 +321,10 @@ public class ClaimJourneys {
             style: .detented(.large, modally: false)
         ) {
             action in
-            if case .navigationAction(.dismissScreen) = action {
-                PopJourney()
-            } else {
-                getScreenForAction(for: action)
-            }
+            getScreen(for: action)
         }
     }
+
     private static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
 
         HostingJourney(
