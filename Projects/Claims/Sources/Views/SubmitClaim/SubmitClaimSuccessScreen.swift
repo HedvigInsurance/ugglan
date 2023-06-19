@@ -8,40 +8,34 @@ public struct SubmitClaimSuccessScreen: View {
     public init() {}
 
     public var body: some View {
-        hForm {
+        ZStack(alignment: .bottom) {
             VStack(spacing: 16) {
+                Spacer()
                 hTextNew(L10n.claimsSuccessTitle, style: .customTitle)
                     .foregroundColor(hLabelColorNew.primary)
-                    .padding(.top, 264)
                 hTextNew(L10n.claimsSuccessLabel, style: .body)
                     .foregroundColor(hLabelColorNew.secondary)
-                    .padding(.horizontal, 32)
                     .multilineTextAlignment(.center)
+                Spacer()
             }
-        }
-        .hUseNewStyle
-        .hFormAttachToBottom {
+            .padding(.horizontal, 16)
             VStack(spacing: 8) {
+                Spacer()
                 hButton.LargeButtonFilled {
                     store.send(.dissmissNewClaimFlow)
                     store.send(.submitClaimOpenFreeTextChat)
                 } content: {
-                    HStack {
-                        hTextNew(L10n.openChat, style: .body)
-                    }
+                    hTextNew(L10n.openChat, style: .body)
                 }
 
                 hButton.LargeButtonText {
                     store.send(.dissmissNewClaimFlow)
                 } content: {
-                    HStack {
-                        hTextNew(L10n.generalCloseButton, style: .body)
-                    }
+                    hTextNew(L10n.generalCloseButton, style: .body)
                 }
             }
-            .padding([.leading, .trailing], 16)
-            .padding(.bottom, 32)
         }
+        .padding(.horizontal, 16)
     }
 }
 
