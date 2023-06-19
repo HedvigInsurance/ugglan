@@ -3,7 +3,6 @@ import hCore
 import hGraphQL
 
 public struct UpdateAppScreen: View {
-
     let onSelected: () -> Void
 
     public init(
@@ -14,37 +13,35 @@ public struct UpdateAppScreen: View {
 
     public var body: some View {
         hForm {
+            Image(uiImage: hCoreUIAssets.warningFilledTriangle.image)
+                .foregroundColor(hLabelColorNew.warning)
+                .padding(.top, 254)
+                .padding(.bottom, 8)
+
             Group {
-                Image(uiImage: hCoreUIAssets.warningTriangle.image)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding([.bottom, .top], 4)
+                hTextNew(L10n.embarkUpdateAppTitle, style: .body)
+                    .foregroundColor(hLabelColorNew.primary)
 
-                hText(L10n.embarkUpdateAppTitle, style: .title2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.bottom, 2)
-
-                hText(L10n.embarkUpdateAppBody, style: .body)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                hTextNew(L10n.embarkUpdateAppBody, style: .body)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(hLabelColorNew.secondary)
             }
-            .padding(.leading, 16)
+            .padding(.horizontal, 32)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .hUseNewStyle
         .hFormAttachToBottom {
-
             VStack {
-                hButton.LargeButtonOutlined {
+                hButton.LargeButtonFilled {
                     UIApplication.shared.open(Environment.current.appStoreURL)
                     onSelected()
                 } content: {
-                    hText(L10n.embarkUpdateAppButton, style: .body)
-                        .foregroundColor(hLabelColor.primary)
+                    hTextNew(L10n.embarkUpdateAppButton, style: .body)
                 }
                 .padding(.bottom, 4)
-                hButton.LargeButtonFilled {
+                hButton.LargeButtonText {
                     onSelected()
                 } content: {
-                    hText(L10n.generalCloseButton, style: .body)
-                        .foregroundColor(hLabelColor.primary.inverted)
+                    hTextNew(L10n.generalCloseButton, style: .body)
                 }
                 .padding(.bottom, 2)
             }

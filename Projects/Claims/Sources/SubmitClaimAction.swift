@@ -37,6 +37,8 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setLoadingState(action: ClaimsLoadingType, state: LoadingState<String>?)
     case setPayoutMethod(method: AvailableCheckoutMethod)
 
+    case setProgress(to: Float?)
+
     case navigationAction(action: ClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
     case setSelectedEntrypoints(entrypoints: [ClaimEntryPointResponseModel])
@@ -65,6 +67,7 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openNotificationsPermissionScreen
     case openEntrypointScreen
     case openNewTriagingScreen
+    case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
 
     public enum LocationPickerType: ActionProtocol {
         case setLocation
