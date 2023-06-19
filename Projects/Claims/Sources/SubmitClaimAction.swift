@@ -68,6 +68,7 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openEntrypointScreen
     case openNewTriagingScreen
     case dismissScreen
+    case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
 
     public enum LocationPickerType: ActionProtocol {
         case setLocation
