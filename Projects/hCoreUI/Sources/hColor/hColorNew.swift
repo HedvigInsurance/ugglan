@@ -35,6 +35,10 @@ public struct hBackgroundColorNew {
         hGreenColorNew.greenSemantic
     }
 
+    public static var signalBackground: some hColor {
+        hRedColorNew.red600
+    }
+
     public static var semanticBorderOne: some hColor {
         hGrayscaleColorNew.greyScale200
     }

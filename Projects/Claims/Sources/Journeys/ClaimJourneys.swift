@@ -26,7 +26,7 @@ public class ClaimJourneys {
                 } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
                     submitClaimOccurrancePlusLocationScreen().addDismissClaimsFlow()
                 } else if case .openAudioRecordingScreen = navigationAction {
-                    openAudioRecordingSceen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+                    openAudioRecordingSceen().addDismissClaimsFlow()
                 } else if case .openSuccessScreen = navigationAction {
                     openSuccessScreen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSingleItemScreen = navigationAction {
@@ -55,7 +55,7 @@ public class ClaimJourneys {
                 } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
                     submitClaimOccurrancePlusLocationScreenOld().addDismissClaimsFlow()
                 } else if case .openAudioRecordingScreen = navigationAction {
-                    openAudioRecordingSceen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+                    openAudioRecordingSceenOld().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSuccessScreen = navigationAction {
                     openSuccessScreenOld().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSingleItemScreen = navigationAction {
@@ -421,6 +421,18 @@ public class ClaimJourneys {
             style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
         ) { action in
             getScreen(for: action)
+        }
+    }
+
+    static func openAudioRecordingSceenOld() -> some JourneyPresentation {
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+        let url = store.state.audioRecordingStep?.getUrl()
+        return HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimAudioRecordingScreenOld(url: url),
+            style: .detented(.large, modally: false)
+        ) { action in
+            getScreenForAction(for: action)
         }
     }
 
