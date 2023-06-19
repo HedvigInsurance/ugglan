@@ -719,7 +719,11 @@ public class ClaimJourneys {
             style: .detented(.scrollViewContentSize, modally: true)
         ) {
             action in
-            getScreen(for: action)
+            if case .navigationAction(.dismissInfoScreens) = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
         }
         .hidesBackButton
     }

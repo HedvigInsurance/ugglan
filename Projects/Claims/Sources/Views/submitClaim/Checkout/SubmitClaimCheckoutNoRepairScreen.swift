@@ -18,10 +18,15 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             hForm {
                 VStack(spacing: 24) {
                     hSection {
-                        hRow {
+                        VStack(alignment: .center) {
                             hTextNew(singleItemCheckoutStep?.payoutAmount.formattedAmount ?? "", style: .title1)
                                 .foregroundColor(hLabelColorNew.primary)
                         }
+                        .background(
+                            Squircle.default()
+                                .fill(Color.clear)
+                        )
+                        .padding(.vertical, 6)
                     }
                     .withHeader {
                         hTextNew(L10n.Claims.Payout.Summary.subtitle, style: .body)
@@ -60,16 +65,14 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                         .padding(.horizontal, 16)
 
                     hSection {
-
                         if let checkoutStep = singleItemCheckoutStep {
                             let payoutMethods = checkoutStep.payoutMethods
                             let shouldShowCheckmark = payoutMethods.count > 1
                             ForEach(payoutMethods, id: \.id) { element in
                                 hRow {
-                                    hText(element.getDisplayName(), style: .title3)
+                                    hTextNew(element.getDisplayName(), style: .title3)
                                         .foregroundColor(hLabelColorNew.primary)
                                         .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding(.bottom, 4)
                                 }
                                 .withSelectedAccessory(
                                     checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark
@@ -79,9 +82,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                                         store.send(.setPayoutMethod(method: element))
                                     }
                                 }
-                                .background(hBackgroundColor.tertiary)
-                                .cornerRadius(.defaultCornerRadius)
-                                .padding(.bottom, 8)
                             }
                         }
                     }
@@ -179,11 +179,11 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
     }
 }
 
-//struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
-//    static var previews: some View {
-//        SubmitClaimCheckoutNoRepairScreen()
-//    }
-//}
+struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        SubmitClaimCheckoutNoRepairScreen()
+    }
+}
 
 public struct SubmitClaimInfoPopUp: View {
     @PresentableStore var store: SubmitClaimStore
@@ -199,12 +199,10 @@ public struct SubmitClaimInfoPopUp: View {
         switch type {
         case .howWeCounted:
             self.title = L10n.claimsCheckoutCountTitle
-            self.bodyText =
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam at tristique tellus. Suspendisse quis lorem ultrices, ultricies lorem eu, egestas ligula. Fusce venenatis ullamcorper arcu, eu vulputate neque hendrerit ultrices"
+            self.bodyText = L10n.claimsCheckoutCountLabel
         case .paymentMethod:
             self.title = L10n.Claims.Payout.Summary.method
-            self.bodyText =
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam at tristique tellus. Suspendisse quis lorem ultrices, ultricies lorem eu, egestas ligula. Fusce venenatis ullamcorper arcu, eu vulputate neque hendrerit ultrices"
+            self.bodyText = L10n.claimsCheckoutPaymentLabel
         }
     }
 
@@ -222,7 +220,7 @@ public struct SubmitClaimInfoPopUp: View {
                 }
 
                 hButton.LargeButtonText {
-                    store.send(.navigationAction(action: .dismissScreen))
+                    store.send(.navigationAction(action: .dismissInfoScreens))
                 } content: {
                     L10n.generalCloseButton.hTextNew(.body)
                         .foregroundColor(hLabelColorNew.primary)
@@ -234,8 +232,8 @@ public struct SubmitClaimInfoPopUp: View {
     }
 }
 
-struct SubmitClaimInfoPopUp_Previews: PreviewProvider {
-    static var previews: some View {
-        SubmitClaimInfoPopUp(type: .howWeCounted)
-    }
-}
+//struct SubmitClaimInfoPopUp_Previews: PreviewProvider {
+//    static var previews: some View {
+//        SubmitClaimInfoPopUp(type: .howWeCounted)
+//    }
+//}
