@@ -9,7 +9,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
             hForm {
             }
-            .hFormTitle(.small, L10n.claimsLocatonOccuranceTitle)
+            .hFormTitle(.small, .title3, L10n.claimsLocatonOccuranceTitle)
             .hDisableScroll
             .hUseNewStyle
             .hFormAttachToBottom {

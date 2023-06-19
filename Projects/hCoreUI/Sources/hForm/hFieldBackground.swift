@@ -43,7 +43,7 @@ struct hFieldBackgroundModifier: ViewModifier {
         } else if animate {
             hBorderColorNew.active
         } else {
-            hBorderColorNew.opaqueTwo
+            hBorderColorNew.opaqueTwo.opacity(0)
         }
     }
 

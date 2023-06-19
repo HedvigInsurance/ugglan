@@ -15,7 +15,7 @@ public struct SubmitClaimContactScreen: View {
     public var body: some View {
         LoadingViewWithContent(.postPhoneNumber) {
             hForm {}
-                .hFormTitle(.small, L10n.claimsConfirmNumberTitle)
+                .hFormTitle(.small, .title3, L10n.claimsConfirmNumberTitle)
                 .hFormAttachToBottom {
                     VStack(spacing: 24) {
                         hSection {
@@ -27,6 +27,7 @@ public struct SubmitClaimContactScreen: View {
                                 placeholder: L10n.phoneNumberRowTitle
                             )
                         }
+                        .sectionContainerStyle(.transparent)
                         hButton.LargeButtonFilled {
                             store.send(.phoneNumberRequest(phoneNumber: phoneNumber))
                             UIApplication.dismissKeyboard()

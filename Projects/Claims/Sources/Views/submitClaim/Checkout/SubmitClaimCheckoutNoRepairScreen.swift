@@ -111,7 +111,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     .padding([.leading, .trailing], 16)
 
                     hButton.LargeButtonText {
-                        store.send(.navigationAction(action: .dismiss))
+                        store.send(.navigationAction(action: .dismissScreen))
                     } content: {
                         hTextNew(
                             L10n.generalBackButton,

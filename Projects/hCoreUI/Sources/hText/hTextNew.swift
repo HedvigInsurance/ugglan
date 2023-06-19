@@ -33,6 +33,7 @@ public enum HFontTextStyleNew {
     case title2
     case title3
     case footnote
+    case customTitle
 
     var uifontTextStyleNew: UIFont {
         switch self {
@@ -42,6 +43,8 @@ public enum HFontTextStyleNew {
             return .systemFont(ofSize: 32)
         case .title3:
             return .systemFont(ofSize: 24)
+        case .customTitle:
+            return .systemFont(ofSize: 28)
         case .body:
             return .systemFont(ofSize: 18)
         case .footnote:

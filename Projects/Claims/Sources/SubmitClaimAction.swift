@@ -22,12 +22,12 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case phoneNumberRequest(phoneNumber: String)
     case dateOfOccurrenceRequest(dateOfOccurrence: Date?)
     case dateOfOccurrenceAndLocationRequest
-    case locationRequest(location: String?)
+    case locationRequest(location: ClaimFlowLocationOptionModel?)
     case singleItemRequest(purchasePrice: Double?)
     case summaryRequest
     case singleItemCheckoutRequest
 
-    case setNewLocation(location: String?)
+    case setNewLocation(location: ClaimFlowLocationOptionModel?)
     case setNewDate(dateOfOccurrence: String?)
     case setPurchasePrice(priceOfPurchase: Double?)
     case setSingleItemModel(modelName: ClaimFlowItemModelOptionModel)
@@ -36,6 +36,8 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
     case setLoadingState(action: ClaimsLoadingType, state: LoadingState<String>?)
     case setPayoutMethod(method: AvailableCheckoutMethod)
+
+    case setProgress(to: Float?)
 
     case navigationAction(action: ClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
@@ -65,7 +67,8 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openNotificationsPermissionScreen
     case openEntrypointScreen
     case openNewTriagingScreen
-    case dismiss
+    case dismissScreen
+    case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
 
     public enum LocationPickerType: ActionProtocol {
         case setLocation
