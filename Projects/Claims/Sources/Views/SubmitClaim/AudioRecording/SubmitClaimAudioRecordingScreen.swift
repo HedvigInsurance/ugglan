@@ -85,7 +85,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 self.audioPlayer.url = url
                             }
                         } else {
-                            VStack(spacing: 60) {
+                            VStack(spacing: 0) {
                                 RecordButton(isRecording: audioRecorder.isRecording) {
                                     if audioRecorder.isRecording {
                                     } else {
@@ -94,7 +94,8 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                         audioRecorder.toggleRecording()
                                     }
                                 }
-                                .frame(height: 72)
+                                .frame(height: audioRecorder.isRecording ? 144 : 72)
+                                .padding(.bottom, audioRecorder.isRecording ? 10 : 46)
                                 .transition(
                                     .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
                                 )
@@ -123,5 +124,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 .environmentObject(audioRecorder)
             }
         }
+    }
+}
+
+struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        SubmitClaimAudioRecordingScreen(url: nil)
+
     }
 }

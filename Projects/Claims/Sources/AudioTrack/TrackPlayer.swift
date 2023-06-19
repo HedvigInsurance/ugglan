@@ -114,3 +114,14 @@ extension View {
         self.environment(\.hWithoutFootnote, true)
     }
 }
+
+struct TrackPlayer_Previews: PreviewProvider {
+
+    static var previews: some View {
+        let audioPlayer = AudioPlayer(url: nil)
+        TrackPlayer(audioPlayer: audioPlayer)
+            .hWithoutFootnote
+            .hUseNewStyle
+
+    }
+}
