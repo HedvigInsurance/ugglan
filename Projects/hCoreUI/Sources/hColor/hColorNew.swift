@@ -197,7 +197,7 @@ public struct hLabelColorNew {
     }
 
     public static var warning: some hColor {
-        hAmberColorNew.amber900
+        hAmberColorNew.amber600
     }
 }
 

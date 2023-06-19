@@ -39,13 +39,13 @@ public class ClaimJourneys {
                     openCheckoutNoRepairScreen().addDismissClaimsFlow()
                         .configureTitle(L10n.Claims.Payout.Summary.title)
                 } else if case .openFailureSceen = navigationAction {
-                    showClaimFailureScreen().addDismissClaimsFlow()
+                    showClaimFailureScreen().withJourneyDismissButton
                 } else if case .openSummaryEditScreen = navigationAction {
                     openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
                 } else if case let .openLocationPicker(type) = navigationAction {
                     openLocationScreen(type: type).addDismissClaimsFlow()
                 } else if case .openUpdateAppScreen = navigationAction {
-                    openUpdateAppTerminationScreen().addDismissClaimsFlow()
+                    openUpdateAppTerminationScreen().withJourneyDismissButton
                 } else if case let .openDatePicker(type) = navigationAction {
                     openDatePickerScreen(type: type)
                 }
@@ -68,13 +68,13 @@ public class ClaimJourneys {
                     openCheckoutNoRepairScreen().addDismissClaimsFlow()
                         .configureTitle(L10n.Claims.Payout.Summary.title)
                 } else if case .openFailureSceen = navigationAction {
-                    showClaimFailureScreen().addDismissClaimsFlow()
+                    showClaimFailureScreenOld().withJourneyDismissButton
                 } else if case .openSummaryEditScreen = navigationAction {
                     openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
                 } else if case let .openLocationPicker(type) = navigationAction {
                     openLocationScreen(type: type).addDismissClaimsFlow()
                 } else if case .openUpdateAppScreen = navigationAction {
-                    openUpdateAppTerminationScreen().addDismissClaimsFlow()
+                    openUpdateAppTerminationScreenOld().withJourneyDismissButton
                 } else if case let .openDatePicker(type) = navigationAction {
                     openDatePickerScreen(type: type)
                 }
@@ -458,6 +458,11 @@ public class ClaimJourneys {
             .hidesBackButton
     }
 
+    private static func showClaimFailureScreenOld() -> some JourneyPresentation {
+        HostingJourney(rootView: ClaimFailureScreenOld())
+            .hidesBackButton
+    }
+
     private static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -471,6 +476,23 @@ public class ClaimJourneys {
         ) {
             action in
             getScreen(for: action)
+        }
+        .hidesBackButton
+    }
+
+    static func openUpdateAppTerminationScreenOld() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: UpdateAppScreenOld(
+                onSelected: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.dissmissNewClaimFlow)
+                }
+            ),
+            style: .detented(.large, modally: true)
+        ) {
+            action in
+            getScreenForAction(for: action)
         }
         .hidesBackButton
     }

@@ -1,54 +1,48 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
-struct ClaimFailureScreen: View {
+public struct ClaimFailureScreen: View {
     @PresentableStore var store: SubmitClaimStore
 
-    var body: some View {
+    public init() {}
 
+    public var body: some View {
         hForm {
-            Image(uiImage: hCoreUIAssets.warningTriangle.image)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-                .padding([.bottom, .top], 4)
+            Image(uiImage: hCoreUIAssets.warningFilledTriangle.image)
+                .foregroundColor(hLabelColorNew.warning)
+                .padding(.top, 254)
+                .padding(.bottom, 8)
 
-            hText(L10n.HomeTab.errorTitle, style: .title2)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
-                .padding(.bottom, 4)
+            Group {
+                hTextNew(L10n.HomeTab.errorTitle, style: .body)
+                    .foregroundColor(hLabelColorNew.primary)
 
-            hText(L10n.HomeTab.errorBody, style: .body)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 16)
+                hTextNew(L10n.HomeTab.errorBody, style: .body)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(hLabelColorNew.secondary)
+            }
+            .padding(.horizontal, 32)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-
+        .hUseNewStyle
         .hFormAttachToBottom {
-
             VStack {
-                hButton.LargeButtonOutlined {
+                hButton.LargeButtonFilled {
                     store.send(.dissmissNewClaimFlow)
                 } content: {
-                    hText(L10n.generalCloseButton, style: .body)
-                        .foregroundColor(hLabelColor.primary)
+                    hTextNew(L10n.generalCloseButton, style: .body)
                 }
                 .padding(.bottom, 4)
-                hButton.LargeButtonFilled {
+
+                hButton.LargeButtonText {
                     store.send(.dissmissNewClaimFlow)
                     store.send(.submitClaimOpenFreeTextChat)
                 } content: {
-                    hText(L10n.openChat, style: .body)
-                        .foregroundColor(hLabelColor.primary.inverted)
+                    hTextNew(L10n.openChat, style: .body)
                 }
             }
             .padding([.leading, .trailing, .bottom], 16)
         }
-    }
-}
-
-struct TerminationFailScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        ClaimFailureScreen()
     }
 }

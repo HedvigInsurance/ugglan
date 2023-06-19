@@ -78,7 +78,7 @@ public struct TerminationFlowJourney {
     static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
-            rootView: UpdateAppScreen(
+            rootView: UpdateAppScreenOld(
                 onSelected: {
                     let store: ContractStore = globalPresentableStoreContainer.get()
                     store.send(.dismissTerminationFlow)
