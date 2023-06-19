@@ -41,12 +41,12 @@ struct RowButtonStyle: SwiftUI.ButtonStyle {
 
 public struct hRow<Content: View, Accessory: View>: View {
     @SwiftUI.Environment(\.hRowPosition) var position: hRowPosition
+    @Environment(\.hWithoutDivider) var hWithoutDivider
 
     var content: Content
     var accessory: Accessory
     var horizontalPadding: CGFloat = 21
     var verticalPadding: CGFloat = 21
-    var showDivider: Bool = true
 
     public init(
         _ accessory: Accessory,
@@ -70,12 +70,6 @@ public struct hRow<Content: View, Accessory: View>: View {
         return new
     }
 
-    public func withoutDivider() -> Self {
-        var new = self
-        new.showDivider = false
-        return new
-    }
-
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading) {
@@ -87,7 +81,7 @@ public struct hRow<Content: View, Accessory: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding([.horizontal], horizontalPadding)
             .padding([.vertical], verticalPadding)
-            if (position == .middle || position == .top) && showDivider {
+            if (position == .middle || position == .top) && !hWithoutDivider {
                 hRowDivider()
             }
         }
@@ -105,19 +99,16 @@ extension hRow where Accessory == EmptyView {
 }
 
 public struct StandaloneChevronAccessory: View {
+    @Environment(\.hUseNewStyle) var hUseNewStyle
+
     public init() {}
 
     public var body: some View {
-        Image(uiImage: hCoreUIAssets.chevronRight.image)
-    }
-}
-
-public struct StandaloneChevronNewAccessory: View {
-    public init() {}
-
-    public var body: some View {
-        Image(uiImage: hCoreUIAssets.chevronRight2.image)
-            .foregroundColor(hLabelColorNew.tertiary)
+        if hUseNewStyle {
+            Image(uiImage: hCoreUIAssets.chevronRight2.image)
+        } else {
+            Image(uiImage: hCoreUIAssets.chevronRight.image)
+        }
     }
 }
 
@@ -127,15 +118,6 @@ public struct ChevronAccessory: View {
     public var body: some View {
         Spacer()
         StandaloneChevronAccessory()
-    }
-}
-
-public struct ChevronNewAccessory: View {
-    public init() {}
-
-    public var body: some View {
-        Spacer()
-        StandaloneChevronNewAccessory()
     }
 }
 
@@ -160,12 +142,6 @@ extension hRow {
     /// Adds a chevron to trailing, indicating a tappable row
     public var withChevronAccessory: hRow<Content, ChevronAccessory> {
         hRow<Content, ChevronAccessory>(ChevronAccessory()) {
-            content
-        }
-    }
-
-    public var withNewChevronAccessory: hRow<Content, ChevronNewAccessory> {
-        hRow<Content, ChevronNewAccessory>(ChevronNewAccessory()) {
             content
         }
     }

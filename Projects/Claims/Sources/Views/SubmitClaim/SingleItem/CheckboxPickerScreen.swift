@@ -78,10 +78,10 @@ struct CheckboxPickerScreen<T>: View {
             }
             .withEmptyAccessory
             .verticalPadding(9)
-            .withoutDivider()
             .onTap {
                 onTapExecute(item: item)
             }
+            .hWithoutDivider
         }
     }
 

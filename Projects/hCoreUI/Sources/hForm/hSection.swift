@@ -132,6 +132,23 @@ extension hSectionContainerStyle: ViewModifier {
     }
 }
 
+private struct EnvironmentHWithoutDivider: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutDivider: Bool {
+        get { self[EnvironmentHWithoutDivider.self] }
+        set { self[EnvironmentHWithoutDivider.self] = newValue }
+    }
+}
+
+extension View {
+    public var hWithoutDivider: some View {
+        self.environment(\.hWithoutDivider, true)
+    }
+}
+
 extension View {
     /// set section container style
     public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
