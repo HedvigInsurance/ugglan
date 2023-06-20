@@ -175,7 +175,6 @@ import hGraphQL
             return InterceptingURLSessionClient()
         }
 
-        setupPresentableStoreLogger()
         setupAnalyticsAndTracking()
 
         bag += Localization.Locale.$currentLocale
@@ -205,13 +204,12 @@ import hGraphQL
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
-
+        setupSession()
         hGraphQL.log = Logger.builder
             .sendNetworkInfo(true)
             .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
             .build()
-
-        setupSession()
+        setupPresentableStoreLogger()
 
         log.info("Starting app")
 

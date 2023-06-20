@@ -7,6 +7,7 @@ import UIKit
 import hAnalytics
 import hCore
 import hCoreUI
+import hGraphQL
 
 extension AppJourney {
     static var main: some JourneyPresentation {
@@ -22,6 +23,8 @@ extension AppJourney {
                 case .loggedIn:
                     AppJourney.loggedIn.onPresent {
                         Launch.shared.completeAnimationCallbacker.callAll()
+                        log.info("Logged in screen", error: nil, attributes: nil)
+
                     }
                 case .impersonation:
                     AppJourney.impersonationSettings.onPresent {
