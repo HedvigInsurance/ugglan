@@ -28,7 +28,7 @@ public class ClaimJourneys {
                 } else if case .openAudioRecordingScreen = navigationAction {
                     openAudioRecordingSceen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSuccessScreen = navigationAction {
-                    openSuccessScreen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+                    openSuccessScreen().withJourneyDismissButton.configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSingleItemScreen = navigationAction {
                     openSingleItemScreen().addDismissClaimsFlow()
                 } else if case .openSummaryScreen = navigationAction {
