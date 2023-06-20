@@ -524,7 +524,6 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             newState.zignsecState.credentialError = false
             newState.loginHasFailed = false
         case .loginFailure:
-            log.error("Login failed", error: nil, attributes: nil)
             newState.loginHasFailed = true
         default:
             break
