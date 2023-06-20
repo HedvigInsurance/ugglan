@@ -70,7 +70,8 @@ struct SubmitClaimCheckoutTransferringScreen: View {
             hButton.LargeButtonText {
                 store.send(.dissmissNewClaimFlow)
             } content: {
-                hText(L10n.generalCloseButton)
+                hTextNew(L10n.generalCloseButton, style: .body)
+                    .foregroundColor(hLabelColorNew.secondary)
             }
         }
         .opacity(successAnimation ? 1 : 0)
@@ -106,10 +107,14 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     .tint(hLabelColorNew.primary)
                     .frame(width: 247)
                     .onAppear {
-                        for i in 1...2 {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                                progress = progress + Float(0.2)
-                            }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            progress = progress + Float(0.33)
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                            progress = progress + Float(0.33)
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            progress = progress + Float(0.33)
                         }
                     }
             }
