@@ -280,7 +280,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
             case let .setDateOfOccurence(model):
                 newState.dateOfOccurenceStep = model
-                send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
+                send(.navigationAction(action: .openDatePicker(type: .submitDateOfOccurence)))
             case let .setLocation(model):
                 newState.locationStep = model
                 send(.navigationAction(action: .openLocationPicker(type: .submitLocation)))
