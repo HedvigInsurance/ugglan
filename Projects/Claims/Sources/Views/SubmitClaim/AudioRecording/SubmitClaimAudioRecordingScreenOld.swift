@@ -70,17 +70,14 @@ public struct SubmitClaimAudioRecordingScreenOld: View {
                                 self.audioPlayer.url = url
                             }
                         } else {
-
                             RecordButton(isRecording: audioRecorder.isRecording) {
-                                if audioRecorder.isRecording {
-                                } else {
-                                }
                                 withAnimation(.spring()) {
                                     audioRecorder.toggleRecording()
                                 }
                             }
                             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300)))
-                            .padding(.top, UIScreen.main.bounds.size.height / 1.7)
+                            .frame(height: 200)
+
                         }
                     }
                     .padding(16)
@@ -93,6 +90,6 @@ public struct SubmitClaimAudioRecordingScreenOld: View {
 
 struct SubmitClaimAudioRecordingScreenOld_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimAudioRecordingScreenOld(url: URL(string: "")!)
+        SubmitClaimAudioRecordingScreenOld(url: URL(string: ""))
     }
 }
