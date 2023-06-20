@@ -41,7 +41,7 @@ public struct AuthenticationState: StateProtocol {
     var otpState = OTPState()
     var seBankIDState = SEBankIDState()
     var zignsecState = ZignsecState()
-    var loginHasFailed = false
+    @Transient(defaultValue: false) var loginHasFailed: Bool
 
     public init() {}
 }
@@ -144,8 +144,18 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             self.networkAuthRepository
                 .loginStatus(statusUrl: StatusUrl(url: statusUrl.absoluteString)) { result, error in
                     if let completedResult = result as? LoginStatusResultCompleted {
+                        log.info(
+                            "LOGIN AUTH FINISHED",
+                            error: nil,
+                            attributes: ["message": completedResult.authorizationCode.code]
+                        )
                         callbacker(.completed(code: completedResult.authorizationCode.code))
-                    } else if let _ = result as? LoginStatusResultFailed {
+                    } else if let result = result as? LoginStatusResultFailed {
+                        log.error(
+                            "LOGIN FAILED",
+                            error: NSError(domain: result.message, code: 1000),
+                            attributes: ["message": result.message]
+                        )
                         callbacker(.failed)
                     } else if let pendingResult = result as? LoginStatusResultPending {
                         callbacker(.pending(statusMessage: pendingResult.statusMessage))
@@ -516,6 +526,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
             newState.zignsecState.credentialError = false
             newState.loginHasFailed = false
         case .loginFailure:
+            log.error("Login failed", error: nil, attributes: nil)
             newState.loginHasFailed = true
         default:
             break

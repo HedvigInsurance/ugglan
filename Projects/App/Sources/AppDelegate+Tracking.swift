@@ -26,6 +26,7 @@ extension AppDelegate {
                     Environment.production.giraffeEndpointURL.host ?? "",
                     Environment.staging.giraffeEndpointURL.host ?? "",
                 ])
+                .set(uploadFrequency: .frequent)
                 .build()
         )
 
