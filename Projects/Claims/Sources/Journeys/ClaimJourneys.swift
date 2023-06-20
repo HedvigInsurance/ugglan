@@ -28,7 +28,7 @@ public class ClaimJourneys {
                 } else if case .openAudioRecordingScreen = navigationAction {
                     openAudioRecordingSceen().addDismissClaimsFlow()
                 } else if case .openSuccessScreen = navigationAction {
-                    openSuccessScreen().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+                    openSuccessScreen().withJourneyDismissButton.configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSingleItemScreen = navigationAction {
                     openSingleItemScreen().addDismissClaimsFlow()
                 } else if case .openSummaryScreen = navigationAction {
@@ -63,7 +63,7 @@ public class ClaimJourneys {
                 } else if case .openSingleItemScreen = navigationAction {
                     openSingleItemScreenOld().addDismissClaimsFlow()
                 } else if case .openSummaryScreen = navigationAction {
-                    openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
+                    openSummaryScreenOld().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
                 } else if case .openDamagePickerScreen = navigationAction {
                     openDamagePickerScreenOld().addDismissClaimsFlow()
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
@@ -492,6 +492,21 @@ public class ClaimJourneys {
             SubmitClaimStore.self,
             rootView: SubmitClaimSummaryScreen(),
             style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
+        ) {
+            action in
+            if case .navigationAction(.dismissScreen) = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
+        }
+    }
+
+    private static func openSummaryScreenOld() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimSummaryScreenOld(),
+            style: .detented(.large, modally: false)
         ) {
             action in
             getScreen(for: action)
