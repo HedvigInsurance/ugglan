@@ -144,10 +144,9 @@ extension BankIDLoginQR: Presentable {
                 bag += store.onAction(
                     .loginFailure,
                     {
-                        guard viewController.navigationController?.viewControllers.count == 2 else {
+                        guard viewController.navigationController?.viewControllers.count ?? 0 <= 2 else {
                             return
                         }
-
                         let alert = Alert<Void>(
                             title: L10n.bankidUserCancelTitle,
                             actions: [
