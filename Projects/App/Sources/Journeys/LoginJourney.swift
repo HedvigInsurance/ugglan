@@ -47,7 +47,7 @@ extension AppJourney {
                 case .emailLogin:
                     otp(style: .detented(.large, modally: false))
                 case .close:
-                    DismissJourney()
+                    PopJourney()
                 }
             }
             .withDismissButton
