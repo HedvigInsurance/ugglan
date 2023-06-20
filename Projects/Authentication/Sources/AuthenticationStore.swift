@@ -145,9 +145,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                 .loginStatus(statusUrl: StatusUrl(url: statusUrl.absoluteString)) { result, error in
                     if let completedResult = result as? LoginStatusResultCompleted {
                         log.info(
-                            "LOGIN AUTH FINISHED",
-                            error: nil,
-                            attributes: ["message": completedResult.authorizationCode.code]
+                            "LOGIN AUTH FINISHED"
                         )
                         callbacker(.completed(code: completedResult.authorizationCode.code))
                     } else if let result = result as? LoginStatusResultFailed {

@@ -175,7 +175,6 @@ import hGraphQL
             return InterceptingURLSessionClient()
         }
 
-        setupPresentableStoreLogger()
         setupAnalyticsAndTracking()
 
         bag += Localization.Locale.$currentLocale
@@ -210,6 +209,7 @@ import hGraphQL
             .sendNetworkInfo(true)
             .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
             .build()
+        setupPresentableStoreLogger()
 
         log.info("Starting app")
 
