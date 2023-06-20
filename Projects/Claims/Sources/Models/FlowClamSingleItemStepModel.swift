@@ -155,7 +155,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
 
     var returnDisplayStringForSummaryPrice: String? {
         if let purchasePrice {
-            return L10n.summaryPurchasePriceDescription(Int(purchasePrice)) + " " + (currencyCode ?? "")
+            return String(Int(purchasePrice)) + " " + (currencyCode ?? "")
         }
         return nil
     }
