@@ -25,9 +25,6 @@ public struct SubmitClaimSummaryScreen: View {
                 .withHeader {
                     HStack {
                         L10n.changeAddressDetails.hTextNew(.body).foregroundColor(hLabelColorNew.primary)
-                        Spacer()
-                        Image(uiImage: hCoreUIAssets.infoSmall.image)
-                            .foregroundColor(hLabelColorNew.secondary)
                     }
                 }
                 .sectionContainerStyle(.transparent)
