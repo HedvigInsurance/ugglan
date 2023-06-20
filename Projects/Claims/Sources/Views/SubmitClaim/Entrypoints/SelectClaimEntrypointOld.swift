@@ -20,17 +20,15 @@ public struct SelectClaimEntrypointOld: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(hUseNewStyle: false, .startClaim) {
-            LoadingViewWithContent(hUseNewStyle: false, .fetchClaimEntrypoints) {
-                hForm {
-                    PresentableStoreLens(
-                        SubmitClaimStore.self,
-                        getter: { state in
-                            state.claimEntrypoints
-                        }
-                    ) { claimEntrypoint in
-                        entrypointList(claimEntrypoint: claimEntrypoint)
+        LoadingViewWithContent(hUseNewStyle: false, [.startClaim, .fetchClaimEntrypoints]) {
+            hForm {
+                PresentableStoreLens(
+                    SubmitClaimStore.self,
+                    getter: { state in
+                        state.claimEntrypoints
                     }
+                ) { claimEntrypoint in
+                    entrypointList(claimEntrypoint: claimEntrypoint)
                 }
             }
         }
