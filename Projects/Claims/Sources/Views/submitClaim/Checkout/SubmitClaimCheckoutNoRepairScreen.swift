@@ -51,12 +51,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                         HStack {
                             hTextNew(L10n.claimsCheckoutCountTitle, style: .body)
                                 .foregroundColor(hLabelColorNew.primary)
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.infoSmall.image)
-                                .foregroundColor(hLabelColorNew.secondary)
-                                .onTapGesture {
-                                    store.send(.navigationAction(action: .openInfoPopUpScreen(type: .howWeCounted)))
-                                }
                         }
                     }
                     .sectionContainerStyle(.transparent)
@@ -89,12 +83,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                         HStack {
                             hTextNew(L10n.Claims.Payout.Summary.method, style: .body)
                                 .foregroundColor(hLabelColorNew.primary)
-                            Spacer()
-                            Image(uiImage: hCoreUIAssets.infoSmall.image)
-                                .foregroundColor(hLabelColorNew.secondary)
-                                .onTapGesture {
-                                    store.send(.navigationAction(action: .openInfoPopUpScreen(type: .paymentMethod)))
-                                }
                         }
                     }
                 }
@@ -166,11 +154,6 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                         .padding(.bottom, 4)
                 }
                 .withSelectedAccessory(checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark)
-                .onTapGesture {
-                    withAnimation {
-                        store.send(.setPayoutMethod(method: element))
-                    }
-                }
                 .background(hBackgroundColor.tertiary)
                 .cornerRadius(.defaultCornerRadius)
                 .padding(.bottom, 8)
@@ -184,56 +167,3 @@ struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
         SubmitClaimCheckoutNoRepairScreen()
     }
 }
-
-public struct SubmitClaimInfoPopUp: View {
-    @PresentableStore var store: SubmitClaimStore
-    var type: ClaimsNavigationAction.InfoPopUpType
-    var title: String
-    var bodyText: String
-
-    public init(
-        type: ClaimsNavigationAction.InfoPopUpType
-    ) {
-        self.type = type
-
-        switch type {
-        case .howWeCounted:
-            self.title = L10n.claimsCheckoutCountTitle
-            self.bodyText = L10n.claimsCheckoutCountLabel
-        case .paymentMethod:
-            self.title = L10n.Claims.Payout.Summary.method
-            self.bodyText = L10n.claimsCheckoutPaymentLabel
-        }
-    }
-
-    public var body: some View {
-        hForm {
-            VStack(alignment: .leading, spacing: 0) {
-                hTextNew(title, style: .body)
-                    .foregroundColor(hLabelColorNew.primary)
-                    .padding(.bottom, 8)
-
-                HStack {
-                    hTextNew(bodyText, style: .body)
-                        .foregroundColor(hLabelColorNew.secondary)
-                        .padding(.bottom, 46)
-                }
-
-                hButton.LargeButtonText {
-                    store.send(.navigationAction(action: .dismissInfoScreens))
-                } content: {
-                    L10n.generalCloseButton.hTextNew(.body)
-                        .foregroundColor(hLabelColorNew.primary)
-                }
-            }
-            .padding(.horizontal, 24)
-        }
-        .hUseNewStyle
-    }
-}
-
-//struct SubmitClaimInfoPopUp_Previews: PreviewProvider {
-//    static var previews: some View {
-//        SubmitClaimInfoPopUp(type: .howWeCounted)
-//    }
-//}

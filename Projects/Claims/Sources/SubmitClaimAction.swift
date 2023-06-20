@@ -67,7 +67,6 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openNotificationsPermissionScreen
     case openEntrypointScreen
     case openNewTriagingScreen
-    case openInfoPopUpScreen(type: InfoPopUpType)
     case dismissInfoScreens
     case dismissScreen
     case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
@@ -81,11 +80,6 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
         case setDateOfOccurrence
         case submitDateOfOccurence
         case setDateOfPurchase
-    }
-
-    public enum InfoPopUpType: ActionProtocol {
-        case howWeCounted
-        case paymentMethod
     }
 }
 

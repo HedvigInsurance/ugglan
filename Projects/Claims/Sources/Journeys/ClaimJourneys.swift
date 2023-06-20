@@ -48,8 +48,6 @@ public class ClaimJourneys {
                     openUpdateAppTerminationScreen().withJourneyDismissButton
                 } else if case let .openDatePicker(type) = navigationAction {
                     openDatePickerScreen(type: type)
-                } else if case let .openInfoPopUpScreen(type) = navigationAction {
-                    openInfoPopUpScreen(type: type)
                 }
             } else {
                 if case let .openPhoneNumberScreen(model) = navigationAction {
@@ -723,22 +721,6 @@ public class ClaimJourneys {
         ) {
             action in
             getScreenForAction(for: action)
-        }
-        .hidesBackButton
-    }
-
-    private static func openInfoPopUpScreen(type: ClaimsNavigationAction.InfoPopUpType) -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimInfoPopUp(type: type),
-            style: .detented(.scrollViewContentSize, modally: true)
-        ) {
-            action in
-            if case .navigationAction(.dismissInfoScreens) = action {
-                PopJourney()
-            } else {
-                getScreen(for: action)
-            }
         }
         .hidesBackButton
     }
