@@ -26,7 +26,7 @@ public struct SubmitClaimAudioRecordingScreenOld: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(.postAudioRecording) {
+        LoadingViewWithContent(hUseNewStyle: false, .postAudioRecording) {
             hForm {
                 PresentableStoreLens(
                     SubmitClaimStore.self,

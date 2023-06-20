@@ -20,8 +20,8 @@ public struct SelectClaimEntrypointOld: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(.startClaim) {
-            LoadingViewWithContent(.fetchClaimEntrypoints) {
+        LoadingViewWithContent(hUseNewStyle: false, .startClaim) {
+            LoadingViewWithContent(hUseNewStyle: false, .fetchClaimEntrypoints) {
                 hForm {
                     PresentableStoreLens(
                         SubmitClaimStore.self,

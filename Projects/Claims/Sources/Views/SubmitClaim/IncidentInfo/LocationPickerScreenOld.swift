@@ -9,11 +9,10 @@ struct LocationPickerScreenOld: View {
         type: ClaimsNavigationAction.LocationPickerType
     ) {
         self.type = type
-
     }
 
     var body: some View {
-        LoadingViewWithContent(.postLocation) {
+        LoadingViewWithContent(hUseNewStyle: false, .postLocation) {
             hForm {
                 hSection {
                     PresentableStoreLens(

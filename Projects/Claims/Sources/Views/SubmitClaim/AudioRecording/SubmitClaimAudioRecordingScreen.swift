@@ -53,7 +53,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     }
                 }
             }
-            .hUseNewStyle
             .hFormAttachToBottom {
                 ZStack(alignment: .bottom) {
                     Group {
@@ -124,6 +123,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 .environmentObject(audioRecorder)
             }
         }
+        .hUseNewStyle
     }
 }
 
