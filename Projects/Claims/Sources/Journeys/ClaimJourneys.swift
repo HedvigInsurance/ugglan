@@ -65,7 +65,7 @@ public class ClaimJourneys {
                 } else if case .openDamagePickerScreen = navigationAction {
                     openDamagePickerScreenOld().addDismissClaimsFlow()
                 } else if case .openCheckoutNoRepairScreen = navigationAction {
-                    openCheckoutNoRepairScreen().addDismissClaimsFlow()
+                    openCheckoutNoRepairScreenOld().addDismissClaimsFlow()
                         .configureTitle(L10n.Claims.Payout.Summary.title)
                 } else if case .openFailureSceen = navigationAction {
                     showClaimFailureScreenOld().withJourneyDismissButton
@@ -521,7 +521,6 @@ public class ClaimJourneys {
     }
 
     private static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
-
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SubmitClaimCheckoutNoRepairScreen()
@@ -529,8 +528,28 @@ public class ClaimJourneys {
             action in
             if case .navigationAction(.openCheckoutTransferringScreen) = action {
                 openCheckoutTransferringScreen()
+            } else if case .navigationAction(.dismissScreen) = action {
+                PopJourney()
             } else if case .summaryRequest = action {
                 openCheckoutTransferringScreen()
+            } else {
+                getScreenForAction(for: action)
+            }
+        }
+    }
+
+    private static func openCheckoutNoRepairScreenOld() -> some JourneyPresentation {
+
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: SubmitClaimCheckoutNoRepairScreenOld(),
+            style: .detented(.large, modally: false)
+        ) {
+            action in
+            if case .navigationAction(.openCheckoutTransferringScreen) = action {
+                openCheckoutTransferringScreenOld()
+            } else if case .summaryRequest = action {
+                openCheckoutTransferringScreenOld()
             } else {
                 getScreen(for: action)
             }
@@ -540,6 +559,14 @@ public class ClaimJourneys {
     static func openCheckoutTransferringScreen() -> some JourneyPresentation {
         HostingJourney(
             rootView: SubmitClaimCheckoutTransferringScreen(),
+            style: .modally(presentationStyle: .fullScreen, transitionStyle: .crossDissolve)
+        )
+    }
+
+    static func openCheckoutTransferringScreenOld() -> some JourneyPresentation {
+
+        HostingJourney(
+            rootView: SubmitClaimCheckoutTransferringScreenOld(),
             style: .modally(presentationStyle: .fullScreen, transitionStyle: .crossDissolve)
         )
     }
