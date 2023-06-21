@@ -57,7 +57,7 @@ public class ClaimJourneys {
                 } else if case .openAudioRecordingScreen = navigationAction {
                     openAudioRecordingSceenOld().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSuccessScreen = navigationAction {
-                    openSuccessScreenOld().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
+                    openSuccessScreenOld().withJourneyDismissButton.configureTitle(L10n.embarkSubmitClaim)
                 } else if case .openSingleItemScreen = navigationAction {
                     openSingleItemScreenOld().addDismissClaimsFlow()
                 } else if case .openSummaryScreen = navigationAction {
@@ -124,28 +124,44 @@ public class ClaimJourneys {
 
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
         let screen = DatePickerScreen(type: type)
-
-        return HostingJourney(
-            SubmitClaimStore.self,
-            rootView: screen,
-            style: type.shouldShowModally ? .detented(.scrollViewContentSize) : .default,
-            options: [
-                .defaults,
-                .largeTitleDisplayMode(.always),
-                .prefersLargeTitles(true),
-            ]
-        ) {
-            action in
-            if case .setNewDate = action {
-                PopJourney()
-            } else if case .setSingleItemPurchaseDate = action {
-                PopJourney()
-            } else {
-                getScreen(for: action)
+        if type.shouldShowModally {
+            return HostingJourney(
+                SubmitClaimStore.self,
+                rootView: screen,
+                style: .detented(.scrollViewContentSize),
+                options: [
+                    .defaults,
+                    .largeTitleDisplayMode(.always),
+                    .prefersLargeTitles(true),
+                ]
+            ) {
+                action in
+                if case .setNewDate = action {
+                    PopJourney()
+                } else if case .setSingleItemPurchaseDate = action {
+                    PopJourney()
+                } else {
+                    getScreen(for: action)
+                }
             }
+            .configureTitle(screen.title)
+            .withDismissButton
+        } else {
+            return HostingJourney(
+                SubmitClaimStore.self,
+                rootView: screen
+            ) {
+                action in
+                if case .setNewDate = action {
+                    PopJourney()
+                } else if case .setSingleItemPurchaseDate = action {
+                    PopJourney()
+                } else {
+                    getScreen(for: action)
+                }
+            }
+            .configureTitle(screen.title)
         }
-        .configureTitle(screen.title)
-        .withDismissButton
     }
 
     static func openLocationScreen(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
@@ -192,7 +208,8 @@ public class ClaimJourneys {
     static func openLocationScreenOld(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: LocationPickerScreenOld(type: type)
+            rootView: LocationPickerScreenOld(type: type),
+            style: type == .submitLocation ? .default : .detented(.scrollViewContentSize)
         ) {
             action in
             if case .setNewLocation = action {
@@ -391,7 +408,7 @@ public class ClaimJourneys {
             } else if case .setSingleItemDamage(_) = action {
                 PopJourney()
             } else {
-                getScreenForAction(for: action)
+                getScreen(for: action)
             }
         }
     }
@@ -429,7 +446,7 @@ public class ClaimJourneys {
             SubmitClaimStore.self,
             rootView: SubmitClaimAudioRecordingScreenOld(url: url)
         ) { action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
     }
 
@@ -635,8 +652,7 @@ public class ClaimJourneys {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: SelectClaimEntrypointOld(entrypointGroupId: nil),
-            style: hAnalyticsExperiment.claimsTriaging
-                ? .modally(presentationStyle: .fullScreen) : .detented(.large, modally: false)
+            style: .detented(.large, modally: false)
         ) { action in
             getScreen(for: action).hidesBackButton
         }
@@ -681,7 +697,7 @@ public class ClaimJourneys {
             )
         ) {
             action in
-            getScreenForAction(for: action)
+            getScreen(for: action)
         }
         .hidesBackButton
     }
