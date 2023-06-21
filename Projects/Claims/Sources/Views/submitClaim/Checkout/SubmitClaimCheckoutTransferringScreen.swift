@@ -33,6 +33,14 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 } onError: { error in
                     errorView(withError: error)
                 }
+                .transition(
+                    .scale.animation(
+                        .interpolatingSpring(
+                            stiffness: 170,
+                            damping: 15
+                        )
+                    )
+                )
             }
         }
     }
@@ -59,7 +67,6 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     .foregroundColor(hLabelColorNew.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 16)
-                    .matchedGeometryEffect(id: "titleLabel", in: animation)
             }
             .scaleEffect(
                 x: successAnimation ? 1 : 0.3,
@@ -97,28 +104,21 @@ struct SubmitClaimCheckoutTransferringScreen: View {
     private func loadingView() -> some View {
         VStack {
             Spacer()
-
             VStack(spacing: 24) {
                 hTextNew(L10n.claimsPayoutProgresLabel, style: .title3)
-                    .matchedGeometryEffect(id: "titleLabel", in: animation)
-                    .padding(.top, 305)
 
                 ProgressView(value: progress)
                     .tint(hLabelColorNew.primary)
-                    .frame(width: 247)
+                    .frame(width: UIScreen.main.bounds.width * 0.53)
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            progress = progress + Float(0.33)
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            progress = progress + Float(0.33)
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            progress = progress + Float(0.33)
+                            withAnimation(.easeInOut(duration: 1.5).delay(0.5)) {
+                                progress = 1
+                            }
                         }
                     }
             }
-            .frame(maxHeight: .infinity, alignment: .top)
+            .frame(maxHeight: .infinity)
             .scaleEffect(
                 x: loadingAnimation ? 1 : 0.3,
                 y: loadingAnimation ? 1 : 0.3,
@@ -127,6 +127,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 
             Spacer()
         }
+        .padding(.bottom, 40)
         .opacity(loadingAnimation ? 1 : 0)
         .disabled(!loadingAnimation)
         .animation(
@@ -160,7 +161,6 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 hTextNew(error, style: .body)
                     .multilineTextAlignment(.center)
                     .foregroundColor(hLabelColor.primary)
-                    .matchedGeometryEffect(id: "titleLabel", in: animation)
             }
             .scaleEffect(
                 x: errorAnimation ? 1 : 0.3,
@@ -179,7 +179,6 @@ struct SubmitClaimCheckoutTransferringScreen: View {
             .padding([.leading, .trailing], 16)
             .cornerRadius(.defaultCornerRadius)
             HStack {
-
                 Button {
                     store.send(.dissmissNewClaimFlow)
                 } label: {
