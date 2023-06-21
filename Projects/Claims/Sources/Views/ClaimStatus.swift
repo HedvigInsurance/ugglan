@@ -14,7 +14,7 @@ struct ClaimStatus: View {
         return { claim in
             store.send(.openClaimDetails(claim: claim))
 
-            hAnalyticsEvent.claimCardClick(
+            _ = hAnalyticsEvent.claimCardClick(
                 claimId: self.claim.id,
                 claimStatus: self.claim.claimDetailData.status.rawValue
             )
