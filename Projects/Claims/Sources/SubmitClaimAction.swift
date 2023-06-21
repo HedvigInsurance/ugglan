@@ -80,6 +80,17 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
         case setDateOfOccurrence
         case submitDateOfOccurence
         case setDateOfPurchase
+
+        var shouldShowModally: Bool {
+            switch self {
+            case .setDateOfOccurrence:
+                return true
+            case .submitDateOfOccurence:
+                return false
+            case .setDateOfPurchase:
+                return true
+            }
+        }
     }
 }
 

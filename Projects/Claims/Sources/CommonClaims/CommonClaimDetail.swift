@@ -69,7 +69,7 @@ extension CommonClaimDetail: Presentable {
 
                 if claim.id == "30" || claim.id == "31" {
                     if let url = URL(
-                        string: "https://apps.apple.com/se/app/firstvet-veterin%C3%A4r-i-mobilen/id1155459157"
+                        string: "https://app.adjust.com/11u5tuxu"
                     ) {
                         UIApplication.shared.open(url)
                     }

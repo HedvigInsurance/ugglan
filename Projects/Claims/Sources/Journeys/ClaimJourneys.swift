@@ -96,8 +96,7 @@ public class ClaimJourneys {
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimContactScreenOld(model: model),
-            style: .detented(.large, modally: false)
+            rootView: SubmitClaimContactScreenOld(model: model)
         ) { action in
             getScreen(for: action)
         }
@@ -116,8 +115,7 @@ public class ClaimJourneys {
     static func submitClaimOccurrancePlusLocationScreenOld() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimOccurrencePlusLocationScreenOld(),
-            style: .detented(.large, modally: false)
+            rootView: SubmitClaimOccurrencePlusLocationScreenOld()
         ) {
             action in
             getScreen(for: action)
@@ -130,7 +128,7 @@ public class ClaimJourneys {
         return HostingJourney(
             SubmitClaimStore.self,
             rootView: screen,
-            style: .detented(.scrollViewContentSize),
+            style: type.shouldShowModally ? .detented(.scrollViewContentSize) : .default,
             options: [
                 .defaults,
                 .largeTitleDisplayMode(.always),
@@ -142,6 +140,8 @@ public class ClaimJourneys {
                 PopJourney()
             } else if case .setSingleItemPurchaseDate = action {
                 PopJourney()
+            } else {
+                getScreen(for: action)
             }
         }
         .configureTitle(screen.title)
@@ -176,7 +176,7 @@ public class ClaimJourneys {
                 },
                 singleSelect: true
             ),
-            style: .detented(.scrollViewContentSize)
+            style: type == .submitLocation ? .default : .detented(.scrollViewContentSize)
         ) {
             action in
             if case .navigationAction(.dismissScreen) = action {
@@ -192,8 +192,7 @@ public class ClaimJourneys {
     static func openLocationScreenOld(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: LocationPickerScreenOld(type: type),
-            style: .default
+            rootView: LocationPickerScreenOld(type: type)
         ) {
             action in
             if case .setNewLocation = action {
@@ -417,8 +416,7 @@ public class ClaimJourneys {
         let url = store.state.audioRecordingStep?.getUrl()
         return HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimAudioRecordingScreen(url: url),
-            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
+            rootView: SubmitClaimAudioRecordingScreen(url: url)
         ) { action in
             getScreen(for: action)
         }
@@ -429,8 +427,7 @@ public class ClaimJourneys {
         let url = store.state.audioRecordingStep?.getUrl()
         return HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimAudioRecordingScreenOld(url: url),
-            style: .detented(.large, modally: false)
+            rootView: SubmitClaimAudioRecordingScreenOld(url: url)
         ) { action in
             getScreenForAction(for: action)
         }
@@ -438,16 +435,14 @@ public class ClaimJourneys {
 
     private static func openSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
-            rootView: SubmitClaimSuccessScreen(),
-            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
+            rootView: SubmitClaimSuccessScreen()
         )
         .hidesBackButton
     }
 
     private static func openSuccessScreenOld() -> some JourneyPresentation {
         HostingJourney(
-            rootView: SubmitClaimSuccessScreenOld(),
-            style: .detented(.large, modally: false)
+            rootView: SubmitClaimSuccessScreenOld()
         )
         .hidesBackButton
     }
@@ -455,8 +450,7 @@ public class ClaimJourneys {
     private static func openSingleItemScreenOld() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimSingleItemOld(),
-            style: .detented(.large, modally: false)
+            rootView: SubmitClaimSingleItemOld()
         ) {
             action in
             if case .navigationAction(.openDatePicker) = action {
@@ -488,8 +482,7 @@ public class ClaimJourneys {
     private static func openSummaryScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimSummaryScreen(),
-            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
+            rootView: SubmitClaimSummaryScreen()
         ) {
             action in
             if case .navigationAction(.dismissScreen) = action {
@@ -503,8 +496,7 @@ public class ClaimJourneys {
     private static func openSummaryScreenOld() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimSummaryScreenOld(),
-            style: .detented(.large, modally: false)
+            rootView: SubmitClaimSummaryScreenOld()
         ) {
             action in
             getScreen(for: action)
@@ -514,8 +506,7 @@ public class ClaimJourneys {
     private static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimCheckoutNoRepairScreen(),
-            style: hAnalyticsExperiment.claimsTriaging ? .default : .detented(.large, modally: false)
+            rootView: SubmitClaimCheckoutNoRepairScreen()
         ) {
             action in
             if case .navigationAction(.openCheckoutTransferringScreen) = action {
@@ -549,7 +540,6 @@ public class ClaimJourneys {
     }
 
     static func openCheckoutTransferringScreen() -> some JourneyPresentation {
-
         HostingJourney(
             rootView: SubmitClaimCheckoutTransferringScreen(),
             style: .modally(presentationStyle: .fullScreen, transitionStyle: .crossDissolve)
@@ -699,8 +689,7 @@ public class ClaimJourneys {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.dissmissNewClaimFlow)
                 }
-            ),
-            style: .detented(.large, modally: true)
+            )
         ) {
             action in
             getScreen(for: action)
@@ -716,8 +705,7 @@ public class ClaimJourneys {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.dissmissNewClaimFlow)
                 }
-            ),
-            style: .detented(.large, modally: true)
+            )
         ) {
             action in
             getScreenForAction(for: action)

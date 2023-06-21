@@ -36,7 +36,7 @@ public struct SubmitClaimSummaryScreen: View {
                         hButton.LargeButtonFilled {
                             store.send(.summaryRequest)
                         } content: {
-                            hText(L10n.generalContinueButton)
+                            hText(L10n.embarkSubmitClaim)
                         }
                         hButton.LargeButtonText {
                             store.send(.navigationAction(action: .dismissScreen))
