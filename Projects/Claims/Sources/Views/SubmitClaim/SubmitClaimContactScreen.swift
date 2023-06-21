@@ -15,7 +15,7 @@ public struct SubmitClaimContactScreen: View {
     public var body: some View {
         LoadingViewWithContent(.postPhoneNumber) {
             hForm {}
-                .hFormTitle(.small, .title3, L10n.claimsConfirmNumberTitle)
+                .hFormTitle(.small, .customTitle, L10n.claimsConfirmNumberTitle)
                 .hFormAttachToBottom {
                     VStack(spacing: 24) {
                         hSection {

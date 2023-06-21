@@ -17,7 +17,7 @@ public struct SubmitClaimSingleItem: View {
             hForm {
             }
             .hUseNewStyle
-            .hFormTitle(.small, .title3, L10n.claimsSingleItemDetails)
+            .hFormTitle(.small, .customTitle, L10n.claimsSingleItemDetails)
             .hFormAttachToBottom {
                 VStack(spacing: 8) {
                     PresentableStoreLens(
