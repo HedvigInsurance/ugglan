@@ -278,7 +278,8 @@ public class ClaimJourneys {
                     store.send(.navigationAction(action: .dismissScreen))
                 }
             ),
-            style: .detented(.scrollViewContentSize)
+            style: .detented(.scrollViewContentSize),
+            options: [.defaults, .wantsGrabber]
         ) {
             action in
             if case let .setItemBrand(brand) = action {
@@ -360,7 +361,8 @@ public class ClaimJourneys {
                 singleSelect: true,
                 showDividers: true
             ),
-            style: .detented(.scrollViewContentSize, modally: false)
+            style: .detented(.scrollViewContentSize, modally: false),
+            options: [.defaults, .wantsGrabber]
         ) {
             action in
             ContinueJourney()
