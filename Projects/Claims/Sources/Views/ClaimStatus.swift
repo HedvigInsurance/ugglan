@@ -10,33 +10,17 @@ struct ClaimStatus: View {
     @PresentableStore
     var store: ClaimsStore
 
-    var body: some View {
-        Button {
+    var tapAction: (Claim) -> Void {
+        return { claim in
             store.send(.openClaimDetails(claim: claim))
-        } label: {
-
         }
-        .buttonStyle(ClaimStatusButtonStyle(claim: claim))
-        .trackOnAppear(
-            hAnalyticsEvent.claimCardVisible(
-                claimId: self.claim.id,
-                claimStatus: self.claim.claimDetailData.status.rawValue
-            )
-        )
-        .trackOnTap(
-            hAnalyticsEvent.claimCardClick(
-                claimId: self.claim.id,
-                claimStatus: self.claim.claimDetailData.status.rawValue
-            )
-        )
     }
-}
 
-struct ClaimStatusButtonStyle: ButtonStyle {
-    let claim: Claim
-
-    func makeBody(configuration: Configuration) -> some View {
+    var body: some View {
         CardComponent(
+            onSelected: {
+                tapAction(claim)
+            },
             mainContent: ClaimPills(claim: claim),
             title: claim.title,
             subTitle: claim.subtitle,
