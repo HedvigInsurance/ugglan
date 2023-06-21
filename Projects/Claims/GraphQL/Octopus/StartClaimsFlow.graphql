@@ -3,6 +3,9 @@ mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
     id
     ...FlowClaimFragment
     context
+    progress {
+        ...ProgressFragment
+    }
   }
 }
 
@@ -154,4 +157,9 @@ fragment FlowClaimAutomaticAutogiroPayoutFragment on FlowClaimAutomaticAutogiroP
 fragment FlowClaimAudioContentFragment on FlowClaimAudioContent {
     audioUrl
     signedUrl
+}
+
+fragment ProgressFragment on FlowProgress {
+    clearedSteps
+    totalSteps
 }

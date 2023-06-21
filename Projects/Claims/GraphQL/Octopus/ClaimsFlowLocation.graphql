@@ -3,5 +3,8 @@ mutation FlowClaimLocationNext($input: FlowClaimLocationInput!, $context: FlowCo
     id
     ...FlowClaimFragment
     context
+    progress {
+        ...ProgressFragment
+    }
   }
 }

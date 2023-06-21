@@ -3,5 +3,8 @@ mutation FlowClaimDateOfOccurrenceNext($input: FlowClaimDateOfOccurrenceInput!, 
     id
     ...FlowClaimFragment
     context
+    progress {
+        ...ProgressFragment
+    }
   }
 }

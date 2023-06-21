@@ -633,6 +633,7 @@ public class ClaimJourneys {
             rootView: LoadingViewWithContent([.fetchClaimEntrypointGroups, .startClaim]) {
                 SelectClaimEntrypointGroup(
                     selectedEntrypoints: { entrypoints in
+
                         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                         store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
 
@@ -659,6 +660,7 @@ public class ClaimJourneys {
         }
         .hidesBackButton
         .withJourneyDismissButton
+        .addClaimsProgressBar
     }
 
     @JourneyBuilder
