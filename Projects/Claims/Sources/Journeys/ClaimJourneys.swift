@@ -544,20 +544,22 @@ public class ClaimJourneys {
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectClaimEntrypointGroup(
-                selectedEntrypoints: { entrypoints in
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
+            rootView: LoadingViewWithContent([.fetchClaimEntrypointGroups, .startClaim]) {
+                SelectClaimEntrypointGroup(
+                    selectedEntrypoints: { entrypoints in
+                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                        store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
 
-                    if entrypoints.isEmpty {
-                        store.send(
-                            .startClaimRequest(
-                                entrypointId: nil,
-                                entrypointOptionId: nil
+                        if entrypoints.isEmpty {
+                            store.send(
+                                .startClaimRequest(
+                                    entrypointId: nil,
+                                    entrypointOptionId: nil
+                                )
                             )
-                        )
-                    }
-                }),
+                        }
+                    })
+            },
             style: hAnalyticsExperiment.claimsTriaging
                 ? .modally(presentationStyle: .overFullScreen) : .detented(.large, modally: false)
         ) { action in
@@ -579,21 +581,23 @@ public class ClaimJourneys {
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectClaimEntrypointType(selectedEntrypointOptions: { options, selectedEntrypointId in
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(.setSelectedEntrypointOptions(entrypoints: options))
-                store.send(.setSelectedEntrypointId(entrypoints: selectedEntrypointId))
+            rootView:
+                LoadingViewWithContent(.startClaim) {
+                    SelectClaimEntrypointType(selectedEntrypointOptions: { options, selectedEntrypointId in
+                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                        store.send(.setSelectedEntrypointOptions(entrypoints: options))
+                        store.send(.setSelectedEntrypointId(entrypoints: selectedEntrypointId))
 
-                if options.isEmpty {
-                    store.send(
-                        .startClaimRequest(
-                            entrypointId: selectedEntrypointId,
-                            entrypointOptionId: nil
-                        )
-                    )
+                        if options.isEmpty {
+                            store.send(
+                                .startClaimRequest(
+                                    entrypointId: selectedEntrypointId,
+                                    entrypointOptionId: nil
+                                )
+                            )
+                        }
+                    })
                 }
-            })
-
         ) { action in
             if case let .setSelectedEntrypointOptions(options) = action {
                 if !options.isEmpty {
@@ -613,15 +617,18 @@ public class ClaimJourneys {
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SelectClaimEntrypointOption(onButtonClick: { entrypointId, entrypointOptionId in
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .startClaimRequest(
-                        entrypointId: entrypointId,
-                        entrypointOptionId: entrypointOptionId
-                    )
-                )
-            })
+            rootView:
+                LoadingViewWithContent(.startClaim) {
+                    SelectClaimEntrypointOption(onButtonClick: { entrypointId, entrypointOptionId in
+                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                        store.send(
+                            .startClaimRequest(
+                                entrypointId: entrypointId,
+                                entrypointOptionId: entrypointOptionId
+                            )
+                        )
+                    })
+                }
         ) { action in
             getScreen(for: action)
         }

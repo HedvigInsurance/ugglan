@@ -73,3 +73,57 @@ public struct WordmarkActivityIndicator: View {
         }
     }
 }
+
+public struct DotsActivityIndicator: View {
+    @State var scaling: Bool = false
+    var size: Size
+
+    public enum Size {
+        case standard
+        case small
+    }
+
+    public init(
+        _ size: Size
+    ) {
+        self.size = size
+    }
+
+    var dotSize: CGFloat {
+        switch size {
+        case .standard:
+            return 6
+        case .small:
+            return 3
+        }
+    }
+
+    public var body: some View {
+        HStack(alignment: .center, spacing: 0) {
+            getCircle(with: 0)
+            Color.clear.frame(width: dotSize)
+            getCircle(with: 0.2)
+            Color.clear.frame(width: dotSize)
+            getCircle(with: 0.4)
+
+        }
+        .onAppear {
+            self.scaling = true
+        }
+        .onDisappear {
+            self.scaling = false
+        }
+    }
+
+    private func getCircle(with delay: Double) -> some View {
+        Circle().fill(hLabelColorNew.primary).frame(width: dotSize, height: dotSize)
+            .scaleEffect(scaling ? 1.2 : 1, anchor: .center)
+            .animation(self.scaling ? .easeInOut(duration: 0.6).delay(delay).repeatForever() : .default)
+    }
+}
+
+struct DotsActivityIndicator_Previews: PreviewProvider {
+    static var previews: some View {
+        DotsActivityIndicator(.standard)
+    }
+}
