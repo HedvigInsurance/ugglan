@@ -31,7 +31,7 @@ public struct SubmitClaimSummaryScreen: View {
             }
             .hFormAttachToBottom {
                 VStack(spacing: 8) {
-                    NoticeComponent(text: L10n.claimsComplementClaim)
+                    InfoCard(text: L10n.claimsComplementClaim)
                     Group {
                         hButton.LargeButtonFilled {
                             store.send(.summaryRequest)

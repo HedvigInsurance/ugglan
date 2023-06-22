@@ -64,7 +64,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         }
         .sectionContainerStyle(.transparent)
 
-        NoticeComponent(text: L10n.claimsDateNotSureNoticeLabel)
+        InfoCard(text: L10n.claimsDateNotSureNoticeLabel)
             .padding([.bottom, .top], 8)
     }
 
