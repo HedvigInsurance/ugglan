@@ -584,8 +584,7 @@ public class ClaimJourneys {
 
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimCheckoutNoRepairScreenOld(),
-            style: .detented(.large, modally: false)
+            rootView: SubmitClaimCheckoutNoRepairScreenOld()
         ) {
             action in
             if case .navigationAction(.openCheckoutTransferringScreen) = action {
