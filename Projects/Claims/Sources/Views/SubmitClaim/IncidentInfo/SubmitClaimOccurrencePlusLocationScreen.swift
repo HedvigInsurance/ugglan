@@ -6,17 +6,15 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
 
     var body: some View {
-        LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
-            hForm {
-            }
-            .hFormTitle(.small, .customTitle, L10n.claimsLocatonOccuranceTitle)
-            .hDisableScroll
-            .hUseNewStyle
-            .hFormAttachToBottom {
-                VStack(spacing: 0) {
-                    displayFieldsAndNotice
-                    continueButton
-                }
+        hForm {
+        }
+        .hFormTitle(.small, .customTitle, L10n.claimsLocatonOccuranceTitle)
+        .hDisableScroll
+        .hUseNewStyle
+        .hFormAttachToBottom {
+            VStack(spacing: 0) {
+                displayFieldsAndNotice
+                continueButton
             }
         }
     }
@@ -70,7 +68,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
     @ViewBuilder
     private var continueButton: some View {
-        hButton.LargeButtonFilled {
+        LoadingButtonWithContent(.postDateOfOccurrenceAndLocation) {
             store.send(.dateOfOccurrenceAndLocationRequest)
         } content: {
             hText(L10n.generalContinueButton, style: .body)

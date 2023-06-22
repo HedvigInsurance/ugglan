@@ -9,43 +9,42 @@ public struct SubmitClaimSummaryScreen: View {
     public init() {}
 
     public var body: some View {
-        LoadingViewWithContent(.postSummary) {
-            hForm {
-                hSection {
-                    VStack(spacing: 8) {
-                        matter
-                        damageType
-                        damageDate
-                        place
-                        model
-                        dateOfPurchase
-                        purchasePrice
-                    }
-                }
-                .withHeader {
-                    HStack {
-                        L10n.changeAddressDetails.hTextNew(.body).foregroundColor(hLabelColorNew.primary)
-                    }
-                }
-                .sectionContainerStyle(.transparent)
-            }
-            .hFormAttachToBottom {
+        hForm {
+            hSection {
                 VStack(spacing: 8) {
-                    NoticeComponent(text: L10n.claimsComplementClaim)
-                    Group {
-                        hButton.LargeButtonFilled {
-                            store.send(.summaryRequest)
-                        } content: {
-                            hText(L10n.embarkSubmitClaim)
-                        }
-                        hButton.LargeButtonText {
-                            store.send(.navigationAction(action: .dismissScreen))
-                        } content: {
-                            hText(L10n.embarkGoBackButton)
-                        }
-                    }
-                    .padding([.leading, .trailing], 16)
+                    matter
+                    damageType
+                    damageDate
+                    place
+                    model
+                    dateOfPurchase
+                    purchasePrice
                 }
+            }
+            .withHeader {
+                HStack {
+                    L10n.changeAddressDetails.hTextNew(.body).foregroundColor(hLabelColorNew.primary)
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+        .hFormAttachToBottom {
+            VStack(spacing: 8) {
+                NoticeComponent(text: L10n.claimsComplementClaim)
+                Group {
+                    LoadingButtonWithContent(.postSummary) {
+                        store.send(.summaryRequest)
+                    } content: {
+                        hText(L10n.embarkSubmitClaim)
+                    }
+
+                    hButton.LargeButtonText {
+                        store.send(.navigationAction(action: .dismissScreen))
+                    } content: {
+                        hText(L10n.embarkGoBackButton)
+                    }
+                }
+                .padding([.leading, .trailing], 16)
             }
         }
         .hUseNewStyle

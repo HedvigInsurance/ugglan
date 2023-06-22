@@ -13,35 +13,32 @@ public struct SubmitClaimSingleItem: View {
     public init() {}
 
     public var body: some View {
-        LoadingViewWithContent(.postSingleItem) {
-            hForm {
-            }
-            .hUseNewStyle
-            .hFormTitle(.small, .customTitle, L10n.claimsSingleItemDetails)
-            .hFormAttachToBottom {
-                VStack(spacing: 8) {
-                    PresentableStoreLens(
-                        SubmitClaimStore.self,
-                        getter: { state in
-                            state.singleItemStep
-                        }
-                    ) { singleItemStep in
-                        displayBrandAndModelField(singleItemStep: singleItemStep)
-                        displayDateField(claim: singleItemStep)
-                        displayPurchasePriceField(claim: singleItemStep)
-                        displayDamageField(claim: singleItemStep)
-                        NoticeComponent(text: L10n.claimsSingleItemNoticeLabel)
+        hForm {
+        }
+        .hUseNewStyle
+        .hFormTitle(.small, .customTitle, L10n.claimsSingleItemDetails)
+        .hFormAttachToBottom {
+            VStack(spacing: 8) {
+                PresentableStoreLens(
+                    SubmitClaimStore.self,
+                    getter: { state in
+                        state.singleItemStep
                     }
-
-                    hButton.LargeButtonFilled {
-                        store.send(.singleItemRequest(purchasePrice: Double(purchasePrice)))
-                        UIApplication.dismissKeyboard()
-                    } content: {
-                        hText(L10n.generalContinueButton)
-                    }
-                    .padding([.leading, .trailing], 16)
-                    .padding(.bottom, 8)
+                ) { singleItemStep in
+                    displayBrandAndModelField(singleItemStep: singleItemStep)
+                    displayDateField(claim: singleItemStep)
+                    displayPurchasePriceField(claim: singleItemStep)
+                    displayDamageField(claim: singleItemStep)
+                    NoticeComponent(text: L10n.claimsSingleItemNoticeLabel)
                 }
+                LoadingButtonWithContent(.postSingleItem) {
+                    store.send(.singleItemRequest(purchasePrice: Double(purchasePrice)))
+                    UIApplication.dismissKeyboard()
+                } content: {
+                    hText(L10n.generalContinueButton)
+                }
+                .padding([.leading, .trailing], 16)
+                .padding(.bottom, 8)
             }
         }
     }

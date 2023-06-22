@@ -29,99 +29,98 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(.postAudioRecording) {
-            hForm {
-                PresentableStoreLens(
-                    SubmitClaimStore.self,
-                    getter: { state in
-                        state.audioRecordingStep
-                    }
-                ) { audioRecordingStep in
-                    ForEach(audioRecordingStep?.questions ?? [], id: \.self) { question in
-                        HStack {
-                            hTextNew(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                .foregroundColor(hLabelColorNew.primary)
-                        }
-                        .padding(16)
-                        .background(
-                            Squircle.default()
-                                .fill(hBackgroundColorNew.opaqueOne)
-                        )
-                        .padding(.leading, 16)
-                        .padding(.trailing, 88)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+        hForm {
+            PresentableStoreLens(
+                SubmitClaimStore.self,
+                getter: { state in
+                    state.audioRecordingStep
                 }
-            }
-            .hFormAttachToBottom {
-                ZStack(alignment: .bottom) {
-                    Group {
-                        if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
-                            VStack(spacing: 12) {
-                                TrackPlayer(audioPlayer: audioPlayer)
-                                    .hWithoutFootnote
-                                    .onAppear {
-                                        minutes = 0
-                                        seconds = 0
-                                    }
-                                hButton.LargeButtonFilled {
-                                    onSubmit(url)
-                                    store.send(.submitAudioRecording(audioURL: url))
-                                } content: {
-                                    hTextNew(L10n.saveAndContinueButtonLabel)
-                                }
-                                hButton.LargeButtonText {
-                                    withAnimation(.spring()) {
-                                        store.send(.resetAudioRecording)
-                                        audioRecorder.restart()
-                                    }
-                                } content: {
-                                    hTextNew(L10n.embarkRecordAgain)
-                                }
-                            }
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                            .onAppear {
-                                self.audioPlayer.url = url
-                            }
-                        } else {
-                            VStack(spacing: 0) {
-                                RecordButton(isRecording: audioRecorder.isRecording) {
-                                    if audioRecorder.isRecording {
-                                    } else {
-                                    }
-                                    withAnimation(.spring()) {
-                                        audioRecorder.toggleRecording()
-                                    }
-                                }
-                                .frame(height: audioRecorder.isRecording ? 144 : 72)
-                                .padding(.bottom, audioRecorder.isRecording ? 10 : 46)
-                                .transition(
-                                    .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
-                                )
-                                if !audioRecorder.isRecording {
-                                    hTextNew(L10n.claimsStartRecordingLabel, style: .body)
-                                        .foregroundColor(hLabelColorNew.primary)
-                                } else {
-                                    let minutesToString = String(format: "%02d", minutes)
-                                    let secondsToString = String(format: "%02d", seconds)
-                                    hTextNew("\(minutesToString):\(secondsToString)", style: .body)
-                                        .foregroundColor(hLabelColorNew.primary)
-                                        .onReceive(timer) { time in
-                                            if ((seconds % 59) == 0) && seconds != 0 {
-                                                minutes += 1
-                                                seconds = 0
-                                            } else {
-                                                seconds += 1
-                                            }
-                                        }
-                                }
-                            }
-                        }
+            ) { audioRecordingStep in
+                ForEach(audioRecordingStep?.questions ?? [], id: \.self) { question in
+                    HStack {
+                        hTextNew(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                            .foregroundColor(hLabelColorNew.primary)
                     }
                     .padding(16)
+                    .background(
+                        Squircle.default()
+                            .fill(hBackgroundColorNew.opaqueOne)
+                    )
+                    .padding(.leading, 16)
+                    .padding(.trailing, 88)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .environmentObject(audioRecorder)
             }
+        }
+        .hFormAttachToBottom {
+            ZStack(alignment: .bottom) {
+                Group {
+                    if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
+                        VStack(spacing: 12) {
+                            TrackPlayer(audioPlayer: audioPlayer)
+                                .hWithoutFootnote
+                                .onAppear {
+                                    minutes = 0
+                                    seconds = 0
+                                }
+                            LoadingButtonWithContent(.postAudioRecording) {
+                                onSubmit(url)
+                                store.send(.submitAudioRecording(audioURL: url))
+                            } content: {
+                                hTextNew(L10n.saveAndContinueButtonLabel)
+                            }
+
+                            hButton.LargeButtonText {
+                                withAnimation(.spring()) {
+                                    store.send(.resetAudioRecording)
+                                    audioRecorder.restart()
+                                }
+                            } content: {
+                                hTextNew(L10n.embarkRecordAgain)
+                            }
+                        }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .onAppear {
+                            self.audioPlayer.url = url
+                        }
+                    } else {
+                        VStack(spacing: 0) {
+                            RecordButton(isRecording: audioRecorder.isRecording) {
+                                if audioRecorder.isRecording {
+                                } else {
+                                }
+                                withAnimation(.spring()) {
+                                    audioRecorder.toggleRecording()
+                                }
+                            }
+                            .frame(height: audioRecorder.isRecording ? 144 : 72)
+                            .padding(.bottom, audioRecorder.isRecording ? 10 : 46)
+                            .transition(
+                                .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
+                            )
+                            if !audioRecorder.isRecording {
+                                hTextNew(L10n.claimsStartRecordingLabel, style: .body)
+                                    .foregroundColor(hLabelColorNew.primary)
+                            } else {
+                                let minutesToString = String(format: "%02d", minutes)
+                                let secondsToString = String(format: "%02d", seconds)
+                                hTextNew("\(minutesToString):\(secondsToString)", style: .body)
+                                    .foregroundColor(hLabelColorNew.primary)
+                                    .onReceive(timer) { time in
+                                        if ((seconds % 59) == 0) && seconds != 0 {
+                                            minutes += 1
+                                            seconds = 0
+                                        } else {
+                                            seconds += 1
+                                        }
+                                    }
+                            }
+                        }
+                    }
+                }
+                .padding(16)
+            }
+            .environmentObject(audioRecorder)
         }
         .hUseNewStyle
     }
