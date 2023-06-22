@@ -169,6 +169,16 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             }
         }()
 
+        if #available(iOS 16.0, *), options.contains(.bluredBackground) {
+            if let presentationController = presentationController as? BlurredSheetPresenationController {
+                presentationController.detents = [
+                    .custom(resolver: { context in
+                        return 0
+                    })
+                ]
+            }
+        }
+
         if options.contains(.unanimated) {
             PresentationStyle.Detent.set(
                 [
