@@ -76,7 +76,7 @@ public class ClaimJourneys {
                 } else if case .openUpdateAppScreen = navigationAction {
                     openUpdateAppTerminationScreenOld().withJourneyDismissButton
                 } else if case let .openDatePicker(type) = navigationAction {
-                    openDatePickerScreen(type: type)
+                    openDatePickerScreenOld(type: type)
                 }
             }
         }
@@ -123,6 +123,46 @@ public class ClaimJourneys {
     }
 
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
+        let screen = DatePickerScreen(type: type)
+        if type.shouldShowModally {
+            return HostingJourney(
+                SubmitClaimStore.self,
+                rootView: screen,
+                style: .detented(.scrollViewContentSize),
+                options: [
+                    .defaults
+                ]
+            ) {
+                action in
+                if case .setNewDate = action {
+                    PopJourney()
+                } else if case .setSingleItemPurchaseDate = action {
+                    PopJourney()
+                } else {
+                    getScreen(for: action)
+                }
+            }
+            .configureTitle(screen.title)
+            .withDismissButton
+        } else {
+            return HostingJourney(
+                SubmitClaimStore.self,
+                rootView: screen
+            ) {
+                action in
+                if case .setNewDate = action {
+                    PopJourney()
+                } else if case .setSingleItemPurchaseDate = action {
+                    PopJourney()
+                } else {
+                    getScreen(for: action)
+                }
+            }
+            .configureTitle(screen.title)
+        }
+    }
+
+    static func openDatePickerScreenOld(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
         let screen = DatePickerScreen(type: type)
         if type.shouldShowModally {
             return HostingJourney(
@@ -238,7 +278,8 @@ public class ClaimJourneys {
                     store.send(.navigationAction(action: .dismissScreen))
                 }
             ),
-            style: .detented(.scrollViewContentSize)
+            style: .detented(.scrollViewContentSize),
+            options: [.defaults, .wantsGrabber]
         ) {
             action in
             if case let .setItemBrand(brand) = action {
@@ -320,7 +361,8 @@ public class ClaimJourneys {
                 singleSelect: true,
                 showDividers: true
             ),
-            style: .detented(.scrollViewContentSize, modally: false)
+            style: .detented(.scrollViewContentSize, modally: false),
+            options: [.defaults, .wantsGrabber]
         ) {
             action in
             ContinueJourney()
