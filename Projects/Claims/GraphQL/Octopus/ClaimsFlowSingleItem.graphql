@@ -3,5 +3,8 @@ mutation FlowClaimSingleItemNext($input: FlowClaimSingleItemInput!, $context: Fl
     id
     ...FlowClaimFragment
     context
+    progress {
+        ...ProgressFragment
+    }
   }
 }

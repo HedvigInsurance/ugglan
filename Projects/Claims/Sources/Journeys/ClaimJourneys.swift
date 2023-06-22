@@ -89,6 +89,7 @@ public class ClaimJourneys {
         ) { action in
             getScreen(for: action)
         }
+        .resetProgressToPreviousValueOnDismiss
     }
 
     private static func submitClaimPhoneNumberScreenOld(
@@ -102,6 +103,7 @@ public class ClaimJourneys {
         }
     }
 
+    @JourneyBuilder
     static func submitClaimOccurrancePlusLocationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -110,6 +112,7 @@ public class ClaimJourneys {
             action in
             getScreen(for: action)
         }
+        .resetProgressToPreviousValueOnDismiss
     }
 
     static func submitClaimOccurrancePlusLocationScreenOld() -> some JourneyPresentation {
@@ -122,10 +125,11 @@ public class ClaimJourneys {
         }
     }
 
+    @JourneyBuilder
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
         let screen = DatePickerScreen(type: type)
         if type.shouldShowModally {
-            return HostingJourney(
+            HostingJourney(
                 SubmitClaimStore.self,
                 rootView: screen,
                 style: .detented(.scrollViewContentSize),
@@ -145,7 +149,7 @@ public class ClaimJourneys {
             .configureTitle(screen.title)
             .withDismissButton
         } else {
-            return HostingJourney(
+            HostingJourney(
                 SubmitClaimStore.self,
                 rootView: screen
             ) {
@@ -158,6 +162,7 @@ public class ClaimJourneys {
                     getScreen(for: action)
                 }
             }
+            .resetProgressToPreviousValueOnDismiss
             .configureTitle(screen.title)
         }
     }
@@ -243,6 +248,7 @@ public class ClaimJourneys {
                 getScreen(for: action)
             }
         }
+        .resetProgressToPreviousValueOnDismiss
     }
 
     static func openLocationScreenOld(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
@@ -479,6 +485,7 @@ public class ClaimJourneys {
         ) { action in
             getScreen(for: action)
         }
+        .resetProgressToPreviousValueOnDismiss
     }
 
     static func openAudioRecordingSceenOld() -> some JourneyPresentation {
@@ -522,6 +529,7 @@ public class ClaimJourneys {
         }
     }
 
+    @JourneyBuilder
     private static func openSingleItemScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -536,6 +544,7 @@ public class ClaimJourneys {
                 getScreen(for: action)
             }
         }
+        .resetProgressToPreviousValueOnDismiss
     }
 
     private static func openSummaryScreen() -> some JourneyPresentation {
@@ -550,6 +559,7 @@ public class ClaimJourneys {
                 getScreen(for: action)
             }
         }
+        .resetProgressToPreviousValueOnDismiss
     }
 
     private static func openSummaryScreenOld() -> some JourneyPresentation {
@@ -578,6 +588,7 @@ public class ClaimJourneys {
                 getScreenForAction(for: action)
             }
         }
+        .resetProgressToPreviousValueOnDismiss
     }
 
     private static func openCheckoutNoRepairScreenOld() -> some JourneyPresentation {
@@ -621,6 +632,7 @@ public class ClaimJourneys {
             action in
             getScreen(for: action)
         }
+        .resetProgressToPreviousValueOnDismiss
     }
 
     @JourneyBuilder
@@ -632,6 +644,7 @@ public class ClaimJourneys {
             rootView: LoadingViewWithContent([.fetchClaimEntrypointGroups, .startClaim]) {
                 SelectClaimEntrypointGroup(
                     selectedEntrypoints: { entrypoints in
+
                         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                         store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
 
@@ -656,8 +669,14 @@ public class ClaimJourneys {
                 getScreen(for: action)
             }
         }
+        .onPresent {
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+            store.send(.fetchEntrypointGroups)
+        }
+        .resetProgressToPreviousValueOnDismiss
         .hidesBackButton
         .withJourneyDismissButton
+        .addClaimsProgressBar
     }
 
     @JourneyBuilder
@@ -692,6 +711,7 @@ public class ClaimJourneys {
                 getScreen(for: action)
             }
         }
+        .resetProgressToPreviousValueOnDismiss
         .showsBackButton
         .withJourneyDismissButton
     }
@@ -717,6 +737,7 @@ public class ClaimJourneys {
         ) { action in
             getScreen(for: action)
         }
+        .resetProgressToPreviousValueOnDismiss
         .withJourneyDismissButton
     }
 
@@ -786,5 +807,15 @@ extension JourneyPresentation {
             andCancelText: L10n.General.no,
             andConfirmText: L10n.General.yes
         )
+    }
+}
+
+extension JourneyPresentation {
+    var resetProgressToPreviousValueOnDismiss: some JourneyPresentation {
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+        let previousProgress = store.state.previousProgress
+        return self.onDismiss {
+            store.send(.setProgress(progress: previousProgress))
+        }
     }
 }

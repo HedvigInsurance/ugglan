@@ -14,7 +14,6 @@ public struct SelectClaimEntrypointGroup: View {
         selectedEntrypoints: @escaping ([ClaimEntryPointResponseModel]) -> Void
     ) {
         self.selectedEntrypoints = selectedEntrypoints
-        store.send(.fetchEntrypointGroups)
     }
 
     public var body: some View {
