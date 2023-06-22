@@ -308,7 +308,6 @@ struct ShowTagList: View {
         } else {
             Squircle.default()
                 .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentBlack100)
-                .hShadow()
         }
     }
 }
