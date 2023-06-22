@@ -82,7 +82,6 @@ extension AppJourney {
                 ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
             }
         }
-        .withJourneyDismissButton
     }
 
     @JourneyBuilder
