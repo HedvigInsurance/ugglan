@@ -346,6 +346,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
         case let .setSelectedEntrypointId(entrypointId):
             newState.entrypoints.selectedEntrypointId = entrypointId
         case let .setProgress(progress):
+            newState.previousProgress = newState.progress
             newState.progress = progress
         default:
             break
