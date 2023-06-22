@@ -45,9 +45,12 @@ extension DefaultStyling {
             NSAttributedString.Key.font: Fonts.fontFor(style: .largeTitle),
         ]
 
+        let backImage = hCoreUIAssets.backButton.image.withAlignmentRectInsets(
+            UIEdgeInsets(top: 0, left: -6, bottom: 0, right: 0)
+        )
         appearance.setBackIndicatorImage(
-            hCoreUIAssets.backButton.image,
-            transitionMaskImage: hCoreUIAssets.backButton.image
+            backImage,
+            transitionMaskImage: backImage
         )
         appearance.backButtonAppearance.normal.titleTextAttributes = [
             .foregroundColor: UIColor.clear
