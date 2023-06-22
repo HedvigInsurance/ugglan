@@ -24,7 +24,6 @@ public struct SelectClaimEntrypointGroup: View {
             .hUseNewStyle
             .hFormTitle(.small, .customTitle, L10n.claimTriagingNavigationTitle)
             .hDisableScroll
-            .hUseBlur
             .hFormAttachToBottom {
                 PresentableStoreLens(
                     SubmitClaimStore.self,
@@ -82,7 +81,6 @@ struct SelectClaimEntrypointType: View {
         .hUseNewStyle
         .hFormTitle(.small, .customTitle, L10n.claimsTriagingWhatHappenedTitle)
         .hDisableScroll
-        .hUseBlur
         .hFormAttachToBottom {
 
             PresentableStoreLens(
@@ -163,7 +161,6 @@ struct SelectClaimEntrypointOption: View {
         .hUseNewStyle
         .hFormTitle(.small, .customTitle, L10n.claimsTriagingWhatItemTitle)
         .hDisableScroll
-        .hUseBlur
         .hFormAttachToBottom {
             PresentableStoreLens(
                 SubmitClaimStore.self,
@@ -230,7 +227,7 @@ struct ShowTagList: View {
             showNotValid
             TagList(tags: tagsToShow) { tag in
                 if showTags {
-                    HStack {
+                    HStack(spacing: 0) {
                         hTextNew(tag, style: .body)
                             .foregroundColor(hLabelColorNew.primary)
                             .lineLimit(1)
@@ -262,6 +259,8 @@ struct ShowTagList: View {
                                 .delay(Double.random(in: 0.3...0.6))
                         )
                     )
+                    .padding([.horizontal, .vertical], -5)
+                    .padding([.trailing, .top], 8)
                 }
             }
             hButton.LargeButtonFilled {
@@ -277,7 +276,6 @@ struct ShowTagList: View {
             } content: {
                 hTextNew(L10n.generalContinueButton, style: .body)
             }
-            .padding(.bottom, 32)
         }
         .padding([.leading, .trailing], 16)
         .onAppear {
@@ -310,6 +308,7 @@ struct ShowTagList: View {
         } else {
             Squircle.default()
                 .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentBlack100)
+                .hShadow()
         }
     }
 }
