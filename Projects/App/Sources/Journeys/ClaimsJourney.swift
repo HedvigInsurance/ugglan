@@ -64,7 +64,8 @@ extension AppJourney {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: HonestyPledge.journey(from: origin),
-            style: .detented(.scrollViewContentSize, bgColor: nil)
+            style: .detented(.scrollViewContentSize, bgColor: nil),
+            options: [.defaults, .bluredBackground]
         ) { action in
             if case let .navigationAction(navigationAction) = action {
                 if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
@@ -82,6 +83,7 @@ extension AppJourney {
                 ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
             }
         }
+        .withJourneyDismissButton
     }
 
     @JourneyBuilder
