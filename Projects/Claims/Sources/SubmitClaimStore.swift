@@ -299,8 +299,10 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             case let .setFailedStep(model):
                 newState.failedStep = model
                 send(.navigationAction(action: .openFailureSceen))
+                newState.progress = nil
             case let .setSuccessStep(model):
                 newState.successStep = model
+                newState.progress = nil
                 send(.navigationAction(action: .openSuccessScreen))
             case let .setAudioStep(model):
                 newState.audioRecordingStep = model
@@ -335,10 +337,12 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.loadingStates[.postSummary] = .loading
         case .singleItemCheckoutRequest:
             newState.loadingStates[.postSingleItemCheckout] = .loading
+            newState.progress = nil
         case .fetchClaimEntrypointsForSelection:
             newState.loadingStates[.fetchClaimEntrypoints] = .loading
         case .fetchEntrypointGroups:
             newState.loadingStates[.fetchClaimEntrypointGroups] = .loading
+            newState.progress = nil
         case let .setSelectedEntrypoints(entrypoints):
             newState.entrypoints.selectedEntrypoints = entrypoints
         case let .setSelectedEntrypointOptions(entrypointOptions):

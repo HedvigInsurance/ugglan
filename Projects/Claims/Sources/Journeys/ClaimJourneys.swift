@@ -669,6 +669,10 @@ public class ClaimJourneys {
                 getScreen(for: action)
             }
         }
+        .onPresent {
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+            store.send(.fetchEntrypointGroups)
+        }
         .resetProgressToPreviousValueOnDismiss
         .hidesBackButton
         .withJourneyDismissButton

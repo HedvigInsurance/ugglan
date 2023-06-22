@@ -1,3 +1,4 @@
+import Combine
 import Flow
 import Foundation
 import Presentation
@@ -10,9 +11,14 @@ import hGraphQL
 
 public struct Claims {
     @PresentableStore var store: ClaimsStore
-    let pollTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
+    let pollTimer: Publishers.Autoconnect<Timer.TimerPublisher>
 
-    public init() {}
+    public init() {
+        let store: ClaimsStore = globalPresentableStoreContainer.get()
+        let count = store.state.claims?.count ?? 1
+        let refreshOn = min(count * 5, 20)
+        pollTimer = Timer.publish(every: TimeInterval(refreshOn), on: .main, in: .common).autoconnect()
+    }
 }
 
 extension Claims: View {
