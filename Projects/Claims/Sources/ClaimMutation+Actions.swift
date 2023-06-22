@@ -82,13 +82,15 @@ extension GraphQLMutation {
                         callback(.value(.setNewClaimId(with: data.getStepId())))
                     }
                     callback(.value(.setNewClaimContext(context: data.getContext())))
-                    if data.getProgress().clearedSteps != 0 {
-                        let clearedSteps = data.getProgress().clearedSteps
+                    if let clearedSteps = data.getProgress().clearedSteps,
                         let totalSteps = data.getProgress().totalSteps
-                        let progressValue = Float(Float(clearedSteps) / Float(totalSteps))
-                        callback(.value(.setProgress(progress: Float(progressValue))))
-                    } else {
-                        callback(.value(.setProgress(progress: 0)))
+                    {
+                        if clearedSteps != 0 {
+                            let progressValue = Float(Float(clearedSteps) / Float(totalSteps))
+                            callback(.value(.setProgress(progress: Float(progressValue))))
+                        } else {
+                            callback(.value(.setProgress(progress: 0)))
+                        }
                     }
                     callback(.value(data[keyPath: keyPath].into()))
                     callback(.value(.setLoadingState(action: self.getLoadingType(), state: nil)))
@@ -117,7 +119,7 @@ protocol ClaimStepContext {
 }
 
 protocol ClaimStepProgress {
-    func getProgress() -> (clearedSteps: Int, totalSteps: Int)
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?)
 }
 
 extension OctopusGraphQL.FlowClaimStartMutation.Data: ClaimStepContext, ClaimStepProgress, ClaimStepId {
@@ -125,7 +127,7 @@ extension OctopusGraphQL.FlowClaimStartMutation.Data: ClaimStepContext, ClaimSte
         return self.flowClaimStart.context
     }
 
-    func getProgress() -> (clearedSteps: Int, totalSteps: Int) {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
             clearedSteps: self.flowClaimStart.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimStart.progress?.totalSteps ?? 0
@@ -186,7 +188,7 @@ extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation.Data: ClaimStep
 }
 
 extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data: ClaimStepProgress {
-    func getProgress() -> (clearedSteps: Int, totalSteps: Int) {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
             clearedSteps: self.flowClaimDateOfOccurrencePlusLocationNext.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimDateOfOccurrencePlusLocationNext.progress?.totalSteps ?? 0
@@ -195,7 +197,7 @@ extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data:
 }
 
 extension OctopusGraphQL.FlowClaimAudioRecordingNextMutation.Data: ClaimStepProgress {
-    func getProgress() -> (clearedSteps: Int, totalSteps: Int) {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
             clearedSteps: self.flowClaimAudioRecordingNext.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimAudioRecordingNext.progress?.totalSteps ?? 0
@@ -204,7 +206,7 @@ extension OctopusGraphQL.FlowClaimAudioRecordingNextMutation.Data: ClaimStepProg
 }
 
 extension OctopusGraphQL.FlowClaimPhoneNumberNextMutation.Data: ClaimStepProgress {
-    func getProgress() -> (clearedSteps: Int, totalSteps: Int) {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
             clearedSteps: self.flowClaimPhoneNumberNext.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimPhoneNumberNext.progress?.totalSteps ?? 0
@@ -213,7 +215,7 @@ extension OctopusGraphQL.FlowClaimPhoneNumberNextMutation.Data: ClaimStepProgres
 }
 
 extension OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation.Data: ClaimStepProgress {
-    func getProgress() -> (clearedSteps: Int, totalSteps: Int) {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
             clearedSteps: self.flowClaimDateOfOccurrenceNext.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimDateOfOccurrenceNext.progress?.totalSteps ?? 0
@@ -222,7 +224,7 @@ extension OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation.Data: ClaimStepPr
 }
 
 extension OctopusGraphQL.FlowClaimLocationNextMutation.Data: ClaimStepProgress {
-    func getProgress() -> (clearedSteps: Int, totalSteps: Int) {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
             clearedSteps: self.flowClaimLocationNext.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimLocationNext.progress?.totalSteps ?? 0
@@ -231,7 +233,7 @@ extension OctopusGraphQL.FlowClaimLocationNextMutation.Data: ClaimStepProgress {
 }
 
 extension OctopusGraphQL.FlowClaimSingleItemNextMutation.Data: ClaimStepProgress {
-    func getProgress() -> (clearedSteps: Int, totalSteps: Int) {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
             clearedSteps: self.flowClaimSingleItemNext.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimSingleItemNext.progress?.totalSteps ?? 0
@@ -240,7 +242,7 @@ extension OctopusGraphQL.FlowClaimSingleItemNextMutation.Data: ClaimStepProgress
 }
 
 extension OctopusGraphQL.FlowClaimSummaryNextMutation.Data: ClaimStepProgress {
-    func getProgress() -> (clearedSteps: Int, totalSteps: Int) {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
             clearedSteps: self.flowClaimSummaryNext.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimSummaryNext.progress?.totalSteps ?? 0
@@ -249,7 +251,7 @@ extension OctopusGraphQL.FlowClaimSummaryNextMutation.Data: ClaimStepProgress {
 }
 
 extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation.Data: ClaimStepProgress {
-    func getProgress() -> (clearedSteps: Int, totalSteps: Int) {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
         return (
             clearedSteps: self.flowClaimSingleItemCheckoutNext.progress?.clearedSteps ?? 0,
             totalSteps: self.flowClaimSingleItemCheckoutNext.progress?.totalSteps ?? 0
