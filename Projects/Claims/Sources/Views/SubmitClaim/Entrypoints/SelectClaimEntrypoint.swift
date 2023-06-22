@@ -225,7 +225,7 @@ struct ShowTagList: View {
     var body: some View {
         VStack(spacing: 16) {
             showNotValid
-            TagList(tags: tagsToShow) { tag in
+            TagList(tags: tagsToShow, horizontalSpacing: 4, verticalSpacing: 4) { tag in
                 if showTags {
                     HStack(spacing: 0) {
                         hTextNew(tag, style: .body)
@@ -249,7 +249,7 @@ struct ShowTagList: View {
                         let generator = UIImpactFeedbackGenerator(style: .soft)
                         generator.impactOccurred()
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 12)  // 16 - tag list horizontal spacing
                     .padding(.vertical, 8)
                     .background(getColorAndShadow(claimId: tag))
                     .scaleEffect(animate && selection == tag ? scaleSize : 1)
@@ -259,8 +259,6 @@ struct ShowTagList: View {
                                 .delay(Double.random(in: 0.3...0.6))
                         )
                     )
-                    .padding([.horizontal, .vertical], -5)
-                    .padding([.trailing, .top], 8)
                 }
             }
             hButton.LargeButtonFilled {
