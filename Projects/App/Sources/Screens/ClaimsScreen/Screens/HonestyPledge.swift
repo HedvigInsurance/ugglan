@@ -184,10 +184,11 @@ struct SlideToConfirm: View {
 
 struct HonestyPledge: View {
     @Environment(\.hUseNewStyle) var hUseNewStyle
-    let onConfirmAction: (() -> Void)?
+    @State var viewController: UIViewController?
+    let onConfirmAction: ((UIViewController?) -> Void)?
 
     init(
-        onConfirmAction: (() -> Void)?
+        onConfirmAction: ((UIViewController?) -> Void)?
     ) {
         self.onConfirmAction = onConfirmAction
     }
@@ -206,9 +207,12 @@ struct HonestyPledge: View {
                 }
                 .padding(.bottom, hUseNewStyle ? 32 : 20)
 
-                SlideToConfirm(onConfirmAction: onConfirmAction)
-                    .frame(maxHeight: 50)
-                    .padding(.bottom, 20)
+                SlideToConfirm(onConfirmAction: {
+                    onConfirmAction?(self.viewController)
+                })
+                .frame(maxHeight: 50)
+                .padding(.bottom, 20)
+
                 if hUseNewStyle {
                     hButton.LargeButtonText {
                         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -224,7 +228,12 @@ struct HonestyPledge: View {
             .padding(.horizontal, hUseNewStyle ? 24 : 15)
             .fixedSize(horizontal: false, vertical: true)
         }
+        .introspectViewController { viewController in
+            weak var weakVC = viewController
+            self.viewController = weakVC
+        }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
+
     }
 }
 
@@ -254,7 +263,7 @@ extension HonestyPledge {
     @ViewBuilder
     static func journey(from origin: ClaimsOrigin) -> some View {
         if hAnalyticsExperiment.claimsTriaging {
-            HonestyPledge {
+            HonestyPledge { vc in
                 let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                 if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -262,12 +271,17 @@ extension HonestyPledge {
                 } else {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
+                    if #available(iOS 15.0, *) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                            vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
+                        }
+                    }
                 }
             }
             .hUseNewStyle
             .hDisableScroll
         } else {
-            HonestyPledge {
+            HonestyPledge { _ in
                 let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
                 if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
