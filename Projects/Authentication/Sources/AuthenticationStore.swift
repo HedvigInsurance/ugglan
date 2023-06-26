@@ -152,7 +152,10 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         log.error(
                             "LOGIN FAILED",
                             error: NSError(domain: result.message, code: 1000),
-                            attributes: ["message": result.message]
+                            attributes: [
+                                "message": result.message,
+                                "statusUrl": statusUrl.absoluteString,
+                            ]
                         )
                         callbacker(.failed)
                     } else if let pendingResult = result as? LoginStatusResultPending {

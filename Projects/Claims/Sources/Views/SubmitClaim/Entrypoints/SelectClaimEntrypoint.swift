@@ -17,7 +17,7 @@ public struct SelectClaimEntrypointGroup: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(.fetchClaimEntrypoints) {
+        LoadingViewWithContent([.fetchClaimEntrypoints]) {
             hForm {
             }
             .hUseNewStyle
@@ -260,7 +260,7 @@ struct ShowTagList: View {
                     )
                 }
             }
-            hButton.LargeButtonFilled {
+            LoadingButtonWithContent(.startClaim) {
                 if selection != nil && selection != "" {
                     notValid = false
                     onButtonClick()

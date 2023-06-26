@@ -44,59 +44,57 @@ public struct DatePickerScreen: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(.postDateOfOccurrence) {
-            hForm {
-                hSection {
-                    DatePicker(
-                        L10n.Claims.Item.Screen.Date.Of.Incident.button,
-                        selection: self.$dateOfOccurrence,
-                        in: ...maxDate,
-                        displayedComponents: [.date]
-                    )
-                    .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
-                    .datePickerStyle(.graphical)
-                    .padding([.leading, .trailing], 16)
-                    .padding([.top], 5)
-                }
+        hForm {
+            hSection {
+                DatePicker(
+                    L10n.Claims.Item.Screen.Date.Of.Incident.button,
+                    selection: self.$dateOfOccurrence,
+                    in: ...maxDate,
+                    displayedComponents: [.date]
+                )
+                .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
+                .datePickerStyle(.graphical)
+                .padding([.leading, .trailing], 16)
+                .padding([.top], 5)
             }
-            .hFormAttachToBottom {
-                VStack {
-                    hButton.LargeButtonFilled {
-                        let action: SubmitClaimsAction = {
-                            switch type {
-                            case .setDateOfOccurrence:
-                                return .setNewDate(dateOfOccurrence: dateOfOccurrence.localDateString)
-                            case .submitDateOfOccurence:
-                                return .dateOfOccurrenceRequest(dateOfOccurrence: dateOfOccurrence)
-                            case .setDateOfPurchase:
-                                return .setSingleItemPurchaseDate(purchaseDate: dateOfOccurrence)
-                            }
-                        }()
-                        store.send(action)
-                    } content: {
-                        hText(buttonTitle, style: .body)
-                            .foregroundColor(hLabelColor.primary.inverted)
-                    }
-                    .padding([.leading, .trailing], 16)
-
-                    hButton.LargeButtonText {
-                        let action: SubmitClaimsAction = {
-                            switch type {
-                            case .setDateOfOccurrence:
-                                return .setNewDate(dateOfOccurrence: nil)
-                            case .submitDateOfOccurence:
-                                return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
-                            case .setDateOfPurchase:
-                                return .setSingleItemPurchaseDate(purchaseDate: nil)
-                            }
-                        }()
-                        store.send(action)
-                    } content: {
-                        hText(L10n.generalNotSure, style: .body)
-                            .foregroundColor(hLabelColor.primary)
-                    }
-                    .padding([.leading, .trailing], 16)
+        }
+        .hFormAttachToBottom {
+            VStack {
+                LoadingButtonWithContent(.postDateOfOccurrence) {
+                    let action: SubmitClaimsAction = {
+                        switch type {
+                        case .setDateOfOccurrence:
+                            return .setNewDate(dateOfOccurrence: dateOfOccurrence.localDateString)
+                        case .submitDateOfOccurence:
+                            return .dateOfOccurrenceRequest(dateOfOccurrence: dateOfOccurrence)
+                        case .setDateOfPurchase:
+                            return .setSingleItemPurchaseDate(purchaseDate: dateOfOccurrence)
+                        }
+                    }()
+                    store.send(action)
+                } content: {
+                    hText(buttonTitle, style: .body)
+                        .foregroundColor(hLabelColor.primary.inverted)
                 }
+                .padding([.leading, .trailing], 16)
+
+                LoadingButtonWithContent(.postDateOfOccurrence) {
+                    let action: SubmitClaimsAction = {
+                        switch type {
+                        case .setDateOfOccurrence:
+                            return .setNewDate(dateOfOccurrence: nil)
+                        case .submitDateOfOccurence:
+                            return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
+                        case .setDateOfPurchase:
+                            return .setSingleItemPurchaseDate(purchaseDate: nil)
+                        }
+                    }()
+                    store.send(action)
+                } content: {
+                    hText(L10n.generalNotSure, style: .body)
+                        .foregroundColor(hLabelColor.primary)
+                }
+                .padding([.leading, .trailing], 16)
             }
         }
     }
