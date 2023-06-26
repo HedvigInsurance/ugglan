@@ -152,12 +152,13 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     ) -> UIPresentationController? {
 
         let presentationController: UIPresentationController = {
-            if #available(iOS 15.0, *), options.contains(.blurredBackground) {
-                return BlurredSheetPresenationController(
+            if #available(iOS 15.0, *) {
+                let presentationController = BlurredSheetPresenationController(
                     presentedViewController: presented,
                     presenting: presenting,
                     useBlur: options.contains(.blurredBackground)
                 )
+                return presentationController
             } else {
                 let key = ["_", "U", "I", "Sheet", "Presentation", "Controller"]
                 let sheetPresentationController = NSClassFromString(key.joined()) as! UIPresentationController.Type
@@ -705,6 +706,8 @@ class BlurredSheetPresenationController: UISheetPresentationController {
         effectView = useBlur ? UIVisualEffectView(effect: UIBlurEffect(style: .regular)) : nil
         effectView?.clipsToBounds = true
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        self.presentedViewController.view.layer.cornerRadius = 16
+        self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
     }
 
     override func presentationTransitionWillBegin() {
