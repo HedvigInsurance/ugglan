@@ -34,7 +34,6 @@ struct CheckboxPickerScreen<T>: View {
                     getCellWithoutDivider(item: item)
                     getCellWithDivider(item: item)
                 }
-                .hWithoutShadow
             }
         }
         .hUseNewStyle

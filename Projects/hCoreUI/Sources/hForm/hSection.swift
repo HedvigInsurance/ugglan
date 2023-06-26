@@ -77,12 +77,12 @@ extension View {
 
 public enum hSectionContainerStyle {
     case transparent
-    case opaque(useNewDesign: Bool, withoutShadow: Bool)
+    case opaque(useNewDesign: Bool)
     case caution(useNewDesign: Bool)
 }
 
 private struct EnvironmentHSectionContainerStyle: EnvironmentKey {
-    static let defaultValue = hSectionContainerStyle.opaque(useNewDesign: false, withoutShadow: false)
+    static let defaultValue = hSectionContainerStyle.opaque(useNewDesign: false)
 }
 
 extension EnvironmentValues {
@@ -98,8 +98,8 @@ extension hSectionContainerStyle: ViewModifier {
         switch self {
         case .transparent:
             content
-        case let .opaque(useNewStyle, withoutShadow):
-            if withoutShadow {
+        case let .opaque(useNewStyle):
+            if useNewStyle {
                 content.background(
                     getOpaqueBackground(useNewStyle: useNewStyle)
                 )
@@ -157,23 +157,6 @@ extension View {
     }
 }
 
-private struct EnvironmentHWithoutShadow: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hWithoutShadow: Bool {
-        get { self[EnvironmentHWithoutShadow.self] }
-        set { self[EnvironmentHWithoutShadow.self] = newValue }
-    }
-}
-
-extension View {
-    public var hWithoutShadow: some View {
-        self.environment(\.hWithoutShadow, true)
-    }
-}
-
 extension View {
     /// set section container style
     public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
@@ -184,7 +167,6 @@ extension View {
 struct hSectionContainer<Content: View>: View {
     @Environment(\.hSectionContainerStyle) var containerStyle
     @Environment(\.hUseNewStyle) var useNewStyle
-    @Environment(\.hWithoutShadow) var hWithoutShadow
     var content: Content
 
     init(
@@ -209,7 +191,7 @@ struct hSectionContainer<Content: View>: View {
         case .caution:
             return .caution(useNewDesign: useNewStyle)
         case .opaque:
-            return .opaque(useNewDesign: useNewStyle, withoutShadow: hWithoutShadow)
+            return .opaque(useNewDesign: useNewStyle)
         case .transparent:
             return .transparent
         }
