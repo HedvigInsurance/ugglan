@@ -152,11 +152,11 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     ) -> UIPresentationController? {
 
         let presentationController: UIPresentationController = {
-            if #available(iOS 15.0, *), options.contains(.bluredBackground) {
+            if #available(iOS 15.0, *), options.contains(.blurredBackground) {
                 return BlurredSheetPresenationController(
                     presentedViewController: presented,
                     presenting: presenting,
-                    useBlur: options.contains(.bluredBackground)
+                    useBlur: options.contains(.blurredBackground)
                 )
             } else {
                 let key = ["_", "U", "I", "Sheet", "Presentation", "Controller"]
@@ -169,7 +169,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             }
         }()
 
-        if #available(iOS 16.0, *), options.contains(.bluredBackground) {
+        if #available(iOS 16.0, *), options.contains(.blurredBackground) {
             if let presentationController = presentationController as? BlurredSheetPresenationController {
                 presentationController.detents = [
                     .custom(resolver: { context in
@@ -238,7 +238,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 extension PresentationOptions {
     // adds a grabber to DetentedModals
     public static let wantsGrabber = PresentationOptions()
-    public static let bluredBackground = PresentationOptions()
+    public static let blurredBackground = PresentationOptions()
 }
 
 extension UIViewController {
@@ -702,7 +702,7 @@ class BlurredSheetPresenationController: UISheetPresentationController {
         presenting presentingViewController: UIViewController?,
         useBlur: Bool
     ) {
-        effectView = useBlur ? UIVisualEffectView(effect: UIBlurEffect(style: .light)) : nil
+        effectView = useBlur ? UIVisualEffectView(effect: UIBlurEffect(style: .regular)) : nil
         effectView?.clipsToBounds = true
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
     }
@@ -727,9 +727,8 @@ class BlurredSheetPresenationController: UISheetPresentationController {
         super.dismissalTransitionWillBegin()
 
         presentedViewController.transitionCoordinator?
-            .animate(alongsideTransition: { [weak self] _ in
+            .animate(alongsideTransition: { [weak self] context in
                 guard let self = self else { return }
-                self.presentedView?.layer.cornerRadius = .zero
                 self.effectView?.alpha = 0
             })
     }
