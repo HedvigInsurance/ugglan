@@ -93,7 +93,7 @@ public enum AuthenticationAction: ActionProtocol {
     case logout
     case logoutSuccess
     case logoutFailure
-    case loginFailure
+    case loginFailure(message: String?)
     case observeLoginStatus(url: URL)
     case otpStateAction(action: OTPStateAction)
     case seBankIDStateAction(action: SEBankIDStateAction)
@@ -104,7 +104,7 @@ public enum AuthenticationAction: ActionProtocol {
 enum LoginStatus: Equatable {
     case pending(statusMessage: String?)
     case completed(code: String)
-    case failed
+    case failed(message: String?)
     case unknown
 }
 
@@ -149,15 +149,16 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         )
                         callbacker(.completed(code: completedResult.authorizationCode.code))
                     } else if let result = result as? LoginStatusResultFailed {
+                        let message = result.message
                         log.error(
                             "LOGIN FAILED",
-                            error: NSError(domain: result.message, code: 1000),
+                            error: NSError(domain: message, code: 1000),
                             attributes: [
-                                "message": result.message,
+                                "message": message,
                                 "statusUrl": statusUrl.absoluteString,
                             ]
                         )
-                        callbacker(.failed)
+                        callbacker(.failed(message: message))
                     } else if let pendingResult = result as? LoginStatusResultPending {
                         callbacker(.pending(statusMessage: pendingResult.statusMessage))
                     } else {
@@ -351,8 +352,8 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
                         if case let .completed(code) = loginStatus {
                             callbacker(.value(.exchange(code: code)))
                             callbacker(.end)
-                        } else if loginStatus == .failed {
-                            callbacker(.value(.loginFailure))
+                        } else if case let .failed(message) = loginStatus {
+                            callbacker(.value(.loginFailure(message: message)))
                             callbacker(.end(LoginError.failed))
                         }
                     }

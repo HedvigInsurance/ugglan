@@ -141,14 +141,13 @@ extension BankIDLoginQR: Presentable {
                     }
                 )
 
-                bag += store.onAction(
-                    .loginFailure,
-                    {
+                bag += store.actionSignal.onValue { action in
+                    if case let .loginFailure(message) = action {
                         guard viewController.navigationController?.viewControllers.count ?? 0 <= 2 else {
                             return
                         }
                         let alert = Alert<Void>(
-                            title: L10n.bankidUserCancelTitle,
+                            title: message ?? L10n.bankidUserCancelTitle,
                             actions: [
                                 .init(
                                     title: L10n.generalRetry,
@@ -170,7 +169,7 @@ extension BankIDLoginQR: Presentable {
                             alert
                         )
                     }
-                )
+                }
 
                 bag += moreBarButtonItem.onValue { _ in
                     let alert = Alert<Void>(actions: [
