@@ -52,7 +52,7 @@ struct CheckboxPickerScreen<T>: View {
                         }
                     }
                 } content: {
-                    hText(L10n.generalContinueButton)
+                    hText(L10n.generalSaveButton)
                 }
                 hButton.LargeButtonText {
                     onCancel()
@@ -61,6 +61,7 @@ struct CheckboxPickerScreen<T>: View {
                 }
             }
             .padding([.leading, .trailing], 16)
+            .padding(.top, 11)
         }
         .onAppear {
             preSelectedItems()?
