@@ -68,7 +68,21 @@ extension AppJourney {
         ) { action in
             if case let .navigationAction(navigationAction) = action {
                 if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
-                    DismissJourney()
+                    if hAnalyticsExperiment.claimsTriaging {
+                        ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                            .onAction(SubmitClaimStore.self) { action in
+                                if case .dissmissNewClaimFlow = action {
+                                    DismissJourney()
+                                }
+                            }
+                    } else {
+                        ClaimJourneys.showClaimEntrypointsOld(origin: origin)
+                            .onAction(SubmitClaimStore.self) { action in
+                                if case .dissmissNewClaimFlow = action {
+                                    DismissJourney()
+                                }
+                            }
+                    }
                 } else if case .openNotificationsPermissionScreen = navigationAction {
                     AskForPushnotifications.journey(for: origin)
                 } else if case .openNewTriagingScreen = navigationAction {
