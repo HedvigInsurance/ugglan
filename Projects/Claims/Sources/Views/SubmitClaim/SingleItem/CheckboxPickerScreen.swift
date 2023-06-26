@@ -38,7 +38,7 @@ struct CheckboxPickerScreen<T>: View {
         }
         .hUseNewStyle
         .hFormAttachToBottom {
-            VStack(spacing: 0) {
+            VStack(spacing: 8) {
                 hButton.LargeButtonFilled {
                     if selectedItems.count > 1 {
                         var itemArr: [T] = []
@@ -52,7 +52,7 @@ struct CheckboxPickerScreen<T>: View {
                         }
                     }
                 } content: {
-                    hText(L10n.generalContinueButton)
+                    hText(L10n.generalSaveButton)
                 }
                 hButton.LargeButtonText {
                     onCancel()
@@ -61,6 +61,7 @@ struct CheckboxPickerScreen<T>: View {
                 }
             }
             .padding([.leading, .trailing], 16)
+            .padding(.top, 11)
         }
         .onAppear {
             preSelectedItems()?

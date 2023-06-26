@@ -108,10 +108,20 @@ public struct CommonClaimsView: View {
             .noSpacing()
         }
         .withHeader {
-            hText(
-                L10n.claimsQuickChoiceHeader,
-                style: .title2
-            )
+            PresentableStoreLens(
+                ClaimsStore.self,
+                getter: { state in
+                    return state.getRecommendedForYou
+                },
+                setter: { _ in
+                    .fetchCommonClaims
+                }
+            ) { commonClaims, _ in
+                hText(
+                    commonClaims.isEmpty ? "" : L10n.claimsQuickChoiceHeader,
+                    style: .title2
+                )
+            }
         }
         .sectionContainerStyle(.transparent)
         .onAppear {

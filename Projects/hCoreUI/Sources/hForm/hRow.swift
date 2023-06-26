@@ -28,7 +28,7 @@ struct RowButtonStyle: SwiftUI.ButtonStyle {
             .background(
                 configuration.isPressed
                     ? (hUseNewStyle
-                        ? Color(UIColor.brandNew(.primaryBackground(true))).opacity(0.1)
+                        ? Color.clear
                         : Color(UIColor.brand(.primaryBackground(true))).opacity(0.1))
                     : Color.clear
             )
