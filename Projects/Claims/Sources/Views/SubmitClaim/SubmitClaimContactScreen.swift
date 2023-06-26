@@ -16,7 +16,7 @@ public struct SubmitClaimContactScreen: View {
         hForm {}
             .hFormTitle(.small, .customTitle, L10n.claimsConfirmNumberTitle)
             .hFormAttachToBottom {
-                VStack(spacing: 24) {
+                VStack(spacing: 16) {
                     hSection {
                         hFloatingTextField(
                             masking: Masking(type: .digits),
@@ -34,8 +34,7 @@ public struct SubmitClaimContactScreen: View {
                         hTextNew(L10n.saveAndContinueButtonLabel, style: .body)
                     }
                     .frame(maxWidth: .infinity, alignment: .bottom)
-                    .padding([.leading, .trailing], 16)
-                    .padding(.bottom, 24)
+                    .padding(.horizontal, 16)
                 }
             }
 
