@@ -38,7 +38,7 @@ struct CheckboxPickerScreen<T>: View {
         }
         .hUseNewStyle
         .hFormAttachToBottom {
-            VStack(spacing: 0) {
+            VStack(spacing: 8) {
                 hButton.LargeButtonFilled {
                     if selectedItems.count > 1 {
                         var itemArr: [T] = []
