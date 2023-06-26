@@ -65,7 +65,7 @@ struct TravelInsuranceContractsScreen: View {
                 store.send(.setTravelInsuranceData(specification: item))
             }
         }
-        .sectionContainerStyle(.opaque(useNewDesign: true))
+        .sectionContainerStyle(.opaque(useNewDesign: true, withoutShadow: false))
     }
 
     @ViewBuilder
