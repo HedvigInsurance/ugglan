@@ -208,24 +208,6 @@ extension JourneyPresentation {
         onAction(SubmitClaimStore.self) { action in
             if case .submitClaimOpenFreeTextChat = action {
                 AppJourney.freeTextChat()
-            } else if case let .navigationAction(navigationAction) = action {
-                if case let .dismissPreSubmitScreensAndStartClaim(origin) = navigationAction {
-                    if hAnalyticsExperiment.claimsTriaging {
-                        ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                            .onAction(SubmitClaimStore.self) { action in
-                                if case .dissmissNewClaimFlow = action {
-                                    DismissJourney()
-                                }
-                            }
-                    } else {
-                        ClaimJourneys.showClaimEntrypointsOld(origin: origin)
-                            .onAction(SubmitClaimStore.self) { action in
-                                if case .dissmissNewClaimFlow = action {
-                                    DismissJourney()
-                                }
-                            }
-                    }
-                }
             }
         }
     }
