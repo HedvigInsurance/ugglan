@@ -34,6 +34,8 @@ struct CheckboxPickerScreen<T>: View {
                     getCellWithoutDivider(item: item)
                     getCellWithDivider(item: item)
                 }
+                .withoutBottomPadding
+                .padding(.bottom, 10)
             }
         }
         .hUseNewStyle
@@ -60,8 +62,8 @@ struct CheckboxPickerScreen<T>: View {
                     hTextNew(L10n.generalCancelButton, style: .body)
                 }
             }
-            .padding([.leading, .trailing], 16)
-            .padding(.top, 11)
+            .padding(.horizontal, 16)
+            .padding(.top, 6)
         }
         .onAppear {
             preSelectedItems()?
