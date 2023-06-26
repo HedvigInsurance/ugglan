@@ -104,7 +104,10 @@ struct CheckboxPickerScreen<T>: View {
             .foregroundColor(hLabelColorNew.primary)
         Spacer()
         Circle()
-            .strokeBorder(hBackgroundColorNew.semanticBorderTwo)
+            .strokeBorder(
+                getBorderColor(currentItem: displayName),
+                lineWidth: checkIfItemInSelected(currentItem: displayName) ? 0 : 1.5
+            )
             .background(Circle().foregroundColor(retColor(currentItem: displayName)))
             .frame(width: 28, height: 28)
     }
@@ -160,6 +163,15 @@ struct CheckboxPickerScreen<T>: View {
             } else {
                 hBackgroundColorNew.opaqueOne
             }
+        }
+    }
+
+    @hColorBuilder
+    func getBorderColor(currentItem: String) -> some hColor {
+        if checkIfItemInSelected(currentItem: currentItem) {
+            hLabelColorNew.primary
+        } else {
+            hBackgroundColorNew.semanticBorderTwo
         }
     }
 }
