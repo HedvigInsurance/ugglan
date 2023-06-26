@@ -11,9 +11,6 @@ struct hFieldBackgroundModifier: ViewModifier {
                     .padding(.horizontal, 16)
                     .background(getBackgroundColor())
                     .clipShape(Squircle.default())
-                    .overlay {
-                        Squircle.default().stroke(getBorderColor())
-                    }
             } else {
                 content
                     .padding(.horizontal, 16)
@@ -33,17 +30,6 @@ struct hFieldBackgroundModifier: ViewModifier {
                 .padding(.horizontal, 6)
                 .foregroundColor(hLabelColorNew.warning)
             }
-        }
-    }
-
-    @hColorBuilder
-    private func getBorderColor() -> some hColor {
-        if error != nil {
-            hBorderColorNew.warning
-        } else if animate {
-            hBorderColorNew.active
-        } else {
-            hBorderColorNew.opaqueTwo.opacity(0)
         }
     }
 
