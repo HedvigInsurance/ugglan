@@ -23,7 +23,6 @@ public struct SelectClaimEntrypointGroup: View {
             .hUseNewStyle
             .hFormTitle(.small, .customTitle, L10n.claimTriagingNavigationTitle)
             .hDisableScroll
-            .hUseBlur
             .hFormAttachToBottom {
                 PresentableStoreLens(
                     SubmitClaimStore.self,
@@ -81,7 +80,6 @@ struct SelectClaimEntrypointType: View {
         .hUseNewStyle
         .hFormTitle(.small, .customTitle, L10n.claimsTriagingWhatHappenedTitle)
         .hDisableScroll
-        .hUseBlur
         .hFormAttachToBottom {
 
             PresentableStoreLens(
@@ -162,7 +160,6 @@ struct SelectClaimEntrypointOption: View {
         .hUseNewStyle
         .hFormTitle(.small, .customTitle, L10n.claimsTriagingWhatItemTitle)
         .hDisableScroll
-        .hUseBlur
         .hFormAttachToBottom {
             PresentableStoreLens(
                 SubmitClaimStore.self,
@@ -227,9 +224,9 @@ struct ShowTagList: View {
     var body: some View {
         VStack(spacing: 16) {
             showNotValid
-            TagList(tags: tagsToShow) { tag in
+            TagList(tags: tagsToShow, horizontalSpacing: 4, verticalSpacing: 4) { tag in
                 if showTags {
-                    HStack {
+                    HStack(spacing: 0) {
                         hTextNew(tag, style: .body)
                             .foregroundColor(hLabelColorNew.primary)
                             .lineLimit(1)
@@ -251,7 +248,7 @@ struct ShowTagList: View {
                         let generator = UIImpactFeedbackGenerator(style: .soft)
                         generator.impactOccurred()
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 12)  // 16 - tag list horizontal spacing
                     .padding(.vertical, 8)
                     .background(getColorAndShadow(claimId: tag))
                     .scaleEffect(animate && selection == tag ? scaleSize : 1)
@@ -276,7 +273,6 @@ struct ShowTagList: View {
             } content: {
                 hTextNew(L10n.generalContinueButton, style: .body)
             }
-            .padding(.bottom, 32)
         }
         .padding([.leading, .trailing], 16)
         .onAppear {

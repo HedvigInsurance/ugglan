@@ -221,7 +221,6 @@ struct HonestyPledge: View {
 
             }
             .padding(.top, hUseNewStyle ? -32 : 0)
-            .padding(.bottom, 20)
             .padding(.horizontal, hUseNewStyle ? 24 : 15)
             .fixedSize(horizontal: false, vertical: true)
         }
@@ -266,7 +265,6 @@ extension HonestyPledge {
                 }
             }
             .hUseNewStyle
-            .hUseBlur
             .hDisableScroll
         } else {
             HonestyPledge {
