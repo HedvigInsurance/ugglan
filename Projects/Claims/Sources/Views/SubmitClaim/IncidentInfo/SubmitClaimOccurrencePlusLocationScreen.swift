@@ -39,7 +39,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        .padding(.bottom, 8)
+        .padding(.bottom, 4)
 
         hSection {
             PresentableStoreLens(
@@ -62,8 +62,8 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         }
         .sectionContainerStyle(.transparent)
 
-        NoticeComponent(text: L10n.claimsDateNotSureNoticeLabel)
-            .padding([.bottom, .top], 8)
+        InfoCard(text: L10n.claimsDateNotSureNoticeLabel)
+            .padding(.vertical, 16)
     }
 
     @ViewBuilder
@@ -76,7 +76,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         }
         .frame(maxWidth: .infinity, alignment: .bottom)
         .padding([.leading, .trailing], 16)
-        .padding(.bottom, 20)
     }
 }
 

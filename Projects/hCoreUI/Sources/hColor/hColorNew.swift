@@ -37,6 +37,10 @@ public struct hBackgroundColorNew {
         hRedColorNew.red600
     }
 
+    public static var signalBlueBackground: some hColor {
+        hBlueColorNew.blue100
+    }
+
     public static var semanticBorderOne: some hColor {
         hGrayscaleColorNew.greyScale200
     }
@@ -224,6 +228,10 @@ public struct hLabelColorNew {
 
     public static var warning: some hColor {
         hAmberColorNew.amber600
+    }
+
+    public static var signalBlue: some hColor {
+        hBlueColorNew.blue800
     }
 }
 

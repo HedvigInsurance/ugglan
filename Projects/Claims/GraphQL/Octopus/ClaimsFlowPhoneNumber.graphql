@@ -3,5 +3,8 @@ mutation FlowClaimPhoneNumberNext($input: FlowClaimPhoneNumberInput!, $context: 
     id
     ...FlowClaimFragment
     context
+    progress {
+        ...ProgressFragment
+    }
   }
 }

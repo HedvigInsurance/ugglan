@@ -29,7 +29,7 @@ public struct SubmitClaimSingleItem: View {
                     displayDateField(claim: singleItemStep)
                     displayPurchasePriceField(claim: singleItemStep)
                     displayDamageField(claim: singleItemStep)
-                    NoticeComponent(text: L10n.claimsSingleItemNoticeLabel)
+                    InfoCard(text: L10n.claimsSingleItemNoticeLabel)
                 }
                 LoadingButtonWithContent(.postSingleItem) {
                     store.send(.singleItemRequest(purchasePrice: Double(purchasePrice)))

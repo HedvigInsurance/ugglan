@@ -21,7 +21,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             .hUseNewStyle
             .hFormAttachToBottom {
                 VStack(spacing: 16) {
-                    NoticeComponent(text: L10n.claimsCheckoutNotice)
+                    InfoCard(text: L10n.claimsCheckoutNotice)
 
                     hButton.LargeButtonFilled {
                         store.send(.singleItemCheckoutRequest)

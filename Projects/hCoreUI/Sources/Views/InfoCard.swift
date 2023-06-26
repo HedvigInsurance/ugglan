@@ -1,7 +1,7 @@
 import SwiftUI
 import hCore
 
-public struct NoticeComponent: View {
+public struct InfoCard: View {
     let text: String
 
     public init(
@@ -16,7 +16,7 @@ public struct NoticeComponent: View {
                 .foregroundColor(hBlueColorNew.blue600)
 
             hTextNew(text, style: .footnote)
-                .foregroundColor(hBlueColorNew.blue900)
+                .foregroundColor(hLabelColorNew.signalBlue)
                 .padding(.leading, 9)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -24,15 +24,15 @@ public struct NoticeComponent: View {
         .padding([.leading, .trailing], 16)
         .background(
             Squircle.default()
-                .fill(hBlueColorNew.blue200)
+                .fill(hBackgroundColorNew.signalBlueBackground)
         )
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding([.leading, .trailing], 16)
     }
 }
 
-struct NoticeComponent_Previews: PreviewProvider {
+struct InfoCard_Previews: PreviewProvider {
     static var previews: some View {
-        NoticeComponent(text: L10n.changeAddressCoverageInfoText)
+        InfoCard(text: L10n.changeAddressCoverageInfoText)
     }
 }

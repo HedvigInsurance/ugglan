@@ -3,5 +3,8 @@ mutation FlowClaimSingleItemCheckoutNext($input: FlowClaimSingleItemCheckoutInpu
     id
     ...FlowClaimFragment
     context
+    progress {
+        ...ProgressFragment
+    }
   }
 }

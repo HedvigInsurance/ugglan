@@ -68,7 +68,10 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
 
 extension GraphQLMutation {
     func execute<ClaimStep: Into>(_ keyPath: KeyPath<Self.Data, ClaimStep>) -> FiniteSignal<SubmitClaimsAction>
-    where ClaimStep.To == SubmitClaimsAction, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext {
+    where
+        ClaimStep.To == SubmitClaimsAction, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext,
+        Self.Data: ClaimStepProgress
+    {
         let octopus: hOctopus = Dependencies.shared.resolve()
         return FiniteSignal { callback in
             let disposeBag = DisposeBag()
@@ -79,6 +82,16 @@ extension GraphQLMutation {
                         callback(.value(.setNewClaimId(with: data.getStepId())))
                     }
                     callback(.value(.setNewClaimContext(context: data.getContext())))
+                    if let clearedSteps = data.getProgress().clearedSteps,
+                        let totalSteps = data.getProgress().totalSteps
+                    {
+                        if clearedSteps != 0 {
+                            let progressValue = Float(Float(clearedSteps) / Float(totalSteps))
+                            callback(.value(.setProgress(progress: Float(progressValue))))
+                        } else {
+                            callback(.value(.setProgress(progress: 0)))
+                        }
+                    }
                     callback(.value(data[keyPath: keyPath].into()))
                     callback(.value(.setLoadingState(action: self.getLoadingType(), state: nil)))
                 }
@@ -105,9 +118,20 @@ protocol ClaimStepContext {
     func getContext() -> String
 }
 
-extension OctopusGraphQL.FlowClaimStartMutation.Data: ClaimStepContext, ClaimStepId {
+protocol ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?)
+}
+
+extension OctopusGraphQL.FlowClaimStartMutation.Data: ClaimStepContext, ClaimStepProgress, ClaimStepId {
     func getContext() -> String {
         return self.flowClaimStart.context
+    }
+
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimStart.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimStart.progress?.totalSteps ?? 0
+        )
     }
 
     func getStepId() -> String {
@@ -160,6 +184,78 @@ extension OctopusGraphQL.FlowClaimSummaryNextMutation.Data: ClaimStepContext {
 extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation.Data: ClaimStepContext {
     func getContext() -> String {
         return self.flowClaimSingleItemCheckoutNext.context
+    }
+}
+
+extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimDateOfOccurrencePlusLocationNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimDateOfOccurrencePlusLocationNext.progress?.totalSteps ?? 0
+        )
+    }
+}
+
+extension OctopusGraphQL.FlowClaimAudioRecordingNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimAudioRecordingNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimAudioRecordingNext.progress?.totalSteps ?? 0
+        )
+    }
+}
+
+extension OctopusGraphQL.FlowClaimPhoneNumberNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimPhoneNumberNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimPhoneNumberNext.progress?.totalSteps ?? 0
+        )
+    }
+}
+
+extension OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimDateOfOccurrenceNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimDateOfOccurrenceNext.progress?.totalSteps ?? 0
+        )
+    }
+}
+
+extension OctopusGraphQL.FlowClaimLocationNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimLocationNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimLocationNext.progress?.totalSteps ?? 0
+        )
+    }
+}
+
+extension OctopusGraphQL.FlowClaimSingleItemNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimSingleItemNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimSingleItemNext.progress?.totalSteps ?? 0
+        )
+    }
+}
+
+extension OctopusGraphQL.FlowClaimSummaryNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimSummaryNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimSummaryNext.progress?.totalSteps ?? 0
+        )
+    }
+}
+
+extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation.Data: ClaimStepProgress {
+    func getProgress() -> (clearedSteps: Int?, totalSteps: Int?) {
+        return (
+            clearedSteps: self.flowClaimSingleItemCheckoutNext.progress?.clearedSteps ?? 0,
+            totalSteps: self.flowClaimSingleItemCheckoutNext.progress?.totalSteps ?? 0
+        )
     }
 }
 
