@@ -74,26 +74,29 @@ public struct DatePickerScreen: View {
                     store.send(action)
                 } content: {
                     hText(buttonTitle, style: .body)
-                        .foregroundColor(hLabelColor.primary.inverted)
                 }
                 .padding([.leading, .trailing], 16)
 
-                LoadingButtonWithContent(.postDateOfOccurrence) {
-                    let action: SubmitClaimsAction = {
-                        switch type {
-                        case .setDateOfOccurrence:
-                            return .setNewDate(dateOfOccurrence: nil)
-                        case .submitDateOfOccurence:
-                            return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
-                        case .setDateOfPurchase:
-                            return .setSingleItemPurchaseDate(purchaseDate: nil)
-                        }
-                    }()
-                    store.send(action)
-                } content: {
-                    hText(L10n.generalNotSure, style: .body)
-                        .foregroundColor(hLabelColor.primary)
-                }
+                LoadingButtonWithContent(
+                    .postDateOfOccurrence,
+                    buttonAction: {
+                        let action: SubmitClaimsAction = {
+                            switch type {
+                            case .setDateOfOccurrence:
+                                return .setNewDate(dateOfOccurrence: nil)
+                            case .submitDateOfOccurence:
+                                return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
+                            case .setDateOfPurchase:
+                                return .setSingleItemPurchaseDate(purchaseDate: nil)
+                            }
+                        }()
+                        store.send(action)
+                    },
+                    content: {
+                        hText(L10n.generalNotSure, style: .body)
+                    },
+                    buttonStyleSelect: .textButton
+                )
                 .padding([.leading, .trailing], 16)
             }
         }
