@@ -92,9 +92,9 @@ struct EuroBonusView: View {
                 )
                 .foregroundColor(hLabelColor.primary)
                 .multilineTextAlignment(.trailing)
-                .hTextFieldOptions([])
+                .hTextFieldOptions([.minimumHeight(height: 40)])
             }
-            .verticalPadding(0)
+            .verticalPadding(1)
             hRow {
                 VStack(alignment: .leading) {
                     Divider()
@@ -104,7 +104,7 @@ struct EuroBonusView: View {
                     }
                 }
             }
-            .verticalPadding(0)
+            .verticalPadding(1)
             hRow {
                 hText(L10n.SasIntegration.info, style: .callout)
                     .foregroundColor(hLabelColor.secondary)
