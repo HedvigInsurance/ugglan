@@ -72,8 +72,8 @@ struct hFontModifierNew: ViewModifier {
             return 23.76 - fontNew.lineHeight
         case .footnote:
             return 19.6 - fontNew.lineHeight
-        default:
-            return 0
+        case .customTitle:
+            return 33.6 - fontNew.lineHeight
         }
     }
 
