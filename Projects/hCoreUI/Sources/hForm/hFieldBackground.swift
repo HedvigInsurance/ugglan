@@ -10,11 +10,14 @@ struct hFieldBackgroundModifier: ViewModifier {
                 content
                     .padding(.horizontal, 16)
                     .background(getBackgroundColor())
+                    .animation(.easeOut, value: animate)
                     .clipShape(Squircle.default())
+
             } else {
                 content
                     .padding(.horizontal, 16)
                     .background(getBackgroundColor())
+                    .animation(.easeOut, value: animate)
                     .clipShape(Squircle.default())
             }
             if let errorMessage = error {
