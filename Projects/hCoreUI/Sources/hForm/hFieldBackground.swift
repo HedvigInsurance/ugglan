@@ -60,11 +60,13 @@ struct hFieldLabel: View {
         let sizeToScaleFrom = HFontTextStyleNew.title3.uifontTextStyleNew.pointSize
         let sizeToScaleTo = HFontTextStyleNew.footnote.uifontTextStyleNew.pointSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
-        let difference = sizeToScaleTo - sizeToScaleFrom
+        let padding = HFontTextStyleNew.title3.uifontLineHeightDifference * 15
         return hTextNew(placeholder, style: .title3)
             .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
             .foregroundColor(getTextColor())
-            .padding(.vertical, shouldMoveLabel ? difference / 2 : 0)
+            .padding(.bottom, shouldMoveLabel ? 1 : padding)
+            .padding(.top, shouldMoveLabel ? 0 : padding)
+
     }
 
     @hColorBuilder

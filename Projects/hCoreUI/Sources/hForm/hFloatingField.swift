@@ -45,7 +45,7 @@ public struct hFloatingField: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, value.isEmpty ? 16 : 10)
+            .padding(.vertical, value.isEmpty ? 0 : 10 - HFontTextStyleNew.title3.uifontLineHeightDifference)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
@@ -66,6 +66,19 @@ public struct hFloatingField: View {
                 withAnimation {
                     self.animate = false
                 }
+            }
+        }
+    }
+}
+
+struct hFloatingField_Previews: PreviewProvider {
+    static var previews: some View {
+
+        @State var value: String = ""
+
+        VStack {
+            hFloatingField(value: "", placeholder: "ni", error: nil) {
+
             }
         }
     }

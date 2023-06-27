@@ -55,7 +55,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 )
                 getTextField
             }
-            .padding(.vertical, shouldMoveLabel ? 10 : 16)
+            .padding(.vertical, shouldMoveLabel ? 10 : 0)
         }
         .introspectTextField { textField in
             if self.textField != textField {
@@ -148,6 +148,30 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     previousInnerValue = value
                 }
             }
-            .frame(maxHeight: shouldMoveLabel ? fieldPointSize * 1.25 : 0)
+            .frame(maxHeight: shouldMoveLabel ? fieldPointSize : 0)
+    }
+}
+
+struct hFloatingTextField_Previews: PreviewProvider {
+    static var previews: some View {
+
+        @State var value: String = ""
+
+        VStack {
+            hFloatingTextField<Bool>(
+                masking: .init(type: .none),
+                value: $value,
+                equals: Binding(
+                    get: {
+                        return nil
+                    },
+                    set: { _ in
+
+                    }
+                ),
+                focusValue: true,
+                placeholder: "PLACEHOLDER"
+            )
+        }
     }
 }
