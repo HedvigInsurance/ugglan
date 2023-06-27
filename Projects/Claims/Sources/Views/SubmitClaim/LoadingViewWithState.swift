@@ -174,12 +174,18 @@ public struct LoadingViewWithContent<Content: View>: View {
     }
 }
 
+public enum ButtonStyleForLoading {
+    case filledButton
+    case textButton
+}
+
 public struct LoadingButtonWithContent<Content: View>: View {
     var content: () -> Content
     let buttonAction: () -> Void
     @PresentableStore var store: SubmitClaimStore
     private let actions: [ClaimsLoadingType]
     private let hUseNewStyle: Bool
+    let buttonStyleSelect: ButtonStyleForLoading?
 
     @State var presentError = false
     @State var error = ""
@@ -190,75 +196,105 @@ public struct LoadingButtonWithContent<Content: View>: View {
         hUseNewStyle: Bool = true,
         _ action: ClaimsLoadingType,
         buttonAction: @escaping () -> Void,
-        @ViewBuilder content: @escaping () -> Content
+        @ViewBuilder content: @escaping () -> Content,
+        buttonStyleSelect: ButtonStyleForLoading? = .filledButton
     ) {
         self.hUseNewStyle = hUseNewStyle
         self.actions = [action]
         self.buttonAction = buttonAction
         self.content = content
+        self.buttonStyleSelect = buttonStyleSelect
     }
 
     public init(
         hUseNewStyle: Bool = true,
         _ actions: [ClaimsLoadingType],
         buttonAction: @escaping () -> Void,
-        @ViewBuilder content: @escaping () -> Content
+        @ViewBuilder content: @escaping () -> Content,
+        buttonStyleSelect: ButtonStyleForLoading? = .filledButton
     ) {
         self.hUseNewStyle = hUseNewStyle
         self.actions = actions
         self.buttonAction = buttonAction
         self.content = content
+        self.buttonStyleSelect = buttonStyleSelect
     }
 
     public var body: some View {
-        hButton.LargeButtonFilled {
-            if !isLoading {
-                buttonAction()
-            }
-        } content: {
-            if !isLoading {
-                content()
-            } else {
-                DotsActivityIndicator(.standard)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .onAppear {
-            func handle(state: SubmitClaimsState) {
-                let actions = state.loadingStates.filter({ self.actions.contains($0.key) })
-                if actions.count > 0 {
-                    if actions.filter({ $0.value == .loading }).count > 0 {
-                        withAnimation {
-                            self.isLoading = true
-                            self.presentError = false
-                        }
-                    } else {
-                        var tempError = ""
-                        for action in actions {
-                            switch action.value {
-                            case .error(let error):
-                                tempError = error
-                            default:
-                                break
-                            }
-                        }
-                        self.error = tempError
-                        self.isLoading = false
-                        self.presentError = true
-                    }
+
+        switch buttonStyleSelect {
+        case .filledButton:
+            hButton.LargeButtonFilled {
+                if !isLoading {
+                    buttonAction()
+                }
+            } content: {
+                if !isLoading {
+                    content()
                 } else {
-                    withAnimation {
-                        self.isLoading = false
-                        self.presentError = false
-                    }
+                    DotsActivityIndicator(.standard)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-            disposeBag += store.stateSignal.onValue { state in
-                handle(state: state)
+            .onAppear {
+                getOnAppear
             }
-            handle(state: store.state)
+        case .textButton:
+            hButton.LargeButtonText {
+                if !isLoading {
+                    buttonAction()
+                }
+            } content: {
+                if !isLoading {
+                    content()
+                } else {
+                    DotsActivityIndicator(.standard)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .onAppear {
+                getOnAppear
+            }
+        case .none:
+            EmptyView()
         }
+    }
+
+    private var getOnAppear: Void {
+        func handle(state: SubmitClaimsState) {
+            let actions = state.loadingStates.filter({ self.actions.contains($0.key) })
+            if actions.count > 0 {
+                if actions.filter({ $0.value == .loading }).count > 0 {
+                    withAnimation {
+                        self.isLoading = true
+                        self.presentError = false
+                    }
+                } else {
+                    var tempError = ""
+                    for action in actions {
+                        switch action.value {
+                        case .error(let error):
+                            tempError = error
+                        default:
+                            break
+                        }
+                    }
+                    self.error = tempError
+                    self.isLoading = false
+                    self.presentError = true
+                }
+            } else {
+                withAnimation {
+                    self.isLoading = false
+                    self.presentError = false
+                }
+            }
+        }
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+        disposeBag += store.stateSignal.onValue { state in
+            handle(state: state)
+        }
+        handle(state: store.state)
     }
 
     @ViewBuilder
@@ -315,11 +351,14 @@ public struct LoadingButtonWithContent<Content: View>: View {
 
 struct LoadingButtonWithContent_Previews: PreviewProvider {
     static var previews: some View {
-        LoadingButtonWithContent(.startClaim) {
-
-        } content: {
-            Text("TEXT")
-        }
-
+        LoadingButtonWithContent(
+            .startClaim,
+            buttonAction: {
+            },
+            content: {
+                Text("TEXT")
+            },
+            buttonStyleSelect: .filledButton
+        )
     }
 }

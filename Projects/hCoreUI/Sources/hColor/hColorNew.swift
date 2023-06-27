@@ -892,3 +892,10 @@ public struct hSignalColorNew {
         )
     }
 }
+public struct hButtonColorNew {
+    public static var primaryAlt: some hColor {
+        hColorScheme(
+            Color(hexString: "EAFFCC")
+        )
+    }
+}

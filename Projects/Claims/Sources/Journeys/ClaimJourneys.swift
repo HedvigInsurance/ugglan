@@ -127,7 +127,7 @@ public class ClaimJourneys {
 
     @JourneyBuilder
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
-        let screen = DatePickerScreen(type: type)
+        let screen = DatePickerScreen(type: type).hUseNewStyle
         if type.shouldShowModally {
             HostingJourney(
                 SubmitClaimStore.self,
@@ -146,7 +146,7 @@ public class ClaimJourneys {
                     getScreen(for: action)
                 }
             }
-            .configureTitle(screen.title)
+            .configureTitle(type.title)
             .withDismissButton
         } else {
             HostingJourney(
@@ -163,7 +163,7 @@ public class ClaimJourneys {
                 }
             }
             .resetProgressToPreviousValueOnDismiss
-            .configureTitle(screen.title)
+            .configureTitle(type.title)
         }
     }
 
@@ -189,7 +189,7 @@ public class ClaimJourneys {
                     getScreen(for: action)
                 }
             }
-            .configureTitle(screen.title)
+            .configureTitle(type.title)
             .withDismissButton
         } else {
             return HostingJourney(
@@ -205,7 +205,7 @@ public class ClaimJourneys {
                     getScreen(for: action)
                 }
             }
-            .configureTitle(screen.title)
+            .configureTitle(type.title)
         }
     }
 
