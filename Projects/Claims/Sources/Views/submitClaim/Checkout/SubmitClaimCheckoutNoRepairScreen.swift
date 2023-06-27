@@ -45,7 +45,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                             style: .body
                         )
                     }
-                    .padding([.leading, .trailing], 16)
+                    .padding(.horizontal, 16)
                 }
             }
         }
@@ -110,6 +110,9 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                         .withSelectedAccessory(
                             checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark
                         )
+                        .noSpacing()
+                        .padding(.vertical, 9)
+                        .padding(.horizontal, 16)
                         .onTapGesture {
                             withAnimation {
                                 store.send(.setPayoutMethod(method: element))
