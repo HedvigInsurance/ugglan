@@ -7,7 +7,6 @@ import hGraphQL
 
 public struct ProfileState: StateProtocol {
     var memberFullName: String = ""
-    var memberCharityName: String = ""
     var monthlyNet: Int = 0
     var partnerData: PartnerData?
     @OptionalTransient var updateEurobonusState: LoadingState<String>?
