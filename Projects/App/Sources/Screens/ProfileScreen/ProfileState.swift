@@ -28,7 +28,7 @@ public enum ProfileAction: ActionProtocol {
     case openFreeTextChat
     case openAppInformation
     case openAppSettings
-    case setProfileState(name: String, charity: String, monthlyNet: Int)
+    case setProfileState(name: String, monthlyNet: Int)
     case setEurobonusNumber(partnerData: PartnerData?)
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
@@ -63,12 +63,11 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                     .onValue { (profileData, partnerData) in
                         if let profileData = profileData.value {
                             let name = (profileData.member.firstName ?? "") + " " + (profileData.member.lastName ?? "")
-                            let charity = profileData.cashback?.name ?? ""
                             let monthlyNet = Int(
                                 profileData.chargeEstimation.subscription.fragments.monetaryAmountFragment
                                     .monetaryAmount.floatAmount
                             )
-                            callback(.value(.setProfileState(name: name, charity: charity, monthlyNet: monthlyNet)))
+                            callback(.value(.setProfileState(name: name, monthlyNet: monthlyNet)))
                         }
                         if let partnerData = partnerData.value {
                             let partner = PartnerData(with: partnerData.currentMember.fragments.partnerDataFragment)
@@ -112,9 +111,8 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
-        case .setProfileState(let name, let charity, let monthlyNet):
+        case .setProfileState(let name, let monthlyNet):
             newState.memberFullName = name
-            newState.memberCharityName = charity
             newState.monthlyNet = monthlyNet
         case .setEurobonusNumber(let partnerData):
             newState.partnerData = partnerData
