@@ -18,7 +18,7 @@ public struct SubmitClaimSingleItem: View {
         .hUseNewStyle
         .hFormTitle(.small, .customTitle, L10n.claimsSingleItemDetails)
         .hFormAttachToBottom {
-            VStack(spacing: 8) {
+            VStack(spacing: 4) {
                 PresentableStoreLens(
                     SubmitClaimStore.self,
                     getter: { state in
@@ -30,6 +30,7 @@ public struct SubmitClaimSingleItem: View {
                     displayPurchasePriceField(claim: singleItemStep)
                     displayDamageField(claim: singleItemStep)
                     InfoCard(text: L10n.claimsSingleItemNoticeLabel)
+                        .padding(.vertical, 12)
                 }
                 LoadingButtonWithContent(.postSingleItem) {
                     store.send(.singleItemRequest(purchasePrice: Double(purchasePrice)))
@@ -37,8 +38,7 @@ public struct SubmitClaimSingleItem: View {
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
-                .padding([.leading, .trailing], 16)
-                .padding(.bottom, 8)
+                .padding(.horizontal, 16)
             }
         }
     }
