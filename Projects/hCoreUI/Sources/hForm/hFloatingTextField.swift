@@ -53,6 +53,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     error: $error,
                     shouldMoveLabel: $shouldMoveLabel
                 )
+
                 getTextField
             }
             .padding(.vertical, shouldMoveLabel ? 10 : 0)
@@ -128,7 +129,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     private var getTextField: some View {
-        let fieldPointSize = HFontTextStyleNew.title3.uifontTextStyleNew.pointSize
+        let fieldPointSize = HFontTextStyleNew.title3.uifontTextStyleNew.pointSize * 1.25
         return SwiftUI.TextField("", text: $innerValue)
             .modifier(hFontModifierNew(style: .title3))
             .modifier(masking)
@@ -148,14 +149,14 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     previousInnerValue = value
                 }
             }
-            .frame(maxHeight: shouldMoveLabel ? fieldPointSize : 0)
+            .frame(height: shouldMoveLabel ? fieldPointSize : 0)
+            .padding(.vertical, shouldMoveLabel ? 2 : 0)
     }
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {
+    @State static var value: String = ""
     static var previews: some View {
-
-        @State var value: String = ""
 
         VStack {
             hFloatingTextField<Bool>(
@@ -165,12 +166,13 @@ struct hFloatingTextField_Previews: PreviewProvider {
                     get: {
                         return nil
                     },
+
                     set: { _ in
 
                     }
                 ),
                 focusValue: true,
-                placeholder: "PLACEHOLDER"
+                placeholder: "Placeholder"
             )
         }
     }
