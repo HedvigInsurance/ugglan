@@ -1,5 +1,6 @@
 import Presentation
 import SwiftUI
+import hCore
 
 public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dissmissNewClaimFlow
@@ -89,6 +90,15 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
                 return false
             case .setDateOfPurchase:
                 return true
+            }
+        }
+
+        var title: String {
+            switch self {
+            case .setDateOfOccurrence, .submitDateOfOccurence:
+                return L10n.Claims.Incident.Screen.Date.Of.incident
+            case .setDateOfPurchase:
+                return L10n.Claims.Item.Screen.Date.Of.Purchase.button
             }
         }
     }

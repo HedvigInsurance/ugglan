@@ -7,9 +7,9 @@ public struct DatePickerScreen: View {
     @State private var dateOfOccurrence = Date()
     @PresentableStore var store: SubmitClaimStore
     private let type: ClaimsNavigationAction.DatePickerType
-    public let title: String
     private let buttonTitle: String
     private let maxDate: Date
+    @Environment(\.hUseNewStyle) var useNewStyle
     public init(
         type: ClaimsNavigationAction.DatePickerType
     ) {
@@ -23,15 +23,6 @@ public struct DatePickerScreen: View {
                 return Date()
             }
         }()
-        self.title = {
-            switch type {
-            case .setDateOfOccurrence, .submitDateOfOccurence:
-                return L10n.Claims.Incident.Screen.Date.Of.incident
-            case .setDateOfPurchase:
-                return L10n.Claims.Item.Screen.Date.Of.Purchase.button
-            }
-        }()
-
         self.buttonTitle = {
             switch type {
             case .setDateOfOccurrence, .setDateOfPurchase:
@@ -57,6 +48,11 @@ public struct DatePickerScreen: View {
                 .padding([.leading, .trailing], 16)
                 .padding([.top], 5)
             }
+            .introspectDatePicker { date in
+                if useNewStyle {
+                    date.tintColor = .brandNew(.primaryText())
+                }
+            }
         }
         .hFormAttachToBottom {
             VStack {
@@ -76,23 +72,27 @@ public struct DatePickerScreen: View {
                     hText(buttonTitle, style: .body)
                 }
                 .padding([.leading, .trailing], 16)
-                hButton.LargeButtonText {
-                    let action: SubmitClaimsAction = {
-                        switch type {
-                        case .setDateOfOccurrence:
-                            return .setNewDate(dateOfOccurrence: nil)
-                        case .submitDateOfOccurence:
-                            return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
-                        case .setDateOfPurchase:
-                            return .setSingleItemPurchaseDate(purchaseDate: nil)
-                        }
-                    }()
-                    store.send(action)
-                } content: {
-                    hText(L10n.generalNotSure, style: .body)
-                        .foregroundColor(hLabelColor.primary)
-                }
-                .padding([.leading, .trailing], 16)
+                LoadingButtonWithContent(
+                    .postDateOfOccurrence,
+                    buttonAction: {
+                        let action: SubmitClaimsAction = {
+                            switch type {
+                            case .setDateOfOccurrence:
+                                return .setNewDate(dateOfOccurrence: nil)
+                            case .submitDateOfOccurence:
+                                return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
+                            case .setDateOfPurchase:
+                                return .setSingleItemPurchaseDate(purchaseDate: nil)
+                            }
+                        }()
+                        store.send(action)
+                    },
+                    content: {
+                        hText(L10n.generalNotSure, style: .body)
+                            .foregroundColor(hLabelColor.primary)
+                    },
+                    buttonStyleSelect: .textButton
+                )
             }
         }
     }
@@ -100,6 +100,6 @@ public struct DatePickerScreen: View {
 
 struct DatePickerView_Previews: PreviewProvider {
     static var previews: some View {
-        DatePickerScreen(type: .setDateOfPurchase)
+        DatePickerScreen(type: .setDateOfPurchase).hUseNewStyle
     }
 }
