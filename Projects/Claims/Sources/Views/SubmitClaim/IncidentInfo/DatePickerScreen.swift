@@ -78,7 +78,7 @@ public struct DatePickerScreen: View {
                 }
                 .padding([.leading, .trailing], 16)
 
-                LoadingButtonWithContent(.postDateOfOccurrence) {
+                hButton.LargeButtonText {
                     let action: SubmitClaimsAction = {
                         switch type {
                         case .setDateOfOccurrence:
