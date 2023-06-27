@@ -40,7 +40,7 @@ struct TravelInsuranceEmailScreen: View {
                             value: $email,
                             placeholder: L10n.TravelCertificate.enterEmailPlaceholder
                         )
-                        .hTextFieldOptions([])
+                        .hTextFieldOptions([.minimumHeight(height: 40)])
                         .hTextFieldError(emailError)
                         .multilineTextAlignment(.center)
                     }

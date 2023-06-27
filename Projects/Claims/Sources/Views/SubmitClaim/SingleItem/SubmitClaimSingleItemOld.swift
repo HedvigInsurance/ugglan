@@ -133,7 +133,7 @@ public struct SubmitClaimSingleItemOld: View {
                         value: $purchasePrice
                     )
                     .multilineTextAlignment(.trailing)
-                    .hTextFieldOptions([])
+                    .hTextFieldOptions([.minimumHeight(height: 40)])
                     Spacer()
 
                     if let preferredCurrency = claim?.prefferedCurrency {

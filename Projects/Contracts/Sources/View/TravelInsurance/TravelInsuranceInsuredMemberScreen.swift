@@ -73,7 +73,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
             )
             .focused($inputType, equals: .fullName)
             .hTextFieldError(fullNameError)
-            .hTextFieldOptions([])
+            .hTextFieldOptions([.minimumHeight(height: 40)])
         }
     }
 
@@ -88,7 +88,7 @@ struct TravelInsuranceInsuredMemberScreen: View {
                 submit()
             }
             .hTextFieldError(personalNumberError)
-            .hTextFieldOptions([])
+            .hTextFieldOptions([.minimumHeight(height: 40)])
         }
     }
 
