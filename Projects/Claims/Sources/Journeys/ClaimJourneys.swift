@@ -72,7 +72,7 @@ public class ClaimJourneys {
                 } else if case .openSummaryEditScreen = navigationAction {
                     openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
                 } else if case let .openLocationPicker(type) = navigationAction {
-                    openLocationScreenOld(type: type).addDismissClaimsFlow()
+                    openLocationScreenOld(type: type)
                 } else if case .openUpdateAppScreen = navigationAction {
                     openUpdateAppTerminationScreenOld().withJourneyDismissButton
                 } else if case let .openDatePicker(type) = navigationAction {
@@ -264,6 +264,7 @@ public class ClaimJourneys {
                 getScreen(for: action)
             }
         }
+        .withDismissButton
     }
 
     static func openBrandPickerScreen() -> some JourneyPresentation {
