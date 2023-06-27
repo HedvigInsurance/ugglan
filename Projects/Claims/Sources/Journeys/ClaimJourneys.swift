@@ -368,7 +368,7 @@ public class ClaimJourneys {
                 singleSelect: true,
                 showDividers: true
             ),
-            style: .detented(.scrollViewContentSize, modally: false),
+            style: .detented(.large, modally: false),
             options: [.defaults, .wantsGrabber]
         ) {
             action in
