@@ -541,11 +541,29 @@ public class ClaimJourneys {
                 openDatePickerScreen(type: .setDateOfPurchase)
             } else if case .navigationAction(.openBrandPicker) = action {
                 openBrandPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
+            } else if case .navigationAction(.openPriceInput) = action {
+                openPriceInputScreen()
             } else {
                 getScreen(for: action)
             }
         }
         .resetProgressToPreviousValueOnDismiss
+    }
+
+    private static func openPriceInputScreen() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: PriceInputScreen(),
+            style: .detented(.scrollViewContentSize, modally: true)
+        ) {
+            action in
+            if case .navigationAction(.dismissScreen) = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
+        }
+        .configureTitle("Fyll i ditt inköpspris")
     }
 
     private static func openSummaryScreen() -> some JourneyPresentation {

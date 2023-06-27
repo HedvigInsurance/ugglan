@@ -92,14 +92,22 @@ public struct SubmitClaimSingleItem: View {
     @ViewBuilder func displayPurchasePriceField(claim: FlowClamSingleItemStepModel?) -> some View {
 
         hSection {
-            hFloatingTextField(
-                masking: Masking(type: .digits),
-                value: $purchasePrice,
-                equals: $type,
-                focusValue: .purchasePrice,
+            hFloatingField(
+                value: purchasePrice,
                 placeholder: L10n.Claims.Item.Screen.Purchase.Price.button,
-                suffix: claim?.prefferedCurrency ?? ""
+                //                error: <#T##Binding<String?>?#>,
+                onTap: {
+                    store.send(.navigationAction(action: .openPriceInput))
+                }
             )
+            //            hFloatingTextField(
+            //                masking: Masking(type: .digits),
+            //                value: $purchasePrice,
+            //                equals: $type,
+            //                focusValue: .purchasePrice,
+            //                placeholder: L10n.Claims.Item.Screen.Purchase.Price.button,
+            //                suffix: claim?.prefferedCurrency ?? ""
+            //            )
         }
         .sectionContainerStyle(.transparent)
     }

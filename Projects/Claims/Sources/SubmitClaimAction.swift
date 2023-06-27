@@ -61,6 +61,7 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openDamagePickerScreen
     case openModelPicker
     case openBrandPicker
+    case openPriceInput
     case openCheckoutNoRepairScreen
     case openCheckoutTransferringScreen
     case openFailureSceen
