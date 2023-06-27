@@ -11,7 +11,7 @@ public struct SubmitClaimSummaryScreen: View {
     public var body: some View {
         hForm {
             hSection {
-                VStack(spacing: 8) {
+                VStack(spacing: 0) {
                     matter
                     damageType
                     damageDate
@@ -24,6 +24,7 @@ public struct SubmitClaimSummaryScreen: View {
             .withHeader {
                 HStack {
                     L10n.changeAddressDetails.hTextNew(.body).foregroundColor(hLabelColorNew.primary)
+                        .padding(.top, 16)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -31,6 +32,7 @@ public struct SubmitClaimSummaryScreen: View {
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 InfoCard(text: L10n.claimsComplementClaim)
+                    .padding(.bottom, 8)
                 Group {
                     LoadingButtonWithContent(.postSummary) {
                         store.send(.summaryRequest)

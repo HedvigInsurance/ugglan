@@ -20,8 +20,9 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
             .hUseNewStyle
             .hFormAttachToBottom {
-                VStack(spacing: 16) {
+                VStack(spacing: 8) {
                     InfoCard(text: L10n.claimsCheckoutNotice)
+                        .padding(.bottom, 8)
 
                     hButton.LargeButtonFilled {
                         store.send(.singleItemCheckoutRequest)
@@ -34,7 +35,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                             style: .body
                         )
                     }
-                    .padding([.leading, .trailing], 16)
+                    .padding(.horizontal, 16)
 
                     hButton.LargeButtonText {
                         store.send(.navigationAction(action: .dismissScreen))
@@ -44,7 +45,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                             style: .body
                         )
                     }
-                    .padding([.leading, .trailing], 16)
+                    .padding(.horizontal, 16)
                 }
             }
         }
@@ -52,7 +53,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
     }
 
     func getFormContent(from singleItemCheckoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 16) {
             hSection {
                 VStack(alignment: .center) {
                     hTextNew(singleItemCheckoutStep?.payoutAmount.formattedAmount ?? "", style: .title1)
@@ -67,7 +68,9 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             .withHeader {
                 hTextNew(L10n.Claims.Payout.Summary.subtitle, style: .body)
                     .foregroundColor(hLabelColorNew.primary)
+                    .padding(.top, 16)
             }
+            .padding(.bottom, 8)
 
             hSection {
                 displayField(
@@ -107,6 +110,9 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                         .withSelectedAccessory(
                             checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark
                         )
+                        .noSpacing()
+                        .padding(.vertical, 9)
+                        .padding(.horizontal, 16)
                         .onTapGesture {
                             withAnimation {
                                 store.send(.setPayoutMethod(method: element))

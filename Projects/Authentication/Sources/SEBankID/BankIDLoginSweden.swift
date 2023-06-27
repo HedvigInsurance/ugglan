@@ -160,16 +160,14 @@ extension BankIDLoginSweden: Presentable {
                         callback(.loggedIn)
                     }
                 )
-
-                bag += store.onAction(
-                    .loginFailure,
-                    {
+                bag += store.actionSignal.onValue { action in
+                    if case let .loginFailure(message) = action {
                         guard viewController.navigationController?.viewControllers.count == 1 else {
                             return
                         }
 
                         let alert = Alert<Void>(
-                            title: L10n.bankidUserCancelTitle,
+                            title: message ?? L10n.bankidUserCancelTitle,
                             actions: [
                                 .init(
                                     title: L10n.generalRetry,
@@ -191,7 +189,7 @@ extension BankIDLoginSweden: Presentable {
                             alert
                         )
                     }
-                )
+                }
 
                 bag += alternativeLoginButton.onTapSignal.onValue { _ in
                     let alert = Alert<Void>(actions: [

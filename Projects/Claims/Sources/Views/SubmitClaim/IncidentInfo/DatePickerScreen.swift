@@ -76,27 +76,22 @@ public struct DatePickerScreen: View {
                     hText(buttonTitle, style: .body)
                 }
                 .padding([.leading, .trailing], 16)
-
-                LoadingButtonWithContent(
-                    .postDateOfOccurrence,
-                    buttonAction: {
-                        let action: SubmitClaimsAction = {
-                            switch type {
-                            case .setDateOfOccurrence:
-                                return .setNewDate(dateOfOccurrence: nil)
-                            case .submitDateOfOccurence:
-                                return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
-                            case .setDateOfPurchase:
-                                return .setSingleItemPurchaseDate(purchaseDate: nil)
-                            }
-                        }()
-                        store.send(action)
-                    },
-                    content: {
-                        hText(L10n.generalNotSure, style: .body)
-                    },
-                    buttonStyleSelect: .textButton
-                )
+                hButton.LargeButtonText {
+                    let action: SubmitClaimsAction = {
+                        switch type {
+                        case .setDateOfOccurrence:
+                            return .setNewDate(dateOfOccurrence: nil)
+                        case .submitDateOfOccurence:
+                            return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
+                        case .setDateOfPurchase:
+                            return .setSingleItemPurchaseDate(purchaseDate: nil)
+                        }
+                    }()
+                    store.send(action)
+                } content: {
+                    hText(L10n.generalNotSure, style: .body)
+                        .foregroundColor(hLabelColor.primary)
+                }
                 .padding([.leading, .trailing], 16)
             }
         }

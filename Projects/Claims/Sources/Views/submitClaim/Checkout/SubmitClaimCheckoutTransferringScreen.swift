@@ -61,12 +61,16 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                         (singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""),
                         style: .title1
                     )
-                    .foregroundColor(hLabelColorNew.secondary)
+                    .foregroundColor(hLabelColorNew.primary)
                 }
                 hTextNew(L10n.claimsPayoutSuccessLabel, style: .body)
                     .foregroundColor(hLabelColorNew.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 16)
+            }
+            .onAppear {
+                let generator = UIImpactFeedbackGenerator(style: .soft)
+                generator.impactOccurred()
             }
             .scaleEffect(
                 x: successAnimation ? 1 : 0.3,
@@ -78,7 +82,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 store.send(.dissmissNewClaimFlow)
             } content: {
                 hTextNew(L10n.generalCloseButton, style: .body)
-                    .foregroundColor(hLabelColorNew.secondary)
+                    .foregroundColor(hLabelColorNew.primary)
             }
         }
         .opacity(successAnimation ? 1 : 0)

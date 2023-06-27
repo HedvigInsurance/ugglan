@@ -41,7 +41,7 @@ struct ProfileView: View {
                     ProfileRow(row: .myInfo, subtitle: stateData.memberFullName)
 
                     if hAnalyticsExperiment.showCharity {
-                        ProfileRow(row: .myCharity, subtitle: stateData.memberCharityName)
+                        ProfileRow(row: .myCharity, subtitle: nil)
                     }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
