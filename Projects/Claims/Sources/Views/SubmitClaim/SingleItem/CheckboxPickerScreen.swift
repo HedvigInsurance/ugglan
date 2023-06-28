@@ -31,8 +31,7 @@ struct CheckboxPickerScreen<T>: View {
         hForm {
             ForEach(items, id: \.displayName) { item in
                 hSection {
-                    getCellWithoutDivider(item: item)
-                    getCellWithDivider(item: item)
+                    getCell(item: item)
                 }
                 .padding(.bottom, -4)
             }
@@ -73,7 +72,7 @@ struct CheckboxPickerScreen<T>: View {
     }
 
     @ViewBuilder
-    func getCellWithoutDivider(item: (object: T, displayName: String)) -> some View {
+    func getCell(item: (object: T, displayName: String)) -> some View {
         if showDividers ?? false {
             hRow {
                 displayContent(displayName: item.displayName)
@@ -84,12 +83,8 @@ struct CheckboxPickerScreen<T>: View {
                 onTapExecute(item: item)
             }
             .hWithoutDivider
-        }
-    }
+        } else {
 
-    @ViewBuilder
-    func getCellWithDivider(item: (object: T, displayName: String)) -> some View {
-        if !(showDividers ?? false) {
             hRow {
                 displayContent(displayName: item.displayName)
             }
@@ -175,5 +170,31 @@ struct CheckboxPickerScreen<T>: View {
         } else {
             hBackgroundColorNew.semanticBorderTwo
         }
+    }
+}
+struct CheckboxPickerScreen_Previews: PreviewProvider {
+
+    struct ModelForPreview {
+        let id: String
+        let name: String
+    }
+    static var previews: some View {
+        CheckboxPickerScreen<ModelForPreview>(
+            items: {
+                return [
+                    ModelForPreview(id: "id", name: "name"),
+                    ModelForPreview(id: "id2", name: "name2"),
+                ]
+                .compactMap({ (object: $0, displayName: $0.name) })
+            }(),
+            preSelectedItems: { nil },
+            onSelected: { selectedLocation in
+
+            },
+            onCancel: {
+
+            },
+            singleSelect: true
+        )
     }
 }
