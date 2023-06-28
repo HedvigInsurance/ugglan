@@ -93,16 +93,24 @@ extension EnvironmentValues {
 }
 
 extension hSectionContainerStyle: ViewModifier {
+
     public func body(content: Content) -> some View {
         switch self {
         case .transparent:
             content
         case let .opaque(useNewStyle):
-            content.background(
-                getOpaqueBackground(useNewStyle: useNewStyle)
-            )
-            .clipShape(Squircle.default())
-            .hShadow()
+            if useNewStyle {
+                content.background(
+                    getOpaqueBackground(useNewStyle: useNewStyle)
+                )
+                .clipShape(Squircle.default())
+            } else {
+                content.background(
+                    getOpaqueBackground(useNewStyle: useNewStyle)
+                )
+                .clipShape(Squircle.default())
+                .hShadow()
+            }
         case let .caution(useNewStyle):
             content.background(
                 getCautionBackground(useNewStyle: useNewStyle)

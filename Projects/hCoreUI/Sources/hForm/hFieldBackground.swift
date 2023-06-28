@@ -10,11 +10,14 @@ struct hFieldBackgroundModifier: ViewModifier {
                 content
                     .padding(.horizontal, 16)
                     .background(getBackgroundColor())
+                    .animation(.easeOut, value: animate)
                     .clipShape(Squircle.default())
+
             } else {
                 content
                     .padding(.horizontal, 16)
                     .background(getBackgroundColor())
+                    .animation(.easeOut, value: animate)
                     .clipShape(Squircle.default())
             }
             if let errorMessage = error {
@@ -60,11 +63,17 @@ struct hFieldLabel: View {
         let sizeToScaleFrom = HFontTextStyleNew.title3.uifontTextStyleNew.pointSize
         let sizeToScaleTo = HFontTextStyleNew.footnote.uifontTextStyleNew.pointSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
-        let difference = sizeToScaleTo - sizeToScaleFrom
+        let padding = HFontTextStyleNew.title3.uifontLineHeightDifference * 15
         return hTextNew(placeholder, style: .title3)
-            .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
             .foregroundColor(getTextColor())
-            .padding(.vertical, shouldMoveLabel ? difference / 2 : 0)
+            .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
+            .padding(.bottom, shouldMoveLabel ? 1 : padding)
+            .padding(.top, shouldMoveLabel ? 0 : padding)
+            .frame(
+                height: shouldMoveLabel
+                    ? sizeToScaleFrom * ratio + HFontTextStyleNew.title3.uifontLineHeightDifference * 2 + 1
+                    : sizeToScaleFrom * 3
+            )
     }
 
     @hColorBuilder
@@ -76,5 +85,20 @@ struct hFieldLabel: View {
         } else {
             hLabelColorNew.secondary
         }
+    }
+}
+
+struct hFieldLabel_Previews: PreviewProvider {
+    @State static var value: String?
+    @State static var animate: Bool = false
+    @State static var shouldMoveLabel: Bool = false
+    static var previews: some View {
+        hFieldLabel(
+            placeholder: "PLACE",
+            animate: $animate,
+            error: $value,
+            shouldMoveLabel: $shouldMoveLabel
+        )
+        .background(Color.red)
     }
 }
