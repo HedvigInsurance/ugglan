@@ -553,8 +553,15 @@ public class ClaimJourneys {
     private static func openPriceInputScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: PriceInputScreen(),
-            style: .detented(.scrollViewContentSize, modally: true)
+            rootView: PriceInputScreen(onSave: { purchasePrice in
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(.setPurchasePrice(priceOfPurchase: Double(purchasePrice)))
+                store.send(.navigationAction(action: .dismissScreen))
+            }),
+            style: .detented(.scrollViewContentSize),
+            options: [
+                .defaults
+            ]
         ) {
             action in
             if case .navigationAction(.dismissScreen) = action {
