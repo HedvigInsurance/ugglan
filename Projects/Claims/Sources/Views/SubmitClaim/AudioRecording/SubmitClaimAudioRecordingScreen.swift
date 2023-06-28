@@ -116,6 +116,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                     }
                             }
                         }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
                 .padding(16)
