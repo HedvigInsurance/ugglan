@@ -50,14 +50,23 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     public var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 0) {
-                hFieldLabel(
-                    placeholder: placeholder,
-                    animate: $animate,
-                    error: $error,
-                    shouldMoveLabel: $shouldMoveLabel
-                )
 
-                getTextField
+                if suffix != nil, suffix != "" {
+                    HStack {
+                        getTextField
+                        Spacer()
+                        getSuffixLabel
+                    }
+                    .padding(.vertical, 15)
+                } else {
+                    hFieldLabel(
+                        placeholder: placeholder,
+                        animate: $animate,
+                        error: $error,
+                        shouldMoveLabel: $shouldMoveLabel
+                    )
+                    getTextField
+                }
             }
             .padding(.vertical, shouldMoveLabel ? 10 : 0)
         }
@@ -143,23 +152,20 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             .modifier(masking)
             .tint(hLabelColorNew.primary)
             .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
-                // when clicking
                 if shouldUpdate {
                     value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
-                    if suffix != nil && value != "" {
-                        innerValue = value + " " + (suffix ?? "")
-                        let endPosition = textField?.position(from: textField!.beginningOfDocument, offset: value.count)
-                        if let endPosition = endPosition {
-                            textField?.selectedTextRange = textField?.textRange(from: endPosition, to: endPosition)
-                        }
-                    } else {
-                        innerValue = value
-                    }
+                    innerValue = value
                     previousInnerValue = value
                 }
             }
-            .frame(height: shouldMoveLabel ? fieldPointSize : 0)
-            .padding(.vertical, shouldMoveLabel ? 2 : 0)
+            .frame(height: (shouldMoveLabel && suffix == nil) ? fieldPointSize : 0)
+            .padding(.vertical, (shouldMoveLabel && suffix == nil) ? 2 : 0)
+
+    }
+
+    private var getSuffixLabel: some View {
+        hTextNew(suffix ?? "", style: .title3)
+            .foregroundColor(hLabelColorNew.secondary)
     }
 }
 

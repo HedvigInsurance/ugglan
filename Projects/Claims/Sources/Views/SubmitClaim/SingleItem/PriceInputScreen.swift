@@ -59,6 +59,7 @@ struct PriceInputScreen: View {
                         }
                     }
                     .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
                 }
             }
     }
