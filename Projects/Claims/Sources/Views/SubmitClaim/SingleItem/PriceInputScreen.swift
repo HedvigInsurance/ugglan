@@ -15,20 +15,16 @@ struct PriceInputScreen: View {
     }
 
     var body: some View {
-
         hForm {}
             .hUseNewStyle
             .hFormAttachToBottom {
-
                 VStack(spacing: 16) {
-
                     PresentableStoreLens(
                         SubmitClaimStore.self,
                         getter: { state in
                             state.singleItemStep
                         }
                     ) { singleItemStep in
-
                         hSection {
                             hFloatingTextField(
                                 masking: Masking(type: .digits),
@@ -36,10 +32,8 @@ struct PriceInputScreen: View {
                                 equals: $type,
                                 focusValue: .purchasePrice,
                                 placeholder: L10n.Claims.Item.Screen.Purchase.Price.button,
-                                suffix: singleItemStep?.prefferedCurrency ?? "",
-                                openKeyboardOnStart: true
+                                suffix: singleItemStep?.prefferedCurrency ?? ""
                             )
-
                         }
                         .padding(.top, 16)
                     }
@@ -61,6 +55,9 @@ struct PriceInputScreen: View {
                     .padding(.horizontal, 16)
                     .padding(.bottom, 16)
                 }
+            }
+            .introspectScrollView { scrollView in
+                scrollView.keyboardDismissMode = .interactive
             }
     }
 }

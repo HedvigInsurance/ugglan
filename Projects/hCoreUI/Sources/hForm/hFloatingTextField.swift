@@ -20,7 +20,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Binding var equals: Value?
     let focusValue: Value
     let onReturn: () -> Void
-    let openKeyboardOnStart: Bool?
 
     public init(
         masking: Masking,
@@ -30,8 +29,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         placeholder: String? = nil,
         suffix: String? = nil,
         error: Binding<String?>? = nil,
-        onReturn: @escaping () -> Void = {},
-        openKeyboardOnStart: Bool = false
+        onReturn: @escaping () -> Void = {}
     ) {
         self.masking = masking
         self.placeholder = placeholder ?? masking.placeholderText ?? ""
@@ -41,7 +39,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         self._equals = equals
         self.focusValue = focusValue
         self.onReturn = onReturn
-        self.openKeyboardOnStart = openKeyboardOnStart
         self._error = error ?? Binding.constant(nil)
         self._previousInnerValue = State(initialValue: value.wrappedValue)
         self._innerValue = State(initialValue: value.wrappedValue)
@@ -71,11 +68,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             .padding(.vertical, shouldMoveLabel ? 10 : 0)
         }
         .introspectTextField { textField in
-            if openKeyboardOnStart ?? false {
-                self.textField?.becomeFirstResponder()
-                shouldMoveLabel = true
-            }
-
             if self.textField != textField {
                 self.textField = textField
             }
@@ -105,6 +97,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 }
                 updateMoveLabel()
                 onReturn()
+            }
+            if equals == focusValue {
+                textField?.becomeFirstResponder()
             }
         }
         .onChange(of: equals) { equals in
