@@ -47,8 +47,9 @@ public struct hCounterField: View {
                         getTextLabel
                     }
                 }
+                .padding(.vertical, textToShow.isEmpty ? 0 : 10 - HFontTextStyleNew.title3.uifontLineHeightDifference)
+
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, textToShow.isEmpty ? 16 : 10)
             }
 
             SwiftUI.Button {

@@ -51,6 +51,10 @@ public enum HFontTextStyleNew {
             return .systemFont(ofSize: 14)
         }
     }
+
+    var uifontLineHeightDifference: CGFloat {
+        return self.uifontTextStyleNew.pointSize / 16
+    }
 }
 
 struct hFontModifierNew: ViewModifier {
