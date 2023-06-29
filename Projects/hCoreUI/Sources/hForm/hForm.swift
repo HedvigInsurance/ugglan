@@ -153,7 +153,7 @@ public struct hForm<Content: View>: View {
                     BackgroundView().edgesIgnoringSafeArea(.all)
                 }
             }
-            if bottomAttachedViewHeight > 0, scrollViewHeight > 0 {
+            if bottomAttachedViewHeight > 0, scrollViewHeight > 0, bottomAttachedViewHeight < scrollViewHeight {
                 getScrollView()
                     .mask(
                         LinearGradient(
@@ -173,7 +173,7 @@ public struct hForm<Content: View>: View {
             bottomAttachedView
                 .background(
                     GeometryReader { geo in
-                        Color.clear.opacity(0.4)
+                        Color.clear
                             .onReceive(Just(geo.size.height)) { height in
                                 self.bottomAttachedViewHeight = height
 

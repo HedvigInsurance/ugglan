@@ -35,25 +35,23 @@ struct PriceInputScreen: View {
                                 suffix: singleItemStep?.prefferedCurrency ?? ""
                             )
                         }
-                        .padding(.top, 16)
                     }
-
-                    VStack(spacing: 8) {
-                        hButton.LargeButtonFilled {
-                            UIApplication.dismissKeyboard()
-                            onSave(purchasePrice)
-                        } content: {
-                            hTextNew(L10n.generalSaveButton, style: .body)
-                        }
-                        hButton.LargeButtonText {
-                            UIApplication.dismissKeyboard()
-                            store.send(.navigationAction(action: .dismissScreen))
-                        } content: {
-                            hTextNew(L10n.generalNotSure, style: .body)
+                    hSection {
+                        VStack(spacing: 8) {
+                            hButton.LargeButtonFilled {
+                                UIApplication.dismissKeyboard()
+                                onSave(purchasePrice)
+                            } content: {
+                                hTextNew(L10n.generalSaveButton, style: .body)
+                            }
+                            hButton.LargeButtonText {
+                                UIApplication.dismissKeyboard()
+                                store.send(.navigationAction(action: .dismissScreen))
+                            } content: {
+                                hTextNew(L10n.generalNotSure, style: .body)
+                            }
                         }
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 16)
                 }
             }
             .introspectScrollView { scrollView in
