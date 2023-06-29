@@ -46,7 +46,7 @@ extension DefaultStyling {
         ]
 
         let backImage = hCoreUIAssets.backButton.image.withAlignmentRectInsets(
-            UIEdgeInsets(top: 0, left: -6, bottom: 0, right: 0)
+            UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
         )
         appearance.setBackIndicatorImage(
             backImage,

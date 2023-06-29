@@ -20,7 +20,7 @@ extension JourneyPresentation {
                     progresView.tintColor = .brandNew(.primaryText(false))
                     navigationBar.addSubview(progresView)
                     progresView.snp.makeConstraints { make in
-                        make.leading.equalToSuperview().offset(12)
+                        make.leading.equalToSuperview().offset(15)
                         make.trailing.equalToSuperview().offset(-15)
                         make.top.equalToSuperview()
                         make.height.equalTo(4)
