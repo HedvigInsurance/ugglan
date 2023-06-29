@@ -284,10 +284,18 @@ public struct LoadingButtonWithContent<Content: View>: View {
                     self.presentError = true
                 }
             } else {
-                withAnimation {
-                    self.isLoading = false
-                    self.presentError = false
+                if isLoading == true {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        self.isLoading = false
+                        self.presentError = false
+                    }
+                } else {
+                    withAnimation {
+                        self.isLoading = false
+                        self.presentError = false
+                    }
                 }
+
             }
         }
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
