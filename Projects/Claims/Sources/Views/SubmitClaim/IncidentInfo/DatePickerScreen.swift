@@ -45,6 +45,7 @@ public struct DatePickerScreen: View {
                 )
                 .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
                 .datePickerStyle(.graphical)
+                .frame(height: 350)
                 .padding([.leading, .trailing], 16)
                 .padding([.top], 5)
             }
@@ -92,6 +93,18 @@ public struct DatePickerScreen: View {
                             .foregroundColor(hLabelColor.primary)
                     },
                     buttonStyleSelect: .textButton
+                )
+            }
+        }
+        .onDisappear {
+            if useNewStyle {
+                UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(.link)
+            }
+        }
+        .onAppear {
+            if useNewStyle {
+                UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brandNew(
+                    .primaryText()
                 )
             }
         }
