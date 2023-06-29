@@ -10,7 +10,7 @@ extension JourneyPresentation {
     func configureHomeScroll() -> some JourneyPresentation {
         self.addConfiguration({ presenter in
             let scrollEdgeAppearance = UINavigationBarAppearance()
-            DefaultStyling.applyCommonNavigationBarStyling(scrollEdgeAppearance)
+            DefaultStyling.applyCommonNavigationBarStyling(scrollEdgeAppearance, useNewDesign: false)
             scrollEdgeAppearance.configureWithTransparentBackground()
             scrollEdgeAppearance.largeTitleTextAttributes = scrollEdgeAppearance.largeTitleTextAttributes
                 .merging(

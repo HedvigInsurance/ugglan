@@ -170,11 +170,11 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             }
         }()
 
-        if #available(iOS 16.0, *), options.contains(.blurredBackground) {
+        if #available(iOS 16.0, *) {
             if let presentationController = presentationController as? BlurredSheetPresenationController {
                 presentationController.detents = [
                     .custom(resolver: { context in
-                        return 0
+                        return -50
                     })
                 ]
             }
@@ -242,6 +242,10 @@ extension PresentationOptions {
     // adds a grabber to DetentedModals
     public static let wantsGrabber = PresentationOptions()
     public static let blurredBackground = PresentationOptions()
+    public static let preffersLargerNavigationBar = PresentationOptions()
+    public static let largeNavigationBar: PresentationOptions = [
+        embedInNavigationController, .preffersLargerNavigationBar,
+    ]
 }
 
 extension UIViewController {
@@ -416,25 +420,33 @@ extension PresentationStyle {
                     viewController.navigationController?.navigationBar != nil
                     && (viewController.navigationController?.isNavigationBarHidden ?? true) == false
 
-                let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : 52
+                let navigationBarDynamicHeight = viewController.navigationController?.navigationBar.frame.height
 
+                let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : navigationBarDynamicHeight ?? 52
+
+                let additionalNavigationSafeAreaInsets =
+                    viewController.navigationController?.additionalSafeAreaInsets ?? UIEdgeInsets()
+                let additionalNavigationHeight =
+                    additionalNavigationSafeAreaInsets.top + additionalNavigationSafeAreaInsets.bottom
+
+                let additionalViewHeight =
+                    viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
                 var totalHeight: CGFloat =
                     scrollView.contentSize.height
                     + (hasNavigationBar ? navigationBarHeight : 0)
+                    + additionalNavigationHeight
+                    + additionalViewHeight
                     + 10
                 if #available(iOS 15.0, *) {
                     if keyboardHeight > 0 {
                         if let window = UIApplication.shared.windows.first {
-                            let topPadding = window.safeAreaInsets.top
                             let bottomPadding = window.safeAreaInsets.bottom
                             totalHeight -= bottomPadding
                         }
                     }
-
                 } else {
                     totalHeight += keyboardHeight
                 }
-
                 return totalHeight
             }
         }
@@ -469,17 +481,13 @@ extension PresentationStyle {
                             case .medium:
                                 return .medium()
                             case let .custom(name, block):
-                                if #available(iOS 16.0, *) {
-                                    return UISheetPresentationController.Detent.custom(
-                                        identifier: UISheetPresentationController.Detent.Identifier.init(name)
-                                    ) { context in
-                                        if let weakViewController {
-                                            return block(weakViewController, weakViewController.view)
-                                        }
-                                        return 0
+                                return UISheetPresentationController.Detent.custom(
+                                    identifier: UISheetPresentationController.Detent.Identifier.init(name)
+                                ) { context in
+                                    if let weakViewController {
+                                        return block(weakViewController, weakViewController.view)
                                     }
-                                } else {
-                                    return .medium()
+                                    return 0
                                 }
                             }
                         }) ?? [.medium()]
@@ -734,6 +742,12 @@ class BlurredSheetPresenationController: UISheetPresentationController {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         self.presentedViewController.view.layer.cornerRadius = 16
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+        self.detents = [
+            .custom(resolver: { context in
+                return 0
+            })
+        ]
+
     }
 
     override func presentationTransitionWillBegin() {
