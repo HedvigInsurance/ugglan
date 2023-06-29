@@ -759,21 +759,6 @@ public class ClaimJourneys {
         .withJourneyDismissButton
     }
 
-    @JourneyBuilder
-    public static func showClaimEntrypointsOld(
-        origin: ClaimsOrigin
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SelectClaimEntrypointOld(entrypointGroupId: nil),
-            style: .detented(.large, modally: false)
-        ) { action in
-            getScreen(for: action).hidesBackButton
-        }
-        .hidesBackButton
-        .withJourneyDismissButton
-    }
-
     private static func showClaimFailureScreen() -> some JourneyPresentation {
         HostingJourney(rootView: ClaimFailureScreen())
             .hidesBackButton

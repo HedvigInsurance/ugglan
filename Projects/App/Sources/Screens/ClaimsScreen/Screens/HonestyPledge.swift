@@ -262,39 +262,22 @@ extension HonestyPledge {
 extension HonestyPledge {
     @ViewBuilder
     static func journey(from origin: ClaimsOrigin) -> some View {
-        if hAnalyticsExperiment.claimsTriaging {
-            HonestyPledge { vc in
-                let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-                if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.navigationAction(action: .openNotificationsPermissionScreen))
-                } else {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
-                    if #available(iOS 15.0, *) {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                            vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
-                        }
-                    }
-                }
-            }
-            .hUseNewStyle
-            .hDisableScroll
-        } else {
-            HonestyPledge { _ in
-                let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-                if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.navigationAction(action: .openNotificationsPermissionScreen))
-                } else {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    if hAnalyticsExperiment.claimsTriaging {
-                        store.send(.navigationAction(action: .openNewTriagingScreen))
-                    } else {
-                        store.send(.navigationAction(action: .openEntrypointScreen))
+        HonestyPledge { vc in
+            let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+            if ugglanStore.state.pushNotificationCurrentStatus() != .authorized {
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(.navigationAction(action: .openNotificationsPermissionScreen))
+            } else {
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
+                if #available(iOS 15.0, *) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
                     }
                 }
             }
         }
+        .hUseNewStyle
+        .hDisableScroll
     }
 }
