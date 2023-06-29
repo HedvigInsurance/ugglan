@@ -305,6 +305,8 @@ public class ClaimJourneys {
             { action, pre in
                 if case .setSingleItemModel(_) = action {
                     pre.bag.dispose()
+                } else if case .navigationAction(.dismissScreen) = action {
+                    pre.bag.dispose()
                 }
             }
         )
@@ -350,7 +352,6 @@ public class ClaimJourneys {
 
     static func openModelPickerScreen() -> some JourneyPresentation {
         HostingJourney(
-            SubmitClaimStore.self,
             rootView: CheckboxPickerScreen<ClaimFlowItemModelOptionModel>(
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -362,23 +363,15 @@ public class ClaimJourneys {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setSingleItemModel(modelName: item.first!))
                 },
-                onCancel: {},
+                onCancel: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.navigationAction(action: .dismissScreen))
+                },
                 singleSelect: true,
                 showDividers: true
             ),
             style: .detented(.large, modally: false),
             options: [.defaults, .wantsGrabber, .largeNavigationBar]
-        ) {
-            action in
-            ContinueJourney()
-        }
-        .onAction(
-            SubmitClaimStore.self,
-            { action, pre in
-                if case .setSingleItemModel = action {
-                    pre.bag.dispose()
-                }
-            }
         )
     }
 
