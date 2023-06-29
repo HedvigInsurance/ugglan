@@ -133,9 +133,7 @@ public class ClaimJourneys {
                 SubmitClaimStore.self,
                 rootView: screen,
                 style: .detented(.scrollViewContentSize),
-                options: [
-                    .defaults
-                ]
+                options: [.largeNavigationBar]
             ) {
                 action in
                 if case .setNewDate = action {
@@ -147,7 +145,6 @@ public class ClaimJourneys {
                 }
             }
             .configureTitle(type.title)
-            .withDismissButton
         } else {
             HostingJourney(
                 SubmitClaimStore.self,
@@ -237,7 +234,8 @@ public class ClaimJourneys {
                 },
                 singleSelect: true
             ),
-            style: type == .submitLocation ? .default : .detented(.scrollViewContentSize)
+            style: type == .submitLocation ? .default : .detented(.scrollViewContentSize),
+            options: type == .submitLocation ? [.defaults] : [.largeNavigationBar]
         ) {
             action in
             if case .navigationAction(.dismissScreen) = action {
@@ -285,8 +283,8 @@ public class ClaimJourneys {
                     store.send(.navigationAction(action: .dismissScreen))
                 }
             ),
-            style: .detented(.scrollViewContentSize),
-            options: [.defaults, .wantsGrabber]
+            style: .detented(.large),
+            options: [.largeNavigationBar, .wantsGrabber]
         ) {
             action in
             if case let .setItemBrand(brand) = action {
@@ -369,7 +367,7 @@ public class ClaimJourneys {
                 showDividers: true
             ),
             style: .detented(.large, modally: false),
-            options: [.defaults, .wantsGrabber]
+            options: [.defaults, .wantsGrabber, .largeNavigationBar]
         ) {
             action in
             ContinueJourney()
@@ -449,7 +447,8 @@ public class ClaimJourneys {
                     store.send(.navigationAction(action: .dismissScreen))
                 }
             ),
-            style: .detented(.scrollViewContentSize)
+            style: .detented(.scrollViewContentSize),
+            options: [.largeNavigationBar]
         ) {
             action in
             if case .navigationAction(.dismissScreen) = action {

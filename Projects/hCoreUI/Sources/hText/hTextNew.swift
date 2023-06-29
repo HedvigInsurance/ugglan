@@ -34,26 +34,29 @@ public enum HFontTextStyleNew {
     case title3
     case footnote
     case customTitle
+    case headline
 
-    var uifontTextStyleNew: UIFont {
+    var uifontTextStyle: UIFont {
         switch self {
         case .title1:
-            return .systemFont(ofSize: 48)
+            return UIFontMetrics(forTextStyle: .title1).scaledFont(for: .systemFont(ofSize: 48))
         case .title2:
-            return .systemFont(ofSize: 32)
+            return UIFontMetrics(forTextStyle: .title2).scaledFont(for: .systemFont(ofSize: 32))
         case .title3:
-            return .systemFont(ofSize: 24)
+            return UIFontMetrics(forTextStyle: .title3).scaledFont(for: .systemFont(ofSize: 24))
         case .customTitle:
-            return .systemFont(ofSize: 28)
+            return UIFontMetrics(forTextStyle: .title3).scaledFont(for: .systemFont(ofSize: 28))
         case .body:
-            return .systemFont(ofSize: 18)
+            return UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 18))
+        case .headline:
+            return UIFontMetrics(forTextStyle: .headline).scaledFont(for: .systemFont(ofSize: 18))
         case .footnote:
-            return .systemFont(ofSize: 14)
+            return UIFontMetrics(forTextStyle: .footnote).scaledFont(for: .systemFont(ofSize: 14))
         }
     }
 
     var uifontLineHeightDifference: CGFloat {
-        return self.uifontTextStyleNew.pointSize / 16
+        return self.uifontTextStyle.pointSize / 16
     }
 }
 
@@ -73,6 +76,8 @@ struct hFontModifierNew: ViewModifier {
         case .title3:
             return 30.24 - fontNew.lineHeight
         case .body:
+            return 23.76 - fontNew.lineHeight
+        case .headline:
             return 23.76 - fontNew.lineHeight
         case .footnote:
             return 19.6 - fontNew.lineHeight

@@ -68,7 +68,7 @@ extension Offer: Presentable {
 
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
-        DefaultStyling.applyCommonNavigationBarStyling(appearance)
+        DefaultStyling.applyCommonNavigationBarStyling(appearance, useNewDesign: false)
         viewController.navigationItem.standardAppearance = appearance
         viewController.navigationItem.compactAppearance = appearance
 
