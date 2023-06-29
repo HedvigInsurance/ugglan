@@ -541,11 +541,36 @@ public class ClaimJourneys {
                 openDatePickerScreen(type: .setDateOfPurchase)
             } else if case .navigationAction(.openBrandPicker) = action {
                 openBrandPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
+            } else if case .navigationAction(.openPriceInput) = action {
+                openPriceInputScreen()
             } else {
                 getScreen(for: action)
             }
         }
         .resetProgressToPreviousValueOnDismiss
+    }
+
+    private static func openPriceInputScreen() -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: PriceInputScreen(onSave: { purchasePrice in
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(.setPurchasePrice(priceOfPurchase: Double(purchasePrice)))
+                store.send(.navigationAction(action: .dismissScreen))
+            }),
+            style: .detented(.scrollViewContentSize),
+            options: [
+                .defaults
+            ]
+        ) {
+            action in
+            if case .navigationAction(.dismissScreen) = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
+            }
+        }
+        .configureTitle(L10n.submitClaimPurchasePriceTitle)
     }
 
     private static func openSummaryScreen() -> some JourneyPresentation {

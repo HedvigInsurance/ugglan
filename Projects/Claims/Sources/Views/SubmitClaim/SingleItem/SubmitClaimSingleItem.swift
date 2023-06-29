@@ -6,8 +6,6 @@ import hGraphQL
 
 public struct SubmitClaimSingleItem: View {
     @PresentableStore var store: SubmitClaimStore
-    @State var purchasePrice: String = ""
-    @State var validPriceInput = false
     @State var type: ClaimsFlowSingleItemFieldType?
 
     public init() {}
@@ -25,20 +23,20 @@ public struct SubmitClaimSingleItem: View {
                         state.singleItemStep
                     }
                 ) { singleItemStep in
+
                     displayBrandAndModelField(singleItemStep: singleItemStep)
                     displayDateField(claim: singleItemStep)
                     displayPurchasePriceField(claim: singleItemStep)
                     displayDamageField(claim: singleItemStep)
                     InfoCard(text: L10n.claimsSingleItemNoticeLabel)
                         .padding(.vertical, 12)
+                    LoadingButtonWithContent(.postSingleItem) {
+                        store.send(.singleItemRequest(purchasePrice: singleItemStep?.purchasePrice))
+                    } content: {
+                        hText(L10n.generalContinueButton)
+                    }
+                    .padding(.horizontal, 16)
                 }
-                LoadingButtonWithContent(.postSingleItem) {
-                    store.send(.singleItemRequest(purchasePrice: Double(purchasePrice)))
-                    UIApplication.dismissKeyboard()
-                } content: {
-                    hText(L10n.generalContinueButton)
-                }
-                .padding(.horizontal, 16)
             }
         }
     }
@@ -92,13 +90,13 @@ public struct SubmitClaimSingleItem: View {
     @ViewBuilder func displayPurchasePriceField(claim: FlowClamSingleItemStepModel?) -> some View {
 
         hSection {
-            hFloatingTextField(
-                masking: Masking(type: .digits),
-                value: $purchasePrice,
-                equals: $type,
-                focusValue: .purchasePrice,
+            hFloatingField(
+                value: (claim?.purchasePrice != nil)
+                    ? String(format: "%.0f", claim?.purchasePrice ?? 0) + " " + (claim?.prefferedCurrency ?? "") : "",
                 placeholder: L10n.Claims.Item.Screen.Purchase.Price.button,
-                suffix: claim?.prefferedCurrency ?? ""
+                onTap: {
+                    store.send(.navigationAction(action: .openPriceInput))
+                }
             )
         }
         .sectionContainerStyle(.transparent)

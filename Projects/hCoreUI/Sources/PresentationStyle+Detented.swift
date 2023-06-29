@@ -418,11 +418,22 @@ extension PresentationStyle {
 
                 let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : 52
 
-                let totalHeight: CGFloat =
+                var totalHeight: CGFloat =
                     scrollView.contentSize.height
                     + (hasNavigationBar ? navigationBarHeight : 0)
-                    + keyboardHeight
                     + 10
+                if #available(iOS 15.0, *) {
+                    if keyboardHeight > 0 {
+                        if let window = UIApplication.shared.windows.first {
+                            let topPadding = window.safeAreaInsets.top
+                            let bottomPadding = window.safeAreaInsets.bottom
+                            totalHeight -= bottomPadding
+                        }
+                    }
+
+                } else {
+                    totalHeight += keyboardHeight
+                }
 
                 return totalHeight
             }
