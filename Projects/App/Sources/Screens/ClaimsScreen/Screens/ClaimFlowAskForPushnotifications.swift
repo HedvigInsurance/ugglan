@@ -99,7 +99,7 @@ extension AskForPushnotifications {
                                 DismissJourney()
                             }
                         }
-                } else if case .openNewTriagingScreen = navigationAction {
+                } else if case .openTriagingScreen = navigationAction {
                     ClaimJourneys.showClaimEntrypointGroup(origin: origin)
                 }
             } else {
