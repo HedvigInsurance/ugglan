@@ -744,7 +744,7 @@ class BlurredSheetPresenationController: UISheetPresentationController {
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         self.detents = [
             .custom(resolver: { context in
-                return 200
+                return 0
             })
         ]
 

@@ -47,10 +47,6 @@ class NavBar: UINavigationBar {
         subviews.forEach { (subview) in
             if subview.frame.size.height != barHeight {
                 let stringFromClass = NSStringFromClass(subview.classForCoder)
-                //                if stringFromClass.contains("BarBackground") {
-                //                    subview.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: barHeight)
-                //
-                //                }
                 if stringFromClass.contains("BarContent") {
                     subview.frame = CGRect(x: 0, y: -(90 - 56) / 2, width: self.frame.width, height: barHeight)
                 }
