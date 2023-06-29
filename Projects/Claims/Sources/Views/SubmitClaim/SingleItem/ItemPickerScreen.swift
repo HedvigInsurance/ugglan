@@ -41,6 +41,7 @@ public struct ItemPickerScreen<T>: View {
                 hTextNew(L10n.generalCancelButton, style: .body)
             }
             .padding(.horizontal, 16)
+            .padding(.top, 16)
         }
     }
 }
