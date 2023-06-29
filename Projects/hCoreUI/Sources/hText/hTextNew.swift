@@ -39,19 +39,19 @@ public enum HFontTextStyleNew {
     var uifontTextStyle: UIFont {
         switch self {
         case .title1:
-            return UIFontMetrics(forTextStyle: .title1).scaledFont(for: .systemFont(ofSize: 48))
+            return .systemFont(ofSize: 48)
         case .title2:
-            return UIFontMetrics(forTextStyle: .title2).scaledFont(for: .systemFont(ofSize: 32))
+            return .systemFont(ofSize: 32)
         case .title3:
-            return UIFontMetrics(forTextStyle: .title3).scaledFont(for: .systemFont(ofSize: 24))
+            return .systemFont(ofSize: 24)
         case .customTitle:
-            return UIFontMetrics(forTextStyle: .title3).scaledFont(for: .systemFont(ofSize: 28))
+            return .systemFont(ofSize: 28)
         case .body:
-            return UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 18))
+            return .systemFont(ofSize: 18)
         case .headline:
-            return UIFontMetrics(forTextStyle: .headline).scaledFont(for: .systemFont(ofSize: 18))
+            return .systemFont(ofSize: 18)
         case .footnote:
-            return UIFontMetrics(forTextStyle: .footnote).scaledFont(for: .systemFont(ofSize: 14))
+            return .systemFont(ofSize: 14)
         }
     }
 
