@@ -11,7 +11,7 @@ func setGrabber(on presentationController: UIPresentationController, to value: B
 
     let selector = NSSelectorFromString(grabberKey.joined())
 
-    if #available(iOS 15.0, *) {
+    if #available(iOS 16.0, *) {
         if let presentationController = presentationController as? UISheetPresentationController {
             presentationController.prefersGrabberVisible = value
         } else if presentationController.responds(to: selector) {
@@ -152,7 +152,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     ) -> UIPresentationController? {
 
         let presentationController: UIPresentationController = {
-            if #available(iOS 15.0, *) {
+            if #available(iOS 16.0, *) {
                 let presentationController = BlurredSheetPresenationController(
                     presentedViewController: presented,
                     presenting: presenting,
@@ -196,7 +196,8 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             )
 
             Signal(after: 0.001).future
-                .onValue { _ in
+                .onValue { [weak presentationController] _ in
+                    guard let presentationController = presentationController else { return }
                     PresentationStyle.Detent.set(
                         self.detents,
                         on: presentationController,
@@ -220,7 +221,8 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             )
 
             Signal(after: 0.05).future
-                .onValue { _ in
+                .onValue { [weak presentationController] _ in
+                    guard let presentationController = presentationController else { return }
                     PresentationStyle.Detent.set(
                         self.detents,
                         on: presentationController,
@@ -281,9 +283,11 @@ extension UIViewController {
             guard let presentationController = navigationController?.presentationController,
                 let newValue = newValue, let index = appliedDetents.firstIndex(of: newValue)
             else { return }
-
+            weak var presentationControllerWeak = presentationController
             func apply() {
-                setDetentIndex(on: presentationController, index: index)
+                if let presentationControllerWeak {
+                    setDetentIndex(on: presentationControllerWeak, index: index)
+                }
             }
 
             if #available(iOS 15, *),
@@ -337,11 +341,11 @@ extension UIViewController {
             return bag
         }
         .distinct()
-        .readable {
-            self.currentDetent
+        .readable { [weak self] in
+            self?.currentDetent
         }
-        .writable { detent in
-            self.currentDetent = detent
+        .writable { [weak self] detent in
+            self?.currentDetent = detent
         }
     }
 
@@ -439,45 +443,56 @@ extension PresentationStyle {
             unanimated: Bool
         ) {
             guard !detents.isEmpty else { return }
-
+            weak var weakViewController = viewController
+            weak var weakPresentationController = presentationController
             func apply() {
-                if #available(iOS 15.0, *) {
-                    viewController.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
-                    viewController.appliedDetents = detents
-                    viewController.sheetPresentationController?.detents = viewController.appliedDetents.map({
-                        switch $0 {
-                        case .large:
-                            return .large()
-                        case .medium:
-                            return .medium()
-                        case let .custom(name, block):
-                            if #available(iOS 16.0, *) {
-                                return UISheetPresentationController.Detent.custom(
-                                    identifier: UISheetPresentationController.Detent.Identifier.init(name)
-                                ) { context in
-                                    return block(viewController, viewController.view)
-                                }
-                            } else {
+                if #available(iOS 16.0, *) {
+                    weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
+                    weakViewController?.appliedDetents = detents
+                    weakViewController?.sheetPresentationController?.detents =
+                        weakViewController?.appliedDetents
+                        .map({
+                            switch $0 {
+                            case .large:
+                                return .large()
+                            case .medium:
                                 return .medium()
+                            case let .custom(name, block):
+                                if #available(iOS 16.0, *) {
+                                    return UISheetPresentationController.Detent.custom(
+                                        identifier: UISheetPresentationController.Detent.Identifier.init(name)
+                                    ) { context in
+                                        if let weakViewController {
+                                            return block(weakViewController, weakViewController.view)
+                                        }
+                                        return 0
+                                    }
+                                } else {
+                                    return .medium()
+                                }
                             }
-                        }
-                    })
+                        }) ?? [.medium()]
                     if let lastDetentIndex = lastDetentIndex {
                         setDetentIndex(on: presentationController, index: lastDetentIndex)
                     }
                 } else {
                     let key = ["_", "set", "Detents", ":"]
                     let selector = NSSelectorFromString(key.joined())
-                    viewController.appliedDetents = detents
-                    presentationController.perform(
-                        selector,
-                        with: NSArray(array: detents.map { $0.getDetent(viewController) })
-                    )
+                    weakViewController?.appliedDetents = detents
+                    if let weakViewController {
+                        weakPresentationController?
+                            .perform(
+                                selector,
+                                with: NSArray(array: detents.map { $0.getDetent(weakViewController) })
+                            )
 
-                    setWantsBottomAttachedInCompactHeight(on: presentationController, to: true)
+                    }
+                    if let weakPresentationController {
+                        setWantsBottomAttachedInCompactHeight(on: weakPresentationController, to: true)
+                    }
 
-                    if let lastDetentIndex = lastDetentIndex {
-                        setDetentIndex(on: presentationController, index: lastDetentIndex)
+                    if let lastDetentIndex = lastDetentIndex, let weakPresentationController {
+                        setDetentIndex(on: weakPresentationController, index: lastDetentIndex)
                     }
                 }
             }
@@ -693,7 +708,7 @@ extension PresentationStyle {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 class BlurredSheetPresenationController: UISheetPresentationController {
 
     let effectView: UIVisualEffectView?
