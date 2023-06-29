@@ -68,27 +68,16 @@ extension AppJourney {
         ) { action in
             if case let .navigationAction(navigationAction) = action {
                 if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
-                    if hAnalyticsExperiment.claimsTriaging {
-                        ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                            .onAction(SubmitClaimStore.self) { action in
-                                if case .dissmissNewClaimFlow = action {
-                                    DismissJourney()
-                                }
+                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                        .onAction(SubmitClaimStore.self) { action in
+                            if case .dissmissNewClaimFlow = action {
+                                DismissJourney()
                             }
-                    } else {
-                        ClaimJourneys.showClaimEntrypointsOld(origin: origin)
-                            .onAction(SubmitClaimStore.self) { action in
-                                if case .dissmissNewClaimFlow = action {
-                                    DismissJourney()
-                                }
-                            }
-                    }
+                        }
                 } else if case .openNotificationsPermissionScreen = navigationAction {
                     AskForPushnotifications.journey(for: origin)
                 } else if case .openNewTriagingScreen = navigationAction {
                     ClaimJourneys.showClaimEntrypointGroup(origin: origin).addClaimsProgressBar
-                } else if case .openEntrypointScreen = navigationAction {
-                    ClaimJourneys.showClaimEntrypointsOld(origin: origin)
                 } else {
                     ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
                 }

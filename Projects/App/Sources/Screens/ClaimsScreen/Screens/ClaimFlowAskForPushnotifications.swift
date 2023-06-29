@@ -79,21 +79,12 @@ extension AskForPushnotifications {
             rootView: AskForPushnotifications(
                 text: L10n.claimsActivateNotificationsBody,
                 onActionExecuted: { vc in
-                    if hAnalyticsExperiment.claimsTriaging {
-                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
-                        if #available(iOS 15.0, *) {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                                vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
-                                vc?.sheetPresentationController?.detents = [.medium()]
-                            }
-                        }
-                    } else {
-                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        if hAnalyticsExperiment.claimsTriaging {
-                            store.send(.navigationAction(action: .openNewTriagingScreen))
-                        } else {
-                            store.send(.navigationAction(action: .openEntrypointScreen))
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
+                    if #available(iOS 15.0, *) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                            vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
+                            vc?.sheetPresentationController?.detents = [.medium()]
                         }
                     }
                 }
@@ -102,25 +93,14 @@ extension AskForPushnotifications {
         ) { action in
             if case let .navigationAction(navigationAction) = action {
                 if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
-                    if hAnalyticsExperiment.claimsTriaging {
-                        ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                            .onAction(SubmitClaimStore.self) { action in
-                                if case .dissmissNewClaimFlow = action {
-                                    DismissJourney()
-                                }
+                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                        .onAction(SubmitClaimStore.self) { action in
+                            if case .dissmissNewClaimFlow = action {
+                                DismissJourney()
                             }
-                    } else {
-                        ClaimJourneys.showClaimEntrypointsOld(origin: origin)
-                            .onAction(SubmitClaimStore.self) { action in
-                                if case .dissmissNewClaimFlow = action {
-                                    DismissJourney()
-                                }
-                            }
-                    }
+                        }
                 } else if case .openNewTriagingScreen = navigationAction {
                     ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                } else if case .openEntrypointScreen = navigationAction {
-                    ClaimJourneys.showClaimEntrypointsOld(origin: origin)
                 }
             } else {
                 ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
