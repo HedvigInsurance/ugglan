@@ -11,7 +11,7 @@ func setGrabber(on presentationController: UIPresentationController, to value: B
 
     let selector = NSSelectorFromString(grabberKey.joined())
 
-    if #available(iOS 15.0, *) {
+    if #available(iOS 16.0, *) {
         if let presentationController = presentationController as? UISheetPresentationController {
             presentationController.prefersGrabberVisible = value
         } else if presentationController.responds(to: selector) {
@@ -152,7 +152,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     ) -> UIPresentationController? {
 
         let presentationController: UIPresentationController = {
-            if #available(iOS 15.0, *) {
+            if #available(iOS 16.0, *) {
                 let presentationController = BlurredSheetPresenationController(
                     presentedViewController: presented,
                     presenting: presenting,
@@ -446,7 +446,7 @@ extension PresentationStyle {
             weak var weakViewController = viewController
             weak var weakPresentationController = presentationController
             func apply() {
-                if #available(iOS 15.0, *) {
+                if #available(iOS 16.0, *) {
                     weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
                     weakViewController?.appliedDetents = detents
                     weakViewController?.sheetPresentationController?.detents =
@@ -708,7 +708,7 @@ extension PresentationStyle {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 class BlurredSheetPresenationController: UISheetPresentationController {
 
     let effectView: UIVisualEffectView?
