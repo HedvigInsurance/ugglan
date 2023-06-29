@@ -61,7 +61,7 @@ struct CheckboxPickerScreen<T>: View {
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.top, 6)
+            .padding(.top, 16)
         }
         .onAppear {
             preSelectedItems()?

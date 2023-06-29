@@ -31,6 +31,8 @@ public struct ItemPickerScreen<T>: View {
                     }
                     .foregroundColor(hLabelColorNew.tertiary)
                 }
+                .withoutBottomPadding
+                .padding(.vertical, 7)
             }
         }
         .hUseNewStyle
