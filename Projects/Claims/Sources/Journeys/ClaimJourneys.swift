@@ -133,7 +133,7 @@ public class ClaimJourneys {
                 SubmitClaimStore.self,
                 rootView: screen,
                 style: .detented(.scrollViewContentSize),
-                options: [.largeNavigationBar]
+                options: [.largeNavigationBar, .blurredBackground]
             ) {
                 action in
                 if case .setNewDate = action {
@@ -235,7 +235,7 @@ public class ClaimJourneys {
                 singleSelect: true
             ),
             style: type == .submitLocation ? .default : .detented(.scrollViewContentSize),
-            options: type == .submitLocation ? [.defaults] : [.largeNavigationBar]
+            options: type == .submitLocation ? [.defaults] : [.largeNavigationBar, .blurredBackground]
         ) {
             action in
             if case .navigationAction(.dismissScreen) = action {
@@ -284,7 +284,7 @@ public class ClaimJourneys {
                 }
             ),
             style: .detented(.large),
-            options: [.largeNavigationBar, .wantsGrabber]
+            options: [.largeNavigationBar, .wantsGrabber, .blurredBackground]
         ) {
             action in
             if case let .setItemBrand(brand) = action {
@@ -371,7 +371,7 @@ public class ClaimJourneys {
                 showDividers: true
             ),
             style: .detented(.large, modally: false),
-            options: [.defaults, .wantsGrabber, .largeNavigationBar]
+            options: [.wantsGrabber, .largeNavigationBar, .blurredBackground]
         )
     }
 
@@ -441,7 +441,7 @@ public class ClaimJourneys {
                 }
             ),
             style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar]
+            options: [.largeNavigationBar, .blurredBackground]
         ) {
             action in
             if case .navigationAction(.dismissScreen) = action {
@@ -552,7 +552,7 @@ public class ClaimJourneys {
             }),
             style: .detented(.scrollViewContentSize),
             options: [
-                .defaults
+                .largeNavigationBar, .blurredBackground,
             ]
         ) {
             action in
