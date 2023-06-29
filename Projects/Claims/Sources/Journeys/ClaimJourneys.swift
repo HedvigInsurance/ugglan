@@ -570,7 +570,7 @@ public class ClaimJourneys {
                 getScreen(for: action)
             }
         }
-        .configureTitle("Fyll i ditt inköpspris")
+        .configureTitle(L10n.submitClaimPurchasePriceTitle)
     }
 
     private static func openSummaryScreen() -> some JourneyPresentation {
