@@ -165,6 +165,7 @@ extension ProfileView {
                     rootView: EuroBonusView(),
                     options: [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
                 )
+                .configureTitle(L10n.SasIntegration.title)
             }
         }
         .configureTitle(L10n.profileTitle)

@@ -16,7 +16,13 @@ public struct Claims {
     public init() {
         let store: ClaimsStore = globalPresentableStoreContainer.get()
         let count = store.state.claims?.count ?? 1
-        let refreshOn = min(count * 5, 20)
+        let refreshOn: Int = {
+            if count == 0 {
+                return 5
+            } else {
+                return min(count * 5, 20)
+            }
+        }()
         pollTimer = Timer.publish(every: TimeInterval(refreshOn), on: .main, in: .common).autoconnect()
     }
 }
