@@ -112,7 +112,7 @@ extension BankIDLoginSweden: Presentable {
                 containerView.setNeedsLayout()
                 containerView.layoutIfNeeded()
             })
-                
+
         bag += store.stateSignal
             .atOnce()
             .map { state in
@@ -131,23 +131,25 @@ extension BankIDLoginSweden: Presentable {
                 else {
                     return
                 }
-                
+
                 guard viewController.navigationController?.viewControllers.count == 1 else {
                     return
                 }
-
-                if UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(
-                        url,
-                        options: [:],
-                        completionHandler: nil
-                    )
+                if !store.state.loginHasFailed {
+                    log.info("BANK ID APP started", error: nil, attributes: ["token": autoStartToken])
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(
+                            url,
+                            options: [:],
+                            completionHandler: nil
+                        )
+                    }
                 }
             }
-        
+
         store.send(.cancel)
         store.send(.seBankIDStateAction(action: .startSession))
-        
+
         return (
             viewController,
             Signal { callback in
@@ -158,16 +160,14 @@ extension BankIDLoginSweden: Presentable {
                         callback(.loggedIn)
                     }
                 )
-                
-                bag += store.onAction(
-                    .loginFailure,
-                    {
+                bag += store.actionSignal.onValue { action in
+                    if case let .loginFailure(message) = action {
                         guard viewController.navigationController?.viewControllers.count == 1 else {
                             return
                         }
-                        
+
                         let alert = Alert<Void>(
-                            title: L10n.bankidUserCancelTitle,
+                            title: message ?? L10n.bankidUserCancelTitle,
                             actions: [
                                 .init(
                                     title: L10n.generalRetry,
@@ -184,12 +184,12 @@ extension BankIDLoginSweden: Presentable {
                                 ),
                             ]
                         )
-                        
+
                         viewController.present(
                             alert
                         )
                     }
-                )
+                }
 
                 bag += alternativeLoginButton.onTapSignal.onValue { _ in
                     let alert = Alert<Void>(actions: [

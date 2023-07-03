@@ -45,7 +45,7 @@ public struct hDatePickerField: View {
             )
             getValueLabel()
         }
-        .padding(.vertical, 10)
+        .padding(.vertical, 10 - HFontTextStyleNew.title3.uifontLineHeightDifference)
         .onChange(of: date) { date in
             selectedDate = date
         }

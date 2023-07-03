@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct DamamagePickerScreen: View {
+public struct DamamagePickerScreenOld: View {
     @PresentableStore var store: SubmitClaimStore
     @State var selectedDamages: [String] = []
 

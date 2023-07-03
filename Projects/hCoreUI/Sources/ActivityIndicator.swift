@@ -73,3 +73,82 @@ public struct WordmarkActivityIndicator: View {
         }
     }
 }
+
+public struct DotsActivityIndicator: View {
+    @State var animate: Bool = false
+    var size: Size
+    public enum Size {
+        case standard
+        case small
+    }
+
+    public init(
+        _ size: Size
+    ) {
+        self.size = size
+    }
+
+    var dotSize: CGFloat {
+        switch size {
+        case .standard:
+            return 6
+        case .small:
+            return 3
+        }
+    }
+
+    public var body: some View {
+        HStack(alignment: .center, spacing: 0) {
+            PulsingCircle(index: 0).frame(width: dotSize, height: dotSize)
+            Color.clear.frame(width: dotSize)
+            PulsingCircle(index: 1).frame(width: dotSize, height: dotSize)
+            Color.clear.frame(width: dotSize)
+            PulsingCircle(index: 2).frame(width: dotSize, height: dotSize)
+        }
+        .onAppear {
+            self.animate = true
+        }
+        .onDisappear {
+            self.animate = false
+        }
+    }
+}
+
+private struct PulsingCircle: View {
+    let totalNumber: CGFloat = 3
+    let duration: CGFloat = 0.5
+    let index: CGFloat
+    @State var animate: Bool = false
+
+    public var body: some View {
+        Circle()
+            .fill(hLabelColorNew.primary.inverted)
+            .opacity(animate ? 0.4 : 1)
+            .onAppear {
+                setAnimation()
+            }
+    }
+
+    private func setAnimation() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration * index) {
+            //            withAnimation(.interpolatingSpring(stiffness: 170, damping: 15)) {
+            withAnimation(.easeInOut(duration: duration)) {
+                animate = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                withAnimation(.easeInOut(duration: duration)) {
+                    animate = false
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + duration * (totalNumber - index - 1)) {
+                    setAnimation()
+                }
+            }
+        }
+    }
+}
+
+struct DotsActivityIndicator_Previews: PreviewProvider {
+    static var previews: some View {
+        DotsActivityIndicator(.standard).background(Color.black)
+    }
+}

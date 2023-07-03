@@ -46,8 +46,8 @@ public enum FontsNew {
         func getFontNew(_ font: UIFont) -> UIFont {
 
             let defaultDescriptor = UIFontDescriptor(
-                name: style.uifontTextStyleNew.fontName,
-                size: style.uifontTextStyleNew.pointSize
+                name: style.uifontTextStyle.fontName,
+                size: style.uifontTextStyle.pointSize
             )
             let size = defaultDescriptor.pointSize
             let fontDescriptor = UIFontDescriptor(fontAttributes: [
@@ -64,7 +64,7 @@ public enum FontsNew {
         }
 
         switch style {
-        case .title2:
+        case .title2, .customTitle:
             return getFontNew(hedvigLettersBigNew)
         default:
             return getFontNew(hedvigLettersStandardNew)

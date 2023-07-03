@@ -11,7 +11,17 @@ func setGrabber(on presentationController: UIPresentationController, to value: B
 
     let selector = NSSelectorFromString(grabberKey.joined())
 
-    if presentationController.responds(to: selector) {
+    if #available(iOS 16.0, *) {
+        if let presentationController = presentationController as? UISheetPresentationController {
+            presentationController.prefersGrabberVisible = value
+        } else if presentationController.responds(to: selector) {
+            if value {
+                presentationController.perform(selector, with: value)
+            } else {
+                presentationController.perform(selector, with: nil)
+            }
+        }
+    } else if presentationController.responds(to: selector) {
         if value {
             presentationController.perform(selector, with: value)
         } else {
@@ -140,12 +150,35 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         presenting: UIViewController?,
         source _: UIViewController
     ) -> UIPresentationController? {
-        let key = ["_", "U", "I", "Sheet", "Presentation", "Controller"]
-        let sheetPresentationController = NSClassFromString(key.joined()) as! UIPresentationController.Type
-        let presentationController = sheetPresentationController.init(
-            presentedViewController: presented,
-            presenting: presenting
-        )
+
+        let presentationController: UIPresentationController = {
+            if #available(iOS 16.0, *) {
+                let presentationController = BlurredSheetPresenationController(
+                    presentedViewController: presented,
+                    presenting: presenting,
+                    useBlur: options.contains(.blurredBackground)
+                )
+                return presentationController
+            } else {
+                let key = ["_", "U", "I", "Sheet", "Presentation", "Controller"]
+                let sheetPresentationController = NSClassFromString(key.joined()) as! UIPresentationController.Type
+                let presentationController = sheetPresentationController.init(
+                    presentedViewController: presented,
+                    presenting: presenting
+                )
+                return presentationController
+            }
+        }()
+
+        if #available(iOS 16.0, *) {
+            if let presentationController = presentationController as? BlurredSheetPresenationController {
+                presentationController.detents = [
+                    .custom(resolver: { context in
+                        return -50
+                    })
+                ]
+            }
+        }
 
         if options.contains(.unanimated) {
             PresentationStyle.Detent.set(
@@ -163,7 +196,8 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             )
 
             Signal(after: 0.001).future
-                .onValue { _ in
+                .onValue { [weak presentationController] _ in
+                    guard let presentationController = presentationController else { return }
                     PresentationStyle.Detent.set(
                         self.detents,
                         on: presentationController,
@@ -187,7 +221,8 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             )
 
             Signal(after: 0.05).future
-                .onValue { _ in
+                .onValue { [weak presentationController] _ in
+                    guard let presentationController = presentationController else { return }
                     PresentationStyle.Detent.set(
                         self.detents,
                         on: presentationController,
@@ -206,6 +241,11 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
 extension PresentationOptions {
     // adds a grabber to DetentedModals
     public static let wantsGrabber = PresentationOptions()
+    public static let blurredBackground = PresentationOptions()
+    public static let preffersLargerNavigationBar = PresentationOptions()
+    public static let largeNavigationBar: PresentationOptions = [
+        embedInNavigationController, .preffersLargerNavigationBar,
+    ]
 }
 
 extension UIViewController {
@@ -247,9 +287,11 @@ extension UIViewController {
             guard let presentationController = navigationController?.presentationController,
                 let newValue = newValue, let index = appliedDetents.firstIndex(of: newValue)
             else { return }
-
+            weak var presentationControllerWeak = presentationController
             func apply() {
-                setDetentIndex(on: presentationController, index: index)
+                if let presentationControllerWeak {
+                    setDetentIndex(on: presentationControllerWeak, index: index)
+                }
             }
 
             if #available(iOS 15, *),
@@ -281,8 +323,9 @@ extension UIViewController {
             let bag = DisposeBag()
 
             bag += (self.view as? UIScrollView)?.panGestureRecognizer
-                .onValue { _ in callback(self.currentDetent) }
-
+                .onValue { _ in
+                    callback(self.currentDetent)
+                }
             bag += self.view.didLayoutSignal.onValue({ _ in
                 callback(self.currentDetent)
             })
@@ -302,11 +345,11 @@ extension UIViewController {
             return bag
         }
         .distinct()
-        .readable {
-            self.currentDetent
+        .readable { [weak self] in
+            self?.currentDetent
         }
-        .writable { detent in
-            self.currentDetent = detent
+        .writable { [weak self] detent in
+            self?.currentDetent = detent
         }
     }
 
@@ -377,14 +420,33 @@ extension PresentationStyle {
                     viewController.navigationController?.navigationBar != nil
                     && (viewController.navigationController?.isNavigationBarHidden ?? true) == false
 
-                let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : 52
+                let navigationBarDynamicHeight = viewController.navigationController?.navigationBar.frame.height
 
-                let totalHeight: CGFloat =
+                let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : navigationBarDynamicHeight ?? 52
+
+                let additionalNavigationSafeAreaInsets =
+                    viewController.navigationController?.additionalSafeAreaInsets ?? UIEdgeInsets()
+                let additionalNavigationHeight =
+                    additionalNavigationSafeAreaInsets.top + additionalNavigationSafeAreaInsets.bottom
+
+                let additionalViewHeight =
+                    viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
+                var totalHeight: CGFloat =
                     scrollView.contentSize.height
                     + (hasNavigationBar ? navigationBarHeight : 0)
-                    + keyboardHeight
-                    + 10
-
+                    + additionalNavigationHeight
+                    + additionalViewHeight
+                //                    + 10
+                if #available(iOS 15.0, *) {
+                    if keyboardHeight > 0 {
+                        if let window = UIApplication.shared.windows.first {
+                            let bottomPadding = window.safeAreaInsets.bottom
+                            totalHeight -= bottomPadding
+                        }
+                    }
+                } else {
+                    totalHeight += keyboardHeight + 10
+                }
                 return totalHeight
             }
         }
@@ -404,20 +466,53 @@ extension PresentationStyle {
             unanimated: Bool
         ) {
             guard !detents.isEmpty else { return }
-
+            weak var weakViewController = viewController
+            weak var weakPresentationController = presentationController
             func apply() {
-                let key = ["_", "set", "Detents", ":"]
-                let selector = NSSelectorFromString(key.joined())
-                viewController.appliedDetents = detents
-                presentationController.perform(
-                    selector,
-                    with: NSArray(array: detents.map { $0.getDetent(viewController) })
-                )
+                if #available(iOS 16.0, *) {
+                    weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
+                    weakViewController?.appliedDetents = detents
+                    weakViewController?.sheetPresentationController?.detents =
+                        weakViewController?.appliedDetents
+                        .map({
+                            switch $0 {
+                            case .large:
+                                return .large()
+                            case .medium:
+                                return .medium()
+                            case let .custom(name, block):
+                                return UISheetPresentationController.Detent.custom(
+                                    identifier: UISheetPresentationController.Detent.Identifier.init(name)
+                                ) { context in
+                                    if let weakViewController {
+                                        return block(weakViewController, weakViewController.view)
+                                    }
+                                    return 0
+                                }
+                            }
+                        }) ?? [.medium()]
+                    if let lastDetentIndex = lastDetentIndex {
+                        setDetentIndex(on: presentationController, index: lastDetentIndex)
+                    }
+                } else {
+                    let key = ["_", "set", "Detents", ":"]
+                    let selector = NSSelectorFromString(key.joined())
+                    weakViewController?.appliedDetents = detents
+                    if let weakViewController {
+                        weakPresentationController?
+                            .perform(
+                                selector,
+                                with: NSArray(array: detents.map { $0.getDetent(weakViewController) })
+                            )
 
-                setWantsBottomAttachedInCompactHeight(on: presentationController, to: true)
+                    }
+                    if let weakPresentationController {
+                        setWantsBottomAttachedInCompactHeight(on: weakPresentationController, to: true)
+                    }
 
-                if let lastDetentIndex = lastDetentIndex {
-                    setDetentIndex(on: presentationController, index: lastDetentIndex)
+                    if let lastDetentIndex = lastDetentIndex, let weakPresentationController {
+                        setDetentIndex(on: weakPresentationController, index: lastDetentIndex)
+                    }
                 }
             }
 
@@ -490,7 +585,8 @@ extension PresentationStyle {
         _ from: UIViewController,
         _ options: PresentationOptions,
         detents: [Detent],
-        modally: Bool
+        modally: Bool,
+        bgColor: UIColor?
     ) -> PresentingViewController.Result {
         viewController.setLargeTitleDisplayMode(options)
 
@@ -508,8 +604,7 @@ extension PresentationStyle {
             bag.hold(delegate)
             vc.transitioningDelegate = delegate
             vc.modalPresentationStyle = .custom
-            vc.view.backgroundColor = .brand(.primaryBackground())
-
+            vc.view.backgroundColor = bgColor
             return from.modallyPresentQueued(vc, options: options) {
                 return Future { completion in
                     let dismissal =
@@ -518,7 +613,6 @@ extension PresentationStyle {
                             options: options
                         )
                         .onResult(completion)
-
                     return Disposer {
                         bag.dispose()
                         dismissal.cancel()
@@ -612,7 +706,11 @@ extension PresentationStyle {
         }
     }
 
-    public static func detented(_ detents: Detent..., modally: Bool = true) -> PresentationStyle {
+    public static func detented(
+        _ detents: Detent...,
+        modally: Bool = true,
+        bgColor: UIColor? = .brand(.primaryBackground())
+    ) -> PresentationStyle {
         PresentationStyle(
             name: "detented",
             present: { viewController, from, options in
@@ -621,9 +719,60 @@ extension PresentationStyle {
                     from,
                     options,
                     detents: detents,
-                    modally: modally
+                    modally: modally,
+                    bgColor: bgColor
                 )
             }
         )
+    }
+}
+
+@available(iOS 16.0, *)
+class BlurredSheetPresenationController: UISheetPresentationController {
+
+    let effectView: UIVisualEffectView?
+
+    init(
+        presentedViewController: UIViewController,
+        presenting presentingViewController: UIViewController?,
+        useBlur: Bool
+    ) {
+        effectView = useBlur ? UIVisualEffectView(effect: UIBlurEffect(style: .regular)) : nil
+        effectView?.clipsToBounds = true
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        self.presentedViewController.view.layer.cornerRadius = 16
+        self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+        self.detents = [
+            .custom(resolver: { context in
+                return 0
+            })
+        ]
+
+    }
+
+    override func presentationTransitionWillBegin() {
+        super.presentationTransitionWillBegin()
+        if let effectView {
+            containerView?.addSubview(effectView)
+            effectView.snp.makeConstraints { make in
+                make.top.leading.bottom.trailing.equalToSuperview()
+            }
+            effectView.alpha = 0
+        }
+        presentedViewController.transitionCoordinator?
+            .animate(alongsideTransition: { [weak self] _ in
+                guard let self = self else { return }
+                self.effectView?.alpha = 1
+            })
+    }
+
+    override func dismissalTransitionWillBegin() {
+        super.dismissalTransitionWillBegin()
+
+        presentedViewController.transitionCoordinator?
+            .animate(alongsideTransition: { [weak self] context in
+                guard let self = self else { return }
+                self.effectView?.alpha = 0
+            })
     }
 }

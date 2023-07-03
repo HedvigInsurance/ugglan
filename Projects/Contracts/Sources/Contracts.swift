@@ -1,5 +1,6 @@
 import Flow
 import Foundation
+import Introspect
 import Presentation
 import SwiftUI
 import UIKit
@@ -63,7 +64,7 @@ public struct Contracts {
     @PresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let filter: ContractFilter
-
+    let disposeBag = DisposeBag()
     public init(
         filter: ContractFilter
     ) {
@@ -91,6 +92,20 @@ extension Contracts: View {
             fetch()
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .insurances))
+        .introspectScrollView { scrollView in
+            let refreshControl = UIRefreshControl()
+            disposeBag.dispose()
+            scrollView.refreshControl = refreshControl
+            disposeBag += refreshControl.store(
+                store,
+                send: {
+                    ContractAction.fetch
+                },
+                endOn: .fetchContractBundlesDone,
+                .fetchContractsDone
+            )
+
+        }
     }
 }
 

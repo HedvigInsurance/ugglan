@@ -6,7 +6,7 @@ struct SubmitClaimOccurrencePlusLocationScreenOld: View {
     @PresentableStore var store: SubmitClaimStore
 
     var body: some View {
-        LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
+        LoadingViewWithContent(hUseNewStyle: false, .postDateOfOccurrenceAndLocation) {
             hForm {
 
                 hSection {

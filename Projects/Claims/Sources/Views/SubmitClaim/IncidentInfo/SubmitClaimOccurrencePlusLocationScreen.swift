@@ -6,17 +6,15 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
 
     var body: some View {
-        LoadingViewWithContent(.postDateOfOccurrenceAndLocation) {
-            hForm {
-            }
-            .hFormTitle(.small, L10n.claimsLocatonOccuranceTitle)
-            .hDisableScroll
-            .hUseNewStyle
-            .hFormAttachToBottom {
-                VStack(spacing: 0) {
-                    displayFieldsAndNotice
-                    continueButton
-                }
+        hForm {
+        }
+        .hFormTitle(.small, .customTitle, L10n.claimsLocatonOccuranceTitle)
+        .hDisableScroll
+        .hUseNewStyle
+        .hFormAttachToBottom {
+            VStack(spacing: 0) {
+                displayFieldsAndNotice
+                continueButton
             }
         }
     }
@@ -41,7 +39,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        .padding(.bottom, 8)
+        .padding(.bottom, 4)
 
         hSection {
             PresentableStoreLens(
@@ -64,13 +62,13 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         }
         .sectionContainerStyle(.transparent)
 
-        NoticeComponent(text: L10n.claimsDateNotSureNoticeLabel)
-            .padding([.bottom, .top], 8)
+        InfoCard(text: L10n.claimsDateNotSureNoticeLabel)
+            .padding(.vertical, 16)
     }
 
     @ViewBuilder
     private var continueButton: some View {
-        hButton.LargeButtonFilled {
+        LoadingButtonWithContent(.postDateOfOccurrenceAndLocation) {
             store.send(.dateOfOccurrenceAndLocationRequest)
         } content: {
             hText(L10n.generalContinueButton, style: .body)
@@ -78,7 +76,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         }
         .frame(maxWidth: .infinity, alignment: .bottom)
         .padding([.leading, .trailing], 16)
-        .padding(.bottom, 20)
     }
 }
 

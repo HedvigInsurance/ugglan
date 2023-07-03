@@ -11,7 +11,7 @@ public struct SubmitClaimSingleItemOld: View {
     public init() {}
 
     public var body: some View {
-        LoadingViewWithContent(.postSingleItem) {
+        LoadingViewWithContent(hUseNewStyle: false, .postSingleItem) {
             hForm {
                 PresentableStoreLens(
                     SubmitClaimStore.self,
@@ -133,7 +133,7 @@ public struct SubmitClaimSingleItemOld: View {
                         value: $purchasePrice
                     )
                     .multilineTextAlignment(.trailing)
-                    .hTextFieldOptions([])
+                    .hTextFieldOptions([.minimumHeight(height: 40)])
                     Spacer()
 
                     if let preferredCurrency = claim?.prefferedCurrency {

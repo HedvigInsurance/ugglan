@@ -36,13 +36,23 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         callback(
                             .value(ContractAction.setContractBundles(activeContractBundles: activeContractBundles))
                         )
+                        callback(.value(.fetchContractBundlesDone))
                     }
                     .onError { error in
-                        if !self.state.hasLoadedContractBundlesOnce {
+                        if ApplicationContext.shared.isDemoMode {
                             callback(
-                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
+                                .value(.setLoadingState(action: action, state: nil))
                             )
+                        } else {
+                            if !self.state.hasLoadedContractBundlesOnce {
+                                callback(
+                                    .value(
+                                        .setLoadingState(action: action, state: .error(error: L10n.General.errorBody))
+                                    )
+                                )
+                            }
                         }
+                        callback(.value(.fetchContractBundlesDone))
                     }
                 return disposeBag
             }
@@ -75,9 +85,17 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         } else {
                             callback(.value(.setLoadingState(action: action, state: nil)))
                         }
+                        callback(.value(.fetchContractsDone))
                     }
                     .onError { error in
-                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                        if ApplicationContext.shared.isDemoMode {
+                            callback(.value(.setLoadingState(action: action, state: nil)))
+                        } else {
+                            callback(
+                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
+                            )
+                        }
+                        callback(.value(.fetchContractsDone))
                     }
                 return disposeBag
             }
@@ -151,7 +169,13 @@ public final class ContractStore: StateStore<ContractState, ContractAction> {
                         callback(.value(.setLoadingState(action: action, state: nil)))
                     }
                     .onError { error in
-                        callback(.value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody))))
+                        if ApplicationContext.shared.isDemoMode {
+                            callback(.value(.setLoadingState(action: action, state: nil)))
+                        } else {
+                            callback(
+                                .value(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
+                            )
+                        }
                     }
                 return disposeBag
             }

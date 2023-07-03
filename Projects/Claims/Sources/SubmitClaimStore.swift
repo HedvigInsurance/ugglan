@@ -15,7 +15,6 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
         _ action: SubmitClaimsAction
     ) -> FiniteSignal<SubmitClaimsAction>? {
         let newClaimContext = state.currentClaimContext ?? ""
-        let currentProgress = state.progress
         switch action {
         case .submitClaimOpenFreeTextChat:
             return nil
@@ -39,7 +38,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             )
             return mutation.execute(\.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.currentStep)
         case let .locationRequest(location):
-            let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: location)
+            let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: location?.value)
             let mutation = OctopusGraphQL.FlowClaimLocationNextMutation(input: locationInput, context: newClaimContext)
             return mutation.execute(\.flowClaimLocationNext.fragments.flowClaimFragment.currentStep)
         case .dateOfOccurrenceAndLocationRequest:
@@ -239,7 +238,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
         case let .setNewClaimId(id):
             newState.currentClaimId = id
         case let .setNewLocation(location):
-            newState.locationStep?.location = location
+            newState.locationStep?.location = location?.value
         case let .setNewDate(dateOfOccurrence):
             newState.dateOfOccurenceStep?.dateOfOccurence = dateOfOccurrence
         case let .setSingleItemDamage(damages):
@@ -281,7 +280,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
             case let .setDateOfOccurence(model):
                 newState.dateOfOccurenceStep = model
-                send(.navigationAction(action: .openDatePicker(type: .setDateOfOccurrence)))
+                send(.navigationAction(action: .openDatePicker(type: .submitDateOfOccurence)))
             case let .setLocation(model):
                 newState.locationStep = model
                 send(.navigationAction(action: .openLocationPicker(type: .submitLocation)))
@@ -294,14 +293,16 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
                 newState.singleItemStep = model.singleItemStepModel
                 send(.navigationAction(action: .openSummaryScreen))
-                send(.navigationAction(action: .openCheckoutNoRepairScreen))
             case let .setSingleItemCheckoutStep(model):
                 newState.singleItemCheckoutStep = model
+                send(.navigationAction(action: .openCheckoutNoRepairScreen))
             case let .setFailedStep(model):
                 newState.failedStep = model
                 send(.navigationAction(action: .openFailureSceen))
+                newState.progress = nil
             case let .setSuccessStep(model):
                 newState.successStep = model
+                newState.progress = nil
                 send(.navigationAction(action: .openSuccessScreen))
             case let .setAudioStep(model):
                 newState.audioRecordingStep = model
@@ -336,16 +337,21 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.loadingStates[.postSummary] = .loading
         case .singleItemCheckoutRequest:
             newState.loadingStates[.postSingleItemCheckout] = .loading
+            newState.progress = nil
         case .fetchClaimEntrypointsForSelection:
             newState.loadingStates[.fetchClaimEntrypoints] = .loading
         case .fetchEntrypointGroups:
             newState.loadingStates[.fetchClaimEntrypointGroups] = .loading
+            newState.progress = nil
         case let .setSelectedEntrypoints(entrypoints):
             newState.entrypoints.selectedEntrypoints = entrypoints
         case let .setSelectedEntrypointOptions(entrypointOptions):
             newState.entrypoints.selectedEntrypointOptions = entrypointOptions
         case let .setSelectedEntrypointId(entrypointId):
             newState.entrypoints.selectedEntrypointId = entrypointId
+        case let .setProgress(progress):
+            newState.previousProgress = newState.progress
+            newState.progress = progress
         default:
             break
         }

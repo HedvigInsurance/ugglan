@@ -102,6 +102,19 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         return nil
     }
 
+    func getAllChoosenDamagesAsText() -> String? {
+        let chosenDamages = self.selectedItemProblems ?? []
+        let availableItemProblems =
+            availableItemProblems.filter { model in
+                return chosenDamages.contains(model.itemProblemId)
+            }
+            .map({ $0.displayName })
+        if !availableItemProblems.isEmpty {
+            return availableItemProblems.joined(separator: ", ")
+        }
+        return nil
+    }
+
     func getListOfModels() -> [ClaimFlowItemModelOptionModel]? {
         if let selectedItemBrand {
             return getListOfModels(for: selectedItemBrand)
@@ -131,6 +144,20 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         }
 
         return textParts.joined(separator: " · ")
+    }
+
+    var returnDisplayStringForSummaryDate: String? {
+        if let purchaseDate {
+            return L10n.summaryPurchaseDateDescription(purchaseDate)
+        }
+        return nil
+    }
+
+    var returnDisplayStringForSummaryPrice: String? {
+        if let purchasePrice {
+            return String(Int(purchasePrice)) + " " + (currencyCode ?? "")
+        }
+        return nil
     }
 }
 
@@ -164,9 +191,17 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     }
 }
 
-struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
+public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
     let displayName: String
     let itemProblemId: String
+
+    init(
+        displayName: String,
+        itemProblemId: String
+    ) {
+        self.displayName = displayName
+        self.itemProblemId = itemProblemId
+    }
 
     init(
         with model: OctopusGraphQL.FlowClaimSingleItemStepFragment.AvailableItemProblem

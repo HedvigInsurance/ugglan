@@ -115,7 +115,7 @@ struct MovingFlowConfirm: View {
         HStack {
             hTextNew(L10n.changeAddressDetails, style: .body)
             Image(uiImage: hCoreUIAssets.chevronDown.image)
-                .foregroundColor(hGrayscaleColorNew.greyScale500)
+                .foregroundColor(hLabelColorNew.tertiary)
             Spacer()
             hTextNew(price, style: .body)
         }
@@ -177,25 +177,27 @@ struct MovingFlowConfirm: View {
     @ViewBuilder
     func showCardComponent(insuranceName: String, price: String) -> some View {
         CardComponent(
-            mainContent: Image(uiImage: hCoreUIAssets.pillowHome.image).resizable()
-                .frame(width: 49, height: 49)
-                .foregroundColor(hGrayscaleColorNew.greyScale900),
+            mainContent: Image(uiImage: hCoreUIAssets.pillowHome.image)
+                .resizable()
+                .frame(width: 49, height: 49),
+            //                .foregroundColor(hGrayscaleColorNew.greyScale900),
             topTitle: insuranceName,
-            topSubTitle: returnSubComponent(),
-            bottomComponent: returnBottomComponent(
-                insuranceName: insuranceName,
-                price: price
-            ),
-            isNew: true
+            //            topSubTitle: returnSubComponent(),
+            bottomComponent: {
+                returnBottomComponent(
+                    insuranceName: insuranceName,
+                    price: price
+                )
+            }
         )
-        .cardComponentOptions([.hideArrow])
-        .padding([.leading, .trailing], 16)
-        .padding(.bottom, 8)
+        //        .cardComponentOptions([.hideArrow])
+        //        .padding([.leading, .trailing], 16)
+        //        .padding(.bottom, 8)
     }
 
     @ViewBuilder
     var noticeComponent: some View {
-        NoticeComponent(
+        InfoCard(
             text:
                 L10n.changeAddressAccidentNotice
         )

@@ -3,5 +3,8 @@ mutation FlowClaimSummaryNext($input: FlowClaimSummaryInput!, $context: FlowCont
     id
     ...FlowClaimFragment
     context
+    progress {
+        ...ProgressFragment
+    }
   }
 }

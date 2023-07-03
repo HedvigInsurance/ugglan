@@ -33,8 +33,10 @@ public enum HFontTextStyleNew {
     case title2
     case title3
     case footnote
+    case customTitle
+    case headline
 
-    var uifontTextStyleNew: UIFont {
+    var uifontTextStyle: UIFont {
         switch self {
         case .title1:
             return .systemFont(ofSize: 48)
@@ -42,11 +44,19 @@ public enum HFontTextStyleNew {
             return .systemFont(ofSize: 32)
         case .title3:
             return .systemFont(ofSize: 24)
+        case .customTitle:
+            return .systemFont(ofSize: 28)
         case .body:
+            return .systemFont(ofSize: 18)
+        case .headline:
             return .systemFont(ofSize: 18)
         case .footnote:
             return .systemFont(ofSize: 14)
         }
+    }
+
+    var uifontLineHeightDifference: CGFloat {
+        return self.uifontTextStyle.pointSize / 16
     }
 }
 
@@ -67,10 +77,12 @@ struct hFontModifierNew: ViewModifier {
             return 30.24 - fontNew.lineHeight
         case .body:
             return 23.76 - fontNew.lineHeight
+        case .headline:
+            return 23.76 - fontNew.lineHeight
         case .footnote:
             return 19.6 - fontNew.lineHeight
-        default:
-            return 0
+        case .customTitle:
+            return 33.6 - fontNew.lineHeight
         }
     }
 

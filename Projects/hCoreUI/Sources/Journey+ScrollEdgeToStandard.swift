@@ -8,7 +8,7 @@ extension JourneyPresentation {
         addConfiguration { presenter in
             presenter.bag += presenter.viewController.view.didMoveToWindowSignal.onValue({ _ in
                 presenter.viewController.navigationController?.navigationBar.scrollEdgeAppearance =
-                    DefaultStyling.standardNavigationBarAppearance()
+                    DefaultStyling.standardNavigationBarAppearance(useNewDesign: false)
             })
         }
     }

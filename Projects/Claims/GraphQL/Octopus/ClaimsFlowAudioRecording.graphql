@@ -3,5 +3,8 @@ mutation FlowClaimAudioRecordingNext($input: FlowClaimAudioRecordingInput!, $con
     id
     ...FlowClaimFragment
     context
+    progress {
+        ...ProgressFragment
+    }
   }
 }

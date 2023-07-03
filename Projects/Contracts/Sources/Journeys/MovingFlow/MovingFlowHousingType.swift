@@ -16,20 +16,15 @@ public struct MovingFlowHousingType: View {
         LoadingViewWithContent(.setMoveIntent) {
             hForm {
                 VStack {
-                    hTextNew(L10n.changeAddressSelectHousingTypeTitle, style: .title3)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.top, 54)
-                        .padding(.bottom, 64)
-
                     ForEach(housingTypes, id: \.self) { type in
                         setCheckBoxComponent(text: type)
                     }
 
-                    NoticeComponent(text: L10n.changeAddressCoverageInfoText)
+                    InfoCard(text: L10n.changeAddressCoverageInfoText)
                         .padding(.top, 100)
                 }
             }
+            .hFormTitle(.standard, .title3, L10n.changeAddressSelectHousingTypeTitle)
             .hUseNewStyle
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
@@ -38,7 +33,7 @@ public struct MovingFlowHousingType: View {
                 } content: {
                     hTextNew(L10n.generalContinueButton, style: .body)
                 }
-                .padding([.leading, .trailing], 16)
+                .padding(.horizontal, 16)
             }
         }
     }
@@ -47,33 +42,50 @@ public struct MovingFlowHousingType: View {
     func setCheckBoxComponent(text: String) -> some View {
         hSection {
             hRow {
-                Image(uiImage: hCoreUIAssets.pillowHome.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 48, height: 48)
-
-                hTextNew(text, style: .body)
-                Spacer()
-                Circle()
-                    .strokeBorder(hGrayscaleColorNew.greyScale900)
-                    .background(Circle().foregroundColor(retColor(text: text)))
-                    .frame(width: 28, height: 28)
+                displayContent(displayName: text)
             }
             .withEmptyAccessory
             .onTap {
                 isSelected = text
             }
         }
-        .withoutVerticalPadding
-        .sectionContainerStyle(.opaque(useNewDesign: true))
+        .padding(.bottom, -4)
+    }
+
+    @ViewBuilder
+    func displayContent(displayName: String) -> some View {
+        Image(uiImage: hCoreUIAssets.pillowHome.image)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 48, height: 48)
+        hTextNew(displayName, style: .body)
+            .foregroundColor(hLabelColorNew.primary)
+        Spacer()
+        Circle()
+            .strokeBorder(
+                getBorderColor(currentItem: displayName),
+                lineWidth: displayName == isSelected ? 0 : 1.5
+            )
+            .background(Circle().foregroundColor(retColor(currentItem: displayName)))
+            .frame(width: 28, height: 28)
     }
 
     @hColorBuilder
-    func retColor(text: String) -> some hColor {
-        if isSelected == text {
-            hGrayscaleColorNew.greyScale900
+    func getBorderColor(currentItem: String) -> some hColor {
+        if currentItem == isSelected {
+            hLabelColorNew.primary
         } else {
-            hGrayscaleColorNew.greyScale100
+            hBackgroundColorNew.semanticBorderTwo
+        }
+    }
+
+    @hColorBuilder
+    func retColor(currentItem: String) -> some hColor {
+        if currentItem == isSelected {
+            hLabelColorNew.primary
+
+        } else {
+            hBackgroundColorNew.opaqueOne
         }
     }
 }

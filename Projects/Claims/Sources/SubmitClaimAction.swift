@@ -1,5 +1,6 @@
 import Presentation
 import SwiftUI
+import hCore
 
 public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dissmissNewClaimFlow
@@ -18,16 +19,16 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setNewClaimId(with: String)
     case setNewClaimContext(context: String)
 
-    case startClaimRequest(entrypointId: String, entrypointOptionId: String?)
+    case startClaimRequest(entrypointId: String?, entrypointOptionId: String?)
     case phoneNumberRequest(phoneNumber: String)
     case dateOfOccurrenceRequest(dateOfOccurrence: Date?)
     case dateOfOccurrenceAndLocationRequest
-    case locationRequest(location: String?)
+    case locationRequest(location: ClaimFlowLocationOptionModel?)
     case singleItemRequest(purchasePrice: Double?)
     case summaryRequest
     case singleItemCheckoutRequest
 
-    case setNewLocation(location: String?)
+    case setNewLocation(location: ClaimFlowLocationOptionModel?)
     case setNewDate(dateOfOccurrence: String?)
     case setPurchasePrice(priceOfPurchase: Double?)
     case setSingleItemModel(modelName: ClaimFlowItemModelOptionModel)
@@ -36,6 +37,8 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
     case setLoadingState(action: ClaimsLoadingType, state: LoadingState<String>?)
     case setPayoutMethod(method: AvailableCheckoutMethod)
+
+    case setProgress(progress: Float?)
 
     case navigationAction(action: ClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
@@ -58,11 +61,16 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openDamagePickerScreen
     case openModelPicker
     case openBrandPicker
+    case openPriceInput
     case openCheckoutNoRepairScreen
     case openCheckoutTransferringScreen
     case openFailureSceen
     case openUpdateAppScreen
     case openNotificationsPermissionScreen
+    case openTriagingScreen
+    case dismissInfoScreens
+    case dismissScreen
+    case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
 
     public enum LocationPickerType: ActionProtocol {
         case setLocation
@@ -73,6 +81,26 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
         case setDateOfOccurrence
         case submitDateOfOccurence
         case setDateOfPurchase
+
+        var shouldShowModally: Bool {
+            switch self {
+            case .setDateOfOccurrence:
+                return true
+            case .submitDateOfOccurence:
+                return false
+            case .setDateOfPurchase:
+                return true
+            }
+        }
+
+        var title: String {
+            switch self {
+            case .setDateOfOccurrence, .submitDateOfOccurence:
+                return L10n.Claims.Incident.Screen.Date.Of.incident
+            case .setDateOfPurchase:
+                return L10n.Claims.Item.Screen.Date.Of.Purchase.button
+            }
+        }
     }
 }
 

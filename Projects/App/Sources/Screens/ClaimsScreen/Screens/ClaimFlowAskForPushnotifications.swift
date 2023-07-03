@@ -1,15 +1,18 @@
+import Claims
 import Presentation
 import SwiftUI
+import hAnalytics
 import hCore
 import hCoreUI
 
 struct AskForPushnotifications: View {
-    let onActionExecuted: () -> Void
+    let onActionExecuted: (UIViewController?) -> Void
+    @State var viewController: UIViewController?
     let text: String
     let pushNotificationStatus: UNAuthorizationStatus
     init(
         text: String,
-        onActionExecuted: @escaping () -> Void
+        onActionExecuted: @escaping (UIViewController?) -> Void
     ) {
         let store: UgglanStore = globalPresentableStoreContainer.get()
         self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
@@ -32,6 +35,7 @@ struct AskForPushnotifications: View {
             .padding([.leading, .trailing], 16)
 
         }
+        .hUseBlur
         .hFormAttachToBottom {
             VStack(spacing: 12) {
                 hButton.LargeButtonFilled {
@@ -41,7 +45,7 @@ struct AskForPushnotifications: View {
                             UIApplication.shared.appDelegate
                                 .registerForPushNotifications()
                                 .onValue { status in
-                                    onActionExecuted()
+                                    onActionExecuted(viewController)
                                 }
                         }
                     })
@@ -52,7 +56,7 @@ struct AskForPushnotifications: View {
                 .frame(maxWidth: .infinity, alignment: .bottom)
 
                 hButton.SmallButtonText {
-                    onActionExecuted()
+                    onActionExecuted(viewController)
                     let store: UgglanStore = globalPresentableStoreContainer.get()
                     store.send(.setPushNotificationStatus(status: nil))
                 } content: {
@@ -62,5 +66,46 @@ struct AskForPushnotifications: View {
             }
             .padding([.leading, .trailing], 16)
         }
+        .introspectViewController { viewController in
+            self.viewController = viewController
+        }
+    }
+}
+
+extension AskForPushnotifications {
+    static func journey(for origin: ClaimsOrigin) -> some JourneyPresentation {
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: AskForPushnotifications(
+                text: L10n.claimsActivateNotificationsBody,
+                onActionExecuted: { vc in
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
+                    if #available(iOS 15.0, *) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                            vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
+                            vc?.sheetPresentationController?.detents = [.medium()]
+                        }
+                    }
+                }
+            ),
+            style: .detented(.large, modally: false, bgColor: nil)
+        ) { action in
+            if case let .navigationAction(navigationAction) = action {
+                if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
+                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                        .onAction(SubmitClaimStore.self) { action in
+                            if case .dissmissNewClaimFlow = action {
+                                DismissJourney()
+                            }
+                        }
+                } else if case .openTriagingScreen = navigationAction {
+                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
+                }
+            } else {
+                ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
+            }
+        }
+        .hidesBackButton
     }
 }

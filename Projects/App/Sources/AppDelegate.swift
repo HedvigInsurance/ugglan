@@ -60,7 +60,7 @@ import hGraphQL
 
         let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
         authenticationStore.send(.logout)
-
+        ApplicationContext.shared.$isLoggedIn.value = false
         ApolloClient.deleteToken()
         self.presentMainJourney()
     }
@@ -127,7 +127,7 @@ import hGraphQL
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
         if url.relativePath.contains("login-failure") {
             let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
-            authenticationStore.send(.loginFailure)
+            authenticationStore.send(.loginFailure(message: nil))
         }
 
         let adyenRedirect = RedirectComponent.applicationDidOpen(from: url)
@@ -175,7 +175,6 @@ import hGraphQL
             return InterceptingURLSessionClient()
         }
 
-        setupPresentableStoreLogger()
         setupAnalyticsAndTracking()
 
         bag += Localization.Locale.$currentLocale
@@ -205,13 +204,12 @@ import hGraphQL
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
-
+        setupSession()
         hGraphQL.log = Logger.builder
             .sendNetworkInfo(true)
             .printLogsToConsole(true, usingFormat: .shortWith(prefix: "[Hedvig] "))
             .build()
-
-        setupSession()
+        setupPresentableStoreLogger()
 
         log.info("Starting app")
 
@@ -294,8 +292,6 @@ import hGraphQL
                             self.bag += ApolloClient.initAndRegisterClient().valueSignal.map { _ in true }.plain()
                                 .atValue { _ in
                                     Dependencies.shared.add(module: Module { AnalyticsCoordinator() })
-
-                                    AnalyticsCoordinator().setUserId()
                                     self.bag += self.window.present(AppJourney.main)
                                 }
                         } else {
@@ -325,6 +321,13 @@ import hGraphQL
                         }
                     }
             }
+
+        bag += ApplicationContext.shared.$isDemoMode.onValue { value in
+            let store: UgglanStore = globalPresentableStoreContainer.get()
+            store.send(.setIsDemoMode(to: value))
+        }
+        let store: UgglanStore = globalPresentableStoreContainer.get()
+        ApplicationContext.shared.$isDemoMode.value = store.state.isDemoMode
         return true
     }
 }

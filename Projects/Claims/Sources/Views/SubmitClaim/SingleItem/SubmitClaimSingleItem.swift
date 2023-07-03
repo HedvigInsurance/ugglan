@@ -6,42 +6,36 @@ import hGraphQL
 
 public struct SubmitClaimSingleItem: View {
     @PresentableStore var store: SubmitClaimStore
-    @State var purchasePrice: String = ""
-    @State var validPriceInput = false
     @State var type: ClaimsFlowSingleItemFieldType?
 
     public init() {}
 
     public var body: some View {
-        LoadingViewWithContent(.postSingleItem) {
-            hForm {
-            }
-            .hUseNewStyle
-            .hFormTitle(.small, L10n.claimsSingleItemDetails)
-            .hFormAttachToBottom {
-
-                VStack(spacing: 8) {
-                    PresentableStoreLens(
-                        SubmitClaimStore.self,
-                        getter: { state in
-                            state.singleItemStep
-                        }
-                    ) { singleItemStep in
-                        displayBrandAndModelField(singleItemStep: singleItemStep)
-                        displayDateField(claim: singleItemStep)
-                        displayPurchasePriceField(claim: singleItemStep)
-                        displayDamageField(claim: singleItemStep)
-                        NoticeComponent(text: L10n.claimsSingleItemNoticeLabel)
+        hForm {
+        }
+        .hUseNewStyle
+        .hFormTitle(.small, .customTitle, L10n.claimsSingleItemDetails)
+        .hFormAttachToBottom {
+            VStack(spacing: 4) {
+                PresentableStoreLens(
+                    SubmitClaimStore.self,
+                    getter: { state in
+                        state.singleItemStep
                     }
+                ) { singleItemStep in
 
-                    hButton.LargeButtonFilled {
-                        store.send(.singleItemRequest(purchasePrice: Double(purchasePrice)))
-                        UIApplication.dismissKeyboard()
+                    displayBrandAndModelField(singleItemStep: singleItemStep)
+                    displayDateField(claim: singleItemStep)
+                    displayPurchasePriceField(claim: singleItemStep)
+                    displayDamageField(claim: singleItemStep)
+                    InfoCard(text: L10n.claimsSingleItemNoticeLabel)
+                        .padding(.vertical, 12)
+                    LoadingButtonWithContent(.postSingleItem) {
+                        store.send(.singleItemRequest(purchasePrice: singleItemStep?.purchasePrice))
                     } content: {
                         hText(L10n.generalContinueButton)
                     }
-                    .padding([.leading, .trailing], 16)
-                    .padding(.bottom, 8)
+                    .padding(.horizontal, 16)
                 }
             }
         }
@@ -96,13 +90,13 @@ public struct SubmitClaimSingleItem: View {
     @ViewBuilder func displayPurchasePriceField(claim: FlowClamSingleItemStepModel?) -> some View {
 
         hSection {
-            hFloatingTextField(
-                masking: Masking(type: .digits),
-                value: $purchasePrice,
-                equals: $type,
-                focusValue: .purchasePrice,
+            hFloatingField(
+                value: (claim?.purchasePrice != nil)
+                    ? String(format: "%.0f", claim?.purchasePrice ?? 0) + " " + (claim?.prefferedCurrency ?? "") : "",
                 placeholder: L10n.Claims.Item.Screen.Purchase.Price.button,
-                suffix: claim?.prefferedCurrency ?? ""
+                onTap: {
+                    store.send(.navigationAction(action: .openPriceInput))
+                }
             )
         }
         .sectionContainerStyle(.transparent)

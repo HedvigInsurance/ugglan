@@ -56,7 +56,9 @@ extension JourneyPresentation {
                                 viewController.navigationItem.rightBarButtonItem?.tintColor = interpolatedColor
                                 viewController.navigationItem.leftBarButtonItem?.tintColor = interpolatedColor
 
-                                let scrollEdgeAppearance = DefaultStyling.scrollEdgeNavigationBarAppearance()
+                                let scrollEdgeAppearance = DefaultStyling.scrollEdgeNavigationBarAppearance(
+                                    useNewDesign: false
+                                )
                                 scrollEdgeAppearance.titleTextAttributes = scrollEdgeAppearance.titleTextAttributes
                                     .merging(
                                         [

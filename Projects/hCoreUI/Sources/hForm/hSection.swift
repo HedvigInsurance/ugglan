@@ -93,16 +93,24 @@ extension EnvironmentValues {
 }
 
 extension hSectionContainerStyle: ViewModifier {
+
     public func body(content: Content) -> some View {
         switch self {
         case .transparent:
             content
         case let .opaque(useNewStyle):
-            content.background(
-                getOpaqueBackground(useNewStyle: useNewStyle)
-            )
-            .clipShape(Squircle.default())
-            .hShadow()
+            if useNewStyle {
+                content.background(
+                    getOpaqueBackground(useNewStyle: useNewStyle)
+                )
+                .clipShape(Squircle.default())
+            } else {
+                content.background(
+                    getOpaqueBackground(useNewStyle: useNewStyle)
+                )
+                .clipShape(Squircle.default())
+                .hShadow()
+            }
         case let .caution(useNewStyle):
             content.background(
                 getCautionBackground(useNewStyle: useNewStyle)
@@ -116,7 +124,7 @@ extension hSectionContainerStyle: ViewModifier {
     @hColorBuilder
     private func getOpaqueBackground(useNewStyle: Bool) -> some hColor {
         if useNewStyle {
-            hGrayscaleColorNew.greyScale100
+            hBackgroundColorNew.opaqueOne
         } else {
             hBackgroundColor.tertiary
         }
@@ -129,6 +137,23 @@ extension hSectionContainerStyle: ViewModifier {
         } else {
             hTintColor.yellowTwo
         }
+    }
+}
+
+private struct EnvironmentHWithoutDivider: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutDivider: Bool {
+        get { self[EnvironmentHWithoutDivider.self] }
+        set { self[EnvironmentHWithoutDivider.self] = newValue }
+    }
+}
+
+extension View {
+    public var hWithoutDivider: some View {
+        self.environment(\.hWithoutDivider, true)
     }
 }
 

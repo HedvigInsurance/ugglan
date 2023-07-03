@@ -75,7 +75,7 @@ enum ChatResult {
                     UgglanStore.self,
                     rootView: AskForPushnotifications(
                         text: L10n.chatActivateNotificationsBody,
-                        onActionExecuted: {
+                        onActionExecuted: { _ in
 
                         }
                     ),
@@ -264,35 +264,37 @@ extension Chat: Presentable {
         )
 
         bag += chatState.errorSignal.onValue({ (error, retry) in
-            if let error {
-                var actions: [Alert<()>.Action] = [Alert<()>.Action]()
-                if let retry {
-                    let retryAction = Alert.Action(title: L10n.generalRetry, style: UIAlertAction.Style.default) {
-                        retry()
+            if !ApplicationContext.shared.isDemoMode {
+                if let error {
+                    var actions: [Alert<()>.Action] = [Alert<()>.Action]()
+                    if let retry {
+                        let retryAction = Alert.Action(title: L10n.generalRetry, style: UIAlertAction.Style.default) {
+                            retry()
+                        }
+                        actions.append(retryAction)
                     }
-                    actions.append(retryAction)
-                }
 
-                let cancelAction = Alert.Action(
-                    title: L10n.alertCancel,
-                    style: UIAlertAction.Style.cancel
-                ) {}
-                let contactUsAction = Alert.Action(title: L10n.General.emailUs) {
-                    if let url = URL(string: "mailto:\(L10n.General.email)") {
-                        UIApplication.shared.open(url)
+                    let cancelAction = Alert.Action(
+                        title: L10n.alertCancel,
+                        style: UIAlertAction.Style.cancel
+                    ) {}
+                    let contactUsAction = Alert.Action(title: L10n.General.emailUs) {
+                        if let url = URL(string: "mailto:\(L10n.General.email)") {
+                            UIApplication.shared.open(url)
+                        }
                     }
+
+                    actions.append(cancelAction)
+                    actions.append(contactUsAction)
+
+                    let alert = Alert(
+                        title: L10n.somethingWentWrong,
+                        message: error.localizedDescription,
+                        tintColor: nil,
+                        actions: actions
+                    )
+                    viewController.present(alert)
                 }
-
-                actions.append(cancelAction)
-                actions.append(contactUsAction)
-
-                let alert = Alert(
-                    title: L10n.somethingWentWrong,
-                    message: error.localizedDescription,
-                    tintColor: nil,
-                    actions: actions
-                )
-                viewController.present(alert)
             }
         })
 

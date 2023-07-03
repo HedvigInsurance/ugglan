@@ -128,7 +128,7 @@ extension BankIDLoginQR: Presentable {
                     generateQRCode(url)
                 }
             })
-        
+
         store.send(.seBankIDStateAction(action: .startSession))
 
         return (
@@ -140,16 +140,14 @@ extension BankIDLoginQR: Presentable {
                         callback(.loggedIn)
                     }
                 )
-                
-                bag += store.onAction(
-                    .loginFailure,
-                    {
-                        guard viewController.navigationController?.viewControllers.count == 2 else {
+
+                bag += store.actionSignal.onValue { action in
+                    if case let .loginFailure(message) = action {
+                        guard viewController.navigationController?.viewControllers.count ?? 0 <= 2 else {
                             return
                         }
-                        
                         let alert = Alert<Void>(
-                            title: L10n.bankidUserCancelTitle,
+                            title: message ?? L10n.bankidUserCancelTitle,
                             actions: [
                                 .init(
                                     title: L10n.generalRetry,
@@ -166,13 +164,12 @@ extension BankIDLoginQR: Presentable {
                                 ),
                             ]
                         )
-                        
+
                         viewController.present(
                             alert
                         )
                     }
-                )
-
+                }
 
                 bag += moreBarButtonItem.onValue { _ in
                     let alert = Alert<Void>(actions: [
@@ -180,6 +177,7 @@ extension BankIDLoginQR: Presentable {
                             title: L10n.demoModeStart,
                             action: {
                                 store.send(.cancel)
+                                ApplicationContext.shared.$isDemoMode.value = true
                                 callback(.loggedIn)
                             }
                         ), .init(title: L10n.demoModeCancel, style: .cancel, action: {}),

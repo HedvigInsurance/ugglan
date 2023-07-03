@@ -65,4 +65,29 @@ public enum Fonts {
             return getFont(hedvigLettersStandard)
         }
     }
+
+    public static func fontForNewDesign(style: HFontTextStyleNew) -> UIFont {
+        func getFont(_ font: UIFont) -> UIFont {
+
+            let defaultDescriptor = UIFontDescriptor(
+                name: style.uifontTextStyle.fontName,
+                size: style.uifontTextStyle.pointSize
+            )
+
+            let size = defaultDescriptor.pointSize
+            let fontDescriptor = UIFontDescriptor(fontAttributes: [
+                UIFontDescriptor.AttributeName.size: size,
+                UIFontDescriptor.AttributeName.family: font.familyName,
+                UIFontDescriptor.AttributeName.name: font.fontName,
+            ])
+
+            return UIFont(descriptor: fontDescriptor, size: size)
+        }
+
+        if !hAnalyticsExperiment.useHedvigLettersFont {
+            return getFont(favoritStdBook)
+        }
+
+        return getFont(hedvigLettersStandard)
+    }
 }

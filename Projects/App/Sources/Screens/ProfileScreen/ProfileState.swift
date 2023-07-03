@@ -7,7 +7,6 @@ import hGraphQL
 
 public struct ProfileState: StateProtocol {
     var memberFullName: String = ""
-    var memberCharityName: String = ""
     var monthlyNet: Int = 0
     var partnerData: PartnerData?
     @OptionalTransient var updateEurobonusState: LoadingState<String>?
@@ -28,8 +27,9 @@ public enum ProfileAction: ActionProtocol {
     case openFreeTextChat
     case openAppInformation
     case openAppSettings
-    case setProfileState(name: String, charity: String, monthlyNet: Int)
+    case setProfileState(name: String, monthlyNet: Int)
     case setEurobonusNumber(partnerData: PartnerData?)
+    case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
     case updateEurobonusState(with: LoadingState<String>?)
 }
@@ -62,18 +62,19 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                     .onValue { (profileData, partnerData) in
                         if let profileData = profileData.value {
                             let name = (profileData.member.firstName ?? "") + " " + (profileData.member.lastName ?? "")
-                            let charity = profileData.cashback?.name ?? ""
                             let monthlyNet = Int(
                                 profileData.chargeEstimation.subscription.fragments.monetaryAmountFragment
                                     .monetaryAmount.floatAmount
                             )
-                            callback(.value(.setProfileState(name: name, charity: charity, monthlyNet: monthlyNet)))
+                            callback(.value(.setProfileState(name: name, monthlyNet: monthlyNet)))
                         }
                         if let partnerData = partnerData.value {
                             let partner = PartnerData(with: partnerData.currentMember.fragments.partnerDataFragment)
                             callback(.value(.setEurobonusNumber(partnerData: partner)))
                         }
+                        callback(.value(.fetchProfileStateCompleted))
                     }
+
                 return disposeBag
             }
         case let .updateEurobonusNumber(number):
@@ -109,9 +110,8 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
-        case .setProfileState(let name, let charity, let monthlyNet):
+        case .setProfileState(let name, let monthlyNet):
             newState.memberFullName = name
-            newState.memberCharityName = charity
             newState.monthlyNet = monthlyNet
         case .setEurobonusNumber(let partnerData):
             newState.partnerData = partnerData

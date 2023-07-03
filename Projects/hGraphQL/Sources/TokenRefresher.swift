@@ -22,23 +22,23 @@ public class TokenRefresher {
         return Future { completion in
             let bag = DisposeBag()
 
-            log.info("Checking if access token refresh is needed")
+            log.debug("Checking if access token refresh is needed")
 
             guard self.needRefresh else {
-                log.info("Access token refresh is not needed")
+                log.debug("Access token refresh is not needed")
                 completion(.success)
                 return bag
             }
 
             if self.isRefreshing.value {
-                log.info("Already refreshing waiting until that is complete")
+                log.debug("Already refreshing waiting until that is complete")
 
                 bag += self.isRefreshing
                     .filter(predicate: { isRefreshing in
                         !isRefreshing
                     })
                     .onFirstValue({ _ in
-                        log.info("Refresh completed")
+                        log.debug("Refresh completed")
                         completion(.success)
                     })
             } else if Date() > token.refreshTokenExpirationDate {

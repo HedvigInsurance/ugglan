@@ -8,8 +8,4 @@ query Profile {
             ...MonetaryAmountFragment
         }
     }
-    cashback {
-        name
-        imageUrl
-    }
 }
