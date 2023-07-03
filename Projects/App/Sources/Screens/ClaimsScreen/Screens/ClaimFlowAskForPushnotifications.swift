@@ -7,7 +7,7 @@ import hCoreUI
 
 struct AskForPushnotifications: View {
     let onActionExecuted: (UIViewController?) -> Void
-    @State var viewController: UIViewController?
+    @StateObject var vm = VCViewModel()
     let text: String
     let pushNotificationStatus: UNAuthorizationStatus
     init(
@@ -45,7 +45,7 @@ struct AskForPushnotifications: View {
                             UIApplication.shared.appDelegate
                                 .registerForPushNotifications()
                                 .onValue { status in
-                                    onActionExecuted(viewController)
+                                    onActionExecuted(vm.vc)
                                 }
                         }
                     })
@@ -56,7 +56,7 @@ struct AskForPushnotifications: View {
                 .frame(maxWidth: .infinity, alignment: .bottom)
 
                 hButton.SmallButtonText {
-                    onActionExecuted(viewController)
+                    onActionExecuted(vm.vc)
                     let store: UgglanStore = globalPresentableStoreContainer.get()
                     store.send(.setPushNotificationStatus(status: nil))
                 } content: {
@@ -67,7 +67,7 @@ struct AskForPushnotifications: View {
             .padding([.leading, .trailing], 16)
         }
         .introspectViewController { viewController in
-            self.viewController = viewController
+            self.vm.vc = viewController
         }
     }
 }

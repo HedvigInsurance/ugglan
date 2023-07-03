@@ -184,11 +184,11 @@ struct SlideToConfirm: View {
 
 struct HonestyPledge: View {
     @Environment(\.hUseNewStyle) var hUseNewStyle
-    @State var viewController: UIViewController?
+    @StateObject var vm = VCViewModel()
     let onConfirmAction: ((UIViewController?) -> Void)?
 
     init(
-        onConfirmAction: ((UIViewController?) -> Void)?
+        onConfirmAction: ((_ vc: UIViewController?) -> Void)?
     ) {
         self.onConfirmAction = onConfirmAction
     }
@@ -208,7 +208,7 @@ struct HonestyPledge: View {
                 .padding(.bottom, hUseNewStyle ? 32 : 20)
 
                 SlideToConfirm(onConfirmAction: {
-                    onConfirmAction?(self.viewController)
+                    onConfirmAction?(vm.vc)
                 })
                 .frame(maxHeight: 50)
                 .padding(.bottom, 20)
@@ -229,12 +229,16 @@ struct HonestyPledge: View {
             .fixedSize(horizontal: false, vertical: true)
         }
         .introspectViewController { viewController in
-            weak var weakVC = viewController
-            self.viewController = weakVC
+            if vm.vc != viewController {
+                vm.vc = viewController
+            }
         }
         .trackOnAppear(hAnalyticsEvent.screenView(screen: .claimHonorPledge))
-
     }
+}
+
+class VCViewModel: ObservableObject {
+    weak var vc: UIViewController?
 }
 
 extension HonestyPledge {
@@ -271,7 +275,7 @@ extension HonestyPledge {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
                 if #available(iOS 15.0, *) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak vc] in
                         vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
                     }
                 }
