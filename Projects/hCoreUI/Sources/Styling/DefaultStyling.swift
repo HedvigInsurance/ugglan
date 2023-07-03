@@ -696,6 +696,7 @@ final class ListTableView: UITableView {}
 extension CGFloat {
     public static var smallCornerRadius: CGFloat = 4
     public static var defaultCornerRadius: CGFloat = 8
+    public static var defaultCornerRadiusNew: CGFloat = 12
     public static var smallIconWidth: CGFloat = 16
 }
 

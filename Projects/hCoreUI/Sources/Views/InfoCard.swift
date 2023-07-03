@@ -25,6 +25,10 @@ public struct InfoCard: View {
         .background(
             Squircle.default()
                 .fill(hBackgroundColorNew.signalBlueBackground)
+                .overlay(
+                    RoundedRectangle(cornerRadius: .defaultCornerRadiusNew)
+                        .strokeBorder(hLabelColorNew.translucentBorder, lineWidth: 0.5)
+                )
         )
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding([.leading, .trailing], 16)
