@@ -20,64 +20,33 @@ public class ClaimJourneys {
     @JourneyBuilder
     private static func getScreen(for action: SubmitClaimsAction) -> some JourneyPresentation {
         if case let .navigationAction(navigationAction) = action {
-            if hAnalyticsExperiment.claimsFlowNewDesign {
-                if case let .openPhoneNumberScreen(model) = navigationAction {
-                    submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
-                } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
-                    submitClaimOccurrancePlusLocationScreen().addDismissClaimsFlow()
-                } else if case .openAudioRecordingScreen = navigationAction {
-                    openAudioRecordingSceen().addDismissClaimsFlow()
-                } else if case .openSuccessScreen = navigationAction {
-                    openSuccessScreen()
-                } else if case .openSingleItemScreen = navigationAction {
-                    openSingleItemScreen().addDismissClaimsFlow()
-                } else if case .openSummaryScreen = navigationAction {
-                    openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
-                } else if case .openDamagePickerScreen = navigationAction {
-                    openDamagePickerScreen().configureTitle(L10n.Claims.Item.Screen.Damage.button)
-                } else if case .openCheckoutNoRepairScreen = navigationAction {
-                    openCheckoutNoRepairScreen().addDismissClaimsFlow()
-                        .configureTitle(L10n.Claims.Payout.Summary.title)
-                } else if case .openFailureSceen = navigationAction {
-                    showClaimFailureScreen().withJourneyDismissButton
-                } else if case .openSummaryEditScreen = navigationAction {
-                    openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
-                } else if case let .openLocationPicker(type) = navigationAction {
-                    openLocationScreen(type: type).configureTitle(L10n.Claims.Incident.Screen.location)
-                } else if case .openUpdateAppScreen = navigationAction {
-                    openUpdateAppTerminationScreen().withJourneyDismissButton
-                } else if case let .openDatePicker(type) = navigationAction {
-                    openDatePickerScreen(type: type)
-                }
-            } else {
-                if case let .openPhoneNumberScreen(model) = navigationAction {
-                    submitClaimPhoneNumberScreenOld(model: model).addDismissClaimsFlow()
-                } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
-                    submitClaimOccurrancePlusLocationScreenOld().addDismissClaimsFlow()
-                } else if case .openAudioRecordingScreen = navigationAction {
-                    openAudioRecordingSceenOld().addDismissClaimsFlow().configureTitle(L10n.embarkSubmitClaim)
-                } else if case .openSuccessScreen = navigationAction {
-                    openSuccessScreenOld().withJourneyDismissButton.configureTitle(L10n.embarkSubmitClaim)
-                } else if case .openSingleItemScreen = navigationAction {
-                    openSingleItemScreenOld().addDismissClaimsFlow()
-                } else if case .openSummaryScreen = navigationAction {
-                    openSummaryScreenOld().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
-                } else if case .openDamagePickerScreen = navigationAction {
-                    openDamagePickerScreenOld().addDismissClaimsFlow()
-                } else if case .openCheckoutNoRepairScreen = navigationAction {
-                    openCheckoutNoRepairScreenOld().addDismissClaimsFlow()
-                        .configureTitle(L10n.Claims.Payout.Summary.title)
-                } else if case .openFailureSceen = navigationAction {
-                    showClaimFailureScreenOld().withJourneyDismissButton
-                } else if case .openSummaryEditScreen = navigationAction {
-                    openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
-                } else if case let .openLocationPicker(type) = navigationAction {
-                    openLocationScreenOld(type: type)
-                } else if case .openUpdateAppScreen = navigationAction {
-                    openUpdateAppTerminationScreenOld().withJourneyDismissButton
-                } else if case let .openDatePicker(type) = navigationAction {
-                    openDatePickerScreenOld(type: type)
-                }
+            if case let .openPhoneNumberScreen(model) = navigationAction {
+                submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
+            } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
+                submitClaimOccurrancePlusLocationScreen().addDismissClaimsFlow()
+            } else if case .openAudioRecordingScreen = navigationAction {
+                openAudioRecordingSceen().addDismissClaimsFlow()
+            } else if case .openSuccessScreen = navigationAction {
+                openSuccessScreen()
+            } else if case .openSingleItemScreen = navigationAction {
+                openSingleItemScreen().addDismissClaimsFlow()
+            } else if case .openSummaryScreen = navigationAction {
+                openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
+            } else if case .openDamagePickerScreen = navigationAction {
+                openDamagePickerScreen().configureTitle(L10n.Claims.Item.Screen.Damage.button)
+            } else if case .openCheckoutNoRepairScreen = navigationAction {
+                openCheckoutNoRepairScreen().addDismissClaimsFlow()
+                    .configureTitle(L10n.Claims.Payout.Summary.title)
+            } else if case .openFailureSceen = navigationAction {
+                showClaimFailureScreen().withJourneyDismissButton
+            } else if case .openSummaryEditScreen = navigationAction {
+                openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
+            } else if case let .openLocationPicker(type) = navigationAction {
+                openLocationScreen(type: type).configureTitle(L10n.Claims.Incident.Screen.location)
+            } else if case .openUpdateAppScreen = navigationAction {
+                openUpdateAppTerminationScreen().withJourneyDismissButton
+            } else if case let .openDatePicker(type) = navigationAction {
+                openDatePickerScreen(type: type)
             }
         }
     }
@@ -92,17 +61,6 @@ public class ClaimJourneys {
         .resetProgressToPreviousValueOnDismiss
     }
 
-    private static func submitClaimPhoneNumberScreenOld(
-        model: FlowClaimPhoneNumberStepModel
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimContactScreenOld(model: model)
-        ) { action in
-            getScreen(for: action)
-        }
-    }
-
     @JourneyBuilder
     static func submitClaimOccurrancePlusLocationScreen() -> some JourneyPresentation {
         HostingJourney(
@@ -113,16 +71,6 @@ public class ClaimJourneys {
             getScreen(for: action)
         }
         .resetProgressToPreviousValueOnDismiss
-    }
-
-    static func submitClaimOccurrancePlusLocationScreenOld() -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimOccurrencePlusLocationScreenOld()
-        ) {
-            action in
-            getScreen(for: action)
-        }
     }
 
     @JourneyBuilder
@@ -249,22 +197,6 @@ public class ClaimJourneys {
         .resetProgressToPreviousValueOnDismiss
     }
 
-    static func openLocationScreenOld(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: LocationPickerScreenOld(type: type),
-            style: type == .submitLocation ? .default : .detented(.scrollViewContentSize)
-        ) {
-            action in
-            if case .setNewLocation = action {
-                PopJourney()
-            } else {
-                getScreen(for: action)
-            }
-        }
-        .withDismissButton
-    }
-
     static func openBrandPickerScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -312,44 +244,6 @@ public class ClaimJourneys {
         )
     }
 
-    static func openBrandPickerScreenOld() -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: ItemPickerScreenOld<ClaimFlowItemBrandOptionModel>(
-                items: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    return store.state.singleItemStep?.availableItemBrandOptions
-                        .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
-                }(),
-                onSelected: { item in
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.setItemBrand(brand: item))
-                }
-            ),
-            options: .autoPopSelfAndSuccessors
-        ) {
-            action in
-            if case let .setItemBrand(brand) = action {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                if store.state.singleItemStep?.shouldShowListOfModels(for: brand) ?? false {
-                    openModelPickerScreenOld()
-                } else {
-                    PopJourney()
-                }
-            } else {
-                getScreen(for: action)
-            }
-        }
-        .onAction(
-            SubmitClaimStore.self,
-            { action, pre in
-                if case .setSingleItemModel(_) = action {
-                    pre.bag.dispose()
-                }
-            }
-        )
-    }
-
     static func openModelPickerScreen() -> some JourneyPresentation {
         HostingJourney(
             rootView: CheckboxPickerScreen<ClaimFlowItemModelOptionModel>(
@@ -372,34 +266,6 @@ public class ClaimJourneys {
             ),
             style: .detented(.large, modally: false),
             options: [.wantsGrabber, .largeNavigationBar, .blurredBackground]
-        )
-    }
-
-    static func openModelPickerScreenOld() -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: ItemPickerScreenOld<ClaimFlowItemModelOptionModel>(
-                items: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    return store.state.singleItemStep?.getListOfModels()?.compactMap({ ($0, $0.displayName) }) ?? []
-
-                }(),
-                onSelected: { item in
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.setSingleItemModel(modelName: item))
-                }
-            )
-        ) {
-            action in
-            ContinueJourney()
-        }
-        .onAction(
-            SubmitClaimStore.self,
-            { action, pre in
-                if case .setSingleItemModel = action {
-                    pre.bag.dispose()
-                }
-            }
         )
     }
 
@@ -454,21 +320,6 @@ public class ClaimJourneys {
         }
     }
 
-    static func openDamagePickerScreenOld() -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: DamamagePickerScreenOld(),
-            style: .default
-        ) {
-            action in
-            if case .setSingleItemDamage(_) = action {
-                PopJourney()
-            } else {
-                getScreen(for: action)
-            }
-        }
-    }
-
     static func openAudioRecordingSceen() -> some JourneyPresentation {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let url = store.state.audioRecordingStep?.getUrl()
@@ -481,45 +332,11 @@ public class ClaimJourneys {
         .resetProgressToPreviousValueOnDismiss
     }
 
-    static func openAudioRecordingSceenOld() -> some JourneyPresentation {
-        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-        let url = store.state.audioRecordingStep?.getUrl()
-        return HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimAudioRecordingScreenOld(url: url)
-        ) { action in
-            getScreen(for: action)
-        }
-    }
-
     private static func openSuccessScreen() -> some JourneyPresentation {
         HostingJourney(
             rootView: SubmitClaimSuccessScreen()
         )
         .hidesBackButton
-    }
-
-    private static func openSuccessScreenOld() -> some JourneyPresentation {
-        HostingJourney(
-            rootView: SubmitClaimSuccessScreenOld()
-        )
-        .hidesBackButton
-    }
-
-    private static func openSingleItemScreenOld() -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimSingleItemOld()
-        ) {
-            action in
-            if case .navigationAction(.openDatePicker) = action {
-                openDatePickerScreen(type: .setDateOfPurchase)
-            } else if case .navigationAction(.openBrandPicker) = action {
-                openBrandPickerScreenOld()
-            } else {
-                getScreen(for: action)
-            }
-        }
     }
 
     @JourneyBuilder
@@ -580,16 +397,6 @@ public class ClaimJourneys {
         .resetProgressToPreviousValueOnDismiss
     }
 
-    private static func openSummaryScreenOld() -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimSummaryScreenOld()
-        ) {
-            action in
-            getScreen(for: action)
-        }
-    }
-
     private static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
@@ -609,34 +416,9 @@ public class ClaimJourneys {
         .resetProgressToPreviousValueOnDismiss
     }
 
-    private static func openCheckoutNoRepairScreenOld() -> some JourneyPresentation {
-
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimCheckoutNoRepairScreenOld()
-        ) {
-            action in
-            if case .navigationAction(.openCheckoutTransferringScreen) = action {
-                openCheckoutTransferringScreenOld()
-            } else if case .summaryRequest = action {
-                openCheckoutTransferringScreenOld()
-            } else {
-                getScreen(for: action)
-            }
-        }
-    }
-
     static func openCheckoutTransferringScreen() -> some JourneyPresentation {
         HostingJourney(
             rootView: SubmitClaimCheckoutTransferringScreen(),
-            style: .modally(presentationStyle: .fullScreen, transitionStyle: .crossDissolve)
-        )
-    }
-
-    static func openCheckoutTransferringScreenOld() -> some JourneyPresentation {
-
-        HostingJourney(
-            rootView: SubmitClaimCheckoutTransferringScreenOld(),
             style: .modally(presentationStyle: .fullScreen, transitionStyle: .crossDissolve)
         )
     }
@@ -756,31 +538,10 @@ public class ClaimJourneys {
             .hidesBackButton
     }
 
-    private static func showClaimFailureScreenOld() -> some JourneyPresentation {
-        HostingJourney(rootView: ClaimFailureScreenOld())
-            .hidesBackButton
-    }
-
     private static func openUpdateAppTerminationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: UpdateAppScreen(
-                onSelected: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.dissmissNewClaimFlow)
-                }
-            )
-        ) {
-            action in
-            getScreen(for: action)
-        }
-        .hidesBackButton
-    }
-
-    static func openUpdateAppTerminationScreenOld() -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: UpdateAppScreenOld(
                 onSelected: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.dissmissNewClaimFlow)
