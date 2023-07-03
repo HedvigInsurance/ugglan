@@ -65,7 +65,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
 
         return OctopusGraphQL.FlowClaimSingleItemInput(
             purchasePrice: purchasePrice == 0 ? nil : purchasePrice,
-            purchaseDate: purchaseDate,
+            purchaseDate: purchaseDate?.localDateToDate?.formatFromDashToDot,
             itemProblemIds: problemsIds,
             itemBrandInput: itemBrandInput,
             itemModelInput: itemModelInput,
@@ -148,7 +148,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
 
     var returnDisplayStringForSummaryDate: String? {
         if let purchaseDate {
-            return L10n.summaryPurchaseDateDescription(purchaseDate)
+            return L10n.summaryPurchaseDateDescription(purchaseDate.localDateToDate?.formatFromDashToDot ?? "")
         }
         return nil
     }
