@@ -26,11 +26,8 @@ public struct MovingFlowJourneyNew {
                         .configureTitle(L10n.InsuranceDetails.changeAddressButton)
                 } else if case .openHousingTypeScreen = navigationAction {
                     MovingFlowJourneyNew.openSelectHousingScreen()
-                        .configureTitle(L10n.InsuranceDetails.changeAddressButton)
                 } else if case .openConfirmScreen = navigationAction {
                     MovingFlowJourneyNew.openConfirmScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
-                    //                } else if case .openDatePickerScreen = navigationAction {
-                    //                    MovingFlowJourneyNew.openDatePickerScreen()
                 } else if case .openFailureScreen = navigationAction {
                     MovingFlowJourneyNew.openFailureScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
                 } else if case .dismissMovingFlow = navigationAction {
