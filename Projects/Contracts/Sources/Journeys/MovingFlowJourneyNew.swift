@@ -23,7 +23,6 @@ public struct MovingFlowJourneyNew {
             if case let .navigationActionMovingFlow(navigationAction) = action {
                 if case .openAddressFillScreen = navigationAction {
                     MovingFlowJourneyNew.openAddressFillScreen()
-                        .configureTitle(L10n.InsuranceDetails.changeAddressButton)
                 } else if case .openHousingTypeScreen = navigationAction {
                     MovingFlowJourneyNew.openSelectHousingScreen()
                 } else if case .openConfirmScreen = navigationAction {

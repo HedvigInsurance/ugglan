@@ -15,17 +15,12 @@ struct MovingFlowSelectAddress: View {
     var body: some View {
         LoadingViewWithContent(.setMoveIntent) {
             hForm {
-                hTextNew(L10n.changeAddressEnterNewAddressTitle, style: .title3)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.bottom, 64)
-                    .padding(.top, 56)
-
                 addressField()
                 postalAndSquareField()
                 numberOfCoinsuredField()
                 accessDateField()
             }
+            .hFormTitle(.standard, .title3, L10n.changeAddressEnterNewAddressTitle)
             .hUseNewStyle
             .hFormAttachToBottom {
                 hButton.LargeButtonFilled {
@@ -33,7 +28,7 @@ struct MovingFlowSelectAddress: View {
                 } content: {
                     hTextNew(L10n.generalContinueButton, style: .body)
                 }
-                .padding([.leading, .trailing], 16)
+                .padding(.horizontal, 16)
                 .padding(.bottom, 8)
             }
         }
@@ -58,8 +53,6 @@ struct MovingFlowSelectAddress: View {
                 focusValue: .address
             )
         }
-        .withoutBottomPadding
-        .sectionContainerStyle(.opaque(useNewDesign: true))
     }
 
     @ViewBuilder
@@ -87,8 +80,6 @@ struct MovingFlowSelectAddress: View {
                 )
             }
         }
-        .withoutVerticalPadding
-        .sectionContainerStyle(.transparent)
     }
 
     @ViewBuilder
@@ -133,8 +124,6 @@ struct MovingFlowSelectAddress: View {
                 .frame(width: 30, height: 60)
             }
         }
-        .withoutVerticalPadding
-        .sectionContainerStyle(.opaque(useNewDesign: true))
     }
 
     @ViewBuilder
