@@ -70,7 +70,7 @@ public struct DatePickerScreen: View {
                     }()
                     store.send(action)
                 } content: {
-                    hText(buttonTitle, style: .body)
+                    hTextNew(buttonTitle, style: .body)
                 }
                 .padding([.leading, .trailing], 16)
                 LoadingButtonWithContent(
@@ -89,7 +89,7 @@ public struct DatePickerScreen: View {
                         store.send(action)
                     },
                     content: {
-                        hText(L10n.generalNotSure, style: .body)
+                        hTextNew(L10n.generalNotSure, style: .body)
                             .foregroundColor(hLabelColor.primary)
                     },
                     buttonStyleSelect: .textButton

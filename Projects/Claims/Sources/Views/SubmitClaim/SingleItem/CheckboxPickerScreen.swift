@@ -52,7 +52,7 @@ struct CheckboxPickerScreen<T>: View {
                         }
                     }
                 } content: {
-                    hText(L10n.generalSaveButton)
+                    hTextNew(L10n.generalSaveButton, style: .body)
                 }
                 hButton.LargeButtonText {
                     onCancel()
