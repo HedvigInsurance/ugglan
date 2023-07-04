@@ -36,7 +36,7 @@ public enum HFontTextStyleNew: CaseIterable {
     case customTitle
     case headline
 
-    var font: UIFont {
+    var fontSize: CGFloat {
         let sizeMultiplier: CGFloat = {
             if UITraitCollection.current.preferredContentSizeCategory != .large {
                 let defaultDescriptor = UIFontDescriptor.preferredFontDescriptor(
@@ -49,19 +49,19 @@ public enum HFontTextStyleNew: CaseIterable {
         }()
         switch self {
         case .title1:
-            return .systemFont(ofSize: 48 * sizeMultiplier)
+            return 48 * sizeMultiplier
         case .title2:
-            return .systemFont(ofSize: 32 * sizeMultiplier)
+            return 32 * sizeMultiplier
         case .title3:
-            return .systemFont(ofSize: 24 * sizeMultiplier)
+            return 24 * sizeMultiplier
         case .customTitle:
-            return .systemFont(ofSize: 28 * sizeMultiplier)
+            return 28 * sizeMultiplier
         case .body:
-            return .systemFont(ofSize: 18 * sizeMultiplier)
+            return 18 * sizeMultiplier
         case .headline:
-            return .systemFont(ofSize: 18 * sizeMultiplier)
+            return 18 * sizeMultiplier
         case .footnote:
-            return .systemFont(ofSize: 14 * sizeMultiplier)
+            return 14 * sizeMultiplier
         }
     }
 
@@ -104,7 +104,7 @@ public enum HFontTextStyleNew: CaseIterable {
     }
 
     var uifontLineHeightDifference: CGFloat {
-        return self.font.pointSize / 16
+        return self.fontSize / 16
     }
 }
 

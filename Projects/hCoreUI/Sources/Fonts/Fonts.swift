@@ -68,13 +68,7 @@ public enum Fonts {
 
     public static func fontForNewDesign(style: HFontTextStyleNew) -> UIFont {
         func getFont(_ font: UIFont) -> UIFont {
-
-            let defaultDescriptor = UIFontDescriptor(
-                name: style.font.fontName,
-                size: style.font.pointSize
-            )
-
-            let size = defaultDescriptor.pointSize
+            let size = style.fontSize
             let fontDescriptor = UIFontDescriptor(fontAttributes: [
                 UIFontDescriptor.AttributeName.size: size,
                 UIFontDescriptor.AttributeName.family: font.familyName,

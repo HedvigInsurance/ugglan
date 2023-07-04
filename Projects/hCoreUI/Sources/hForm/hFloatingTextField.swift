@@ -141,7 +141,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     private var getTextField: some View {
-        let fieldPointSize = HFontTextStyleNew.title3.font.pointSize * 1.25
+        let fieldPointSize = HFontTextStyleNew.title3.fontSize * 1.25
         return SwiftUI.TextField("", text: $innerValue)
             .modifier(hFontModifierNew(style: .title3))
             .modifier(masking)
@@ -165,8 +165,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {
-    @State static var value: String = ""
     static var previews: some View {
+        @State var value: String = "s"
 
         VStack {
             hFloatingTextField<Bool>(
