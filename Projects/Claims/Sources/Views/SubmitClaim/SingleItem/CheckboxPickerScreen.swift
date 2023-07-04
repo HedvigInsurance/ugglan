@@ -41,11 +41,7 @@ struct CheckboxPickerScreen<T>: View {
             VStack(spacing: 8) {
                 hButton.LargeButtonFilled {
                     if selectedItems.count > 1 {
-                        var itemArr: [T] = []
-                        for item in selectedItems {
-                            itemArr.append(item.object)
-                        }
-                        onSelected(itemArr)
+                        onSelected(selectedItems.map({ $0.object }))
                     } else {
                         if let object = selectedItems.first?.object {
                             onSelected([object])
