@@ -104,25 +104,67 @@ extension DirectDebitSetup: Presentable {
         bag += webView.isLoadingSignal.animated(style: AnimationStyle.easeOut(duration: 0.5)) { loading in
             if loading { activityIndicator.alpha = 1 } else { activityIndicator.alpha = 0 }
         }
+        let alertDismissAlert = ReadWriteSignal<Bool>(false)
+        func presentAlert() {
+            let alert = Alert(
+                title: L10n.generalError,
+                message: L10n.somethingWentWrong,
+                tintColor: nil,
+                actions: [
+                    Alert.Action(title: L10n.generalRetry, style: UIAlertAction.Style.default) {
+                        true
+                    },
+                    Alert.Action(
+                        title: L10n.alertCancel,
+                        style: UIAlertAction.Style.cancel
+                    ) { false },
+                ]
+            )
+            bag += viewController.present(alert)
+                .onValue { shouldRetry in
+                    if shouldRetry {
+                        startRegistration()
+                    } else {
+                        alertDismissAlert.value = true
+                    }
+                }
 
+        }
         func startRegistration() {
             viewController.view = webView
             viewController.navigationItem.setLeftBarButton(dismissButton, animated: true)
 
             webView.trackOnAppear(hAnalyticsEvent.screenView(screen: .connectPaymentTrustly))
 
-            bag += giraffe.client.perform(mutation: GiraffeGraphQL.StartDirectDebitRegistrationMutation()).valueSignal
-                .compactMap { $0.startDirectDebitRegistration }
-                .onValue { startDirectDebitRegistration in
-                    webView.load(URLRequest(url: URL(string: startDirectDebitRegistration)!))
-                }
+            bag += giraffe.client.perform(mutation: GiraffeGraphQL.StartDirectDebitRegistrationMutation())
+                .onValue({ data in
+                    if let url = URL(string: data.startDirectDebitRegistration) {
+                        let request = URLRequest(
+                            url: url,
+                            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+                            timeoutInterval: 10
+                        )
+                        webView.load(request)
+                    } else {
+                        presentAlert()
+                    }
+                })
+                .onError({ error in
+                    presentAlert()
+                })
         }
 
         startRegistration()
-
         return (
             viewController,
             FiniteSignal { callback in
+                bag +=
+                    alertDismissAlert
+                    .filter(predicate: { $0 })
+                    .onValue({ _ in
+                        callback(.value(true))
+                    })
+
                 bag += dismissButton.onValue {
                     var alert: Alert<Bool>
 
@@ -161,7 +203,6 @@ extension DirectDebitSetup: Presentable {
                         callback(.value(true))
                         return
                     }
-
                     bag += viewController.present(alert)
                         .onValue { shouldDismiss in
                             if shouldDismiss {
@@ -175,6 +216,7 @@ extension DirectDebitSetup: Presentable {
                                 callback(.value(true))
                             }
                         }
+
                 }
 
                 func showResultScreen(type: DirectDebitResultType) {
@@ -215,7 +257,6 @@ extension DirectDebitSetup: Presentable {
 
                     viewController.view = containerView
                 }
-
                 bag += webView.decidePolicyForNavigationAction.set { _, navigationAction in
                     guard let url = navigationAction.request.url else { return .allow }
                     let urlString = String(describing: url)
