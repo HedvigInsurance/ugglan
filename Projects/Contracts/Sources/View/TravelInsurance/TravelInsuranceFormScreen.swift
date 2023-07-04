@@ -42,6 +42,9 @@ struct TravelInsuranceFormScreen: View {
                 .navigationTitle(L10n.TravelCertificate.cardTitle)
             }
             .presentableStoreLensAnimation(.spring())
+            .onChange(of: dateOfOccurrence) { date in
+                store.send(.setDate(value: date, type: .startDate))
+            }
 
         }
     }
