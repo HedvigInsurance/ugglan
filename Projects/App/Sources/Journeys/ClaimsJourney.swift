@@ -78,7 +78,7 @@ extension AppJourney {
                 } else if case .openNotificationsPermissionScreen = navigationAction {
                     AskForPushnotifications.journey(for: origin)
                 } else if case .openTriagingScreen = navigationAction {
-                    ClaimJourneys.showClaimEntrypointGroup(origin: origin).addClaimsProgressBar
+                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
                 } else {
                     ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
                 }

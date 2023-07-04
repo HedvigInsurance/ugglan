@@ -62,7 +62,7 @@ public struct SubmitClaimSingleItem: View {
 
         hSection {
             hFloatingField(
-                value: claim?.purchaseDate ?? "",
+                value: claim?.purchaseDate?.localDateToDate?.displayDateDotFormat ?? "",
                 placeholder: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
                 onTap: {
                     store.send(.navigationAction(action: .openDatePicker(type: .setDateOfPurchase)))

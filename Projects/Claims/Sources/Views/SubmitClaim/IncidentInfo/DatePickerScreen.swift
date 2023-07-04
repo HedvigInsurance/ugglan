@@ -48,7 +48,9 @@ public struct DatePickerScreen: View {
                 .frame(height: 350)
                 .padding([.leading, .trailing], 16)
                 .padding([.top], 5)
+                .background(Color.clear)
             }
+            .sectionContainerStyle(.transparent)
             .introspectDatePicker { date in
                 if useNewStyle {
                     date.tintColor = .brandNew(.primaryText())
