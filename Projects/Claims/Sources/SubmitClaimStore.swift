@@ -43,7 +43,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             return mutation.execute(\.flowClaimLocationNext.fragments.flowClaimFragment.currentStep)
         case .dateOfOccurrenceAndLocationRequest:
             let location = state.locationStep?.getSelectedOption()?.value
-            let date = state.dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.formatFromDashToDot
+            let date = state.dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.formatFromDotToDash
 
             let dateAndLocationInput = OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationInput(
                 dateOfOccurrence: date,

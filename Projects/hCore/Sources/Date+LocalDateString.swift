@@ -13,9 +13,8 @@ extension Date {
         return formatter.string(from: self)
     }
 
-    public var formatFromDashToDot: String? {
+    public var formatFromDotToDash: String? {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy.MM.dd"
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: self)
     }
