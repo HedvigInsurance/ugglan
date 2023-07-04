@@ -69,8 +69,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     .padding(.horizontal, 16)
             }
             .onAppear {
-                let generator = UIImpactFeedbackGenerator(style: .soft)
-                generator.impactOccurred()
+                ImpactGenerator.soft()
             }
             .scaleEffect(
                 x: successAnimation ? 1 : 0.3,
