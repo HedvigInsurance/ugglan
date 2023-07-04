@@ -141,7 +141,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     private var getTextField: some View {
-        let fieldPointSize = HFontTextStyleNew.title3.uifontTextStyle.pointSize * 1.25
+        let fieldPointSize = HFontTextStyleNew.title3.font.pointSize * 1.25
         return SwiftUI.TextField("", text: $innerValue)
             .modifier(hFontModifierNew(style: .title3))
             .modifier(masking)
