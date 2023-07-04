@@ -163,7 +163,13 @@ public class ClaimJourneys {
                     return store.state.locationStep?.options
                         .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
                 }(),
-                preSelectedItems: { nil },
+                preSelectedItems: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    if let value = store.state.locationStep?.getSelectedOption() {
+                        return [value.displayName]
+                    }
+                    return []
+                },
                 onSelected: { selectedLocation in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     let executedAction: SubmitClaimsAction = {
@@ -252,7 +258,7 @@ public class ClaimJourneys {
                     return store.state.singleItemStep?.getListOfModels()?.compactMap({ ($0, $0.displayName) }) ?? []
 
                 }(),
-                preSelectedItems: { nil },
+                preSelectedItems: { return [] },
                 onSelected: { item in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setSingleItemModel(modelName: item.first!))
@@ -280,13 +286,18 @@ public class ClaimJourneys {
                 }(),
                 preSelectedItems: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    var damagesArray: [ClaimFlowItemProblemOptionModel] = []
-                    for selectedDamage in store.state.singleItemStep?.selectedItemProblems ?? [] {
-                        damagesArray.append(
-                            ClaimFlowItemProblemOptionModel(displayName: selectedDamage, itemProblemId: selectedDamage)
-                        )
+                    if let singleItemStep = store.state.singleItemStep {
+                        let preselected = singleItemStep.availableItemProblems
+                            .filter { model in
+                                singleItemStep.selectedItemProblems?
+                                    .contains(where: { item in
+                                        model.itemProblemId == item
+                                    }) ?? false
+                            }
+                            .map({ $0.displayName })
+                        return preselected
                     }
-                    return damagesArray
+                    return []
                 },
                 onSelected: { selectedDamages in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
