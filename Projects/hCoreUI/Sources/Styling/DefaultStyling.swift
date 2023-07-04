@@ -7,11 +7,22 @@ import SwiftUI
 import UIKit
 
 public class hNavigationController: UINavigationController {
-    public init() {
-        super.init(navigationBarClass: UINavigationBar.self, toolbarClass: UIToolbar.self)
+
+    private let additionalHeight: CGFloat?
+
+    public init(additionalHeight: CGFloat? = nil) {
+        self.additionalHeight = additionalHeight
+        super.init(navigationBarClass: NavBar.self, toolbarClass: UIToolbar.self)
+        if let navBar = self.navigationBar as? NavBar {
+            navBar.additionalHeight = additionalHeight
+        }
+        if let additionalHeight {
+            additionalSafeAreaInsets.top = additionalHeight
+        }
     }
 
     public override init(navigationBarClass: AnyClass?, toolbarClass: AnyClass?) {
+        self.additionalHeight = nil
         super.init(navigationBarClass: navigationBarClass, toolbarClass: toolbarClass)
     }
 
@@ -22,10 +33,67 @@ public class hNavigationController: UINavigationController {
     }
 }
 
+class NavBar: UINavigationBar {
+    var additionalHeight: CGFloat?
+
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        if let additionalHeight {
+            return CGSize(width: size.width, height: size.height + additionalHeight)
+        } else {
+            return super.sizeThatFits(size)
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if let additionalHeight {
+            subviews.forEach { (subview) in
+                if subview.frame.size.height != self.frame.size.height + additionalHeight {
+                    let stringFromClass = NSStringFromClass(subview.classForCoder)
+                    if stringFromClass.contains("BarContent") {
+                        subview.frame = CGRect(
+                            x: 0,
+                            y: 0,
+                            width: self.frame.width,
+                            height: self.frame.size.height + additionalHeight
+                        )
+
+                    }
+                    if stringFromClass.contains("BarBackground") {
+                        subview.frame = CGRect(
+                            x: 0,
+                            y: 0,
+                            width: self.frame.width,
+                            height: self.frame.size.height + additionalHeight
+                        )
+                    }
+                    if stringFromClass.contains("UIProgressView") {
+                        subview.frame = CGRect(
+                            x: subview.frame.origin.x,
+                            y: -4,
+                            width: subview.frame.width,
+                            height: subview.frame.height
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 public class hNavigationControllerWithLargerNavBar: UINavigationController {
     public init() {
-        super.init(navigationBarClass: NavBar.self, toolbarClass: UIToolbar.self)
+        super.init(navigationBarClass: LargeNavBar.self, toolbarClass: UIToolbar.self)
         additionalSafeAreaInsets.top = 90 - 56
+        if #available(iOS 15, *) {
+            let navigationBarAppearance = UINavigationBarAppearance()
+            navigationBarAppearance.configureWithTransparentBackground()
+            navigationBarAppearance.backgroundColor = UIColor.clear
+            DefaultStyling.applyCommonNavigationBarStyling(navigationBarAppearance, useNewDesign: true)
+            self.navigationBar.standardAppearance = navigationBarAppearance
+            self.navigationBar.compactAppearance = navigationBarAppearance
+            self.navigationBar.scrollEdgeAppearance = navigationBarAppearance
+        }
     }
 
     required init?(
@@ -35,7 +103,7 @@ public class hNavigationControllerWithLargerNavBar: UINavigationController {
     }
 }
 
-class NavBar: UINavigationBar {
+class LargeNavBar: UINavigationBar {
     var barHeight: CGFloat = 90
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
@@ -152,7 +220,13 @@ extension DefaultStyling {
             if options.contains(.preffersLargerNavigationBar) {
                 return hNavigationControllerWithLargerNavBar()
             } else {
-                return hNavigationController()
+                let additionalHeight: CGFloat? = {
+                    if options.contains(.withAdditionalSpaceForProgressBar) {
+                        return 4
+                    }
+                    return nil
+                }()
+                return hNavigationController(additionalHeight: additionalHeight)
             }
         }
 

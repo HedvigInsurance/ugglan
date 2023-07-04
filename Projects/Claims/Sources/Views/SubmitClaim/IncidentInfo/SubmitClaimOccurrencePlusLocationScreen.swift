@@ -4,19 +4,17 @@ import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
-
     var body: some View {
-        hForm {
-        }
-        .hFormTitle(.small, .customTitle, L10n.claimsLocatonOccuranceTitle)
-        .hDisableScroll
-        .hUseNewStyle
-        .hFormAttachToBottom {
-            VStack(spacing: 0) {
-                displayFieldsAndNotice
-                continueButton
+        hForm {}
+            .hFormTitle(.small, .customTitle, L10n.claimsLocatonOccuranceTitle)
+            .hDisableScroll
+            .hUseNewStyle
+            .hFormAttachToBottom {
+                VStack(spacing: 0) {
+                    displayFieldsAndNotice
+                    continueButton
+                }
             }
-        }
     }
 
     @ViewBuilder
