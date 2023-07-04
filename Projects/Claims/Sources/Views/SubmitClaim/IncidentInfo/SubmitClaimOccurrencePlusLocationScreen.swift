@@ -4,9 +4,17 @@ import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
+    private let options: ClaimsNavigationAction.SubmitClaimOption
+
+    init(
+        options: ClaimsNavigationAction.SubmitClaimOption
+    ) {
+        self.options = options
+    }
+
     var body: some View {
         hForm {}
-            .hFormTitle(.small, .customTitle, L10n.claimsLocatonOccuranceTitle)
+            .hFormTitle(.small, .customTitle, options.title)
             .hDisableScroll
             .hUseNewStyle
             .hFormAttachToBottom {
@@ -19,49 +27,52 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
     @ViewBuilder
     private var displayFieldsAndNotice: some View {
-        hSection {
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.locationStep
-                }
-            ) { locationStep in
 
-                hFloatingField(
-                    value: locationStep?.getSelectedOption()?.displayName ?? "",
-                    placeholder: L10n.Claims.Location.Screen.title,
-                    onTap: {
-                        store.send(.navigationAction(action: .openLocationPicker(type: .setLocation)))
-                    }
-                )
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.locationStep
+            }
+        ) { locationStep in
+            if let locationStep = locationStep {
+                hSection {
+                    hFloatingField(
+                        value: locationStep.getSelectedOption()?.displayName ?? "",
+                        placeholder: L10n.Claims.Location.Screen.title,
+                        onTap: {
+                            store.send(.navigationAction(action: .openLocationPicker))
+                        }
+                    )
+                }
+                .sectionContainerStyle(.transparent)
+                .padding(.bottom, 4)
             }
         }
-        .sectionContainerStyle(.transparent)
-        .padding(.bottom, 4)
 
-        hSection {
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.dateOfOccurenceStep
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.dateOfOccurenceStep
+            }
+        ) { dateOfOccurenceStep in
+
+            if let dateOfOccurrenceStep = dateOfOccurenceStep {
+                hSection {
+                    hFloatingField(
+                        value: dateOfOccurrenceStep.dateOfOccurence ?? "",
+                        placeholder: L10n.Claims.Item.Screen.Date.Of.Incident.button,
+                        onTap: {
+                            store.send(
+                                .navigationAction(action: .openDatePicker(type: .setDateOfOccurrence))
+                            )
+                        }
+                    )
                 }
-            ) { dateOfOccurenceStep in
-
-                hFloatingField(
-                    value: dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.displayDateDotFormat ?? "",
-                    placeholder: L10n.Claims.Item.Screen.Date.Of.Incident.button,
-                    onTap: {
-                        store.send(
-                            .navigationAction(action: .openDatePicker(type: .setDateOfOccurrence))
-                        )
-                    }
-                )
+                .sectionContainerStyle(.transparent)
+                InfoCard(text: L10n.claimsDateNotSureNoticeLabel)
+                    .padding(.vertical, 16)
             }
         }
-        .sectionContainerStyle(.transparent)
-
-        InfoCard(text: L10n.claimsDateNotSureNoticeLabel)
-            .padding(.vertical, 16)
     }
 
     @ViewBuilder
@@ -79,6 +90,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
 struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimOccurrencePlusLocationScreen()
+        SubmitClaimOccurrencePlusLocationScreen(options: [.date, .location])
     }
 }

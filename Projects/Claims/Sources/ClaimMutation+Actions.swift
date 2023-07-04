@@ -278,7 +278,7 @@ extension OctopusGraphQL.FlowClaimPhoneNumberNextMutation: ClaimStepLoadingType 
 
 extension OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation: ClaimStepLoadingType {
     func getLoadingType() -> ClaimsLoadingType {
-        return .postDateOfOccurrence
+        return .postDateOfOccurrenceAndLocation
     }
 }
 
@@ -290,7 +290,7 @@ extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation: Clai
 
 extension OctopusGraphQL.FlowClaimLocationNextMutation: ClaimStepLoadingType {
     func getLoadingType() -> ClaimsLoadingType {
-        return .postLocation
+        return .postDateOfOccurrenceAndLocation
     }
 }
 
