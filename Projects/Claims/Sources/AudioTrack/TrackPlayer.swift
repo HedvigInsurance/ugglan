@@ -39,9 +39,9 @@ struct TrackPlayer: View {
                         color: hLabelColor.primary
                     )
                     .foregroundColor(hLabelColor.primary)
+                    .transition(.opacity.animation(.easeOut))
                 } else {
                     image
-
                     let waveform = WaveformView(
                         stripeColor: getWaveColor,
                         sampleHeights: audioPlayer.sampleHeights
@@ -53,6 +53,7 @@ struct TrackPlayer: View {
                             OverlayView(audioPlayer: audioPlayer).mask(waveform)
                                 .padding(.top, 6)
                         )
+                        .transition(.opacity.animation(.easeOut))
                 }
             }
             .padding(.horizontal, 16)
