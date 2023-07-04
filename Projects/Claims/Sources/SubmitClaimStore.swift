@@ -194,47 +194,6 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                     .disposable
                 return disposeBag
             }
-
-        case let .fetchClaimEntrypointsForSelection(entrypointGroupId):
-            var entryPointInput: OctopusGraphQL.EntrypointSearchInput
-
-            if let entrypointGroupId = entrypointGroupId {
-                entryPointInput = OctopusGraphQL.EntrypointSearchInput(
-                    entrypointGroupId: entrypointGroupId,
-                    type: OctopusGraphQL.EntrypointType.claim
-                )
-            } else {
-                entryPointInput = OctopusGraphQL.EntrypointSearchInput(
-                    type: OctopusGraphQL.EntrypointType.claim
-                )
-            }
-
-            let query = OctopusGraphQL.EntrypointSearchQuery(input: entryPointInput)
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag +=
-                    self.octopus.client.fetch(query: query)
-                    .onValue { data in
-                        let model = data.entrypointSearch.map { data in
-                            ClaimEntryPointResponseModel(with: data.fragments.entrypointFragment)
-                        }
-
-                        callback(.value(.setClaimEntrypointsForSelection(model)))
-                        callback(.value(.setLoadingState(action: .fetchClaimEntrypoints, state: nil)))
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(
-                                    action: .fetchClaimEntrypoints,
-                                    state: .error(error: L10n.General.errorBody)
-                                )
-                            )
-                        )
-                    }
-                    .disposable
-                return disposeBag
-            }
         default:
             return nil
         }
@@ -342,8 +301,6 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
         case .singleItemCheckoutRequest:
             newState.loadingStates[.postSingleItemCheckout] = .loading
             newState.progress = nil
-        case .fetchClaimEntrypointsForSelection:
-            newState.loadingStates[.fetchClaimEntrypoints] = .loading
         case .fetchEntrypointGroups:
             newState.loadingStates[.fetchClaimEntrypointGroups] = .loading
             newState.progress = nil

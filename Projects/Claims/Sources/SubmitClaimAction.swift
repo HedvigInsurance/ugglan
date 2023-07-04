@@ -6,7 +6,6 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dissmissNewClaimFlow
     case submitClaimOpenFreeTextChat
 
-    case fetchClaimEntrypointsForSelection(entrypointGroupId: String?)
     case fetchEntrypointGroups
     case setClaimEntrypointsForSelection([ClaimEntryPointResponseModel])
     case setClaimEntrypointGroupsForSelection([ClaimEntryPointGroupResponseModel])
@@ -138,7 +137,6 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
 
 public enum ClaimsLoadingType: Codable & Equatable & Hashable {
     case startClaim
-    case fetchClaimEntrypoints
     case fetchClaimEntrypointGroups
     case postPhoneNumber
     case postDateOfOccurrenceAndLocation

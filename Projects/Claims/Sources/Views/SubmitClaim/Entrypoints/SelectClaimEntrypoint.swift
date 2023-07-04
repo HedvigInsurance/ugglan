@@ -17,7 +17,7 @@ public struct SelectClaimEntrypointGroup: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent([.fetchClaimEntrypoints]) {
+        LoadingViewWithContent([.fetchClaimEntrypointGroups]) {
             hForm {
             }
             .hUseNewStyle
