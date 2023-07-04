@@ -52,6 +52,8 @@ struct PriceInputScreen: View {
                             }
                         }
                     }
+                    .sectionContainerStyle(.transparent)
+                    .padding(.bottom, 16)
                 }
             }
             .introspectScrollView { scrollView in
