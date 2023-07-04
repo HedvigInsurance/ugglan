@@ -21,9 +21,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
 
     case startClaimRequest(entrypointId: String?, entrypointOptionId: String?)
     case phoneNumberRequest(phoneNumber: String)
-    case dateOfOccurrenceRequest
     case dateOfOccurrenceAndLocationRequest
-    case locationRequest(location: ClaimFlowLocationOptionModel?)
     case singleItemRequest(purchasePrice: Double?)
     case summaryRequest
     case singleItemCheckoutRequest
@@ -136,9 +134,7 @@ public enum ClaimsLoadingType: Codable & Equatable & Hashable {
     case fetchClaimEntrypoints
     case fetchClaimEntrypointGroups
     case postPhoneNumber
-    case postDateOfOccurrence
     case postDateOfOccurrenceAndLocation
-    case postLocation
     case postSingleItem
     case postSummary
     case postSingleItemCheckout
