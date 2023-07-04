@@ -21,6 +21,8 @@ struct TrackPlayer: View {
         switch audioPlayer.playbackState {
         case let .playing(paused):
             Image(uiImage: paused ? hCoreUIAssets.play.image : hCoreUIAssets.pause.image)
+                .resizable()
+                .frame(width: 24, height: 24)
                 .foregroundColor(getWaveColor)
         default:
             Image(uiImage: hCoreUIAssets.play.image)
@@ -37,9 +39,9 @@ struct TrackPlayer: View {
                         color: hLabelColor.primary
                     )
                     .foregroundColor(hLabelColor.primary)
+                    .transition(.opacity.animation(.easeOut))
                 } else {
                     image
-
                     let waveform = WaveformView(
                         stripeColor: getWaveColor,
                         sampleHeights: audioPlayer.sampleHeights
@@ -51,6 +53,7 @@ struct TrackPlayer: View {
                             OverlayView(audioPlayer: audioPlayer).mask(waveform)
                                 .padding(.top, 6)
                         )
+                        .transition(.opacity.animation(.easeOut))
                 }
             }
             .padding(.horizontal, 16)
@@ -59,12 +62,9 @@ struct TrackPlayer: View {
             .background(
                 RoundedRectangle(cornerRadius: .defaultCornerRadius)
                     .fill(getBackgroundColor)
-                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
             )
             .onTapGesture {
-                withAnimation(.spring()) {
-                    audioPlayer.togglePlaying()
-                }
+                audioPlayer.togglePlaying()
             }
 
             if !hWithoutFootnote {
