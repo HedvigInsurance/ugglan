@@ -23,7 +23,7 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
                 }
                 let input = OctopusGraphQL.TravelCertificateCreateInput(
                     contractId: config.contractId,
-                    startDate: travelInsuranceModel.startDate.displayDateDotFormat ?? "",
+                    startDate: travelInsuranceModel.startDate.localDateString,
                     isMemberIncluded: travelInsuranceModel.isPolicyHolderIncluded,
                     coInsured: travelInsuranceModel.policyCoinsuredPersons.map({
                         OctopusGraphQL.TravelCertificateCreateCoInsured(fullName: $0.fullName, ssn: $0.personalNumber)
