@@ -65,7 +65,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
 
         return OctopusGraphQL.FlowClaimSingleItemInput(
             purchasePrice: purchasePrice == 0 ? nil : purchasePrice,
-            purchaseDate: purchaseDate,
+            purchaseDate: purchaseDate?.localDateToDate?.localDateString,
             itemProblemIds: problemsIds,
             itemBrandInput: itemBrandInput,
             itemModelInput: itemModelInput,
@@ -128,29 +128,6 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
 
     func shouldShowListOfModels(for brand: ClaimFlowItemBrandOptionModel) -> Bool {
         return !(self.getListOfModels(for: brand.itemBrandId)?.isEmpty ?? true)
-    }
-
-    var returnDisplayStringForSummary: String {
-        var textParts: [String] = []
-        if let purchaseDate {
-            let purchaseDateText = L10n.summaryPurchaseDateDescription(purchaseDate)
-            textParts.append(purchaseDateText)
-        }
-
-        if let purchasePrice {
-            let purchasePriceText =
-                L10n.summaryPurchasePriceDescription(Int(purchasePrice)) + " " + (currencyCode ?? "")
-            textParts.append(purchasePriceText)
-        }
-
-        return textParts.joined(separator: " · ")
-    }
-
-    var returnDisplayStringForSummaryDate: String? {
-        if let purchaseDate {
-            return L10n.summaryPurchaseDateDescription(purchaseDate)
-        }
-        return nil
     }
 
     var returnDisplayStringForSummaryPrice: String? {
