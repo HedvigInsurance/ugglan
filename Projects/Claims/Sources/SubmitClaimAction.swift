@@ -48,7 +48,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
 
 public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel)
-    case openDateOfOccurrencePlusLocationScreen(type: LocationDatePicker)
+    case openDateOfOccurrencePlusLocationScreen(options: SubmitClaimOption)
     case openAudioRecordingScreen
     case openLocationPicker
     case openDatePicker(type: DatePickerType)
@@ -84,20 +84,27 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
         }
     }
 
-    public enum LocationDatePicker: ActionProtocol {
-        case location
-        case date
-        case locationAndDate
+    public struct SubmitClaimOption: OptionSet, ActionProtocol, Hashable {
+        public let rawValue: UInt
+
+        public init(rawValue: UInt) {
+            self.rawValue = rawValue
+        }
+
+        static let location = SubmitClaimOption(rawValue: 1 << 0)
+        static let date = SubmitClaimOption(rawValue: 1 << 1)
 
         var title: String {
-            switch self {
-            case .locationAndDate:
+            let hasLocation = self.contains(.location)
+            let hasDate = self.contains(.date)
+            if hasLocation && hasDate {
                 return L10n.claimsLocatonOccuranceTitle
-            case .date:
+            } else if hasDate {
                 return L10n.Claims.Incident.Screen.Date.Of.incident
-            case .location:
+            } else if hasLocation {
                 return L10n.Claims.Incident.Screen.location
             }
+            return ""
         }
     }
 }

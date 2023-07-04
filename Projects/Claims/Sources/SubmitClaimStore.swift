@@ -286,13 +286,13 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 newState.dateOfOccurrencePlusLocationStep = model.dateOfOccurencePlusLocationModel
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
-                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(type: .locationAndDate)))
+                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(options: [.date, .location])))
             case let .setDateOfOccurence(model):
                 newState.dateOfOccurenceStep = model
-                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(type: .date)))
+                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(options: .date)))
             case let .setLocation(model):
                 newState.locationStep = model
-                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(type: .location)))
+                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(options: .location)))
             case let .setSingleItem(model):
                 newState.singleItemStep = model
                 send(.navigationAction(action: .openSingleItemScreen))

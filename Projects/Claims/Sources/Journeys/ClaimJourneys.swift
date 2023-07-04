@@ -22,8 +22,8 @@ public class ClaimJourneys {
         if case let .navigationAction(navigationAction) = action {
             if case let .openPhoneNumberScreen(model) = navigationAction {
                 submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
-            } else if case let .openDateOfOccurrencePlusLocationScreen(type) = navigationAction {
-                submitClaimOccurrancePlusLocationScreen(type: type).addDismissClaimsFlow()
+            } else if case let .openDateOfOccurrencePlusLocationScreen(options) = navigationAction {
+                submitClaimOccurrancePlusLocationScreen(options: options).addDismissClaimsFlow()
             } else if case .openAudioRecordingScreen = navigationAction {
                 openAudioRecordingSceen().addDismissClaimsFlow()
             } else if case .openSuccessScreen = navigationAction {
@@ -63,11 +63,11 @@ public class ClaimJourneys {
 
     @JourneyBuilder
     static func submitClaimOccurrancePlusLocationScreen(
-        type: ClaimsNavigationAction.LocationDatePicker
+        options: ClaimsNavigationAction.SubmitClaimOption
     ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimOccurrencePlusLocationScreen(type: type)
+            rootView: SubmitClaimOccurrencePlusLocationScreen(options: options)
         ) {
             action in
             getScreen(for: action)

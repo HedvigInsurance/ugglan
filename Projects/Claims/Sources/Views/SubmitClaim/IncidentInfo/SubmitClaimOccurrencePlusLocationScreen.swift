@@ -4,17 +4,17 @@ import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
-    private let type: ClaimsNavigationAction.LocationDatePicker
+    private let options: ClaimsNavigationAction.SubmitClaimOption
 
     init(
-        type: ClaimsNavigationAction.LocationDatePicker
+        options: ClaimsNavigationAction.SubmitClaimOption
     ) {
-        self.type = type
+        self.options = options
     }
 
     var body: some View {
         hForm {}
-            .hFormTitle(.small, .customTitle, type.title)
+            .hFormTitle(.small, .customTitle, options.title)
             .hDisableScroll
             .hUseNewStyle
             .hFormAttachToBottom {
@@ -34,7 +34,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                 state.locationStep
             }
         ) { locationStep in
-
             if let locationStep = locationStep {
                 hSection {
                     hFloatingField(
@@ -91,6 +90,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
 struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimOccurrencePlusLocationScreen(type: .locationAndDate)
+        SubmitClaimOccurrencePlusLocationScreen(options: [.date, .location])
     }
 }
