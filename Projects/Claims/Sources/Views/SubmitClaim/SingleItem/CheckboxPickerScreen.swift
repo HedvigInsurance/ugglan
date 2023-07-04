@@ -3,24 +3,25 @@ import hCore
 import hCoreUI
 
 struct CheckboxPickerScreen<T>: View {
-    var items: [(object: T, displayName: String)]
-    let preSelectedItems: () -> [T]?
+    typealias PickerModel = (object: T, displayName: String)
+    var items: [PickerModel]
+    let preSelectedItems: [String]
     let onSelected: ([T]) -> Void
     let onCancel: () -> Void
     let singleSelect: Bool?
     let showDividers: Bool?
-    @State var selectedItems: [(object: T, displayName: String)] = []
+    @State var selectedItems: [PickerModel] = []
 
     public init(
         items: [(object: T, displayName: String)],
-        preSelectedItems: @escaping () -> [T]?,
+        preSelectedItems: @escaping () -> [String],
         onSelected: @escaping ([T]) -> Void,
         onCancel: @escaping () -> Void,
         singleSelect: Bool? = false,
         showDividers: Bool? = false
     ) {
         self.items = items
-        self.preSelectedItems = preSelectedItems
+        self.preSelectedItems = preSelectedItems()
         self.onSelected = onSelected
         self.onCancel = onCancel
         self.singleSelect = singleSelect
@@ -60,10 +61,7 @@ struct CheckboxPickerScreen<T>: View {
             .padding(.top, 16)
         }
         .onAppear {
-            preSelectedItems()?
-                .forEach { item in
-                    self.selectedItems.append((item, ""))
-                }
+            selectedItems = items.filter({ preSelectedItems.contains($0.displayName) })
         }
     }
 
@@ -158,7 +156,7 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                 ]
                 .compactMap({ (object: $0, displayName: $0.name) })
             }(),
-            preSelectedItems: { nil },
+            preSelectedItems: { [] },
             onSelected: { selectedLocation in
 
             },
