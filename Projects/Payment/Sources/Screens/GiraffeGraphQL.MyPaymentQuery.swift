@@ -100,7 +100,7 @@ extension DirectDebitSetup: Presentable {
         activityIndicator.snp.makeConstraints { make in make.edges.equalToSuperview()
             make.size.equalToSuperview()
         }
-
+        let urlSignal = ReadWriteSignal<URL?>(nil)
         bag += webView.isLoadingSignal.animated(style: AnimationStyle.easeOut(duration: 0.5)) { loading in
             if loading { activityIndicator.alpha = 1 } else { activityIndicator.alpha = 0 }
         }
@@ -144,6 +144,7 @@ extension DirectDebitSetup: Presentable {
                             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
                             timeoutInterval: 10
                         )
+                        urlSignal.value = url
                         webView.load(request)
                     } else {
                         presentAlert()
@@ -154,6 +155,18 @@ extension DirectDebitSetup: Presentable {
                 })
         }
 
+        bag += combineLatest(Signal(after: 7), webView.isLoadingSignal, urlSignal.future.resultSignal)
+            .onValue { _, isLoading, url in
+                if isLoading {
+                    if let url = url.value, let urlToOpen = url {
+                        UIApplication.shared.open(urlToOpen)
+                        alertDismissAlert.value = true
+                    } else {
+                        presentAlert()
+                    }
+                }
+
+            }
         startRegistration()
         return (
             viewController,

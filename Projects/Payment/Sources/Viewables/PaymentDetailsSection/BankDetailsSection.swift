@@ -20,28 +20,59 @@ extension BankDetailsSection: Viewable {
         let section = SectionView(header: L10n.myPaymentBankRowLabel, footer: nil)
         let row = KeyValueRow()
         row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
-
+        var removePaymentRow = ReadWriteSignal<Bool>(true)
         bag += section.append(row)
-
-        let dataSignal = giraffe.client.watch(
-            query: GiraffeGraphQL.MyPaymentQuery(
-                locale: Localization.Locale.currentLocale.asGraphQLLocale()
+        func configure() {
+            let dataSignal = giraffe.client.watch(
+                query: GiraffeGraphQL.MyPaymentQuery(
+                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                ),
+                cachePolicy: .returnCacheDataAndFetch
             )
-        )
-        let noBankAccountSignal = dataSignal.filter { $0.bankAccount == nil }
+            let noBankAccountSignal = dataSignal.filter { $0.bankAccount == nil }
 
-        bag += noBankAccountSignal.map { _ in L10n.myPaymentNotConnected }.bindTo(row.keySignal)
+            bag += noBankAccountSignal.map { _ in L10n.myPaymentNotConnected }.bindTo(row.keySignal)
 
-        bag += dataSignal.compactMap { $0.bankAccount?.bankName }.bindTo(row.keySignal)
+            bag += dataSignal.compactMap { $0.bankAccount?.bankName }.bindTo(row.keySignal)
+            bag += dataSignal.compactMap { $0.bankAccount?.descriptor }.bindTo(row.valueSignal)
 
-        bag += dataSignal.compactMap { $0.bankAccount?.descriptor }.bindTo(row.valueSignal)
+            let myPaymentQuerySignal = giraffe.client.watch(
+                query: GiraffeGraphQL.MyPaymentQuery(
+                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
+                ),
+                cachePolicy: .returnCacheDataAndFetch
+            )
+            bag += myPaymentQuerySignal.onValueDisposePrevious { data in let innerBag = bag.innerBag()
+                removePaymentRow.value = true
+                switch data.payinMethodStatus {
+                case .pending:
+                    let pendingRow = RowView()
 
-        let myPaymentQuerySignal = giraffe.client.watch(
-            query: GiraffeGraphQL.MyPaymentQuery(
-                locale: Localization.Locale.currentLocale.asGraphQLLocale()
-            ),
-            cachePolicy: .returnCacheDataAndFetch
-        )
+                    innerBag += pendingRow.append(
+                        MultilineLabel(
+                            value: L10n.myPaymentUpdatingMessage,
+                            style: .brand(.footnote(color: .tertiary))
+                        )
+                    )
+
+                    section.append(pendingRow)
+
+                    innerBag += { section.remove(pendingRow) }
+
+                    innerBag += addConnectPayment(data)
+                case .active, .needsSetup, .__unknown: innerBag += addConnectPayment(data)
+                }
+                return innerBag
+            }
+        }
+
+        configure()
+        bag += NotificationCenter.default.signal(forName: UIApplication.willEnterForegroundNotification)
+            .onValue { _ in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    configure()
+                }
+            }
 
         func addConnectPayment(_ data: GiraffeGraphQL.MyPaymentQuery.Data) -> Disposable {
             let bag = DisposeBag()
@@ -72,34 +103,12 @@ extension BankDetailsSection: Viewable {
                     )
                     .sink()
                 }
-
+            bag += removePaymentRow.onValue({ _ in
+                section.remove(paymentSetupRow)
+            })
             bag += { section.remove(paymentSetupRow) }
 
             return bag
-        }
-
-        bag += myPaymentQuerySignal.onValueDisposePrevious { data in let innerBag = bag.innerBag()
-
-            switch data.payinMethodStatus {
-            case .pending:
-                let pendingRow = RowView()
-
-                innerBag += pendingRow.append(
-                    MultilineLabel(
-                        value: L10n.myPaymentUpdatingMessage,
-                        style: .brand(.footnote(color: .tertiary))
-                    )
-                )
-
-                section.append(pendingRow)
-
-                innerBag += { section.remove(pendingRow) }
-
-                innerBag += addConnectPayment(data)
-            case .active, .needsSetup, .__unknown: innerBag += addConnectPayment(data)
-            }
-
-            return innerBag
         }
 
         return (section, bag)
