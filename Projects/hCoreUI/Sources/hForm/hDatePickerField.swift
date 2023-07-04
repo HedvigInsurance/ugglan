@@ -66,7 +66,7 @@ public struct hDatePickerField: View {
 
     private func getValueLabel() -> some View {
         HStack {
-            Text(selectedDate?.localDateString ?? L10n.generalSelectButton)
+            Text(selectedDate?.displayDateDotFormat ?? L10n.generalSelectButton)
                 .modifier(hFontModifierNew(style: .title3))
                 .foregroundColor(hLabelColorNew.primary)
             Spacer()
