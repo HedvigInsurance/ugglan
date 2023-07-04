@@ -37,7 +37,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
     case setLoadingState(action: ClaimsLoadingType, state: LoadingState<String>?)
     case setPayoutMethod(method: AvailableCheckoutMethod)
-
+    case setLocation(location: String?)
     case setProgress(progress: Float?)
 
     case navigationAction(action: ClaimsNavigationAction)
@@ -50,9 +50,9 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
 
 public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel)
-    case openDateOfOccurrencePlusLocationScreen(showLocation: Bool)
+    case openDateOfOccurrencePlusLocationScreen(type: LocationDatePicker)
     case openAudioRecordingScreen
-    case openLocationPicker(type: LocationPickerType)
+    case openLocationPicker
     case openDatePicker(type: DatePickerType)
     case openSuccessScreen
     case openSingleItemScreen
@@ -72,11 +72,6 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case dismissScreen
     case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
 
-    public enum LocationPickerType: ActionProtocol {
-        case setLocation
-        case submitLocation
-    }
-
     public enum DatePickerType: ActionProtocol {
         case setDateOfOccurrence
         case setDateOfPurchase
@@ -87,6 +82,23 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
                 return L10n.Claims.Incident.Screen.Date.Of.incident
             case .setDateOfPurchase:
                 return L10n.Claims.Item.Screen.Date.Of.Purchase.button
+            }
+        }
+    }
+
+    public enum LocationDatePicker: ActionProtocol {
+        case location
+        case date
+        case locationAndDate
+
+        var title: String {
+            switch self {
+            case .locationAndDate:
+                return L10n.claimsLocatonOccuranceTitle
+            case .date:
+                return L10n.Claims.Incident.Screen.Date.Of.incident
+            case .location:
+                return L10n.Claims.Incident.Screen.location
             }
         }
     }

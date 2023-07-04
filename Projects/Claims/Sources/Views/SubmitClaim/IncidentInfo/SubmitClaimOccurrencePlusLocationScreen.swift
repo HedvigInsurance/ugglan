@@ -4,18 +4,17 @@ import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
-
-    let showLocation: Bool
+    private let type: ClaimsNavigationAction.LocationDatePicker
 
     init(
-        showLocation: Bool
+        type: ClaimsNavigationAction.LocationDatePicker
     ) {
-        self.showLocation = showLocation
+        self.type = type
     }
 
     var body: some View {
         hForm {}
-            .hFormTitle(.small, .customTitle, L10n.claimsLocatonOccuranceTitle)
+            .hFormTitle(.small, .customTitle, type.title)
             .hDisableScroll
             .hUseNewStyle
             .hFormAttachToBottom {
@@ -29,61 +28,58 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     @ViewBuilder
     private var displayFieldsAndNotice: some View {
 
-        if showLocation {
-            hSection {
-                PresentableStoreLens(
-                    SubmitClaimStore.self,
-                    getter: { state in
-                        state.locationStep
-                    }
-                ) { locationStep in
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.locationStep
+            }
+        ) { locationStep in
 
+            if let locationStep = locationStep {
+                hSection {
                     hFloatingField(
-                        value: locationStep?.getSelectedOption()?.displayName ?? "",
+                        value: locationStep.getSelectedOption()?.displayName ?? "",
                         placeholder: L10n.Claims.Location.Screen.title,
                         onTap: {
-                            store.send(.navigationAction(action: .openLocationPicker(type: .setLocation)))
+                            store.send(.navigationAction(action: .openLocationPicker))
                         }
                     )
                 }
+                .sectionContainerStyle(.transparent)
+                .padding(.bottom, 4)
             }
-            .sectionContainerStyle(.transparent)
-            .padding(.bottom, 4)
         }
 
-        hSection {
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.dateOfOccurenceStep
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.dateOfOccurenceStep
+            }
+        ) { dateOfOccurenceStep in
+
+            if let dateOfOccurrenceStep = dateOfOccurenceStep {
+                hSection {
+                    hFloatingField(
+                        value: dateOfOccurrenceStep.dateOfOccurence ?? "",
+                        placeholder: L10n.Claims.Item.Screen.Date.Of.Incident.button,
+                        onTap: {
+                            store.send(
+                                .navigationAction(action: .openDatePicker(type: .setDateOfOccurrence))
+                            )
+                        }
+                    )
                 }
-            ) { dateOfOccurenceStep in
-
-                hFloatingField(
-                    value: dateOfOccurenceStep?.dateOfOccurence ?? "",
-                    placeholder: L10n.Claims.Item.Screen.Date.Of.Incident.button,
-                    onTap: {
-                        store.send(
-                            .navigationAction(action: .openDatePicker(type: .setDateOfOccurrence))
-                        )
-                    }
-                )
+                .sectionContainerStyle(.transparent)
+                InfoCard(text: L10n.claimsDateNotSureNoticeLabel)
+                    .padding(.vertical, 16)
             }
         }
-        .sectionContainerStyle(.transparent)
-
-        InfoCard(text: L10n.claimsDateNotSureNoticeLabel)
-            .padding(.vertical, 16)
     }
 
     @ViewBuilder
     private var continueButton: some View {
         LoadingButtonWithContent(.postDateOfOccurrenceAndLocation) {
-            if showLocation {
-                store.send(.dateOfOccurrenceAndLocationRequest)
-            } else {
-                store.send(.dateOfOccurrenceRequest)
-            }
+            store.send(.dateOfOccurrenceAndLocationRequest)
         } content: {
             hText(L10n.generalContinueButton, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
@@ -95,6 +91,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
 struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimOccurrencePlusLocationScreen(showLocation: true)
+        SubmitClaimOccurrencePlusLocationScreen(type: .locationAndDate)
     }
 }

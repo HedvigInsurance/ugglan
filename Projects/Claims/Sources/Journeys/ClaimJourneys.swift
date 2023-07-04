@@ -22,8 +22,8 @@ public class ClaimJourneys {
         if case let .navigationAction(navigationAction) = action {
             if case let .openPhoneNumberScreen(model) = navigationAction {
                 submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
-            } else if case let .openDateOfOccurrencePlusLocationScreen(showLocation) = navigationAction {
-                submitClaimOccurrancePlusLocationScreen(showLocation: showLocation).addDismissClaimsFlow()
+            } else if case let .openDateOfOccurrencePlusLocationScreen(type) = navigationAction {
+                submitClaimOccurrancePlusLocationScreen(type: type).addDismissClaimsFlow()
             } else if case .openAudioRecordingScreen = navigationAction {
                 openAudioRecordingSceen().addDismissClaimsFlow()
             } else if case .openSuccessScreen = navigationAction {
@@ -41,8 +41,8 @@ public class ClaimJourneys {
                 showClaimFailureScreen().withJourneyDismissButton
             } else if case .openSummaryEditScreen = navigationAction {
                 openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
-            } else if case let .openLocationPicker(type) = navigationAction {
-                openLocationScreen(type: type).configureTitle(L10n.Claims.Incident.Screen.location)
+            } else if case .openLocationPicker = navigationAction {
+                openLocationScreen().configureTitle(L10n.Claims.Incident.Screen.location)
             } else if case .openUpdateAppScreen = navigationAction {
                 openUpdateAppTerminationScreen().withJourneyDismissButton
             } else if case let .openDatePicker(type) = navigationAction {
@@ -62,10 +62,12 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    static func submitClaimOccurrancePlusLocationScreen(showLocation: Bool) -> some JourneyPresentation {
+    static func submitClaimOccurrancePlusLocationScreen(
+        type: ClaimsNavigationAction.LocationDatePicker
+    ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimOccurrencePlusLocationScreen(showLocation: showLocation)
+            rootView: SubmitClaimOccurrencePlusLocationScreen(type: type)
         ) {
             action in
             getScreen(for: action)
@@ -94,7 +96,7 @@ public class ClaimJourneys {
         .configureTitle(type.title)
     }
 
-    static func openLocationScreen(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
+    static func openLocationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: CheckboxPickerScreen<ClaimFlowLocationOptionModel>(
@@ -106,15 +108,7 @@ public class ClaimJourneys {
                 preSelectedItems: { nil },
                 onSelected: { selectedLocation in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    let executedAction: SubmitClaimsAction = {
-                        switch type {
-                        case .setLocation:
-                            return .setNewLocation(location: selectedLocation.first)
-                        case .submitLocation:
-                            return .locationRequest(location: selectedLocation.first)
-                        }
-                    }()
-                    store.send(executedAction)
+                    store.send(.setNewLocation(location: selectedLocation.first))
                 },
                 onCancel: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -122,8 +116,8 @@ public class ClaimJourneys {
                 },
                 singleSelect: true
             ),
-            style: type == .submitLocation ? .default : .detented(.scrollViewContentSize),
-            options: type == .submitLocation ? [.defaults] : [.largeNavigationBar, .blurredBackground]
+            style: .detented(.scrollViewContentSize),
+            options: [.largeNavigationBar, .blurredBackground]
         ) {
             action in
             if case .navigationAction(.dismissScreen) = action {
