@@ -156,7 +156,7 @@ public class ClaimJourneys {
                 }
             ),
             style: .detented(.large),
-            options: [.largeNavigationBar, .wantsGrabber, .blurredBackground]
+            options: [.largeNavigationBar, .wantsGrabber]
         ) {
             action in
             if case let .setItemBrand(brand) = action {
@@ -205,7 +205,7 @@ public class ClaimJourneys {
                 showDividers: true
             ),
             style: .detented(.large, modally: false),
-            options: [.wantsGrabber, .largeNavigationBar, .blurredBackground]
+            options: [.wantsGrabber]
         )
     }
 
@@ -395,7 +395,8 @@ public class ClaimJourneys {
                         )
                     }
                 }),
-            style: .modally(presentationStyle: .overFullScreen)
+            style: .modally(presentationStyle: .overFullScreen),
+            options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
             if case let .setSelectedEntrypoints(entrypoints) = action {
                 if !entrypoints.isEmpty {

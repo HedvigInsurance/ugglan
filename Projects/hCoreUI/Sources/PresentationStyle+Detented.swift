@@ -243,6 +243,7 @@ extension PresentationOptions {
     public static let wantsGrabber = PresentationOptions()
     public static let blurredBackground = PresentationOptions()
     public static let preffersLargerNavigationBar = PresentationOptions()
+    public static let withAdditionalSpaceForProgressBar = PresentationOptions()
     public static let largeNavigationBar: PresentationOptions = [
         embedInNavigationController, .preffersLargerNavigationBar,
     ]
