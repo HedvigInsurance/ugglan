@@ -145,8 +145,6 @@ final class TravelInsuranceStore: StateStore<TravelInsuranceState, TravelInsuran
             } else {
                 newState.loadingStates.removeValue(forKey: action)
             }
-        default:
-            break
         }
         return newState
     }

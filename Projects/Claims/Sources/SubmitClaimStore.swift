@@ -29,8 +29,8 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             let phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
             let mutation = OctopusGraphQL.FlowClaimPhoneNumberNextMutation(input: phoneNumber, context: newClaimContext)
             return mutation.execute(\.flowClaimPhoneNumberNext.fragments.flowClaimFragment.currentStep)
-        case let .dateOfOccurrenceRequest(dateOfOccurrence):
-            let dateString = dateOfOccurrence?.localDateString
+        case .dateOfOccurrenceRequest:
+            let dateString = state.dateOfOccurenceStep?.dateOfOccurence
             let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
             let mutation = OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation(
                 input: dateOfOccurrenceInput,
@@ -277,10 +277,10 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 newState.dateOfOccurrencePlusLocationStep = model.dateOfOccurencePlusLocationModel
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
-                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
+                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(showLocation: true)))
             case let .setDateOfOccurence(model):
                 newState.dateOfOccurenceStep = model
-                send(.navigationAction(action: .openDatePicker(type: .submitDateOfOccurence)))
+                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(showLocation: false)))
             case let .setLocation(model):
                 newState.locationStep = model
                 send(.navigationAction(action: .openLocationPicker(type: .submitLocation)))

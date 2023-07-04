@@ -17,7 +17,7 @@ public struct DatePickerScreen: View {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         self.maxDate = {
             switch type {
-            case .setDateOfOccurrence, .submitDateOfOccurence:
+            case .setDateOfOccurrence:
                 return store.state.dateOfOccurenceStep?.getMaxDate() ?? Date()
             case .setDateOfPurchase:
                 return Date()
@@ -27,8 +27,6 @@ public struct DatePickerScreen: View {
             switch type {
             case .setDateOfOccurrence, .setDateOfPurchase:
                 return L10n.generalSaveButton
-            case .submitDateOfOccurence:
-                return L10n.generalContinueButton
             }
         }()
         self.dateOfOccurrence = min(maxDate, Date())
@@ -62,8 +60,6 @@ public struct DatePickerScreen: View {
                         switch type {
                         case .setDateOfOccurrence:
                             return .setNewDate(dateOfOccurrence: dateOfOccurrence.localDateString)
-                        case .submitDateOfOccurence:
-                            return .dateOfOccurrenceRequest(dateOfOccurrence: dateOfOccurrence)
                         case .setDateOfPurchase:
                             return .setSingleItemPurchaseDate(purchaseDate: dateOfOccurrence)
                         }
@@ -80,8 +76,6 @@ public struct DatePickerScreen: View {
                             switch type {
                             case .setDateOfOccurrence:
                                 return .setNewDate(dateOfOccurrence: nil)
-                            case .submitDateOfOccurence:
-                                return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
                             case .setDateOfPurchase:
                                 return .setSingleItemPurchaseDate(purchaseDate: nil)
                             }

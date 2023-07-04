@@ -21,7 +21,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
 
     case startClaimRequest(entrypointId: String?, entrypointOptionId: String?)
     case phoneNumberRequest(phoneNumber: String)
-    case dateOfOccurrenceRequest(dateOfOccurrence: Date?)
+    case dateOfOccurrenceRequest
     case dateOfOccurrenceAndLocationRequest
     case locationRequest(location: ClaimFlowLocationOptionModel?)
     case singleItemRequest(purchasePrice: Double?)
@@ -50,7 +50,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
 
 public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel)
-    case openDateOfOccurrencePlusLocationScreen
+    case openDateOfOccurrencePlusLocationScreen(showLocation: Bool)
     case openAudioRecordingScreen
     case openLocationPicker(type: LocationPickerType)
     case openDatePicker(type: DatePickerType)
@@ -79,23 +79,11 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
 
     public enum DatePickerType: ActionProtocol {
         case setDateOfOccurrence
-        case submitDateOfOccurence
         case setDateOfPurchase
-
-        var shouldShowModally: Bool {
-            switch self {
-            case .setDateOfOccurrence:
-                return true
-            case .submitDateOfOccurence:
-                return false
-            case .setDateOfPurchase:
-                return true
-            }
-        }
 
         var title: String {
             switch self {
-            case .setDateOfOccurrence, .submitDateOfOccurence:
+            case .setDateOfOccurrence:
                 return L10n.Claims.Incident.Screen.Date.Of.incident
             case .setDateOfPurchase:
                 return L10n.Claims.Item.Screen.Date.Of.Purchase.button

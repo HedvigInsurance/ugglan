@@ -4,6 +4,13 @@ import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
+    let showLocation: Bool
+
+    init(
+        showLocation: Bool
+    ) {
+        self.showLocation = showLocation
+    }
 
     var body: some View {
         hForm {
@@ -21,25 +28,28 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
     @ViewBuilder
     private var displayFieldsAndNotice: some View {
-        hSection {
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.locationStep
-                }
-            ) { locationStep in
 
-                hFloatingField(
-                    value: locationStep?.getSelectedOption()?.displayName ?? "",
-                    placeholder: L10n.Claims.Location.Screen.title,
-                    onTap: {
-                        store.send(.navigationAction(action: .openLocationPicker(type: .setLocation)))
+        if showLocation {
+            hSection {
+                PresentableStoreLens(
+                    SubmitClaimStore.self,
+                    getter: { state in
+                        state.locationStep
                     }
-                )
+                ) { locationStep in
+
+                    hFloatingField(
+                        value: locationStep?.getSelectedOption()?.displayName ?? "",
+                        placeholder: L10n.Claims.Location.Screen.title,
+                        onTap: {
+                            store.send(.navigationAction(action: .openLocationPicker(type: .setLocation)))
+                        }
+                    )
+                }
             }
+            .sectionContainerStyle(.transparent)
+            .padding(.bottom, 4)
         }
-        .sectionContainerStyle(.transparent)
-        .padding(.bottom, 4)
 
         hSection {
             PresentableStoreLens(
@@ -69,7 +79,11 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     @ViewBuilder
     private var continueButton: some View {
         LoadingButtonWithContent(.postDateOfOccurrenceAndLocation) {
-            store.send(.dateOfOccurrenceAndLocationRequest)
+            if showLocation {
+                store.send(.dateOfOccurrenceAndLocationRequest)
+            } else {
+                store.send(.dateOfOccurrenceRequest)
+            }
         } content: {
             hText(L10n.generalContinueButton, style: .body)
                 .foregroundColor(hLabelColor.primary.inverted)
@@ -81,6 +95,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
 struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimOccurrencePlusLocationScreen()
+        SubmitClaimOccurrencePlusLocationScreen(showLocation: true)
     }
 }
