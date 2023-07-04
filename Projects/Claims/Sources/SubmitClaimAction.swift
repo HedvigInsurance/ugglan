@@ -21,9 +21,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
 
     case startClaimRequest(entrypointId: String?, entrypointOptionId: String?)
     case phoneNumberRequest(phoneNumber: String)
-    case dateOfOccurrenceRequest(dateOfOccurrence: Date?)
     case dateOfOccurrenceAndLocationRequest
-    case locationRequest(location: ClaimFlowLocationOptionModel?)
     case singleItemRequest(purchasePrice: Double?)
     case summaryRequest
     case singleItemCheckoutRequest
@@ -37,7 +35,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
     case setLoadingState(action: ClaimsLoadingType, state: LoadingState<String>?)
     case setPayoutMethod(method: AvailableCheckoutMethod)
-
+    case setLocation(location: String?)
     case setProgress(progress: Float?)
 
     case navigationAction(action: ClaimsNavigationAction)
@@ -50,9 +48,9 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
 
 public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel)
-    case openDateOfOccurrencePlusLocationScreen
+    case openDateOfOccurrencePlusLocationScreen(options: SubmitClaimOption)
     case openAudioRecordingScreen
-    case openLocationPicker(type: LocationPickerType)
+    case openLocationPicker
     case openDatePicker(type: DatePickerType)
     case openSuccessScreen
     case openSingleItemScreen
@@ -72,34 +70,41 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case dismissScreen
     case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
 
-    public enum LocationPickerType: ActionProtocol {
-        case setLocation
-        case submitLocation
-    }
-
     public enum DatePickerType: ActionProtocol {
         case setDateOfOccurrence
-        case submitDateOfOccurence
         case setDateOfPurchase
-
-        var shouldShowModally: Bool {
-            switch self {
-            case .setDateOfOccurrence:
-                return true
-            case .submitDateOfOccurence:
-                return false
-            case .setDateOfPurchase:
-                return true
-            }
-        }
 
         var title: String {
             switch self {
-            case .setDateOfOccurrence, .submitDateOfOccurence:
+            case .setDateOfOccurrence:
                 return L10n.Claims.Incident.Screen.Date.Of.incident
             case .setDateOfPurchase:
                 return L10n.Claims.Item.Screen.Date.Of.Purchase.button
             }
+        }
+    }
+
+    public struct SubmitClaimOption: OptionSet, ActionProtocol, Hashable {
+        public let rawValue: UInt
+
+        public init(rawValue: UInt) {
+            self.rawValue = rawValue
+        }
+
+        static let location = SubmitClaimOption(rawValue: 1 << 0)
+        static let date = SubmitClaimOption(rawValue: 1 << 1)
+
+        var title: String {
+            let hasLocation = self.contains(.location)
+            let hasDate = self.contains(.date)
+            if hasLocation && hasDate {
+                return L10n.claimsLocatonOccuranceTitle
+            } else if hasDate {
+                return L10n.Claims.Incident.Screen.Date.Of.incident
+            } else if hasLocation {
+                return L10n.Claims.Incident.Screen.location
+            }
+            return ""
         }
     }
 }
@@ -136,9 +141,7 @@ public enum ClaimsLoadingType: Codable & Equatable & Hashable {
     case fetchClaimEntrypoints
     case fetchClaimEntrypointGroups
     case postPhoneNumber
-    case postDateOfOccurrence
     case postDateOfOccurrenceAndLocation
-    case postLocation
     case postSingleItem
     case postSummary
     case postSingleItemCheckout

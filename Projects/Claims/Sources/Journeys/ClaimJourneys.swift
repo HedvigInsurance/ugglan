@@ -22,8 +22,8 @@ public class ClaimJourneys {
         if case let .navigationAction(navigationAction) = action {
             if case let .openPhoneNumberScreen(model) = navigationAction {
                 submitClaimPhoneNumberScreen(model: model).addDismissClaimsFlow()
-            } else if case .openDateOfOccurrencePlusLocationScreen = navigationAction {
-                submitClaimOccurrancePlusLocationScreen().addDismissClaimsFlow()
+            } else if case let .openDateOfOccurrencePlusLocationScreen(options) = navigationAction {
+                submitClaimOccurrancePlusLocationScreen(options: options).addDismissClaimsFlow()
             } else if case .openAudioRecordingScreen = navigationAction {
                 openAudioRecordingSceen().addDismissClaimsFlow()
             } else if case .openSuccessScreen = navigationAction {
@@ -41,8 +41,8 @@ public class ClaimJourneys {
                 showClaimFailureScreen().withJourneyDismissButton
             } else if case .openSummaryEditScreen = navigationAction {
                 openSummaryEditScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Edit.Screen.title)
-            } else if case let .openLocationPicker(type) = navigationAction {
-                openLocationScreen(type: type).configureTitle(L10n.Claims.Incident.Screen.location)
+            } else if case .openLocationPicker = navigationAction {
+                openLocationScreen().configureTitle(L10n.Claims.Incident.Screen.location)
             } else if case .openUpdateAppScreen = navigationAction {
                 openUpdateAppTerminationScreen().withJourneyDismissButton
             } else if case let .openDatePicker(type) = navigationAction {
@@ -62,10 +62,12 @@ public class ClaimJourneys {
     }
 
     @JourneyBuilder
-    static func submitClaimOccurrancePlusLocationScreen() -> some JourneyPresentation {
+    static func submitClaimOccurrancePlusLocationScreen(
+        options: ClaimsNavigationAction.SubmitClaimOption
+    ) -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimOccurrencePlusLocationScreen()
+            rootView: SubmitClaimOccurrencePlusLocationScreen(options: options)
         ) {
             action in
             getScreen(for: action)
@@ -76,85 +78,25 @@ public class ClaimJourneys {
     @JourneyBuilder
     static func openDatePickerScreen(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
         let screen = DatePickerScreen(type: type).hUseNewStyle
-        if type.shouldShowModally {
-            HostingJourney(
-                SubmitClaimStore.self,
-                rootView: screen,
-                style: .detented(.scrollViewContentSize),
-                options: [.largeNavigationBar, .blurredBackground]
-            ) {
-                action in
-                if case .setNewDate = action {
-                    PopJourney()
-                } else if case .setSingleItemPurchaseDate = action {
-                    PopJourney()
-                } else {
-                    getScreen(for: action)
-                }
+        HostingJourney(
+            SubmitClaimStore.self,
+            rootView: screen,
+            style: .detented(.scrollViewContentSize),
+            options: [.largeNavigationBar, .blurredBackground]
+        ) {
+            action in
+            if case .setNewDate = action {
+                PopJourney()
+            } else if case .setSingleItemPurchaseDate = action {
+                PopJourney()
+            } else {
+                getScreen(for: action)
             }
-            .configureTitle(type.title)
-        } else {
-            HostingJourney(
-                SubmitClaimStore.self,
-                rootView: screen
-            ) {
-                action in
-                if case .setNewDate = action {
-                    PopJourney()
-                } else if case .setSingleItemPurchaseDate = action {
-                    PopJourney()
-                } else {
-                    getScreen(for: action)
-                }
-            }
-            .resetProgressToPreviousValueOnDismiss
-            .configureTitle(type.title)
         }
+        .configureTitle(type.title)
     }
 
-    static func openDatePickerScreenOld(type: ClaimsNavigationAction.DatePickerType) -> some JourneyPresentation {
-        let screen = DatePickerScreen(type: type)
-        if type.shouldShowModally {
-            return HostingJourney(
-                SubmitClaimStore.self,
-                rootView: screen,
-                style: .detented(.scrollViewContentSize),
-                options: [
-                    .defaults,
-                    .largeTitleDisplayMode(.always),
-                    .prefersLargeTitles(true),
-                ]
-            ) {
-                action in
-                if case .setNewDate = action {
-                    PopJourney()
-                } else if case .setSingleItemPurchaseDate = action {
-                    PopJourney()
-                } else {
-                    getScreen(for: action)
-                }
-            }
-            .configureTitle(type.title)
-            .withDismissButton
-        } else {
-            return HostingJourney(
-                SubmitClaimStore.self,
-                rootView: screen
-            ) {
-                action in
-                if case .setNewDate = action {
-                    PopJourney()
-                } else if case .setSingleItemPurchaseDate = action {
-                    PopJourney()
-                } else {
-                    getScreen(for: action)
-                }
-            }
-            .configureTitle(type.title)
-        }
-    }
-
-    static func openLocationScreen(type: ClaimsNavigationAction.LocationPickerType) -> some JourneyPresentation {
+    static func openLocationScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
             rootView: CheckboxPickerScreen<ClaimFlowLocationOptionModel>(
@@ -172,15 +114,7 @@ public class ClaimJourneys {
                 },
                 onSelected: { selectedLocation in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    let executedAction: SubmitClaimsAction = {
-                        switch type {
-                        case .setLocation:
-                            return .setNewLocation(location: selectedLocation.first)
-                        case .submitLocation:
-                            return .locationRequest(location: selectedLocation.first)
-                        }
-                    }()
-                    store.send(executedAction)
+                    store.send(.setNewLocation(location: selectedLocation.first))
                 },
                 onCancel: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -188,8 +122,8 @@ public class ClaimJourneys {
                 },
                 singleSelect: true
             ),
-            style: type == .submitLocation ? .default : .detented(.scrollViewContentSize),
-            options: type == .submitLocation ? [.defaults] : [.largeNavigationBar, .blurredBackground]
+            style: .detented(.scrollViewContentSize),
+            options: [.largeNavigationBar, .blurredBackground]
         ) {
             action in
             if case .navigationAction(.dismissScreen) = action {
