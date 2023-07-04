@@ -107,7 +107,7 @@ struct RenewalInformationCard: View {
                 titleIcon: hCoreUIAssets.refresh.image,
                 title: L10n.InsuranceDetails.updateDetailsSheetTitle,
                 bodyText: L10n.InsuranceDetails.AdressUpdateBody.No.address(
-                    contract.upcomingAgreementDate?.localDateString ?? ""
+                    contract.upcomingAgreementDate?.displayDateDotFormat ?? ""
                 ),
                 backgroundColor: hTintColor.lavenderTwo
             ) {

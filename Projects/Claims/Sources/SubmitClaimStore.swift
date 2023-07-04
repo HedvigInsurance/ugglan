@@ -62,7 +62,6 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 return mutation.execute(\.flowClaimLocationNext.fragments.flowClaimFragment.currentStep)
             }
             return nil
-
         case let .submitAudioRecording(audioURL):
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
