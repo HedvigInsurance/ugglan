@@ -57,7 +57,7 @@ public struct DatePickerScreen: View {
         }
         .hFormAttachToBottom {
             VStack {
-                LoadingButtonWithContent(.postDateOfOccurrence) {
+                LoadingButtonWithContent(.postDateOfOccurrenceAndLocation) {
                     let action: SubmitClaimsAction = {
                         switch type {
                         case .setDateOfOccurrence:
@@ -72,7 +72,7 @@ public struct DatePickerScreen: View {
                 }
                 .padding([.leading, .trailing], 16)
                 LoadingButtonWithContent(
-                    .postDateOfOccurrence,
+                    .postDateOfOccurrenceAndLocation,
                     buttonAction: {
                         let action: SubmitClaimsAction = {
                             switch type {

@@ -333,10 +333,6 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.singleItemCheckoutStep?.selectedPayoutMethod = method
         case .phoneNumberRequest:
             newState.loadingStates[.postPhoneNumber] = .loading
-        case .dateOfOccurrenceRequest:
-            newState.loadingStates[.postDateOfOccurrence] = .loading
-        case .locationRequest:
-            newState.loadingStates[.postLocation] = .loading
         case .dateOfOccurrenceAndLocationRequest:
             newState.loadingStates[.postDateOfOccurrenceAndLocation] = .loading
         case .singleItemRequest:
