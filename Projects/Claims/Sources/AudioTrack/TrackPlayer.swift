@@ -21,6 +21,8 @@ struct TrackPlayer: View {
         switch audioPlayer.playbackState {
         case let .playing(paused):
             Image(uiImage: paused ? hCoreUIAssets.play.image : hCoreUIAssets.pause.image)
+                .resizable()
+                .frame(width: 24, height: 24)
                 .foregroundColor(getWaveColor)
         default:
             Image(uiImage: hCoreUIAssets.play.image)
@@ -59,12 +61,9 @@ struct TrackPlayer: View {
             .background(
                 RoundedRectangle(cornerRadius: .defaultCornerRadius)
                     .fill(getBackgroundColor)
-                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
             )
             .onTapGesture {
-                withAnimation(.spring()) {
-                    audioPlayer.togglePlaying()
-                }
+                audioPlayer.togglePlaying()
             }
 
             if !hWithoutFootnote {
