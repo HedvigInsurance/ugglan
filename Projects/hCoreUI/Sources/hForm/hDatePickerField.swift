@@ -45,7 +45,7 @@ public struct hDatePickerField: View {
             )
             getValueLabel()
         }
-        .padding(.vertical, 10 - HFontTextStyleNew.title3.uifontLineHeightDifference)
+        .padding(.vertical, 10 - HFontTextStyleNew.title3.uifontLineHeightDifference + 5)
         .onChange(of: date) { date in
             selectedDate = date
         }
@@ -149,7 +149,7 @@ private struct DatePickerView: View {
 }
 
 struct hDatePickerField_Previews: PreviewProvider {
-    @State private static var date: Date?
+    @State private static var date: Date? = Date()
     private static let config = hDatePickerField.HDatePickerFieldConfig(
         placeholder: "Placeholder"
     )

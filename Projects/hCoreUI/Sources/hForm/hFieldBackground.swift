@@ -60,8 +60,8 @@ struct hFieldLabel: View {
     @Binding var shouldMoveLabel: Bool
 
     var body: some View {
-        let sizeToScaleFrom = HFontTextStyleNew.title3.uifontTextStyle.pointSize
-        let sizeToScaleTo = HFontTextStyleNew.footnote.uifontTextStyle.pointSize
+        let sizeToScaleFrom = HFontTextStyleNew.title3.fontSize
+        let sizeToScaleTo = HFontTextStyleNew.footnote.fontSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
         let padding = HFontTextStyleNew.title3.uifontLineHeightDifference * 15
         return hTextNew(placeholder, style: .title3)
