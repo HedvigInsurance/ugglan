@@ -392,12 +392,19 @@ public class ClaimJourneys {
                     store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
 
                     if entrypoints.isEmpty {
+                        store.send(.setProgress(progress: 0.3))
                         store.send(
                             .startClaimRequest(
                                 entrypointId: nil,
                                 entrypointOptionId: nil
                             )
                         )
+                    } else {
+                        if entrypoints.first?.options == [] {
+                            store.send(.setProgress(progress: 0.2))
+                        } else {
+                            store.send(.setProgress(progress: 0.1))
+                        }
                     }
                 }),
             style: .modally(presentationStyle: .overFullScreen),
@@ -432,6 +439,7 @@ public class ClaimJourneys {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setSelectedEntrypointOptions(entrypoints: options))
                     store.send(.setSelectedEntrypointId(entrypoints: selectedEntrypointId))
+                    store.send(.setProgress(progress: 0.2))
 
                     if options.isEmpty {
                         store.send(

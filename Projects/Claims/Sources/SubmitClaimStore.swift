@@ -303,7 +303,8 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.progress = nil
         case .fetchEntrypointGroups:
             newState.loadingStates[.fetchClaimEntrypointGroups] = .loading
-            newState.progress = nil
+            newState.progress = 0
+            newState.previousProgress = 0
         case let .setSelectedEntrypoints(entrypoints):
             newState.entrypoints.selectedEntrypoints = entrypoints
         case let .setSelectedEntrypointOptions(entrypointOptions):
