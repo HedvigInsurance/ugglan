@@ -26,7 +26,7 @@ public struct MovingFlowJourneyNew {
                 } else if case .openHousingTypeScreen = navigationAction {
                     MovingFlowJourneyNew.openSelectHousingScreen()
                 } else if case .openConfirmScreen = navigationAction {
-                    MovingFlowJourneyNew.openConfirmScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
+                    MovingFlowJourneyNew.openConfirmScreen()
                 } else if case .openFailureScreen = navigationAction {
                     MovingFlowJourneyNew.openFailureScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
                 } else if case .dismissMovingFlow = navigationAction {

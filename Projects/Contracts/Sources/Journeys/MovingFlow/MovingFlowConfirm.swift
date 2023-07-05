@@ -9,85 +9,81 @@ struct MovingFlowConfirm: View {
 
     var body: some View {
         hForm {
+            VStack(spacing: 16) {
+                if isMultipleOffer {
+                    showCardComponent(
+                        insuranceName: "Hemförsäkring",
+                        price: "179 kr/mån"
+                    )
+                    showCardComponent(
+                        insuranceName: "Olycksfallsförsäkring",
+                        price: "99 kr/mån"
+                    )
+                    noticeComponent
+                } else {
+                    showCardComponent(
+                        insuranceName: "Hemförsäkring",
+                        price: "179 kr/mån"
+                    )
+                }
+                overviewComponent
+                if isMultipleOffer {
+                    whatIsCovered(
+                        insuranceName: "Hemförsäkring",
+                        fields: [
+                            FieldInfo(
+                                name: "Försäkrat belopp",
+                                price: "1 000 000 kr"
+                            ),
+                            FieldInfo(
+                                name: "Självrisk",
+                                price: "1 500 kr"
+                            ),
+                            FieldInfo(
+                                name: "Reseskydd",
+                                price: "45 dagar"
+                            ),
+                        ]
+                    )
 
-            hTextNew(L10n.changeAddressAcceptOffer, style: .title3)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.bottom, 50)
-
-            if isMultipleOffer {
-                showCardComponent(
-                    insuranceName: "Hemförsäkring",
-                    price: "179 kr/mån"
-                )
-                showCardComponent(
-                    insuranceName: "Olycksfallsförsäkring",
-                    price: "99 kr/mån"
-                )
-                noticeComponent
-                overviewComponent()
-            } else {
-                showCardComponent(
-                    insuranceName: "Hemförsäkring",
-                    price: "179 kr/mån"
-                )
-                overviewComponent()
+                    whatIsCovered(
+                        insuranceName: "Olycksfallsförsäkring",
+                        fields: [
+                            FieldInfo(
+                                name: "Försäkrat belopp",
+                                price: "1 000 000 kr"
+                            ),
+                            FieldInfo(
+                                name: "Självrisk",
+                                price: "1 500 kr"
+                            ),
+                        ]
+                    )
+                } else {
+                    whatIsCovered(
+                        insuranceName: "Hemförsäkring",
+                        fields: [
+                            FieldInfo(
+                                name: "Försäkrat belopp",
+                                price: "1 000 000 kr"
+                            ),
+                            FieldInfo(
+                                name: "Självrisk",
+                                price: "1 500 kr"
+                            ),
+                            FieldInfo(
+                                name: "Reseskydd",
+                                price: "45 dagar"
+                            ),
+                        ]
+                    )
+                }
+                questionAnswerComponent
+                chatComponent
             }
-            if isMultipleOffer {
-                whatIsCovered(
-                    insuranceName: "Hemförsäkring",
-                    fields: [
-                        FieldInfo(
-                            name: "Försäkrat belopp",
-                            price: "1 000 000 kr"
-                        ),
-                        FieldInfo(
-                            name: "Självrisk",
-                            price: "1 500 kr"
-                        ),
-                        FieldInfo(
-                            name: "Reseskydd",
-                            price: "45 dagar"
-                        ),
-                    ]
-                )
-
-                whatIsCovered(
-                    insuranceName: "Olycksfallsförsäkring",
-                    fields: [
-                        FieldInfo(
-                            name: "Försäkrat belopp",
-                            price: "1 000 000 kr"
-                        ),
-                        FieldInfo(
-                            name: "Självrisk",
-                            price: "1 500 kr"
-                        ),
-                    ]
-                )
-            } else {
-                whatIsCovered(
-                    insuranceName: "Hemförsäkring",
-                    fields: [
-                        FieldInfo(
-                            name: "Försäkrat belopp",
-                            price: "1 000 000 kr"
-                        ),
-                        FieldInfo(
-                            name: "Självrisk",
-                            price: "1 500 kr"
-                        ),
-                        FieldInfo(
-                            name: "Reseskydd",
-                            price: "45 dagar"
-                        ),
-                    ]
-                )
-            }
-            questionAnswerComponent
-            chatComponent
         }
         .hUseNewStyle
+        .hFormTitle(.standard, .title3, L10n.changeAddressAcceptOffer)
     }
 
     @ViewBuilder
@@ -100,14 +96,18 @@ struct MovingFlowConfirm: View {
         }
     }
 
-    func returnSubComponent() -> some View {
-        HStack {
-            hTextNew(L10n.changeAddressActivationDate("02.12.24"), style: .body)
-            Image(uiImage: hCoreUIAssets.infoSmall.image)
-                .resizable()
-                .frame(width: 14, height: 14)
+    func returnMiddleComponent(insuranceName: String) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            hTextNew(insuranceName, style: .body)
+                .foregroundColor(hLabelColorNew.primary)
+            HStack {
+                hTextNew(L10n.changeAddressActivationDate("02.12.24"), style: .body)
+                Image(uiImage: hCoreUIAssets.infoSmall.image)
+                    .resizable()
+                    .frame(width: 14, height: 14)
+            }
+            .foregroundColor(hLabelColorNew.secondary)
         }
-        .foregroundColor(hGrayscaleColorNew.greyScale700)
     }
 
     @ViewBuilder
@@ -180,9 +180,7 @@ struct MovingFlowConfirm: View {
             mainContent: Image(uiImage: hCoreUIAssets.pillowHome.image)
                 .resizable()
                 .frame(width: 49, height: 49),
-            //                .foregroundColor(hGrayscaleColorNew.greyScale900),
-            topTitle: insuranceName,
-            //            topSubTitle: returnSubComponent(),
+            middleContent: returnMiddleComponent(insuranceName: insuranceName),
             bottomComponent: {
                 returnBottomComponent(
                     insuranceName: insuranceName,
@@ -190,9 +188,8 @@ struct MovingFlowConfirm: View {
                 )
             }
         )
-        //        .cardComponentOptions([.hideArrow])
-        //        .padding([.leading, .trailing], 16)
-        //        .padding(.bottom, 8)
+        .hCardComponentOptions([.paddingOnDivider, .hideArrow])
+        .padding([.leading, .trailing], 16)
     }
 
     @ViewBuilder
@@ -205,7 +202,7 @@ struct MovingFlowConfirm: View {
     }
 
     @ViewBuilder
-    func overviewComponent() -> some View {
+    var overviewComponent: some View {
         HStack {
             hTextNew(L10n.changeAddressTotal, style: .body)
             Spacer()
