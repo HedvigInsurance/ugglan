@@ -59,7 +59,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             if let dateOfOccurrenceStep = dateOfOccurenceStep {
                 hSection {
                     hFloatingField(
-                        value: dateOfOccurrenceStep.dateOfOccurence ?? "",
+                        value: dateOfOccurrenceStep.dateOfOccurence?.localDateToDate?.displayDateDotFormat ?? "",
                         placeholder: L10n.Claims.Item.Screen.Date.Of.Incident.button,
                         onTap: {
                             store.send(
