@@ -158,15 +158,16 @@ extension DirectDebitSetup: Presentable {
 
         bag += combineLatest(Signal(after: 5), webView.isLoadingSignal, urlSignal.future.resultSignal)
             .onValue { _, isLoading, url in
-                //                if isLoading {
-                didFailToLoadWebViewSignal.value = true
-                if let url = url.value, let urlToOpen = url {
-                    UIApplication.shared.open(urlToOpen)
+                if isLoading {
                     didFailToLoadWebViewSignal.value = true
-                } else {
-                    presentAlert()
+                    if let url = url.value, let urlToOpen = url {
+                        UIApplication.shared.open(urlToOpen)
+                        didFailToLoadWebViewSignal.value = true
+                    } else {
+                        presentAlert()
+                    }
+
                 }
-                //                }
             }
 
         bag += combineLatest(

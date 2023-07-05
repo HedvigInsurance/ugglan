@@ -35,14 +35,7 @@ extension BankDetailsSection: Viewable {
 
             bag += dataSignal.compactMap { $0.bankAccount?.bankName }.bindTo(row.keySignal)
             bag += dataSignal.compactMap { $0.bankAccount?.descriptor }.bindTo(row.valueSignal)
-
-            let myPaymentQuerySignal = giraffe.client.watch(
-                query: GiraffeGraphQL.MyPaymentQuery(
-                    locale: Localization.Locale.currentLocale.asGraphQLLocale()
-                ),
-                cachePolicy: .returnCacheDataAndFetch
-            )
-            bag += myPaymentQuerySignal.onValueDisposePrevious { data in let innerBag = bag.innerBag()
+            bag += dataSignal.onValueDisposePrevious { data in let innerBag = bag.innerBag()
                 removePaymentRow.value = true
                 switch data.payinMethodStatus {
                 case .pending:
