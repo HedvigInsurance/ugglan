@@ -194,6 +194,7 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                     .disposable
                 return disposeBag
             }
+
         default:
             return nil
         }
@@ -307,7 +308,19 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.previousProgress = 0
         case let .setSelectedEntrypoints(entrypoints):
             newState.entrypoints.selectedEntrypoints = entrypoints
+
+            if entrypoints.isEmpty {
+                newState.progress = 0.3
+            } else {
+                if entrypoints.first?.options == [] {
+                    newState.progress = 0.2
+                } else {
+                    newState.progress = 0.1
+                }
+            }
         case let .setSelectedEntrypointOptions(entrypointOptions):
+            newState.previousProgress = newState.progress
+            newState.progress = 0.2
             newState.entrypoints.selectedEntrypointOptions = entrypointOptions
         case let .setSelectedEntrypointId(entrypointId):
             newState.entrypoints.selectedEntrypointId = entrypointId
