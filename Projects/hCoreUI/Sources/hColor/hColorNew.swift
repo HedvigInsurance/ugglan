@@ -62,6 +62,16 @@ public struct hBackgroundColorNew {
     }
 }
 
+public struct hOverlayColorNew {
+    public static var pressedGhost: some hColor {
+        hGrayscaleTranslucentColorNew.greyScaleTranslucentBlack100
+    }
+
+    public static var pressedPrimary: some hColor {
+        hGrayscaleTranslucentColorNew.greyScaleTranslucent900
+    }
+}
+
 public struct hGrayscaleColorNew {
     public static var greyScale25: some hColor {
         hColorScheme(
