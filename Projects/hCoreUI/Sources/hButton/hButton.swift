@@ -4,8 +4,8 @@ import SwiftUI
 struct LargeButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .frame(minHeight: 52)
-            .frame(minWidth: 200)
+            .frame(minHeight: 56)
+            .frame(minWidth: 300)
             .frame(maxWidth: .infinity)
     }
 }
@@ -13,7 +13,7 @@ struct LargeButtonModifier: ViewModifier {
 struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .frame(minHeight: 35)
+            .frame(minHeight: 40)
             .padding(.leading)
             .padding(.trailing)
     }
@@ -151,11 +151,13 @@ extension View {
 }
 
 struct ButtonFilledStyle: SwiftUI.ButtonStyle {
+    @Environment(\.hUseNewStyle) var hUseNewStyle
     var size: ButtonSize
 
     struct Label: View {
         @Environment(\.isEnabled) var isEnabled
         @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
+
         var configuration: Configuration
 
         @hColorBuilder var foregroundColor: some hColor {
@@ -189,18 +191,19 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         }
     }
 
+    @hColorBuilder
     var pressedColor: some hColor {
-        hColorScheme(
-            light: hOverlayColor.pressed,
-            dark: hOverlayColor.pressedLavender
-        )
+        if hUseNewStyle {
+            hOverlayColorNew.pressedPrimary
+        } else {
+            hOverlayColor.pressed
+        }
     }
 
     func makeBody(configuration: Configuration) -> some View {
         VStack {
             Label(configuration: configuration)
-                .padding(.leading, 16)
-                .padding(.trailing, 16)
+                .padding(.horizontal, 16)
         }
         .buttonSizeModifier(size)
         .background(ButtonFilledBackground(configuration: configuration))
@@ -266,6 +269,8 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
 }
 
 struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
+    @Environment(\.hUseNewStyle) var hUseNewStyle
+
     struct Label: View {
         var configuration: Configuration
 
@@ -292,13 +297,24 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
         }
         .modifier(LargeButtonModifier())
         .background(Color.clear)
-        .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
+        .overlay(configuration.isPressed ? getPressedColor : nil)
         .clipShape(Squircle.default())
         .modifier(OpacityModifier())
+    }
+
+    @hColorBuilder
+    var getPressedColor: some hColor {
+        if hUseNewStyle {
+            hOverlayColorNew.pressedGhost
+        } else {
+            hOverlayColor.pressed
+        }
     }
 }
 
 struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
+    @Environment(\.hUseNewStyle) var hUseNewStyle
+
     struct Label: View {
         var configuration: Configuration
 
@@ -325,10 +341,19 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
         }
         .modifier(SmallButtonModifier())
         .background(Color.clear)
-        .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
+        .overlay(configuration.isPressed ? getPressedColor : nil)
         .clipShape(Squircle.default())
         .modifier(OpacityModifier())
         .contentShape(Rectangle())
+    }
+
+    @hColorBuilder
+    var getPressedColor: some hColor {
+        if hUseNewStyle {
+            hOverlayColorNew.pressedGhost
+        } else {
+            hOverlayColor.pressed
+        }
     }
 }
 
