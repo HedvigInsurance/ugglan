@@ -7,6 +7,7 @@ struct WithCard<Card: View>: ViewModifier {
     func body(content: Content) -> some View {
         VStack {
             content
+            card()
         }
     }
 }

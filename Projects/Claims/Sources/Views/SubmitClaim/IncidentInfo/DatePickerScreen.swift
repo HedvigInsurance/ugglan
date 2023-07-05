@@ -17,7 +17,7 @@ public struct DatePickerScreen: View {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         self.maxDate = {
             switch type {
-            case .setDateOfOccurrence, .submitDateOfOccurence:
+            case .setDateOfOccurrence:
                 return store.state.dateOfOccurenceStep?.getMaxDate() ?? Date()
             case .setDateOfPurchase:
                 return Date()
@@ -27,8 +27,6 @@ public struct DatePickerScreen: View {
             switch type {
             case .setDateOfOccurrence, .setDateOfPurchase:
                 return L10n.generalSaveButton
-            case .submitDateOfOccurence:
-                return L10n.generalContinueButton
             }
         }()
         self.dateOfOccurrence = min(maxDate, Date())
@@ -48,7 +46,9 @@ public struct DatePickerScreen: View {
                 .frame(height: 350)
                 .padding([.leading, .trailing], 16)
                 .padding([.top], 5)
+                .background(Color.clear)
             }
+            .sectionContainerStyle(.transparent)
             .introspectDatePicker { date in
                 if useNewStyle {
                     date.tintColor = .brandNew(.primaryText())
@@ -57,13 +57,11 @@ public struct DatePickerScreen: View {
         }
         .hFormAttachToBottom {
             VStack {
-                LoadingButtonWithContent(.postDateOfOccurrence) {
+                LoadingButtonWithContent(.postDateOfOccurrenceAndLocation) {
                     let action: SubmitClaimsAction = {
                         switch type {
                         case .setDateOfOccurrence:
                             return .setNewDate(dateOfOccurrence: dateOfOccurrence.localDateString)
-                        case .submitDateOfOccurence:
-                            return .dateOfOccurrenceRequest(dateOfOccurrence: dateOfOccurrence)
                         case .setDateOfPurchase:
                             return .setSingleItemPurchaseDate(purchaseDate: dateOfOccurrence)
                         }
@@ -74,14 +72,12 @@ public struct DatePickerScreen: View {
                 }
                 .padding([.leading, .trailing], 16)
                 LoadingButtonWithContent(
-                    .postDateOfOccurrence,
+                    .postDateOfOccurrenceAndLocation,
                     buttonAction: {
                         let action: SubmitClaimsAction = {
                             switch type {
                             case .setDateOfOccurrence:
                                 return .setNewDate(dateOfOccurrence: nil)
-                            case .submitDateOfOccurence:
-                                return .dateOfOccurrenceRequest(dateOfOccurrence: nil)
                             case .setDateOfPurchase:
                                 return .setSingleItemPurchaseDate(purchaseDate: nil)
                             }

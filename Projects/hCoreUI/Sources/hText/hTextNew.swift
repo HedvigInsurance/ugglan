@@ -27,7 +27,7 @@ extension String {
     }
 }
 
-public enum HFontTextStyleNew {
+public enum HFontTextStyleNew: CaseIterable {
     case body
     case title1
     case title2
@@ -36,27 +36,75 @@ public enum HFontTextStyleNew {
     case customTitle
     case headline
 
-    var uifontTextStyle: UIFont {
+    var fontSize: CGFloat {
+        let sizeMultiplier: CGFloat = {
+            if UITraitCollection.current.preferredContentSizeCategory != .large {
+                let defaultDescriptor = UIFontDescriptor.preferredFontDescriptor(
+                    withTextStyle: uifontTextStyle,
+                    compatibleWith: .current
+                )
+                return defaultDescriptor.pointSize / defaultSystemSize
+            }
+            return 1
+        }()
         switch self {
         case .title1:
-            return .systemFont(ofSize: 48)
+            return 48 * sizeMultiplier
         case .title2:
-            return .systemFont(ofSize: 32)
+            return 32 * sizeMultiplier
         case .title3:
-            return .systemFont(ofSize: 24)
+            return 24 * sizeMultiplier
         case .customTitle:
-            return .systemFont(ofSize: 28)
+            return 28 * sizeMultiplier
         case .body:
-            return .systemFont(ofSize: 18)
+            return 18 * sizeMultiplier
         case .headline:
-            return .systemFont(ofSize: 18)
+            return 18 * sizeMultiplier
         case .footnote:
-            return .systemFont(ofSize: 14)
+            return 14 * sizeMultiplier
+        }
+    }
+
+    private var uifontTextStyle: UIFont.TextStyle {
+        switch self {
+        case .title1:
+            return .title1
+        case .title2:
+            return .title2
+        case .title3:
+            return .title3
+        case .customTitle:
+            return .title3
+        case .body:
+            return .body
+        case .headline:
+            return .headline
+        case .footnote:
+            return .footnote
+        }
+    }
+
+    private var defaultSystemSize: CGFloat {
+        switch self {
+        case .title1:
+            return 28
+        case .title2:
+            return 22
+        case .title3:
+            return 20
+        case .customTitle:
+            return 22
+        case .body:
+            return 17
+        case .headline:
+            return 17
+        case .footnote:
+            return 13
         }
     }
 
     var uifontLineHeightDifference: CGFloat {
-        return self.uifontTextStyle.pointSize / 16
+        return self.fontSize / 16
     }
 }
 

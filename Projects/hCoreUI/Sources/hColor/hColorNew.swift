@@ -62,6 +62,16 @@ public struct hBackgroundColorNew {
     }
 }
 
+public struct hOverlayColorNew {
+    public static var pressedGhost: some hColor {
+        hGrayscaleTranslucentColorNew.greyScaleTranslucentBlack100
+    }
+
+    public static var pressedPrimary: some hColor {
+        hGrayscaleTranslucentColorNew.greyScaleTranslucent900
+    }
+}
+
 public struct hGrayscaleColorNew {
     public static var greyScale25: some hColor {
         hColorScheme(
@@ -191,6 +201,12 @@ public struct hGrayscaleTranslucentColorNew {
         )
     }
 
+    public static var greyScaleTranslucentBorder: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.07)
+        )
+    }
+
     public static var greyScaleTranslucentField: some hColor {
         hColorScheme(
             Color(hexString: "#121212").opacity(0.05)
@@ -232,6 +248,10 @@ public struct hLabelColorNew {
 
     public static var signalBlue: some hColor {
         hBlueColorNew.blue800
+    }
+
+    public static var translucentBorder: some hColor {
+        hGrayscaleTranslucentColorNew.greyScaleTranslucentBorder
     }
 }
 

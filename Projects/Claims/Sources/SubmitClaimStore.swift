@@ -29,31 +29,39 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             let phoneNumber = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumberInput)
             let mutation = OctopusGraphQL.FlowClaimPhoneNumberNextMutation(input: phoneNumber, context: newClaimContext)
             return mutation.execute(\.flowClaimPhoneNumberNext.fragments.flowClaimFragment.currentStep)
-        case let .dateOfOccurrenceRequest(dateOfOccurrence):
-            let dateString = dateOfOccurrence?.localDateString
-            let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
-            let mutation = OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation(
-                input: dateOfOccurrenceInput,
-                context: newClaimContext
-            )
-            return mutation.execute(\.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.currentStep)
-        case let .locationRequest(location):
-            let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: location?.value)
-            let mutation = OctopusGraphQL.FlowClaimLocationNextMutation(input: locationInput, context: newClaimContext)
-            return mutation.execute(\.flowClaimLocationNext.fragments.flowClaimFragment.currentStep)
         case .dateOfOccurrenceAndLocationRequest:
-            let location = state.locationStep?.getSelectedOption()?.value
-            let date = state.dateOfOccurenceStep?.dateOfOccurence
+            if let dateOfOccurrenceStep = state.dateOfOccurenceStep, let locationStep = state.locationStep {
+                let location = locationStep.getSelectedOption()?.value
+                let date = dateOfOccurrenceStep.dateOfOccurence
 
-            let dateAndLocationInput = OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationInput(
-                dateOfOccurrence: date,
-                location: location
-            )
-            let mutation = OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation(
-                input: dateAndLocationInput,
-                context: newClaimContext
-            )
-            return mutation.execute(\.flowClaimDateOfOccurrencePlusLocationNext.fragments.flowClaimFragment.currentStep)
+                let dateAndLocationInput = OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationInput(
+                    dateOfOccurrence: date,
+                    location: location
+                )
+                let mutation = OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation(
+                    input: dateAndLocationInput,
+                    context: newClaimContext
+                )
+                return mutation.execute(
+                    \.flowClaimDateOfOccurrencePlusLocationNext.fragments.flowClaimFragment.currentStep
+                )
+            } else if let dateOfOccurrenceStep = state.dateOfOccurenceStep {
+                let dateString = dateOfOccurrenceStep.dateOfOccurence
+                let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(dateOfOccurrence: dateString)
+                let mutation = OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation(
+                    input: dateOfOccurrenceInput,
+                    context: newClaimContext
+                )
+                return mutation.execute(\.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.currentStep)
+            } else if let locationStep = state.locationStep {
+                let locationInput = OctopusGraphQL.FlowClaimLocationInput(location: locationStep.location)
+                let mutation = OctopusGraphQL.FlowClaimLocationNextMutation(
+                    input: locationInput,
+                    context: newClaimContext
+                )
+                return mutation.execute(\.flowClaimLocationNext.fragments.flowClaimFragment.currentStep)
+            }
+            return nil
         case let .submitAudioRecording(audioURL):
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
@@ -186,47 +194,6 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                     .disposable
                 return disposeBag
             }
-
-        case let .fetchClaimEntrypointsForSelection(entrypointGroupId):
-            var entryPointInput: OctopusGraphQL.EntrypointSearchInput
-
-            if let entrypointGroupId = entrypointGroupId {
-                entryPointInput = OctopusGraphQL.EntrypointSearchInput(
-                    entrypointGroupId: entrypointGroupId,
-                    type: OctopusGraphQL.EntrypointType.claim
-                )
-            } else {
-                entryPointInput = OctopusGraphQL.EntrypointSearchInput(
-                    type: OctopusGraphQL.EntrypointType.claim
-                )
-            }
-
-            let query = OctopusGraphQL.EntrypointSearchQuery(input: entryPointInput)
-            return FiniteSignal { callback in
-                let disposeBag = DisposeBag()
-                disposeBag +=
-                    self.octopus.client.fetch(query: query)
-                    .onValue { data in
-                        let model = data.entrypointSearch.map { data in
-                            ClaimEntryPointResponseModel(with: data.fragments.entrypointFragment)
-                        }
-
-                        callback(.value(.setClaimEntrypointsForSelection(model)))
-                        callback(.value(.setLoadingState(action: .fetchClaimEntrypoints, state: nil)))
-                    }
-                    .onError { error in
-                        callback(
-                            .value(
-                                .setLoadingState(
-                                    action: .fetchClaimEntrypoints,
-                                    state: .error(error: L10n.General.errorBody)
-                                )
-                            )
-                        )
-                    }
-                    .disposable
-                return disposeBag
-            }
         default:
             return nil
         }
@@ -277,13 +244,13 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                 newState.dateOfOccurrencePlusLocationStep = model.dateOfOccurencePlusLocationModel
                 newState.locationStep = model.locationModel
                 newState.dateOfOccurenceStep = model.dateOfOccurenceModel
-                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen))
+                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(options: [.date, .location])))
             case let .setDateOfOccurence(model):
                 newState.dateOfOccurenceStep = model
-                send(.navigationAction(action: .openDatePicker(type: .submitDateOfOccurence)))
+                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(options: .date)))
             case let .setLocation(model):
                 newState.locationStep = model
-                send(.navigationAction(action: .openLocationPicker(type: .submitLocation)))
+                send(.navigationAction(action: .openDateOfOccurrencePlusLocationScreen(options: .location)))
             case let .setSingleItem(model):
                 newState.singleItemStep = model
                 send(.navigationAction(action: .openSingleItemScreen))
@@ -325,10 +292,6 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.singleItemCheckoutStep?.selectedPayoutMethod = method
         case .phoneNumberRequest:
             newState.loadingStates[.postPhoneNumber] = .loading
-        case .dateOfOccurrenceRequest:
-            newState.loadingStates[.postDateOfOccurrence] = .loading
-        case .locationRequest:
-            newState.loadingStates[.postLocation] = .loading
         case .dateOfOccurrenceAndLocationRequest:
             newState.loadingStates[.postDateOfOccurrenceAndLocation] = .loading
         case .singleItemRequest:
@@ -338,8 +301,6 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
         case .singleItemCheckoutRequest:
             newState.loadingStates[.postSingleItemCheckout] = .loading
             newState.progress = nil
-        case .fetchClaimEntrypointsForSelection:
-            newState.loadingStates[.fetchClaimEntrypoints] = .loading
         case .fetchEntrypointGroups:
             newState.loadingStates[.fetchClaimEntrypointGroups] = .loading
             newState.progress = nil

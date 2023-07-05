@@ -17,7 +17,7 @@ public struct SelectClaimEntrypointGroup: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent([.fetchClaimEntrypoints]) {
+        LoadingViewWithContent([.fetchClaimEntrypointGroups]) {
             hForm {
             }
             .hUseNewStyle
@@ -245,8 +245,7 @@ struct ShowTagList: View {
                             animate = false
                         }
                         notValid = false
-                        let generator = UIImpactFeedbackGenerator(style: .soft)
-                        generator.impactOccurred()
+                        ImpactGenerator.soft()
                     }
                     .padding(.horizontal, 12)  // 16 - tag list horizontal spacing
                     .padding(.vertical, 8)
@@ -298,12 +297,12 @@ struct ShowTagList: View {
     @ViewBuilder
     func getColorAndShadow(claimId: String) -> some View {
         if selection == claimId {
-            Squircle.default()
+            RoundedRectangle(cornerRadius: 12)
                 .foregroundColor(hBackgroundColorNew.semanticButton)
                 .hShadow()
 
         } else {
-            Squircle.default()
+            RoundedRectangle(cornerRadius: 12)
                 .foregroundColor(hGrayscaleTranslucentColorNew.greyScaleTranslucentBlack100)
         }
     }

@@ -67,7 +67,7 @@ extension CommonClaimDetail: Presentable {
             bag += claimButton.onTapSignal.onValue {
                 hAnalyticsEvent.beginClaim(screen: .commonClaimDetail).send()
 
-                if claim.id == "30" || claim.id == "31" {
+                if claim.id == "30" || claim.id == "31" || claim.id == "32" {
                     if let url = URL(
                         string: "https://app.adjust.com/11u5tuxu"
                     ) {

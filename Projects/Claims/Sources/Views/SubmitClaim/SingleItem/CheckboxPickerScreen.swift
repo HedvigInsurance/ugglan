@@ -3,24 +3,25 @@ import hCore
 import hCoreUI
 
 struct CheckboxPickerScreen<T>: View {
-    var items: [(object: T, displayName: String)]
-    let preSelectedItems: () -> [T]?
+    typealias PickerModel = (object: T, displayName: String)
+    var items: [PickerModel]
+    let preSelectedItems: [String]
     let onSelected: ([T]) -> Void
     let onCancel: () -> Void
     let singleSelect: Bool?
     let showDividers: Bool?
-    @State var selectedItems: [(object: T, displayName: String)] = []
+    @State var selectedItems: [PickerModel] = []
 
     public init(
         items: [(object: T, displayName: String)],
-        preSelectedItems: @escaping () -> [T]?,
+        preSelectedItems: @escaping () -> [String],
         onSelected: @escaping ([T]) -> Void,
         onCancel: @escaping () -> Void,
         singleSelect: Bool? = false,
         showDividers: Bool? = false
     ) {
         self.items = items
-        self.preSelectedItems = preSelectedItems
+        self.preSelectedItems = preSelectedItems()
         self.onSelected = onSelected
         self.onCancel = onCancel
         self.singleSelect = singleSelect
@@ -41,11 +42,7 @@ struct CheckboxPickerScreen<T>: View {
             VStack(spacing: 8) {
                 hButton.LargeButtonFilled {
                     if selectedItems.count > 1 {
-                        var itemArr: [T] = []
-                        for item in selectedItems {
-                            itemArr.append(item.object)
-                        }
-                        onSelected(itemArr)
+                        onSelected(selectedItems.map({ $0.object }))
                     } else {
                         if let object = selectedItems.first?.object {
                             onSelected([object])
@@ -64,10 +61,7 @@ struct CheckboxPickerScreen<T>: View {
             .padding(.top, 16)
         }
         .onAppear {
-            preSelectedItems()?
-                .forEach { item in
-                    self.selectedItems.append((item, ""))
-                }
+            selectedItems = items.filter({ preSelectedItems.contains($0.displayName) })
         }
     }
 
@@ -97,75 +91,50 @@ struct CheckboxPickerScreen<T>: View {
 
     @ViewBuilder
     func displayContent(displayName: String) -> some View {
-        hTextNew(displayName, style: .title3)
-            .foregroundColor(hLabelColorNew.primary)
-        Spacer()
-        Circle()
-            .strokeBorder(
-                getBorderColor(currentItem: displayName),
-                lineWidth: checkIfItemInSelected(currentItem: displayName) ? 0 : 1.5
-            )
-            .background(Circle().foregroundColor(retColor(currentItem: displayName)))
-            .frame(width: 28, height: 28)
+        let isSelected = selectedItems.first(where: { $0.displayName == displayName }) != nil
+        HStack(spacing: 0) {
+            hTextNew(displayName, style: .title3)
+                .foregroundColor(hLabelColorNew.primary)
+            Spacer()
+            Circle()
+                .strokeBorder(
+                    getBorderColor(isSelected: isSelected),
+                    lineWidth: isSelected ? 0 : 1.5
+                )
+                .background(Circle().foregroundColor(retColor(isSelected: isSelected)))
+                .frame(width: 28, height: 28)
+        }
     }
 
     func onTapExecute(item: (object: T, displayName: String)) {
-        if !(singleSelect ?? true) {
-            var remove = false
-            var index = 0
-            for selectedItem in selectedItems {
-                if selectedItem.displayName == item.displayName {
-                    remove = true
-                    break
+        ImpactGenerator.soft()
+        withAnimation(.easeInOut(duration: 0)) {
+            if !(singleSelect ?? true) {
+                if let index = self.selectedItems.firstIndex(where: { $0.displayName == item.displayName }) {
+                    selectedItems.remove(at: index)
+                } else {
+                    selectedItems.append(item)
                 }
-                if !remove {
-                    index += 1
+            } else {
+                if !(selectedItems.first?.displayName == item.displayName) {
+                    selectedItems = [item]
                 }
-            }
-            if remove {
-                selectedItems.remove(at: index)
-            } else {
-                selectedItems.append(item)
-            }
-        } else {
-            if !(selectedItems.first?.displayName == item.displayName) {
-                selectedItems = []
-                selectedItems.append(item)
-            }
-        }
-    }
-
-    func checkIfItemInSelected(currentItem: String) -> Bool {
-        var containsElement = false
-        selectedItems.forEach { x in
-            if x.displayName == currentItem {
-                containsElement = true
-            }
-        }
-        return containsElement
-    }
-
-    @hColorBuilder
-    func retColor(currentItem: String) -> some hColor {
-        if selectedItems.count > 1 {
-            if checkIfItemInSelected(currentItem: currentItem) {
-                hLabelColorNew.primary
-            } else {
-                hBackgroundColorNew.opaqueOne
-            }
-
-        } else {
-            if selectedItems.first?.displayName == currentItem {
-                hLabelColorNew.primary
-            } else {
-                hBackgroundColorNew.opaqueOne
             }
         }
     }
 
     @hColorBuilder
-    func getBorderColor(currentItem: String) -> some hColor {
-        if checkIfItemInSelected(currentItem: currentItem) {
+    func retColor(isSelected: Bool) -> some hColor {
+        if isSelected {
+            hLabelColorNew.primary
+        } else {
+            hBackgroundColorNew.opaqueOne
+        }
+    }
+
+    @hColorBuilder
+    func getBorderColor(isSelected: Bool) -> some hColor {
+        if isSelected {
             hLabelColorNew.primary
         } else {
             hBackgroundColorNew.semanticBorderTwo
@@ -187,7 +156,7 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                 ]
                 .compactMap({ (object: $0, displayName: $0.name) })
             }(),
-            preSelectedItems: { nil },
+            preSelectedItems: { [] },
             onSelected: { selectedLocation in
 
             },
