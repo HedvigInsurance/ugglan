@@ -104,7 +104,8 @@ extension DirectDebitSetup: Presentable {
         bag += webView.isLoadingSignal.animated(style: AnimationStyle.easeOut(duration: 0.5)) { loading in
             if loading { activityIndicator.alpha = 1 } else { activityIndicator.alpha = 0 }
         }
-        let alertDismissAlert = ReadWriteSignal<Bool>(false)
+        let shouldDismissViewSignal = ReadWriteSignal<Bool>(false)
+        let didFailToLoadWebViewSignal = ReadWriteSignal<Bool>(false)
         func presentAlert() {
             let alert = Alert(
                 title: L10n.generalError,
@@ -125,7 +126,7 @@ extension DirectDebitSetup: Presentable {
                     if shouldRetry {
                         startRegistration()
                     } else {
-                        alertDismissAlert.value = true
+                        shouldDismissViewSignal.value = true
                     }
                 }
 
@@ -155,26 +156,37 @@ extension DirectDebitSetup: Presentable {
                 })
         }
 
-        bag += combineLatest(Signal(after: 7), webView.isLoadingSignal, urlSignal.future.resultSignal)
+        bag += combineLatest(Signal(after: 5), webView.isLoadingSignal, urlSignal.future.resultSignal)
             .onValue { _, isLoading, url in
-                if isLoading {
-                    if let url = url.value, let urlToOpen = url {
-                        UIApplication.shared.open(urlToOpen)
-                        alertDismissAlert.value = true
-                    } else {
-                        presentAlert()
-                    }
+                //                if isLoading {
+                didFailToLoadWebViewSignal.value = true
+                if let url = url.value, let urlToOpen = url {
+                    UIApplication.shared.open(urlToOpen)
+                    didFailToLoadWebViewSignal.value = true
+                } else {
+                    presentAlert()
                 }
-
+                //                }
             }
+
+        bag += combineLatest(
+            didFailToLoadWebViewSignal.future.resultSignal,
+            NotificationCenter.default.signal(forName: UIApplication.willEnterForegroundNotification)
+        )
+        .onValue { (didFailToLoad, _) in
+            if didFailToLoad.value == true {
+                shouldDismissViewSignal.value = true
+            }
+        }
         startRegistration()
         return (
             viewController,
             FiniteSignal { callback in
                 bag +=
-                    alertDismissAlert
+                    shouldDismissViewSignal
                     .filter(predicate: { $0 })
                     .onValue({ _ in
+                        paymentStore.send(.fetchPayInMethodStatus)
                         callback(.value(true))
                     })
 

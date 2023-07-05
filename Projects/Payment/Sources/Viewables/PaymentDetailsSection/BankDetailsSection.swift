@@ -20,7 +20,7 @@ extension BankDetailsSection: Viewable {
         let section = SectionView(header: L10n.myPaymentBankRowLabel, footer: nil)
         let row = KeyValueRow()
         row.valueStyleSignal.value = .brand(.headline(color: .quartenary))
-        var removePaymentRow = ReadWriteSignal<Bool>(true)
+        let removePaymentRow = ReadWriteSignal<Bool>(true)
         bag += section.append(row)
         func configure() {
             let dataSignal = giraffe.client.watch(
@@ -47,7 +47,6 @@ extension BankDetailsSection: Viewable {
                 switch data.payinMethodStatus {
                 case .pending:
                     let pendingRow = RowView()
-
                     innerBag += pendingRow.append(
                         MultilineLabel(
                             value: L10n.myPaymentUpdatingMessage,
@@ -58,6 +57,10 @@ extension BankDetailsSection: Viewable {
                     section.append(pendingRow)
 
                     innerBag += { section.remove(pendingRow) }
+
+                    innerBag += removePaymentRow.onValue { _ in
+                        section.remove(pendingRow)
+                    }
 
                     innerBag += addConnectPayment(data)
                 case .active, .needsSetup, .__unknown: innerBag += addConnectPayment(data)
