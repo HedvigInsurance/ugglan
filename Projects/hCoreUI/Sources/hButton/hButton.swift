@@ -11,11 +11,19 @@ struct LargeButtonModifier: ViewModifier {
 }
 
 struct SmallButtonModifier: ViewModifier {
+    @Environment(\.hUseNewStyle) var hUseNewStyle
     func body(content: Content) -> some View {
-        content
-            .frame(minHeight: 40)
-            .padding(.leading)
-            .padding(.trailing)
+
+        if hUseNewStyle {
+            content
+                .frame(minHeight: 40)
+                .frame(maxWidth: .infinity)
+        } else {
+            content
+                .frame(minHeight: 40)
+                .padding(.leading)
+                .padding(.trailing)
+        }
     }
 }
 
@@ -340,11 +348,20 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
             Label(configuration: configuration).contentShape(Rectangle())
         }
         .modifier(SmallButtonModifier())
-        .background(Color.clear)
+        .background(getBackgroundColor)
         .overlay(configuration.isPressed ? getPressedColor : nil)
         .clipShape(Squircle.default())
         .modifier(OpacityModifier())
         .contentShape(Rectangle())
+    }
+
+    @ViewBuilder
+    var getBackgroundColor: some View {
+        if hUseNewStyle {
+            hGrayscaleColorNew.greyScale25
+        } else {
+            Color.clear
+        }
     }
 
     @hColorBuilder

@@ -3,6 +3,7 @@ import hCore
 
 public struct GeneralDatePicker: View {
     @State private var dateOfOccurrence = Date()
+    @Environment(\.hUseNewStyle) var useNewStyle
 
     private let model: GeneralDatePickerViewModel
 
@@ -19,8 +20,14 @@ public struct GeneralDatePicker: View {
                 getDatePicker
                     .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
                     .datePickerStyle(.graphical)
-                    .padding([.leading, .trailing], 16)
+                    .padding(.horizontal, 16)
                     .padding([.top], 5)
+            }
+            .sectionContainerStyle(.transparent)
+            .introspectDatePicker { date in
+                if useNewStyle {
+                    date.tintColor = .brandNew(.primaryText())
+                }
             }
         }
         .hFormAttachToBottom {
@@ -31,7 +38,19 @@ public struct GeneralDatePicker: View {
                     hText(model.buttonTitle, style: .body)
                         .foregroundColor(hLabelColor.primary.inverted)
                 }
-                .padding([.leading, .trailing], 16)
+                .padding(.horizontal, 16)
+            }
+        }
+        .onDisappear {
+            if useNewStyle {
+                UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(.link)
+            }
+        }
+        .onAppear {
+            if useNewStyle {
+                UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brandNew(
+                    .primaryText()
+                )
             }
         }
         .navigationTitle(model.title)

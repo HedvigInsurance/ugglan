@@ -128,7 +128,6 @@ struct MovingFlowSelectAddress: View {
 
     @ViewBuilder
     func accessDateField() -> some View {
-
         VStack {
             hTextNew(L10n.changeAddressMovingDateLabel, style: .footnote)
                 .foregroundColor(hGrayscaleColorNew.greyScale700)
@@ -144,12 +143,15 @@ struct MovingFlowSelectAddress: View {
                     .padding(.trailing, 16)
             }
         }
-        .padding([.top, .bottom], 11)
+        .onTapGesture {
+            store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
+        }
+        .padding(.vertical, 11)
         .background(
             Squircle.default()
                 .fill(hGrayscaleColorNew.greyScale100)
         )
-        .padding([.leading, .trailing], 16)
+        .padding(.horizontal, 16)
         .onTapGesture {
             store.send(.navigationActionMovingFlow(action: .openDatePickerScreen))
             self.type = nil

@@ -28,7 +28,6 @@ public struct MovingFlowHousingType: View {
                     InfoCard(text: L10n.changeAddressCoverageInfoText)
                     hButton.LargeButtonFilled {
                         store.send(.navigationActionMovingFlow(action: .openAddressFillScreen))
-                        // send isSelected to next view
                     } content: {
                         hTextNew(L10n.generalContinueButton, style: .body)
                     }

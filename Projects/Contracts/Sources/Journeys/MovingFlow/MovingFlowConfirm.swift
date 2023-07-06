@@ -119,7 +119,6 @@ struct MovingFlowConfirm: View {
             Spacer()
             hTextNew(price, style: .body)
         }
-        .padding([.leading, .trailing], 16)
         .onTapGesture {
             if selectedInsurances.contains(insuranceName) {
                 let index = selectedInsurances.firstIndex(of: insuranceName)
@@ -161,16 +160,23 @@ struct MovingFlowConfirm: View {
                     hTextNew("11847", style: .body)
                 }
 
-                hText("Dokument", style: .body)
+                hTextNew("Dokument", style: .body)
                     .foregroundColor(hLabelColor.primary)
-                    .padding([.top, .bottom], 16)
+                    .padding(.vertical, 16)
 
                 hTextNew("Försäkringsvillkor", style: .body)
                 hTextNew("Försäkringsinformation", style: .body)
                 hTextNew("Produktfaktablad", style: .body)
             }
-            .padding([.leading, .trailing, .top], 16)
-            .foregroundColor(hGrayscaleColorNew.greyScale700)
+            .padding(.vertical, 16)
+            .foregroundColor(hLabelColorNew.secondary)
+
+            hButton.SmallButtonText {
+                store.send(.navigationActionMovingFlow(action: .openAddressFillScreen))
+            } content: {
+                hTextNew("Ändra", style: .body)
+            }
+
         }
     }
 
@@ -189,7 +195,7 @@ struct MovingFlowConfirm: View {
             }
         )
         .hCardComponentOptions([.paddingOnDivider, .hideArrow])
-        .padding([.leading, .trailing], 16)
+        .padding(.horizontal, 16)
     }
 
     @ViewBuilder

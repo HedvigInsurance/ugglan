@@ -31,6 +31,8 @@ public struct MovingFlowJourneyNew {
                     MovingFlowJourneyNew.openFailureScreen().configureTitle(L10n.InsuranceDetails.changeAddressButton)
                 } else if case .dismissMovingFlow = navigationAction {
                     DismissJourney()
+                } else if case .openDatePickerScreen = navigationAction {
+                    MovingFlowJourneyNew.openDatePickerScreen()
                 }
             } else if case .goToFreeTextChat = action {
                 DismissJourney()
@@ -73,29 +75,41 @@ public struct MovingFlowJourneyNew {
             rootView: MovingFlowConfirm()
         ) {
             action in
-            getMovingFlowScreenForAction(for: action)
+            if case .navigationActionMovingFlow(.openAddressFillScreen) = action {
+                PopJourney()
+            } else {
+                getMovingFlowScreenForAction(for: action)
+            }
         }
         .withJourneyDismissButton
     }
 
-    //    @JourneyBuilder
-    //    static func openDatePickerScreen() -> some JourneyPresentation {
-    //        HostingJourney(
-    //            ContractStore.self,
-    //            rootView: DatePickerView(
-    //                onSelect: { movingDate in
-    //                    let store: ContractStore = globalPresentableStoreContainer.get()
-    //                    store.send(.setMovingDate(movingDate: movingDate))
-    //                }),
-    //            style: .detented(.scrollViewContentSize)
-    //        ) {
-    //            action in
-    //            if case .setMovingDate = action {
-    //                PopJourney()
-    //            }
-    //        }
-    //        .withJourneyDismissButton
-    //    }
+    @JourneyBuilder
+    static func openDatePickerScreen() -> some JourneyPresentation {
+        HostingJourney(
+            ContractStore.self,
+            rootView: GeneralDatePicker(
+                GeneralDatePickerViewModel(
+                    title: "title",
+                    buttonTitle: "button title",
+                    onDateSelected: { movingDate in
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.setMovingDate(movingDate: movingDate))
+                    }
+                )
+            )
+            .hUseNewStyle,
+            style: .detented(.scrollViewContentSize)
+        ) {
+            action in
+            if case .setMovingDate = action {
+                PopJourney()
+            } else {
+                getMovingFlowScreenForAction(for: action)
+            }
+        }
+        .withJourneyDismissButton
+    }
 
     @JourneyBuilder
     static func openFailureScreen() -> some JourneyPresentation {
