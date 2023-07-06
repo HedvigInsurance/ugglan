@@ -294,7 +294,7 @@ public class ClaimJourneys {
             if case .navigationAction(.openDatePicker) = action {
                 openDatePickerScreen(type: .setDateOfPurchase)
             } else if case .navigationAction(.openBrandPicker) = action {
-                openBrandPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
+                openBrandPickerScreen().configureTitle(L10n.claimsChooseBrandTitle)
             } else if case .navigationAction(.openPriceInput) = action {
                 openPriceInputScreen()
             } else {
