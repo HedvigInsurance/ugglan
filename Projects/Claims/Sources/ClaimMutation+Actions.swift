@@ -86,21 +86,9 @@ extension GraphQLMutation {
                         let totalSteps = data.getProgress().totalSteps
                     {
                         if clearedSteps != 0 {
-                            var totalTriaging = totalSteps
-                            var clearedTriaging = clearedSteps
-
-                            if totalSteps <= 4 {
-                                totalTriaging += 3
-                                clearedTriaging += 3
-                            }
-                            let progressValue = Float(Float(clearedTriaging) / Float(totalTriaging))
-                            callback(.value(.setProgress(progress: Float(progressValue))))
+                            let progressValue = Float(Float(clearedSteps) / Float(totalSteps)) * 0.7 + 0.3
                         } else {
-                            if data.getProgress().totalSteps ?? 0 <= 4 {
-                                callback(.value(.setProgress(progress: 0.4)))
-                            } else {
-                                callback(.value(.setProgress(progress: 0.3)))
-                            }
+                            callback(.value(.setProgress(progress: 0.3)))
                         }
                     }
                     callback(.value(data[keyPath: keyPath].into()))

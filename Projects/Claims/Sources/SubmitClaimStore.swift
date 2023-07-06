@@ -307,8 +307,8 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.progress = 0
             newState.previousProgress = 0
         case let .setSelectedEntrypoints(entrypoints):
+            newState.previousProgress = 0
             if entrypoints.isEmpty {
-                newState.progress = 0.3
                 newState.entrypoints.selectedEntrypoints = entrypoints
                 send(
                     .startClaimRequest(
@@ -323,14 +323,15 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                     newState.progress = 0.1
                 }
                 newState.entrypoints.selectedEntrypoints = entrypoints
-                send(.navigationAction(action: .openTriagingEntrypointScreen))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+                    self?.send(.navigationAction(action: .openTriagingEntrypointScreen))
+                }
             }
         case let .setSelectedEntrypointOptions(entrypointOptions, selectedEntrypointId):
             newState.previousProgress = newState.progress
             newState.progress = 0.2
             newState.entrypoints.selectedEntrypointOptions = entrypointOptions
             newState.entrypoints.selectedEntrypointId = selectedEntrypointId
-
             if entrypointOptions.isEmpty {
                 send(
                     .startClaimRequest(
@@ -339,7 +340,9 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
                     )
                 )
             } else {
-                send(.navigationAction(action: .openTriagingOptionScreen))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+                    self?.send(.navigationAction(action: .openTriagingOptionScreen))
+                }
             }
         case let .setProgress(progress):
             newState.previousProgress = newState.progress
