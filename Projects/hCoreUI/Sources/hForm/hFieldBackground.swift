@@ -24,14 +24,14 @@ struct hFieldBackgroundModifier: ViewModifier {
                 HStack {
 
                     Image(uiImage: HCoreUIAsset.warningFilledTriangle.image)
-                        .foregroundColor(hAmberColorNew.amber600)
+                        .foregroundColor(hSignalColorNew.amberElement)
                     hText(errorMessage, style: .footnote)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                 }
                 .padding(.top, 6)
                 .padding(.horizontal, 6)
-                .foregroundColor(hLabelColorNew.warning)
+                .foregroundColor(hSignalColorNew.amberFill)
             }
         }
     }
@@ -39,11 +39,11 @@ struct hFieldBackgroundModifier: ViewModifier {
     @hColorBuilder
     private func getBackgroundColor() -> some hColor {
         if error != nil {
-            hBackgroundColorNew.inputBackgroundWarning
+            hSignalColorNew.amberFill
         } else if animate {
-            hBackgroundColorNew.inputBackgroundActive
+            hSignalColorNew.greenFill
         } else {
-            hBackgroundColorNew.inputBackground
+            hFillColorNew.opaqueOne
         }
     }
 }
@@ -79,11 +79,11 @@ struct hFieldLabel: View {
     @hColorBuilder
     private func getTextColor() -> some hColor {
         if error != nil {
-            hLabelColorNew.warning
+            hSignalColorNew.amberElement
         } else if animate {
-            hLabelColorNew.active
+            hSignalColorNew.greenElement
         } else {
-            hLabelColorNew.secondary
+            hTextColorNew.secondary
         }
     }
 }

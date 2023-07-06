@@ -68,7 +68,7 @@ public struct hDatePickerField: View {
         HStack {
             Text(selectedDate?.displayDateDotFormat ?? L10n.generalSelectButton)
                 .modifier(hFontModifierNew(style: .title3))
-                .foregroundColor(hLabelColorNew.primary)
+                .foregroundColor(hTextColorNew.primary)
             Spacer()
         }
 

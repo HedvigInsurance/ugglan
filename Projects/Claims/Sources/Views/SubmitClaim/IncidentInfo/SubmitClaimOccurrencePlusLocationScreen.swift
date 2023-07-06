@@ -69,7 +69,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     )
                 }
                 .sectionContainerStyle(.transparent)
-                InfoCard(text: L10n.claimsDateNotSureNoticeLabel)
+                InfoCard(text: L10n.claimsDateNotSureNoticeLabel, type: .info)
                     .padding(.vertical, 16)
             }
         }

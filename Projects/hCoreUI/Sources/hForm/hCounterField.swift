@@ -107,7 +107,7 @@ public struct hCounterField: View {
 
     private var getTextLabel: some View {
         hTextNew(textToShow, style: .title3)
-            .foregroundColor(hLabelColorNew.primary)
+            .foregroundColor(hTextColorNew.primary)
     }
 
     private func startAnimation() {

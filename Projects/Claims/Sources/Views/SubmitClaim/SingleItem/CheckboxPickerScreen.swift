@@ -94,7 +94,7 @@ struct CheckboxPickerScreen<T>: View {
         let isSelected = selectedItems.first(where: { $0.displayName == displayName }) != nil
         HStack(spacing: 0) {
             hTextNew(displayName, style: .title3)
-                .foregroundColor(hLabelColorNew.primary)
+                .foregroundColor(hTextColorNew.primary)
             Spacer()
             Circle()
                 .strokeBorder(
@@ -126,18 +126,18 @@ struct CheckboxPickerScreen<T>: View {
     @hColorBuilder
     func retColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hLabelColorNew.primary
+            hTextColorNew.primary
         } else {
-            hBackgroundColorNew.opaqueOne
+            hFillColorNew.opaqueOne
         }
     }
 
     @hColorBuilder
     func getBorderColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hLabelColorNew.primary
+            hTextColorNew.primary
         } else {
-            hBackgroundColorNew.semanticBorderTwo
+            hBorderColorNew.opaqueTwo
         }
     }
 }

@@ -27,7 +27,7 @@ public struct hCheckmarkField: View {
         }
         .padding(.vertical, 20)
         .modifier(hFontModifierNew(style: .body))
-        .foregroundColor(hLabelColorNew.primary)
+        .foregroundColor(hTextColorNew.primary)
         .addFieldBackground(animate: $animate, error: $error)
         .onTapGesture {
             self.selected.toggle()

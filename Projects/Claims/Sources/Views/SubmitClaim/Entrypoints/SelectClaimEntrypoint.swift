@@ -228,7 +228,7 @@ struct ShowTagList: View {
                 if showTags {
                     HStack(spacing: 0) {
                         hTextNew(tag, style: .body)
-                            .foregroundColor(hLabelColorNew.primary)
+                            .foregroundColor(hTextColorNew.primary)
                             .lineLimit(1)
                             .scaleEffect(animate && selection == tag ? 1 / scaleSize : 1)
                     }
@@ -298,7 +298,7 @@ struct ShowTagList: View {
     func getColorAndShadow(claimId: String) -> some View {
         if selection == claimId {
             RoundedRectangle(cornerRadius: 12)
-                .foregroundColor(hBackgroundColorNew.semanticButton)
+                .foregroundColor(hGreenColorNew.green50) /* TODO - RENAME */
                 .hShadow()
 
         } else {

@@ -20,7 +20,7 @@ struct SlideTrack: View {
             VStack(alignment: .center) {
                 if hUseNewStyle {
                     L10n.claimsPledgeSlideLabel.hTextNew(.body)
-                        .foregroundColor(hLabelColorNew.secondary)
+                        .foregroundColor(hTextColorNew.secondary)
                 } else {
                     L10n.claimsPledgeSlideLabel.hText(.body)
                 }
@@ -75,7 +75,7 @@ struct SlideDragger: View {
                     ZStack {
                         if hUseNewStyle {
                             Image(uiImage: hCoreUIAssets.chevronRightRevamp.image)
-                                .foregroundColor(hLabelColorNew.primary.inverted)
+                                .foregroundColor(hTextColorNew.primary.inverted)
                         } else {
                             Image(uiImage: Asset.continue.image)
                         }
@@ -99,7 +99,7 @@ struct SlideDragger: View {
     @hColorBuilder
     private var background: some hColor {
         if hUseNewStyle {
-            hLabelColorNew.primary
+            hTextColorNew.primary
         } else {
             hTintColor.lavenderOne
         }
@@ -198,7 +198,7 @@ struct HonestyPledge: View {
             VStack(alignment: .leading, spacing: 0) {
                 if hUseNewStyle {
                     L10n.honestyPledgeTitle.hTextNew(.body)
-                        .foregroundColor(hLabelColorNew.primary)
+                        .foregroundColor(hTextColorNew.primary)
                         .padding(.bottom, 8)
                 }
                 HStack {
@@ -219,7 +219,7 @@ struct HonestyPledge: View {
                         store.send(.dissmissNewClaimFlow)
                     } content: {
                         L10n.generalCancelButton.hTextNew(.body)
-                            .foregroundColor(hLabelColorNew.primary)
+                            .foregroundColor(hTextColorNew.primary)
                     }
                 }
 

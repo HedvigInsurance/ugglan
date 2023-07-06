@@ -11,17 +11,17 @@ public struct ClaimFailureScreen: View {
     public var body: some View {
         hForm {
             Image(uiImage: hCoreUIAssets.warningFilledTriangle.image)
-                .foregroundColor(hLabelColorNew.warning)
+                .foregroundColor(hSignalColorNew.amberElement)
                 .padding(.top, 254)
                 .padding(.bottom, 8)
 
             Group {
                 hTextNew(L10n.HomeTab.errorTitle, style: .body)
-                    .foregroundColor(hLabelColorNew.primary)
+                    .foregroundColor(hTextColorNew.primary)
 
                 hTextNew(L10n.HomeTab.errorBody, style: .body)
                     .multilineTextAlignment(.center)
-                    .foregroundColor(hLabelColorNew.secondary)
+                    .foregroundColor(hTextColorNew.secondary)
             }
             .padding(.horizontal, 32)
         }
