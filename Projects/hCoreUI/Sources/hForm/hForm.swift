@@ -117,7 +117,6 @@ public struct hForm<Content: View>: View {
 
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hUseNewStyle) var hUseNewStyle
-    @Environment(\.hUseBlur) var hUseBlur
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.hDisableScroll) var hDisableScroll
     var content: Content
@@ -131,7 +130,7 @@ public struct hForm<Content: View>: View {
     }
 
     public var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             if gradientType != .none {
                 hGradient(
                     oldGradientType: $gradientState.oldGradientType,
@@ -147,46 +146,31 @@ public struct hForm<Content: View>: View {
                     }
                 }
             } else {
-                if hUseBlur {
-                    BackgroundBlurView().edgesIgnoringSafeArea(.all)
-                } else {
-                    BackgroundView().edgesIgnoringSafeArea(.all)
-                }
+                BackgroundView().edgesIgnoringSafeArea(.all)
             }
-            if bottomAttachedViewHeight > 0, scrollViewHeight > 0, bottomAttachedViewHeight < scrollViewHeight {
-                getScrollView()
-                    .mask(
-                        LinearGradient(
-                            gradient: Gradient(stops: [
-                                .init(color: .black, location: 0),
-                                .init(color: .black, location: 1 - bottomAttachedViewHeight / scrollViewHeight),
-                                .init(color: .clear, location: 1 - bottomAttachedViewHeight / scrollViewHeight),
-                                .init(color: .clear, location: 1),
-                            ]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-            } else {
-                getScrollView()
-            }
+            getScrollView()
+            BackgroundBlurView()
+                .frame(
+                    height: bottomAttachedViewHeight + (UIApplication.shared.safeArea?.bottom ?? 0),
+                    alignment: .bottom
+                )
+                .offset(y: UIApplication.shared.safeArea?.bottom ?? 0)
+                .ignoresSafeArea(.all)
             bottomAttachedView
                 .background(
                     GeometryReader { geo in
                         Color.clear
                             .onReceive(Just(geo.size.height)) { height in
                                 self.bottomAttachedViewHeight = height
-
                             }
                     }
                 )
                 .frame(maxHeight: .infinity, alignment: .bottom)
-
         }
+
         .onAppear {
             self.gradientState.gradientType = gradientType
         }
-
     }
 
     func getScrollView() -> some View {
@@ -243,22 +227,5 @@ extension EnvironmentValues {
 extension View {
     public var hUseNewStyle: some View {
         self.environment(\.hUseNewStyle, true)
-    }
-}
-
-private struct EnvironmentHUseBlur: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hUseBlur: Bool {
-        get { self[EnvironmentHUseBlur.self] }
-        set { self[EnvironmentHUseBlur.self] = newValue }
-    }
-}
-
-extension View {
-    public var hUseBlur: some View {
-        self.environment(\.hUseBlur, true)
     }
 }
