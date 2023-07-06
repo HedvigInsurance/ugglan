@@ -307,23 +307,40 @@ public final class SubmitClaimStore: StateStore<SubmitClaimsState, SubmitClaimsA
             newState.progress = 0
             newState.previousProgress = 0
         case let .setSelectedEntrypoints(entrypoints):
-            newState.entrypoints.selectedEntrypoints = entrypoints
-
             if entrypoints.isEmpty {
                 newState.progress = 0.3
+                newState.entrypoints.selectedEntrypoints = entrypoints
+                send(
+                    .startClaimRequest(
+                        entrypointId: nil,
+                        entrypointOptionId: nil
+                    )
+                )
             } else {
                 if entrypoints.first?.options == [] {
                     newState.progress = 0.2
                 } else {
                     newState.progress = 0.1
                 }
+                newState.entrypoints.selectedEntrypoints = entrypoints
+                send(.navigationAction(action: .openTriagingEntrypointScreen))
             }
-        case let .setSelectedEntrypointOptions(entrypointOptions):
+        case let .setSelectedEntrypointOptions(entrypointOptions, selectedEntrypointId):
             newState.previousProgress = newState.progress
             newState.progress = 0.2
             newState.entrypoints.selectedEntrypointOptions = entrypointOptions
-        case let .setSelectedEntrypointId(entrypointId):
-            newState.entrypoints.selectedEntrypointId = entrypointId
+            newState.entrypoints.selectedEntrypointId = selectedEntrypointId
+
+            if entrypointOptions.isEmpty {
+                send(
+                    .startClaimRequest(
+                        entrypointId: selectedEntrypointId,
+                        entrypointOptionId: nil
+                    )
+                )
+            } else {
+                send(.navigationAction(action: .openTriagingOptionScreen))
+            }
         case let .setProgress(progress):
             newState.previousProgress = newState.progress
             newState.progress = progress
