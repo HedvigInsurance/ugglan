@@ -138,7 +138,6 @@ public class ClaimJourneys {
                 getScreen(for: action)
             }
         }
-        .resetProgressToPreviousValueOnDismiss
     }
 
     static func openBrandPickerScreen() -> some JourneyPresentation {
