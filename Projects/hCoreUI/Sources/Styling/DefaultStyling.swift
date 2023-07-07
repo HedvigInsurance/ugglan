@@ -89,7 +89,7 @@ public class hNavigationControllerWithLargerNavBar: UINavigationController {
             let compact = UINavigationBarAppearance()
             compact.configureWithTransparentBackground()
             compact.backgroundColor = UIColor.clear
-            compact.shadowColor = hLabelColorNew.translucentBorder.colorFor(.light, .base).color.uiColor()
+            compact.shadowColor = hBorderColorNew.translucentOne.colorFor(.light, .base).color.uiColor()
             compact.backgroundEffect = UIBlurEffect(style: .light)
             DefaultStyling.applyCommonNavigationBarStyling(compact, useNewDesign: true)
             self.navigationBar.compactAppearance = compact
