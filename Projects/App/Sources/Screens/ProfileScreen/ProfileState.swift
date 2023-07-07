@@ -61,19 +61,17 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
                     )
                 disposeBag += combineLatest(getChargeEstimationData.resultSignal, getProfileData.resultSignal)
                     .onValue { (chargeEstimationData, profileData) in
-                        var monthlyNet = 0
                         if let chargeEstimationData = chargeEstimationData.value {
-                            monthlyNet = Int(
+                            let monthlyNet = Int(
                                 chargeEstimationData.chargeEstimation.subscription.fragments.monetaryAmountFragment
                                     .monetaryAmount.floatAmount
                             )
+                            callback(.value(.setMonthlyNet(monthlyNet: monthlyNet)))
                         }
                         if let profileData = profileData.value {
                             let name = profileData.currentMember.firstName + " " + profileData.currentMember.lastName
-                            let email = profileData.currentMember.email
                             let partner = PartnerData(with: profileData.currentMember.fragments.partnerDataFragment)
                             callback(.value(.setEurobonusNumber(partnerData: partner)))
-                            callback(.value(.setMonthlyNet(monthlyNet: monthlyNet)))
                             callback(.value(.setMemberName(name: name)))
                         }
                         callback(.value(.fetchProfileStateCompleted))
