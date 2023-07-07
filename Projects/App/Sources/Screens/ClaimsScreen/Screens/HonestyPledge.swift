@@ -75,7 +75,7 @@ struct SlideDragger: View {
                     ZStack {
                         if hUseNewStyle {
                             Image(uiImage: hCoreUIAssets.chevronRightRevamp.image)
-                                .foregroundColor(hTextColorNew.primary.inverted)
+                                .foregroundColor(hTextColorNew.negative)
                         } else {
                             Image(uiImage: Asset.continue.image)
                         }
