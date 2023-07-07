@@ -86,10 +86,10 @@ extension GraphQLMutation {
                         let totalSteps = data.getProgress().totalSteps
                     {
                         if clearedSteps != 0 {
-                            let progressValue = Float(Float(clearedSteps) / Float(totalSteps))
-                            callback(.value(.setProgress(progress: Float(progressValue))))
+                            let progressValue = Float(Float(clearedSteps) / Float(totalSteps)) * 0.7 + 0.3
+                            callback(.value(.setProgress(progress: progressValue)))
                         } else {
-                            callback(.value(.setProgress(progress: 0)))
+                            callback(.value(.setProgress(progress: 0.3)))
                         }
                     }
                     callback(.value(data[keyPath: keyPath].into()))
