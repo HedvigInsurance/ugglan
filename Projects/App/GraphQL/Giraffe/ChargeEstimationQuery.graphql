@@ -1,8 +1,4 @@
-query Profile {
-    member {
-        firstName
-        lastName
-    }
+query ChargeEstimation {
     chargeEstimation {
         subscription {
             ...MonetaryAmountFragment

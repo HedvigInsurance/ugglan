@@ -1,0 +1,129 @@
+mutation MemberUpdateEmail($input: MemberUpdateEmailInput!) {
+  memberUpdateEmail(input: $input) {
+    member {
+      id
+      claims {
+        id
+        outcome
+        status
+        submittedAt
+        associatedTypeOfContract
+        closedAt
+        audioUrl
+      }
+      firstName
+      lastName
+      hasActivePaymentConnection
+      email
+      countryCode
+      phoneNumber
+      partnerData {
+        sas {
+          eligible
+          eurobonusNumber
+        }
+      }
+      travelCertificateSpecifications {
+        infoSpecifications {
+          title
+          body
+        }
+        contractSpecifications {
+          contractId
+          minStartDate
+          maxStartDate
+          maxDurationDays
+          numberOfCoInsured
+          location {
+            street
+          }
+        }
+      }
+      travelCertificates {
+        id
+        signedUrl
+        startDate
+        endDate
+      }
+      crossSells {
+        id
+        title
+        description
+        about
+        imageUrl
+        blurHash
+        storeUrl
+        productVariants {
+          typeOfContract
+          partner
+          perils {
+            id
+            title
+            description
+            info
+            shortDescription
+            covered
+            exceptions
+            colorCode
+          }
+          insurableLimits {
+            label
+            limit
+            description
+            type
+          }
+          documents {
+            displayName
+            url
+            type
+          }
+          highlights {
+            title
+            description
+          }
+          faq {
+            headline
+            body
+          }
+          displayName
+          product {
+            id
+            name
+            variants {
+              typeOfContract
+              partner
+              displayName
+            }
+            displayNameShort
+            displayNameFull
+            tagline
+            pillowImage {
+              id
+              src
+              alt
+            }
+            featuredImage {
+              id
+              src
+              alt
+            }
+            pageLink
+            categoryPageLink
+            developerValues {
+              fields
+              exampleFormData
+            }
+            externalInsurers {
+              id
+              displayName
+              insurelyId
+            }
+          }
+        }
+      }
+    }
+    userError {
+      message
+    }
+  }
+}

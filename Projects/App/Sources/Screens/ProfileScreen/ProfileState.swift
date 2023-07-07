@@ -7,6 +7,7 @@ import hGraphQL
 
 public struct ProfileState: StateProtocol {
     var memberFullName: String = ""
+    var memberEmail: String = ""
     var monthlyNet: Int = 0
     var partnerData: PartnerData?
     @OptionalTransient var updateEurobonusState: LoadingState<String>?
@@ -27,7 +28,7 @@ public enum ProfileAction: ActionProtocol {
     case openFreeTextChat
     case openAppInformation
     case openAppSettings
-    case setProfileState(name: String, monthlyNet: Int)
+    case setProfileState(name: String, email: String, monthlyNet: Int)
     case setEurobonusNumber(partnerData: PartnerData?)
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
@@ -49,28 +50,30 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
 
                 let getProfileData = self.giraffe.client
                     .fetch(
-                        query: GiraffeGraphQL.ProfileQuery(),
+                        query: GiraffeGraphQL.ChargeEstimationQuery(),
                         cachePolicy: .fetchIgnoringCacheData
                     )
 
                 let getPartnerData = self.octopus.client
                     .fetch(
-                        query: OctopusGraphQL.ParnerDataQuery(),
+                        query: OctopusGraphQL.ProfileQuery(),
                         cachePolicy: .fetchIgnoringCacheData
                     )
                 disposeBag += combineLatest(getProfileData.resultSignal, getPartnerData.resultSignal)
                     .onValue { (profileData, partnerData) in
+                        var monthlyNet = 0
                         if let profileData = profileData.value {
-                            let name = (profileData.member.firstName ?? "") + " " + (profileData.member.lastName ?? "")
-                            let monthlyNet = Int(
+                            monthlyNet = Int(
                                 profileData.chargeEstimation.subscription.fragments.monetaryAmountFragment
                                     .monetaryAmount.floatAmount
                             )
-                            callback(.value(.setProfileState(name: name, monthlyNet: monthlyNet)))
                         }
                         if let partnerData = partnerData.value {
+                            let name = partnerData.currentMember.firstName + " " + partnerData.currentMember.lastName
+                            let email = partnerData.currentMember.email
                             let partner = PartnerData(with: partnerData.currentMember.fragments.partnerDataFragment)
                             callback(.value(.setEurobonusNumber(partnerData: partner)))
+                            callback(.value(.setProfileState(name: name, email: email, monthlyNet: monthlyNet)))
                         }
                         callback(.value(.fetchProfileStateCompleted))
                     }
@@ -110,8 +113,9 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
-        case .setProfileState(let name, let monthlyNet):
+        case .setProfileState(let name, let email, let monthlyNet):
             newState.memberFullName = name
+            newState.memberEmail = email
             newState.monthlyNet = monthlyNet
         case .setEurobonusNumber(let partnerData):
             newState.partnerData = partnerData
@@ -137,6 +141,8 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
 
 public struct PartnerData: Codable, Equatable {
     let sas: PartnerDataSas?
+    //    let name: String?
+    //    let email: String?
 
     var shouldShowEuroBonus: Bool {
         return sas?.eligible ?? false
@@ -145,6 +151,8 @@ public struct PartnerData: Codable, Equatable {
     init?(with data: OctopusGraphQL.PartnerDataFragment) {
         guard let sasData = data.partnerData?.sas else { return nil }
         self.sas = PartnerDataSas(with: sasData)
+        //        self.name = name
+        //        self.email = email
     }
 }
 

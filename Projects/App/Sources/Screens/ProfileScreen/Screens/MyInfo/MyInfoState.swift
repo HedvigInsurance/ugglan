@@ -8,6 +8,7 @@ import hGraphQL
 
 struct MyInfoState {
     @Inject private var giraffe: hGiraffe
+    @Inject private var octopus: hOctopus
 
     let presentingViewController: UIViewController
 
@@ -46,10 +47,10 @@ struct MyInfoState {
 
                     let innerBag = bag.innerBag()
 
-                    innerBag += self.giraffe.client
+                    innerBag += self.octopus.client
                         .perform(
-                            mutation: GiraffeGraphQL.UpdatePhoneNumberMutation(
-                                phoneNumber: phoneNumber
+                            mutation: OctopusGraphQL.MemberUpdatePhoneNumberMutation(
+                                input: OctopusGraphQL.MemberUpdatePhoneNumberInput(phoneNumber: phoneNumber)
                             )
                         )
                         .onValue { _ in completion(.success) }
@@ -77,17 +78,22 @@ struct MyInfoState {
 
                     let innerBag = bag.innerBag()
 
-                    innerBag += self.giraffe.client
-                        .perform(mutation: GiraffeGraphQL.UpdateEmailMutation(email: email))
+                    innerBag += self.octopus.client
+                        .perform(
+                            mutation: OctopusGraphQL.MemberUpdateEmailMutation(
+                                input: OctopusGraphQL.MemberUpdateEmailInput(email: email)
+                            )
+                        )
                         .onValue { _ in completion(.success)
-
-                            self.giraffe.store.update(query: GiraffeGraphQL.MyInfoQuery()) {
-                                (data: inout GiraffeGraphQL.MyInfoQuery.Data) in
-                                data.member.email = email
+                            self.octopus.store.update(query: OctopusGraphQL.ProfileQuery())
+                            { /* TODO: UPDATE TO MyInfoQuery to octopus */
+                                (data: inout OctopusGraphQL.ProfileQuery.Data) in
+                                data.currentMember.email = email
                             }
                         }
-                        .onError { _ in completion(.failure(MyInfoSaveError.emailMalformed)) }
+                        .onError { _ in completion(.failure(MyInfoSaveError.emailMalformed))
 
+                        }
                     return innerBag
                 }
             }
