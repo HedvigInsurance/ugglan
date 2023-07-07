@@ -23,18 +23,18 @@ public struct InfoCard: View {
                 .padding(.leading, 9)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding([.top, .bottom], 12)
-        .padding([.leading, .trailing], 16)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
         .background(
             Squircle.default()
                 .fill(getBackgroundColor)
                 .overlay(
                     RoundedRectangle(cornerRadius: .defaultCornerRadiusNew)
-                        .strokeBorder(getBorderColor, lineWidth: 0.5)
+                        .strokeBorder(hBorderColorNew.translucentOne, lineWidth: 0.5)
                 )
         )
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding([.leading, .trailing], 16)
+        .padding(.horizontal, 16)
     }
 
     @hColorBuilder
@@ -62,20 +62,6 @@ public struct InfoCard: View {
             hSignalColorNew.redFill
         case .campaign:
             hSignalColorNew.greenFill
-        }
-    }
-
-    @hColorBuilder
-    var getBorderColor: some hColor {
-        switch type {
-        case .info:
-            hSignalColorNew.blueElement
-        case .attention:
-            hSignalColorNew.amberElement
-        case .error:
-            hSignalColorNew.redElement
-        case .campaign:
-            hSignalColorNew.greenElement
         }
     }
 }
