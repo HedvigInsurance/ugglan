@@ -86,13 +86,25 @@ public class hNavigationControllerWithLargerNavBar: UINavigationController {
         super.init(navigationBarClass: LargeNavBar.self, toolbarClass: UIToolbar.self)
         additionalSafeAreaInsets.top = 90 - 56
         if #available(iOS 15, *) {
-            let navigationBarAppearance = UINavigationBarAppearance()
-            navigationBarAppearance.configureWithTransparentBackground()
-            navigationBarAppearance.backgroundColor = UIColor.clear
-            DefaultStyling.applyCommonNavigationBarStyling(navigationBarAppearance, useNewDesign: true)
-            self.navigationBar.standardAppearance = navigationBarAppearance
-            self.navigationBar.compactAppearance = navigationBarAppearance
-            self.navigationBar.scrollEdgeAppearance = navigationBarAppearance
+            let compact = UINavigationBarAppearance()
+            compact.configureWithTransparentBackground()
+            compact.backgroundColor = UIColor.clear
+            compact.shadowColor = hLabelColorNew.translucentBorder.colorFor(.light, .base).color.uiColor()
+            compact.backgroundEffect = UIBlurEffect(style: .light)
+            DefaultStyling.applyCommonNavigationBarStyling(compact, useNewDesign: true)
+            self.navigationBar.compactAppearance = compact
+            self.navigationBar.standardAppearance = compact
+
+            let scrollEdgeNavigationBarAppearance = UINavigationBarAppearance()
+            DefaultStyling.applyCommonNavigationBarStyling(scrollEdgeNavigationBarAppearance, useNewDesign: true)
+            scrollEdgeNavigationBarAppearance.backgroundColor = .clear
+            scrollEdgeNavigationBarAppearance.configureWithDefaultBackground()
+            scrollEdgeNavigationBarAppearance.shadowImage = UIColor.clear.asImage()
+            scrollEdgeNavigationBarAppearance.backgroundImage = nil
+
+            self.navigationBar.scrollEdgeAppearance = scrollEdgeNavigationBarAppearance
+            self.navigationBar.compactScrollEdgeAppearance = scrollEdgeNavigationBarAppearance
+            self.navigationBar.isTranslucent = true
         }
     }
 

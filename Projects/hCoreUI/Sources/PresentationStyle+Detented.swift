@@ -245,7 +245,7 @@ extension PresentationOptions {
     public static let preffersLargerNavigationBar = PresentationOptions()
     public static let withAdditionalSpaceForProgressBar = PresentationOptions()
     public static let largeNavigationBar: PresentationOptions = [
-        embedInNavigationController, .preffersLargerNavigationBar,
+        embedInNavigationController, .preffersLargerNavigationBar, .wantsGrabber,
     ]
 }
 

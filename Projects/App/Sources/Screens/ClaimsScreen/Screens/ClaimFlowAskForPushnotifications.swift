@@ -35,7 +35,6 @@ struct AskForPushnotifications: View {
             .padding([.leading, .trailing], 16)
 
         }
-        .hUseBlur
         .hFormAttachToBottom {
             VStack(spacing: 12) {
                 hButton.LargeButtonFilled {

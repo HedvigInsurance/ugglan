@@ -156,7 +156,7 @@ public class ClaimJourneys {
                 }
             ),
             style: .detented(.large),
-            options: [.largeNavigationBar, .wantsGrabber]
+            options: [.largeNavigationBar]
         ) {
             action in
             if case let .setItemBrand(brand) = action {
