@@ -141,8 +141,6 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
 
 public struct PartnerData: Codable, Equatable {
     let sas: PartnerDataSas?
-    //    let name: String?
-    //    let email: String?
 
     var shouldShowEuroBonus: Bool {
         return sas?.eligible ?? false
@@ -151,8 +149,6 @@ public struct PartnerData: Codable, Equatable {
     init?(with data: OctopusGraphQL.PartnerDataFragment) {
         guard let sasData = data.partnerData?.sas else { return nil }
         self.sas = PartnerDataSas(with: sasData)
-        //        self.name = name
-        //        self.email = email
     }
 }
 
