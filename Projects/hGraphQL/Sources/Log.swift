@@ -62,7 +62,9 @@ extension Logging {
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
     public func debug(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
-        debug(message, error: error, attributes: attributes)
+        if Environment.current != .production {
+            debug(message, error: error, attributes: attributes)
+        }
     }
 
     /// Sends an INFO log message.
