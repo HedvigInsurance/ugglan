@@ -78,7 +78,7 @@ where MainContent: View, BottomContent: View, MiddleContent: View {
     var getBackground: some View {
         if hUseNewStyle {
             Squircle.default()
-                .fill(hBackgroundColorNew.opaqueOne)
+                .fill(hFillColorNew.opaqueOne)
         } else {
             Squircle.default()
                 .fill(hBackgroundColor.tertiary)

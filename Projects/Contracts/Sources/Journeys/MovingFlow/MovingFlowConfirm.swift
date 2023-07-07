@@ -99,14 +99,14 @@ struct MovingFlowConfirm: View {
     func returnMiddleComponent(insuranceName: String) -> some View {
         VStack(alignment: .leading, spacing: 1) {
             hTextNew(insuranceName, style: .body)
-                .foregroundColor(hLabelColorNew.primary)
+                .foregroundColor(hTextColorNew.primary)
             HStack {
                 hTextNew(L10n.changeAddressActivationDate("02.12.24"), style: .body)
                 Image(uiImage: hCoreUIAssets.infoSmall.image)
                     .resizable()
                     .frame(width: 14, height: 14)
             }
-            .foregroundColor(hLabelColorNew.secondary)
+            .foregroundColor(hTextColorNew.secondary)
         }
     }
 
@@ -115,7 +115,7 @@ struct MovingFlowConfirm: View {
         HStack {
             hTextNew(L10n.changeAddressDetails, style: .body)
             Image(uiImage: hCoreUIAssets.chevronDown.image)
-                .foregroundColor(hLabelColorNew.tertiary)
+                .foregroundColor(hTextColorNew.tertiary)
             Spacer()
             hTextNew(price, style: .body)
         }
@@ -169,7 +169,7 @@ struct MovingFlowConfirm: View {
                 hTextNew("Produktfaktablad", style: .body)
             }
             .padding(.vertical, 16)
-            .foregroundColor(hLabelColorNew.secondary)
+            .foregroundColor(hTextColorNew.secondary)
 
             hButton.SmallButtonText {
                 store.send(.navigationActionMovingFlow(action: .openAddressFillScreen))
@@ -202,7 +202,8 @@ struct MovingFlowConfirm: View {
     var noticeComponent: some View {
         InfoCard(
             text:
-                L10n.changeAddressAccidentNotice
+                L10n.changeAddressAccidentNotice,
+            type: .info
         )
         .padding(.bottom, 16)
     }

@@ -36,7 +36,7 @@ public struct CheckBoxComponent: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 48, height: 48)
             hTextNew(displayName, style: .body)
-                .foregroundColor(hLabelColorNew.primary)
+                .foregroundColor(hTextColorNew.primary)
             Spacer()
             Circle()
                 .strokeBorder(
@@ -51,18 +51,18 @@ public struct CheckBoxComponent: View {
     @hColorBuilder
     func getBorderColor(currentItem: String) -> some hColor {
         if currentItem == isSelected {
-            hLabelColorNew.primary
+            hTextColorNew.primary
         } else {
-            hBackgroundColorNew.semanticBorderTwo
+            hBorderColorNew.opaqueTwo
         }
     }
 
     @hColorBuilder
     func retColor(currentItem: String) -> some hColor {
         if currentItem == isSelected {
-            hLabelColorNew.primary
+            hTextColorNew.primary
         } else {
-            hBackgroundColorNew.opaqueOne
+            hFillColorNew.opaqueOne
         }
     }
 }
