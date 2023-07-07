@@ -7,7 +7,6 @@ import hGraphQL
 
 public struct ProfileState: StateProtocol {
     var memberFullName: String = ""
-    var memberEmail: String = ""
     var monthlyNet: Int = 0
     var partnerData: PartnerData?
     @OptionalTransient var updateEurobonusState: LoadingState<String>?
@@ -28,7 +27,8 @@ public enum ProfileAction: ActionProtocol {
     case openFreeTextChat
     case openAppInformation
     case openAppSettings
-    case setProfileState(name: String, email: String, monthlyNet: Int)
+    case setMonthlyNet(monthlyNet: Int)
+    case setMemberName(name: String)
     case setEurobonusNumber(partnerData: PartnerData?)
     case fetchProfileStateCompleted
     case updateEurobonusNumber(number: String)
@@ -48,32 +48,33 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             return FiniteSignal { callback in
                 let disposeBag = DisposeBag()
 
-                let getProfileData = self.giraffe.client
+                let getChargeEstimationData = self.giraffe.client
                     .fetch(
                         query: GiraffeGraphQL.ChargeEstimationQuery(),
                         cachePolicy: .fetchIgnoringCacheData
                     )
 
-                let getPartnerData = self.octopus.client
+                let getProfileData = self.octopus.client
                     .fetch(
                         query: OctopusGraphQL.ProfileQuery(),
                         cachePolicy: .fetchIgnoringCacheData
                     )
-                disposeBag += combineLatest(getProfileData.resultSignal, getPartnerData.resultSignal)
-                    .onValue { (profileData, partnerData) in
+                disposeBag += combineLatest(getChargeEstimationData.resultSignal, getProfileData.resultSignal)
+                    .onValue { (chargeEstimationData, profileData) in
                         var monthlyNet = 0
-                        if let profileData = profileData.value {
+                        if let chargeEstimationData = chargeEstimationData.value {
                             monthlyNet = Int(
-                                profileData.chargeEstimation.subscription.fragments.monetaryAmountFragment
+                                chargeEstimationData.chargeEstimation.subscription.fragments.monetaryAmountFragment
                                     .monetaryAmount.floatAmount
                             )
                         }
-                        if let partnerData = partnerData.value {
-                            let name = partnerData.currentMember.firstName + " " + partnerData.currentMember.lastName
-                            let email = partnerData.currentMember.email
-                            let partner = PartnerData(with: partnerData.currentMember.fragments.partnerDataFragment)
+                        if let profileData = profileData.value {
+                            let name = profileData.currentMember.firstName + " " + profileData.currentMember.lastName
+                            let email = profileData.currentMember.email
+                            let partner = PartnerData(with: profileData.currentMember.fragments.partnerDataFragment)
                             callback(.value(.setEurobonusNumber(partnerData: partner)))
-                            callback(.value(.setProfileState(name: name, email: email, monthlyNet: monthlyNet)))
+                            callback(.value(.setMonthlyNet(monthlyNet: monthlyNet)))
+                            callback(.value(.setMemberName(name: name)))
                         }
                         callback(.value(.fetchProfileStateCompleted))
                     }
@@ -113,10 +114,10 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
     public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
         var newState = state
         switch action {
-        case .setProfileState(let name, let email, let monthlyNet):
-            newState.memberFullName = name
-            newState.memberEmail = email
+        case .setMonthlyNet(let monthlyNet):
             newState.monthlyNet = monthlyNet
+        case .setMemberName(let name):
+            newState.memberFullName = name
         case .setEurobonusNumber(let partnerData):
             newState.partnerData = partnerData
         case .updateEurobonusNumber:
