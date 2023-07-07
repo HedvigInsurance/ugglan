@@ -124,7 +124,7 @@ extension hSectionContainerStyle: ViewModifier {
     @hColorBuilder
     private func getOpaqueBackground(useNewStyle: Bool) -> some hColor {
         if useNewStyle {
-            hBackgroundColorNew.opaqueOne
+            hFillColorNew.opaqueOne
         } else {
             hBackgroundColor.tertiary
         }
@@ -133,7 +133,7 @@ extension hSectionContainerStyle: ViewModifier {
     @hColorBuilder
     private func getCautionBackground(useNewStyle: Bool) -> some hColor {
         if useNewStyle {
-            hYellowColorNew.yellow600
+            hSignalColorNew.amberElement
         } else {
             hTintColor.yellowTwo
         }
@@ -268,7 +268,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
     @hColorBuilder
     static func returnLabelColorPrimary(useNewStyle: Bool) -> some hColor {
         if useNewStyle {
-            hLabelColorNew.primary
+            hTextColorNew.primary
         } else {
             hLabelColor.primary
         }
@@ -277,7 +277,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
     @hColorBuilder
     static func returnLabelColorSecondary(useNewStyle: Bool) -> some hColor {
         if useNewStyle {
-            hLabelColorNew.secondary
+            hTextColorNew.secondary
         } else {
             hLabelColor.secondary
         }

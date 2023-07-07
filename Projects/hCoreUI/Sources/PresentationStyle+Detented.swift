@@ -245,7 +245,7 @@ extension PresentationOptions {
     public static let preffersLargerNavigationBar = PresentationOptions()
     public static let withAdditionalSpaceForProgressBar = PresentationOptions()
     public static let largeNavigationBar: PresentationOptions = [
-        embedInNavigationController, .preffersLargerNavigationBar,
+        embedInNavigationController, .preffersLargerNavigationBar, .wantsGrabber,
     ]
 }
 
@@ -437,7 +437,6 @@ extension PresentationStyle {
                     + (hasNavigationBar ? navigationBarHeight : 0)
                     + additionalNavigationHeight
                     + additionalViewHeight
-                //                    + 10
                 if #available(iOS 15.0, *) {
                     if keyboardHeight > 0 {
                         if let window = UIApplication.shared.windows.first {

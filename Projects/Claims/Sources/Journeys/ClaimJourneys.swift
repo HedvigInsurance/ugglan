@@ -47,6 +47,10 @@ public class ClaimJourneys {
                 openUpdateAppTerminationScreen().withJourneyDismissButton
             } else if case let .openDatePicker(type) = navigationAction {
                 openDatePickerScreen(type: type)
+            } else if case .openTriagingEntrypointScreen = navigationAction {
+                showClaimEntrypointType().addDismissClaimsFlow()
+            } else if case .openTriagingOptionScreen = navigationAction {
+                showClaimEntrypointOption().addDismissClaimsFlow()
             }
         }
     }
@@ -134,7 +138,6 @@ public class ClaimJourneys {
                 getScreen(for: action)
             }
         }
-        .resetProgressToPreviousValueOnDismiss
     }
 
     static func openBrandPickerScreen() -> some JourneyPresentation {
@@ -156,7 +159,7 @@ public class ClaimJourneys {
                 }
             ),
             style: .detented(.large),
-            options: [.largeNavigationBar, .wantsGrabber]
+            options: [.largeNavigationBar]
         ) {
             action in
             if case let .setItemBrand(brand) = action {
@@ -294,7 +297,7 @@ public class ClaimJourneys {
             if case .navigationAction(.openDatePicker) = action {
                 openDatePickerScreen(type: .setDateOfPurchase)
             } else if case .navigationAction(.openBrandPicker) = action {
-                openBrandPickerScreen().configureTitle(L10n.claimsChooseModelTitle)
+                openBrandPickerScreen().configureTitle(L10n.claimsChooseBrandTitle)
             } else if case .navigationAction(.openPriceInput) = action {
                 openPriceInputScreen()
             } else {
@@ -390,26 +393,11 @@ public class ClaimJourneys {
                 selectedEntrypoints: { entrypoints in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
-
-                    if entrypoints.isEmpty {
-                        store.send(
-                            .startClaimRequest(
-                                entrypointId: nil,
-                                entrypointOptionId: nil
-                            )
-                        )
-                    }
                 }),
             style: .modally(presentationStyle: .overFullScreen),
             options: [.defaults, .withAdditionalSpaceForProgressBar]
         ) { action in
-            if case let .setSelectedEntrypoints(entrypoints) = action {
-                if !entrypoints.isEmpty {
-                    ClaimJourneys.showClaimEntrypointType(origin: origin)
-                }
-            } else {
-                getScreen(for: action).showsBackButton
-            }
+            getScreen(for: action).showsBackButton
         }
         .onPresent {
             let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -417,49 +405,27 @@ public class ClaimJourneys {
         }
         .resetProgressToPreviousValueOnDismiss
         .hidesBackButton
-        .withJourneyDismissButton
         .addClaimsProgressBar
     }
 
     @JourneyBuilder
-    public static func showClaimEntrypointType(
-        origin: ClaimsOrigin
-    ) -> some JourneyPresentation {
+    public static func showClaimEntrypointType() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
             rootView:
                 SelectClaimEntrypointType(selectedEntrypointOptions: { options, selectedEntrypointId in
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.setSelectedEntrypointOptions(entrypoints: options))
-                    store.send(.setSelectedEntrypointId(entrypoints: selectedEntrypointId))
-
-                    if options.isEmpty {
-                        store.send(
-                            .startClaimRequest(
-                                entrypointId: selectedEntrypointId,
-                                entrypointOptionId: nil
-                            )
-                        )
-                    }
+                    store.send(.setSelectedEntrypointOptions(entrypoints: options, entrypointId: selectedEntrypointId))
                 })
         ) { action in
-            if case let .setSelectedEntrypointOptions(options) = action {
-                if !options.isEmpty {
-                    ClaimJourneys.showClaimEntrypointOption(origin: origin)
-                }
-            } else {
-                getScreen(for: action)
-            }
+            getScreen(for: action)
         }
         .resetProgressToPreviousValueOnDismiss
         .showsBackButton
-        .withJourneyDismissButton
     }
 
     @JourneyBuilder
-    public static func showClaimEntrypointOption(
-        origin: ClaimsOrigin
-    ) -> some JourneyPresentation {
+    public static func showClaimEntrypointOption() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
             rootView:
@@ -476,7 +442,6 @@ public class ClaimJourneys {
             getScreen(for: action)
         }
         .resetProgressToPreviousValueOnDismiss
-        .withJourneyDismissButton
     }
 
     private static func showClaimFailureScreen() -> some JourneyPresentation {

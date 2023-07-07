@@ -35,7 +35,6 @@ struct AskForPushnotifications: View {
             .padding([.leading, .trailing], 16)
 
         }
-        .hUseBlur
         .hFormAttachToBottom {
             VStack(spacing: 12) {
                 hButton.LargeButtonFilled {
@@ -99,7 +98,7 @@ extension AskForPushnotifications {
                                 DismissJourney()
                             }
                         }
-                } else if case .openTriagingScreen = navigationAction {
+                } else if case .openTriagingGroupScreen = navigationAction {
                     ClaimJourneys.showClaimEntrypointGroup(origin: origin)
                 }
             } else {

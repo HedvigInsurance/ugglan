@@ -202,7 +202,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     @hColorBuilder
     var pressedColor: some hColor {
         if hUseNewStyle {
-            hOverlayColorNew.pressedPrimary
+            hButtonColorNew.primaryHover
         } else {
             hOverlayColor.pressed
         }
@@ -313,7 +313,7 @@ struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
     @hColorBuilder
     var getPressedColor: some hColor {
         if hUseNewStyle {
-            hOverlayColorNew.pressedGhost
+            hButtonColorNew.secondaryHover
         } else {
             hOverlayColor.pressed
         }
@@ -367,7 +367,7 @@ struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
     @hColorBuilder
     var getPressedColor: some hColor {
         if hUseNewStyle {
-            hOverlayColorNew.pressedGhost
+            hButtonColorNew.secondaryHover
         } else {
             hOverlayColor.pressed
         }

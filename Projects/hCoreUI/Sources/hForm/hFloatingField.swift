@@ -56,7 +56,7 @@ public struct hFloatingField: View {
     }
     private var getTextLabel: some View {
         hTextNew(value, style: .title3)
-            .foregroundColor(hLabelColorNew.primary)
+            .foregroundColor(hTextColorNew.primary)
     }
 
     private func startAnimation() {

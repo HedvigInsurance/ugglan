@@ -145,7 +145,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         return SwiftUI.TextField("", text: $innerValue)
             .modifier(hFontModifierNew(style: .title3))
             .modifier(masking)
-            .tint(hLabelColorNew.primary)
+            .tint(hTextColorNew.primary)
             .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
                 if shouldUpdate {
                     value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
@@ -160,7 +160,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
     private var getSuffixLabel: some View {
         hTextNew(suffix ?? "", style: .title3)
-            .foregroundColor(hLabelColorNew.secondary)
+            .foregroundColor(hTextColorNew.secondary)
     }
 }
 

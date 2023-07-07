@@ -41,8 +41,7 @@ public enum SubmitClaimsAction: ActionProtocol, Hashable {
     case stepModelAction(action: ClaimsStepModelAction)
     case setSelectedEntrypoints(entrypoints: [ClaimEntryPointResponseModel])
     case setSelectedEntrypoint(entrypoint: ClaimEntryPointResponseModel)
-    case setSelectedEntrypointOptions(entrypoints: [ClaimEntryPointOptionResponseModel])
-    case setSelectedEntrypointId(entrypoints: String?)
+    case setSelectedEntrypointOptions(entrypoints: [ClaimEntryPointOptionResponseModel], entrypointId: String?)
 }
 
 public enum ClaimsNavigationAction: ActionProtocol, Hashable {
@@ -64,7 +63,9 @@ public enum ClaimsNavigationAction: ActionProtocol, Hashable {
     case openFailureSceen
     case openUpdateAppScreen
     case openNotificationsPermissionScreen
-    case openTriagingScreen
+    case openTriagingGroupScreen
+    case openTriagingEntrypointScreen
+    case openTriagingOptionScreen
     case dismissInfoScreens
     case dismissScreen
     case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)

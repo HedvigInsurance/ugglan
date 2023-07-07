@@ -133,7 +133,7 @@ class ChatState {
                 subscription: GiraffeGraphQL.ChatMessagesSubscriptionSubscription(),
                 queue: DispatchQueue.global(qos: .background),
                 onError: { error in
-                    log.error("Chat Error: ChatMessagesSubscriptionSubscription", error: error, attributes: nil)
+                    log.warn("Chat Warn: ChatMessagesSubscriptionSubscription", error: error, attributes: nil)
                 }
             )
             .compactMap(on: .concurrentBackground) { $0.message.fragments.messageData }
