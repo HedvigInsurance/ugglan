@@ -122,7 +122,7 @@ private struct PulsingCircle: View {
 
     public var body: some View {
         Circle()
-            .fill(hLabelColorNew.primary.inverted)
+            .fill(hTextColorNew.negative)
             .opacity(animate ? 0.4 : 1)
             .onAppear {
                 setAnimation()

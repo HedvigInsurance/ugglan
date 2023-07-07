@@ -21,7 +21,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             .hUseNewStyle
             .hFormAttachToBottom {
                 VStack(spacing: 8) {
-                    InfoCard(text: L10n.claimsCheckoutNotice)
+                    InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
                         .padding(.bottom, 8)
 
                     hButton.LargeButtonFilled {
@@ -57,7 +57,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             hSection {
                 VStack(alignment: .center) {
                     hTextNew(singleItemCheckoutStep?.payoutAmount.formattedAmount ?? "", style: .title1)
-                        .foregroundColor(hLabelColorNew.primary)
+                        .foregroundColor(hTextColorNew.primary)
                 }
                 .background(
                     Squircle.default()
@@ -67,7 +67,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             }
             .withHeader {
                 hTextNew(L10n.Claims.Payout.Summary.subtitle, style: .body)
-                    .foregroundColor(hLabelColorNew.primary)
+                    .foregroundColor(hTextColorNew.primary)
                     .padding(.top, 16)
             }
             .padding(.bottom, 8)
@@ -89,7 +89,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             .withHeader {
                 HStack {
                     hTextNew(L10n.claimsCheckoutCountTitle, style: .body)
-                        .foregroundColor(hLabelColorNew.primary)
+                        .foregroundColor(hTextColorNew.primary)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -104,7 +104,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                     ForEach(payoutMethods, id: \.id) { element in
                         hRow {
                             hTextNew(element.getDisplayName(), style: .title3)
-                                .foregroundColor(hLabelColorNew.primary)
+                                .foregroundColor(hTextColorNew.primary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .withSelectedAccessory(
@@ -124,7 +124,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
             .withHeader {
                 HStack {
                     hTextNew(L10n.Claims.Payout.Summary.method, style: .body)
-                        .foregroundColor(hLabelColorNew.primary)
+                        .foregroundColor(hTextColorNew.primary)
                 }
             }
         }
@@ -135,14 +135,14 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
         hRow {
             HStack {
                 hTextNew(title, style: .body)
-                    .foregroundColor(hLabelColorNew.secondary)
+                    .foregroundColor(hTextColorNew.secondary)
                 Spacer()
 
                 hTextNew(
                     model?.formattedAmount ?? "",
                     style: .body
                 )
-                .foregroundColor(hLabelColorNew.secondary)
+                .foregroundColor(hTextColorNew.secondary)
             }
         }
         .noSpacing()

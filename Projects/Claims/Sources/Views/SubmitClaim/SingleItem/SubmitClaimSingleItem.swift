@@ -28,7 +28,7 @@ public struct SubmitClaimSingleItem: View {
                     displayDateField(claim: singleItemStep)
                     displayPurchasePriceField(claim: singleItemStep)
                     displayDamageField(claim: singleItemStep)
-                    InfoCard(text: L10n.claimsSingleItemNoticeLabel)
+                    InfoCard(text: L10n.claimsSingleItemNoticeLabel, type: .info)
                         .padding(.vertical, 12)
                     LoadingButtonWithContent(.postSingleItem) {
                         store.send(.singleItemRequest(purchasePrice: singleItemStep?.purchasePrice))

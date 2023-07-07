@@ -70,7 +70,7 @@ struct TrackPlayer: View {
             if !hWithoutFootnote {
                 if hUseNewStyle {
                     hTextNew(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
-                        .foregroundColor(hLabelColorNew.secondary)
+                        .foregroundColor(hTextColorNew.secondary)
                 } else {
                     hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
                         .foregroundColor(hLabelColor.secondary)
@@ -82,7 +82,7 @@ struct TrackPlayer: View {
     @hColorBuilder
     var getWaveColor: some hColor {
         if hUseNewStyle {
-            hLabelColorNew.primary
+            hTextColorNew.primary
         } else {
             playbackTint
         }
@@ -91,7 +91,7 @@ struct TrackPlayer: View {
     @hColorBuilder
     var getBackgroundColor: some hColor {
         if hUseNewStyle {
-            hBackgroundColorNew.opaqueOne
+            hFillColorNew.opaqueOne
         } else {
             backgroundColorOld
         }

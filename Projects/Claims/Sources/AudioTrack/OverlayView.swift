@@ -13,7 +13,7 @@ struct OverlayView: View {
     @hColorBuilder
     var getStaplesMaskColor: some hColor {
         if hUseNewStyle {
-            hLabelColorNew.tertiary
+            hTextColorNew.tertiary
         } else {
             staplesMaskColorOld
         }

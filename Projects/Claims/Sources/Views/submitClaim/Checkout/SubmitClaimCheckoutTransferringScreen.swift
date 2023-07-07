@@ -61,10 +61,10 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                         (singleItemCheckoutStep?.payoutAmount.formattedAmount ?? ""),
                         style: .title1
                     )
-                    .foregroundColor(hLabelColorNew.primary)
+                    .foregroundColor(hTextColorNew.primary)
                 }
                 hTextNew(L10n.claimsPayoutSuccessLabel, style: .body)
-                    .foregroundColor(hLabelColorNew.secondary)
+                    .foregroundColor(hTextColorNew.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 16)
             }
@@ -81,7 +81,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 store.send(.dissmissNewClaimFlow)
             } content: {
                 hTextNew(L10n.generalCloseButton, style: .body)
-                    .foregroundColor(hLabelColorNew.primary)
+                    .foregroundColor(hTextColorNew.primary)
             }
         }
         .opacity(successAnimation ? 1 : 0)
@@ -111,7 +111,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 hTextNew(L10n.claimsPayoutProgresLabel, style: .title3)
 
                 ProgressView(value: progress)
-                    .tint(hLabelColorNew.primary)
+                    .tint(hTextColorNew.primary)
                     .frame(width: UIScreen.main.bounds.width * 0.53)
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -187,7 +187,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 } label: {
                     HStack {
                         hTextNew(L10n.generalCloseButton, style: .body)
-                            .foregroundColor(hLabelColorNew.secondary)
+                            .foregroundColor(hTextColorNew.secondary)
                             .padding(16)
                     }
                     .frame(maxWidth: .infinity)
@@ -196,7 +196,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                         RoundedRectangle(
                             cornerRadius: .defaultCornerRadius
                         )
-                        .stroke(hLabelColorNew.primary, lineWidth: 1)
+                        .stroke(hTextColorNew.primary, lineWidth: 1)
                     )
                 }
 
@@ -205,7 +205,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 } label: {
                     HStack {
                         hTextNew(L10n.generalRetry, style: .body)
-                            .foregroundColor(hLabelColorNew.primary)
+                            .foregroundColor(hTextColorNew.primary)
                             .padding(16)
                     }
                     .frame(maxWidth: .infinity)
@@ -214,7 +214,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                         RoundedRectangle(
                             cornerRadius: .defaultCornerRadius
                         )
-                        .stroke(hLabelColorNew.primary, lineWidth: 1)
+                        .stroke(hTextColorNew.primary, lineWidth: 1)
                     )
                 }
             }

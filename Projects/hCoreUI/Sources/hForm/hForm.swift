@@ -206,7 +206,7 @@ public struct hForm<Content: View>: View {
     @hColorBuilder
     static func returnTintColor(useNewStyle: Bool) -> some hColor {
         if useNewStyle {
-            hGreenColorNew.green100
+            hSignalColorNew.greenFill
         } else {
             hTintColor.lavenderOne
         }

@@ -76,9 +76,9 @@ struct TravelInsuranceContractsScreen: View {
         HStack {
             Spacer()
             if item.contractId == selectedOne?.contractId {
-                Circle().fill(hLabelColorNew.primary).frame(width: 22, height: 22)
+                Circle().fill(hTextColorNew.primary).frame(width: 22, height: 22)
             } else {
-                Circle().stroke(hLabelColorNew.tertiary)
+                Circle().stroke(hTextColorNew.tertiary)
                     .frame(width: 22, height: 22)
             }
         }
