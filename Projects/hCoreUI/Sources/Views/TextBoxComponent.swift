@@ -42,7 +42,7 @@ public struct TextBoxComponent<MainContent>: View where MainContent: View {
         .padding(16)
         .background(
             Squircle.default()
-                .fill(hGrayscaleColorNew.greyScale100)
+                .fill(hFillColorNew.opaqueOne)
                 .hShadow()
         )
         .onTapGesture {

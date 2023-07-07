@@ -133,7 +133,7 @@ extension hSectionContainerStyle: ViewModifier {
     @hColorBuilder
     private func getCautionBackground(useNewStyle: Bool) -> some hColor {
         if useNewStyle {
-            hYellowColorNew.yellow600
+            hSignalColorNew.amberElement
         } else {
             hTintColor.yellowTwo
         }

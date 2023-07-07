@@ -16,7 +16,7 @@ public struct InfoCard: View {
     public var body: some View {
         HStack(alignment: .top, spacing: 0) {
             Image(uiImage: hCoreUIAssets.infoSmall.image)
-                .foregroundColor(hBlueColorNew.blue600)
+                .foregroundColor(hSignalColorNew.blueElement)
 
             hTextNew(text, style: .footnote)
                 .foregroundColor(getTextColor)
