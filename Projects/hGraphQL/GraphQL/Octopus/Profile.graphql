@@ -1,6 +1,7 @@
 query Profile {
   currentMember {
   email
+  phoneNumber
   firstName
   lastName
     ...PartnerDataFragment

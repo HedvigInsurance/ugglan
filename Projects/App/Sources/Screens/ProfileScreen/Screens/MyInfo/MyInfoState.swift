@@ -85,8 +85,7 @@ struct MyInfoState {
                             )
                         )
                         .onValue { _ in completion(.success)
-                            self.octopus.store.update(query: OctopusGraphQL.ProfileQuery())
-                            { /* TODO: UPDATE TO MyInfoQuery to octopus */
+                            self.octopus.store.update(query: OctopusGraphQL.ProfileQuery()) {
                                 (data: inout OctopusGraphQL.ProfileQuery.Data) in
                                 data.currentMember.email = email
                             }
@@ -117,12 +116,12 @@ struct MyInfoState {
         let bag = DisposeBag()
 
         let dataSignal = giraffe.client.watch(
-            query: GiraffeGraphQL.MyInfoQuery(),
+            query: OctopusGraphQL.ProfileQuery(),
             cachePolicy: .returnCacheDataAndFetch
         )
 
-        bag += dataSignal.compactMap { $0.member.email }.bindTo(emailSignal)
-        bag += dataSignal.compactMap { $0.member.phoneNumber }.bindTo(phoneNumberSignal)
+        bag += dataSignal.compactMap { $0.currentMember.email }.bindTo(emailSignal)
+        bag += dataSignal.compactMap { $0.currentMember.phoneNumber }.bindTo(phoneNumberSignal)
 
         return bag
     }

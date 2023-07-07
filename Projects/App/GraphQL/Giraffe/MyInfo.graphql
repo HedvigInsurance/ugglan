@@ -1,8 +1,0 @@
-query MyInfo {
-    member {
-        firstName
-        lastName
-        email
-        phoneNumber
-    }
-}
