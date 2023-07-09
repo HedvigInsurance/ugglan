@@ -1,19 +1,26 @@
 import Flow
+import Foundation
 import Presentation
 import SwiftUI
 import hAnalytics
 import hCore
-import hCoreUI
 
-public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: View>: View {
+public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: View, StoreType: StoreLoading & Store>:
+    View
+{
     var content: () -> Content
     var onLoading: () -> LoadingView
     var onError: (_ error: String) -> ErrorView
 
-    @PresentableStore var store: SubmitClaimStore
-    private let action: ClaimsLoadingType
+    var action: StoreType.Loading
+    @State var showOnLoading: Bool = false
+    @State var error: String?
+
+    @PresentableStore var store: StoreType
+
     public init(
-        _ action: ClaimsLoadingType,
+        _ type: StoreType.Type,
+        _ action: StoreType.Loading,
         @ViewBuilder content: @escaping () -> Content,
         @ViewBuilder onLoading: @escaping () -> LoadingView,
         @ViewBuilder onError: @escaping (_ error: String) -> ErrorView
@@ -24,31 +31,44 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
         self.onError = onError
     }
     public var body: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.loadingStates
-            }
-        ) { loadingStates in
-            if let state = loadingStates[action] {
-                switch state {
-                case .loading:
-                    onLoading()
-                case let .error(error):
-                    onError(error)
+        getView
+            .onReceive(
+                store.loadingSignal
+                    .plain()
+                    .publisher
+            ) { value in
+                if let state = value[action] {
+                    switch state {
+                    case .loading:
+                        showOnLoading = true
+                        self.error = nil
+                    case let .error(error):
+                        showOnLoading = false
+                        self.error = error
+                    }
+                } else {
+                    showOnLoading = false
+                    self.error = nil
                 }
-            } else {
-                content()
             }
+    }
+
+    @ViewBuilder
+    private var getView: some View {
+        if let error {
+            onError(error)
+        } else if showOnLoading {
+            onLoading()
+        } else {
+            content()
         }
-        .presentableStoreLensAnimation(.easeInOut)
     }
 }
 
-public struct LoadingViewWithContent<Content: View>: View {
+public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & Store>: View {
     var content: () -> Content
-    @PresentableStore var store: SubmitClaimStore
-    private let actions: [ClaimsLoadingType]
+    @PresentableStore var store: StoreType
+    private let actions: [StoreType.Loading]
     private let hUseNewStyle: Bool
 
     @State var presentError = false
@@ -57,18 +77,9 @@ public struct LoadingViewWithContent<Content: View>: View {
     var disposeBag = DisposeBag()
 
     public init(
+        _ type: StoreType.Type,
         hUseNewStyle: Bool = true,
-        _ action: ClaimsLoadingType,
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.hUseNewStyle = hUseNewStyle
-        self.actions = [action]
-        self.content = content
-    }
-
-    public init(
-        hUseNewStyle: Bool = true,
-        _ actions: [ClaimsLoadingType],
+        _ actions: [StoreType.Loading],
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.hUseNewStyle = hUseNewStyle
@@ -83,42 +94,38 @@ public struct LoadingViewWithContent<Content: View>: View {
                 loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.1)))
             }
         }
-        .onAppear {
-            func handle(state: SubmitClaimsState) {
-                let actions = state.loadingStates.filter({ self.actions.contains($0.key) })
-                if actions.count > 0 {
-                    if actions.filter({ $0.value == .loading }).count > 0 {
-                        withAnimation {
-                            self.isLoading = true
-                            self.presentError = false
-                        }
-                    } else {
-                        var tempError = ""
-                        for action in actions {
-                            switch action.value {
-                            case .error(let error):
-                                tempError = error
-                            default:
-                                break
-                            }
-                        }
-                        self.error = tempError
-                        self.isLoading = false
-                        self.presentError = true
-                    }
-                } else {
+        .onReceive(
+            store.loadingSignal
+                .plain()
+                .publisher
+        ) { value in
+            let actions = value.filter({ self.actions.contains($0.key) })
+            if actions.count > 0 {
+                if actions.filter({ $0.value == .loading }).count > 0 {
                     withAnimation {
-                        self.isLoading = false
+                        self.isLoading = true
                         self.presentError = false
                     }
+                } else {
+                    var tempError = ""
+                    for action in actions {
+                        switch action.value {
+                        case .error(let error):
+                            tempError = error
+                        default:
+                            break
+                        }
+                    }
+                    self.error = tempError
+                    self.isLoading = false
+                    self.presentError = true
+                }
+            } else {
+                withAnimation {
+                    self.isLoading = false
+                    self.presentError = false
                 }
             }
-            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-            disposeBag += store.stateSignal.onValue { state in
-                handle(state: state)
-            }
-            handle(state: store.state)
-
         }
     }
 
@@ -133,7 +140,7 @@ public struct LoadingViewWithContent<Content: View>: View {
                         message: Text(error),
                         dismissButton: .default(Text(L10n.alertOk)) {
                             for action in actions {
-                                store.send(.setLoadingState(action: action, state: nil))
+                                store.removeLoading(for: action)
                             }
                         }
                     )
@@ -146,7 +153,7 @@ public struct LoadingViewWithContent<Content: View>: View {
                         message: Text(error),
                         dismissButton: .default(Text(L10n.alertOk)) {
                             for action in actions {
-                                store.send(.setLoadingState(action: action, state: nil))
+                                store.removeLoading(for: action)
                             }
                         }
                     )
@@ -179,11 +186,11 @@ public enum ButtonStyleForLoading {
     case textButton
 }
 
-public struct LoadingButtonWithContent<Content: View>: View {
+public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & Store>: View {
     var content: () -> Content
     let buttonAction: () -> Void
-    @PresentableStore var store: SubmitClaimStore
-    private let actions: [ClaimsLoadingType]
+    @PresentableStore var store: StoreType
+    private let actions: [StoreType.Loading]
     private let hUseNewStyle: Bool
     let buttonStyleSelect: ButtonStyleForLoading?
 
@@ -193,8 +200,9 @@ public struct LoadingButtonWithContent<Content: View>: View {
     var disposeBag = DisposeBag()
 
     public init(
+        _ type: StoreType.Type,
         hUseNewStyle: Bool = true,
-        _ action: ClaimsLoadingType,
+        _ action: StoreType.Loading,
         buttonAction: @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content,
         buttonStyleSelect: ButtonStyleForLoading? = .filledButton
@@ -207,8 +215,9 @@ public struct LoadingButtonWithContent<Content: View>: View {
     }
 
     public init(
+        _ type: StoreType.Type,
         hUseNewStyle: Bool = true,
-        _ actions: [ClaimsLoadingType],
+        _ actions: [StoreType.Loading],
         buttonAction: @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content,
         buttonStyleSelect: ButtonStyleForLoading? = .filledButton
@@ -236,8 +245,45 @@ public struct LoadingButtonWithContent<Content: View>: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .onAppear {
-                getOnAppear
+            .onReceive(
+                store.loadingSignal
+                    .plain()
+                    .publisher
+            ) { value in
+                let actions = value.filter({ self.actions.contains($0.key) })
+                if actions.count > 0 {
+                    if actions.filter({ $0.value == .loading }).count > 0 {
+                        withAnimation {
+                            self.isLoading = true
+                            self.presentError = false
+                        }
+                    } else {
+                        var tempError = ""
+                        for action in actions {
+                            switch action.value {
+                            case .error(let error):
+                                tempError = error
+                            default:
+                                break
+                            }
+                        }
+                        self.error = tempError
+                        self.isLoading = false
+                        self.presentError = true
+                    }
+                } else {
+                    if isLoading == true {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            self.isLoading = false
+                            self.presentError = false
+                        }
+                    } else {
+                        withAnimation {
+                            self.isLoading = false
+                            self.presentError = false
+                        }
+                    }
+                }
             }
         case .textButton:
             hButton.LargeButtonText {
@@ -252,57 +298,49 @@ public struct LoadingButtonWithContent<Content: View>: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .onAppear {
-                getOnAppear
+            .onReceive(
+                store.loadingSignal
+                    .plain()
+                    .publisher
+            ) { value in
+                let actions = value.filter({ self.actions.contains($0.key) })
+                if actions.count > 0 {
+                    if actions.filter({ $0.value == .loading }).count > 0 {
+                        withAnimation {
+                            self.isLoading = true
+                            self.presentError = false
+                        }
+                    } else {
+                        var tempError = ""
+                        for action in actions {
+                            switch action.value {
+                            case .error(let error):
+                                tempError = error
+                            default:
+                                break
+                            }
+                        }
+                        self.error = tempError
+                        self.isLoading = false
+                        self.presentError = true
+                    }
+                } else {
+                    if isLoading == true {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            self.isLoading = false
+                            self.presentError = false
+                        }
+                    } else {
+                        withAnimation {
+                            self.isLoading = false
+                            self.presentError = false
+                        }
+                    }
+                }
             }
         case .none:
             EmptyView()
         }
-    }
-
-    private var getOnAppear: Void {
-        func handle(state: SubmitClaimsState) {
-            let actions = state.loadingStates.filter({ self.actions.contains($0.key) })
-            if actions.count > 0 {
-                if actions.filter({ $0.value == .loading }).count > 0 {
-                    withAnimation {
-                        self.isLoading = true
-                        self.presentError = false
-                    }
-                } else {
-                    var tempError = ""
-                    for action in actions {
-                        switch action.value {
-                        case .error(let error):
-                            tempError = error
-                        default:
-                            break
-                        }
-                    }
-                    self.error = tempError
-                    self.isLoading = false
-                    self.presentError = true
-                }
-            } else {
-                if isLoading == true {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.isLoading = false
-                        self.presentError = false
-                    }
-                } else {
-                    withAnimation {
-                        self.isLoading = false
-                        self.presentError = false
-                    }
-                }
-
-            }
-        }
-        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-        disposeBag += store.stateSignal.onValue { state in
-            handle(state: state)
-        }
-        handle(state: store.state)
     }
 
     @ViewBuilder
@@ -316,7 +354,7 @@ public struct LoadingButtonWithContent<Content: View>: View {
                         message: Text(error),
                         dismissButton: .default(Text(L10n.alertOk)) {
                             for action in actions {
-                                store.send(.setLoadingState(action: action, state: nil))
+                                store.removeLoading(for: action)
                             }
                         }
                     )
@@ -329,7 +367,7 @@ public struct LoadingButtonWithContent<Content: View>: View {
                         message: Text(error),
                         dismissButton: .default(Text(L10n.alertOk)) {
                             for action in actions {
-                                store.send(.setLoadingState(action: action, state: nil))
+                                store.removeLoading(for: action)
                             }
                         }
                     )
@@ -354,19 +392,5 @@ public struct LoadingButtonWithContent<Content: View>: View {
             .cornerRadius(.defaultCornerRadius)
             .edgesIgnoringSafeArea(.top)
         }
-    }
-}
-
-struct LoadingButtonWithContent_Previews: PreviewProvider {
-    static var previews: some View {
-        LoadingButtonWithContent(
-            .startClaim,
-            buttonAction: {
-            },
-            content: {
-                Text("TEXT")
-            },
-            buttonStyleSelect: .filledButton
-        )
     }
 }

@@ -63,7 +63,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                     minutes = 0
                                     seconds = 0
                                 }
-                            LoadingButtonWithContent(.postAudioRecording) {
+                            LoadingButtonWithContent(SubmitClaimStore.self, .postAudioRecording) {
                                 onSubmit(url)
                                 store.send(.submitAudioRecording(audioURL: url))
                             } content: {
