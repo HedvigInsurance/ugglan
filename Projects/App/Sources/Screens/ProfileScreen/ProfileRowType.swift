@@ -35,7 +35,7 @@ enum ProfileRowType {
         case .appInfo:
             return hCoreUIAssets.infoIcon.image
         case .settings:
-            return hCoreUIAssets.settingsIcon.image
+            return hCoreUIAssets.settingsIconOld.image
         case let .eurobonus(hasEnteredNumber):
             if hasEnteredNumber {
                 return hCoreUIAssets.euroBonusWithValueRowIcon.image
