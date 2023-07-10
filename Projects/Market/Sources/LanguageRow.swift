@@ -32,7 +32,7 @@ struct LanguageRowButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: 16) {
-            Image(uiImage: Asset.globe.image)
+            Image(uiImage: hCoreUIAssets.globe.image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)

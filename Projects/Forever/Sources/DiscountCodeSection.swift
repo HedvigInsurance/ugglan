@@ -35,7 +35,7 @@ struct DiscountCodeSectionView: View {
                         store.send(.showPushNotificationsReminder)
                         Toasts.shared.displayToast(
                             toast: .init(
-                                symbol: .icon(Asset.toastIcon.image),
+                                symbol: .icon(hCoreUIAssets.toastIcon.image),
                                 body: L10n.ReferralsActiveToast.text
                             )
                         )
