@@ -156,12 +156,12 @@ extension DefaultStyling {
         appearance.titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
             NSAttributedString.Key.font: useNewDesign
-                ? Fonts.fontForNewDesign(style: .headline) : Fonts.fontFor(style: .headline),
+                ? Fonts.fontFor(style: .headline) : Fonts.fontFor(style: .headline),
         ]
         appearance.largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
             NSAttributedString.Key.font: useNewDesign
-                ? Fonts.fontForNewDesign(style: .headline) : Fonts.fontFor(style: .largeTitle),
+                ? Fonts.fontFor(style: .headline) : Fonts.fontFor(style: .title1),
         ]
 
         let backImage = hCoreUIAssets.backButton.image.withAlignmentRectInsets(
@@ -327,7 +327,7 @@ extension DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontForNewDesign(style: .footnote)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
                 ],
                 for: .normal
             )
@@ -335,7 +335,7 @@ extension DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontForNewDesign(style: .footnote)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
                 ],
                 for: .highlighted
             )

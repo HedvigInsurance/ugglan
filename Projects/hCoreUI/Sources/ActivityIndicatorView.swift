@@ -69,7 +69,6 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
     var content: () -> Content
     @PresentableStore var store: StoreType
     private let actions: [StoreType.Loading]
-    private let hUseNewStyle: Bool
 
     @State var presentError = false
     @State var error = ""
@@ -78,11 +77,9 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
 
     public init(
         _ type: StoreType.Type,
-        hUseNewStyle: Bool = true,
         _ actions: [StoreType.Loading],
         @ViewBuilder content: @escaping () -> Content
     ) {
-        self.hUseNewStyle = hUseNewStyle
         self.actions = actions
         self.content = content
     }
@@ -131,53 +128,28 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
 
     @ViewBuilder
     private var contentView: some View {
-        if hUseNewStyle {
-            content()
-                .blur(radius: isLoading ? 10 : 0)
-                .alert(isPresented: $presentError) {
-                    Alert(
-                        title: Text(L10n.somethingWentWrong),
-                        message: Text(error),
-                        dismissButton: .default(Text(L10n.alertOk)) {
-                            for action in actions {
-                                store.removeLoading(for: action)
-                            }
+        content()
+            .blur(radius: isLoading ? 10 : 0)
+            .alert(isPresented: $presentError) {
+                Alert(
+                    title: Text(L10n.somethingWentWrong),
+                    message: Text(error),
+                    dismissButton: .default(Text(L10n.alertOk)) {
+                        for action in actions {
+                            store.removeLoading(for: action)
                         }
-                    )
-                }
-        } else {
-            content()
-                .alert(isPresented: $presentError) {
-                    Alert(
-                        title: Text(L10n.somethingWentWrong),
-                        message: Text(error),
-                        dismissButton: .default(Text(L10n.alertOk)) {
-                            for action in actions {
-                                store.removeLoading(for: action)
-                            }
-                        }
-                    )
-                }
-        }
+                    }
+                )
+            }
     }
     @ViewBuilder
     private var loadingIndicatorView: some View {
-        if hUseNewStyle {
-            HStack {
-                DotsActivityIndicator(.standard)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(hBackgroundColorNew.primary.opacity(0.01))
-            .edgesIgnoringSafeArea(.top)
-        } else {
-            HStack {
-                WordmarkActivityIndicator(.standard)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(hBackgroundColor.primary.opacity(0.7))
-            .cornerRadius(.defaultCornerRadius)
-            .edgesIgnoringSafeArea(.top)
+        HStack {
+            DotsActivityIndicator(.standard)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(hBackgroundColorNew.primary.opacity(0.01))
+        .edgesIgnoringSafeArea(.top)
     }
 }
 
@@ -191,7 +163,6 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
     let buttonAction: () -> Void
     @PresentableStore var store: StoreType
     private let actions: [StoreType.Loading]
-    private let hUseNewStyle: Bool
     let buttonStyleSelect: ButtonStyleForLoading?
 
     @State var presentError = false
@@ -201,13 +172,11 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
 
     public init(
         _ type: StoreType.Type,
-        hUseNewStyle: Bool = true,
         _ action: StoreType.Loading,
         buttonAction: @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content,
         buttonStyleSelect: ButtonStyleForLoading? = .filledButton
     ) {
-        self.hUseNewStyle = hUseNewStyle
         self.actions = [action]
         self.buttonAction = buttonAction
         self.content = content
@@ -216,13 +185,11 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
 
     public init(
         _ type: StoreType.Type,
-        hUseNewStyle: Bool = true,
         _ actions: [StoreType.Loading],
         buttonAction: @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content,
         buttonStyleSelect: ButtonStyleForLoading? = .filledButton
     ) {
-        self.hUseNewStyle = hUseNewStyle
         self.actions = actions
         self.buttonAction = buttonAction
         self.content = content
@@ -345,52 +312,27 @@ public struct LoadingButtonWithContent<Content: View, StoreType: StoreLoading & 
 
     @ViewBuilder
     private var contentView: some View {
-        if hUseNewStyle {
-            content()
-                .blur(radius: isLoading ? 10 : 0)
-                .alert(isPresented: $presentError) {
-                    Alert(
-                        title: Text(L10n.somethingWentWrong),
-                        message: Text(error),
-                        dismissButton: .default(Text(L10n.alertOk)) {
-                            for action in actions {
-                                store.removeLoading(for: action)
-                            }
+        content()
+            .blur(radius: isLoading ? 10 : 0)
+            .alert(isPresented: $presentError) {
+                Alert(
+                    title: Text(L10n.somethingWentWrong),
+                    message: Text(error),
+                    dismissButton: .default(Text(L10n.alertOk)) {
+                        for action in actions {
+                            store.removeLoading(for: action)
                         }
-                    )
-                }
-        } else {
-            content()
-                .alert(isPresented: $presentError) {
-                    Alert(
-                        title: Text(L10n.somethingWentWrong),
-                        message: Text(error),
-                        dismissButton: .default(Text(L10n.alertOk)) {
-                            for action in actions {
-                                store.removeLoading(for: action)
-                            }
-                        }
-                    )
-                }
-        }
+                    }
+                )
+            }
     }
     @ViewBuilder
     private var loadingIndicatorView: some View {
-        if hUseNewStyle {
-            HStack {
-                DotsActivityIndicator(.standard)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(hBackgroundColorNew.primary.opacity(0.01))
-            .edgesIgnoringSafeArea(.top)
-        } else {
-            HStack {
-                WordmarkActivityIndicator(.standard)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(hBackgroundColor.primary.opacity(0.7))
-            .cornerRadius(.defaultCornerRadius)
-            .edgesIgnoringSafeArea(.top)
+        HStack {
+            DotsActivityIndicator(.standard)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(hBackgroundColorNew.primary.opacity(0.01))
+        .edgesIgnoringSafeArea(.top)
     }
 }

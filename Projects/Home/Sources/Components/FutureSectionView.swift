@@ -25,19 +25,19 @@ struct FutureSectionView: View {
                                 memberName,
                                 inceptionDate
                             )
-                            .hText(.prominentTitle)
+                            .hText(.title1)
                         L10n.HomeTab.activeInFutureBody
                             .hText(.body)
                             .foregroundColor(hLabelColor.secondary)
                     case .pendingSwitchable:
                         L10n.HomeTab.pendingSwitchableWelcomeTitle(memberName)
-                            .hText(.prominentTitle)
+                            .hText(.title1)
                         L10n.HomeTab.pendingSwitchableBody
                             .hText(.body)
                             .foregroundColor(hLabelColor.secondary)
                     case .pendingNonswitchable:
                         L10n.HomeTab.pendingNonswitchableWelcomeTitle(memberName)
-                            .hText(.prominentTitle)
+                            .hText(.title1)
                         L10n.HomeTab.pendingNonswitchableBody
                             .hText(.body)
                             .foregroundColor(hLabelColor.secondary)

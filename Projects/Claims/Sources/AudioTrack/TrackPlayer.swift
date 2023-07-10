@@ -4,7 +4,6 @@ import hCoreUI
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
-    @Environment(\.hUseNewStyle) var hUseNewStyle
     @Environment(\.hWithoutFootnote) var hWithoutFootnote
 
     let playbackTint: some hColor = hColorScheme(
@@ -23,10 +22,10 @@ struct TrackPlayer: View {
             Image(uiImage: paused ? hCoreUIAssets.play.image : hCoreUIAssets.pause.image)
                 .resizable()
                 .frame(width: 24, height: 24)
-                .foregroundColor(getWaveColor)
+                .foregroundColor(hTextColorNew.primary)
         default:
             Image(uiImage: hCoreUIAssets.play.image)
-                .foregroundColor(getWaveColor)
+                .foregroundColor(hTextColorNew.primary)
         }
     }
 
@@ -43,14 +42,15 @@ struct TrackPlayer: View {
                 } else {
                     image
                     let waveform = WaveformView(
-                        stripeColor: getWaveColor,
+                        stripeColor: hTextColorNew.primary,
                         sampleHeights: audioPlayer.sampleHeights
                     )
                     .frame(maxWidth: .infinity)
                     waveform
                         .padding(.top, 6)
                         .overlay(
-                            OverlayView(audioPlayer: audioPlayer).mask(waveform)
+                            OverlayView(audioPlayer: audioPlayer)
+                                .mask(waveform)
                                 .padding(.top, 6)
                         )
                         .transition(.opacity.animation(.easeOut))
@@ -61,39 +61,16 @@ struct TrackPlayer: View {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                    .fill(getBackgroundColor)
+                    .fill(hFillColorNew.opaqueOne)
             )
             .onTapGesture {
                 audioPlayer.togglePlaying()
             }
 
             if !hWithoutFootnote {
-                if hUseNewStyle {
-                    hTextNew(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
-                        .foregroundColor(hTextColorNew.secondary)
-                } else {
-                    hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
-                        .foregroundColor(hLabelColor.secondary)
-                }
+                hText(L10n.ClaimStatus.Files.claimAudioFooter, style: .footnote)
+                    .foregroundColor(hTextColorNew.secondary)
             }
-        }
-    }
-
-    @hColorBuilder
-    var getWaveColor: some hColor {
-        if hUseNewStyle {
-            hTextColorNew.primary
-        } else {
-            playbackTint
-        }
-    }
-
-    @hColorBuilder
-    var getBackgroundColor: some hColor {
-        if hUseNewStyle {
-            hFillColorNew.opaqueOne
-        } else {
-            backgroundColorOld
         }
     }
 }
@@ -121,7 +98,5 @@ struct TrackPlayer_Previews: PreviewProvider {
         let audioPlayer = AudioPlayer(url: nil)
         TrackPlayer(audioPlayer: audioPlayer)
             .hWithoutFootnote
-            .hUseNewStyle
-
     }
 }
