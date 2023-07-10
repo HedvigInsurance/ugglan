@@ -125,7 +125,7 @@ public final class ProfileStore: StateStore<ProfileState, ProfileAction> {
             if state == nil {
                 Toasts.shared.displayToast(
                     toast: Toast(
-                        symbol: .icon(hCoreUIAssets.editIcon.image),
+                        symbol: .icon(hCoreUIAssets.edit.image),
                         body: L10n.profileMyInfoSaveSuccessToastBody
                     )
                 )

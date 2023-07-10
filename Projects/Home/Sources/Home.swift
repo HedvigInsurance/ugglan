@@ -107,7 +107,7 @@ extension HomeView {
         .configureTabBarItem(
             title: L10n.HomeTab.title,
             image: hCoreUIAssets.homeTab.image,
-            selectedImage: hCoreUIAssets.homeTabSelected.image
+            selectedImage: hCoreUIAssets.homeTabActive.image
         )
         .configureHomeScroll()
     }

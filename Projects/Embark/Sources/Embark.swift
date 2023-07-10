@@ -340,7 +340,7 @@ extension Embark: Presentable {
                 }
 
                 let tooltipButton = UIButton()
-                tooltipButton.setImage(hCoreUIAssets.infoLarge.image, for: .normal)
+                tooltipButton.setImage(hCoreUIAssets.infoIcon.image, for: .normal)
 
                 let didTapTooltip = tooltipButton.signal(for: .touchUpInside)
 

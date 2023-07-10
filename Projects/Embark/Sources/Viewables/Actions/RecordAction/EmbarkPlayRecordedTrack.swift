@@ -13,9 +13,9 @@ struct TrackPlayer: View {
 
     @ViewBuilder var image: some View {
         if audioPlayer.isPlaying {
-            Image(uiImage: hCoreUIAssets.pause.image)
+            Image(uiImage: hCoreUIAssets.pauseChat.image)
         } else {
-            Image(uiImage: hCoreUIAssets.play.image)
+            Image(uiImage: hCoreUIAssets.playFilled.image)
         }
     }
 

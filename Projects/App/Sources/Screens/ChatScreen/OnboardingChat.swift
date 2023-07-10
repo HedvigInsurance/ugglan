@@ -44,7 +44,7 @@ extension OnboardingChat: Presentable {
         viewController.navigationItem.leftBarButtonItem = settingsButton
 
         let restartButton = UIBarButtonItem()
-        restartButton.image = HCoreUIAsset.restartChat.image /* TODO: CHECK */
+        restartButton.image = HCoreUIAsset.restartChat.image
         restartButton.tintColor = .brand(.primaryText())
 
         bag += restartButton.onValue { _ in

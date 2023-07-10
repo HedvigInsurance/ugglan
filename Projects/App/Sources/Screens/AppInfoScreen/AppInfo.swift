@@ -61,7 +61,7 @@ struct AppInfo {
                 switch self {
                 case .language: return hCoreUIAssets.language.image
                 case .market: return Localization.Locale.currentLocale.market.icon
-                case .version: return hCoreUIAssets.infoLarge.image
+                case .version: return hCoreUIAssets.infoIcon.image
                 case .memberId: return hCoreUIAssets.memberCard.image
                 case .deviceId: return hCoreUIAssets.profileCircleIcon.image
                 }
@@ -253,7 +253,7 @@ extension MenuChild {
         MenuChild(
             title: L10n.aboutScreenTitle,
             style: .default,
-            image: hCoreUIAssets.infoLarge.image,
+            image: hCoreUIAssets.infoIcon.image,
             action: .appInformation
         )
     }

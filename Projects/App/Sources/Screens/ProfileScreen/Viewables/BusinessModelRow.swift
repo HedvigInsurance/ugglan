@@ -13,7 +13,7 @@ extension BusinessModelRow: Viewable {
         let row = IconRow(
             title: L10n.businessModelProfileRow,
             subtitle: "",
-            iconAsset: hCoreUIAssets.charityPlain.image,
+            iconAsset: hCoreUIAssets.heart.image,
             options: [.withArrow]
         )
 

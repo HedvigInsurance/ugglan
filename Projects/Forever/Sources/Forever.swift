@@ -55,7 +55,7 @@ public struct ForeverView: View {
                         Button(action: {
                             store.send(.showInfoSheet(discount: discountAmount.formattedAmount))
                         }) {
-                            Image(uiImage: hCoreUIAssets.infoLarge.image).foregroundColor(hLabelColor.primary)
+                            Image(uiImage: hCoreUIAssets.infoIcon.image).foregroundColor(hLabelColor.primary)
                         }
                     }
                 }

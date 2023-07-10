@@ -37,7 +37,7 @@ extension AudioPlayer: Viewable {
         bag += control.didLayoutSignal.onValue { _ in control.layer.cornerRadius = control.frame.height / 2 }
 
         let playIconImageView = UIImageView()
-        playIconImageView.image = HCoreUIAsset.play.image /* TODO: CHECK IF SHOULD BE FILLED */
+        playIconImageView.image = HCoreUIAsset.play.image
         playIconImageView.tintColor = .brand(.primaryButtonTextColor)
         playIconImageView.contentMode = .scaleAspectFit
 
@@ -74,7 +74,7 @@ extension AudioPlayer: Viewable {
         func pause(audioPlayer: AVAudioPlayer) {
             timerBag.dispose()
             audioPlayer.pause()
-            playIconImageView.image = hCoreUIAssets.play.image /* TODO: CHECK IF FILLED */
+            playIconImageView.image = hCoreUIAssets.play.image
             updateTimeStamp(audioPlayer: audioPlayer)
             updateShader(audioPlayer: audioPlayer)
         }
@@ -83,7 +83,7 @@ extension AudioPlayer: Viewable {
             try? AVAudioSession.sharedInstance().setCategory(.playback)
             timerBag.dispose()
             audioPlayer.play()
-            playIconImageView.image = hCoreUIAssets.pause.image /* TODO: CHECK IF FILLED */
+            playIconImageView.image = hCoreUIAssets.pauseChat.image
             updateTimeStamp(audioPlayer: audioPlayer)
             updateShader(audioPlayer: audioPlayer)
         }

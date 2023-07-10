@@ -26,7 +26,7 @@ struct CrossSellMoreInfoSection: View {
             }
             hRow {
                 HStack(spacing: 16) {
-                    Image(uiImage: hCoreUIAssets.infoLarge.image)
+                    Image(uiImage: hCoreUIAssets.infoIcon.image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 24, height: 24)
