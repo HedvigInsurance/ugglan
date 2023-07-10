@@ -232,7 +232,7 @@ extension Embark: Presentable {
                     .onValue { redirect in callback(.value(redirect)) }
 
                 let backButton = UIBarButtonItem(
-                    image: hCoreUIAssets.backButton.image,
+                    image: hCoreUIAssets.arrowBack.image,
                     style: .plain,
                     target: nil,
                     action: nil

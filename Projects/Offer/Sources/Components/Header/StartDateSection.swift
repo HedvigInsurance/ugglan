@@ -135,7 +135,7 @@ extension StartDateSection: Presentable {
                     }
                 }
 
-                row.append(hCoreUIAssets.chevronRight.image)
+                row.append(hCoreUIAssets.arrowForward.image)
 
                 innerBag += section.append(row).compactMap { _ in row.viewController }
                     .withLatestFrom(store.stateSignal.atOnce().compactMap { $0.currentVariant?.bundle })

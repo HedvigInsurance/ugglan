@@ -105,9 +105,9 @@ public struct StandaloneChevronAccessory: View {
 
     public var body: some View {
         if hUseNewStyle {
-            Image(uiImage: hCoreUIAssets.chevronRight2.image)
-        } else {
             Image(uiImage: hCoreUIAssets.chevronRight.image)
+        } else {
+            Image(uiImage: hCoreUIAssets.arrowForward.image)
         }
     }
 }

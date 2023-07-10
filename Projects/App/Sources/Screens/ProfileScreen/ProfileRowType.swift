@@ -27,9 +27,9 @@ enum ProfileRowType {
     var icon: UIImage {
         switch self {
         case .myInfo:
-            return hCoreUIAssets.myInfoRowIcon.image
+            return hCoreUIAssets.memberCard.image
         case .myCharity:
-            return hCoreUIAssets.charityPlain.image
+            return hCoreUIAssets.heart.image
         case .payment:
             return hCoreUIAssets.paymentRowIcon.image
         case .appInfo:
@@ -40,7 +40,7 @@ enum ProfileRowType {
             if hasEnteredNumber {
                 return hCoreUIAssets.euroBonusWithValueRowIcon.image
             } else {
-                return hCoreUIAssets.euroBonusRowIcon.image
+                return hCoreUIAssets.eurobonus.image
             }
         }
     }

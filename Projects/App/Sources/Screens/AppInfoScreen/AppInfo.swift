@@ -171,7 +171,7 @@ extension AppInfo: Presentable {
             let marketRow = AppInfoRow(
                 title: market.title,
                 icon: market.icon,
-                trailingIcon: hCoreUIAssets.chevronRight.image,
+                trailingIcon: hCoreUIAssets.arrowForward.image,
                 value: value(row: market)
             )
 

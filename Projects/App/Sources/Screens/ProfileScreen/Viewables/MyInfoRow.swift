@@ -18,7 +18,7 @@ extension MyInfoRow: Viewable {
         let row = IconRow(
             title: L10n.profileMyInfoRowTitle,
             subtitle: "",
-            iconAsset: hCoreUIAssets.myInfoRowIcon.image,
+            iconAsset: hCoreUIAssets.memberCard.image,
             options: [.withArrow]
         )
 

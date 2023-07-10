@@ -46,7 +46,7 @@ struct LanguageRowButtonStyle: ButtonStyle {
 
             Spacer()
 
-            Image(uiImage: hCoreUIAssets.chevronRight.image)
+            Image(uiImage: hCoreUIAssets.arrowForward.image)
                 .resizable()
                 .foregroundColor(.white)
                 .frame(width: 16, height: 16)

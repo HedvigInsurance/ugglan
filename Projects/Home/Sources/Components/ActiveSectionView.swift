@@ -39,12 +39,12 @@ struct ActiveSectionView<Content: View, Claims: View, CommonClaims: View>: View 
             if hAnalyticsExperiment.movingFlow {
                 hSection {
                     hRow {
-                        Image(uiImage: hCoreUIAssets.apartmentOld.image)
+                        Image(uiImage: hCoreUIAssets.apartment.image)
                         L10n.HomeTab.editingSectionChangeAddressLabel.hText()
                     }
                     .withCustomAccessory {
                         Spacer()
-                        Image(uiImage: hCoreUIAssets.chevronRight.image)
+                        Image(uiImage: hCoreUIAssets.arrowForward.image)
                     }
                     .onTap {
                         store.send(.openMovingFlow)
