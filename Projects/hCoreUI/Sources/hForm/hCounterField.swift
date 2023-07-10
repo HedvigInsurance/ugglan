@@ -59,7 +59,7 @@ public struct hCounterField: View {
                     decrease()
                 }
             } label: {
-                Image(uiImage: hCoreUIAssets.minusIcon.image)
+                Image(uiImage: hCoreUIAssets.minusSmall.image)
                     .foregroundColor(
                         hTextColorNew.primary.opacity(value == 0 ? 0.4 : 1)
 
@@ -74,7 +74,7 @@ public struct hCounterField: View {
                     increase()
                 }
             } label: {
-                Image(uiImage: hCoreUIAssets.plusIcon.image)
+                Image(uiImage: hCoreUIAssets.plusSmall.image)
                     .foregroundColor(hTextColorNew.primary)
                     .frame(width: 35, height: 35)
             }

@@ -37,7 +37,7 @@ struct ChatButtonView: View {
                 }
                 action()
             }) {
-                Image(uiImage: hCoreUIAssets.chat.image)
+                Image(uiImage: hCoreUIAssets.chatQuickNav.image)
                     .foregroundColor(hLabelColor.primary)
                     .padding(10)
                     .padding(.bottom, -2)

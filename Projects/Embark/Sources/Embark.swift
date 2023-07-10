@@ -246,7 +246,7 @@ extension Embark: Presentable {
 
                     let closeAction = UIAction(
                         title: L10n.embarkExitButton,
-                        image: hCoreUIAssets.tinyCircledX.image,
+                        image: hCoreUIAssets.circularCross.image,
                         attributes: .destructive
                     ) { _ in callback(.end) }
 
