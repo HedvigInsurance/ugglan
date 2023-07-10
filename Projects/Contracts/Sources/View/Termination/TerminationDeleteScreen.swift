@@ -13,8 +13,7 @@ public struct TerminationDeleteScreen: View {
     }
 
     public var body: some View {
-
-        LoadingViewWithContent(.deleteTermination) {
+        LoadingViewWithContent(ContractStore.self, [.deleteTermination]) {
             hForm {
                 PresentableStoreLens(
                     ContractStore.self,
