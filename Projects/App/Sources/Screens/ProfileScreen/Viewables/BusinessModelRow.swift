@@ -2,6 +2,7 @@ import Flow
 import Foundation
 import Presentation
 import hCore
+import hCoreUI
 
 struct BusinessModelRow {}
 
@@ -12,7 +13,7 @@ extension BusinessModelRow: Viewable {
         let row = IconRow(
             title: L10n.businessModelProfileRow,
             subtitle: "",
-            iconAsset: Asset.charityPlain.image,
+            iconAsset: hCoreUIAssets.charityPlain.image,
             options: [.withArrow]
         )
 

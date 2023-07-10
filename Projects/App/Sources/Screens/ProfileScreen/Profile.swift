@@ -13,7 +13,7 @@ struct ProfileView: View {
     @State private var showLogoutAlert = false
     private let disposeBag = DisposeBag()
     private func getLogoutIcon() -> UIImage {
-        let icon = Asset.logoutIcon.image.withTintColor(.brand(.destructive))
+        let icon = hCoreUIAssets.logoutIcon.image.withTintColor(.brand(.destructive))
         return icon
     }
 
@@ -63,7 +63,7 @@ struct ProfileView: View {
 
                     hRow {
                         HStack(spacing: 16) {
-                            Image(uiImage: Asset.logoutIcon.image)
+                            Image(uiImage: hCoreUIAssets.logoutIcon.image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 40, height: 40)
@@ -171,8 +171,8 @@ extension ProfileView {
         .configureTitle(L10n.profileTitle)
         .configureTabBarItem(
             title: L10n.profileTitle,
-            image: Asset.profileTab.image,
-            selectedImage: Asset.profileTabActive.image
+            image: hCoreUIAssets.profileTab.image,
+            selectedImage: hCoreUIAssets.profileTabActive.image
         )
     }
 }

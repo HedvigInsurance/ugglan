@@ -4,6 +4,7 @@ import Form
 import Foundation
 import UIKit
 import hCore
+import hCoreUI
 
 struct AudioPlayer { let audioPlayerSignal = ReadWriteSignal<AVAudioPlayer?>(nil) }
 
@@ -36,7 +37,7 @@ extension AudioPlayer: Viewable {
         bag += control.didLayoutSignal.onValue { _ in control.layer.cornerRadius = control.frame.height / 2 }
 
         let playIconImageView = UIImageView()
-        playIconImageView.image = Asset.play.image
+        playIconImageView.image = HCoreUIAsset.play.image /* TODO: CHECK IF SHOULD BE FILLED */
         playIconImageView.tintColor = .brand(.primaryButtonTextColor)
         playIconImageView.contentMode = .scaleAspectFit
 
@@ -73,7 +74,7 @@ extension AudioPlayer: Viewable {
         func pause(audioPlayer: AVAudioPlayer) {
             timerBag.dispose()
             audioPlayer.pause()
-            playIconImageView.image = Asset.play.image
+            playIconImageView.image = hCoreUIAssets.play.image /* TODO: CHECK IF FILLED */
             updateTimeStamp(audioPlayer: audioPlayer)
             updateShader(audioPlayer: audioPlayer)
         }
@@ -82,7 +83,7 @@ extension AudioPlayer: Viewable {
             try? AVAudioSession.sharedInstance().setCategory(.playback)
             timerBag.dispose()
             audioPlayer.play()
-            playIconImageView.image = Asset.pause.image
+            playIconImageView.image = hCoreUIAssets.pause.image /* TODO: CHECK IF FILLED */
             updateTimeStamp(audioPlayer: audioPlayer)
             updateShader(audioPlayer: audioPlayer)
         }

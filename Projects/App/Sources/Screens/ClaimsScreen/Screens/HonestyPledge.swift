@@ -77,7 +77,7 @@ struct SlideDragger: View {
                             Image(uiImage: hCoreUIAssets.chevronRightRevamp.image)
                                 .foregroundColor(hTextColorNew.negative)
                         } else {
-                            Image(uiImage: Asset.continue.image)
+                            Image(uiImage: hCoreUIAssets.continue.image)
                         }
                     }
                     .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)

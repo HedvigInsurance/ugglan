@@ -15,7 +15,7 @@ extension AttachGIFButton: Viewable {
 
         control.snp.makeConstraints { make in make.width.height.equalTo(40) }
 
-        let icon = Icon(icon: Asset.gif.image, iconWidth: 20)
+        let icon = Icon(icon: hCoreUIAssets.gif.image, iconWidth: 20)
         control.addSubview(icon)
 
         icon.snp.makeConstraints { make in make.width.height.equalTo(20)
@@ -26,11 +26,11 @@ extension AttachGIFButton: Viewable {
             .animated(style: AnimationStyle.linear(duration: 0.1)) { isOpen in
                 if isOpen {
                     icon.transform = CGAffineTransform(rotationAngle: CGFloat(radians(45)))
-                    icon.icon = Asset.attachFile.image
+                    icon.icon = hCoreUIAssets.attachFile.image
                     icon.iconWidth = 15
                 } else {
                     icon.transform = CGAffineTransform(rotationAngle: CGFloat(radians(0)))
-                    icon.icon = Asset.gif.image
+                    icon.icon = hCoreUIAssets.gif.image
                     icon.iconWidth = 20
                 }
             }

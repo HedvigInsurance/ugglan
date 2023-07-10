@@ -26,8 +26,8 @@ struct AppInfo {
 
         var icon: UIImage {
             switch self {
-            case .appInformation: return Asset.infoIcon.image
-            case .appSettings: return Asset.settingsIcon.image
+            case .appInformation: return hCoreUIAssets.infoIcon.image
+            case .appSettings: return hCoreUIAssets.settingsIcon.image
             }
         }
 
