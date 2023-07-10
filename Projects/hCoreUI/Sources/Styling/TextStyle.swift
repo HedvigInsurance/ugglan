@@ -35,8 +35,8 @@ extension TextStyle { public enum BrandTextStyle {
 
     private var font: UIFont {
         switch self {
-        case .prominentTitle: return Fonts.fontFor(style: .prominentTitle)
-        case .largeTitle: return Fonts.fontFor(style: .largeTitle)
+        case .prominentTitle: return Fonts.fontFor(style: .title1)
+        case .largeTitle: return Fonts.fontFor(style: .title1)
         case .title1: return Fonts.fontFor(style: .title1)
         case .title2: return Fonts.fontFor(style: .title2)
         case .title3: return Fonts.fontFor(style: .title3)

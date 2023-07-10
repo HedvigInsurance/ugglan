@@ -19,14 +19,14 @@ public struct hCheckmarkField: View {
 
     public var body: some View {
         HStack {
-            hTextNew(text, style: .title3)
+            hText(text, style: .title3)
             Spacer()
             if selected {
                 Image(uiImage: hCoreUIAssets.checkmark.image)
             }
         }
         .padding(.vertical, 20)
-        .modifier(hFontModifierNew(style: .body))
+        .modifier(hFontModifier(style: .body))
         .foregroundColor(hTextColorNew.primary)
         .addFieldBackground(animate: $animate, error: $error)
         .onTapGesture {

@@ -20,8 +20,7 @@ public struct SelectClaimEntrypointGroup: View {
         LoadingViewWithContent(SubmitClaimStore.self, [.fetchClaimEntrypointGroups]) {
             hForm {
             }
-            .hUseNewStyle
-            .hFormTitle(.small, .customTitle, L10n.claimTriagingNavigationTitle)
+            .hFormTitle(.small, .title1, L10n.claimTriagingNavigationTitle)
             .hDisableScroll
             .hFormAttachToBottom {
                 PresentableStoreLens(
@@ -77,8 +76,7 @@ struct SelectClaimEntrypointType: View {
     var body: some View {
         hForm {
         }
-        .hUseNewStyle
-        .hFormTitle(.small, .customTitle, L10n.claimsTriagingWhatHappenedTitle)
+        .hFormTitle(.small, .title1, L10n.claimsTriagingWhatHappenedTitle)
         .hDisableScroll
         .hFormAttachToBottom {
 
@@ -157,8 +155,7 @@ struct SelectClaimEntrypointOption: View {
     var body: some View {
         hForm {
         }
-        .hUseNewStyle
-        .hFormTitle(.small, .customTitle, L10n.claimsTriagingWhatItemTitle)
+        .hFormTitle(.small, .title1, L10n.claimsTriagingWhatItemTitle)
         .hDisableScroll
         .hFormAttachToBottom {
             PresentableStoreLens(
@@ -227,7 +224,7 @@ struct ShowTagList: View {
             TagList(tags: tagsToShow, horizontalSpacing: 4, verticalSpacing: 4) { tag in
                 if showTags {
                     HStack(spacing: 0) {
-                        hTextNew(tag, style: .body)
+                        hText(tag, style: .body)
                             .foregroundColor(hTextColorNew.primary)
                             .lineLimit(1)
                             .scaleEffect(animate && selection == tag ? 1 / scaleSize : 1)
@@ -270,7 +267,7 @@ struct ShowTagList: View {
                     selection = ""
                 }
             } content: {
-                hTextNew(L10n.generalContinueButton, style: .body)
+                hText(L10n.generalContinueButton, style: .body)
             }
         }
         .padding([.leading, .trailing], 16)
@@ -289,7 +286,7 @@ struct ShowTagList: View {
             HStack {
                 Image(uiImage: hCoreUIAssets.infoSmall.image)
                     .foregroundColor(hAmberColorNew.amber600)
-                hTextNew(L10n.claimsSelectCategory, style: .body)
+                hText(L10n.claimsSelectCategory, style: .body)
             }
         }
     }

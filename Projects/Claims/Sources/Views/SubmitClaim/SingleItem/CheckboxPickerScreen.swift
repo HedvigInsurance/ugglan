@@ -37,7 +37,6 @@ struct CheckboxPickerScreen<T>: View {
                 .padding(.bottom, -4)
             }
         }
-        .hUseNewStyle
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 hButton.LargeButtonFilled {
@@ -49,12 +48,12 @@ struct CheckboxPickerScreen<T>: View {
                         }
                     }
                 } content: {
-                    hTextNew(L10n.generalSaveButton, style: .body)
+                    hText(L10n.generalSaveButton, style: .body)
                 }
                 hButton.LargeButtonText {
                     onCancel()
                 } content: {
-                    hTextNew(L10n.generalCancelButton, style: .body)
+                    hText(L10n.generalCancelButton, style: .body)
                 }
             }
             .padding(.horizontal, 16)
@@ -93,7 +92,7 @@ struct CheckboxPickerScreen<T>: View {
     func displayContent(displayName: String) -> some View {
         let isSelected = selectedItems.first(where: { $0.displayName == displayName }) != nil
         HStack(spacing: 0) {
-            hTextNew(displayName, style: .title3)
+            hText(displayName, style: .title3)
                 .foregroundColor(hTextColorNew.primary)
             Spacer()
             Circle()

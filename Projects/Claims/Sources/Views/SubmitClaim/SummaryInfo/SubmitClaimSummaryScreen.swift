@@ -23,7 +23,7 @@ public struct SubmitClaimSummaryScreen: View {
             }
             .withHeader {
                 HStack {
-                    L10n.changeAddressDetails.hTextNew(.body).foregroundColor(hTextColorNew.primary)
+                    L10n.changeAddressDetails.hText(.body).foregroundColor(hTextColorNew.primary)
                         .padding(.top, 16)
                 }
             }
@@ -49,7 +49,6 @@ public struct SubmitClaimSummaryScreen: View {
                 .padding([.leading, .trailing], 16)
             }
         }
-        .hUseNewStyle
     }
 
     @ViewBuilder
@@ -149,9 +148,9 @@ public struct SubmitClaimSummaryScreen: View {
     func createRow(with title: String?, and value: String?) -> some View {
         if let title, let value {
             HStack {
-                title.hTextNew(.body).foregroundColor(hTextColorNew.secondary)
+                title.hText(.body).foregroundColor(hTextColorNew.secondary)
                 Spacer()
-                value.hTextNew(.body).foregroundColor(hTextColorNew.secondary)
+                value.hText(.body).foregroundColor(hTextColorNew.secondary)
             }
         }
     }

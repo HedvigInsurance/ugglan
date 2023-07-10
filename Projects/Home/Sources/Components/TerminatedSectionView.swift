@@ -13,7 +13,7 @@ struct TerminatedSectionView<Claims: View>: View {
     var body: some View {
         hSection {
             VStack(alignment: .leading, spacing: 16) {
-                L10n.HomeTab.terminatedWelcomeTitle(memberName).hText(.prominentTitle)
+                L10n.HomeTab.terminatedWelcomeTitle(memberName).hText(.title1)
                 L10n.HomeTab.terminatedBody
                     .hText(.body)
                     .foregroundColor(hLabelColor.secondary)

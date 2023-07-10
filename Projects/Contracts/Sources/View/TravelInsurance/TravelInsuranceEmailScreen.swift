@@ -30,7 +30,7 @@ struct TravelInsuranceEmailScreen: View {
                 }
             }
         }
-        .sectionContainerStyle(.opaque(useNewDesign: false))
+        .sectionContainerStyle(.opaque)
         .hFormAttachToBottom {
             VStack {
                 hRow {

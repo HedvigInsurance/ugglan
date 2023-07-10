@@ -16,7 +16,6 @@ struct PriceInputScreen: View {
 
     var body: some View {
         hForm {}
-            .hUseNewStyle
             .hFormAttachToBottom {
                 VStack(spacing: 16) {
                     PresentableStoreLens(
@@ -42,13 +41,13 @@ struct PriceInputScreen: View {
                                 UIApplication.dismissKeyboard()
                                 onSave(purchasePrice)
                             } content: {
-                                hTextNew(L10n.generalSaveButton, style: .body)
+                                hText(L10n.generalSaveButton, style: .body)
                             }
                             hButton.LargeButtonText {
                                 UIApplication.dismissKeyboard()
                                 store.send(.navigationAction(action: .dismissScreen))
                             } content: {
-                                hTextNew(L10n.generalNotSure, style: .body)
+                                hText(L10n.generalNotSure, style: .body)
                             }
                         }
                     }

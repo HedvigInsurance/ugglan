@@ -141,9 +141,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     private var getTextField: some View {
-        let fieldPointSize = HFontTextStyleNew.title3.fontSize * 1.25
         return SwiftUI.TextField("", text: $innerValue)
-            .modifier(hFontModifierNew(style: .title3))
+            .modifier(hFontModifier(style: .title3))
             .modifier(masking)
             .tint(hTextColorNew.primary)
             .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
@@ -153,20 +152,18 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     previousInnerValue = value
                 }
             }
-            .frame(height: (shouldMoveLabel && suffix == nil) ? fieldPointSize : 0)
-            .padding(.vertical, (shouldMoveLabel && suffix == nil) ? 2 : 0)
-
+            .frame(height: (shouldMoveLabel && suffix == nil) ? HFontTextStyle.title3.fontSize : 0)
     }
 
     private var getSuffixLabel: some View {
-        hTextNew(suffix ?? "", style: .title3)
+        hText(suffix ?? "", style: .title3)
             .foregroundColor(hTextColorNew.secondary)
     }
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {
     static var previews: some View {
-        @State var value: String = "s"
+        @State var value: String = "Test"
 
         VStack {
             hFloatingTextField<Bool>(
@@ -182,7 +179,7 @@ struct hFloatingTextField_Previews: PreviewProvider {
                     }
                 ),
                 focusValue: true,
-                placeholder: "Placeholder"
+                placeholder: "Label"
             )
         }
     }
